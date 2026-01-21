@@ -23,11 +23,11 @@ def main():
     print("=" * 70)
     print("IDENTIFYING LOW QUALITY AGENTS FOR REFACTORING")
     print("=" * 70)
-    
+
     # Load agent discovery
     with open(DISCOVERY_FILE, 'r', encoding='utf-8') as f:
         agents = json.load(f)
-    
+
     # Calculate quality scores
     agent_scores = []
     for agent in agents:
@@ -40,25 +40,25 @@ def main():
             'schema_strictness': agent.get('schema_strictness', 0),
             'quality_score': score
         })
-    
+
     # Sort by quality score (lowest first)
     agent_scores.sort(key=lambda x: x['quality_score'])
-    
+
     # Find agents below 100% in any metric
     needs_work = [a for a in agent_scores if a['typed_pct'] < 100 or a['documented_pct'] < 100 or a['schema_strictness'] < 100]
-    
+
     print(f"\nTotal agents: {len(agents)}")
     print(f"Agents needing improvement: {len(needs_work)}")
     print(f"\nCurrent averages:")
     print(f"  Typed: {sum(a['typed_pct'] for a in agent_scores) / len(agent_scores):.1f}%")
     print(f"  Documented: {sum(a['documented_pct'] for a in agent_scores) / len(agent_scores):.1f}%")
     print(f"  Schema: {sum(a['schema_strictness'] for a in agent_scores) / len(agent_scores):.1f}%")
-    
+
     # Show batches of 5-6 agents
     print("\n" + "=" * 70)
     print("REFACTORING BATCHES (5-6 agents each)")
     print("=" * 70)
-    
+
     batch_size = 6
     for batch_num, i in enumerate(range(0, min(30, len(needs_work)), batch_size), 1):
         batch = needs_work[i:i+batch_size]

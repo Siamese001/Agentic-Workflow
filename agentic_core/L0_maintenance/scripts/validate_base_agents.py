@@ -41,11 +41,11 @@ CANONICAL_BASE_AGENTS = {
 def find_base_agents() -> Dict[str, List[Dict]]:
     """Find all base agents grouped by layer."""
     base_agents_by_layer = defaultdict(list)
-    
+
     for agent in data:
         class_name = agent.get('class_name', '')
         layer = agent.get('layer', '')
-        
+
         # Identify base agents
         # 1. Has "BaseAgent" in name
         # 2. Or matches canonical pattern (L0MaintenanceBaseAgent, L1CognitionBaseAgent, etc.)
@@ -55,13 +55,13 @@ def find_base_agents() -> Dict[str, List[Dict]]:
             class_name in CANONICAL_BASE_AGENTS.values() or
             'base_class' in agent.get('path', '').lower()
         )
-        
+
         if is_base_agent and layer:
             # Extract layer prefix (L0, L1, etc.)
             layer_prefix = layer[:2] if len(layer) >= 2 else layer
             if layer_prefix in LAYERS:
                 base_agents_by_layer[layer_prefix].append(agent)
-    
+
     return base_agents_by_layer
 
 def validate_base_agents() -> Tuple[bool, List[str]]:
@@ -69,18 +69,18 @@ def validate_base_agents() -> Tuple[bool, List[str]]:
     base_agents = find_base_agents()
     errors = []
     warnings = []
-    
+
     print("=" * 80)
     print("BASE AGENT UNIQUENESS VALIDATION")
     print("=" * 80)
     print()
-    
+
     for layer in LAYERS:
         agents = base_agents.get(layer, [])
         canonical = CANONICAL_BASE_AGENTS.get(layer)
-        
+
         print(f"{layer} Layer:")
-        
+
         if len(agents) == 0:
             warnings.append(f"⚠️  {layer}: No base agent found (expected {canonical})")
             print(f"   ⚠️  No base agent (expected {canonical})")
@@ -97,63 +97,63 @@ def validate_base_agents() -> Tuple[bool, List[str]]:
             # Multiple base agents - ERROR
             errors.append(f"❌ {layer}: Found {len(agents)} base agents (expected 1)")
             print(f"   ❌ MULTIPLE BASE AGENTS FOUND: {len(agents)}")
-            
+
             # Check if canonical exists
             canonical_agent = next((a for a in agents if a['class_name'] == canonical), None)
-            
+
             for i, agent in enumerate(agents, 1):
                 name = agent['class_name']
                 path = agent['path']
                 is_canonical = (name == canonical)
                 marker = "👑 CANONICAL" if is_canonical else "🔴 DUPLICATE"
-                
+
                 print(f"      {i}. {name} {marker}")
                 print(f"         {path}")
-            
+
             if canonical_agent:
                 print(f"   💡 Recommendation: Keep {canonical}, deprecate others")
             else:
                 print(f"   💡 Recommendation: Rename one to {canonical}, deprecate others")
-        
+
         print()
-    
+
     print("=" * 80)
     print("VALIDATION SUMMARY")
     print("=" * 80)
-    
+
     if errors:
         print(f"❌ {len(errors)} ERRORS")
         for error in errors:
             print(f"   {error}")
         print()
-    
+
     if warnings:
         print(f"⚠️  {len(warnings)} WARNINGS")
         for warning in warnings:
             print(f"   {warning}")
         print()
-    
+
     if not errors and not warnings:
         print("✅ All layers have exactly 1 canonical base agent")
         print()
-    
+
     is_valid = len(errors) == 0
     all_messages = errors + warnings
-    
+
     return is_valid, all_messages
 
 def suggest_fixes() -> List[str]:
     """Suggest fixes for base agent violations."""
     base_agents = find_base_agents()
     fixes = []
-    
+
     for layer in LAYERS:
         agents = base_agents.get(layer, [])
         canonical = CANONICAL_BASE_AGENTS.get(layer)
-        
+
         if len(agents) > 1:
             canonical_agent = next((a for a in agents if a['class_name'] == canonical), None)
-            
+
             if canonical_agent:
                 # Keep canonical, deprecate others
                 for agent in agents:
@@ -164,13 +164,13 @@ def suggest_fixes() -> List[str]:
                 fixes.append(f"Rename {agents[0]['class_name']} to {canonical} at {agents[0]['path']}")
                 for agent in agents[1:]:
                     fixes.append(f"Deprecate {agent['class_name']} at {agent['path']}")
-    
+
     return fixes
 
 def main():
     """Main entry point."""
     is_valid, messages = validate_base_agents()
-    
+
     if not is_valid:
         print("=" * 80)
         print("RECOMMENDED FIXES")
@@ -181,7 +181,7 @@ def main():
         print()
         print("Run this script with --fix flag to auto-apply fixes (not yet implemented)")
         return 1
-    
+
     return 0
 
 if __name__ == "__main__":

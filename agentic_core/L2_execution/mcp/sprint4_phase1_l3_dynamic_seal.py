@@ -98,10 +98,10 @@ def remove_static_import(content: str, import_statement: str) -> str:
     # Match the full line including newline
     pattern = re.escape(import_statement) + r'\s*\n'
     content = re.sub(pattern, '', content)
-    
+
     # Also try without newline for last line
     content = content.replace(import_statement, '')
-    
+
     return content
 
 def refactor_mission_orchestrator(file_path: Path) -> bool:
@@ -109,7 +109,7 @@ def refactor_mission_orchestrator(file_path: Path) -> bool:
     try:
         content = file_path.read_text(encoding='utf-8')
         original = content
-        
+
         # Remove static imports
         content = remove_static_import(
             content,
@@ -119,15 +119,15 @@ def refactor_mission_orchestrator(file_path: Path) -> bool:
             content,
             "from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent"
         )
-        
+
         # The functions already use dynamic imports inside, so we're done
         # Just need to remove the top-level static imports
-        
+
         if content != original:
             file_path.write_text(content, encoding='utf-8')
             return True
         return False
-        
+
     except Exception as e:
         print(f"❌ Error refactoring {file_path.name}: {e}")
         return False
@@ -137,13 +137,13 @@ def refactor_mission_controller(file_path: Path) -> bool:
     try:
         content = file_path.read_text(encoding='utf-8')
         original = content
-        
+
         # Remove static import at top
         content = remove_static_import(
             content,
             "from agentic_core.L5_safety.validators.mission_preflight_1 import MissionPreflight"
         )
-        
+
         # The other imports (compliance_orchestrator, SubAtomicEngine, SafetyGuardrail)
         # are already dynamic (inside try blocks in methods), so just remove if they exist at top
         content = remove_static_import(
@@ -158,12 +158,12 @@ def refactor_mission_controller(file_path: Path) -> bool:
             content,
             "from agentic_core.L5_safety.guardrails.safety_layer import SafetyGuardrail"
         )
-        
+
         if content != original:
             file_path.write_text(content, encoding='utf-8')
             return True
         return False
-        
+
     except Exception as e:
         print(f"❌ Error refactoring {file_path.name}: {e}")
         return False
@@ -173,7 +173,7 @@ def refactor_mcp_router(file_path: Path) -> bool:
     try:
         content = file_path.read_text(encoding='utf-8')
         original = content
-        
+
         # Remove static imports
         content = remove_static_import(
             content,
@@ -183,15 +183,15 @@ def refactor_mcp_router(file_path: Path) -> bool:
             content,
             "from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield"
         )
-        
+
         # Add lazy loader helper at class level if mcp_authority is used
         # The redis_shield is already imported dynamically inside a method
-        
+
         if content != original:
             file_path.write_text(content, encoding='utf-8')
             return True
         return False
-        
+
     except Exception as e:
         print(f"❌ Error refactoring {file_path.name}: {e}")
         return False
@@ -201,40 +201,40 @@ def refactor_mcp_marketplace(file_path: Path) -> bool:
     try:
         content = file_path.read_text(encoding='utf-8')
         original = content
-        
+
         # Remove static import
         content = remove_static_import(
             content,
             "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority"
         )
-        
+
         if content != original:
             file_path.write_text(content, encoding='utf-8')
             return True
         return False
-        
+
     except Exception as e:
         print(f"❌ Error refactoring {file_path.name}: {e}")
         return False
 
 def main():
     """Apply Dynamic Seal pattern to L3 orchestration files."""
-    
+
     print("=" * 80)
     print("  Sprint 4 - Phase 1: Surgical L3→L5 Dynamic Seal")
     print("=" * 80)
     print()
     print("Strategy: Remove static L5 imports, leverage existing dynamic imports")
     print()
-    
+
     l3_dir = REPO / AGENTIC_CORE_DIR / "L3_orchestration" / "workflow_engines"
-    
+
     if not l3_dir.exists():
         print(f"❌ Directory not found: {l3_dir}")
         return 1
-    
+
     files_modified = 0
-    
+
     # Refactor mission_orchestrator.py
     file_path = l3_dir / "mission_orchestrator.py"
     if file_path.exists():
@@ -242,7 +242,7 @@ def main():
         if refactor_mission_orchestrator(file_path):
             print(f"✅ Fixed: {file_path.name}")
             files_modified += 1
-    
+
     # Refactor mission_controller_engine.py
     file_path = l3_dir / "mission_controller_engine.py"
     if file_path.exists():
@@ -250,7 +250,7 @@ def main():
         if refactor_mission_controller(file_path):
             print(f"✅ Fixed: {file_path.name}")
             files_modified += 1
-    
+
     # Refactor mission_controller.py
     file_path = l3_dir / "mission_controller.py"
     if file_path.exists():
@@ -258,7 +258,7 @@ def main():
         if refactor_mission_controller(file_path):
             print(f"✅ Fixed: {file_path.name}")
             files_modified += 1
-    
+
     # Refactor mcp_router_sovereign.py
     file_path = l3_dir / "mcp_router_sovereign.py"
     if file_path.exists():
@@ -266,7 +266,7 @@ def main():
         if refactor_mcp_router(file_path):
             print(f"✅ Fixed: {file_path.name}")
             files_modified += 1
-    
+
     # Refactor mcp_marketplace_sovereign.py
     file_path = l3_dir / "mcp_marketplace_sovereign.py"
     if file_path.exists():
@@ -274,14 +274,14 @@ def main():
         if refactor_mcp_marketplace(file_path):
             print(f"✅ Fixed: {file_path.name}")
             files_modified += 1
-    
+
     print()
     print("=" * 80)
     print("  Phase 1 Summary")
     print("=" * 80)
     print(f"Files modified: {files_modified}")
     print()
-    
+
     if files_modified > 0:
         print("✅ Phase 1 complete!")
         print()
@@ -293,7 +293,7 @@ def main():
         print("  python scripts/ssot.py validate --summary")
     else:
         print("ℹ️  No files needed refactoring")
-    
+
     return 0
 
 if __name__ == "__main__":

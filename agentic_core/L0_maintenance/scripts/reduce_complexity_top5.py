@@ -14,7 +14,7 @@ def analyze_method_complexity(file_path: Path) -> List[Tuple[str, int]]:
     try:
         content = file_path.read_text(encoding='utf-8')
         tree = ast.parse(content)
-        
+
         method_complexities = []
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
@@ -22,7 +22,7 @@ def analyze_method_complexity(file_path: Path) -> List[Tuple[str, int]]:
                     if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         cc = calculate_method_cc(item)
                         method_complexities.append((f"{node.name}.{item.name}", cc))
-        
+
         return sorted(method_complexities, key=lambda x: x[1], reverse=True)
     except Exception as e:
         print(f"Error analyzing {file_path}: {e}")
@@ -31,7 +31,7 @@ def analyze_method_complexity(file_path: Path) -> List[Tuple[str, int]]:
 def calculate_method_cc(node: ast.FunctionDef) -> int:
     """Calculate cyclomatic complexity for a single method."""
     cc = 1  # Base complexity
-    
+
     for child in ast.walk(node):
         if isinstance(child, (ast.If, ast.While, ast.For, ast.AsyncFor)):
             cc += 1
@@ -43,33 +43,33 @@ def calculate_method_cc(node: ast.FunctionDef) -> int:
             cc += len(child.values) - 1
         elif isinstance(child, (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp)):
             cc += 1
-    
+
     return cc
 
 def main():
     """Analyze top 5 complex agents."""
     project_root = Path(__file__).parent.parent
-    
+
     # Load discovery data
     discovery_file = project_root / "agent_discovery_full.json"
     with open(discovery_file) as f:
         agents = json.load(f)
-    
+
     # Sort by complexity
     agents_sorted = sorted(agents, key=lambda x: x.get('cyclomatic_complexity', 0), reverse=True)
-    
+
     print("=" * 80)
     print("TOP 5 AGENTS BY COMPLEXITY - METHOD BREAKDOWN")
     print("=" * 80)
-    
+
     for i, agent in enumerate(agents_sorted[:5], 1):
         name = agent.get('class_name', 'Unknown')
         cc = agent.get('cyclomatic_complexity', 0)
         rel_path = agent.get('file_path', '')
-        
+
         print(f"\n{i}. {name} (Total CC={cc})")
         print(f"   File: {rel_path}")
-        
+
         if rel_path:
             file_path = project_root / rel_path
             if file_path.exists():
@@ -80,7 +80,7 @@ def main():
                         print(f"      {method_name}: CC={method_cc}")
             else:
                 print(f"   [!] File not found: {file_path}")
-        
+
         print()
 
 if __name__ == "__main__":

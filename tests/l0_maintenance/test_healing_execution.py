@@ -10,13 +10,13 @@ from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy
 def main():
     project_root = Path(__file__).parent.parent
     guardian = get_autonomy_guardian(project_root)
-    
+
     print("\n" + "=" * 80)
     print("EXECUTING AUTONOMOUS HEALING")
     print("=" * 80)
-    
+
     result = guardian.heal_repository(dry_run=False, execute=True)
-    
+
     print("\n" + "=" * 80)
     print("HEALING SUMMARY")
     print("=" * 80)
@@ -24,7 +24,7 @@ def main():
     print(f"Agents Fixed: {result.get('fixed', 0)}")
     print(f"Errors: {result.get('errors', 0)}")
     print("=" * 80)
-    
+
     return 0 if result.get('errors', 0) == 0 else 1
 
 if __name__ == '__main__':

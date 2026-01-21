@@ -296,15 +296,15 @@ class HardeningConfig:
     enable_dspy_optimization: bool = False
     enable_enhanced_sandbox: bool = True
     enable_tool_verification: bool = True
-    
+
     # Constrained decoding
     max_retries: int = 3
-    
+
     # Sandbox settings
     sandbox_image: str = "python:3.10-slim"
     sandbox_network_disabled: bool = True
     sandbox_security_hardening: bool = True
-    
+
     # Tool verification
     verification_strict_mode: bool = True
 ```

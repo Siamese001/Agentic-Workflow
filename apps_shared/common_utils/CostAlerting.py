@@ -37,7 +37,7 @@ class CostMetrics:
     period_start: float
     period_end: float
     model_breakdown: Dict[str, float] = field(default_factory=dict)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -64,7 +64,7 @@ class CostAlert:
     current_cost: float
     budget_limit: float
     timestamp: float = field(default_factory=time.time)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -81,7 +81,7 @@ class CostAlert:
 
 class CostTracker:
     """Tracks costs per agent with SPIFFE identity integration.
-    
+
     Features:
     - Per-agent cost attribution
     - Budget enforcement
@@ -89,7 +89,7 @@ class CostTracker:
     - Model-level breakdown
     - Financial accountability
     """
-    
+
     def __init__(
         self,
         default_budget_per_agent: Optional[float] = None,
@@ -97,7 +97,7 @@ class CostTracker:
         enable_logging: bool = True,
     ):
         """Initialize cost tracker.
-        
+
         Args:
             default_budget_per_agent: Default budget per agent
             alert_threshold_percent: Alert when cost reaches this % of budget
@@ -106,11 +106,11 @@ class CostTracker:
         self.default_budget_per_agent = default_budget_per_agent
         self.alert_threshold_percent = alert_threshold_percent
         self.enable_logging = enable_logging
-        
+
         self._agent_costs: Dict[str, List[Dict[str, Any]]] = {}
         self._agent_budgets: Dict[str, float] = {}
         self._alerts: List[CostAlert] = []
-        
+
         if self.enable_logging:
             logger.info(
                 "cost_tracker_initialized",
@@ -119,7 +119,7 @@ class CostTracker:
                     "alert_threshold": alert_threshold_percent,
                 }
             )
-    
+
     def record_cost(
         self,
         agent_id: str,
@@ -129,7 +129,7 @@ class CostTracker:
         cost: float,
     ) -> None:
         """Record cost for an agent.
-        
+
         Args:
             agent_id: Agent identifier
             spiffe_id: SPIFFE ID for identity
@@ -139,7 +139,7 @@ class CostTracker:
         """
         if agent_id not in self._agent_costs:
             self._agent_costs[agent_id] = []
-        
+
         record = {
             "spiffe_id": spiffe_id,
             "model_id": model_id,
@@ -147,13 +147,13 @@ class CostTracker:
             "cost": cost,
             "timestamp": time.time(),
         }
-        
+
         self._agent_costs[agent_id].append(record)
-        
+
         # Check budget
         if agent_id in self._agent_budgets:
             self._check_budget(agent_id, spiffe_id)
-        
+
         if self.enable_logging:
             logger.debug(
                 "cost_recorded",
@@ -163,16 +163,16 @@ class CostTracker:
                     "cost": cost,
                 }
             )
-    
+
     def set_budget(self, agent_id: str, budget: float) -> None:
         """Set budget for an agent.
-        
+
         Args:
             agent_id: Agent identifier
             budget: Budget amount
         """
         self._agent_budgets[agent_id] = budget
-        
+
         if self.enable_logging:
             logger.info(
                 "budget_set",
@@ -181,48 +181,48 @@ class CostTracker:
                     "budget": budget,
                 }
             )
-    
+
     def get_metrics(
         self,
         agent_id: str,
         period_hours: int = 24,
     ) -> Optional[CostMetrics]:
         """Get cost metrics for an agent.
-        
+
         Args:
             agent_id: Agent identifier
             period_hours: Period in hours
-            
+
         Returns:
             CostMetrics or None
         """
         records = self._agent_costs.get(agent_id, [])
-        
+
         if not records:
             return None
-        
+
         # Filter by period
         period_start = time.time() - (period_hours * 3600)
         period_records = [r for r in records if r["timestamp"] >= period_start]
-        
+
         if not period_records:
             return None
-        
+
         # Calculate metrics
         total_cost = sum(r["cost"] for r in period_records)
         token_count = sum(r["tokens"] for r in period_records)
         request_count = len(period_records)
         avg_cost = total_cost / request_count if request_count > 0 else 0.0
-        
+
         # Model breakdown
         model_breakdown: Dict[str, float] = {}
         for record in period_records:
             model_id = record["model_id"]
             model_breakdown[model_id] = model_breakdown.get(model_id, 0.0) + record["cost"]
-        
+
         # Get SPIFFE ID from most recent record
         spiffe_id = period_records[-1]["spiffe_id"]
-        
+
         metrics = CostMetrics(
             agent_id=agent_id,
             spiffe_id=spiffe_id,
@@ -234,57 +234,57 @@ class CostTracker:
             period_end=time.time(),
             model_breakdown=model_breakdown,
         )
-        
+
         return metrics
-    
+
     def get_all_metrics(
         self,
         period_hours: int = 24,
     ) -> List[CostMetrics]:
         """Get metrics for all agents.
-        
+
         Args:
             period_hours: Period in hours
-            
+
         Returns:
             List of CostMetrics
         """
         all_metrics = []
-        
+
         for agent_id in self._agent_costs.keys():
             metrics = self.get_metrics(agent_id, period_hours)
             if metrics:
                 all_metrics.append(metrics)
-        
+
         return all_metrics
-    
+
     def get_alerts(
         self,
         agent_id: Optional[str] = None,
         level: Optional[CostAlertLevel] = None,
     ) -> List[CostAlert]:
         """Get cost alerts.
-        
+
         Args:
             agent_id: Optional agent ID filter
             level: Optional level filter
-            
+
         Returns:
             List of CostAlert
         """
         alerts = self._alerts
-        
+
         if agent_id:
             alerts = [a for a in alerts if a.agent_id == agent_id]
-        
+
         if level:
             alerts = [a for a in alerts if a.level == level]
-        
+
         return alerts
-    
+
     def _check_budget(self, agent_id: str, spiffe_id: str) -> None:
         """Check if agent is within budget.
-        
+
         Args:
             agent_id: Agent identifier
             spiffe_id: SPIFFE ID
@@ -292,14 +292,14 @@ class CostTracker:
         budget = self._agent_budgets.get(agent_id)
         if not budget:
             return
-        
+
         metrics = self.get_metrics(agent_id)
         if not metrics:
             return
-        
+
         current_cost = metrics.total_cost
         usage_percent = current_cost / budget
-        
+
         # Check thresholds
         if usage_percent >= 1.0:
             self._create_alert(
@@ -319,7 +319,7 @@ class CostTracker:
                 current_cost=current_cost,
                 budget_limit=budget,
             )
-    
+
     def _create_alert(
         self,
         agent_id: str,
@@ -330,7 +330,7 @@ class CostTracker:
         budget_limit: float,
     ) -> None:
         """Create cost alert.
-        
+
         Args:
             agent_id: Agent identifier
             spiffe_id: SPIFFE ID
@@ -348,13 +348,13 @@ class CostTracker:
             current_cost=current_cost,
             budget_limit=budget_limit,
         )
-        
+
         self._alerts.append(alert)
-        
+
         # Keep only recent alerts (last 100)
         if len(self._alerts) > 100:
             self._alerts = self._alerts[-100:]
-        
+
         if self.enable_logging:
             logger.warning(
                 "cost_alert_triggered",
@@ -371,10 +371,10 @@ def create_cost_tracker(
     default_budget_per_agent: Optional[float] = None,
 ) -> CostTracker:
     """Factory function to create cost tracker.
-    
+
     Args:
         default_budget_per_agent: Default budget per agent
-        
+
     Returns:
         CostTracker instance
     """

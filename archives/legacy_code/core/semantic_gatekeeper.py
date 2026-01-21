@@ -835,4 +835,3 @@ def get_gatekeeper() -> SemanticGatekeeper:
     if _gatekeeper is None:
         _gatekeeper = SemanticGatekeeper()
     return _gatekeeper
-

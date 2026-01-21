@@ -103,10 +103,10 @@ def check_ssot_imports(file_path: Path) -> Tuple[bool, List[str]]:
             errors.append("Missing SSOT import from dashboard_ssot_definitions")
         elif not any(name.startswith('COL_') for name in imported_names):
             errors.append("No COL_* constants imported (should use SSOT column names)")
-            
+
     except Exception as e:
         errors.append(f"AST Parsing Error: {e}")
-    
+
     return len(errors) == 0, errors
 
 def check_hardcoded_strings(file_path: Path) -> Tuple[bool, List[str]]:
@@ -114,12 +114,12 @@ def check_hardcoded_strings(file_path: Path) -> Tuple[bool, List[str]]:
     errors = []
     content = file_path.read_text(encoding='utf-8')
     lines = content.split('\n')
-    
+
     for line_num, line in enumerate(lines, 1):
         stripped = line.strip()
         if not stripped or stripped.startswith('#') or stripped.startswith('"""') or stripped.startswith("'''"):
             continue
-        
+
         for hardcoded, ssot_const in SSOT_COLUMN_MAPPINGS.items():
             # Robust detection for dict access and .get() calls
             patterns = [
@@ -131,21 +131,21 @@ def check_hardcoded_strings(file_path: Path) -> Tuple[bool, List[str]]:
                     errors.append(
                         f"Line {line_num}: Hardcoded '{hardcoded}' should use {ssot_const}"
                     )
-        
+
         for hardcoded, ssot_const in SSOT_FIELD_MAPPINGS.items():
             if re.search(rf"\.get\(['\"{re.escape(hardcoded)}['\"]\)", line):
                 if ssot_const not in line: # Ensure we aren't already using the constant
                     errors.append(
                         f"Line {line_num}: Hardcoded '{hardcoded}' should use {ssot_const}"
                     )
-    
+
     return len(errors) == 0, errors
 
 def check_calculation_duplication(file_path: Path) -> Tuple[bool, List[str]]:
     """Check for duplicate calculation logic instead of SSOT functions."""
     errors = []
     content = file_path.read_text(encoding='utf-8')
-    
+
     # Patterns that indicate duplicate calculation logic
     duplicate_patterns = [
         (r'sum\(\s*1\s*for\s+.*\s+if\s+.*has_healing.*\).*\*\s*100', 'calc_heal_cap_pct()'),
@@ -153,7 +153,7 @@ def check_calculation_duplication(file_path: Path) -> Tuple[bool, List[str]]:
         (r'sum\(\s*1\s*for\s+.*\s+if\s+.*has_tests.*\).*\*\s*100', 'calc_test_pct()'),
         (r'sum\(\s*1\s*for\s+.*\s+if\s+.*mcp_hardened.*\).*\*\s*100', 'calc_hardened_pct()'),
     ]
-    
+
     for pattern, ssot_func in duplicate_patterns:
         matches = re.finditer(pattern, content, re.IGNORECASE)
         for match in matches:
@@ -162,24 +162,24 @@ def check_calculation_duplication(file_path: Path) -> Tuple[bool, List[str]]:
             errors.append(
                 f"Line {line_num}: Duplicate calculation logic - should use {ssot_func}"
             )
-    
+
     return len(errors) == 0, errors
 
 def test_file_ssot_compliance(file_path: Path) -> Tuple[bool, List[str]]:
     """Test a single file for SSOT compliance."""
     all_errors = []
-    
+
     print(f"\n{'='*70}")
     print(f"Testing: {file_path.name}")
     print(f"{'='*70}")
-    
+
     # Test 1: SSOT imports
     passed, errors = check_ssot_imports(file_path)
     if not passed:
         all_errors.extend([f"  ❌ SSOT Import: {e}" for e in errors])
     else:
         print("  ✅ SSOT imports present")
-    
+
     # Test 2: No hardcoded strings
     passed, errors = check_hardcoded_strings(file_path)
     if not passed:
@@ -188,35 +188,35 @@ def test_file_ssot_compliance(file_path: Path) -> Tuple[bool, List[str]]:
             all_errors.append(f"  ... and {len(errors) - 5} more hardcoded strings")
     else:
         print("  ✅ No hardcoded column/field names")
-    
+
     # Test 3: No duplicate calculations
     passed, errors = check_calculation_duplication(file_path)
     if not passed:
         all_errors.extend([f"  ❌ Duplicate Calc: {e}" for e in errors])
     else:
         print("  ✅ No duplicate calculation logic")
-    
+
     return len(all_errors) == 0, all_errors
 
 def test_no_hardcoded_columns_in_js() -> Tuple[bool, List[str]]:
     """Test Case 3: Ensures no hardcoded metric strings exist in JS renderers."""
     errors = []
     js_dir = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "js" / "renderers"
-    
+
     if not js_dir.exists():
         errors.append(f"JS renderers directory not found: {js_dir}")
         return False, errors
-    
+
     for js_file in js_dir.glob("*.js"):
         content = js_file.read_text(encoding='utf-8')
         lines = content.split('\n')
-        
+
         for line_num, line in enumerate(lines, 1):
             # Skip comments and import statements
             stripped = line.strip()
             if stripped.startswith('//') or stripped.startswith('/*') or 'import' in stripped:
                 continue
-            
+
             for forbidden in JS_FORBIDDEN_STRINGS:
                 # Check for string literals in object access or assignments
                 patterns = [
@@ -225,7 +225,7 @@ def test_no_hardcoded_columns_in_js() -> Tuple[bool, List[str]]:
                     rf"= '{re.escape(forbidden)}'",
                     rf'= "{re.escape(forbidden)}"'
                 ]
-                
+
                 for pattern in patterns:
                     if re.search(pattern, line):
                         # Check if line uses SSOT constant instead
@@ -235,7 +235,7 @@ def test_no_hardcoded_columns_in_js() -> Tuple[bool, List[str]]:
                                 f"Hardcoded string '{forbidden}' found. Use COLUMNS.* constant."
                             )
                             break
-    
+
     return len(errors) == 0, errors
 
 
@@ -243,25 +243,25 @@ def test_ssot_generation_integrity() -> Tuple[bool, List[str]]:
     """Test Case 2: Ensures generated files match YAML source."""
     import yaml
     import hashlib
-    
+
     errors = []
     yaml_path = PROJECT_ROOT / "scripts" / "config" / "dashboard_ssot.yaml"
     py_output = PROJECT_ROOT / "scripts" / "dashboard_ssot_definitions.py"
     js_output = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "js" / "constants" / "dashboard-constants.js"
-    
+
     if not yaml_path.exists():
         errors.append(f"YAML config not found: {yaml_path}")
         return False, errors
-    
+
     # Load YAML and verify generated files match
     try:
         with open(yaml_path, 'r', encoding='utf-8') as f:
             yaml_data = yaml.safe_load(f)
-        
+
         # Check Python constants exist
         if py_output.exists():
             py_content = py_output.read_text(encoding='utf-8')
-            
+
             # Verify key constants are present
             for col_key in yaml_data.get('columns', {}).keys():
                 const_name = f"COL_{col_key.upper()}"
@@ -269,38 +269,38 @@ def test_ssot_generation_integrity() -> Tuple[bool, List[str]]:
                     errors.append(f"Missing Python constant: {const_name}")
         else:
             errors.append(f"Generated Python file not found: {py_output}")
-        
+
         # Check JavaScript constants exist
         if js_output.exists():
             js_content = js_output.read_text(encoding='utf-8')
-            
+
             # Verify window.COLUMNS exists
             if 'window.COLUMNS' not in js_content:
                 errors.append("Missing window.COLUMNS in generated JS")
         else:
             errors.append(f"Generated JavaScript file not found: {js_output}")
-            
+
     except Exception as e:
         errors.append(f"Generation integrity check failed: {e}")
-    
+
     return len(errors) == 0, errors
 
 
 def test_generator_weight_validation() -> Tuple[bool, List[str]]:
     """Test Case 1: Ensures generator validates weight sums."""
     import yaml
-    
+
     errors = []
     yaml_path = PROJECT_ROOT / "scripts" / "config" / "dashboard_ssot.yaml"
-    
+
     if not yaml_path.exists():
         errors.append(f"YAML config not found: {yaml_path}")
         return False, errors
-    
+
     try:
         with open(yaml_path, 'r', encoding='utf-8') as f:
             yaml_data = yaml.safe_load(f)
-        
+
         # Check health weights sum to 1.0
         health_weights = yaml_data.get('health_weights', {})
         if health_weights:
@@ -309,7 +309,7 @@ def test_generator_weight_validation() -> Tuple[bool, List[str]]:
                 errors.append(
                     f"Health weights sum to {weight_sum:.3f}, expected 1.0 (±0.001)"
                 )
-        
+
         # Check L0 weights sum to 1.0
         l0_weights = yaml_data.get('health_weights_l0', {})
         if l0_weights:
@@ -318,7 +318,7 @@ def test_generator_weight_validation() -> Tuple[bool, List[str]]:
                 errors.append(
                     f"L0 health weights sum to {weight_sum:.3f}, expected 1.0 (±0.001)"
                 )
-        
+
         # Check code quality weights sum to 1.0
         cq_weights = yaml_data.get('code_quality_weights', {})
         if cq_weights:
@@ -327,10 +327,10 @@ def test_generator_weight_validation() -> Tuple[bool, List[str]]:
                 errors.append(
                     f"Code quality weights sum to {weight_sum:.3f}, expected 1.0 (±0.001)"
                 )
-                
+
     except Exception as e:
         errors.append(f"Weight validation failed: {e}")
-    
+
     return len(errors) == 0, errors
 
 
@@ -340,10 +340,10 @@ def main():
     print("DASHBOARD SSOT ENFORCEMENT TEST SUITE")
     print("="*70)
     print("\nVerifying SSOT compliance across Python and JavaScript...")
-    
+
     all_passed = True
     all_errors = {}
-    
+
     # Test 1: Generator Weight Validation
     print("\n" + "="*70)
     print("Test 1: Generator Weight Validation")
@@ -355,7 +355,7 @@ def main():
         print("❌ FAILED: Weight validation errors")
         all_errors['Weight Validation'] = errors
         all_passed = False
-    
+
     # Test 2: Generation Integrity
     print("\n" + "="*70)
     print("Test 2: SSOT Generation Integrity")
@@ -367,7 +367,7 @@ def main():
         print("❌ FAILED: Generation integrity errors")
         all_errors['Generation Integrity'] = errors
         all_passed = False
-    
+
     # Test 3: JavaScript Leak Detection
     print("\n" + "="*70)
     print("Test 3: JavaScript Hardcoded String Detection")
@@ -379,33 +379,33 @@ def main():
         print("❌ FAILED: JavaScript leak detection errors")
         all_errors['JavaScript Leaks'] = errors
         all_passed = False
-    
+
     # Test 4: Python Test Files SSOT Compliance
     print("\n" + "="*70)
     print("Test 4: Python Test Files SSOT Compliance")
     print("="*70)
-    
+
     scripts_dir = PROJECT_ROOT / "scripts"
     test_files = [
         scripts_dir / "test_dashboard_end_to_end.py",
         scripts_dir / "test_dashboard_data_integrity.py",
         scripts_dir / "test_dashboard_generation.py",
     ]
-    
+
     test_files = [f for f in test_files if f.exists()]
     print(f"Found {len(test_files)} Python test files to check")
-    
+
     for test_file in test_files:
         passed, errors = test_file_ssot_compliance(test_file)
         if not passed:
             all_passed = False
             all_errors[test_file.name] = errors
-    
+
     # Summary
     print("\n" + "="*70)
     print("SSOT ENFORCEMENT TEST SUMMARY")
     print("="*70)
-    
+
     if all_passed:
         print("\n✅ ALL TESTS PASSED")
         print("\n✅ Test 1: Generator weight validation")
@@ -424,7 +424,7 @@ def main():
                 print(f"  {error}")
             if len(errors) > 10:
                 print(f"  ... and {len(errors) - 10} more errors")
-        
+
         print("\n" + "="*70)
         print("FIX REQUIRED")
         print("="*70)

@@ -179,4 +179,3 @@ CANON_EXCEPTIONS = (
     AgentExecutionError,
     CanonTokenError
 )
-

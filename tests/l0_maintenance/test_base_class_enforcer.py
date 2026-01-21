@@ -12,13 +12,13 @@ from agentic_core.L5_safety.validators.BaseClassEnforcerAgent import get_base_cl
 def main():
     enforcer = get_base_class_enforcer(project_root)
     result = enforcer.scan_violations()
-    
+
     print("=== Base Class Enforcement Report ===")
     print(f"Total Layer Agents: {result.get('total_layer_agents', 0)}")
     print(f"Compliant: {result.get('compliant_count', 0)}")
     print(f"Violations: {result.get('violation_count', 0)}")
     print(f"Compliance Rate: {result.get('compliance_rate', 0)}%")
-    
+
     if result.get('violations'):
         print(f"\nSample Violations (first 10):")
         for v in result['violations'][:10]:

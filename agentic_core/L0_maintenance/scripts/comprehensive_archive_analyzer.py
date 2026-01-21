@@ -42,7 +42,7 @@ class CodeEntity:
     docstring: str = ""
     loc: int = 0
     domain: str = ""  # resume, outreach, shared, infrastructure
-    
+
 @dataclass
 class FileAnalysis:
     """Complete analysis of a single file."""
@@ -73,7 +73,7 @@ def extract_docstring(node) -> str:
 def classify_entity_type(name: str, bases: List[str]) -> str:
     """Classify entity type based on name and inheritance."""
     name_lower = name.lower()
-    
+
     if name.endswith('Agent') or any('Agent' in b for b in bases):
         return 'agent'
     if any(b in ('BaseModel', 'Enum', 'TypedDict') for b in bases):
@@ -87,15 +87,15 @@ def classify_entity_type(name: str, bases: List[str]) -> str:
 def infer_domain(content: str, entities: List[CodeEntity]) -> str:
     """Infer domain from content and entity names."""
     content_lower = content.lower()
-    
+
     resume_signals = ['resume', 'cv', 'job description', 'skill', 'experience', 'ats', 'bullet', 'achievement']
     outreach_signals = ['outreach', 'linkedin', 'recipient', 'campaign', 'message', 'personalization', 'sender', 'hop']
     infra_signals = ['cache', 'redis', 'pinecone', 'mcp', 'heal', 'validate', 'orchestrat', 'state', 'config']
-    
+
     resume_score = sum(3 if s in content_lower else 0 for s in resume_signals)
     outreach_score = sum(3 if s in content_lower else 0 for s in outreach_signals)
     infra_score = sum(2 if s in content_lower else 0 for s in infra_signals)
-    
+
     # Boost from entity names
     for e in entities:
         name_lower = e.name.lower()
@@ -105,7 +105,7 @@ def infer_domain(content: str, entities: List[CodeEntity]) -> str:
             outreach_score += 10
         if any(s in name_lower for s in ['state', 'cache', 'config', 'validator']):
             infra_score += 5
-    
+
     if resume_score > 15 and outreach_score > 15:
         return 'shared'
     if resume_score > outreach_score and resume_score > infra_score:
@@ -130,13 +130,13 @@ def analyze_file(file_path: Path, archive_folder: str) -> Optional[FileAnalysis]
         )
     except Exception:
         return None
-    
+
     analysis = FileAnalysis(
         path=str(file_path),
         archive_folder=archive_folder,
         loc=len(content.splitlines())
     )
-    
+
     # Extract imports
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
@@ -153,7 +153,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> Optional[FileAnalysis]
                 analysis.internal_deps.append(module)
             elif not module.startswith(('typing', 'pathlib', 'os', 'sys', 're', 'json', 'dataclasses', 'enum')):
                 analysis.external_deps.append(module)
-    
+
     # Extract entities
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, ast.ClassDef):
@@ -163,10 +163,10 @@ def analyze_file(file_path: Path, archive_folder: str) -> Optional[FileAnalysis]
                     bases.append(base.id)
                 elif isinstance(base, ast.Attribute):
                     bases.append(base.attr)
-            
-            methods = [item.name for item in node.body 
+
+            methods = [item.name for item in node.body
                       if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))]
-            
+
             entity = CodeEntity(
                 name=node.name,
                 entity_type=classify_entity_type(node.name, bases),
@@ -177,7 +177,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> Optional[FileAnalysis]
                 loc=node.end_lineno - node.lineno if hasattr(node, 'end_lineno') else 0
             )
             analysis.entities.append(entity)
-            
+
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             params = [arg.arg for arg in node.args.args if arg.arg != 'self']
             entity = CodeEntity(
@@ -189,15 +189,15 @@ def analyze_file(file_path: Path, archive_folder: str) -> Optional[FileAnalysis]
                 loc=node.end_lineno - node.lineno if hasattr(node, 'end_lineno') else 0
             )
             analysis.entities.append(entity)
-    
+
     # Infer domain
     analysis.domain = infer_domain(content, analysis.entities)
-    
+
     # Calculate quality score
     has_docstrings = sum(1 for e in analysis.entities if e.docstring) / max(len(analysis.entities), 1)
     has_type_hints = 'typing' in str(analysis.imports) or ': ' in content
     analysis.quality_score = (has_docstrings * 50) + (50 if has_type_hints else 0)
-    
+
     return analysis
 
 # ============================================================================
@@ -213,7 +213,7 @@ def build_current_codebase_index(dirs: List[str]) -> Dict[str, Set[str]]:
         'models': set(),
         'methods': set(),
     }
-    
+
     for dir_path in dirs:
         for py_file in Path(dir_path).rglob('*.py'):
             if '__pycache__' in str(py_file) or 'archives' in str(py_file):
@@ -221,7 +221,7 @@ def build_current_codebase_index(dirs: List[str]) -> Dict[str, Set[str]]:
             try:
                 content = py_file.read_text(encoding='utf-8', errors='replace')
                 tree = ast.parse(content)
-                
+
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
                         index['classes'].add(node.name.lower())
@@ -234,20 +234,20 @@ def build_current_codebase_index(dirs: List[str]) -> Dict[str, Set[str]]:
                         index['functions'].add(node.name.lower())
             except:
                 continue
-    
+
     return index
 
 def calculate_uniqueness(analysis: FileAnalysis, codebase_index: Dict[str, Set[str]]) -> Tuple[float, List[str]]:
     """Calculate how unique the file's entities are compared to codebase."""
     if not analysis.entities:
         return 0.0, []
-    
+
     unique_entities = []
     total_score = 0
-    
+
     for entity in analysis.entities:
         name_lower = entity.name.lower()
-        
+
         # Check if entity exists in codebase
         exists = False
         if entity.entity_type == 'agent':
@@ -256,7 +256,7 @@ def calculate_uniqueness(analysis: FileAnalysis, codebase_index: Dict[str, Set[s
             exists = name_lower in codebase_index['classes']
         elif entity.entity_type == 'function':
             exists = name_lower in codebase_index['functions']
-        
+
         if not exists:
             unique_entities.append(entity.name)
             # Weight by entity type
@@ -268,11 +268,11 @@ def calculate_uniqueness(analysis: FileAnalysis, codebase_index: Dict[str, Set[s
                 total_score += 15
             elif entity.entity_type == 'function':
                 total_score += 10
-    
+
     # Normalize to 0-100
     max_possible = len(analysis.entities) * 30
     uniqueness = (total_score / max_possible * 100) if max_possible > 0 else 0
-    
+
     return uniqueness, unique_entities
 
 # ============================================================================
@@ -284,21 +284,21 @@ def main():
     print("COMPREHENSIVE ARCHIVE ANALYSIS")
     print("Advanced AST-based analysis of all archived files")
     print("=" * 80)
-    
+
     # Build current codebase index
     print("\n[1/4] Building current codebase index...")
     current_dirs = ['agentic_core', 'apps_rg', 'apps_lic', 'apps_shared', 'scripts']
     codebase_index = build_current_codebase_index(current_dirs)
     print(f"  Indexed: {len(codebase_index['classes'])} classes, {len(codebase_index['agents'])} agents, {len(codebase_index['functions'])} functions")
-    
+
     # Scan archives
     print("\n[2/4] Scanning archive folders...")
     archives_root = Path('archives')
-    
+
     # Priority archives to analyze (most likely to have useful content)
     priority_archives = [
         'apps_lic',
-        'apps_rg', 
+        'apps_rg',
         'apps_shared',
         'Reachout Engine Archive',
         'legacy_agents',
@@ -307,57 +307,57 @@ def main():
         'deprecated_agents',
         'consolidated_agents',
     ]
-    
+
     all_analyses: List[FileAnalysis] = []
     archive_stats = defaultdict(lambda: {'files': 0, 'agents': 0, 'unique': 0})
-    
+
     for archive_name in priority_archives:
         archive_path = archives_root / archive_name
         if not archive_path.exists():
             continue
-        
+
         py_files = list(archive_path.rglob('*.py'))
         archive_stats[archive_name]['files'] = len(py_files)
-        
+
         for py_file in py_files:
             if '__pycache__' in str(py_file) or '__init__' in py_file.name:
                 continue
-            
+
             analysis = analyze_file(py_file, archive_name)
             if analysis and not analysis.has_syntax_error:
                 # Calculate uniqueness
                 uniqueness, unique_entities = calculate_uniqueness(analysis, codebase_index)
                 analysis.unique_score = uniqueness
-                
+
                 # Count agents
                 agents = [e for e in analysis.entities if e.entity_type == 'agent']
                 archive_stats[archive_name]['agents'] += len(agents)
-                
+
                 if uniqueness > 50:
                     archive_stats[archive_name]['unique'] += 1
-                
+
                 all_analyses.append(analysis)
-    
+
     print(f"  Analyzed {len(all_analyses)} files across {len(priority_archives)} archives")
-    
+
     # Identify restoration candidates
     print("\n[3/4] Identifying restoration candidates...")
-    
+
     # Categorize by recommendation
     restore_high = []  # Unique agents/critical functionality
     restore_medium = []  # Unique utilities/models
     review_needed = []  # Partial overlap, needs manual review
     skip_exists = []  # Already in codebase
     skip_low_quality = []  # Syntax errors or low quality
-    
+
     for analysis in all_analyses:
         if analysis.has_syntax_error:
             skip_low_quality.append(analysis)
             continue
-        
+
         agents = [e for e in analysis.entities if e.entity_type == 'agent']
         models = [e for e in analysis.entities if e.entity_type == 'model']
-        
+
         if analysis.unique_score >= 80:
             if agents:
                 restore_high.append(analysis)
@@ -369,10 +369,10 @@ def main():
             review_needed.append(analysis)
         else:
             skip_exists.append(analysis)
-    
+
     # Generate report
     print("\n[4/4] Generating report...")
-    
+
     report = []
     report.append("=" * 80)
     report.append("ARCHIVE RESTORATION FINDINGS & RECOMMENDATIONS")
@@ -380,7 +380,7 @@ def main():
     report.append(f"\nAnalysis Date: 2026-01-20")
     report.append(f"Total Files Analyzed: {len(all_analyses)}")
     report.append(f"Current Codebase: {len(codebase_index['agents'])} agents, {len(codebase_index['classes'])} classes")
-    
+
     # Archive summary
     report.append("\n" + "=" * 80)
     report.append("ARCHIVE SUMMARY")
@@ -388,13 +388,13 @@ def main():
     for archive_name, stats in sorted(archive_stats.items(), key=lambda x: -x[1]['unique']):
         report.append(f"\n  {archive_name}:")
         report.append(f"    Files: {stats['files']}, Agents: {stats['agents']}, High-Unique: {stats['unique']}")
-    
+
     # HIGH PRIORITY RESTORATIONS
     report.append("\n" + "=" * 80)
     report.append("HIGH PRIORITY RESTORATIONS (Unique Agents)")
     report.append("=" * 80)
     report.append(f"\nTotal: {len(restore_high)} files")
-    
+
     for analysis in sorted(restore_high, key=lambda x: -x.unique_score)[:20]:
         agents = [e for e in analysis.entities if e.entity_type == 'agent']
         report.append(f"\n  [{analysis.unique_score:.0f}%] {Path(analysis.path).name}")
@@ -403,7 +403,7 @@ def main():
         report.append(f"    Agents: {[a.name for a in agents]}")
         if agents and agents[0].docstring:
             report.append(f"    Purpose: {agents[0].docstring[:80]}...")
-        
+
         # Recommend target
         if analysis.domain == 'outreach':
             target = 'apps_lic/engines/'
@@ -412,20 +412,20 @@ def main():
         else:
             target = 'apps_shared/base_agents/'
         report.append(f"    RESTORE TO: {target}")
-    
+
     # MEDIUM PRIORITY
     report.append("\n" + "=" * 80)
     report.append("MEDIUM PRIORITY RESTORATIONS (Unique Utilities/Models)")
     report.append("=" * 80)
     report.append(f"\nTotal: {len(restore_medium)} files")
-    
+
     for analysis in sorted(restore_medium, key=lambda x: -x.unique_score)[:15]:
         entities = [e.name for e in analysis.entities if e.entity_type != 'function'][:5]
         report.append(f"\n  [{analysis.unique_score:.0f}%] {Path(analysis.path).name}")
         report.append(f"    Archive: {analysis.archive_folder}")
         report.append(f"    Domain: {analysis.domain.upper()}")
         report.append(f"    Entities: {entities}")
-        
+
         if analysis.domain == 'outreach':
             target = 'apps_lic/engines/utils/'
         elif analysis.domain == 'resume':
@@ -433,26 +433,26 @@ def main():
         else:
             target = 'apps_shared/common_utils/'
         report.append(f"    RESTORE TO: {target}")
-    
+
     # REVIEW NEEDED
     report.append("\n" + "=" * 80)
     report.append("REVIEW NEEDED (Partial Overlap)")
     report.append("=" * 80)
     report.append(f"\nTotal: {len(review_needed)} files")
     report.append("These files have some unique content but significant overlap with current codebase.")
-    
+
     for analysis in sorted(review_needed, key=lambda x: -x.unique_score)[:10]:
         report.append(f"\n  [{analysis.unique_score:.0f}%] {Path(analysis.path).name}")
         report.append(f"    Archive: {analysis.archive_folder}")
         report.append(f"    Entities: {[e.name for e in analysis.entities][:5]}")
-    
+
     # SKIP
     report.append("\n" + "=" * 80)
     report.append("SKIP (Already Exists or Low Quality)")
     report.append("=" * 80)
     report.append(f"\nAlready in codebase: {len(skip_exists)} files")
     report.append(f"Syntax errors/low quality: {len(skip_low_quality)} files")
-    
+
     # SUMMARY
     report.append("\n" + "=" * 80)
     report.append("EXECUTIVE SUMMARY")
@@ -462,15 +462,15 @@ def main():
     MEDIUM PRIORITY (restore as needed):     {len(restore_medium)} files
     REVIEW NEEDED (manual inspection):       {len(review_needed)} files
     SKIP (exists or low quality):            {len(skip_exists) + len(skip_low_quality)} files
-    
+
     TOTAL RESTORATION CANDIDATES:            {len(restore_high) + len(restore_medium)} files
     """)
-    
+
     # Top 10 restoration commands
     report.append("\n" + "=" * 80)
     report.append("TOP 10 RESTORATION COMMANDS")
     report.append("=" * 80)
-    
+
     top_restores = sorted(restore_high + restore_medium, key=lambda x: -x.unique_score)[:10]
     for analysis in top_restores:
         src = analysis.path
@@ -480,14 +480,14 @@ def main():
             dst = 'apps_rg/engines/'
         else:
             dst = 'apps_shared/'
-        
+
         filename = Path(analysis.path).name
         report.append(f'\ncp "{src}" "{dst}{filename}"')
-    
+
     # Print and save report
     report_text = '\n'.join(report)
     print(report_text)
-    
+
     # Save to file
     report_path = Path('docs/ARCHIVE_ANALYSIS_REPORT.md')
     report_path.write_text(report_text, encoding='utf-8')

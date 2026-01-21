@@ -127,7 +127,7 @@ START
    ) -> Path:
        """
        Ensure agent_discovery_full.json is fresh.
-       
+
        Returns: Path to fresh JSON file
        Raises: DiscoveryError if scan fails
        """
@@ -181,7 +181,7 @@ else:
        - Method signature changes
        - Decorator changes
        - Import changes
-       
+
        Returns False for:
        - Method body changes
        - Comment/docstring changes

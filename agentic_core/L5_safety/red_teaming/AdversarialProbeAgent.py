@@ -61,7 +61,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
     async def act(self) -> Dict[str, Any]:
         """Execute adversarial probing."""
         logger.info(f"[{self.name}] Starting adversarial attack simulation")
-        
+
         results = {
             "agent": self.name,
             "probes_executed": 0,
@@ -75,10 +75,10 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
             for pattern in self.attack_patterns:
                 probe_result = await self._execute_attack_pattern(pattern)
                 results["probes_executed"] += 1
-                
+
                 if probe_result.get("vulnerability_exposed"):
                     results["vulnerabilities_exposed"] += 1
-                
+
                 results["attack_results"].append({
                     "pattern": pattern,
                     "vulnerable": probe_result.get("vulnerability_exposed", False),
@@ -90,7 +90,7 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
             # Calculate threat assessment
             high_threat = sum(1 for r in results["attack_results"] if r.get("threat_level") == "high")
             critical_threat = sum(1 for r in results["attack_results"] if r.get("threat_level") == "critical")
-            
+
             results["threat_assessment"] = {
                 "overall_threat_level": "critical" if critical_threat > 0 else "high" if high_threat > 0 else "medium",
                 "critical_vulnerabilities": critical_threat,
@@ -209,4 +209,4 @@ class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
-        return {"healed": 0, "skipped": 0, "parent": result}
+        return {"violations_fixed": 0, "skipped": 0, "parent": result}

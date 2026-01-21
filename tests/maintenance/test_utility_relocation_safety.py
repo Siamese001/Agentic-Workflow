@@ -33,16 +33,16 @@ class TestDependencyIsolation:
         apps_shared_dir = PROJECT_ROOT / "apps_shared"
         if not apps_shared_dir.exists():
             pytest.skip("apps_shared directory not found")
-        
+
         violations = []
-        
+
         # Phase 6.8: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
         for py_file in get_python_files(apps_shared_dir):
             try:
                 content = py_file.read_text(encoding='utf-8', errors='ignore')
                 tree = ast.parse(content)
-                
+
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
                         for alias in node.names:
@@ -53,7 +53,7 @@ class TestDependencyIsolation:
                             violations.append((str(py_file), f"from {node.module} import ..."))
             except SyntaxError:
                 continue
-        
+
         if violations:
             msg = "\n".join([f"  {v[0]}: {v[1]}" for v in violations])
             pytest.fail(f"apps_shared has forbidden imports from apps_lic:\n{msg}")
@@ -66,16 +66,16 @@ class TestDependencyIsolation:
         apps_shared_dir = PROJECT_ROOT / "apps_shared"
         if not apps_shared_dir.exists():
             pytest.skip("apps_shared directory not found")
-        
+
         violations = []
-        
+
         # Phase 6.8: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
         for py_file in get_python_files(apps_shared_dir):
             try:
                 content = py_file.read_text(encoding='utf-8', errors='ignore')
                 tree = ast.parse(content)
-                
+
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
                         for alias in node.names:
@@ -86,7 +86,7 @@ class TestDependencyIsolation:
                             violations.append((str(py_file), f"from {node.module} import ..."))
             except SyntaxError:
                 continue
-        
+
         if violations:
             msg = "\n".join([f"  {v[0]}: {v[1]}" for v in violations])
             pytest.fail(f"apps_shared has forbidden imports from apps_rg:\n{msg}")
@@ -103,7 +103,7 @@ class TestCircularDependencyPrevention:
         try:
             content = file_path.read_text(encoding='utf-8', errors='ignore')
             tree = ast.parse(content)
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
@@ -122,10 +122,10 @@ class TestCircularDependencyPrevention:
         territory_dir = PROJECT_ROOT / territory
         if not territory_dir.exists():
             return {}
-        
+
         deps = {}
         known_territories = {'agentic_core', 'apps_shared', 'apps_rg', 'apps_lic', 'tests', 'scripts'}
-        
+
         # Phase 6.8: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
         for py_file in get_python_files(territory_dir):
@@ -133,7 +133,7 @@ class TestCircularDependencyPrevention:
             external = imports & known_territories
             if external:
                 deps[str(py_file.relative_to(PROJECT_ROOT))] = external
-        
+
         return deps
 
     def test_no_circular_apps_shared_to_apps_lic(self):
@@ -141,13 +141,13 @@ class TestCircularDependencyPrevention:
         TC-003: Verify no circular dependency: apps_shared -> apps_lic -> apps_shared.
         """
         apps_shared_deps = self._get_territory_dependencies("apps_shared")
-        
+
         # Check if any apps_shared file imports apps_lic
         circular_risk = []
         for file_path, deps in apps_shared_deps.items():
             if 'apps_lic' in deps:
                 circular_risk.append(file_path)
-        
+
         if circular_risk:
             pytest.fail(f"Circular dependency risk: apps_shared files importing apps_lic:\n" +
                        "\n".join(f"  - {f}" for f in circular_risk))
@@ -155,19 +155,19 @@ class TestCircularDependencyPrevention:
     def test_gravity_compliance(self):
         """
         TC-004: Verify gravity compliance - downstream can import upstream, not vice versa.
-        
+
         Allowed: apps_lic -> apps_shared -> agentic_core
         Forbidden: agentic_core -> apps_* (except via dynamic import)
         """
         agentic_core_deps = self._get_territory_dependencies("agentic_core")
-        
+
         # Check if agentic_core imports from apps_*
         gravity_violations = []
         for file_path, deps in agentic_core_deps.items():
             forbidden = deps & {'apps_shared', 'apps_rg', 'apps_lic'}
             if forbidden:
                 gravity_violations.append((file_path, forbidden))
-        
+
         if gravity_violations:
             msg = "\n".join([f"  {v[0]}: imports {v[1]}" for v in gravity_violations])
             pytest.fail(f"Gravity violations (agentic_core importing downstream):\n{msg}")
@@ -183,16 +183,16 @@ class TestRelocationCandidate:
         TC-005: Verify DuplicateCodeDetectorAgent can run with only agentic_core dependencies.
         """
         detector_path = PROJECT_ROOT / "apps_shared" / "utils" / "DuplicateCodeDetectorAgent.py"
-        
+
         if not detector_path.exists():
             pytest.skip("DuplicateCodeDetectorAgent not found in apps_shared/utils/")
-        
+
         # Check its imports
         imports = set()
         try:
             content = detector_path.read_text(encoding='utf-8', errors='ignore')
             tree = ast.parse(content)
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
@@ -202,22 +202,22 @@ class TestRelocationCandidate:
                         imports.add(node.module.split('.')[0])
         except SyntaxError as e:
             pytest.fail(f"Syntax error in DuplicateCodeDetectorAgent: {e}")
-        
+
         # Allowed dependencies
-        allowed = {'agentic_core', 'apps_shared', 'typing', 'pathlib', 'os', 'sys', 
+        allowed = {'agentic_core', 'apps_shared', 'typing', 'pathlib', 'os', 'sys',
                    'ast', 're', 'json', 'logging', 'dataclasses', 'collections',
                    'functools', 'itertools', 'hashlib', 'difflib', 'abc', 'enum'}
-        
+
         forbidden = imports - allowed
         # Filter out stdlib modules
-        stdlib_prefixes = {'typing', 'pathlib', 'os', 'sys', 'ast', 're', 'json', 
+        stdlib_prefixes = {'typing', 'pathlib', 'os', 'sys', 'ast', 're', 'json',
                           'logging', 'dataclasses', 'collections', 'functools',
                           'itertools', 'hashlib', 'difflib', 'abc', 'enum', 'datetime',
                           'time', 'copy', 'io', 'warnings', 'traceback', 'inspect',
                           'importlib', 'contextlib', 'threading', 'subprocess', 'shutil'}
-        
+
         forbidden = forbidden - stdlib_prefixes
-        
+
         if 'apps_lic' in forbidden or 'apps_rg' in forbidden:
             pytest.fail(f"DuplicateCodeDetectorAgent has forbidden dependencies: {forbidden}")
 

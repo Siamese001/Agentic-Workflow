@@ -1,7 +1,7 @@
 # SSOT Folder Structure Recommendations Report
 
-**Date:** 2026-01-19  
-**File:** `agentic_core/L5_safety/validators/structure_blueprint.py`  
+**Date:** 2026-01-19
+**File:** `agentic_core/L5_safety/validators/structure_blueprint.py`
 **Scope:** Review of SOVEREIGN_REGISTRY depth definitions and folder structure
 
 ---
@@ -128,7 +128,7 @@ L4_APPROVED_FOLDERS: Set[str] = {
     'agentic_core/L5_safety/guardrails',
     'agentic_core/L2_execution/ToolRegistry',
     'agentic_core/utils/core_extensions',
-    
+
     # NEW - Add these
     'agentic_core/L5_safety/validators',      # 135 files
     'agentic_core/schemas/models',            # 42 files

@@ -5,9 +5,9 @@ CRITICAL AUTONOMY LAW (NON-NEGOTIABLE):
 
 1. Every domain agent (naming, location, uniqueness, safety, etc.) MUST be fully autonomous.
 2. Autonomous means:
-   - Contains a public method `heal_repository(dry_run: bool = True, execute: bool = False)` 
+   - Contains a public method `heal_repository(dry_run: bool = True, execute: bool = False)`
    - This method performs full-repo scan + single-file healing + logging + summary
-   - Can be called directly via `get_agent(project_root).heal_repository()` 
+   - Can be called directly via `get_agent(project_root).heal_repository()`
 3. NO external runner scripts are permitted:
    - Files in `scripts/healing/`, `scripts/tools/`, or similar are FORBIDDEN
    - Creating such a script is a direct violation of sovereignty

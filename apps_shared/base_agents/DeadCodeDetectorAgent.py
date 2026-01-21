@@ -24,7 +24,7 @@ from typing import Dict, List, Optional, Set, Tuple, Any
 def add_parents(node: ast.AST, parent: Optional[ast.AST] = None) -> None:
     """
     Add parent reference to all AST nodes for upward traversal.
-    
+
     Args:
         node: AST node to process
         parent: Parent node (None for root)
@@ -38,11 +38,11 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
     """
     Enhanced AST visitor that tracks dead code with class-aware method detection.
     """
-    
+
     def __init__(self, file_path: Path) -> None:
         """
         Initialize the AST visitor.
-        
+
         Args:
             file_path: Path to file being analyzed
         """
@@ -58,11 +58,11 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
         self.used_functions: Set[str] = set()
         self.import_line_numbers: Dict[str, int] = {}
         self.definition_line_numbers: Dict[str, int] = {}
-        
+
     def visit_Import(self, node: ast.Import) -> None:
         """
         Track import statements and their line numbers.
-        
+
         Args:
             node: Import AST node
         """
@@ -71,11 +71,11 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
             self.imported_names.add(name)
             self.import_line_numbers[name] = node.lineno
         self.generic_visit(node)
-        
+
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         """
         Track from-import statements.
-        
+
         Args:
             node: ImportFrom AST node
         """
@@ -85,14 +85,14 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
                 self.imported_names.add(name)
                 self.import_line_numbers[name] = node.lineno
         self.generic_visit(node)
-        
+
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
         """
         Track function definitions.
-        
+
         Args:
             node: FunctionDef AST node
-        
+
         Returns:
             Result of generic_visit
         """
@@ -100,14 +100,14 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
         self.defined_functions.add(node.name)
         self.definition_line_numbers[node.name] = node.lineno
         self.generic_visit(node)
-        
+
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> Any:
         """
         Track async function definitions.
-        
+
         Args:
             node: AsyncFunctionDef AST node
-        
+
         Returns:
             Result of generic_visit
         """
@@ -115,39 +115,39 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
         self.defined_functions.add(node.name)
         self.definition_line_numbers[node.name] = node.lineno
         self.generic_visit(node)
-        
+
     def visit_ClassDef(self, node: ast.ClassDef) -> Any:
         """
         Track class definitions and their methods.
-        
+
         Args:
             node: ClassDef AST node
-        
+
         Returns:
             Result of generic_visit
         """
         self.defined_names.add(node.name)
         self.defined_classes.add(node.name)
         self.definition_line_numbers[node.name] = node.lineno
-        
+
         # Initialize method tracking for this class
         self.class_methods[node.name] = set()
         self.used_methods[node.name] = set()
-        
+
         # Track all methods in this class
         for body_node in node.body:
             if isinstance(body_node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 self.class_methods[node.name].add(body_node.name)
                 self.definition_line_numbers[f"{node.name}.{body_node.name}"] = body_node.lineno
-                
+
         self.generic_visit(node)
-        
+
     def visit_Name(self, node: ast.Name) -> Any:
         """Track name usage."""
         if isinstance(node.ctx, ast.Load):
             self.used_names.add(node.id)
         self.generic_visit(node)
-        
+
     def visit_Call(self, node: ast.Call) -> Any:
         """Track function/method calls."""
         # Track direct function calls
@@ -160,7 +160,7 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
                 if class_hint in self.defined_classes:
                     self.used_methods.setdefault(class_hint, set()).add(node.func.attr)
         self.generic_visit(node)
-        
+
     # [EXTENSION] Detect self.method / cls.method references
     def visit_Attribute(self, node: ast.Attribute) -> Any:
         """Track attribute access, especially self.method and cls.method."""
@@ -186,7 +186,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
     Sovereign dead code auditor that identifies unused code across the project.
     Enhanced with class-aware method tracking and parent-node traversal.
     """
-    
+
     def __init__(self, project_root: Path) -> None:
         """Initialize the instance."""
         self.project_root = project_root
@@ -197,7 +197,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             "unused_methods": [],
             "dead_files": []
         }
-        
+
     def _find_unused_imports(self, visitor, findings: Dict) -> None:
         """Extract unused imports from visitor."""
         for import_name in visitor.imported_names:
@@ -249,10 +249,10 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             content = file_path.read_text(encoding='utf-8')
         except Exception as e:
             return {"error": f"Could not read {file_path}: {e}"}
-            
+
         if not content.strip() or file_path.name == "__init__.py":
             return {"skipped": True, "reason": "Empty or __init__ file"}
-            
+
         try:
             tree = ast.parse(content, filename=str(file_path))
             add_parents(tree)
@@ -260,7 +260,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             visitor.visit(tree)
         except SyntaxError as e:
             return {"error": f"Syntax error in {file_path}: {e}"}
-            
+
         findings = {
             "file_path": str(file_path.relative_to(self.project_root)),
             "unused_imports": [],
@@ -268,30 +268,30 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
             "unused_classes": [],
             "unused_methods": []
         }
-        
+
         self._find_unused_imports(visitor, findings)
         self._find_unused_functions(visitor, findings)
         self._find_unused_classes(visitor, findings)
         self._find_unused_methods(visitor, findings)
-                    
+
         return findings
-        
+
     def scan_directory(self, directory: Path, recursive: bool = True) -> Dict:
         """
         Scan an entire directory for dead code.
         """
         if not directory.exists():
             return {"error": f"Directory {directory} does not exist"}
-            
+
         # Find all Python files
         if recursive:
             py_files = list(directory.rglob("*.py"))
         else:
             py_files = list(directory.glob("*.py"))
-            
+
         # Filter out __pycache__ and other ignored directories
         py_files = [f for f in py_files if "__pycache__" not in str(f) and ".pytest_cache" not in str(f)]
-        
+
         results = {
             "scanned_files": len(py_files),
             "findings": [],
@@ -302,7 +302,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
                 "total_unused_methods": 0
             }
         }
-        
+
         for file_path in py_files:
             finding = self.analyze_file(file_path)
             if "error" in finding:
@@ -314,9 +314,9 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
                 results["summary"]["total_unused_functions"] += len(finding["unused_functions"])
                 results["summary"]["total_unused_classes"] += len(finding["unused_classes"])
                 results["summary"]["total_unused_methods"] += len(finding["unused_methods"])
-                
+
         return results
-        
+
     def generate_report(self, results: Dict) -> str:
         """
         Generate a human-readable report of dead code findings.
@@ -327,7 +327,7 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         report.append("=" * 70)
         report.append(f"Scanned {results.get('scanned_files', 0)} files")
         report.append("")
-        
+
         summary = results.get("summary", {})
         report.append("SUMMARY:")
         report.append(f"  Unused Imports: {summary.get('total_unused_imports', 0)}")
@@ -335,38 +335,38 @@ class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
         report.append(f"  Unused Classes: {summary.get('total_unused_classes', 0)}")
         report.append(f"  Unused Methods: {summary.get('total_unused_methods', 0)}")
         report.append("")
-        
+
         # Detailed findings
         for finding in results.get("findings", []):
             if "error" in finding:
                 report.append(f"ERROR: {finding['error']}")
                 continue
-                
+
             file_path = finding.get("file_path", "unknown")
             report.append(f"FILE: {file_path}")
-            
+
             if finding["unused_imports"]:
                 report.append("  Unused Imports:")
                 for imp in finding["unused_imports"]:
                     report.append(f"    - {imp['name']} (line {imp['line']})")
-                    
+
             if finding["unused_functions"]:
                 report.append("  Unused Functions:")
                 for func in finding["unused_functions"]:
                     report.append(f"    - {func['name']}() (line {func['line']})")
-                    
+
             if finding["unused_classes"]:
                 report.append("  Unused Classes:")
                 for cls in finding["unused_classes"]:
                     report.append(f"    - {cls['name']} (line {cls['line']})")
-                    
+
             if finding["unused_methods"]:
                 report.append("  Unused Methods:")
                 for method in finding["unused_methods"]:
                     report.append(f"    - {method['class']}.{method['name']}() (line {method['line']})")
-                    
+
             report.append("")
-            
+
         return "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(report)
 
     @timeout(300)
@@ -397,11 +397,11 @@ def main() -> Any:
     if len(sys.argv) < 2:
         print("Usage: python dead_code_detector_agent.py <directory>")
         sys.exit(1)
-        
+
     target_dir = Path(sys.argv[1])
     if not target_dir.is_absolute():
         target_dir = Path.cwd() / target_dir
-        
+
     detector = DeadCodeDetectorAgent(target_dir)
     results = detector.scan_directory(target_dir)
     print(detector.generate_report(results))

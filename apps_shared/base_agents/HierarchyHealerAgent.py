@@ -36,17 +36,17 @@ from agentic_core.utils.core_extensions.subatomic_testing_mixin import Subatomic
 class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     L5 Hierarchy Healer Agent
-    
+
     Heals hierarchy violations by:
     1. Relocating files from non-approved subfolders to the nearest approved subfolder
     2. Removing empty non-approved subfolders after relocation
     3. Purging orphaned files from forbidden or root-level locations
     """
-    
+
     def __init__(self, project_root: Path, healing_enabled: bool = True) -> None:
         """
         Initialize the hierarchy healer.
-        
+
         Args:
             project_root: Absolute path to the project root
             healing_enabled: Whether healing operations are enabled
@@ -58,70 +58,70 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
     def heal_hierarchy_violations(self) -> Dict[str, Any]:
         """
         Heal hierarchy violations by relocating files and removing empty folders.
-        
+
         Returns:
             Dict with counts of relocated files and removed folders
         """
         results = {"files_relocated": 0, "folders_removed": 0, "errors": []}
-        
+
         if not self.healing_enabled:
             print("   [INFO] Hierarchy healing disabled (healing_enabled=False)")
             return results
-        
+
         print("\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[*] L6 HIERARCHY ENFORCEMENT: Healing non-approved subfolders...")
-        
+
         # Get approved L1 folders for agentic_core from SSOT
         approved_l1 = set(SOVEREIGN_REGISTRY["agentic_core"]["subfolders"])
-        
+
         agentic_core_path = self.project_root / "agentic_core"
         if not agentic_core_path.exists():
             return results
-        
+
         # Phase 1: Find all non-approved L1 folders
         actual_l1 = {
-            p.name for p in agentic_core_path.iterdir() 
+            p.name for p in agentic_core_path.iterdir()
             if p.is_dir() and not p.name.startswith(".") and p.name not in self.protected_folders
         }
         non_approved_l1 = actual_l1 - approved_l1
-        
+
         for bad_l1 in non_approved_l1:
             self._heal_l1_folder(bad_l1, agentic_core_path, approved_l1, results)
-        
+
         # Phase 2: Check L2 subfolders within approved L1 folders
         for l1_name in approved_l1:
             self._heal_l2_folders(l1_name, agentic_core_path, results)
-        
+
         print(f"   [HIERARCHY HEALING COMPLETE] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed")
         if results["errors"]:
             print(f"   [!] {len(results['errors'])} errors occurred during healing")
-        
+
         return results
 
     def _heal_l1_folder(self, bad_l1: str, agentic_core_path: Path, approved_l1: set, results: Dict[str, Any]) -> None:
         """Heal non-approved L1 folder by relocating files and removing empty folder."""
         bad_path = agentic_core_path / bad_l1
         print(f"   [!] Non-approved L1 folder: {bad_l1}")
-        
+
         # Find best target based on folder name heuristics
         target_l1 = get_best_target_l1(bad_l1, approved_l1)
         target_path = agentic_core_path / target_l1
-        
+
         # Relocate all files from non-approved folder
         for py_file in get_python_files(bad_path):
             if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
                 continue
             self._relocate_file_to_l1(py_file, target_l1, target_path, results)
-        
+
         # Try to remove empty folder tree
         self._cleanup_empty_folder(bad_path, bad_l1, results)
-    
+
     def _relocate_file_to_l1(self, py_file: Path, target_l1: str, target_path: Path, results: Dict[str, Any]) -> None:
         """Relocate a single file to approved L1 folder."""
         try:
             target_l2 = get_best_target_l2(target_l1, py_file.name)
             final_target = target_path / target_l2
             final_target.mkdir(parents=True, exist_ok=True)
-            
+
             dest = final_target / py_file.name
             if not dest.exists():
                 shutil.move(str(py_file), str(dest))
@@ -131,36 +131,36 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
                 print(f"      [!] SKIP (exists): {py_file.name}")
         except Exception as e:
             results["errors"].append(f"{py_file.name}: {e}")
-    
+
     def _heal_l2_folders(self, l1_name: str, agentic_core_path: Path, results: Dict[str, Any]) -> None:
         """Heal non-approved L2 folders within an approved L1 folder."""
         l1_path = agentic_core_path / l1_name
         if not l1_path.exists():
             return
-        
+
         approved_l2 = set(CORE_SUBFOLDER_MAP.get(l1_name, []))
         if not approved_l2:
             return  # No L2 enforcement for this L1
-        
+
         actual_l2 = {
-            p.name for p in l1_path.iterdir() 
+            p.name for p in l1_path.iterdir()
             if p.is_dir() and not p.name.startswith(".") and p.name not in self.protected_folders
         }
         non_approved_l2 = actual_l2 - approved_l2
-        
+
         for bad_l2 in non_approved_l2:
             self._heal_single_l2_folder(l1_name, l1_path, bad_l2, results)
-    
+
     def _heal_single_l2_folder(self, l1_name: str, l1_path: Path, bad_l2: str, results: Dict[str, Any]) -> None:
         """Heal a single non-approved L2 folder."""
         bad_path = l1_path / bad_l2
         print(f"   [!] Non-approved L2 folder: {l1_name}/{bad_l2}")
-        
+
         # Find best target L2 folder
         target_l2 = get_best_target_l2(l1_name, bad_l2)
         target_path = l1_path / target_l2
         target_path.mkdir(parents=True, exist_ok=True)
-        
+
         # Relocate all files
         for py_file in get_python_files(bad_path):
             if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
@@ -175,10 +175,10 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
                     print(f"      [!] SKIP (exists): {py_file.name}")
             except Exception as e:
                 results["errors"].append(f"{py_file.name}: {e}")
-        
+
         # Try to remove empty folder
         self._cleanup_empty_folder(bad_path, f"{l1_name}/{bad_l2}", results)
-    
+
     def _cleanup_empty_folder(self, folder_path: Path, folder_label: str, results: Dict[str, Any]) -> None:
         """Remove empty folder tree after relocation."""
         try:
@@ -192,40 +192,40 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
     def _remove_empty_dirs(self, path: Path) -> None:
         """
         Recursively remove empty directories.
-        
+
         Args:
             path: Directory path to check and potentially remove
         """
         if not path.is_dir():
             return
-        
+
         # First, recurse into subdirectories
         for child in path.iterdir():
             if child.is_dir():
                 self._remove_empty_dirs(child)
-        
+
         # Then check if this directory is now empty
         remaining = [
-            p for p in path.iterdir() 
+            p for p in path.iterdir()
             if p.name not in {"__pycache__", "__init__.py", ".gitkeep"}
             and not p.name.startswith(".")
         ]
-        
+
         if not remaining:
             # Aggressively purge empty shell
             init_file = path / "__init__.py"
             if init_file.exists():
                 init_file.unlink(missing_ok=True)
-            
+
             pycache = path / "__pycache__"
             if pycache.exists():
                 shutil.rmtree(pycache, ignore_errors=True)
-            
+
             gitkeep = path / ".gitkeep"
             if gitkeep.exists():
                 gitkeep.unlink()
                 print(f"      [✓] Removed .gitkeep sentinel: {gitkeep}")
-            
+
             try:
                 path.rmdir()
                 print(f"      [✓] PURGED ghost folder: {path}")
@@ -286,12 +286,12 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         """
         Purge code and assets in forbidden or root-level locations.
         Only files with no legal home are archived.
-        
+
         Returns:
             Dict with purge count and errors
         """
         import os
-        
+
         if not self.healing_enabled:
             return {"purged": 0, "errors": []}
 
@@ -309,7 +309,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
         orphaned_files = []
         MAX_PURGE_SCAN = 500
         scan_count = 0
-        
+
         for root, dirs, files in os.walk(self.project_root):
             # Skip protected folders entirely
             dirs[:] = [d for d in dirs if d not in self.protected_folders and not d.startswith('.')]
@@ -377,7 +377,7 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
-        
+
         # === ZOMBIE VACCINATION: Wired orphaned methods ===
         if hasattr(self, 'heal_hierarchy_violations') and not dry_run and execute:
             try:
@@ -420,5 +420,5 @@ class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
                 Logger.error(f'Error in _cleanup_empty_folder: {e}')
                 metrics['errors'] += 1
         # === END VACCINATION ===
-        
+
         return {"healed": 0, "skipped": 0, "parent": result}

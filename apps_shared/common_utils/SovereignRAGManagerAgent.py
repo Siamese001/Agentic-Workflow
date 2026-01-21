@@ -41,7 +41,7 @@ class SovereignRAGManager:
         self.cache_dir = project_root / "agentic_core" / "knowledge" / "ResearchCache"
         self.cache = ResearchCache(self.cache_dir)
         self.static_knowledge = self._load_static_index()
-        
+
         # Optional: Expose embedding cache stats
         try:
             self.embedding_cache_stats = lambda: {
@@ -50,7 +50,7 @@ class SovereignRAGManager:
             }
         except:
             self.embedding_cache_stats = lambda: {"size": 0, "maxsize": 0}
-        
+
         # Optional: Initialize vector store, embedder, and BM25 if available
         try:
             from agentic_core.semantic_memory.embeddings.GeminiEmbedder import GeminiEmbedder
@@ -64,7 +64,7 @@ class SovereignRAGManager:
             self.embedder = None
             self.vector_store = None
             self.Bm25Store = None
-        
+
         # Optional: Initialize LLM engine for reranking
         self.engine = None
 
@@ -106,7 +106,7 @@ class SovereignRAGManager:
                     for i, (emb, chunk) in enumerate(zip(embeddings, text_chunks))
                 ]
                 self.vector_store.upsert(vectors)
-            
+
             # BM25 indexing
             if self.Bm25Store:
                 self.Bm25Store.add_documents([
@@ -130,7 +130,7 @@ class SovereignRAGManager:
         # 1. Parallel hybrid retrieval
         vector_candidates = []
         bm25_candidates = []
-        
+
         # Vector Search
         if hasattr(self, "vector_store") and self.vector_store:
             try:
@@ -172,7 +172,7 @@ class SovereignRAGManager:
 
         # 2. Reciprocal Rank Fusion (RRF)
         fused_candidates = self._rrf_fusion(vector_candidates, bm25_candidates, k=60)
-        
+
         # Add static boost to fused results
         all_candidates = fused_candidates + static_boost
 
@@ -184,19 +184,19 @@ class SovereignRAGManager:
     def _rrf_fusion(self, vector_list: List[Dict], bm25_list: List[Dict], k: int = 60) -> List[Dict]:
         """Reciprocal Rank Fusion — combines multiple retrieval scores."""
         scores = {}
-        
+
         for rank, item in enumerate(vector_list):
             item_id = item.get("id", f"vec_{rank}")
             scores[item_id] = scores.get(item_id, 0) + 1 / (k + rank)
-            
+
         for rank, item in enumerate(bm25_list):
             item_id = item.get("id", f"bm25_{rank}")
             scores[item_id] = scores.get(item_id, 0) + 1 / (k + rank)
-            
+
         # Map IDs back to full document objects
         all_items = {item.get("id", f"item_{i}"): item for i, item in enumerate(vector_list + bm25_list)}
         sorted_ids = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
-        
+
         # Update scores with RRF scores
         result = []
         for doc_id in sorted_ids:
@@ -204,7 +204,7 @@ class SovereignRAGManager:
                 item = all_items[doc_id].copy()
                 item["score"] = scores[doc_id]
                 result.append(item)
-        
+
         return result
 
     async def _llm_rerank(self, query: str, candidates: List[Dict], top_k: int) -> List[Dict]:

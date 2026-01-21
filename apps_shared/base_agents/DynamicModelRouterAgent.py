@@ -52,7 +52,7 @@ class ModelTier(str, Enum):
     FLASH_BASIC = "gemini-2.5-flash"  # 8K thinking budget, cheap
     FLASH_EXTENDED = "gemini-2.5-flash"  # 16K thinking budget, moderate
     DEEP_THINK = "gemini-3.0-deep-think"  # 24K+ thinking budget, expensive
-    
+
     @classmethod
     def _run_self_tests(cls) -> bool:
         """Phase 1 Final: Enum values validation."""
@@ -75,14 +75,14 @@ class RoutingDecision:
     rationale: str
     estimated_tokens: int
     complexity_score: float
-    
+
     def _run_self_tests(self) -> bool:
         """Phase 1 Final: Minimal self-testing for data container."""
         assert hasattr(self, "ModelTier"), "Missing ModelTier"
         assert hasattr(self, "thinking_budget"), "Missing thinking_budget"
         assert self.thinking_budget > 0, "thinking_budget must be positive"
         return True
-    
+
     def __post_init__(self) -> None:
         """Run self-tests after dataclass initialization."""
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
@@ -101,7 +101,7 @@ class ComplexityProfile:
     import_count: int
     class_count: int
     complexity_score: float  # 0-100
-    
+
     def _run_self_tests(self) -> bool:
         """Phase 1 Final: Minimal self-testing for data container."""
         assert hasattr(self, "file_path"), "Missing file_path"
@@ -109,7 +109,7 @@ class ComplexityProfile:
         assert 0 <= self.complexity_score <= 100, "complexity_score must be 0-100"
         assert self.total_lines >= 0, "total_lines must be non-negative"
         return True
-    
+
     def __post_init__(self) -> None:
         """Run self-tests after dataclass initialization."""
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
@@ -119,31 +119,31 @@ class ComplexityProfile:
 class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     """
     The Throttler - Dynamic Model Router
-    
+
     Analyzes file complexity before healing and routes to appropriate model.
     Prevents "Enough Thinking" wall by matching model power to Task complexity.
-    
+
     Routing Strategy:
     - Complexity Score 0-30: Flash Basic (8K budget)
     - Complexity Score 31-60: Flash Extended (16K budget)
     - Complexity Score 61-100: Deep Think (24K budget)
-    
+
     Factors:
     - File size (lines)
     - Nesting depth
     - Function complexity
     - Cyclomatic complexity
     - Import dependencies
-    
+
     L4 Checkpoint Integration:
     - Hop state checkpointed for mid-hop resume
     - Routing decisions logged to L4 ledger
     """
-    
+
     def __init__(self, ctx: Any) -> None:
         """
         Initialize Dynamic Model Router.
-        
+
         Args:
             ctx: ValidationContext
         """
@@ -151,7 +151,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         # Initialize shared Sub-Atomic Engine components via dependency injection from ctx.
         # The ValidationContext is expected to provide these pre-initialized components.
         # If they are not present in ctx, they will be None, and a warning will be logged.
-        
+
         self.engine = getattr(self.ctx, 'subatomic_engine', None)
         self.safety = getattr(self.ctx, 'SafetyGuardrail', None)
         self.fission = getattr(self.ctx, 'FissionManagerAgent', None)
@@ -166,55 +166,55 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             self.engine = None
             self.safety = None
             self.fission = None
-        
+
         # Routing thresholds
         self.BASIC_THRESHOLD = 30
         self.EXTENDED_THRESHOLD = 60
-        
+
         # Budget allocation
         self.BUDGETS = {
             ModelTier.FLASH_BASIC: 8000,
             ModelTier.FLASH_EXTENDED: 16000,
             ModelTier.DEEP_THINK: 24576
         }
-        
+
         # Temperature settings
         self.TEMPERATURES = {
             ModelTier.FLASH_BASIC: 0.1,  # Low for deterministic fixes
             ModelTier.FLASH_EXTENDED: 0.2,  # Moderate for refactoring
             ModelTier.DEEP_THINK: 0.3  # Higher for creative solutions
         }
-    
+
     async def execute(self) -> Any:
         """
         Execute model routing analysis.
-        
+
         This is called before healing to determine optimal model.
         """
         Logger.info("🎯 Dynamic Model Router: Analyzing complexity for routing...")
-        
+
         # Analyze all files in context
         for file_path in self.ctx.python_files:
             profile = self._analyze_file_complexity(file_path)
             decision = self._route_to_model(profile)
-            
+
             # Store routing decision in context
             if not hasattr(self.ctx, 'routing_decisions'):
                 self.ctx.routing_decisions = {}
-            
+
             self.ctx.routing_decisions[file_path] = decision
-            
+
             Logger.info(f"   {file_path}: {decision.ModelTier.value} "
                        f"(complexity: {profile.complexity_score:.1f}, "
                        f"budget: {decision.thinking_budget})")
-    
+
     def _analyze_file_complexity(self, file_path: str) -> ComplexityProfile:
         """
         Analyze file complexity for routing decision.
-        
+
         Args:
             file_path: Path to file
-            
+
         Returns:
             Complexity profile
         """
@@ -224,7 +224,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         except Exception as e:
             Logger.warning(f"Could not read {file_path}: {e}")
             return self._create_default_profile(file_path)
-        
+
         try:
             tree = ast.parse(source)
         except SyntaxError:
@@ -240,7 +240,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
                 class_count=0,
                 complexity_score=20.0  # Low score for syntax fixes
             )
-        
+
         # Calculate metrics
         total_lines = len([l for l in source.split('\n') if l.strip()])
         max_nesting = self._calculate_max_nesting(tree)
@@ -250,13 +250,13 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         cyclomatic_complexity = self._calculate_cyclomatic_complexity(tree)
         import_count = sum(1 for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom)))
         class_count = sum(1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef))
-        
+
         # Calculate complexity score (0-100)
         complexity_score = self._calculate_complexity_score(
             total_lines, max_nesting, max_function_lines,
             cyclomatic_complexity, function_count
         )
-        
+
         return ComplexityProfile(
             file_path=file_path,
             total_lines=total_lines,
@@ -268,54 +268,54 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             class_count=class_count,
             complexity_score=complexity_score
         )
-    
+
     def _calculate_max_nesting(self, tree: ast.AST) -> int:
         """Calculate maximum nesting depth."""
         max_depth = 0
-        
+
         def visit(node, depth=0) -> Any:
             """Execute visit operation."""
             nonlocal max_depth
             max_depth = max(max_depth, depth)
-            
+
             if isinstance(node, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
                 depth += 1
-            
+
             for child in ast.iter_child_nodes(node):
                 visit(child, depth)
-        
+
         visit(tree)
         return max_depth
-    
+
     def _extract_functions(self, tree: ast.AST) -> Dict:
         """Extract function metadata."""
         functions = {}
-        
+
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 lines = (node.end_lineno or node.lineno) - node.lineno + 1
                 functions[node.name] = {'lines': lines}
-        
+
         return functions
-    
+
     def _calculate_cyclomatic_complexity(self, tree: ast.AST) -> int:
         """Calculate cyclomatic complexity."""
         complexity = 1  # Base complexity
-        
+
         for node in ast.walk(tree):
             if isinstance(node, (ast.If, ast.While, ast.For, ast.ExceptHandler)):
                 complexity += 1
             elif isinstance(node, ast.BoolOp):
                 complexity += len(node.values) - 1
-        
+
         return complexity
-    
+
     def _calculate_complexity_score(self, total_lines: int, max_nesting: int,
                                    max_function_lines: int, cyclomatic: int,
                                    function_count: int) -> float:
         """
         Calculate overall complexity score (0-100).
-        
+
         Weighted factors:
         - File size: 20%
         - Nesting depth: 30%
@@ -329,7 +329,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
         function_size_score = min(100, (max_function_lines / 100) * 100)
         cyclomatic_score = min(100, (cyclomatic / 20) * 100)
         function_count_score = min(100, (function_count / 20) * 100)
-        
+
         # Weighted average
         complexity_score = (
             size_score * 0.20 +
@@ -338,26 +338,26 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             cyclomatic_score * 0.15 +
             function_count_score * 0.10
         )
-        
+
         return complexity_score
-    
+
     def _route_to_model(self, profile: ComplexityProfile) -> RoutingDecision:
         """
         Route to appropriate model based on complexity.
-        
+
         Args:
             profile: Complexity profile
-            
+
         Returns:
             Routing decision
         """
         score = profile.complexity_score
-        
+
         if score <= self.BASIC_THRESHOLD:
             # Simple file - use basic Flash
             ModelTier = ModelTier.FLASH_BASIC
             rationale = f"Low complexity ({score:.1f}/100) - simple linting/syntax fixes"
-            
+
         elif score <= self.EXTENDED_THRESHOLD:
             # Medium complexity - use extended Flash
             ModelTier = ModelTier.FLASH_EXTENDED
@@ -366,14 +366,14 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             # High complexity - use Deep Think
             ModelTier = ModelTier.DEEP_THINK
             rationale = f"High complexity ({score:.1f}/100) - deep reasoning required"
-        
+
         # Get budget and temperature
         thinking_budget = self.BUDGETS[ModelTier]
         temperature = self.TEMPERATURES[ModelTier]
-        
+
         # Estimate token usage (rough heuristic)
         estimated_tokens = int(profile.total_lines * 10 * (score / 100))
-        
+
         return RoutingDecision(
             ModelTier=ModelTier,
             thinking_budget=thinking_budget,
@@ -382,7 +382,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             estimated_tokens=estimated_tokens,
             complexity_score=score
         )
-    
+
     def _create_default_profile(self, file_path: str) -> ComplexityProfile:
         """Create default profile for unreadable files."""
         return ComplexityProfile(
@@ -396,39 +396,39 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             class_count=0,
             complexity_score=30.0  # Medium default
         )
-    
+
     def get_routing_for_file(self, file_path: str) -> Optional[RoutingDecision]:
         """
         Get routing decision for a specific file.
-        
+
         Args:
             file_path: Path to file
-            
+
         Returns:
             Routing decision or None
         """
         if not hasattr(self.ctx, 'routing_decisions'):
             return None
-        
+
         return self.ctx.routing_decisions.get(file_path)
-    
+
     def generate_routing_report(self) -> str:
         """Generate routing report for all files."""
         if not hasattr(self.ctx, 'routing_decisions'):
             return "No routing decisions available"
-        
+
         decisions = self.ctx.routing_decisions
-        
+
         # Group by model tier
         by_tier = {
             ModelTier.FLASH_BASIC: [],
             ModelTier.FLASH_EXTENDED: [],
             ModelTier.DEEP_THINK: []
         }
-        
+
         for file_path, decision in decisions.items():
             by_tier[decision.ModelTier].append((file_path, decision))
-        
+
         # Generate report
         lines = [
             "🎯 DYNAMIC MODEL ROUTING REPORT",
@@ -445,7 +445,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
             "",
             "=" * 80
         ]
-        
+
         return "\n".join(lines)
 
     @timeout(300)

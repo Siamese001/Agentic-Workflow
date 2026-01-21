@@ -50,13 +50,13 @@ def find_duplicates():
             for py_file in get_python_files(folder_path):
                 if py_file.name != '__init__.py':
                     files_by_name[py_file.name].append(str(py_file))
-    
+
     return {name: paths for name, paths in files_by_name.items() if len(paths) > 1}
 
 def find_gravity_violations():
     """Find upward import violations (higher layer importing from lower layer)."""
     violations = []
-    
+
     # Phase 4.1: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
     for py_file in get_python_files(ROOT / AGENTIC_CORE_DIR):
@@ -81,7 +81,7 @@ def find_gravity_violations():
                         })
         except Exception as e:
             pass
-    
+
     return violations
 
 def find_syntax_errors():
@@ -132,7 +132,7 @@ def find_naming_violations():
 
 if __name__ == '__main__':
     print("=== SSOT AUDIT REPORT ===\n")
-    
+
     # Duplicates
     duplicates = find_duplicates()
     print(f"DUPLICATE FILES: {len(duplicates)}")
@@ -140,9 +140,9 @@ if __name__ == '__main__':
         print(f"  {name}:")
         for p in paths:
             print(f"    - {p}")
-    
+
     print(f"\n{'='*50}\n")
-    
+
     # Gravity violations
     gravity = find_gravity_violations()
     print(f"GRAVITY VIOLATIONS: {len(gravity)}")
@@ -150,17 +150,17 @@ if __name__ == '__main__':
         print(f"  {v['file_layer']} imports {v['import_layer']}: {Path(v['file']).name}")
         print(f"    File: {v['file']}")
         print(f"    Imports: {v['imports']}")
-    
+
     print(f"\n{'='*50}\n")
-    
+
     # Syntax errors
     syntax = find_syntax_errors()
     print(f"SYNTAX ERRORS: {len(syntax)}")
     for e in syntax[:30]:
         print(f"  {e['file']}:{e['line']} - {e['message']}")
-    
+
     print(f"\n{'='*50}\n")
-    
+
     # Naming violations
     naming = find_naming_violations()
     print(f"NAMING VIOLATIONS: {len(naming)}")

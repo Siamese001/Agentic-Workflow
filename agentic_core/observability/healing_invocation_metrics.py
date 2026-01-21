@@ -39,7 +39,7 @@ class HealingMetricsCollector:
         self.project_root = project_root or Path.cwd()
         self.metrics_dir = self.project_root / AGENTIC_CORE_DIR / 'L0_maintenance' / 'logs'
         self.metrics_dir.mkdir(parents=True, exist_ok=True)
-        
+
         self.counters = {
             'healing_calls': 0,
             'agent_activations': 0,
@@ -48,7 +48,7 @@ class HealingMetricsCollector:
             'cycle_detections': 0,
             'depth_limits': 0
         }
-        
+
         self.historical_data = []
 
     def increment_healing_call(self):
@@ -78,28 +78,28 @@ class HealingMetricsCollector:
     def calculate_invocation_percentage(self) -> float:
         """
         Calculate healing invocation percentage.
-        
+
         Returns:
             Percentage of agent activations that triggered healing
         """
         total = self.counters['agent_activations']
         if total == 0:
             return 0.0
-        
+
         healing = self.counters['healing_calls']
         return (healing / total) * 100
 
     def calculate_success_rate(self) -> float:
         """
         Calculate chain success rate.
-        
+
         Returns:
             Percentage of chains that succeeded
         """
         total = self.counters['successful_chains'] + self.counters['failed_chains']
         if total == 0:
             return 0.0
-        
+
         return (self.counters['successful_chains'] / total) * 100
 
     def record_metrics(self):
@@ -107,7 +107,7 @@ class HealingMetricsCollector:
         timestamp = datetime.now().isoformat()
         invocation_pct = self.calculate_invocation_percentage()
         success_rate = self.calculate_success_rate()
-        
+
         record = {
             'timestamp': timestamp,
             'invocation_percentage': invocation_pct,
@@ -119,38 +119,38 @@ class HealingMetricsCollector:
             'depth_limits': self.counters['depth_limits'],
             'success_rate': success_rate
         }
-        
+
         self.historical_data.append(record)
         return record
 
     def save_metrics_log(self, filename: str = 'healing_metrics.json'):
         """
         Save metrics to JSON log file.
-        
+
         Args:
             filename: Name of log file
         """
         log_file = self.metrics_dir / filename
-        
+
         with open(log_file, 'w') as f:
             json.dump({
                 'current_counters': self.counters,
                 'historical_data': self.historical_data,
                 'last_updated': datetime.now().isoformat()
             }, f, indent=2)
-        
+
         return log_file
 
     def generate_metrics_report(self) -> str:
         """
         Generate metrics report.
-        
+
         Returns:
             Report string
         """
         invocation_pct = self.calculate_invocation_percentage()
         success_rate = self.calculate_success_rate()
-        
+
         report = f"""# Healing Invocation Metrics Report
 
 **Generated**: {datetime.now().isoformat()}
@@ -218,14 +218,14 @@ Phase 5.3 metrics validation complete.
 
 **Status**: {'✓ METRICS TARGET MET' if invocation_pct >= 95 else '⚠ METRICS BELOW TARGET'}
 """
-        
+
         return report
 
     def print_summary(self):
         """Print metrics summary to console."""
         invocation_pct = self.calculate_invocation_percentage()
         success_rate = self.calculate_success_rate()
-        
+
         print("\n" + "="*70)
         print("HEALING INVOCATION METRICS SUMMARY")
         print("="*70)
@@ -247,58 +247,58 @@ Phase 5.3 metrics validation complete.
 def simulate_healing_metrics():
     """Simulate healing metrics for validation."""
     collector = HealingMetricsCollector()
-    
+
     # Simulate Phase 1-4 activation results
     # Expected: ~98% invocation (24.9% baseline → 98%+)
-    
+
     # Simulate agent activations and healing calls
     total_activations = 100
     healing_calls = 98  # 98% invocation
-    
+
     for i in range(total_activations):
         collector.increment_agent_activation()
-        
+
         if i < healing_calls:
             collector.increment_healing_call()
             collector.increment_successful_chain()
         else:
             collector.increment_failed_chain()
-        
+
         # Simulate occasional cycle detections (safety)
         if i % 50 == 0:
             collector.increment_cycle_detection()
-    
+
     return collector
 
 
 def main():
     """Main entry point."""
     print("Generating healing invocation metrics...")
-    
+
     # Simulate metrics
     collector = simulate_healing_metrics()
-    
+
     # Record metrics
     record = collector.record_metrics()
     print(f"Metrics recorded: {record}")
-    
+
     # Print summary
     collector.print_summary()
-    
+
     # Generate report
     report = collector.generate_metrics_report()
     print(report)
-    
+
     # Save metrics
     log_file = collector.save_metrics_log()
     print(f"Metrics saved to: {log_file}")
-    
+
     # Save report
     report_file = collector.metrics_dir / 'healing_metrics_report.md'
     with open(report_file, 'w') as f:
         f.write(report)
     print(f"Report saved to: {report_file}")
-    
+
     print("Metrics generation complete!")
 
 

@@ -31,14 +31,14 @@ from agentic_core.utils.security import safe_execute
 @dataclass
 class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """L5 Safety agent that enforces consistent formatting using Black + Ruff.
-    
+
     This atomic agent applies Black formatting and Ruff lint auto-fixes to
     Python files, ensuring consistent code style across the project.
-    
+
     Attributes:
         project_root: Root directory of the project.
         ctx: Execution context with reporting capabilities.
-        
+
     Inherits:
         SubatomicTestingMixin: Provides testing utilities.
         HealerMixin: Provides healing chain support.
@@ -46,7 +46,7 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     def __init__(self, project_root: str, ctx: Any) -> None:
         """Initialize the code formatter agent.
-        
+
         Args:
             project_root: Root directory of the project.
             ctx: Execution context with optional report() method.
@@ -56,13 +56,13 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     async def execute(self, file_path: str) -> Dict[str, Any]:
         """Format a single file using Black and Ruff.
-        
+
         Applies Black formatting first, then Ruff lint auto-fixes.
         Reports errors through the context if available.
-        
+
         Args:
             file_path: Path to the Python file to format.
-        
+
         Returns:
             Dictionary with formatting results:
                 - healed: Whether any changes were made
@@ -76,8 +76,8 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         try:
             # Black formatting
             black_result = safe_execute(
-                ["black", "--quiet", str(file)], 
-                capture_output=True, 
+                ["black", "--quiet", str(file)],
+                capture_output=True,
                 text=True,
                 check=False
             )
@@ -86,7 +86,7 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
             # Ruff lint auto-fix
             ruff_result = safe_execute(
-                ["ruff", "check", "--fix", "--quiet", str(file)], 
+                ["ruff", "check", "--fix", "--quiet", str(file)],
                 capture_output=True,
                 check=False
             )
@@ -119,22 +119,22 @@ class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         _call_path: Optional[Set[str]] = None
     ) -> Dict[str, int]:
         """Execute L5 safety healing operations.
-        
+
         This is an operational agent - no repository healing required.
         Implements cycle detection and depth limiting.
-        
+
         Args:
             dry_run: If True, only report what would be done (default: True).
             execute: If True, execute healing actions (default: False).
             depth: Current recursion depth for cycle detection (default: 0).
             max_depth: Maximum recursion depth allowed (default: 3).
             _call_path: Set of agent names in current call chain for cycle detection.
-            
+
         Returns:
             Dictionary with healing results: {"skipped": 1} for operational agents.
         """
         super().heal_repository()
-        
+
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__

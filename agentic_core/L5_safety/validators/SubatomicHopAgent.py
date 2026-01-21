@@ -32,14 +32,14 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 class SubatomicHopAgent(MCPHardenedMixin, HealerMixin):
     """
     Sovereign SubatomicHop with Dependency Injection.
-    
-    This is a 'Pure Engine.' It has no knowledge of higher layers (L3-L5) 
+
+    This is a 'Pure Engine.' It has no knowledge of higher layers (L3-L5)
     at the import level. All required logic is injected at runtime.
     """
 
     def __init__(self, role: str, config: Dict, storage: Optional[Any]=None, genealogy: Optional[Any]=None, PiiVault: Optional[Any]=None, CostGovernor: Optional[Any]=None, overseer: Optional[Any]=None, membrane: Optional[Any]=None, airlock: Optional[Any]=None, SupremeCourt: Optional[Any]=None, mcp_manager: Optional[Any]=None, sandbox: Optional[Any]=None, StructuredEngine: Optional[Any]=None, gatekeeper: Optional[Any]=None, telemetry: Optional[Any]=None) -> None:
         """Initialize SubatomicHop with injected dependencies.
-        
+
         Args:
             role: Agent role identifier
             config: Configuration dictionary
@@ -56,7 +56,7 @@ class SubatomicHopAgent(MCPHardenedMixin, HealerMixin):
             StructuredEngine: StructuredEngine instance (injected)
             gatekeeper: SemanticGatekeeper instance (injected)
             telemetry: TelemetryRecorder instance (injected)
-            
+
         Raises:
             SovereignDependencyError: If required dependencies are Missing
         """
@@ -85,14 +85,14 @@ class SubatomicHopAgent(MCPHardenedMixin, HealerMixin):
 
     def _ensure_dep(self, dep: Any, name: str) -> Any:
         """Validate that a required dependency was injected.
-        
+
         Args:
             dep: The dependency instance
             name: Human-readable name for error messages
-            
+
         Returns:
             The validated dependency
-            
+
         Raises:
             SovereignDependencyError: If dependency is None
         """

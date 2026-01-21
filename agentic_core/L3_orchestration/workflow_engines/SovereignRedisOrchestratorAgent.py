@@ -32,7 +32,7 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 @dataclass
 class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     '''Brief description of functionality and purpose.'''
-    
+
     def __init__(self) -> None:
         """Initialize the instance."""
         self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
@@ -55,8 +55,8 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
         # The Fix: Only inject SSL if specifically requested by scheme
         if parsed.scheme == "rediss":
             params["ssl"] = True
-            params["ssl_cert_reqs"] = None 
-        
+            params["ssl_cert_reqs"] = None
+
         return redis.Redis(**params)
 
     def get(self, key: str) -> Any:
@@ -68,7 +68,7 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
             except (redis.ConnectionError, redis.TimeoutError):
                 self.use_fallback = True
                 print("   [L2] Redis failed -> Switching to Bounded Fallback")
-        
+
         return self.fallback_cache.get(key)
 
     def set(self, key: str, value: Any) -> Any:
@@ -94,7 +94,7 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
                 return self.connection.delete(key) > 0
             except (redis.ConnectionError, redis.TimeoutError):
                 self.use_fallback = True
-        
+
         # Try to delete from fallback cache
         if key in self.fallback_cache:
             del self.fallback_cache[key]
@@ -109,7 +109,7 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
                 return self.connection.exists(key) > 0
             except (redis.ConnectionError, redis.TimeoutError):
                 self.use_fallback = True
-        
+
         return key in self.fallback_cache
 
     def clear(self) -> Any:
@@ -120,7 +120,7 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHar
                 self.connection.flushdb()
             except (redis.ConnectionError, redis.TimeoutError):
                 self.use_fallback = True
-        
+
         self.fallback_cache.clear()
 
     def get_connection_info(self) -> dict:

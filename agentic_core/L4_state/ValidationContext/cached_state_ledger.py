@@ -31,7 +31,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         self.root = project_root
         self.session_id = session_id
         self._mcp_audit('init', payload={'session_id': session_id})
-        
+
         # [L6 HARDENING] Sovereign Redis connection with full URL parsing + fallback
         # Rationale: ValidationContext.py falls back to Fallback ValidationContext when ledger init fails
         # → Missing .successful_traces → GeminiSpy rejects mutations → zero file changes
@@ -52,7 +52,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             }
             if parsed.scheme == "rediss":
                 connection_kwargs["ssl"] = True
-            
+
             self.redis = redis.Redis(**connection_kwargs)
             self.redis.ping()
             print("   [OK] CachedStateLedger: Redis Sovereign Cache ONLINE")
@@ -82,7 +82,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             else:
                 self._memory_cache[full_key] = context
         except Exception: pass
-        
+
         # [L4 TELEMETRY] Record successful cache operation for GeminiSpy
         self._record_successful_trace({
             "operation": "cache_validation_context",
@@ -91,7 +91,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         })
 
     def get_cached_validation_context(self, key: str) -> Optional[Dict]:
-                    
+
         full_key = f"{self.prefix_context}:{key}"
         try:
             if self.redis:
@@ -152,7 +152,7 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def _run_self_tests(self) -> bool:
         """Run self-tests for CachedStateLedger."""
         super()._run_self_tests()
-        
+
         # Test cache round-trip
         test_key = "__self_test_cache"
         test_val = {"test": 42, "timestamp": time.time()}
@@ -160,16 +160,16 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         retrieved = self.get_cached_validation_context(test_key)
         assert retrieved is not None, "Cache round-trip failed"
         assert retrieved.get("test") == 42, "Cache data corruption"
-        
+
         # Test audit trail
         assert hasattr(self, '_successful_traces'), "Missing successful_traces"
-        
+
         return True
 
     def _perform_healing(self, anomaly: AnomalyReport) -> bool:
         """Perform healing for detected anomalies."""
         self._mcp_audit("healing_start", payload=anomaly.to_dict())
-        
+
         if anomaly.type == "cache_stale":
             # Flush stale cache entries
             if self.redis:
@@ -182,14 +182,14 @@ class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
                 self._memory_cache.clear()
             self._mcp_audit("healing_success", payload={"action": "cache_flush"})
             return True
-        
+
         if anomaly.type == "audit_corruption":
             # Reset audit trail
             self._audit_trail = []
             self._successful_traces = []
             self._mcp_audit("healing_success")
             return True
-        
+
         return False
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""

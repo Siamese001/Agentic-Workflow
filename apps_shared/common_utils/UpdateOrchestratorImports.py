@@ -30,7 +30,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 # Import replacement mapping
 IMPORT_REPLACEMENTS: Dict[str, Tuple[str, str]] = {
     # Legacy orchestrator -> (unified module, unified class)
-    
+
     # L3 Orchestrators -> CoreOrchestrationAgent
     "CachedOrchestratorAgent": (
         "agentic_core.L3_orchestration.unified.CoreOrchestrationAgent",
@@ -72,7 +72,7 @@ IMPORT_REPLACEMENTS: Dict[str, Tuple[str, str]] = {
         "agentic_core.L3_orchestration.unified.CoreOrchestrationAgent",
         "CoreOrchestrationAgent",
     ),
-    
+
     # Apps Orchestrators -> AppWorkflowOrchestratorAgent
     "LicWorkflowOrchestratorAgent": (
         "agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent",
@@ -129,14 +129,14 @@ def find_files_with_imports(root: Path) -> List[Path]:
 def update_imports_in_file(file_path: Path, dry_run: bool = False) -> List[str]:
     """Update legacy imports in a single file."""
     changes = []
-    
+
     try:
         content = file_path.read_text(encoding="utf-8")
     except Exception:
         return changes
-    
+
     original_content = content
-    
+
     for legacy_name, (unified_module, unified_class) in IMPORT_REPLACEMENTS.items():
         # Pattern 1: from ... import LegacyOrchestrator
         pattern1 = rf"from\s+[\w.]+\s+import\s+{legacy_name}\b"
@@ -144,17 +144,17 @@ def update_imports_in_file(file_path: Path, dry_run: bool = False) -> List[str]:
             new_import = f"from {unified_module} import {unified_class}"
             content = re.sub(pattern1, new_import, content)
             changes.append(f"Updated import: {legacy_name} -> {unified_class}")
-        
+
         # Pattern 2: Usage of LegacyOrchestrator() - replace with UnifiedClass()
         if any(legacy_name in c for c in changes):
             usage_pattern = rf"\b{legacy_name}\b"
             if re.search(usage_pattern, content):
                 content = re.sub(usage_pattern, unified_class, content)
                 changes.append(f"Updated usage: {legacy_name} -> {unified_class}")
-    
+
     if content != original_content and not dry_run:
         file_path.write_text(content, encoding="utf-8")
-    
+
     return changes
 
 
@@ -162,18 +162,18 @@ def main():
     parser = argparse.ArgumentParser(description='Update legacy orchestrator imports')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
     args = parser.parse_args()
-    
+
     print("=" * 70)
     print("Phase 1 Global Search & Replace - Orchestrator Import Updates")
     print("=" * 70)
-    
+
     if args.dry_run:
         print("\n[DRY RUN MODE]\n")
-    
+
     files = find_files_with_imports(PROJECT_ROOT)
     total_changes = 0
     files_modified = 0
-    
+
     for file_path in files:
         changes = update_imports_in_file(file_path, args.dry_run)
         if changes:
@@ -183,18 +183,18 @@ def main():
                 print(f"  - {change}")
             total_changes += len(changes)
             files_modified += 1
-    
+
     print(f"\n{'=' * 70}")
     print("Summary:")
     print(f"  Files scanned:  {len(files)}")
     print(f"  Files modified: {files_modified}")
     print(f"  Total changes:  {total_changes}")
-    
+
     if args.dry_run:
         print("\n[DRY RUN COMPLETE]")
     else:
         print("\n✓ ORCHESTRATOR IMPORT UPDATES COMPLETE")
-    
+
     return 0
 
 

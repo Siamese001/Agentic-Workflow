@@ -76,33 +76,33 @@ class SyntaxViolation:
 class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     [L5 VALIDATOR] Python syntax validation agent.
-    
+
     Prevents unparseable code from entering the codebase by validating
     Python syntax using AST parsing before any healing or commit operations.
-    
+
     Addresses the critical gap where 138 agents parse AST but none
     specifically validate syntax errors.
     """
-    
+
     # Approved folders for validation (tests excluded - 33 non-blocking errors)
     SOVEREIGN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR]
-    
+
     # Directories to skip
     SKIP_DIRS = {'__pycache__', '.git', 'node_modules', '.venv', 'venv', ARCHIVES_DIR}
-    
+
     def __init__(self, project_root: Path = None) -> None:
         """Initialize the syntax validator."""
         self.project_root = Path(project_root) if project_root else Path.cwd()
         self.logger = Logger
         super().__init__()
-    
+
     def validate_file(self, file_path: Path) -> Optional[SyntaxViolation]:
         """
         Validate a single Python file for syntax errors.
-        
+
         Args:
             file_path: Path to the Python file to validate
-            
+
         Returns:
             SyntaxViolation if syntax error found, None if valid
         """
@@ -110,7 +110,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
             content = file_path.read_text(encoding='utf-8')
             ast.parse(content, filename=str(file_path))
             return None  # No syntax errors
-            
+
         except SyntaxError as e:
             return SyntaxViolation(
                 file_path=file_path,
@@ -136,52 +136,52 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
                 error_message=f"Validation error: {str(e)}",
                 error_type=type(e).__name__
             )
-    
+
     def scan_directory(self, directory: Path) -> List[SyntaxViolation]:
         """
         Scan a directory for Python files with syntax errors.
-        
+
         Args:
             directory: Directory to scan
-            
+
         Returns:
             List of syntax violations found
         """
         violations = []
-        
+
         from agentic_core.utils.ssot_discovery import get_python_files
         for py_file in get_python_files(directory):
             # Skip excluded directories
             if any(skip_dir in py_file.parts for skip_dir in self.SKIP_DIRS):
                 continue
-            
+
             violation = self.validate_file(py_file)
             if violation:
                 violations.append(violation)
-        
+
         return violations
-    
+
     def validate_repository(self) -> Dict[str, Any]:
         """
         Validate all Python files in approved folders.
-        
+
         Returns:
             Dictionary with validation results
         """
         all_violations = []
-        
+
         for root_folder in self.SOVEREIGN_ROOTS:
             folder_path = self.project_root / root_folder
             if folder_path.exists():
                 violations = self.scan_directory(folder_path)
                 all_violations.extend(violations)
-        
+
         return {
             "total_violations": len(all_violations),
             "violations": all_violations,
             "status": "FAIL" if all_violations else "PASS"
         }
-    
+
     @standard_heal
     def heal_repository(
         self,
@@ -193,14 +193,14 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
     ) -> Dict[str, Any]:
         """
         Canon Key 51 compliance: Audit and report syntax state.
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, attempt to fix simple syntax errors
             depth: Current recursion depth
             max_depth: Maximum recursion depth
             _call_path: Internal call path tracking
-            
+
         Returns:
             Dictionary with healing summary
         """
@@ -208,14 +208,14 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
 
         if _call_path is None:
             _call_path = []
-        
+
         self.logger.info(f"[SyntaxValidatorAgent] Starting syntax validation (dry_run={dry_run})")
-        
+
         # Validate all files
         results = self.validate_repository()
-        
+
         violations = results.get('violations', [])
-        
+
         # Report findings
         if violations:
             self.logger.warning(f"Found {len(violations)} syntax errors:")
@@ -227,7 +227,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
                 self.logger.warning(f"  ... and {len(violations) - 10} more")
         else:
             self.logger.info("No syntax errors found - repository is clean!")
-        
+
         # Healing logic (if execute=True)
         fixed_count = 0
         if execute and not dry_run:
@@ -236,7 +236,7 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
             # - Inconsistent indentation
             # - Missing colons
             self.logger.info("Auto-fix not yet implemented - manual intervention required")
-        
+
         return {
             "agent": "SyntaxValidatorAgent",
             "violations_found": len(violations),
@@ -246,33 +246,33 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
             "execute": execute,
             "summary": f"Found {len(violations)} syntax errors, fixed {fixed_count}"
         }
-    
+
     def get_violation_summary(self, violations: List[SyntaxViolation]) -> Dict[str, Any]:
         """
         Generate a summary of syntax violations.
-        
+
         Args:
             violations: List of syntax violations
-            
+
         Returns:
             Summary dictionary
         """
         by_error_type = {}
         by_file = {}
-        
+
         for v in violations:
             # Group by error type
             error_type = v.error_type
             if error_type not in by_error_type:
                 by_error_type[error_type] = []
             by_error_type[error_type].append(v)
-            
+
             # Group by file
             file_name = v.file_path.name
             if file_name not in by_file:
                 by_file[file_name] = []
             by_file[file_name].append(v)
-        
+
         return {
             "total": len(violations),
             "by_error_type": {k: len(v) for k, v in by_error_type.items()},

@@ -581,10 +581,10 @@ EXECUTIVE SUMMARY
     Files to REVIEW:            126
     Files to SKIP:              2942
     Files with syntax errors:   135
-    
+
     TOTAL UNIQUE AGENTS:        1260
     TOTAL RESTORATION FILES:    2697
-    
+
 
 ================================================================================
 TOP 20 RESTORATION COMMANDS

@@ -31,7 +31,7 @@ def _perform_single_attempt(func: Callable, *args, **kwargs) -> Tuple[bool, Any,
         return False, None, e
 
 
-def _execute_with_retries_internal(func: Callable, max_retries: int, base_delay: float, 
+def _execute_with_retries_internal(func: Callable, max_retries: int, base_delay: float,
                                    *args, **kwargs) -> Tuple[bool, Any, Optional[Exception]]:
     """
     Helper function to execute a function with retries and exponential backoff.
@@ -42,15 +42,15 @@ def _execute_with_retries_internal(func: Callable, max_retries: int, base_delay:
 
         if success:
             return True, result, None
-        
+
         # If not successful and it's the last attempt, return the exception
         if attempt == max_retries - 1:
             return False, None, exception
-        
+
         # Otherwise, delay and retry
         delay = base_delay * (2 ** attempt)
         time.sleep(delay)
-    
+
     # This line is only reachable if max_retries is 0
     return False, None, None
 
@@ -58,29 +58,29 @@ def _execute_with_retries_internal(func: Callable, max_retries: int, base_delay:
 def retry_with_backoff(func: Callable, max_retries: int = 3, base_delay: float = 1.0) -> Callable:
     """
     Retry decorator for MCP calls with exponential backoff.
-    
+
     Args:
         func: Function to retry
         max_retries: Maximum number of retry attempts
         base_delay: Base delay in seconds (doubles with each retry)
-    
+
     Returns:
         Wrapped function with retry logic
     """
     def wrapper(*args, **kwargs):
-                    
+
         # Delegate the actual retry logic to the helper function
         success, result, exception = _execute_with_retries_internal(
             func, max_retries, base_delay, *args, **kwargs
         )
-        
+
         if success:
             return result
-        
+
         if exception:
             raise exception
-        
+
         # This case handles max_retries = 0 where no success or exception occurred
         return None
-    
+
     return wrapper

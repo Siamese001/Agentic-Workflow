@@ -41,27 +41,27 @@ class SealResult:
 class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
     """
     Sovereign Agent responsible for surgical refactoring of upward dependencies.
-    
+
     Capabilities:
     - Discovers import violations using UnifiedSSOTValidator
     - Applies Dynamic Seal pattern to eliminate static upward imports
     - Supports dry-run mode for safe validation
     - Provides detailed remediation reports
-    
+
     Usage:
         agent = DynamicSealAgent(root_dir=".")
         results = agent.execute_sprint(target_pattern="L3 → L5", dry_run=True)
     """
-    
+
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
@@ -78,18 +78,18 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
         self.sealed_files: List[str] = []
 
     def execute_sprint(
-        self, 
+        self,
         target_pattern: Optional[str] = None,
         dry_run: bool = True
     ) -> Dict[str, Any]:
         """
         Execute a sprint to seal import violations.
-        
+
         Args:
             target_pattern: Pattern to filter violations (e.g., "L3 → L5", "L2 → L4")
                           If None, processes all upward violations
             dry_run: If True, only reports what would be changed
-            
+
         Returns:
             Dictionary with results including modified files and statistics
         """
@@ -97,29 +97,29 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
         print("  DYNAMIC SEAL AGENT - Surgical Refactoring")
         print("=" * 80)
         print()
-        
+
         if dry_run:
             print("🔍 DRY-RUN MODE: No files will be modified")
         else:
             print("⚠️  LIVE MODE: Files will be modified")
         print()
-        
+
         # Run validation to discover violations
         report = self.validator.validate_all()
-        
+
         # Filter violations by pattern if specified
         violations = report.import_violations
         if target_pattern:
             violations = [
-                v for v in violations 
+                v for v in violations
                 if f"{v.source_layer} → {v.target_layer}" == target_pattern.replace("LL", "")
             ]
-        
+
         print(f"Found {len(violations)} import violations")
         if target_pattern:
             print(f"Filtered to pattern: {target_pattern}")
         print()
-        
+
         # Group violations by file
         violations_by_file = {}
         for v in violations:
@@ -127,7 +127,7 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
             if file_path not in violations_by_file:
                 violations_by_file[file_path] = []
             violations_by_file[file_path].append(v)
-        
+
         # Process each file
         results = {
             "modified": [],
@@ -136,16 +136,16 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
             "files_processed": 0,
             "violations_sealed": 0
         }
-        
+
         for file_path, file_violations in violations_by_file.items():
             seal_result = self._apply_seal(
-                Path(file_path), 
+                Path(file_path),
                 file_violations,
                 dry_run
             )
-            
+
             results["files_processed"] += 1
-            
+
             if seal_result.success:
                 results["modified"].append(seal_result.file_path)
                 results["violations_sealed"] += seal_result.violations_sealed
@@ -155,7 +155,7 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
                     "file": seal_result.file_path,
                     "error": seal_result.error
                 })
-        
+
         # Print summary
         print()
         print("=" * 80)
@@ -166,28 +166,28 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
         print(f"Violations sealed: {results['violations_sealed']}")
         print(f"Errors: {len(results['errors'])}")
         print()
-        
+
         if results['modified']:
             print("Modified files:")
             for file_path in results['modified']:
                 print(f"  ✅ {Path(file_path).relative_to(self.root)}")
-        
+
         if results['errors']:
             print("\nErrors:")
             for error in results['errors']:
                 print(f"  ❌ {Path(error['file']).relative_to(self.root)}: {error['error']}")
-        
+
         return results
 
     def _apply_seal(
-        self, 
-        file_path: Path, 
+        self,
+        file_path: Path,
         violations: List[Any],
         dry_run: bool
     ) -> SealResult:
         """
         Apply Dynamic Seal pattern to a file.
-        
+
         Strategy:
         1. Identify static upward imports
         2. Remove static import lines
@@ -197,10 +197,10 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
         try:
             content = file_path.read_text(encoding='utf-8')
             original_content = content
-            
+
             violations_found = len(violations)
             violations_sealed = 0
-            
+
             if dry_run:
                 print(f"[DRY-RUN] Would process {violations_found} violations in {file_path.name}")
                 return SealResult(
@@ -209,21 +209,21 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
                     violations_sealed=violations_found,
                     success=True
                 )
-            
+
             # Process each violation
             for violation in violations:
                 import_line = violation.import_statement.strip()
-                
+
                 # Check if this import is already dynamic (in try/except)
                 if self._is_dynamic_import(content, import_line):
                     print(f"  ℹ️  Already dynamic: {import_line[:60]}...")
                     continue
-                
+
                 # Remove static import
                 content = self._remove_import_line(content, import_line)
                 violations_sealed += 1
                 print(f"  ✅ Sealed: {import_line[:60]}...")
-            
+
             # Write back if changed
             if content != original_content:
                 file_path.write_text(content, encoding='utf-8')
@@ -240,7 +240,7 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
                     violations_sealed=0,
                     success=True
                 )
-                
+
         except Exception as e:
             return SealResult(
                 file_path=str(file_path),
@@ -253,21 +253,21 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
     def _is_dynamic_import(self, content: str, import_line: str) -> bool:
         """Check if an import is already inside a try/except block."""
         lines = content.split('\n')
-        
+
         for i, line in enumerate(lines):
             if import_line in line:
                 # Look backwards for try: statement
                 for j in range(i - 1, max(0, i - 10), -1):
                     if 'try:' in lines[j]:
                         return True
-        
+
         return False
 
     def _remove_import_line(self, content: str, import_statement: str) -> str:
         """Remove an import statement from content."""
         lines = content.split('\n')
         new_lines = []
-        
+
         for line in lines:
             # Skip lines that contain the import statement
             if import_statement.strip() in line and 'import' in line:
@@ -276,7 +276,7 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
                 if stripped.startswith('from ') or stripped.startswith('import '):
                     continue
             new_lines.append(line)
-        
+
         return '\n'.join(new_lines)
 
     def generate_report(self) -> str:
@@ -293,7 +293,7 @@ class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
 """
         for file_path in self.sealed_files:
             report += f"- `{file_path}`\n"
-        
+
         report += """
 ## Pattern Applied
 
@@ -315,7 +315,7 @@ python scripts/ssot.py validate --summary
 def main() -> Any:
     """CLI entry point for the Dynamic Seal Agent."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(
         description="Dynamic Seal Agent - Surgical refactoring of import violations"
     )
@@ -334,15 +334,15 @@ def main() -> Any:
         default=".",
         help="Repository root directory"
     )
-    
+
     args = parser.parse_args()
-    
+
     agent = DynamicSealAgent(root_dir=args.root)
     results = agent.execute_sprint(
         target_pattern=args.pattern,
         dry_run=args.dry_run
     )
-    
+
     print()
     print(f"✅ Dynamic Seal Agent completed")
     print(f"   Sealed {results['violations_sealed']} violations in {len(results['modified'])} files")

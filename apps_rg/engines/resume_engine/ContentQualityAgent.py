@@ -57,13 +57,13 @@ class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     async def execute(self) -> None:
         """
         Execute content quality validation.
-        
+
         Validates:
         - Minimum section lengths
         - Placeholder text detection
         - Sentence structure
         - Quantified achievements
-        
+
         Raises:
             QUALITY_FAILURE signal if quality issues found
         """
@@ -109,10 +109,10 @@ class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     def _to_string(self, content: Any) -> str:
         """
         Convert content to string for analysis.
-        
+
         Args:
             content: Content to convert (str, list, dict, or other)
-        
+
         Returns:
             String representation of content
         """
@@ -127,12 +127,12 @@ class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
-        
+
         Returns:
             Dict with healing summary (violations, fixed, errors)
         """
@@ -190,10 +190,10 @@ class TestPilot(ResumeAgent):
     def _test_schema(self, resume: Dict[str, Any]) -> Dict[str, Any]:
         """
         Test basic schema structure.
-        
+
         Args:
             resume: Resume data to validate
-        
+
         Returns:
             Dict with test results
         """
@@ -207,10 +207,10 @@ class TestPilot(ResumeAgent):
     def _test_completeness(self, resume: Dict[str, Any]) -> Dict[str, Any]:
         """
         Test content completeness.
-        
+
         Args:
             resume: Resume data to validate
-        
+
         Returns:
             Dict with test results
         """
@@ -225,10 +225,10 @@ class TestPilot(ResumeAgent):
     def _test_no_empty_sections(self, resume: Dict[str, Any]) -> Dict[str, Any]:
         """
         Test for empty sections.
-        
+
         Args:
             resume: Resume data to validate
-        
+
         Returns:
             Dict with test results
         """
@@ -241,10 +241,10 @@ class TestPilot(ResumeAgent):
     def _test_reasonable_lengths(self, resume: Dict[str, Any]) -> Dict[str, Any]:
         """
         Test section lengths are reasonable.
-        
+
         Args:
             resume: Resume data to validate
-        
+
         Returns:
             Dict with test results
         """

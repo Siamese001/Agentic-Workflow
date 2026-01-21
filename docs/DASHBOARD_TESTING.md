@@ -173,7 +173,7 @@ To add a new test to the suite:
 def test_13_your_new_test(self):
     """Test 13: Description of what this test validates."""
     self.assertIsNotNone(self.template_content, "Template content not loaded")
-    
+
     # Your test logic here
     self.assertIn(
         'expected_content',
@@ -209,18 +209,18 @@ The test suite can be integrated into CI/CD pipelines:
 # Example GitHub Actions workflow
 - name: Run Dashboard Tests
   run: python tests/test_dashboard_generation.py
-  
+
 - name: Generate Dashboard (only if tests pass)
   run: python gen_dashboard.py
 ```
 
 ## Benefits
 
-✅ **Prevents regressions**: Bugs can't be reintroduced  
-✅ **Fast feedback**: Catch errors in seconds, not minutes  
-✅ **Documentation**: Tests document expected behavior  
-✅ **Confidence**: Safe to refactor knowing tests will catch breaks  
-✅ **Quality gate**: Dashboard generation only succeeds with valid templates  
+✅ **Prevents regressions**: Bugs can't be reintroduced
+✅ **Fast feedback**: Catch errors in seconds, not minutes
+✅ **Documentation**: Tests document expected behavior
+✅ **Confidence**: Safe to refactor knowing tests will catch breaks
+✅ **Quality gate**: Dashboard generation only succeeds with valid templates
 
 ## Summary
 

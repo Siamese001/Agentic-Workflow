@@ -83,7 +83,7 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
     async def act(self) -> Dict[str, Any]:
         """Execute chaos engineering tests."""
         logger.info(f"[{self.name}] Starting chaos engineering resilience tests")
-        
+
         results = {
             "agent": self.name,
             "tests_executed": 0,
@@ -97,10 +97,10 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
             for scenario in self.chaos_scenarios:
                 test_result = await self._execute_chaos_scenario(scenario)
                 results["tests_executed"] += 1
-                
+
                 if test_result.get("failure_detected"):
                     results["failures_detected"] += 1
-                
+
                 results["scenarios_tested"].append({
                     "scenario": scenario,
                     "failure_detected": test_result.get("failure_detected", False),
@@ -228,4 +228,4 @@ class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
-        return {"healed": 0, "skipped": 0, "parent": result}
+        return {"violations_fixed": 0, "skipped": 0, "parent": result}

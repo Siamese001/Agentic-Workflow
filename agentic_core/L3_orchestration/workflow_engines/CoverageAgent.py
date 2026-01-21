@@ -55,7 +55,7 @@ class CoverageAgent(SovereignBaseAgent):
     ) -> None:
         """
         Initialize coverage agent.
-        
+
         Args:
             layers: Optional list of layer names to monitor
             threshold_entropy: Entropy threshold for triggering interventions

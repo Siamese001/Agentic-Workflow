@@ -33,8 +33,8 @@ class SovereignLlmRouterMcpClient(MCPHardenedMixin, HealerMixin):
     async def validate_content(self, content: str, validation_type: str='safety') -> Dict[str, Any]:
         """
         Validate content via LLM Router MCP.
-        
-        FAIL-SAFE STRATEGY: 
+
+        FAIL-SAFE STRATEGY:
         If MCP fails, we default to is_safe=False (Fail Closed).
         """
         payload: Any = {'content': content, 'validation_type': validation_type, 'model': config.LLM_ROUTER_SAFETY_MODEL, 'temperature': config.LLM_ROUTER_VALIDATION_TEMPERATURE, 'max_tokens': config.LLM_ROUTER_MAX_TOKENS}

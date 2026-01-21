@@ -25,13 +25,13 @@ class RgReflectionAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     async def execute(self) -> None:
         """
         Execute reflection on system execution.
-        
+
         Analyzes:
         - Cycle performance and convergence
         - Failed agents and signals
         - Budget usage and modifications
         - Overall outcome and quality
-        
+
         Records insights for learning and improvement.
         """
         self.log("Reflecting on execution...")
@@ -65,7 +65,7 @@ class RgReflectionAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     def _estimate_quality_score(self) -> float:
         """
         Estimate quality score based on agent results.
-        
+
         Returns:
             Quality score (0-1) based on passed/total agents ratio
         """

@@ -17,11 +17,11 @@ def test_corrected_methods():
     """Test the corrected Meta-Learning method calls."""
     project_root = Path(__file__).parent.parent
     guardian = get_autonomy_guardian(project_root)
-    
+
     print("\n" + "=" * 80)
     print("TESTING CORRECTED META-LEARNING METHODS")
     print("=" * 80)
-    
+
     # Test 1: Redis cache_set
     print("\n[TEST 1] Redis cache_set")
     print("-" * 60)
@@ -34,7 +34,7 @@ def test_corrected_methods():
             ttl=86400
         )
         print("✅ cache_set executed successfully")
-        
+
         # Try to retrieve it
         cached = guardian.cache_get(key="test_autonomy_fix_2026")
         if cached:
@@ -43,7 +43,7 @@ def test_corrected_methods():
             print("⚠️  cache_get returned None (Redis may not be running)")
     except Exception as e:
         print(f"⚠️  cache_set failed: {e}")
-    
+
     # Test 2: Pinecone vector_upsert
     print("\n[TEST 2] Pinecone vector_upsert")
     print("-" * 60)
@@ -58,7 +58,7 @@ def test_corrected_methods():
             }
         )
         print("✅ vector_upsert executed successfully")
-        
+
         # Try to search for it
         results = guardian.vector_search(
             query="healing signature verification",
@@ -70,7 +70,7 @@ def test_corrected_methods():
             print("⚠️  vector_search returned no results (Pinecone may not be configured)")
     except Exception as e:
         print(f"⚠️  vector_upsert failed: {e}")
-    
+
     print("\n" + "=" * 80)
     print("CONCLUSION")
     print("=" * 80)

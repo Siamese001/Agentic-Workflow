@@ -13,7 +13,7 @@
 - **Features**: Basic structured output, tool calling
 - **Limitations**: No prompt caching, batch processing limited
 
-### Anthropic MCP v1.0  
+### Anthropic MCP v1.0
 - **Models**: claude-3-sonnet, claude-3-haiku
 - **Context Window**: 200k tokens
 - **Features**: Tool use, basic streaming
@@ -191,7 +191,7 @@
 - Add structured_output_schemas section
 - Update tool specifications format
 
-# Anthropic  
+# Anthropic
 - Convert system_prompt string to array format
 - Add cache_control to cached content
 - Update tool_use to v2 specification

@@ -80,13 +80,13 @@ def archive_file(source: Path, category: str, dry_run: bool = False) -> Tuple[bo
     """Archive a single file to category subfolder."""
     target_dir = ARCHIVE_DIR / category
     target = target_dir / source.name
-    
+
     if target.exists():
         return False, "Already archived"
-    
+
     if dry_run:
         return True, f"Would archive to {target.relative_to(PROJECT_ROOT)}"
-    
+
     try:
         target_dir.mkdir(parents=True, exist_ok=True)
         shutil.move(str(source), str(target))
@@ -99,37 +99,37 @@ def main():
     parser = argparse.ArgumentParser(description='Archive Phase 4 legacy agents')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
     args = parser.parse_args()
-    
+
     print("=" * 70)
     print("Phase 4 Hard Migration - Detector/Healer/Router/Executor Archive")
     print("=" * 70)
-    
+
     if args.dry_run:
         print("\n[DRY RUN MODE]\n")
-    
+
     total_archived = 0
     total_skipped = 0
     total_not_found = 0
-    
+
     categories = [
         ("Legacy Detectors", LEGACY_DETECTORS, "legacy_detectors"),
         ("Legacy Healers", LEGACY_HEALERS, "legacy_healers"),
         ("Legacy Routers", LEGACY_ROUTERS, "legacy_routers"),
         ("Legacy Executors", LEGACY_EXECUTORS, "legacy_executors"),
     ]
-    
+
     for title, agents, category in categories:
         print(f"\n--- {title} ---")
         for filename in agents:
             source = find_agent(filename)
-            
+
             if source is None:
                 print(f"  - NOT FOUND: {filename}")
                 total_not_found += 1
                 continue
-            
+
             success, message = archive_file(source, category, args.dry_run)
-            
+
             if success:
                 icon = "o" if args.dry_run else "+"
                 print(f"  {icon} {filename}")
@@ -140,18 +140,18 @@ def main():
                     total_skipped += 1
                 else:
                     print(f"  x ERROR: {filename} - {message}")
-    
+
     print(f"\n{'=' * 70}")
     print("Summary:")
     print(f"  Archived:  {total_archived}")
     print(f"  Skipped:   {total_skipped}")
     print(f"  Not Found: {total_not_found}")
-    
+
     if args.dry_run:
         print("\n[DRY RUN COMPLETE]")
     else:
         print("\n+ PHASE 4 LEGACY ARCHIVE COMPLETE")
-    
+
     return 0
 
 

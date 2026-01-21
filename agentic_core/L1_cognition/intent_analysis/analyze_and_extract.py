@@ -21,8 +21,8 @@ def analyze_and_extract() -> None:
     duplicate_files: Any = []
     unique_content_files: Any = []
     # Phase 6.4: Use ssot_discovery instead of rglob
-    all_files: Any = (list(get_python_files(source_dir)) + 
-                      list(get_data_files(source_dir, extensions=['.json'])) + 
+    all_files: Any = (list(get_python_files(source_dir)) +
+                      list(get_data_files(source_dir, extensions=['.json'])) +
                       list(get_data_files(source_dir, extensions=['.md'])))
     for file_path in all_files:
         FILENAME: Any = file_path.name

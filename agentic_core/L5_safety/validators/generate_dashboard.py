@@ -88,56 +88,56 @@ REQUIRED_FIELDS = [
 
 class DashboardGenerator:
     """SSOT Dashboard Generator - Single point of control."""
-    
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.discovery_path = project_root / AGENT_DISCOVERY_JSON
         self.dashboard_path = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
         self.agents = []
-        
+
         # Defensive: Verify critical paths exist immediately
         if not self.project_root.exists():
             raise FileNotFoundError(f"Project root not found: {self.project_root}")
-            
+
     def load_agent_discovery(self) -> bool:
         """Load and validate agent_discovery_full.json."""
         if not self.discovery_path.exists():
             print(f"❌ ERROR: {self.discovery_path} not found")
             return False
-        
+
         try:
             with open(self.discovery_path, 'r', encoding='utf-8') as f:
                 self.agents = json.load(f)
-            
+
             if not isinstance(self.agents, list):
                 print(f"❌ ERROR: Invalid agent discovery data (expected list, got {type(self.agents)})")
                 return False
-                
+
             if len(self.agents) == 0:
                 print(f"⚠️  WARNING: Agent discovery list is empty")
                 return False
-            
+
             print(f"✅ Loaded {len(self.agents)} agents from discovery")
             return True
-            
+
         except json.JSONDecodeError as e:
             print(f"❌ ERROR: Corrupt JSON in agent discovery: {e}")
             return False
         except Exception as e:
             print(f"❌ ERROR loading agent discovery: {e}")
             return False
-    
+
     def group_agents_by_territory(self) -> Dict[str, List[Dict]]:
         """Group agents by FIXED detailed territory structure with subcategories."""
         territories = defaultdict(list)
         unknown_agents = []
-        
+
         for agent in self.agents:
             layer = agent.get('layer', '')
             sub_dir = agent.get('sub_dir', '')
             path = agent.get('path', '').replace('\\', '/')
             class_name = agent.get('class_name', '')
-            
+
             # Map to FIXED detailed territory names with subcategories
             if APPS_LIC_DIR in sub_dir:
                 territory = "Apps Lic"
@@ -226,9 +226,9 @@ class DashboardGenerator:
                 # Fallback - Capture for logging
                 territory = "Unknown"
                 unknown_agents.append(f"{class_name} ({path})")
-            
+
             territories[territory].append(agent)
-            
+
         # Log unknown agents if any found
         if unknown_agents:
             print(f"⚠️  WARNING: {len(unknown_agents)} agents mapped to 'Unknown' territory:")
@@ -236,15 +236,15 @@ class DashboardGenerator:
                 print(f"   - {agent_info}")
             if len(unknown_agents) > 5:
                 print(f"   ... and {len(unknown_agents) - 5} more.")
-        
+
         return territories
-    
+
     def compute_territory_metrics(self, agents_list: List[Dict]) -> Dict[str, Any]:
         """Compute metrics for a territory with FIXED field schema."""
         total = len(agents_list)
         if total == 0:
             return {}
-        
+
         # Compute raw metrics from ACTUAL agent data
         heal_cap = sum(1 for a in agents_list if a.get('has_healing'))
         heal_inv = sum(1 for a in agents_list if a.get('invocation') == 'Yes')
@@ -253,18 +253,18 @@ class DashboardGenerator:
         cc_sum = sum(a.get('cyclomatic_complexity', 1) for a in agents_list)
         typed_pct_sum = sum(a.get('typed_pct', 0) for a in agents_list)
         doc_pct_sum = sum(a.get('documented_pct', 0) for a in agents_list)
-        
+
         # PHASE 1 FIX: Calculate from real data (Finding #1 and #3)
         loc_sum = sum(a.get('loc', 0) for a in agents_list)
         schema_sum = sum(a.get('schema_strictness', 0) for a in agents_list)
-        
+
         # PHASE 3 FIX: Calculate metadata and usage from real data (Finding #2 and #5)
         metadata_count = sum(1 for a in agents_list if a.get('has_metadata', False))
         used_count = sum(1 for a in agents_list if a.get('is_used', False))
-        
+
         # MCP Hardened - from actual agent data (not hardcoded!)
         mcp_hardened = sum(1 for a in agents_list if a.get('mcp_hardened'))
-        
+
         # Calculate percentages from REAL counts
         heal_cap_pct = round(heal_cap / total * 100, 1)
         heal_inv_pct = round(heal_inv / total * 100, 1)
@@ -273,23 +273,23 @@ class DashboardGenerator:
         typed_pct = round(typed_pct_sum / total, 1)
         doc_pct = round(doc_pct_sum / total, 1)
         avg_cc = round(cc_sum / total, 1)
-        
+
         # PHASE 1 FIX: Use real data instead of hardcoded values
         avg_loc = round(loc_sum / total, 1)
         schema_pct = round(schema_sum / total, 1)
-        
+
         # PHASE 3 FIX: Use real data instead of hardcoded values
         metadata_pct = round(metadata_count / total * 100, 1)
         used_pct = round(used_count / total * 100, 1)
-        
+
         # Hardened % and MCP Capable % - REAL calculation from mcp_hardened field
         hardened_pct = round(mcp_hardened / total * 100, 1)
         mcp_pct = hardened_pct  # Same metric, different label
-        
+
         # Derived metrics
         complexity_health = round(max(0, 100 - (avg_cc * 2)), 1)
         code_quality = round((typed_pct + doc_pct) / 2, 1)
-        
+
         # GOSPEL-WEIGHTED HEALTH SCORE (replaces even weighting)
         # Weights reflect architectural priorities:
         # - 30% Heal Capability (core of autonomy)
@@ -298,29 +298,29 @@ class DashboardGenerator:
         # - 20% Observability (prevents Ghost Agents)
         # - 15% Complexity Health (technical debt indicator)
         base_health = round(
-            (heal_cap_pct * 0.30) + 
-            (heal_inv_pct * 0.10) + 
-            (test_pct * 0.25) + 
-            (obs_pct * 0.20) + 
+            (heal_cap_pct * 0.30) +
+            (heal_inv_pct * 0.10) +
+            (test_pct * 0.25) +
+            (obs_pct * 0.20) +
             (complexity_health * 0.15),
             1
         )
-        
+
         # L5 SECURITY ZERO-MULTIPLIER
         # If territory contains unhardened L5 agents, health drops to 0
         l5_agents = [a for a in agents_list if a.get('layer', '').startswith('L5')]
         unhardened_l5 = [a for a in l5_agents if not a.get('mcp_hardened')]
-        
+
         if unhardened_l5:
             health = 0.0  # CRITICAL: L5 security violation
         else:
             health = base_health
         risk = "HIGH" if avg_cc > 12 or health < 60 else "MED" if avg_cc > 8 or health < 80 else "LOW"
-        
+
         # Calculate proper base class percentage from actual agent data
         proper_base_count = sum(1 for a in agents_list if a.get('proper_base_class', False))
         proper_base_pct = round((proper_base_count / total * 100), 1) if total > 0 else 0.0
-        
+
         return {
             "total": total,
             "compliant": heal_cap,
@@ -343,7 +343,7 @@ class DashboardGenerator:
             "mcp_pct": mcp_pct,
             "proper_base_pct": proper_base_pct
         }
-    
+
     def calculate_layer_criticality(self, territory_name: str) -> int:
         """
         Calculate criticality based on architectural layer (Finding #4).
@@ -361,12 +361,12 @@ class DashboardGenerator:
             'L0': 40,   # Maintenance - Supporting tools
             'L6': 30,   # Observability - Monitoring
         }
-        
+
         for layer, score in LAYER_WEIGHTS.items():
             if layer in territory_name:
                 return score
         return 50  # Default for unknown territories
-    
+
     def build_territory_row(self, territory_name: str, metrics: Dict[str, Any], priority: int, is_infrastructure: bool = False) -> Dict[str, Any]:
         """Build a territory row with FIXED field schema."""
         return {
@@ -397,17 +397,17 @@ class DashboardGenerator:
             "Priority": priority,
             "IsInfrastructure": is_infrastructure
         }
-    
+
     def build_total_row(self, rows: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Build TOTAL row by aggregating territory rows."""
         if not rows:
             return {}
-        
+
         total_agents = sum(r["Total"] for r in rows)
-        
+
         def weighted_avg(key):
             return round(sum(r[key] * r["Total"] for r in rows) / total_agents, 1)
-        
+
         heal_cap_pct = weighted_avg("Heal Cap %")
         heal_inv_pct = weighted_avg("Heal Invocation %")
         test_pct = weighted_avg("Test %")
@@ -417,7 +417,7 @@ class DashboardGenerator:
         hardened_pct = weighted_avg("Hardened %")
         mcp_pct = weighted_avg("MCP Capable %")
         proper_base_pct = weighted_avg("Canonical Inheritance %")
-        
+
         avg_cc = round(sum(r["Avg CC"] * r["Total"] for r in rows) / total_agents, 1)
         avg_loc = round(sum(r["Avg LOC"] * r["Total"] for r in rows) / total_agents, 1)  # PHASE 1 FIX
         schema_pct = weighted_avg("Schema Strictness %")  # PHASE 1 FIX
@@ -426,18 +426,18 @@ class DashboardGenerator:
         avg_criticality = round(sum(r["Criticality"] * r["Total"] for r in rows) / total_agents, 1)  # PHASE 2 FIX
         complexity_health = round(sum(r["Complexity Health"] * r["Total"] for r in rows) / total_agents, 1)
         code_quality = round(sum(r["Code Quality Score"] * r["Total"] for r in rows) / total_agents, 1)
-        
+
         health = round(
-            (heal_cap_pct * 0.30) + 
-            (heal_inv_pct * 0.10) + 
-            (test_pct * 0.25) + 
-            (obs_pct * 0.20) + 
+            (heal_cap_pct * 0.30) +
+            (heal_inv_pct * 0.10) +
+            (test_pct * 0.25) +
+            (obs_pct * 0.20) +
             (complexity_health * 0.15),
             1
         )
-        
+
         risk = "HIGH" if avg_cc > 12 or health < 60 else "MED" if avg_cc > 8 or health < 80 else "LOW"
-        
+
         return {
             "Territory": "TOTAL",
             "Total": total_agents,
@@ -466,15 +466,15 @@ class DashboardGenerator:
             "Priority": "ALL",
             "IsInfrastructure": False
         }
-    
+
     def build_per_agent_data(self, territories: Dict[str, List[Dict]]) -> Dict[str, Dict]:
         """Build per-agent data structure for each territory to replace mock data."""
         per_agent_data = {}
-        
+
         # Iterate through ALL territories in TERRITORY_ORDER to ensure complete coverage
         for territory_name in TERRITORY_ORDER:
             agents_list = territories.get(territory_name, [])
-            
+
             # Include empty territories with empty arrays (for consistent rendering)
             if not agents_list:
                 per_agent_data[territory_name] = {
@@ -492,7 +492,7 @@ class DashboardGenerator:
                     'agents': []
                 }
                 continue
-            
+
             # Extract per-agent metric arrays
             heal_cap_values = []
             invocation_values = []
@@ -506,65 +506,65 @@ class DashboardGenerator:
             base_values = []
             quality_values = []
             agent_objects = []
-            
+
             for agent in agents_list:
                 # Heal capability (0 or 100)
                 heal_cap = 100.0 if agent.get('has_healing') else 0.0
                 heal_cap_values.append(heal_cap)
-                
+
                 # Invocation (0 or 100 based on invocation field)
                 invocation = 100.0 if agent.get('invocation') == 'Yes' else 0.0
                 invocation_values.append(invocation)
-                
+
                 # Hardened (0 or 100)
                 hardened = 100.0 if agent.get('mcp_hardened') else 0.0
                 hardened_values.append(hardened)
-                
+
                 # Test coverage (0 or 100)
                 test = 100.0 if agent.get('has_tests') else 0.0
                 test_values.append(test)
-                
+
                 # Complexity health (inverted CC)
                 cc = agent.get('cyclomatic_complexity', 0)
                 complexity_health = max(0, min(100, 100 - (cc * 2)))
                 complexity_health_values.append(complexity_health)
-                
+
                 # Health (average of 5 components)
                 obs_pct = 100.0 if agent.get('observability', {}).get('logging') else 0.0
                 health = (heal_cap + invocation + test + obs_pct + complexity_health) / 5
                 health_values.append(health)
-                
+
                 # Code quality metrics
                 typed = agent.get('typed_pct', 0.0)
                 typed_values.append(typed)
-                
+
                 documented = agent.get('documented_pct', 0.0)
                 documented_values.append(documented)
-                
+
                 schema = agent.get('schema_strictness', 100.0)
                 schema_values.append(schema)
-                
+
                 base = 100.0 if agent.get('proper_base_class') else 0.0
                 base_values.append(base)
-                
+
                 # Code quality score (average of code metrics)
                 quality = (typed + documented + schema + base) / 4
                 quality_values.append(quality)
-                
+
                 # Build complete agent object for drill-down modal
                 abs_path = str(self.project_root / agent.get('path', ''))
                 rel_path = agent.get('path', '')
-                
+
                 # Observability summary
                 obs = agent.get('observability', {})
                 obs_summary = f"Logging: {'✓' if obs.get('logging') else '✗'} | Metrics: {'✓' if obs.get('metrics') else '✗'} | Tracing: {'✓' if obs.get('tracing') else '✗'}"
-                
+
                 # MCP hardening summary
                 mcp_summary = f"Shield: {'✓' if agent.get('mcp_hardened') else '✗'} | @hardened: ✗ | Safe: ✓"
-                
+
                 # Typing summary
                 typing_summary = f"Init: ✗ | Methods: {int(typed)}% | Returns: {int(typed/2)}%"
-                
+
                 agent_objects.append({
                     'name': agent.get('class_name', 'Unknown'),
                     'path': agent.get('path', ''),
@@ -592,7 +592,7 @@ class DashboardGenerator:
                     'quality': quality,
                     'loc': agent.get('loc', 0)
                 })
-            
+
             per_agent_data[territory_name] = {
                 'healCap': heal_cap_values,
                 'invocation': invocation_values,
@@ -607,20 +607,20 @@ class DashboardGenerator:
                 'codeQuality': quality_values,
                 'agents': agent_objects
             }
-        
+
         return per_agent_data
-    
+
     def generate_dashboard_data(self) -> List[Dict[str, Any]]:
         """Generate dashboard data with only territories that have actual agents."""
         territories = self.group_agents_by_territory()
-        
+
         # Build rows ONLY for territories with agents (no empty placeholders)
         rows = []
         priority = 1
         for territory_name in TERRITORY_ORDER:
             # Updated to match new "L6 Observability" spacing
             is_infrastructure = "L6 Observability" in territory_name
-            
+
             if territory_name in territories and len(territories[territory_name]) > 0:
                 # Territory has agents - compute real metrics
                 agents_list = territories[territory_name]
@@ -630,45 +630,45 @@ class DashboardGenerator:
                     rows.append(row)
                     priority += 1
             # Skip territories with no agents - no fake placeholder rows
-        
+
         # Build TOTAL row from all rows (all have agents now)
         total_row = self.build_total_row(rows)
-        
+
         # TOTAL always first
         all_rows = [total_row] + rows
-        
+
         return all_rows
-    
+
     def validate_dashboard_data(self, data: List[Dict[str, Any]]) -> bool:
         """Validate dashboard data - only real territories with agents."""
         if not data:
             print("❌ VALIDATION FAILED: No data generated")
             return False
-        
+
         # GUARDRAIL 1: Must have at least TOTAL row + some territory rows
         if len(data) < 2:
             print("❌ VALIDATION FAILED: Need at least TOTAL + 1 territory")
             return False
-        
+
         # GUARDRAIL 2: TOTAL row must be first
         if data[0].get("Territory") != "TOTAL":
             print("❌ GUARDRAIL VIOLATION: TOTAL row must be first")
             return False
-        
+
         # GUARDRAIL 3: All rows must have all required fields
         for i, row in enumerate(data):
             missing_fields = [f for f in REQUIRED_FIELDS if f not in row]
             if missing_fields:
                 print(f"❌ GUARDRAIL VIOLATION: Row {i} ({row.get('Territory', 'UNKNOWN')}) missing fields: {missing_fields}")
                 return False
-        
+
         # GUARDRAIL 4: All territory rows must have agents (no 0-count placeholders)
         for row in data[1:]:  # Skip TOTAL
             if row.get("Total", 0) == 0:
                 print(f"❌ GUARDRAIL VIOLATION: Territory '{row.get('Territory')}' has 0 agents")
                 print("   Empty placeholder rows are not allowed!")
                 return False
-        
+
         # GUARDRAIL 5: Verify health formula consistency
         for i, row in enumerate(data[1:], 1):  # Skip TOTAL row
             if row.get('Total', 0) > 0:  # Only check non-empty territories
@@ -678,34 +678,34 @@ class DashboardGenerator:
                 obs = row.get('Observable %', 0)
                 complexity = row.get('Complexity Health', 0)
                 health = row.get('Health', 0)
-                
+
                 expected_health = round((heal_cap * 0.30) + (heal_inv * 0.10) + (test * 0.25) + (obs * 0.20) + (complexity * 0.15), 1)
-                
+
                 if abs(health - expected_health) > 0.2:  # Allow small rounding differences
                     print(f"⚠️  WARNING: Health formula mismatch in {row.get('Territory')}")
                     print(f"   Expected: {expected_health}% (weighted average)")
                     print(f"   Actual: {health}%")
-        
+
         print(f"✅ VALIDATION PASSED: {len(data)} rows with all required fields")
         return True
-    
+
     def validate_html_before_write(self, html: str) -> Tuple[bool, List[str]]:
         """Validate HTML content before writing to disk."""
         errors = []
-        
+
         # Check 1: Detect duplicate const declarations
         const_patterns = {
             'dashboardData': r'const\s+dashboardData\s*=',
             'realAgentData': r'const\s+realAgentData\s*=',
         }
-        
+
         for var_name, pattern in const_patterns.items():
             matches = re.findall(pattern, html)
             if len(matches) > 1:
                 errors.append(f"CRITICAL: Found {len(matches)} declarations of 'const {var_name}' (expected 1)")
             elif len(matches) == 0:
                 errors.append(f"ERROR: Found 0 declarations of 'const {var_name}' (expected 1)")
-        
+
         # Check 2: Validate file size (300KB-900KB)
         size_bytes = len(html.encode('utf-8'))
         size_kb = size_bytes / 1024
@@ -713,26 +713,26 @@ class DashboardGenerator:
             errors.append(f"WARNING: HTML size is {size_kb:.1f}KB (expected <900KB) - possible duplication")
         elif size_kb < 250:
             errors.append(f"WARNING: HTML size is {size_kb:.1f}KB (expected >250KB) - possible data missing")
-        
+
         # Check 3: Validate line count
         line_count = html.count('\n')
         if line_count > 20000:
             errors.append(f"WARNING: HTML has {line_count:,} lines (expected <20K)")
-        
+
         # Check 4: Validate JavaScript syntax (basic check - brace matching)
         script_blocks = re.findall(r'<script>(.*?)</script>', html, re.DOTALL)
         for i, script in enumerate(script_blocks):
             if script.count('{') != script.count('}'):
                 errors.append(f"ERROR: Script block {i+1} has mismatched braces")
-        
+
         return (len(errors) == 0, errors)
-    
+
     def update_dashboard_html(self, data: List[Dict[str, Any]], per_agent_data: Dict[str, Dict]) -> bool:
         """Update dashboard HTML with new data and real per-agent data."""
         if not self.dashboard_path.exists():
             print(f"❌ ERROR: Dashboard HTML not found at {self.dashboard_path}")
             return False
-        
+
         # GUARDRAIL: Create a backup before modifying
         try:
             backup_path = self.dashboard_path.with_suffix('.html.bak')
@@ -741,48 +741,48 @@ class DashboardGenerator:
         except Exception as e:
             print(f"❌ ERROR creating backup: {e}")
             return False
-        
+
         try:
             html = self.dashboard_path.read_text(encoding='utf-8')
-            
+
             # Remove ALL existing realAgentData declarations
             real_agent_pattern3 = r'const realAgentData = \{.*?\n\s*(?=const |function |let |var |\s*</script>)'
             html = re.sub(real_agent_pattern3, '', html, flags=re.DOTALL | re.MULTILINE)
-            
+
             # Find dashboardData location
             data_start_marker = 'const dashboardData = ['
             data_end_marker = '];'
             data_start_idx = html.find(data_start_marker)
             data_end_idx = html.find(data_end_marker, data_start_idx) + len(data_end_marker)
-            
+
             if data_start_idx == -1 or data_end_idx == -1:
                 print("❌ ERROR: Could not find dashboardData in HTML")
                 return False
-            
+
             # Build new data blocks
             new_json = json.dumps(data, indent=2)
             new_data_block = f'const dashboardData = {new_json};'
-            
+
             agent_json = json.dumps(per_agent_data, indent=2)
             real_agent_block = f'\n\n        // Real per-agent data (replaces generateMockAgentData)\n        const realAgentData = {agent_json};'
-            
+
             # Replace dashboardData and insert realAgentData after it
             new_html = html[:data_start_idx] + new_data_block + real_agent_block + html[data_end_idx:]
-            
+
             # PHASE 1 GUARDRAIL: Validate before writing
             is_valid, errors = self.validate_html_before_write(new_html)
-            
+
             if not is_valid:
                 print("❌ VALIDATION FAILED - HTML NOT WRITTEN")
                 for error in errors:
                     print(f"   {error}")
                 return False
-            
+
             # Only write if validation passes
             self.dashboard_path.write_text(new_html, encoding='utf-8')
             print(f"✅ Updated {self.dashboard_path}")
             return True
-            
+
         except Exception as e:
             print(f"❌ ERROR updating dashboard HTML: {e}")
             try:
@@ -792,33 +792,33 @@ class DashboardGenerator:
             except Exception:
                 pass
             return False
-    
+
     def run(self) -> bool:
         """Execute complete dashboard generation pipeline."""
         print("=" * 70)
         print("SSOT DASHBOARD GENERATOR")
         print("=" * 70)
         print()
-        
+
         try:
             if not self.load_agent_discovery():
                 return False
-            
+
             print("\n📊 Generating dashboard data...")
             territories = self.group_agents_by_territory()
             data = self.generate_dashboard_data()
-            
+
             print("\n📊 Building per-agent data...")
             per_agent_data = self.build_per_agent_data(territories)
-            
+
             print("\n🔍 Validating dashboard data...")
             if not self.validate_dashboard_data(data):
                 return False
-            
+
             print("\n💾 Updating dashboard HTML...")
             if not self.update_dashboard_html(data, per_agent_data):
                 return False
-            
+
             total_row = data[0]
             print("\n" + "=" * 70)
             print("✅ DASHBOARD GENERATION COMPLETE")
@@ -828,9 +828,9 @@ class DashboardGenerator:
             print(f"Health: {total_row['Health']}%")
             print(f"Territories: {len(data) - 1}")
             print("=" * 70)
-            
+
             return True
-            
+
         except Exception as e:
             print(f"\n❌ FATAL ERROR in execution pipeline: {e}")
             import traceback

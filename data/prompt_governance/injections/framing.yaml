@@ -5,17 +5,17 @@
 framing_injection:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # V5 Instructional Injection Framework - Framing Layer
   v5_framing_injections:
     enabled: true
     injection_count: 5
-    
+
     # 1. Global Goal-State Injection
     global_goal_state:
       description: "Anchor all model reasoning to one clear overarching objective"
       prompt_template: |
-        Your primary objective is to {goal_state}. All reasoning, analysis, and output must align with this central goal. 
+        Your primary objective is to {goal_state}. All reasoning, analysis, and output must align with this central goal.
         Before proceeding, confirm your understanding of the objective and how each step serves this purpose.
       usage_context:
         - "Resume optimization"
@@ -25,7 +25,7 @@ framing_injection:
         - "Clear goal articulation"
         - "Consistent alignment throughout"
         - "Objective-driven decision making"
-        
+
     # 2. Success Criteria Injection
     success_criteria:
       description: "Define explicit quality thresholds and outcome requirements upfront"
@@ -34,7 +34,7 @@ framing_injection:
         - Quality Threshold: {quality_threshold}
         - Required Outcomes: {required_outcomes}
         - Evaluation Metrics: {evaluation_metrics}
-        
+
         All outputs must meet or exceed these criteria. If any criterion is not met, revise and improve.
       usage_context:
         - "Resume scoring"
@@ -44,19 +44,19 @@ framing_injection:
         - "Measurable quality standards"
         - "Clear outcome definitions"
         - "Specific evaluation metrics"
-        
+
     # 3. Task Mode Declaration
     task_mode_declaration:
       description: "Specify cognitive mode: analytical, synthesis, adversarial, meta, security"
       prompt_template: |
         Task Mode: {cognitive_mode}
-        
+
         Operating Mode Parameters:
         - Cognitive Approach: {cognitive_approach}
         - Analysis Depth: {analysis_depth}
         - Output Style: {output_style}
         - Safety Level: {safety_level}
-        
+
         Maintain this mode throughout the entire task execution.
       usage_context:
         - "Complex analysis tasks"
@@ -66,7 +66,7 @@ framing_injection:
         - "Consistent mode application"
         - "Appropriate cognitive approach"
         - "Mode-specific output characteristics"
-        
+
     # 4. Scope & Boundaries Injection
     scope_boundaries:
       description: "State exact constraints and forbidden behaviors for the task"
@@ -76,7 +76,7 @@ framing_injection:
         - Forbidden Behaviors: {forbidden_behaviors}
         - Content Constraints: {content_constraints}
         - Output Limitations: {output_limitations}
-        
+
         Strictly adhere to these boundaries. Do not exceed scope or engage in forbidden behaviors.
       usage_context:
         - "Data privacy compliance"
@@ -86,7 +86,7 @@ framing_injection:
         - "Strict boundary adherence"
         - "No scope violations"
         - "Appropriate constraint application"
-        
+
     # 5. Cost/Latency Targets
     cost_latency_targets:
       description: "Guide model toward concise, efficient reasoning under resource limits"
@@ -96,7 +96,7 @@ framing_injection:
         - Token Limit: {token_limit}
         - Processing Cost Target: {cost_target}
         - Efficiency Requirement: {efficiency_requirement}
-        
+
         Optimize for efficiency while maintaining quality. Prioritize concise, direct responses.
       usage_context:
         - "Real-time processing"
@@ -106,19 +106,19 @@ framing_injection:
         - "Response within time limits"
         - "Efficient token usage"
         - "Cost-effective processing"
-        
+
   # Global framing principles
   global_principles:
     enabled: true
     framing_level: "comprehensive"
-    
+
     # Core framing strategies
     strategies:
       problem_decomposition: true
       perspective_shifting: true
       context_optimization: true
       solution_orientation: true
-      
+
   # Problem framing frameworks
   problem_framing:
     # Resume problem framing
@@ -129,48 +129,48 @@ framing_injection:
           - "identify_transferable_skills"
           - "highlight_adaptability"
           - "emphasize_learning_capability"
-          
+
         key_questions:
           - "What core skills apply across industries?"
           - "How to demonstrate relevant experience?"
           - "What learning achievements show adaptability?"
-          
+
       experience_gap:
         definition: "Limited relevant experience for target role"
         framing_approach:
           - "reframe_related_experience"
           - "emphasize_potential_and_growth"
           - "show_initiative_and_projects"
-          
+
         key_questions:
           - "What experiences demonstrate relevant capabilities?"
           - "How to show readiness for the role?"
           - "What projects demonstrate applicable skills?"
-          
+
       skill_obsolescence:
         definition: "Skills need updating for modern market"
         framing_approach:
           - "highlight_continuous_learning"
           - "show_recent_certifications"
           - "emphasize_adaptability_to_new_tech"
-          
+
         key_questions:
           - "What recent learning demonstrates current knowledge?"
           - "How to show commitment to staying current?"
           - "What transferable fundamentals apply to new tech?"
-          
+
       achievement_quantification:
         definition: "Difficulty quantifying impact and results"
         framing_approach:
           - "use_metrics_and_kpis"
           - "show_before_after_scenarios"
           - "demonstrate_business_value"
-          
+
         key_questions:
           - "What measurable improvements were achieved?"
           - "How did actions impact business outcomes?"
           - "What efficiency gains were realized?"
-          
+
     # Outreach problem framing
     outreach_problems:
       cold_contact:
@@ -179,36 +179,36 @@ framing_injection:
           - "establish_mutual_connections"
           - "demonstrate_research_preparation"
           - "offer_value_first"
-          
+
         key_questions:
           - "What common ground exists?"
           - "How to show genuine interest?"
           - "What value can be offered?"
-          
+
       follow_up_strategy:
         definition: "Maintaining engagement without being intrusive"
         framing_approach:
           - "provide_additional_value"
           - "reference_previous_conversation"
           - "respect_timing_and_preferences"
-          
+
         key_questions:
           - "What new information adds value?"
           - "How to reference prior meaningfully?"
           - "What timing shows respect for their schedule?"
-          
+
       message_personalization:
         definition: "Creating tailored messages at scale"
         framing_approach:
           - "identify_specific_interests"
           - "reference_company_initiatives"
           - "align_with_professional_goals"
-          
+
         key_questions:
           - "What specific interests align with recipient?"
           - "How to connect to their company's mission?"
           - "What professional goals can be supported?"
-          
+
   # Perspective framing
   perspective_framing:
     # User perspectives
@@ -219,36 +219,36 @@ framing_injection:
           - "career_advancement"
           - "skill_utilization"
           - "growth_potential"
-          
+
         framing_focus:
           - "highlight_future_potential"
           - "emphasize_readiness_for_challenges"
           - "show_commitment_to_growth"
-          
+
       career_changer:
         mindset: "transition_focused"
         priorities:
           - "transferable_skills"
           - "adaptability"
           - "learning_capability"
-          
+
         framing_focus:
           - "bridge_past_to_future"
           - "demonstrate_quick_learning"
           - "show_relevant_fundamentals"
-          
+
       industry_expert:
         mindset: "authority_positioning"
         priorities:
           - "thought_leadership"
           - "industry_insights"
           - "innovative_thinking"
-          
+
         framing_focus:
           - "show_deep_expertise"
           - "demonstrate_industry_vision"
           - "highlight_innovative_contributions"
-          
+
     # Recruiter perspectives
     recruiter_perspectives:
       technical_recruiter:
@@ -257,36 +257,36 @@ framing_injection:
           - "technical_competence"
           - "project_experience"
           - "problem_solving_ability"
-          
+
         framing_focus:
           - "show_technical_depth"
           - "demonstrate_project_impact"
           - "highlight_problem_solving_approach"
-          
+
       hr_generalist:
         mindset: "cultural_fit"
         priorities:
           - "team_compatibility"
           - "communication_skills"
           - "growth_potential"
-          
+
         framing_focus:
           - "show_collaboration_experience"
           - "demonstrate_communication_clarity"
           - "highlight_learning_initiative"
-          
+
       hiring_manager:
         mindset: "business_value"
         priorities:
           - "immediate_impact"
           - "team_productivity"
           - "results_orientation"
-          
+
         framing_focus:
           - "show_quantifiable_results"
           - "demonstrate_team_contributions"
           - "highlight_business_understanding"
-          
+
   # Context framing
   context_framing:
     # Industry contexts
@@ -296,45 +296,45 @@ framing_injection:
           - "rapid_innovation"
           - "skill_obsolescence"
           - "project_based_work"
-          
+
         framing_adaptations:
           - "emphasize_continuous_learning"
           - "show_project_portfolio"
           - "demonstrate_adaptability"
-          
+
       healthcare:
         characteristics:
           - "regulatory_compliance"
           - "patient_focus"
           - "interdisciplinary_teams"
-          
+
         framing_adaptations:
           - "highlight_compliance_experience"
           - "show_patient_centered_approach"
           - "demonstrate_team_collaboration"
-          
+
       finance:
         characteristics:
           - "risk_management"
           - "analytical_rigor"
           - "regulatory_oversight"
-          
+
         framing_adaptations:
           - "show_risk_assessment_skills"
           - "demonstrate_analytical_precision"
           - "highlight_compliance_knowledge"
-          
+
       education:
         characteristics:
           - "student_outcomes"
           - "curriculum_development"
           - "stakeholder_communication"
-          
+
         framing_adaptations:
           - "show_student_impact"
           - "demonstrate_curriculum_innovation"
           - "highlight_communication_skills"
-          
+
     # Role contexts
     role_contexts:
       leadership:
@@ -342,19 +342,19 @@ framing_injection:
           - "team_development"
           - "strategic_vision"
           - "change_management"
-          
+
       individual_contributor:
         framing_elements:
           - "technical_expertise"
           - "project_execution"
           - "collaboration_impact"
-          
+
       consultant:
         framing_elements:
           - "client_value"
           - "problem_solving"
           - "knowledge_transfer"
-          
+
   # Solution framing
   solution_framing:
     # Resume solution framing
@@ -365,21 +365,21 @@ framing_injection:
           - "match_to_job_requirements"
           - "provide_evidence_examples"
           - "show_proficiency_levels"
-          
+
       experience_presentation:
         approach: "impact_focused"
         strategy:
           - "quantify_achievements"
           - "show_progression_responsibility"
           - "demonstrate_business_value"
-          
+
       narrative_construction:
         approach: "career_story"
         strategy:
           - "create_cohesive_trajectory"
           - "highlight_growth_moments"
           - "show_future_direction"
-          
+
     # Outreach solution framing
     outreach_solutions:
       message_crafting:
@@ -388,21 +388,21 @@ framing_injection:
           - "identify_recipient_needs"
           - "offer_specific_value"
           - "demonstrate_preparation"
-          
+
       relationship_building:
         approach: "long_term"
         strategy:
           - "show_genuine_interest"
           - "provide_ongoing_value"
           - "maintain_professional_presence"
-          
+
       opportunity_seeking:
         approach: "mutual_benefit"
         strategy:
           - "identify_shared_interests"
           - "propose_collaboration"
           - "demonstrate_complementary_skills"
-          
+
   # Framing optimization
   optimization:
     # Dynamic framing
@@ -412,12 +412,12 @@ framing_injection:
         - "recipient_response"
         - "engagement_metrics"
         - "conversion_rates"
-        
+
       optimization_goals:
         - "response_rate_improvement"
         - "engagement_quality"
         - "conversion_efficiency"
-        
+
     # A/B testing
     ab_testing:
       enabled: true
@@ -425,12 +425,12 @@ framing_injection:
         - "opening_approach"
         - "value_proposition"
         - "call_to_action"
-        
+
       success_metrics:
         - "response_rate"
         - "engagement_time"
         - "conversion_rate"
-        
+
   # Framing templates
   templates:
     # Problem framing templates
@@ -441,14 +441,14 @@ framing_injection:
           - "identify_transferable_foundation"
           - "highlight_adaptability_evidence"
           - "show_future_readiness"
-          
+
       skill_gap:
         structure:
           - "recognize_skill_requirements"
           - "bridge_with_related_experience"
           - "demonstrate_learning_capability"
           - "show_growth_potential"
-          
+
     # Solution framing templates
     solution_templates:
       value_proposition:
@@ -457,7 +457,7 @@ framing_injection:
           - "identify_competency_match"
           - "provide_specific_evidence"
           - "offer_mutual_benefit"
-          
+
       expertise_demonstration:
         structure:
           - "establish_credibility"

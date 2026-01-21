@@ -14,7 +14,7 @@ TIERS:
 USAGE:
     from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
     from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
-    
+
     strategy = HealingStrategy(project_root=Path.cwd())
     orchestrator = UnifiedOrchestratorAgent(strategy=strategy)
     result = orchestrator.run_mission({"dry_run": True})
@@ -37,15 +37,15 @@ Logger = logging.getLogger(__name__)
 class HealingStrategy:
     """
     Tiered healing execution strategy.
-    
+
     Implements the MissionStrategy protocol for the UnifiedOrchestratorAgent.
     Encapsulates the 5-tier healing execution flow from SSOTOrchestratorAgent.
     """
-    
+
     def __init__(self, project_root: Optional[Path] = None, target_tier: Optional[int] = None) -> None:
         """
         Initialize the healing strategy.
-        
+
         Args:
             project_root: Root path for the project (defaults to cwd)
             target_tier: If specified, only run this tier (0-4). None runs all tiers.
@@ -54,7 +54,7 @@ class HealingStrategy:
         self.target_tier = target_tier
         self._agents: Dict[str, Any] = {}
         self._dedup_agent: Optional[Any] = None
-        
+
         # Define the 5-tier execution plan using core registry
         self._tiers: Dict[str, List[str]] = {
             "Tier 0: Pre-Flight": CORE_HYGIENE_AGENTS["tier_0_preflight"],
@@ -73,35 +73,35 @@ class HealingStrategy:
                 # Reserved for future safety validators
             ],
         }
-    
+
     @property
     def name(self) -> str:
         """Return the strategy name."""
         return "HealingStrategy"
-    
+
     def get_tiers(self) -> Dict[str, List[str]]:
         """
         Return the tiered execution plan.
-        
+
         Returns:
             Dictionary mapping tier names to lists of agent names.
         """
         # Filter out empty tiers
         return {k: v for k, v in self._tiers.items() if v}
-    
+
     def should_run_tier(self, tier_name: str) -> bool:
         """
         Check if a tier should be executed based on target_tier filter.
-        
+
         Args:
             tier_name: Name of the tier (e.g., "Tier 0: Pre-Flight")
-            
+
         Returns:
             True if the tier should run, False to skip
         """
         if self.target_tier is None:
             return True  # No filter, run all tiers
-        
+
         # Extract tier number from name (e.g., "Tier 0: Pre-Flight" -> 0)
         try:
             tier_num = int(tier_name.split(":")[0].replace("Tier", "").strip())
@@ -109,38 +109,38 @@ class HealingStrategy:
         except (ValueError, IndexError):
             Logger.warning(f"[HealingStrategy] Could not parse tier number from: {tier_name}")
             return False
-    
+
     def get_tier_skip_message(self, tier_name: str) -> str:
         """
         Get a message explaining why a tier is being skipped.
-        
+
         Args:
             tier_name: Name of the tier being skipped
-            
+
         Returns:
             Skip message for logging
         """
         return f"⏭️  SKIPPING {tier_name} (target_tier={self.target_tier})"
-    
+
     def get_agent(self, agent_name: str) -> Optional[Any]:
         """
         Get or create an agent instance by name.
-        
+
         Uses lazy loading to instantiate agents only when needed.
-        
+
         Args:
             agent_name: Name of the agent to retrieve
-            
+
         Returns:
             Agent instance or None if not available
         """
         # Handle two-phase deduplication specially (shared instance)
         if agent_name.startswith("TwoPhaseDeduplicationAgent"):
             return self._get_dedup_agent()
-        
+
         if agent_name in self._agents:
             return self._agents[agent_name]
-        
+
         try:
             agent = self._load_agent(agent_name)
             if agent:
@@ -149,7 +149,7 @@ class HealingStrategy:
         except Exception as e:
             Logger.error(f"[HealingStrategy] Failed to load {agent_name}: {e}")
             return None
-    
+
     def _get_dedup_agent(self) -> Optional[Any]:
         """Get or create the shared TwoPhaseDeduplicationAgent instance."""
         if self._dedup_agent is None:
@@ -160,14 +160,14 @@ class HealingStrategy:
                 Logger.error(f"[HealingStrategy] Failed to load TwoPhaseDeduplicationAgent: {e}")
                 return None
         return self._dedup_agent
-    
+
     def _load_agent(self, agent_name: str) -> Optional[Any]:
         """
         Load an agent by name.
-        
+
         Args:
             agent_name: Name of the agent to load
-            
+
         Returns:
             Agent instance or None if not available
         """
@@ -175,72 +175,72 @@ class HealingStrategy:
             if agent_name == "UnifiedCodeValidatorAgent":
                 from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
                 return UnifiedCodeValidatorAgent()
-            
+
             elif agent_name == "HygieneGuardianAgent":
                 from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
                 return HygieneGuardianAgent(project_root=self.project_root)
-            
+
             elif agent_name == "UnifiedStructureEnforcerAgent":
                 from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
                 return UnifiedStructureEnforcerAgent(project_root=self.project_root)
-            
+
             elif agent_name == "NamingAgent":
                 from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
                 return NamingAgent(project_root=self.project_root)
-            
+
             elif agent_name == "LocationAgent":
                 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
                 return LocationAgent(project_root=self.project_root)
-            
+
             elif agent_name == "UnifiedCodeEnforcerAgent":
                 from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
                 return UnifiedCodeEnforcerAgent()
-            
+
             elif agent_name == "StructuralHealerAgent":
                 from agentic_core.L5_safety.guardrails.StructuralHealerAgent import StructuralHealerAgent
                 return StructuralHealerAgent(project_root=self.project_root)
-            
+
             # Core Hygiene Agents
             elif agent_name == "ImportAgent":
                 from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
                 return ImportAgent(project_root=self.project_root)
-            
+
             elif agent_name == "HierarchyAgent":
                 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
                 return HierarchyAgent(project_root=self.project_root)
-            
+
             elif agent_name == "CodeDeduplicationAgent":
                 from agentic_core.L5_safety.validators.CodeDeduplicationAgent import CodeDeduplicationAgent
                 return CodeDeduplicationAgent()
-            
+
             elif agent_name == "FilesystemSSOTReconcilerAgent":
                 from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
                 return FilesystemSSOTReconcilerAgent(project_root=self.project_root)
-            
+
             elif agent_name == "GitHygieneAgent":
                 from agentic_core.L5_safety.guardrails.GitHygieneAgent import GitHygieneAgent
                 return GitHygieneAgent(project_root=self.project_root, ctx=None)
-            
+
             elif agent_name == "FileCleanupAgent":
                 from agentic_core.L5_safety.guardrails.FileCleanupAgent import FileCleanupAgent
                 return FileCleanupAgent(project_root=self.project_root, ctx=None)
-            
+
             elif agent_name == "AutonomyGuardianAgent":
                 from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent
                 return AutonomyGuardianAgent(project_root=self.project_root)
-            
+
             elif agent_name == "CodeJanitorAgent":
                 from agentic_core.L5_safety.validators.CodeJanitorAgent import CodeJanitorAgent
                 return CodeJanitorAgent()
-            
+
             else:
                 Logger.warning(f"[HealingStrategy] Unknown agent: {agent_name}")
                 return None
-                
+
         except ImportError as e:
             Logger.error(f"[HealingStrategy] Import error for {agent_name}: {e}")
             return None
-    
+
     def execute_agent(
         self,
         agent: Any,
@@ -251,19 +251,19 @@ class HealingStrategy:
     ) -> Dict[str, Any]:
         """
         Execute a single agent and return results.
-        
+
         Args:
             agent: The agent instance to execute
             agent_name: Name of the agent (for logging)
             dry_run: If True, only report violations
             execute: If True, apply fixes
             **kwargs: Additional agent-specific parameters
-            
+
         Returns:
             Dictionary with execution results
         """
         start_time = datetime.now()
-        
+
         try:
             # Handle two-phase deduplication specially
             if agent_name == "TwoPhaseDeduplicationAgent_PhaseA":
@@ -281,12 +281,12 @@ class HealingStrategy:
                     "violations_fixed": 0,
                     "error_message": f"Agent {agent_name} missing heal_repository()",
                 }
-            
+
             execution_time_ms = (datetime.now() - start_time).total_seconds() * 1000
-            
+
             # Normalize result to standard format
             return self._normalize_result(result, execution_time_ms)
-            
+
         except Exception as e:
             execution_time_ms = (datetime.now() - start_time).total_seconds() * 1000
             Logger.error(f"[HealingStrategy] Error executing {agent_name}: {e}")
@@ -297,15 +297,15 @@ class HealingStrategy:
                 "execution_time_ms": execution_time_ms,
                 "error_message": str(e),
             }
-    
+
     def _normalize_result(self, result: Dict[str, Any], execution_time_ms: float) -> Dict[str, Any]:
         """
         Normalize agent result to standard format.
-        
+
         Args:
             result: Raw result from agent
             execution_time_ms: Execution time in milliseconds
-            
+
         Returns:
             Normalized result dictionary
         """
@@ -316,13 +316,13 @@ class HealingStrategy:
             result.get("errors") or
             0
         )
-        
+
         violations_fixed = (
             result.get("violations_fixed") or
             result.get("fixed") or
             0
         )
-        
+
         # Determine status
         status = result.get("status")
         if not status:
@@ -334,7 +334,7 @@ class HealingStrategy:
                 status = "PASS"
             else:
                 status = "FAIL"
-        
+
         return {
             "status": status,
             "violations_found": violations_found,
@@ -343,7 +343,7 @@ class HealingStrategy:
             "error_message": result.get("error_message"),
             "raw_result": result,
         }
-    
+
     def should_abort_tier(
         self,
         tier_name: str,
@@ -352,16 +352,16 @@ class HealingStrategy:
     ) -> bool:
         """
         Determine if execution should abort after a tier.
-        
+
         Implements stability gates:
         - Tier 0 (Pre-Flight): Always fatal if failed (syntax must be valid)
         - Tier 1 (Structural): Fatal only during execute mode
-        
+
         Args:
             tier_name: Name of the completed tier
             tier_results: Results from all agents in the tier
             execute: Whether we're in execute mode
-            
+
         Returns:
             True if execution should abort, False to continue
         """
@@ -370,20 +370,20 @@ class HealingStrategy:
             r.get("status") in ("FAIL", "ERROR")
             for r in tier_results
         )
-        
+
         if not has_failure:
             return False
-        
+
         # Gate 1: Pre-Flight (Syntax) - Always fatal
         if "Tier 0" in tier_name or "Pre-Flight" in tier_name:
             Logger.error("🛑 CRITICAL GATE: Syntax Validation Failed. Aborting Mission.")
             return True
-        
+
         # Gate 2: Structural - Fatal only during execute mode
         if ("Tier 1" in tier_name or "Structural" in tier_name) and execute:
             Logger.error("🛑 STABILITY GATE: Structural violations persist. Aborting.")
             return True
-        
+
         return False
 
 

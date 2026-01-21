@@ -37,7 +37,7 @@ async def test_key_42_fission_execution():
     project_root = Path(__file__).resolve().parent.parent.parent.parent
     target_dir = project_root / "agentic_core" / "L1_cognition" / "thought_engine" / "extraction"
     target_dir.mkdir(parents=True, exist_ok=True)
-    
+
     test_file = target_dir / "test_fission_subject.py"
     with open(test_file, "w") as f:
         f.write('"""\nTest Protocol: Key 42 Subject\n"""\n')

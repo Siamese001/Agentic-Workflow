@@ -19,51 +19,51 @@ def debug_dashboard():
     except ImportError:
         print("❌ Playwright not installed")
         return False
-    
+
     # Start HTTP Server
     PORT = 8765
     dashboard_dir = project_root / "agentic_core" / "L6_observability" / "dashboards"
-    
+
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=str(dashboard_dir), **kwargs)
-        
+
         def log_message(self, format, *args):
             print(f"   [SERVER] {format % args}")
-    
+
     def serve():
         with socketserver.TCPServer(("", PORT), Handler) as httpd:
             httpd.serve_forever()
-    
+
     server_thread = threading.Thread(target=serve, daemon=True)
     server_thread.start()
     print(f"[SERVER] Started at http://localhost:{PORT}")
     time.sleep(1)
-    
+
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)  # Visible browser for debugging
         page = browser.new_page()
-        
+
         # Capture console messages
         console_messages = []
         page.on("console", lambda msg: console_messages.append(f"[{msg.type}] {msg.text}"))
-        
+
         # Capture page errors
         page_errors = []
         page.on("pageerror", lambda exc: page_errors.append(str(exc)))
-        
+
         # Capture failed requests
         failed_requests = []
         page.on("requestfailed", lambda req: failed_requests.append(f"{req.url} - {req.failure}"))
-        
+
         print(f"\n[LOADING] http://localhost:{PORT}/autonomy_dashboard.html")
         page.goto(f"http://localhost:{PORT}/autonomy_dashboard.html", timeout=30000)
         time.sleep(5)  # Wait for everything to load
-        
+
         print("\n" + "="*70)
         print("DIAGNOSTIC RESULTS")
         print("="*70)
-        
+
         # Check if dashboardData loaded
         print("\n1. Checking dashboardData variable...")
         dashboard_data_check = page.evaluate("""
@@ -76,7 +76,7 @@ def debug_dashboard():
                 };
             }
         """)
-        
+
         if dashboard_data_check['exists']:
             print(f"   ✅ dashboardData exists")
             print(f"   ✅ Type: {dashboard_data_check['type']}")
@@ -86,7 +86,7 @@ def debug_dashboard():
         else:
             print(f"   ❌ dashboardData does NOT exist")
             print(f"   Type: {dashboard_data_check['type']}")
-        
+
         # Check other data files
         print("\n2. Checking other data variables...")
         other_data = page.evaluate("""
@@ -98,11 +98,11 @@ def debug_dashboard():
                 };
             }
         """)
-        
+
         for var_name, exists in other_data.items():
             status = "✅" if exists else "❌"
             print(f"   {status} {var_name}: {exists}")
-        
+
         # Check for error message in DOM
         print("\n3. Checking for error message in DOM...")
         error_msg = page.locator("text=Data Load Error").count()
@@ -112,7 +112,7 @@ def debug_dashboard():
             print(f"   Error content: {error_content}")
         else:
             print(f"   ✅ No 'Data Load Error' message found")
-        
+
         # Console messages
         print(f"\n4. Console Messages ({len(console_messages)}):")
         if console_messages:
@@ -120,7 +120,7 @@ def debug_dashboard():
                 print(f"   {msg}")
         else:
             print("   (none)")
-        
+
         # Page errors
         print(f"\n5. Page Errors ({len(page_errors)}):")
         if page_errors:
@@ -128,7 +128,7 @@ def debug_dashboard():
                 print(f"   ❌ {err}")
         else:
             print("   ✅ No page errors")
-        
+
         # Failed requests
         print(f"\n6. Failed Requests ({len(failed_requests)}):")
         if failed_requests:
@@ -136,7 +136,7 @@ def debug_dashboard():
                 print(f"   ❌ {req}")
         else:
             print("   ✅ No failed requests")
-        
+
         # Check script tags
         print("\n7. Checking script tags...")
         script_tags = page.evaluate("""
@@ -148,23 +148,23 @@ def debug_dashboard():
                 }));
             }
         """)
-        
+
         if script_tags:
             for script in script_tags:
                 print(f"   Script: {script['src']}")
                 print(f"     State: {script['loaded']}")
         else:
             print("   ❌ No data script tags found")
-        
+
         # Take screenshot
         screenshot_path = project_root / "dashboard_debug.png"
         page.screenshot(path=str(screenshot_path), full_page=True)
         print(f"\n8. Screenshot saved: {screenshot_path}")
-        
+
         print("\n" + "="*70)
         print("ANALYSIS")
         print("="*70)
-        
+
         if not dashboard_data_check['exists']:
             print("\n❌ ROOT CAUSE: dashboardData variable is not defined")
             print("\nPossible causes:")
@@ -179,7 +179,7 @@ def debug_dashboard():
             print("  2. Error condition incorrectly triggered")
         else:
             print("\n✅ Data appears to be loading correctly")
-        
+
         input("\nPress Enter to close browser and continue...")
         browser.close()
 

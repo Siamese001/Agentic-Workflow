@@ -20,7 +20,7 @@ class HealingStrategy(ABC):
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         """
         Initialize healing strategy.
-        
+
         Args:
             config: Strategy-specific configuration
         """
@@ -30,11 +30,11 @@ class HealingStrategy(ABC):
     def apply(self, violation: Dict[str, Any], file_path: Path) -> Dict[str, Any]:
         """
         Apply healing strategy to violation.
-        
+
         Args:
             violation: Violation details
             file_path: Path to file with violation
-            
+
         Returns:
             Healing result with status and details
         """
@@ -52,15 +52,15 @@ class TerritoryHealingStrategy(HealingStrategy):
         """Apply territory healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
-        
+
         try:
             target_path = violation.get('target_path')
             if not target_path:
                 return {'success': False, 'error': 'No target path specified'}
-            
+
             # Simulate file move (in real implementation, would use safe_path_join)
             Logger.info(f"Territory healing: {file_path} → {target_path}")
-            
+
             return {
                 'success': True,
                 'type': 'territory',
@@ -79,15 +79,15 @@ class GravityHealingStrategy(HealingStrategy):
         """Apply gravity healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
-        
+
         try:
             bad_imports = violation.get('bad_imports', [])
             if not bad_imports:
                 return {'success': False, 'error': 'No bad imports specified'}
-            
+
             # Simulate import surgery
             Logger.info(f"Gravity healing: Removing {len(bad_imports)} bad imports from {file_path}")
-            
+
             return {
                 'success': True,
                 'type': 'gravity',
@@ -106,15 +106,15 @@ class NamingHealingStrategy(HealingStrategy):
         """Apply naming healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
-        
+
         try:
             proposed_name = violation.get('proposed_name')
             if not proposed_name:
                 return {'success': False, 'error': 'No proposed name specified'}
-            
+
             # Simulate file rename
             Logger.info(f"Naming healing: {file_path.name} → {proposed_name}")
-            
+
             return {
                 'success': True,
                 'type': 'naming',
@@ -133,15 +133,15 @@ class HierarchyHealingStrategy(HealingStrategy):
         """Apply hierarchy healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
-        
+
         try:
             hierarchy_issue = violation.get('issue')
             if not hierarchy_issue:
                 return {'success': False, 'error': 'No hierarchy issue specified'}
-            
+
             # Simulate hierarchy restructuring
             Logger.info(f"Hierarchy healing: Fixing {hierarchy_issue} in {file_path}")
-            
+
             return {
                 'success': True,
                 'type': 'hierarchy',
@@ -160,15 +160,15 @@ class ComplianceHealingStrategy(HealingStrategy):
         """Apply compliance healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
-        
+
         try:
             compliance_rule = violation.get('rule')
             if not compliance_rule:
                 return {'success': False, 'error': 'No compliance rule specified'}
-            
+
             # Simulate compliance fix
             Logger.info(f"Compliance healing: Enforcing {compliance_rule} in {file_path}")
-            
+
             return {
                 'success': True,
                 'type': 'compliance',
@@ -187,15 +187,15 @@ class DriftHealingStrategy(HealingStrategy):
         """Apply drift healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
-        
+
         try:
             drift_type = violation.get('drift_type')
             if not drift_type:
                 return {'success': False, 'error': 'No drift type specified'}
-            
+
             # Simulate drift correction
             Logger.info(f"Drift healing: Correcting {drift_type} in {file_path}")
-            
+
             return {
                 'success': True,
                 'type': 'drift',
@@ -214,15 +214,15 @@ class DeadCodeHealingStrategy(HealingStrategy):
         """Apply dead code healing."""
         if not self._validate_inputs(violation, file_path):
             return {'success': False, 'error': 'Invalid inputs'}
-        
+
         try:
             dead_items = violation.get('dead_items', [])
             if not dead_items:
                 return {'success': False, 'error': 'No dead code items specified'}
-            
+
             # Simulate dead code removal
             Logger.info(f"Dead code healing: Removing {len(dead_items)} dead items from {file_path}")
-            
+
             return {
                 'success': True,
                 'type': 'dead_code',
@@ -258,25 +258,25 @@ class HealingStrategyFactory:
     ) -> HealingStrategy:
         """
         Create healing strategy instance.
-        
+
         Args:
             violation_type: Type of violation (territory, gravity, naming, etc.)
             config: Strategy-specific configuration
-            
+
         Returns:
             HealingStrategy instance
-            
+
         Raises:
             ValueError: If violation type unknown
         """
         strategy_class = cls._strategies.get(violation_type.lower())
-        
+
         if not strategy_class:
             raise ValueError(
                 f"Unknown violation type: {violation_type}. "
                 f"Available: {', '.join(cls._strategies.keys())}"
             )
-        
+
         return strategy_class(config=config)
 
     @classmethod

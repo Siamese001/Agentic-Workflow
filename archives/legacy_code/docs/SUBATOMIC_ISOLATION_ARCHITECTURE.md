@@ -28,7 +28,7 @@ The Canon Validator has been upgraded with **Subatomic Isolation Architecture** 
 @dataclass
 class ValidationContext:
     python_files: List[str] = field(default_factory=list)
-    
+
     def __post_init__(self):
         self.python_files = get_python_files()  # Load ALL files
         print(f"Loaded {len(self.python_files)} files")
@@ -39,7 +39,7 @@ class ValidationContext:
 @dataclass
 class ValidationContext:
     # NO static python_files list!
-    
+
     def get_python_files(self) -> List[str]:
         """On-demand file discovery - prevents context bloat."""
         return get_python_files()
@@ -68,21 +68,21 @@ def check_key_24_no_unused_variables(self):
 def check_key_24_no_unused_variables(self):
     violations = []
     violation_count = 0
-    
+
     # Process files ONE AT A TIME
     for file_path in self.ctx.get_python_files():
         # Isolated scope - only this file's context loaded
         file_violations = self._check_single_file_unused_vars(file_path)
-        
+
         if file_violations:
             violation_count += len(file_violations)
             violations.extend(file_violations[:5])  # Limit per-file
-            
+
             # Early exit if too many violations
             if violation_count > 1000:
                 violations.append(f"... and {violation_count - len(violations)} more")
                 break
-    
+
     return violations
 
 def _check_single_file_unused_vars(self, file_path: str):
@@ -105,7 +105,7 @@ def _check_single_file_unused_vars(self, file_path: str):
 # Before
 for file_path in self.ctx.python_files:  # Static list
 
-# After  
+# After
 for file_path in self.ctx.get_python_files():  # On-demand
 ```
 
@@ -113,7 +113,7 @@ for file_path in self.ctx.get_python_files():  # On-demand
 ```python
 def __init__(self):
     self.ctx = ValidationContext()
-    
+
     # Print file count using on-demand method
     file_count = len(self.ctx.get_python_files())
     print(f"   [CTX] Blackboard initialized with {file_count} valid source files.")
@@ -186,18 +186,18 @@ def __init__(self):
 def check_key_XX(self):
     """Main check function."""
     violations = []
-    
+
     for item in self.ctx.get_items():  # On-demand iteration
         # Call isolated helper
         item_violations = self._check_single_item(item)
-        
+
         # Report immediately
         violations.extend(item_violations[:limit])
-        
+
         # Early exit if needed
         if len(violations) > threshold:
             break
-    
+
     return violations
 
 def _check_single_item(self, item):

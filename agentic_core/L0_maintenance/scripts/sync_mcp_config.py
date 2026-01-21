@@ -54,7 +54,7 @@ def load_windsurf_config(config_path: Path) -> Dict[str, Any]:
     """Load the current Windsurf MCP config."""
     if not config_path.exists():
         return {"mcpServers": {}}
-    
+
     try:
         return json.loads(config_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:
@@ -73,25 +73,25 @@ def convert_registry_to_windsurf_format(registry: Dict[str, Any]) -> Dict[str, A
         "brave_search": "brave-search",
         "sequential_thinking": "sequential-thinking",
     }
-    
+
     mcp_servers = {}
-    
+
     for name, config in registry.items():
         # First convert underscore to hyphen
         hyphenated_name = name.replace("_", "-")
-        
+
         # Then apply explicit name mapping if exists
         windsurf_name = NAME_MAP.get(name, NAME_MAP.get(hyphenated_name, hyphenated_name))
-        
+
         # Build the server config
         server_config = {
             "command": config.command,
             "args": list(config.args),
             "env": dict(config.env) if config.env else {}
         }
-        
+
         mcp_servers[windsurf_name] = server_config
-    
+
     return mcp_servers
 
 
@@ -120,28 +120,28 @@ def merge_configs(
 ) -> Dict[str, Any]:
     """
     Merge registry servers into current config.
-    
+
     Args:
         current_config: Current Windsurf config
         registry_servers: Servers from SOVEREIGN_MCP_REGISTRY
         preserve_local: If True, preserve servers not in registry (like filesystem)
-    
+
     Returns:
         Merged configuration
     """
     current_servers = current_config.get("mcpServers", {})
     merged_servers = {}
-    
+
     # Preserve local-only servers
     if preserve_local:
         for name in get_preserved_servers():
             if name in current_servers:
                 merged_servers[name] = current_servers[name]
-    
+
     # Add/update all registry servers
     for name, config in registry_servers.items():
         merged_servers[name] = config
-    
+
     return {"mcpServers": merged_servers}
 
 
@@ -152,10 +152,10 @@ def compute_diff(
     """Compute the difference between current and new configs."""
     current_servers = set(current_config.get("mcpServers", {}).keys())
     new_servers = set(new_config.get("mcpServers", {}).keys())
-    
+
     added = new_servers - current_servers
     removed = current_servers - new_servers
-    
+
     # Check for modified servers
     modified = []
     for name in current_servers & new_servers:
@@ -163,7 +163,7 @@ def compute_diff(
         new = new_config["mcpServers"][name]
         if current != new:
             modified.append(name)
-    
+
     return {
         "added": sorted(added),
         "removed": sorted(removed),
@@ -177,31 +177,31 @@ def print_diff(diff: Dict[str, List[str]], new_config: Dict[str, Any]) -> None:
     print("\n" + "="*60)
     print("MCP CONFIGURATION SYNC DIFF")
     print("="*60)
-    
+
     if diff["added"]:
         print(f"\n✅ ADDED ({len(diff['added'])}):")
         for name in diff["added"]:
             config = new_config["mcpServers"][name]
             print(f"   + {name}")
             print(f"     command: {config['command']} {' '.join(config['args'])}")
-    
+
     if diff["removed"]:
         print(f"\n❌ REMOVED ({len(diff['removed'])}):")
         for name in diff["removed"]:
             print(f"   - {name}")
-    
+
     if diff["modified"]:
         print(f"\n🔄 MODIFIED ({len(diff['modified'])}):")
         for name in diff["modified"]:
             config = new_config["mcpServers"][name]
             print(f"   ~ {name}")
             print(f"     command: {config['command']} {' '.join(config['args'])}")
-    
+
     if diff["unchanged"]:
         print(f"\n⏸️  UNCHANGED ({len(diff['unchanged'])}):")
         for name in diff["unchanged"]:
             print(f"     {name}")
-    
+
     total_changes = len(diff["added"]) + len(diff["removed"]) + len(diff["modified"])
     print("\n" + "="*60)
     print(f"SUMMARY: {total_changes} change(s) detected")
@@ -212,10 +212,10 @@ def backup_config(config_path: Path) -> Optional[Path]:
     """Create a backup of the current config."""
     if not config_path.exists():
         return None
-    
+
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     backup_path = config_path.with_suffix(f".backup_{timestamp}.json")
-    
+
     try:
         backup_path.write_text(config_path.read_text(encoding="utf-8"), encoding="utf-8")
         return backup_path
@@ -229,7 +229,7 @@ def apply_config(config_path: Path, new_config: Dict[str, Any]) -> bool:
     try:
         # Ensure parent directory exists
         config_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Write with pretty formatting
         config_path.write_text(
             json.dumps(new_config, indent=2) + "\n",
@@ -245,18 +245,18 @@ def verify_sync(config_path: Path, registry: Dict[str, Any]) -> bool:
     """Verify that Windsurf config is in sync with registry."""
     current_config = load_windsurf_config(config_path)
     registry_servers = convert_registry_to_windsurf_format(registry)
-    
+
     current_servers = current_config.get("mcpServers", {})
-    
+
     missing = []
     mismatched = []
-    
+
     for name, expected in registry_servers.items():
         if name not in current_servers:
             missing.append(name)
         elif current_servers[name] != expected:
             mismatched.append(name)
-    
+
     if missing or mismatched:
         print("\n❌ SYNC STATUS: OUT OF SYNC")
         if missing:
@@ -295,64 +295,64 @@ def main():
         default=None,
         help="Override Windsurf config path"
     )
-    
+
     args = parser.parse_args()
-    
+
     print("\n" + "="*60)
     print("MCP CONFIGURATION SYNC")
     print("="*60)
     print(f"Timestamp: {datetime.now().isoformat()}")
-    
+
     # Determine config path
     config_path = args.config_path or get_windsurf_config_path()
     print(f"Config path: {config_path}")
-    
+
     # Load registry
     print("\nLoading SOVEREIGN_MCP_REGISTRY...")
     registry = load_sovereign_registry()
     print(f"   Found {len(registry)} servers in registry")
-    
+
     # Verify-only mode
     if args.verify:
         success = verify_sync(config_path, registry)
         sys.exit(0 if success else 1)
-    
+
     # Load current config
     print("\nLoading current Windsurf config...")
     current_config = load_windsurf_config(config_path)
     current_count = len(current_config.get("mcpServers", {}))
     print(f"   Found {current_count} servers in Windsurf config")
-    
+
     # Convert and merge
     registry_servers = convert_registry_to_windsurf_format(registry)
     new_config = merge_configs(current_config, registry_servers)
-    
+
     # Compute and show diff
     diff = compute_diff(current_config, new_config)
     print_diff(diff, new_config)
-    
+
     total_changes = len(diff["added"]) + len(diff["removed"]) + len(diff["modified"])
-    
+
     if total_changes == 0:
         print("\n✅ No changes needed - configs are in sync!")
         sys.exit(0)
-    
+
     if not args.apply:
         print("\n⚠️  DRY RUN - No changes applied")
         print("   Run with --apply to apply these changes")
         sys.exit(0)
-    
+
     # Apply changes
     print("\n" + "="*60)
     print("APPLYING CHANGES")
     print("="*60)
-    
+
     # Backup
     if not args.no_backup:
         backup_path = backup_config(config_path)
         if backup_path:
             print(f"   Backup created: {backup_path}")
-    
+
     # Apply
     if apply_config(config_path, new_config):
         print(f"   ✅ Config written to: {config_path}")

@@ -25,7 +25,7 @@ class OmniContextAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     ROLE: Wisdom & Semantic Retrieval. Provides context-aware answers.
     """
     async def execute(self) -> None:
-                    
+
         print(f"\n[>>>] {self.name} ACTIVATED: Initializing semantic wisdom...")
         await asyncio.sleep(0)
         self.ctx.OmniContext = self

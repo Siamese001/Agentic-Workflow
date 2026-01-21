@@ -26,12 +26,12 @@ heal_method = '''
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs):
         """
         Autonomous healing implementation as per Canon Key 51.
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
-        
+
         Returns:
             Dict with healing summary: {"violations": int, "fixed": int, "errors": int}
         """
@@ -44,18 +44,18 @@ for agent in missing:
     if not agent_path.exists():
         print(f"  ❌ File not found: {agent['path']}")
         continue
-    
+
     try:
         content = agent_path.read_text(encoding='utf-8')
-        
+
         # Skip if already has heal_repository (double check)
         if 'def heal_repository' in content:
             print(f"  ⏭️  Already has heal_repository: {agent['path']}")
             continue
-        
+
         # Find the last line of the class (before end of file or next class)
         lines = content.split('\n')
-        
+
         # Find the class definition line
         class_line = -1
         class_name = agent.get('class_name', '')
@@ -63,11 +63,11 @@ for agent in missing:
             if f"class {class_name}" in line and ':' in line:
                 class_line = i
                 break
-        
+
         if class_line == -1:
             print(f"  ❌ No class {class_name} found: {agent['path']}")
             continue
-        
+
         # Find the end of the class (next class or end of file)
         end_line = len(lines)
         for i in range(class_line + 1, len(lines)):
@@ -76,15 +76,15 @@ for agent in missing:
             if line.strip().startswith('class ') and ':' in line and not line.startswith('    '):
                 end_line = i
                 break
-        
+
         # Insert heal_repository before the end of the class
         new_lines = lines[:end_line] + [heal_method] + lines[end_line:]
         new_content = '\n'.join(new_lines)
-        
+
         agent_path.write_text(new_content, encoding='utf-8')
         print(f"  ✅ Fixed: {agent['path']}")
         fixed_count += 1
-        
+
     except Exception as e:
         print(f"  ❌ Error fixing {agent['path']}: {e}")
 

@@ -39,33 +39,33 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
     def _run_self_tests(self) -> bool:
         """Run self-tests for ResumeAgent."""
         super()._run_self_tests()
-        
+
         # Verify context is valid
         assert self.ctx is not None, "Context must not be None"
         assert self.name, "Agent name must be set"
-        
+
         # Verify signals interface
         assert hasattr(self.ctx, 'signals'), "Context must have signals"
         assert hasattr(self.ctx, 'record_result'), "Context must have record_result"
-        
+
         return True
 
     def _perform_healing(self, anomaly: AnomalyReport) -> bool:
         """Perform healing for detected anomalies."""
         self._mcp_audit("healing_start", payload=anomaly.to_dict())
-        
+
         if anomaly.type == "context_corruption":
             # Reset context state
             self.ctx.signals.clear()
             self._mcp_audit("healing_success")
             return True
-        
+
         if anomaly.type == "budget_exhausted":
             # Reset budget tracking
             self.ctx.budget.reset() if hasattr(self.ctx, 'budget') else None
             self._mcp_audit("healing_success")
             return True
-        
+
         return False
 
     @abstractmethod
@@ -147,7 +147,7 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
         """Apps_rg/resume_engine base agent - fully chained healing."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
-        
+
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__

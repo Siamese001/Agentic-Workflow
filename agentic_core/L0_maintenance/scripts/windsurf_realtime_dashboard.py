@@ -88,15 +88,15 @@ app.layout = html.Div([
         html.P("Autonomous Healing & MCP Hardening Progress",
                style={'textAlign': 'center', 'color': '#6B7280', 'marginTop': '0'})
     ], style={'backgroundColor': '#F3F4F6', 'padding': '20px', 'borderRadius': '10px', 'marginBottom': '20px'}),
-    
+
     # Auto-refresh interval (30 seconds)
     dcc.Interval(id='interval-component', interval=30*1000, n_intervals=0),
-    
+
     # Stats cards row
     html.Div(id='stats-cards', style={
         'display': 'flex', 'justifyContent': 'space-around', 'marginBottom': '30px', 'flexWrap': 'wrap'
     }),
-    
+
     # Charts row 1
     html.Div([
         html.Div([
@@ -106,24 +106,24 @@ app.layout = html.Div([
             dcc.Graph(id='coverage-pie-chart')
         ], style={'width': '38%', 'display': 'inline-block', 'verticalAlign': 'top'})
     ], style={'marginBottom': '20px'}),
-    
+
     # Charts row 2
     html.Div([
         dcc.Graph(id='cumulative-dual-chart')
     ], style={'marginBottom': '20px'}),
-    
+
     # Charts row 3 (MCP if available)
     html.Div([
         dcc.Graph(id='mcp-progress-chart')
     ], style={'marginBottom': '20px'}),
-    
+
     # Footer with last update
     html.Div(id='last-update', style={
         'textAlign': 'center', 'padding': '15px',
         'backgroundColor': '#F3F4F6', 'borderRadius': '10px',
         'color': '#6B7280'
     })
-    
+
 ], style={'fontFamily': 'Arial, sans-serif', 'padding': '20px', 'maxWidth': '1400px', 'margin': '0 auto'})
 
 
@@ -157,23 +157,23 @@ def update_dashboard(n_intervals):
     """Update all dashboard components."""
     df = load_data()
     stats = get_latest_stats(df)
-    
+
     # Stats cards
     cards = [
         create_stat_card("Core Healing", f"{stats['healing_pct']}%", "#10B981", "💚"),
         create_stat_card("Healed Agents", f"{stats['healed']}/{stats['total']}", "#1E3A8A", "🔧"),
         create_stat_card("MCP Hardened", f"{stats['mcp']}", "#8B5CF6", "🛡️"),
         create_stat_card("Total Commits", f"{stats['commits']}", "#F59E0B", "📝"),
-        create_stat_card("Regressions", f"{stats['regressions']}", 
+        create_stat_card("Regressions", f"{stats['regressions']}",
                         "#10B981" if stats['regressions'] == 0 else "#EF4444", "⚠️")
     ]
-    
+
     if df.empty:
         empty_fig = go.Figure()
         empty_fig.add_annotation(text="No data available", xref="paper", yref="paper",
                                   x=0.5, y=0.5, showarrow=False, font=dict(size=20))
         return cards, empty_fig, empty_fig, empty_fig, empty_fig, "No data loaded"
-    
+
     # Line chart: Healing % Progress
     fig_line = px.line(
         df, x='batch', y='healing_core_pct',
@@ -191,7 +191,7 @@ def update_dashboard(n_intervals):
         yaxis_range=[0, 105],
         template="plotly_white"
     )
-    
+
     # Pie chart: Current Coverage
     fig_pie = px.pie(
         values=[stats['healed'], stats['total'] - stats['healed']],
@@ -200,7 +200,7 @@ def update_dashboard(n_intervals):
         color_discrete_sequence=['#10B981', '#E5E7EB']
     )
     fig_pie.update_traces(textinfo='percent+value', pull=[0.05, 0])
-    
+
     # Dual axis: Cumulative Progress
     fig_dual = make_subplots(specs=[[{"secondary_y": True}]])
     fig_dual.add_trace(
@@ -221,7 +221,7 @@ def update_dashboard(n_intervals):
     )
     fig_dual.update_yaxes(title_text="Healed Agents", secondary_y=False)
     fig_dual.update_yaxes(title_text="Cumulative Commits", secondary_y=True)
-    
+
     # MCP Progress chart
     if 'mcp_hardened' in df.columns and df['mcp_hardened'].sum() > 0:
         fig_mcp = px.bar(
@@ -236,10 +236,10 @@ def update_dashboard(n_intervals):
         fig_mcp.add_annotation(text="MCP Hardening data will appear after Phase 4",
                                xref="paper", yref="paper", x=0.5, y=0.5, showarrow=False)
         fig_mcp.update_layout(title='🛡️ MCP Hardened Agents Progress')
-    
+
     # Last update timestamp
     last_update = f"🔄 Last update: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Auto-refresh every 30s | Data source: windsurf_log.json"
-    
+
     return cards, fig_line, fig_pie, fig_dual, fig_mcp, last_update
 
 
@@ -251,5 +251,5 @@ if __name__ == '__main__':
     print(f"🌐 Dashboard URL: http://127.0.0.1:8050")
     print(f"🔄 Auto-refresh: Every 30 seconds")
     print("\nPress Ctrl+C to stop the server\n")
-    
+
     app.run(debug=True, host='127.0.0.1', port=8050)

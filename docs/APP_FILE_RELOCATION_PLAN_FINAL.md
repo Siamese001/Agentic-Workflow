@@ -1,7 +1,7 @@
 # App File Relocation Plan (SSOT-Aligned)
 
-**Generated:** 2026-01-20  
-**Status:** Ready for implementation  
+**Generated:** 2026-01-20
+**Status:** Ready for implementation
 **SSOT Compliance:** ✅ Verified against `structure_blueprint.py`
 
 ---
@@ -242,7 +242,7 @@ agentic_core/L5_safety/validators/safety_validate_ethical_standards.py
 # Resume Engine
 mkdir -p apps_rg/engines/utils
 
-# Outreach Engine  
+# Outreach Engine
 mkdir -p apps_lic/engines/utils
 
 # Shared

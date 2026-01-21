@@ -87,7 +87,7 @@ class TerritoryChangeHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, FileS
 # NAMING FIXED: AutonomousRAGDaemon → AutonomousRagDaemon
 class AutonomousRagDaemon:
     """L3: Self-monitoring RAG system with autonomous health checks"""
-    
+
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
 
@@ -98,43 +98,43 @@ class AutonomousRagDaemon:
         self.Historian = Historian
         self.loop = asyncio.get_event_loop()
         self.running = True
-        
+
         # Self-monitoring intervals
         self.health_check_interval = 3600  # 1 hour
         self.reindex_interval = 86400  # 24 hours
-        
+
         # Watchdog setup
         self.observer = Observer()
         self.handler = TerritoryChangeHandlerAgent(self)
-        
+
     async def start(self) -> Any:
         """Start the autonomous daemon"""
         print("[DAEMON] Starting Autonomous RAG Daemon...")
-        
+
         # Start file system watcher
         watch_path = Path(AGENTIC_CORE_DIR)
         self.observer.schedule(self.handler, str(watch_path), recursive=True)
         self.observer.start()
-        
+
         # Start background tasks
         asyncio.create_task(self.health_check())
         asyncio.create_task(self.periodic_reindex())
-        
+
         print("[DAEMON] Autonomous RAG Daemon online")
     async def health_check(self) -> Any:
         """L5: Sovereign validation – testing the Canon against reality"""
         while self.running:
             await asyncio.sleep(self.health_check_interval)
-            
+
             try:
                 # Randomize from a small pool of 'Golden Queries'
                 test_queries = ["Purpose of the Canon?", "Explain L5 safety", "How does L1 expansion work?"]
                 import random
                 query = random.choice(test_queries)
-                
+
                 result = await self.orchestrator.sovereign_retrieve(query)
                 faithfulness = result.get("faithfulness", 0.0)
-                
+
                 # Log health metrics
                 self.Historian.log_event({
                     "event": "health_check",
@@ -142,20 +142,20 @@ class AutonomousRagDaemon:
                     "faithfulness": faithfulness,
                     "timestamp": time.time()
                 })
-                
+
                 if faithfulness < 0.75:
                     print(f"[!] Health check warning: faithfulness {faithfulness:.2f}")
                     await self.trigger_reindex()
-                    
+
             except Exception as e:
                 print(f"[!] Health check failed: {e}")
-    
+
     async def periodic_reindex(self) -> Any:
         """Periodic full reindexing"""
         while self.running:
             await asyncio.sleep(self.reindex_interval)
             await self.trigger_reindex()
-    
+
     async def trigger_reindex(self) -> Any:
         """Trigger a full reindex of the canon"""
         print("[DAEMON] Triggering reindex...")
@@ -164,7 +164,7 @@ class AutonomousRagDaemon:
             print("[DAEMON] Reindex complete")
         except Exception as e:
             print(f"[!] Reindex failed: {e}")
-    
+
     async def stop(self) -> Any:
         """Stop the daemon"""
         print("[DAEMON] Stopping Autonomous RAG Daemon...")

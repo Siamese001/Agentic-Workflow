@@ -5,12 +5,12 @@
 tool_use_injection:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # V5 Instructional Injection Framework - Tooling Layer
   v5_tooling_injections:
     enabled: true
     injection_count: 5
-    
+
     # 16. Tool-Feedback Loop Injection
     tool_feedback_loop:
       description: "Incorporate structured tool outputs into subsequent reasoning steps"
@@ -21,7 +21,7 @@ tool_use_injection:
         3. Output Analysis: {output_analysis}
         4. Integration Steps: {integration_steps}
         5. Next Action: {next_action}
-        
+
         Use tool output to inform and improve subsequent reasoning and actions.
         Maintain feedback loop throughout the entire process.
       usage_context:
@@ -32,7 +32,7 @@ tool_use_injection:
         - "Tool outputs effectively integrated"
         - "Feedback loop maintained"
         - "Process optimization achieved"
-        
+
     # 17. Evidence Binding / Citation Anchors
     evidence_binding:
       description: "Ground claims to explicit retrieved strings or verified evidence"
@@ -42,7 +42,7 @@ tool_use_injection:
         - Evidence Source: {evidence_source}
         - Citation Anchor: {citation_anchor}
         - Verification Status: {verification_status}
-        
+
         All claims must be grounded in explicit evidence with proper citations.
         Use citation anchors to reference specific evidence locations.
       usage_context:
@@ -53,7 +53,7 @@ tool_use_injection:
         - "Claims properly evidenced"
         - "Citations accurately anchored"
         - "Evidence verification complete"
-        
+
     # 18. Cross-Tool Reconciliation
     cross_tool_reconciliation:
       description: "Resolve conflicting outputs across RAG, QA, and drafting tools"
@@ -62,11 +62,11 @@ tool_use_injection:
         Tool A Output: {tool_a_output}
         Tool B Output: {tool_b_output}
         Tool C Output: {tool_c_output}
-        
+
         Conflict Analysis: {conflict_analysis}
         Resolution Strategy: {resolution_strategy}
         Reconciled Output: {reconciled_output}
-        
+
         Identify and resolve conflicts between tool outputs for consistent results.
       usage_context:
         - "Multi-tool analysis"
@@ -76,7 +76,7 @@ tool_use_injection:
         - "Conflicts identified and resolved"
         - "Consistent output achieved"
         - "Tool integration optimized"
-        
+
     # 19. Shadow Validation
     shadow_validation:
       description: "Run rapid internal sanity check before returning final output"
@@ -87,7 +87,7 @@ tool_use_injection:
         3. Sanity Check: {sanity_check}
         4. Error Detection: {error_detection}
         5. Final Validation: {final_validation}
-        
+
         Perform internal validation before output finalization.
         Correct any issues before returning results.
       usage_context:
@@ -98,7 +98,7 @@ tool_use_injection:
         - "Internal validation completed"
         - "Errors detected and corrected"
         - "Quality standards met"
-        
+
     # 20. Model-Switch Aware Instructions
     model_switch_aware:
       description: "Adapt instructions based on fast versus high-accuracy model usage"
@@ -107,17 +107,17 @@ tool_use_injection:
         Current Model: {current_model_type}
         Model Characteristics: {model_characteristics}
         Adaptation Strategy: {adaptation_strategy}
-        
+
         Fast Model Mode:
         - Processing Style: {fast_processing_style}
         - Output Format: {fast_output_format}
         - Quality Threshold: {fast_quality_threshold}
-        
+
         High-Accuracy Model Mode:
         - Processing Style: {accurate_processing_style}
         - Output Format: {accurate_output_format}
         - Quality Threshold: {accurate_quality_threshold}
-        
+
         Adapt approach based on current model capabilities and constraints.
       usage_context:
         - "Multi-model environments"
@@ -127,19 +127,19 @@ tool_use_injection:
         - "Instructions adapted to model"
         - "Optimal performance achieved"
         - "Resource constraints respected"
-        
+
   # Global tool use principles
   global_principles:
     enabled: true
     optimization_level: "maximum"
-    
+
     # Core tool areas
     tool_areas:
       tool_selection: true
       usage_optimization: true
       integration_coordination: true
       performance_monitoring: true
-      
+
   # Tool selection frameworks
   tool_selection:
     # Resume processing tools
@@ -152,16 +152,16 @@ tool_use_injection:
             - "accuracy_rate"  # > 95%
             - "processing_speed"  # < 5 seconds
             - "field_extraction"  # Contact, experience, education, skills
-            
+
           recommended_tools:
             - name: "nlp_resume_parser"
               strengths: ["high_accuracy", "format_flexible"]
               use_case: "complex_resume_formats"
-              
+
             - name: "structured_parser"
               strengths: ["fast_processing", "standard_formats"]
               use_case: "high_volume_processing"
-              
+
       analysis_tools:
         skill_analyzer:
           description: "Analyze and categorize skills from resume content"
@@ -169,24 +169,24 @@ tool_use_injection:
             - "skill_taxonomy_coverage"
             - "industry_specific_recognition"
             - "proficiency_level_detection"
-            
+
           recommended_tools:
             - name: "taxonomy_skill_analyzer"
               strengths: ["comprehensive_taxonomy", "industry_mapping"]
               use_case: "skill_gap_analysis"
-              
+
         experience_classifier:
           description: "Classify work experience by relevance and impact"
           selection_criteria:
             - "relevance_scoring"
             - "achievement_detection"
             - "career_progression_analysis"
-            
+
           recommended_tools:
             - name: "impact_classifier"
               strengths: ["achievement_focused", "quantification_support"]
               use_case: "experience_optimization"
-              
+
     # Outreach processing tools
     outreach_tools:
       research_tools:
@@ -196,24 +196,24 @@ tool_use_injection:
             - "data_source_coverage"
             - "information_freshness"
             - "relevance_scoring"
-            
+
           recommended_tools:
             - name: "web_research_aggregator"
               strengths: ["comprehensive_sources", "real_time_data"]
               use_case: "company_intelligence_gathering"
-              
+
         contact_enricher:
           description: "Enrich contact information with professional details"
           selection_criteria:
             - "data_accuracy"
             - "privacy_compliance"
             - "coverage_breadth"
-            
+
           recommended_tools:
             - name: "professional_network_enricher"
               strengths: ["professional_focus", "verified_data"]
               use_case: "contact_profile_enhancement"
-              
+
       personalization_tools:
         message_generator:
           description: "Generate personalized outreach messages"
@@ -221,12 +221,12 @@ tool_use_injection:
             - "personalization_quality"
             - "tone_adaptability"
             - "template_flexibility"
-            
+
           recommended_tools:
             - name: "contextual_message_generator"
               strengths: ["deep_personalization", "tone_control"]
               use_case: "high_value_outreach"
-              
+
   # Usage optimization
   usage_optimization:
     # Tool coordination
@@ -237,48 +237,48 @@ tool_use_injection:
             - tool: "resume_parser"
               input: "raw_resume_document"
               output: "structured_resume_data"
-              
+
             - tool: "skill_analyzer"
               input: "structured_resume_data"
               output: "categorized_skills"
-              
+
             - tool: "experience_classifier"
               input: "structured_resume_data"
               output: "classified_experience"
-              
+
             - tool: "quality_scorer"
               input: "classified_experience, categorized_skills"
               output: "resume_quality_score"
-              
+
         outreach_processing:
           steps:
             - tool: "company_researcher"
               input: "company_identifier"
               output: "company_profile"
-              
+
             - tool: "contact_enricher"
               input: "contact_information"
               output: "enriched_contact_profile"
-              
+
             - tool: "message_generator"
               input: "company_profile, enriched_contact_profile"
               output: "personalized_message"
-              
+
     # Parallel processing
     parallel_workflows:
       resume_optimization:
         parallel_tasks:
           - tool: "skill_analyzer"
             focus: "skill_extraction_and_categorization"
-            
+
           - tool: "experience_classifier"
             focus: "experience_relevance_scoring"
-            
+
           - tool: "format_validator"
             focus: "format_compliance_check"
-            
+
         synchronization_point: "quality_assessment"
-        
+
   # Performance monitoring
   performance_monitoring:
     # Tool performance metrics
@@ -287,38 +287,38 @@ tool_use_injection:
         - name: "tool_processing_time"
           type: "histogram"
           labels: ["tool_name", "input_type"]
-          
+
         - name: "tool_success_rate"
           type: "gauge"
           labels: ["tool_name"]
-          
+
         - name: "tool_accuracy_score"
           type: "histogram"
           labels: ["tool_name", "task_type"]
-          
+
       quality_metrics:
         - name: "output_quality_score"
           type: "gauge"
           labels: ["tool_name", "output_type"]
-          
+
         - name: "user_satisfaction_rating"
           type: "histogram"
           labels: ["tool_name"]
-          
+
     # Performance thresholds
     thresholds:
       processing_time:
         max_acceptable: 30  # seconds
         target_optimal: 10  # seconds
-        
+
       accuracy:
         minimum_acceptable: 0.85
         target_optimal: 0.95
-        
+
       success_rate:
         minimum_acceptable: 0.90
         target_optimal: 0.98
-        
+
   # Tool integration
   integration:
     # API integration
@@ -328,35 +328,35 @@ tool_use_injection:
           - "api_key_authentication"
           - "oauth2_authentication"
           - "jwt_authentication"
-          
+
       rate_limiting:
         enabled: true
         default_limits:
           requests_per_minute: 60
           requests_per_hour: 1000
-          
+
       error_handling:
         retry_strategy: "exponential_backoff"
         max_retries: 3
         fallback_behavior: "graceful_degradation"
-        
+
     # Data flow integration
     data_flow:
       input_validation:
         schema_validation: true
         format_validation: true
         content_validation: true
-        
+
       output_standardization:
         consistent_format: true
         metadata_inclusion: true
         quality_metrics: true
-        
+
       error_propagation:
         error_logging: true
         user_notification: true
         recovery_attempts: true
-        
+
   # Tool optimization
   optimization:
     # Resource optimization
@@ -365,29 +365,29 @@ tool_use_injection:
         caching_strategy: "lru_cache"
         memory_limits: "2GB"
         garbage_collection: "aggressive"
-        
+
       cpu_optimization:
         parallel_processing: true
         batch_operations: true
         load_balancing: true
-        
+
       network_optimization:
         connection_pooling: true
         request_batching: true
         compression_enabled: true
-        
+
     # Cost optimization
     cost_management:
       api_cost_monitoring:
         enabled: true
         cost_per_request_tracking: true
         monthly_budget_limits: true
-        
+
       tool_selection_optimization:
         cost_effectiveness_analysis: true
         performance_cost_ratio: true
         budget_constrained_selection: true
-        
+
   # Tool governance
   governance:
     # Access control
@@ -397,12 +397,12 @@ tool_use_injection:
           - "basic_user"
           - "advanced_user"
           - "admin"
-          
+
         permissions:
           basic_user: ["standard_tools"]
           advanced_user: ["standard_tools", "advanced_tools"]
           admin: ["all_tools", "tool_configuration"]
-          
+
     # Usage policies
     usage_policies:
       fair_usage:
@@ -410,12 +410,12 @@ tool_use_injection:
           basic_user: 100
           advanced_user: 500
           admin: "unlimited"
-          
+
       data_privacy:
         data_retention: "30_days"
         audit_logging: true
         consent_required: true
-        
+
   # Tool maintenance
   maintenance:
     # Update management
@@ -423,23 +423,23 @@ tool_use_injection:
       automatic_updates: true
       rollback_capability: true
       testing_before_deployment: true
-      
+
       update_schedule:
         security_patches: "immediate"
         feature_updates: "weekly"
         major_versions: "monthly"
-        
+
     # Monitoring and alerting
     monitoring:
       health_checks:
         enabled: true
         frequency: "5_minutes"
         alert_thresholds: "performance_degradation"
-        
+
       alerting:
         channels: ["email", "slack", "pagerduty"]
         escalation_rules: "severity_based"
-        
+
   # Tool testing
   testing:
     # Automated testing
@@ -447,22 +447,22 @@ tool_use_injection:
       unit_tests:
         coverage_requirement: 90
         test_frequency: "on_commit"
-        
+
       integration_tests:
         coverage_requirement: 80
         test_frequency: "daily"
-        
+
       performance_tests:
         baseline_comparison: true
         regression_detection: true
         test_frequency: "weekly"
-        
+
     # Manual testing
     manual_testing:
       user_acceptance_testing:
         required: true
         test_scenarios: ["happy_path", "edge_cases", "error_conditions"]
-        
+
       quality_assurance:
         review_process: true
         approval_workflow: true

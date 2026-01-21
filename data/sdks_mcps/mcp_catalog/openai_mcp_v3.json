@@ -156,7 +156,7 @@
   "usage_tracking": {
     "tokens": {
       "prompt": "prompt_tokens",
-      "completion": "completion_tokens", 
+      "completion": "completion_tokens",
       "total": "total_tokens",
       "cached_prompt": "cached_tokens"
     },

@@ -13,121 +13,121 @@ on:
 jobs:
   mcp-compliance:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      
+
       - name: Check for hardcoded credentials
         run: |
           echo "🔍 Scanning for hardcoded credentials..."
-          
+
           # Check for hardcoded passwords (excluding test files and env var usage)
           if grep -r "password\s*=\s*[\"']" agentic_core --include="*.py" | grep -v "os.getenv\|os.environ\|test_"; then
             echo "❌ FAIL: Hardcoded passwords found"
             exit 1
           fi
-          
+
           # Check for hardcoded API keys
           if grep -r "api_key\s*=\s*[\"'][A-Za-z0-9_-]\{20,\}" agentic_core --include="*.py" | grep -v "os.getenv\|os.environ\|test_"; then
             echo "❌ FAIL: Hardcoded API keys found"
             exit 1
           fi
-          
+
           # Check Neo4j default password is removed
           if grep -r 'NEO4J_PASSWORD", "password"' agentic_core --include="*.py"; then
             echo "❌ FAIL: Neo4j default password found"
             exit 1
           fi
-          
+
           echo "✅ PASS: No hardcoded credentials detected"
-      
+
       - name: Verify MCPHardenedMixin usage
         run: |
           echo "🔍 Verifying MCP clients use hardened mixin..."
-          
+
           # Check Redis MCP client
           if ! grep -q "class sovereign_redis_mcp_client(MCPHardenedMixin)" agentic_core/L4_state/validation_context/caching_redis_mcp_client.py; then
             echo "❌ FAIL: Redis MCP client not using MCPHardenedMixin"
             exit 1
           fi
-          
+
           # Check Pinecone MCP client
           if ! grep -q "class sovereign_pinecone_mcp_client(MCPHardenedMixin)" agentic_core/L4_state/validation_context/pinecone_mcp_client.py; then
             echo "❌ FAIL: Pinecone MCP client not using MCPHardenedMixin"
             exit 1
           fi
-          
+
           echo "✅ PASS: MCP clients properly hardened"
-      
+
       - name: Verify environment variable usage
         run: |
           echo "🔍 Checking environment variable configuration..."
-          
+
           # Verify sovereign_env.py has MCP vars
           if ! grep -q "MCP_TIMEOUT_SECONDS" agentic_core/config/blueprint_sovereign/sovereign_env.py; then
             echo "❌ FAIL: MCP_TIMEOUT_SECONDS not in sovereign_env.py"
             exit 1
           fi
-          
+
           if ! grep -q "MCP_MAX_RETRIES" agentic_core/config/blueprint_sovereign/sovereign_env.py; then
             echo "❌ FAIL: MCP_MAX_RETRIES not in sovereign_env.py"
             exit 1
           fi
-          
+
           if ! grep -q "NEO4J_PASSWORD" agentic_core/config/blueprint_sovereign/sovereign_env.py; then
             echo "❌ FAIL: NEO4J_PASSWORD not in sovereign_env.py"
             exit 1
           fi
-          
+
           echo "✅ PASS: Environment variables properly configured"
-      
+
       - name: Verify SSL and pooling enforcement
         run: |
           echo "🔍 Checking SSL/TLS and connection pooling..."
-          
+
           # Check for disabled SSL cert validation
           if grep -r "ssl_cert_reqs.*=.*None" agentic_core --include="*.py" | grep -v "test_\|#"; then
             echo "❌ FAIL: SSL cert validation disabled"
             exit 1
           fi
-          
+
           # Check for ssl_check_hostname=False
           if grep -r "ssl_check_hostname.*=.*False" agentic_core --include="*.py" | grep -v "test_\|#"; then
             echo "❌ FAIL: SSL hostname check disabled"
             exit 1
           fi
-          
+
           # Verify Neo4j uses connection pooling
           if ! grep -q "max_connection_pool_size" agentic_core/config/blueprint_sovereign/graph_store_neo4j.py; then
             echo "❌ FAIL: Neo4j missing connection pooling"
             exit 1
           fi
-          
+
           # Verify Neo4j enforces encryption
           if ! grep -q "encrypted=True" agentic_core/config/blueprint_sovereign/graph_store_neo4j.py; then
             echo "❌ FAIL: Neo4j encryption not enforced"
             exit 1
           fi
-          
+
           echo "✅ PASS: SSL/TLS and pooling properly enforced"
-      
+
       - name: Install dependencies
         run: |
           pip install pytest pytest-asyncio
-      
+
       - name: Run MCP hardening tests
         run: |
           echo "🧪 Running MCP hardening validation tests..."
           export PYTHONPATH="${PYTHONPATH}:${GITHUB_WORKSPACE}"
           python -m pytest tests/unit/test_mcp_hardened_mixin.py::TestNoHardcodedCredentials -v
           python -m pytest tests/unit/test_mcp_hardened_mixin.py::TestRedisMCPClientHardening -v
-      
+
       - name: MCP Sovereignty Status
         if: success()
         run: |

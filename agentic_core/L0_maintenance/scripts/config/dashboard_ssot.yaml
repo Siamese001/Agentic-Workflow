@@ -33,14 +33,14 @@ columns:
   hardened: "MCP Hardened %"
   complexity_health: "Complexity Health %"
   health: "Health"
-  
+
   # Table 2: Code Quality Metrics
   typed: "Typed %"
   documented: "Documented %"
   schema_strictness: "Schema Strictness %"
   canonical_inheritance: "Canonical Inheritance %"
   code_quality: "Code Quality Score"
-  
+
   # Additional Metrics
   avg_cc: "Avg CC"
   observable: "Observable %"
@@ -54,53 +54,53 @@ columns:
 territories:
   # Base/Root
   sovereign_base: "Sovereign Base Agent"
-  
+
   # L6 Observability
   l6_base: "L6_Observability/Base Agent"
   l6_metrics: "L6_Observability/Metrics"
   l6_telemetry: "L6_Observability/Telemetry"
   l6_tracing: "L6_Observability/Tracing"
   l6_compliance: "L6_Observability/Compliance"
-  
+
   # L5 Safety
   l5_base: "L5 Safety/Base Agent"
   l5_validators: "L5 Safety/Validators"
   l5_guardrails: "L5 Safety/Guardrails"
   l5_red_teaming: "L5 Safety/Red Teaming"
   l5_gravity: "L5 Safety/Gravity"
-  
+
   # L4 State
   l4_base: "L4 State/Base Agent"
   l4_core: "L4 State/Core"
   l4_infrastructure: "L4 State/Infrastructure"
   l4_specialized: "L4 State/Specialized"
-  
+
   # L3 Orchestration
   l3_base: "L3 Orchestration/Base Agent"
   l3_core: "L3 Orchestration/Core"
   l3_infrastructure: "L3 Orchestration/Infrastructure"
   l3_specialized: "L3 Orchestration/Specialized"
-  
+
   # L2 Execution
   l2_base: "L2 Execution/Base Agent"
   l2_core: "L2 Execution/Core"
   l2_specialized: "L2 Execution/Specialized"
-  
+
   # L1 Cognition
   l1_base: "L1 Cognition/Base Agent"
   l1_core: "L1 Cognition/Core"
   l1_specialized: "L1 Cognition/Specialized"
-  
+
   # L0 Maintenance
   l0_base: "L0 Maintenance/Base Agent"
   l0_core: "L0 Maintenance/Core"
   l0_infrastructure: "L0 Maintenance/Infrastructure"
-  
+
   # Apps
   apps_lic: "Apps Lic"
   apps_rg: "Apps Rg"
   apps_shared: "Apps Shared"
-  
+
   # Utils
   utils: "Utils"
 
@@ -117,14 +117,14 @@ fields:
   layer: "layer"
   territory: "territory"
   category: "category"
-  
+
   # Capabilities
   has_healing: "has_healing"
   has_tests: "has_tests"
   has_tools: "has_tools"
   has_memory: "has_memory"
   mcp_hardened: "mcp_hardened"
-  
+
   # Metrics
   invocation: "invocation"
   typed_pct: "typed_pct"
@@ -132,7 +132,7 @@ fields:
   schema_strictness: "schema_strictness"
   proper_base_class: "proper_base_class"
   cyclomatic_complexity: "cyclomatic_complexity"
-  
+
   # Inheritance
   inheritance: "inheritance"
   base_classes: "base_classes"
@@ -146,27 +146,27 @@ thresholds:
   # Target Values (100% expected)
   mcp_hardened_target: 100.0
   heal_cap_target: 100.0
-  
+
   # Minimum Acceptable Values
   test_coverage_min: 50.0
   health_score_min: 60.0
   complexity_health_min: 30.0
-  
+
   # Target Values (aspirational)
   test_coverage_target: 80.0
   typed_target: 100.0
   documented_target: 100.0
   schema_strictness_target: 100.0
-  
+
   # Outlier Detection
   outlier_threshold_default: 50.0
   outlier_threshold_critical: 0.0
-  
+
   # Complexity Limits
   complexity_health_max: 60.0
   avg_cc_warning: 15.0
   avg_cc_critical: 25.0
-  
+
   # Phase 2: Granular Thresholds for Stricter Logic
   coverage_warning: 70.0
   coverage_critical: 40.0

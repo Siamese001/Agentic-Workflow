@@ -114,66 +114,66 @@ def _get_sovereign_domain():
 def refactor_file(file_path: Path, old_import: str, new_code: str) -> bool:
     """
     Replace static import with dynamic importlib pattern.
-    
+
     Returns:
         True if file was modified, False otherwise
     """
     try:
         content = file_path.read_text(encoding='utf-8')
-        
+
         # Check if old import exists
         if old_import not in content:
             return False
-        
+
         # Comment out old import and add new dynamic loader
         new_content = content.replace(
             old_import,
             f"# {old_import}  # Refactored to dynamic import to avoid upward dependency\n{new_code}"
         )
-        
+
         # Write back
         file_path.write_text(new_content, encoding='utf-8')
-        
+
         print(f"✅ Fixed: {file_path.name}")
         return True
-        
+
     except Exception as e:
         print(f"❌ Error processing {file_path.name}: {e}")
         return False
 
 def main():
     """Apply surgical refactoring to L0 files."""
-    
+
     print("=" * 80)
     print("  L0 Gravity Import Surgical Refactoring")
     print("=" * 80)
     print()
-    
+
     l0_scripts = REPO / AGENTIC_CORE_DIR / "L0_maintenance" / SCRIPTS_DIR
-    
+
     if not l0_scripts.exists():
         print(f"❌ Directory not found: {l0_scripts}")
         return 1
-    
+
     files_modified = 0
-    
+
     for filename, refactoring in REFACTORINGS.items():
         file_path = l0_scripts / filename
-        
+
         if not file_path.exists():
             print(f"⚠️  File not found: {filename}")
             continue
-        
+
         if refactor_file(file_path, refactoring["old_import"], refactoring["new_code"]):
             files_modified += 1
-    
+
     print()
     print("=" * 80)
     print("  Summary")
     print("=" * 80)
     print(f"Files modified: {files_modified}/{len(REFACTORINGS)}")
     print()
-    
+
     if files_modified > 0:
         print("✅ Surgical refactoring complete!")
         print()
@@ -185,7 +185,7 @@ def main():
         print("  1. Review modified files and update usage patterns")
         print("  2. Run: python scripts/ssot.py validate --summary")
         print("  3. Test affected functionality")
-    
+
     return 0
 
 if __name__ == "__main__":

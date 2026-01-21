@@ -232,20 +232,20 @@ class AutonomyConfig:
     enable_reasoning_kernel: bool = False
     enable_dynamic_tools: bool = False
     enable_recursive_planning: bool = False
-    
+
     # Episodic Memory
     memory_similarity_threshold: float = 0.85
     memory_min_rating: float = 0.6
-    
+
     # Reasoning Kernel
     reasoning_max_candidates: int = 3
     reasoning_critique_threshold: float = 0.7
     enable_tree_of_thoughts: bool = True
-    
+
     # Tool Registry
     tool_max_matches: int = 5
     tool_min_relevance: float = 0.6
-    
+
     # Recursive Planner
     planner_max_depth: int = 3
     planner_max_parallel: int = 5

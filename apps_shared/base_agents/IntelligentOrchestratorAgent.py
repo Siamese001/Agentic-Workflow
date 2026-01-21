@@ -51,7 +51,7 @@ class IntelligentOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
 
     async def _execute_single_agent(self, agent: Any, index: int) -> str:
         """Execute a single agent and return status.
-        
+
         Returns:
             'skipped', 'passed', or 'failed'
         """
@@ -82,10 +82,10 @@ class IntelligentOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         """Execute all agents in sequence."""
         print('🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...')
         print(f'\n[MISSION] Starting validation sweep across {len(self.ctx.python_files)} files...')
-        
+
         agents_executed, agents_passed, agents_failed = 0, 0, 0
         await self.ctx.services.init_mcp_async()
-        
+
         for i, agent in enumerate(self.swarm, 1):
             status = await self._execute_single_agent(agent, i)
             if status == 'passed':
@@ -94,12 +94,12 @@ class IntelligentOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
             elif status == 'failed':
                 agents_executed += 1
                 agents_failed += 1
-            
+
             if 'CRITICAL_FAIL' in self.ctx.signals:
                 print('\n🛑 MISSION ABORTED: Critical Architecture Failure.')
                 print('   Action: Fix Key 40/41/50 immediately.')
                 break
-        
+
         self._print_execution_summary(agents_executed, agents_passed, agents_failed)
         self.print_mission_report()
 

@@ -23,7 +23,7 @@ class ExecutionResult:
 class Settings:
     """
     Executor for shared settings operations.
-    
+
     Ensures consistent handling of configuration context and error boundaries
     across the sovereign domain.
     """
@@ -35,11 +35,11 @@ class Settings:
     def process(self, payload: Union[str, int, float, bool, list, dict], context: Optional[Dict] = None) -> ExecutionResult:
         """
         Execute the primary logic for this module.
-        
+
         Args:
             payload: The input data to process
             context: Optional execution context
-            
+
         Returns:
             ExecutionResult indicating success or failure
         """

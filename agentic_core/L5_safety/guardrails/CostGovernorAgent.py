@@ -35,16 +35,16 @@ class BudgetExceededError(Exception):
 @dataclass
 class CostGovernorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """L5 Safety agent that tracks and limits LLM spend across models and tools.
-    
+
     This financial guardrail monitors API costs and enforces budget constraints.
     It calculates costs based on token usage and raises BudgetExceededError
     when the configured limit is exceeded.
-    
+
     Attributes:
         config: Configuration dictionary with budget settings.
         limit: Maximum allowed spend in dollars.
         spend: Current accumulated spend in dollars.
-        
+
     Inherits:
         SubatomicTestingMixin: Provides testing utilities.
         HealerMixin: Provides healing chain support.
@@ -52,7 +52,7 @@ class CostGovernorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     def __init__(self, config: Dict[str, Any]) -> None:
         """Initialize the cost governor with budget configuration.
-        
+
         Args:
             config: Configuration dictionary containing:
                 - budget_limit: Maximum allowed spend in dollars (default: 10.0)
@@ -63,15 +63,15 @@ class CostGovernorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     def track(self, model: str, input_tokens: int, output_tokens: int) -> float:
         """Calculate and record the cost of an LLM call.
-        
+
         Args:
             model: Name of the LLM model used.
             input_tokens: Number of input tokens in the request.
             output_tokens: Number of output tokens in the response.
-            
+
         Returns:
             Cost of this call in dollars.
-            
+
         Raises:
             BudgetExceededError: If total spend exceeds the configured limit.
         """
@@ -95,22 +95,22 @@ class CostGovernorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         _call_path: Optional[Set[str]] = None
     ) -> Dict[str, int]:
         """Execute L5 safety healing operations.
-        
+
         This is an operational agent - no repository healing required.
         Implements cycle detection and depth limiting.
-        
+
         Args:
             dry_run: If True, only report what would be done (default: True).
             execute: If True, execute healing actions (default: False).
             depth: Current recursion depth for cycle detection (default: 0).
             max_depth: Maximum recursion depth allowed (default: 3).
             _call_path: Set of agent names in current call chain for cycle detection.
-            
+
         Returns:
             Dictionary with healing results: {"skipped": 1} for operational agents.
         """
         super().heal_repository()
-        
+
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__

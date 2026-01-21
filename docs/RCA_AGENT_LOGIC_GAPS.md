@@ -52,7 +52,7 @@ def _heal_depth_violation(self, file_path: Path, rel: Path, depth: int, expected
         spacers = tuple(["depth_aligned"] * deficit)
         new_parts = rel.parts[:-1] + spacers + (rel.parts[-1],)
         target_path = self.project_root.joinpath(*new_parts)
-    
+
     # Move instead of archive
     target_path.parent.mkdir(parents=True, exist_ok=True)
     file_path.rename(target_path)
@@ -72,7 +72,7 @@ The `_determine_archive_subpath` method has a **fallback to `archives/uncategori
 ```python
 def _determine_archive_subpath(self, file_path: Path) -> Path:
     # ... AST analysis attempts ...
-    
+
     # FINAL FALLBACK: Uncategorized purge
     uncat = self.archives_root / "uncategorized"  # PROBLEM
     uncat.mkdir(exist_ok=True)
@@ -89,13 +89,13 @@ def _determine_archive_subpath(self, file_path: Path) -> Path:
 def _determine_archive_subpath(self, file_path: Path) -> Optional[Path]:
     """Returns None if file should NOT be archived."""
     from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
-    
+
     rel_path = file_path.relative_to(self.project_root)
-    
+
     # Check if file is in a valid sovereign territory
     if is_path_allowed(str(rel_path)):
         return None  # Don't archive - file is valid
-    
+
     # ... existing AST analysis ...
 ```
 
@@ -146,7 +146,7 @@ def _apply_healing_strategy(self, file_path, msg, ...):
     for pattern, method_name in self.HEALING_STRATEGIES.items():
         if pattern in msg:
             return getattr(self, method_name)(...)
-    
+
     # CRITICAL: Only archive if NO handler matches
     # Consider logging a warning instead of archiving
     Logger.warning(f"No handler for: {msg}")

@@ -15,7 +15,7 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 class LicReflectionAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
     """
     Reflects on execution and suggests improvements.
-    
+
     Analyzes:
     - Passed and failed agents
     - Active signals
@@ -25,12 +25,12 @@ class LicReflectionAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin)
     async def execute(self) -> None:
         """
         Execute reflection on campaign execution.
-        
+
         Analyzes:
         - Agent results (passed/failed)
         - Active signals
         - Campaign readiness for execution
-        
+
         Determines if more cycles are needed.
         """
         print(f"   [{self.name}] Reflecting on execution...")

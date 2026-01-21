@@ -25,7 +25,7 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 class OutreachTaskPriority(Enum):
     """
     Priority levels for proactive outreach tasks.
-    
+
     Defines the urgency and importance of tasks identified by the
     proactive scheduler for outreach campaigns.
     """
@@ -39,7 +39,7 @@ class OutreachTaskPriority(Enum):
 class OutreachHandoffReason(Enum):
     """
     Reasons for handoff to human in outreach.
-    
+
     Defines the specific conditions that trigger a handoff request
     when the agent reaches capability limits or encounters compliance issues.
     """
@@ -105,10 +105,10 @@ class OutreachProactiveScheduler:
     def __init__(self, ctx: OutreachEngineContext) -> None:
         """
         Initialize outreach proactive scheduler.
-        
+
         Args:
             ctx: Outreach engine context for coordination
-        
+
         Sets up task tracking and autonomous task identification
         for outreach campaigns.
         """
@@ -454,4 +454,3 @@ class OutreachCapabilityMonitorAgent(SubatomicTestingMixin, HealerMixin, MCPHard
     def heal_repository(self) -> dict:
             """Invoke healing chain via super()."""
             return super().heal_repository()
-

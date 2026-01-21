@@ -35,7 +35,7 @@ class FusionResult:
     sources: List[str] = None
     confidence: float = 0.0
     metadata: Dict[str, Any] = None
-    
+
     def __post_init__(self):
         if self.vector_results is None:
             self.vector_results = []
@@ -49,7 +49,7 @@ class FusionResult:
 
 class CypherQueryGenerator:
     """Generates Cypher queries from natural language patterns."""
-    
+
     def __init__(self):
         """Initialize the query generator with patterns."""
         # Common query patterns
@@ -58,33 +58,33 @@ class CypherQueryGenerator:
             "skills_match": r"(?:what|which) skills do (?:i|you|candidate) have (?:for|in|related to) (.+)",
             "experience_with": r"(?:experience|worked|used) (?:with|on) (.+)",
             "projects_using": r"projects (?:using|with|involving) (.+)",
-            
+
             # Company and role relationships
             "role_at_company": r"(?:role|position|job) (?:at|in) (.+)",
             "company_tech_stack": r"(?:tech stack|technology|technologies) (?:at|used by) (.+)",
             "team_collaboration": r"(?:worked|collaborated) (?:with|on) (.+)",
-            
+
             # Career progression
             "career_path": r"(?:career|progression|advancement) (?:path|track) (?:for|to) (.+)",
             "skill_to_role": r"(.+) skills (?:lead to|for|required for) (.+) role",
-            
+
             # Project relationships
             "project_outcomes": r"(?:outcome|result|impact) (?:of|from) (.+) project",
             "technologies_for": r"(?:technologies|tech) (?:for|to|needed for) (.+)",
         }
-        
+
         # Cypher templates for each pattern
         self.templates = {
             "skills_match": """
                 MATCH (e:Entity)-[:HAS_SKILL]->(s:Skill)
                 WHERE s.name =~ $skill_pattern
                 OPTIONAL MATCH (e)-[:WORKED_ON]->(p:Project)
-                RETURN e.name as entity, 
+                RETURN e.name as entity,
                        collect(DISTINCT s.name) as skills,
                        collect(DISTINCT p.name) as projects
                 LIMIT 10
             """,
-            
+
             "experience_with": """
                 MATCH (e:Entity)-[:WORKED_WITH]->(t:Technology)
                 WHERE t.name =~ $tech_pattern
@@ -94,7 +94,7 @@ class CypherQueryGenerator:
                        collect(DISTINCT p.name) as projects
                 LIMIT 10
             """,
-            
+
             "projects_using": """
                 MATCH (p:Project)-[:USES_TECH]->(t:Technology)
                 WHERE t.name =~ $tech_pattern
@@ -104,7 +104,7 @@ class CypherQueryGenerator:
                        collect(DISTINCT e.name) as contributors
                 LIMIT 10
             """,
-            
+
             "role_at_company": """
                 MATCH (e:Entity)-[:WORKED_AT]->(c:Company)
                 WHERE c.name =~ $company_pattern
@@ -114,7 +114,7 @@ class CypherQueryGenerator:
                        collect(DISTINCT r.name) as roles
                 LIMIT 10
             """,
-            
+
             "company_tech_stack": """
                 MATCH (c:Company)-[:USES_TECH]->(t:Technology)
                 WHERE c.name =~ $company_pattern
@@ -122,7 +122,7 @@ class CypherQueryGenerator:
                        collect(DISTINCT t.name) as tech_stack
                 LIMIT 10
             """,
-            
+
             "team_collaboration": """
                 MATCH (e1:Entity)-[:COLLABORATED_WITH]->(e2:Entity)
                 WHERE e1.name =~ $entity_pattern OR e2.name =~ $entity_pattern
@@ -132,14 +132,14 @@ class CypherQueryGenerator:
                        collect(DISTINCT p.name) as shared_projects
                 LIMIT 10
             """,
-            
+
             "career_path": """
                 MATCH path = (e:Entity)-[:NEXT_ROLE*]->(r:Role)
                 WHERE e.name =~ $entity_pattern
                 RETURN [node in nodes(path) | node.name] as career_progression
                 LIMIT 5
             """,
-            
+
             "skill_to_role": """
                 MATCH (s:Skill)-[:REQUIRED_FOR]->(r:Role)
                 WHERE s.name =~ $skill_pattern AND r.name =~ $role_pattern
@@ -148,7 +148,7 @@ class CypherQueryGenerator:
                        collect(DISTINCT r.level) as levels
                 LIMIT 10
             """,
-            
+
             "project_outcomes": """
                 MATCH (p:Project)-[:RESULTED_IN]->(o:Outcome)
                 WHERE p.name =~ $project_pattern
@@ -157,7 +157,7 @@ class CypherQueryGenerator:
                        collect(DISTINCT o.metric) as metrics
                 LIMIT 10
             """,
-            
+
             "technologies_for": """
                 MATCH (d:Domain)-[:REQUIRES_TECH]->(t:Technology)
                 WHERE d.name =~ $domain_pattern
@@ -166,24 +166,24 @@ class CypherQueryGenerator:
                 LIMIT 10
             """
         }
-    
+
     def generate_query(self, natural_query: str) -> Tuple[str, Dict[str, Any], str]:
         """Generate Cypher query from natural language.
-        
+
         Args:
             natural_query: Natural language query
-            
+
         Returns:
             Tuple of (cypher_query, parameters, query_type)
         """
         natural_lower = natural_query.lower()
-        
+
         # Try to match patterns
         for pattern_name, pattern in self.patterns.items():
             match = re.search(pattern, natural_lower)
             if match:
                 template = self.templates[pattern_name]
-                
+
                 # Extract parameters
                 if pattern_name == "skill_to_role":
                     skill_pattern = f"(?i).*{match.group(1)}.*"
@@ -195,7 +195,7 @@ class CypherQueryGenerator:
                 else:
                     entity = match.group(1).strip()
                     entity_pattern = f"(?i).*{entity}.*"
-                    
+
                     # Map to appropriate parameter
                     if "skill" in pattern_name:
                         params = {"skill_pattern": entity_pattern}
@@ -211,9 +211,9 @@ class CypherQueryGenerator:
                         params = {"entity_pattern": entity_pattern}
                     else:
                         params = {"entity_pattern": entity_pattern}
-                
+
                 return template, params, pattern_name
-        
+
         # Fallback: general entity search
         fallback_template = """
             MATCH (e:Entity)
@@ -224,14 +224,14 @@ class CypherQueryGenerator:
                    collect(DISTINCT related.name)[0..5] as related_entities
             LIMIT 10
         """
-        
+
         entity_pattern = f"(?i).*{natural_lower.split()[-1]}.*"
         return fallback_template, {"entity_pattern": entity_pattern}, "entity_search"
 
 
 class GraphRAGFusion:
     """Fuses vector and graph retrieval for enhanced RAG."""
-    
+
     def __init__(
         self,
         knowledge_graph: Optional[KnowledgeGraphAgent] = None,
@@ -240,7 +240,7 @@ class GraphRAGFusion:
         confidence_threshold: float = 0.6
     ):
         """Initialize GraphRAG fusion.
-        
+
         Args:
             knowledge_graph: KnowledgeGraphAgent instance
             vector_retriever: Function for vector retrieval
@@ -252,7 +252,7 @@ class GraphRAGFusion:
         self.enable_fusion = enable_fusion
         self.confidence_threshold = confidence_threshold
         self.query_generator = CypherQueryGenerator()
-        
+
         # Statistics
         self.stats = {
             "total_queries": 0,
@@ -262,9 +262,9 @@ class GraphRAGFusion:
             "multi_hop_queries": 0,
             "graph_fallbacks": 0
         }
-        
+
         logger.info(f"Initialized GraphRAGFusion - Fusion: {enable_fusion}")
-    
+
     async def query(
         self,
         natural_query: str,
@@ -272,21 +272,21 @@ class GraphRAGFusion:
         max_results: int = 5
     ) -> FusionResult:
         """Execute a GraphRAG fusion query.
-        
+
         Args:
             natural_query: Natural language query
             query_type: Type of query (auto-detected if None)
             max_results: Maximum results to return
-            
+
         Returns:
             FusionResult with combined results
         """
         self.stats["total_queries"] += 1
-        
+
         # Auto-detect query type if not specified
         if query_type is None:
             query_type = self._detect_query_type(natural_query)
-        
+
         # Execute based on query type
         if query_type == QueryType.VECTOR_ONLY:
             return await self._vector_only_query(natural_query, max_results)
@@ -294,36 +294,36 @@ class GraphRAGFusion:
             return await self._graph_only_query(natural_query, max_results)
         else:
             return await self._fusion_query(natural_query, query_type, max_results)
-    
+
     def _detect_query_type(self, query: str) -> QueryType:
         """Detect query type from natural language.
-        
+
         Args:
             query: Natural language query
-            
+
         Returns:
             Detected QueryType
         """
         query_lower = query.lower()
-        
+
         # Check for relationship indicators
         relationship_words = [
             "relationship", "connection", "between", "related to",
             "worked with", "collaborated", "team", "together"
         ]
-        
+
         # Check for multi-hop indicators
         multi_hop_words = [
             "path", "journey", "progression", "through", "via",
             "leads to", "resulted in", "caused"
         ]
-        
+
         # Check for graph-specific patterns
         graph_patterns = [
             "nodes", "edges", "graph", "network",
             "hops", "traverse", "connected"
         ]
-        
+
         if any(word in query_lower for word in multi_hop_words):
             return QueryType.MULTI_HOP
         elif any(word in query_lower for word in relationship_words):
@@ -332,30 +332,30 @@ class GraphRAGFusion:
             return QueryType.GRAPH_ONLY
         else:
             return QueryType.VECTOR_ONLY
-    
+
     async def _vector_only_query(
         self,
         query: str,
         max_results: int
     ) -> FusionResult:
         """Execute vector-only query.
-        
+
         Args:
             query: Query string
             max_results: Maximum results
-            
+
         Returns:
             FusionResult with vector results
         """
         self.stats["vector_only"] += 1
-        
+
         try:
             if self.vector_retriever:
                 # Call vector retriever
                 vector_results = await self.vector_retriever(query, max_results)
             else:
                 vector_results = []
-            
+
             return FusionResult(
                 query=query,
                 query_type=QueryType.VECTOR_ONLY,
@@ -363,7 +363,7 @@ class GraphRAGFusion:
                 sources=["vector_search"],
                 confidence=0.8
             )
-            
+
         except Exception as e:
             logger.error(f"Vector query failed: {e}")
             return FusionResult(
@@ -372,28 +372,28 @@ class GraphRAGFusion:
                 sources=["vector_error"],
                 confidence=0.0
             )
-    
+
     async def _graph_only_query(
         self,
         query: str,
         max_results: int
     ) -> FusionResult:
         """Execute graph-only query.
-        
+
         Args:
             query: Query string
             max_results: Maximum results
-            
+
         Returns:
             FusionResult with graph results
         """
         self.stats["graph_only"] += 1
-        
+
         try:
             if self.knowledge_graph:
                 # Generate Cypher query
                 cypher, params, pattern_type = self.query_generator.generate_query(query)
-                
+
                 # Execute via knowledge graph
                 # Note: This would need async support in KnowledgeGraphAgent
                 graph_context = self.knowledge_graph.query_context(
@@ -401,7 +401,7 @@ class GraphRAGFusion:
                     hops=2,
                     limit=max_results
                 )
-                
+
                 return FusionResult(
                     query=query,
                     query_type=QueryType.GRAPH_ONLY,
@@ -418,12 +418,12 @@ class GraphRAGFusion:
                     sources=["graph_unavailable"],
                     confidence=0.0
                 )
-                
+
         except Exception as e:
             logger.error(f"Graph query failed: {e}")
             # Fallback to vector
             return await self._vector_only_query(query, max_results)
-    
+
     async def _fusion_query(
         self,
         query: str,
@@ -431,12 +431,12 @@ class GraphRAGFusion:
         max_results: int
     ) -> FusionResult:
         """Execute fusion query combining vector and graph.
-        
+
         Args:
             query: Query string
             query_type: Type of fusion query
             max_results: Maximum results
-            
+
         Returns:
             FusionResult with fused results
         """
@@ -444,34 +444,34 @@ class GraphRAGFusion:
             self.stats["multi_hop_queries"] += 1
         else:
             self.stats["fusion_queries"] += 1
-        
+
         # Run vector and graph queries in parallel
         vector_task = self._vector_only_query(query, max_results)
         graph_task = self._graph_only_query(query, max_results)
-        
+
         vector_result, graph_result = await asyncio.gather(
             vector_task, graph_task, return_exceptions=True
         )
-        
+
         # Handle exceptions
         if isinstance(vector_result, Exception):
             vector_result = FusionResult(query=query, query_type=QueryType.VECTOR_ONLY)
         if isinstance(graph_result, Exception):
             graph_result = FusionResult(query=query, query_type=QueryType.GRAPH_ONLY)
-        
+
         # Fuse results
         fused_context = self._fuse_results(
             vector_result.vector_results,
             graph_result.graph_results,
             query_type
         )
-        
+
         # Combine sources
         combined_sources = vector_result.sources + graph_result.sources
-        
+
         # Calculate combined confidence
         combined_confidence = max(vector_result.confidence, graph_result.confidence)
-        
+
         return FusionResult(
             query=query,
             query_type=query_type,
@@ -486,7 +486,7 @@ class GraphRAGFusion:
                 "graph_metadata": graph_result.metadata
             }
         )
-    
+
     def _fuse_results(
         self,
         vector_results: List[Dict[str, Any]],
@@ -494,17 +494,17 @@ class GraphRAGFusion:
         query_type: QueryType
     ) -> str:
         """Fuse vector and graph results into context.
-        
+
         Args:
             vector_results: Results from vector search
             graph_context: Results from graph search
             query_type: Type of query
-            
+
         Returns:
             Fused context string
         """
         context_parts = []
-        
+
         # Add unstructured text from vector results
         if vector_results:
             context_parts.append("## Unstructured Knowledge")
@@ -515,11 +515,11 @@ class GraphRAGFusion:
                 else:
                     text = str(result)
                 context_parts.append(f"{i}. {text[:200]}...")
-        
+
         # Add structured relationships from graph
         if graph_context and graph_context.entities:
             context_parts.append("\n## Structured Relationships")
-            
+
             # Add entities
             if graph_context.entities:
                 context_parts.append("### Key Entities:")
@@ -527,7 +527,7 @@ class GraphRAGFusion:
                     name = entity.get('name', entity.get('entity_name', 'Unknown'))
                     score = entity.get('influence_score', entity.get('score', 0))
                     context_parts.append(f"- {name} (relevance: {score:.2f})")
-            
+
             # Add relationships
             if graph_context.relationships:
                 context_parts.append("\n### Relationships:")
@@ -536,12 +536,12 @@ class GraphRAGFusion:
                     target = rel.get('target', rel.get('end', 'Unknown'))
                     rel_type = rel.get('type', 'related_to')
                     context_parts.append(f"- {source} --[{rel_type}]--> {target}")
-        
+
         return "\n".join(context_parts)
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get fusion statistics.
-        
+
         Returns:
             Dictionary with stats
         """
@@ -559,18 +559,18 @@ _graphrag_fusion: Optional[GraphRAGFusion] = None
 
 def get_graphrag_fusion(**kwargs) -> GraphRAGFusion:
     """Get or create global GraphRAG fusion instance.
-    
+
     Args:
         **kwargs: Arguments for GraphRAGFusion
-        
+
     Returns:
         GraphRAGFusion instance
     """
     global _graphrag_fusion
-    
+
     if _graphrag_fusion is None:
         _graphrag_fusion = GraphRAGFusion(**kwargs)
-    
+
     return _graphrag_fusion
 
 
@@ -582,13 +582,13 @@ async def graphrag_query(
     **kwargs
 ) -> FusionResult:
     """Convenience function for GraphRAG query.
-    
+
     Args:
         query: Natural language query
         query_type: Type of query
         max_results: Maximum results
         **kwargs: Additional arguments
-        
+
     Returns:
         FusionResult
     """

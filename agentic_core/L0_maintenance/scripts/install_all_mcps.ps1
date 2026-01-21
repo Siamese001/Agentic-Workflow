@@ -11,7 +11,7 @@ Write-Host "Checking Node.js installation..." -ForegroundColor Yellow
 try {
     $nodeVersion = node --version 2>$null
     $npmVersion = npm --version 2>$null
-    
+
     if ($nodeVersion -and $npmVersion) {
         Write-Host "✓ Node.js version: $nodeVersion" -ForegroundColor Green
         Write-Host "✓ npm version: $npmVersion" -ForegroundColor Green
@@ -50,11 +50,11 @@ $failCount = 0
 
 foreach ($server in $servers) {
     Write-Host "[$($servers.IndexOf($server) + 1)/6] Installing $($server.Name) MCP Server..." -ForegroundColor Yellow
-    
+
     try {
         # Try to run the package with npx to verify/install
         $output = npx -y $server.Package --version 2>&1
-        
+
         if ($LASTEXITCODE -eq 0 -or $output -match "version") {
             Write-Host "  ✓ $($server.Name) installed successfully" -ForegroundColor Green
             $successCount++
@@ -68,7 +68,7 @@ foreach ($server in $servers) {
         Write-Host "    Error: $_" -ForegroundColor DarkRed
         $failCount++
     }
-    
+
     Write-Host ""
 }
 

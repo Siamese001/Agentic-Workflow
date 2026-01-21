@@ -106,10 +106,10 @@ async def _snapshot_file_hashes(self, ctx: Any) -> Dict[str, str]:
 ```python
 async def _run_tandem_healing(self, ctx: Any, detection_results: Dict[str, Any]):
     """Spawn healers for detected violations."""
-    
+
     # Get all validator-healer pairs
     atomic_validators = self._orchestrator.get_atomic_validators()
-    
+
     # For each file with violations
     for file_path, violations in violations_by_file.items():
         # Spawn appropriate healer for each violation
@@ -149,7 +149,7 @@ async def _run_ssot_revalidation(self, ctx: Any):
 ```python
 async def _detect_fission_events(self, ctx, pre_hashes, post_hashes, pre_violations, post_violations):
     """Detect files requiring decomposition."""
-    
+
     for file_path in ctx.python_files:
         # File unchanged?
         if pre_hashes[file_path] == post_hashes[file_path]:
@@ -460,7 +460,7 @@ The L4 Recursive Convergence Loop represents a fundamental shift from **reactive
 
 ---
 
-**Status**: ✅ Production Ready  
-**Version**: 4.0  
-**Compliance**: 99.7%  
+**Status**: ✅ Production Ready
+**Version**: 4.0
+**Compliance**: 99.7%
 **Test Coverage**: Integration tests required

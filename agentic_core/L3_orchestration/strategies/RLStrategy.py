@@ -26,32 +26,32 @@ Logger = logging.getLogger(__name__)
 class RLStrategy:
     """
     Strategy for reinforcement learning orchestration missions.
-    
+
     Consolidates:
     - Actor-Critic methods (from ActorCriticOrchestratorAgent)
     - PPO optimization (from PPOOrchestratorAgent)
     - Q-Learning (from QLearningOrchestratorAgent)
     - General RL (from RLOrchestratorAgent)
     - REINFORCE with critic (from ReinforceCriticOrchestratorAgent)
-    
+
     Usage:
         strategy = RLStrategy(project_root=Path.cwd())
         orchestrator = UnifiedOrchestratorAgent(strategy=strategy)
         result = orchestrator.run_mission({"dry_run": True})
     """
-    
+
     project_root: Path = field(default_factory=Path.cwd)
     algorithm: str = "actor_critic"  # actor_critic, ppo, q_learning, reinforce
-    
+
     @property
     def name(self) -> str:
         """Return the strategy name."""
         return f"RLStrategy({self.algorithm})"
-    
+
     def get_tiers(self) -> Dict[str, List[str]]:
         """
         Return the tiered execution plan for RL missions.
-        
+
         Returns:
             Dictionary mapping tier names to lists of agent names.
         """
@@ -69,7 +69,7 @@ class RLStrategy:
                 "RewardValidatorAgent",
             ],
         }
-    
+
     def _get_optimizer_agent(self) -> str:
         """Get the optimizer agent based on algorithm."""
         algorithm_map = {
@@ -79,21 +79,21 @@ class RLStrategy:
             "reinforce": "ReinforceOptimizerAgent",
         }
         return algorithm_map.get(self.algorithm, "ActorCriticOptimizerAgent")
-    
+
     def get_agent(self, agent_name: str) -> Optional[Any]:
         """
         Get or create an agent instance by name.
-        
+
         Args:
             agent_name: Name of the agent to retrieve
-            
+
         Returns:
             Agent instance or None if not available
         """
         # RL agents are typically stubs - return None for now
         Logger.debug(f"[RLStrategy] Agent {agent_name} requested (stub)")
         return None
-    
+
     def execute_agent(
         self,
         agent: Any,
@@ -104,14 +104,14 @@ class RLStrategy:
     ) -> Dict[str, Any]:
         """
         Execute a single agent and return results.
-        
+
         Args:
             agent: The agent instance to execute
             agent_name: Name of the agent (for logging)
             dry_run: If True, only report violations
             execute: If True, apply fixes
             **kwargs: Additional agent-specific parameters
-            
+
         Returns:
             Dictionary with execution results
         """
@@ -123,15 +123,15 @@ class RLStrategy:
                 "execution_time_ms": 0,
                 "error_message": f"{agent_name} not implemented",
             }
-        
+
         import time
         start_time = time.time()
-        
+
         try:
             if hasattr(agent, 'heal_repository'):
                 result = agent.heal_repository(dry_run=dry_run, execute=execute)
                 execution_time_ms = (time.time() - start_time) * 1000
-                
+
                 return {
                     "status": "PASS" if result.get("errors", 0) == 0 else "FAIL",
                     "violations_found": result.get("violations", 0),
@@ -156,7 +156,7 @@ class RLStrategy:
                 "execution_time_ms": execution_time_ms,
                 "error_message": str(e),
             }
-    
+
     def should_abort_tier(
         self,
         tier_name: str,
@@ -165,12 +165,12 @@ class RLStrategy:
     ) -> bool:
         """
         Determine if execution should abort after a tier.
-        
+
         Args:
             tier_name: Name of the completed tier
             tier_results: Results from all agents in the tier
             execute: Whether we're in execute mode
-            
+
         Returns:
             True if execution should abort, False to continue
         """
@@ -179,5 +179,5 @@ class RLStrategy:
             for result in tier_results:
                 if result.get("status") == "FAIL":
                     return True
-        
+
         return False

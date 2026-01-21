@@ -80,6 +80,6 @@ if len(files_with_globals) > self.MAX_FILES_PER_RUN:
 - ⏳ Awaiting approval to re-enable with constraints
 
 ---
-**Last Updated:** 2025-12-14  
-**Incident Severity:** CRITICAL  
+**Last Updated:** 2025-12-14
+**Incident Severity:** CRITICAL
 **Resolution Status:** RESOLVED with permanent safeguards

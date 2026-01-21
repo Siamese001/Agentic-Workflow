@@ -19,23 +19,23 @@ log = logging.getLogger(__name__)
 class RecoveryCoordinator(WorkflowCoordinator):
     """
     HARDENED Recovery Coordinator
-    
+
     Features:
     - Graceful error handling
     - Fallback execution
     - Error logging and reporting
     """
-    
+
     async def coordinate(self, task: Dict[str, Any]) -> Dict[str, Any]:
         """Execute recovery workflow."""
         self._lazy_init()
-        
+
         original_task = task.get('original_task', {})
         error = task.get('error', 'Unknown error')
-        
+
         log.error(f"Recovery triggered for task type: {original_task.get('type', 'unknown')}")
         log.error(f"Error: {error}")
-        
+
         # Implement recovery logic here
         # For now, return a safe fallback response
         return {

@@ -37,14 +37,14 @@ from openai import AsyncOpenAI
 async def batch_process(prompts, max_concurrent=10):
     client = AsyncOpenAI()
     semaphore = asyncio.Semaphore(max_concurrent)
-    
+
     async def process_prompt(prompt):
         async with semaphore:
             return await client.chat.completions.create(
                 model="gpt-4o",
                 messages=[{"role": "user", "content": prompt}]
             )
-    
+
     return await asyncio.gather(*[process_prompt(p) for p in prompts])
 ```
 
@@ -64,13 +64,13 @@ def optimize_model_choice(estimated_tokens, budget_constraints):
         "gpt-4o-mini": 0.00015,
         "gpt-4o": 0.005
     }
-    
+
     # Calculate optimal model based on budget and requirements
     for model, cost in cost_per_1k_tokens.items():
         total_cost = (estimated_tokens / 1000) * cost
         if total_cost <= budget_constraints.max_cost:
             return model
-    
+
     return "gpt-4o-mini"  # Fallback to most cost-effective option
 ```
 
@@ -107,14 +107,14 @@ class CircuitBreaker:
         self.failure_count = 0
         self.last_failure_time = None
         self.state = "CLOSED"  # CLOSED, OPEN, HALF_OPEN
-    
+
     def call(self, func, *args, **kwargs):
         if self.state == "OPEN":
             if time.time() - self.last_failure_time > self.timeout:
                 self.state = "HALF_OPEN"
             else:
                 raise Exception("Circuit breaker is OPEN")
-        
+
         try:
             result = func(*args, **kwargs)
             if self.state == "HALF_OPEN":
@@ -149,17 +149,17 @@ class OpenAIMonitor:
     def __init__(self):
         self.metrics = APIMetrics()
         self.request_times: List[float] = []
-    
-    def track_request(self, start_time: float, end_time: float, 
+
+    def track_request(self, start_time: float, end_time: float,
                      tokens_used: int, cost: float, success: bool):
         latency = end_time - start_time
         self.request_times.append(latency)
-        
+
         self.metrics.request_count += 1
         self.metrics.total_tokens += tokens_used
         self.metrics.total_cost += cost
         self.metrics.average_latency = sum(self.request_times) / len(self.request_times)
-        
+
         if not success:
             self.metrics.error_rate = (self.metrics.error_rate * (self.metrics.request_count - 1) + 1) / self.metrics.request_count
 ```
@@ -174,13 +174,13 @@ from cryptography.fernet import Fernet
 class SecureAPIKeyManager:
     def __init__(self):
         self.cipher_suite = Fernet(os.environ.get('ENCRYPTION_KEY'))
-    
+
     def encrypt_api_key(self, api_key: str) -> str:
         return self.cipher_suite.encrypt(api_key.encode()).decode()
-    
+
     def decrypt_api_key(self, encrypted_key: str) -> str:
         return self.cipher_suite.decrypt(encrypted_key.encode()).decode()
-    
+
     def get_api_key(self, service: str) -> str:
         encrypted_key = os.environ.get(f'{service}_API_KEY_ENCRYPTED')
         if encrypted_key:
@@ -198,7 +198,7 @@ def validate_content_safety(content: str) -> bool:
         r'\binternal instructions\b',
         # Add more patterns as needed
     ]
-    
+
     for pattern in blocked_patterns:
         if re.search(pattern, content, re.IGNORECASE):
             return False
@@ -217,10 +217,10 @@ def adaptive_temperature(task_type: str, complexity: float) -> float:
         "generation": 0.7,
         "creative": 0.9
     }
-    
+
     base_temp = base_temperatures.get(task_type, 0.7)
     adjustment = (complexity - 0.5) * 0.2  # Scale based on complexity
-    
+
     return max(0.0, min(1.0, base_temp + adjustment))
 ```
 
@@ -232,23 +232,23 @@ class SmartBatcher:
         self.max_wait_time = max_wait_time
         self.pending_requests = []
         self.last_batch_time = time.time()
-    
+
     async def add_request(self, request):
         self.pending_requests.append(request)
-        
-        if (len(self.pending_requests) >= self.max_batch_size or 
+
+        if (len(self.pending_requests) >= self.max_batch_size or
             time.time() - self.last_batch_time >= self.max_wait_time):
             await self.process_batch()
-    
+
     async def process_batch(self):
         if not self.pending_requests:
             return
-        
+
         # Process batch and clear pending
         batch = self.pending_requests.copy()
         self.pending_requests.clear()
         self.last_batch_time = time.time()
-        
+
         # Execute batch processing
         results = await batch_process(batch)
         return results

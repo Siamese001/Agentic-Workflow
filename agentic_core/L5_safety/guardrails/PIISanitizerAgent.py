@@ -27,10 +27,10 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 
 def track_metrics(name: str):
     """Stub decorator for track_metrics.
-    
+
     Args:
         name: Metric name to track.
-        
+
     Returns:
         Decorator function that passes through the wrapped function.
     """
@@ -41,13 +41,13 @@ def track_metrics(name: str):
 
 class PIISanitizerAgent(L5SafetyBaseAgent):
     """L5 Safety agent that performs local PII detection using regex heuristics.
-    
+
     This agent detects and redacts common PII patterns including emails,
     phone numbers, and names from text data.
-    
+
     Attributes:
         PII_PATTERNS: Dictionary mapping PII types to compiled regex patterns.
-        
+
     Inherits:
         L5SafetyBaseAgent: Provides logging, healing, and MCP hardening.
     """
@@ -61,10 +61,10 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
     @track_metrics("run_pii_sanitizer")
     def run(self, resume: Dict[str, Any]) -> Dict[str, Any]:
         """Run PII sanitizer on the resume data.
-        
+
         Args:
             resume: Dictionary containing resume data to sanitize.
-            
+
         Returns:
             Sanitized copy of the resume with PII redacted.
         """
@@ -86,10 +86,10 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
 
     def _sanitize_text(self, text: str) -> str:
         """Sanitize text by redacting PII patterns.
-        
+
         Args:
             text: Text to sanitize.
-            
+
         Returns:
             Text with PII patterns replaced by redaction markers.
         """
@@ -108,16 +108,16 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
         _call_path: Optional[Set[str]] = None
     ) -> Dict[str, int]:
         """Execute L5 safety healing operations.
-        
+
         This is an operational guardrail agent - no repository healing required.
-        
+
         Args:
             dry_run: If True, only report what would be done (default: True).
             execute: If True, execute healing actions (default: False).
             depth: Current recursion depth for cycle detection (default: 0).
             max_depth: Maximum recursion depth allowed (default: 3).
             _call_path: Set of agent names in current call chain for cycle detection.
-            
+
         Returns:
             Dictionary with healing results: {"skipped": 1} for operational agents.
         """
@@ -127,7 +127,7 @@ class PIISanitizerAgent(L5SafetyBaseAgent):
 
     def _run_self_tests(self) -> Dict[str, Any]:
         """Run internal self-tests for agent validation.
-        
+
         Returns:
             Dictionary with test results:
                 - passed: Count of passed tests

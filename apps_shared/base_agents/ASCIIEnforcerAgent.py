@@ -17,7 +17,7 @@ class ASCIIEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     Enforce ASCII-only characters for LinkedIn compatibility
     GAP 1.10 from v10.22
     """
-    
+
     UNICODE_REPLACEMENTS = {
         "•": "-",
         "–": "-",
@@ -28,32 +28,32 @@ class ASCIIEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         "'": "'",
         "…": "...",
     }
-    
+
     def enforce_ascii(self, text: str) -> str:
         """
         Replace Unicode characters with ASCII equivalents.
-        
+
         Args:
             text: Input text potentially containing Unicode characters
-        
+
         Returns:
             Text with Unicode replaced by ASCII equivalents
         """
         for unicode_char, ascii_replacement in self.UNICODE_REPLACEMENTS.items():
             text = text.replace(unicode_char, ascii_replacement)
-        
+
         # Remove any remaining non-ASCII
         text = text.encode("ascii", "ignore").decode("ascii")
-        
+
         return text
-    
+
     def validate(self, text: str) -> Tuple[bool, str]:
         """
         Validate that text contains only ASCII characters.
-        
+
         Args:
             text: Text to validate
-        
+
         Returns:
             Tuple of (is_valid, error_message)
         """
@@ -67,7 +67,7 @@ class ASCIIEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: bool = False, **kwargs) -> Dict[str, int]:

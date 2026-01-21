@@ -32,11 +32,11 @@ sys.path.insert(0, str(PROJECT_ROOT))
 def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[str, Any]]]:
     """
     Run all 5 legacy validators and collect violations.
-    
+
     Args:
         source: Python source code
         file_path: Path for error reporting
-        
+
     Returns:
         Dictionary mapping validator name to violations
     """
@@ -47,7 +47,7 @@ def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[s
         'DangerousBuiltinsValidatorAgent': [],
         'DebuggerValidatorAgent': [],
     }
-    
+
     try:
         from agentic_core.L1_cognition.thought_engine.BareExceptValidatorAgent import BareExceptValidatorAgent
         validator = BareExceptValidatorAgent()
@@ -55,7 +55,7 @@ def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[s
         results['BareExceptValidatorAgent'] = violations
     except Exception as e:
         results['BareExceptValidatorAgent'] = [{'error': str(e)}]
-    
+
     try:
         from agentic_core.L1_cognition.thought_engine.EmptyExceptValidatorAgent import EmptyExceptValidatorAgent
         validator = EmptyExceptValidatorAgent()
@@ -63,7 +63,7 @@ def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[s
         results['EmptyExceptValidatorAgent'] = violations
     except Exception as e:
         results['EmptyExceptValidatorAgent'] = [{'error': str(e)}]
-    
+
     try:
         from agentic_core.L1_cognition.thought_engine.EvalExecValidatorAgent import EvalExecValidatorAgent
         validator = EvalExecValidatorAgent()
@@ -71,7 +71,7 @@ def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[s
         results['EvalExecValidatorAgent'] = violations
     except Exception as e:
         results['EvalExecValidatorAgent'] = [{'error': str(e)}]
-    
+
     try:
         from agentic_core.L1_cognition.thought_engine.DangerousBuiltinsValidatorAgent import DangerousBuiltinsValidatorAgent
         validator = DangerousBuiltinsValidatorAgent()
@@ -79,7 +79,7 @@ def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[s
         results['DangerousBuiltinsValidatorAgent'] = violations
     except Exception as e:
         results['DangerousBuiltinsValidatorAgent'] = [{'error': str(e)}]
-    
+
     try:
         from agentic_core.L1_cognition.thought_engine.DebuggerValidatorAgent import DebuggerValidatorAgent
         validator = DebuggerValidatorAgent()
@@ -87,18 +87,18 @@ def run_legacy_validators(source: str, file_path: Path) -> Dict[str, List[Dict[s
         results['DebuggerValidatorAgent'] = violations
     except Exception as e:
         results['DebuggerValidatorAgent'] = [{'error': str(e)}]
-    
+
     return results
 
 
 def run_unified_validator(source: str, file_path: Path) -> Dict[str, List[Dict[str, Any]]]:
     """
     Run the UnifiedASTValidatorAgent and collect violations.
-    
+
     Args:
         source: Python source code
         file_path: Path for error reporting
-        
+
     Returns:
         Dictionary with grouped violations
     """
@@ -117,7 +117,7 @@ def run_unified_validator(source: str, file_path: Path) -> Dict[str, List[Dict[s
 def normalize_violations(violations: List[Dict[str, Any]]) -> Set[tuple]:
     """
     Normalize violations for comparison.
-    
+
     Extracts (lineno, message_type) tuples for comparison.
     """
     normalized = set()
@@ -126,7 +126,7 @@ def normalize_violations(violations: List[Dict[str, Any]]) -> Set[tuple]:
             continue
         lineno = v.get('lineno', 0)
         msg = v.get('message', '').lower()
-        
+
         # Categorize by violation type
         if 'bare except' in msg:
             normalized.add((lineno, 'bare_except'))
@@ -138,14 +138,14 @@ def normalize_violations(violations: List[Dict[str, Any]]) -> Set[tuple]:
             normalized.add((lineno, 'dangerous_builtin'))
         elif 'breakpoint' in msg or 'pdb' in msg or 'debugger' in msg:
             normalized.add((lineno, 'debugger'))
-    
+
     return normalized
 
 
 def compare_results(legacy: Dict, unified: Dict) -> Dict[str, Any]:
     """
     Compare legacy and unified validator results.
-    
+
     Returns:
         Comparison report with match status
     """
@@ -154,21 +154,21 @@ def compare_results(legacy: Dict, unified: Dict) -> Dict[str, Any]:
     for validator_name, violations in legacy.items():
         if isinstance(violations, list):
             legacy_violations.extend(violations)
-    
+
     # Get unified violations
     unified_violations = unified.get('all_violations', [])
-    
+
     # Normalize for comparison
     legacy_normalized = normalize_violations(legacy_violations)
     unified_normalized = normalize_violations(unified_violations)
-    
+
     # Compare
     only_in_legacy = legacy_normalized - unified_normalized
     only_in_unified = unified_normalized - legacy_normalized
     common = legacy_normalized & unified_normalized
-    
+
     match_rate = len(common) / max(len(legacy_normalized), 1) * 100
-    
+
     return {
         'match_rate': match_rate,
         'is_100_percent_match': len(only_in_legacy) == 0 and len(only_in_unified) == 0,
@@ -183,23 +183,23 @@ def compare_results(legacy: Dict, unified: Dict) -> Dict[str, Any]:
 def run_chaos_test() -> Dict[str, Any]:
     """
     Run the chaos_test.py validation.
-    
+
     Returns:
         Test results with expected vs actual violations
     """
     chaos_file = PROJECT_ROOT / 'tests' / 'chaos_test.py'
-    
+
     if not chaos_file.exists():
         return {'error': f'chaos_test.py not found at {chaos_file}'}
-    
+
     source = chaos_file.read_text(encoding='utf-8')
-    
+
     # Run unified validator
     from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import UnifiedASTValidatorAgent
     validator = UnifiedASTValidatorAgent()
     grouped = validator.validate_all(source, chaos_file)
     all_violations = validator.get_violations()
-    
+
     # Expected counts (updated to match actual detection behavior)
     # Note: bare except with pass triggers BOTH bare_except AND empty_except
     # Note: eval inside function_with_bare_except counts as eval_exec
@@ -210,7 +210,7 @@ def run_chaos_test() -> Dict[str, Any]:
         'eval_exec': 4,     # Includes eval inside function_with_bare_except
         'dangerous_builtins': 5,
     }
-    
+
     # Actual counts
     actual = {
         'debugger': len(grouped.get('debugger', [])),
@@ -219,11 +219,11 @@ def run_chaos_test() -> Dict[str, Any]:
         'eval_exec': len(grouped.get('eval_exec', [])),
         'dangerous_builtins': len(grouped.get('dangerous_builtins', [])),
     }
-    
+
     # Check matches
     matches = {k: expected[k] == actual[k] for k in expected}
     all_match = all(matches.values())
-    
+
     return {
         'chaos_test_file': str(chaos_file),
         'expected': expected,
@@ -239,7 +239,7 @@ def run_chaos_test() -> Dict[str, Any]:
 def run_self_tests() -> Dict[str, Any]:
     """
     Run the UnifiedASTValidatorAgent's internal self-tests.
-    
+
     Returns:
         Self-test results
     """
@@ -255,21 +255,21 @@ def main():
     parser.add_argument('--compare', action='store_true', help='Run parallel comparison with legacy validators')
     parser.add_argument('--output-dir', type=str, default='test_results', help='Output directory for JSON results')
     args = parser.parse_args()
-    
+
     output_dir = PROJECT_ROOT / args.output_dir
     output_dir.mkdir(exist_ok=True)
-    
+
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    
+
     print("=" * 60)
     print("UnifiedASTValidatorAgent Test Suite")
     print("=" * 60)
-    
+
     results = {
         'timestamp': timestamp,
         'tests': {},
     }
-    
+
     # Self-tests
     if args.self_test or not (args.chaos_only or args.compare):
         print("\n[1/3] Running self-tests...")
@@ -287,14 +287,14 @@ def main():
         except Exception as e:
             print(f"  ✗ Self-tests failed: {e}")
             results['tests']['self_tests'] = {'error': str(e)}
-    
+
     # Chaos test
     if args.chaos_only or not args.compare:
         print("\n[2/3] Running chaos_test.py validation...")
         try:
             chaos_results = run_chaos_test()
             results['tests']['chaos_test'] = chaos_results
-            
+
             if chaos_results.get('all_match'):
                 print(f"  ✓ Chaos test PASSED: All {chaos_results.get('total_expected')} violations detected")
             else:
@@ -307,24 +307,24 @@ def main():
         except Exception as e:
             print(f"  ✗ Chaos test failed: {e}")
             results['tests']['chaos_test'] = {'error': str(e)}
-    
+
     # Parallel comparison
     if args.compare:
         print("\n[3/3] Running parallel comparison (shadow mode)...")
         try:
             chaos_file = PROJECT_ROOT / 'tests' / 'chaos_test.py'
             source = chaos_file.read_text(encoding='utf-8')
-            
+
             legacy_results = run_legacy_validators(source, chaos_file)
             unified_results = run_unified_validator(source, chaos_file)
             comparison = compare_results(legacy_results, unified_results)
-            
+
             results['tests']['parallel_comparison'] = {
                 'legacy': legacy_results,
                 'unified': unified_results,
                 'comparison': comparison,
             }
-            
+
             if comparison.get('is_100_percent_match'):
                 print(f"  ✓ 100% MATCH: Legacy and Unified validators produce identical results")
             else:
@@ -335,15 +335,15 @@ def main():
         except Exception as e:
             print(f"  ✗ Parallel comparison failed: {e}")
             results['tests']['parallel_comparison'] = {'error': str(e)}
-    
+
     # Save results
     output_file = output_dir / f'unified_ast_validator_test_{timestamp}.json'
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(results, f, indent=2, default=str)
-    
+
     print(f"\n{'=' * 60}")
     print(f"Results saved to: {output_file}")
-    
+
     # Summary
     all_passed = True
     if 'self_tests' in results['tests']:
@@ -356,7 +356,7 @@ def main():
         comp = results['tests']['parallel_comparison'].get('comparison', {})
         if not comp.get('is_100_percent_match', False):
             all_passed = False
-    
+
     if all_passed:
         print("✓ ALL TESTS PASSED")
         return 0

@@ -35,22 +35,22 @@ def scan_temp_artifacts(root: Path) -> List[Path]:
 def scan_empty_folders(root: Path) -> List[Path]:
     """Scan for empty folders without removing them."""
     empty_folders = []
-    
+
     for root_folder in ALLOWED_ROOT_FOLDERS:
         root_path = root / root_folder
         if not root_path.exists():
             continue
-        
+
         # Walk bottom-up
         for dirpath, dirnames, filenames in os.walk(root_path, topdown=False):
             current_dir = Path(dirpath)
-            
+
             # Skip .git and sovereign roots
             if ".git" in current_dir.parts:
                 continue
             if current_dir.name in ALLOWED_ROOT_FOLDERS:
                 continue
-            
+
             # Check if folder is truly empty (ignoring .gitkeep)
             try:
                 children = [x for x in current_dir.iterdir() if x.name not in IGNORE_FILES]
@@ -58,36 +58,36 @@ def scan_empty_folders(root: Path) -> List[Path]:
                     empty_folders.append(current_dir)
             except PermissionError:
                 pass
-    
+
     return empty_folders
 
 
 def scan_folders_with_only_init(root: Path) -> List[Path]:
     """Scan for folders that only contain __init__.py (no other meaningful content)."""
     init_only_folders = []
-    
+
     for root_folder in ALLOWED_ROOT_FOLDERS:
         root_path = root / root_folder
         if not root_path.exists():
             continue
-        
+
         for dirpath, dirnames, filenames in os.walk(root_path, topdown=False):
             current_dir = Path(dirpath)
-            
+
             # Skip .git and sovereign roots
             if ".git" in current_dir.parts:
                 continue
             if current_dir.name in ALLOWED_ROOT_FOLDERS:
                 continue
-            
+
             try:
                 children = list(current_dir.iterdir())
                 # Filter out .gitkeep and hidden files
                 meaningful_children = [
-                    x for x in children 
+                    x for x in children
                     if x.name not in IGNORE_FILES and not x.name.startswith(".")
                 ]
-                
+
                 # Check if only __init__.py exists (no subdirs, no other files)
                 if len(meaningful_children) == 1:
                     only_child = meaningful_children[0]
@@ -95,7 +95,7 @@ def scan_folders_with_only_init(root: Path) -> List[Path]:
                         init_only_folders.append(current_dir)
             except PermissionError:
                 pass
-    
+
     return init_only_folders
 
 
@@ -103,7 +103,7 @@ def remove_artifacts(artifacts: List[Path]) -> Tuple[int, List[str]]:
     """Remove artifacts and return count and errors."""
     removed = 0
     errors = []
-    
+
     for path in artifacts:
         try:
             if path.is_file():
@@ -114,7 +114,7 @@ def remove_artifacts(artifacts: List[Path]) -> Tuple[int, List[str]]:
                 removed += 1
         except Exception as e:
             errors.append(f"{path}: {e}")
-    
+
     return removed, errors
 
 
@@ -122,10 +122,10 @@ def remove_empty_folders(folders: List[Path]) -> Tuple[int, List[str]]:
     """Remove empty folders and return count and errors."""
     removed = 0
     errors = []
-    
+
     # Sort by depth (deepest first) to handle nested empty folders
     sorted_folders = sorted(folders, key=lambda p: len(p.parts), reverse=True)
-    
+
     for folder in sorted_folders:
         try:
             # Re-check if still empty (might have been parent of another empty folder)
@@ -136,7 +136,7 @@ def remove_empty_folders(folders: List[Path]) -> Tuple[int, List[str]]:
                     removed += 1
         except Exception as e:
             errors.append(f"{folder}: {e}")
-    
+
     return removed, errors
 
 
@@ -144,16 +144,16 @@ def main():
     print("=" * 70)
     print("HYGIENE GUARDIAN AGENT - FULL REPO SCAN")
     print("=" * 70)
-    
+
     project_root = PROJECT_ROOT
     print(f"\nProject Root: {project_root}")
     print(f"Allowed Root Folders: {sorted(ALLOWED_ROOT_FOLDERS)}")
-    
+
     # === PHASE 1: SCAN (Before Fixes) ===
     print("\n" + "=" * 70)
     print("PHASE 1: INITIAL SCAN (Before Fixes)")
     print("=" * 70)
-    
+
     # Scan for artifacts
     print("\n[1.1] Scanning for temporary artifacts...")
     artifacts = scan_temp_artifacts(project_root)
@@ -162,7 +162,7 @@ def main():
         print(f"        - {a.relative_to(project_root)}")
     if len(artifacts) > 20:
         print(f"        ... and {len(artifacts) - 20} more")
-    
+
     # Scan for empty folders
     print("\n[1.2] Scanning for empty folders...")
     empty_folders = scan_empty_folders(project_root)
@@ -171,7 +171,7 @@ def main():
         print(f"        - {f.relative_to(project_root)}")
     if len(empty_folders) > 20:
         print(f"        ... and {len(empty_folders) - 20} more")
-    
+
     # Scan for __init__.py only folders
     print("\n[1.3] Scanning for folders with only __init__.py...")
     init_only = scan_folders_with_only_init(project_root)
@@ -180,12 +180,12 @@ def main():
         print(f"        - {f.relative_to(project_root)}")
     if len(init_only) > 20:
         print(f"        ... and {len(init_only) - 20} more")
-    
+
     # === PHASE 2: APPLY FIXES ===
     print("\n" + "=" * 70)
     print("PHASE 2: APPLYING FIXES")
     print("=" * 70)
-    
+
     # Remove artifacts
     print("\n[2.1] Removing temporary artifacts...")
     artifacts_removed, artifact_errors = remove_artifacts(artifacts)
@@ -194,7 +194,7 @@ def main():
         print(f"      Errors: {len(artifact_errors)}")
         for e in artifact_errors[:5]:
             print(f"        - {e}")
-    
+
     # Remove empty folders
     print("\n[2.2] Removing empty folders...")
     folders_removed, folder_errors = remove_empty_folders(empty_folders)
@@ -203,29 +203,29 @@ def main():
         print(f"      Errors: {len(folder_errors)}")
         for e in folder_errors[:5]:
             print(f"        - {e}")
-    
+
     # === PHASE 3: RE-SCAN (After Fixes) ===
     print("\n" + "=" * 70)
     print("PHASE 3: VERIFICATION SCAN (After Fixes)")
     print("=" * 70)
-    
+
     # Re-scan for artifacts
     print("\n[3.1] Re-scanning for temporary artifacts...")
     remaining_artifacts = scan_temp_artifacts(project_root)
     print(f"      Remaining: {len(remaining_artifacts)} artifact(s)")
-    
+
     # Re-scan for empty folders
     print("\n[3.2] Re-scanning for empty folders...")
     remaining_empty = scan_empty_folders(project_root)
     print(f"      Remaining: {len(remaining_empty)} empty folder(s)")
     for f in remaining_empty:
         print(f"        - {f.relative_to(project_root)}")
-    
+
     # Re-scan for __init__.py only folders
     print("\n[3.3] Re-scanning for folders with only __init__.py...")
     remaining_init_only = scan_folders_with_only_init(project_root)
     print(f"      Remaining: {len(remaining_init_only)} folder(s)")
-    
+
     # === SUMMARY ===
     print("\n" + "=" * 70)
     print("SUMMARY REPORT")
@@ -247,7 +247,7 @@ AFTER FIXES:
 
 STATUS: {"✅ CLEAN" if len(remaining_artifacts) == 0 and len(remaining_empty) == 0 else "⚠️ ISSUES REMAIN"}
 """)
-    
+
     return {
         "before": {
             "artifacts": len(artifacts),

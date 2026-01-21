@@ -385,4 +385,3 @@ def create_version_manager() -> PromptVersionManager:
         PromptVersionManager instance
     """
     return PromptVersionManager()
-

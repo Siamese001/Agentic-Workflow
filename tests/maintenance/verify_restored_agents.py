@@ -49,7 +49,7 @@ def test_restoration_integrity():
     for cls, path in RESTORED_TARGETS:
         if not check_agent_import(cls, path):
             failures.append(cls)
-    
+
     if failures:
         pytest.fail(f"Failed to import {len(failures)} restored agents: {failures}")
 

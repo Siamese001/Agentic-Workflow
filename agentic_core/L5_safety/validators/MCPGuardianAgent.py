@@ -37,7 +37,7 @@ from agentic_core.utils.core_extensions.subatomic_testing_mixin import Subatomic
 class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     L5 Safety Guardian for MCP integration compliance.
-    
+
     Validates that all MCP integrations follow sovereignty principles:
     - No hardcoded credentials
     - Proper retry/timeout configuration
@@ -48,13 +48,13 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def __init__(self, project_root: Optional[Path] = None) -> None:
         """
         Initialize MCP Guardian.
-        
+
         Args:
             project_root: Project root directory for scanning
         """
         self.project_root = project_root or Path.cwd()
         self.violations: List[Dict[str, Any]] = []
-        
+
     async def audit_mcp_call(
         self,
         operation: str,
@@ -63,17 +63,17 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     ) -> bool:
         """
         Audit a single MCP call for compliance.
-        
+
         Args:
             operation: Name of the operation (e.g., 'redis_get')
             client_name: Name of the MCP client
             config: Configuration dictionary for the call
-            
+
         Returns:
             True if compliant, False if violations found
         """
         violations = []
-        
+
         # Check for hardcoded credentials
         if self._has_hardcoded_credentials(config):
             violations.append({
@@ -83,7 +83,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 "client": client_name,
                 "message": "Hardcoded credentials detected in MCP call"
             })
-        
+
         # Check for Missing timeout
         if "timeout" not in config and "timeout_seconds" not in config:
             violations.append({
@@ -93,7 +93,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 "client": client_name,
                 "message": "No timeout configured for MCP call"
             })
-        
+
         # Check for SSL enforcement (Redis, Neo4j)
         if client_name.lower() in ["redis", "neo4j"]:
             if not config.get("ssl", False) and not config.get("use_ssl", False):
@@ -104,18 +104,18 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                     "client": client_name,
                     "message": f"{client_name} connection without SSL/TLS"
                 })
-        
+
         if violations:
             self.violations.extend(violations)
             self._emit_critique(violations)
             return False
-        
+
         return True
-    
+
     def scan_codebase(self) -> Dict[str, Any]:
         """
         Scan entire codebase for MCP compliance violations.
-        
+
         Returns:
             Dictionary with scan results and violations
         """
@@ -125,22 +125,22 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             "compliant_files": [],
             "non_compliant_files": []
         }
-        
+
         # Scan for hardcoded credentials
         hardcoded_patterns = [
             (r'password\s*=\s*["\'](?!.*getenv)[\w\-]+["\']', "HARDCODED_PASSWORD"),
             (r'api_key\s*=\s*["\'](?!.*getenv)[\w\-]+["\']', "HARDCODED_API_KEY"),
             (r'secret\s*=\s*["\'](?!.*getenv)[\w\-]+["\']', "HARDCODED_SECRET"),
         ]
-        
+
         from agentic_core.utils.ssot_discovery import get_python_files
         for py_file in get_python_files(self.project_root):
             if "test" in str(py_file) or "__pycache__" in str(py_file):
                 continue
-            
+
             results["files_scanned"] += 1
             content = py_file.read_text(encoding="utf-8", errors="ignore")
-            
+
             file_violations = []
             for pattern, ViolationType in hardcoded_patterns:
                 matches = re.finditer(pattern, content, re.IGNORECASE)
@@ -152,40 +152,40 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                         "Severity": "CRITICAL",
                         "match": match.group(0)
                     })
-            
+
             if file_violations:
                 results["violations"].extend(file_violations)
                 results["non_compliant_files"].append(str(py_file.relative_to(self.project_root)))
             else:
                 results["compliant_files"].append(str(py_file.relative_to(self.project_root)))
-        
+
         return results
-    
+
     def _has_hardcoded_credentials(self, config: Dict[str, Any]) -> bool:
         """
         Check if configuration contains hardcoded credentials.
-        
+
         Args:
             config: Configuration dictionary
-            
+
         Returns:
             True if hardcoded credentials found
         """
         sensitive_keys = ["password", "api_key", "secret", "token", "key"]
-        
+
         for key, value in config.items():
             if any(sensitive in key.lower() for sensitive in sensitive_keys):
                 if isinstance(value, str) and not value.startswith("$"):
                     # Check if it's not an env var reference
                     if "getenv" not in str(value) and "environ" not in str(value):
                         return True
-        
+
         return False
-    
+
     def _emit_critique(self, violations: List[Dict[str, Any]]) -> None:
         """
         Emit CRITIQUE for MCP violations.
-        
+
         Args:
             violations: List of Violation dictionaries
         """
@@ -195,7 +195,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 f"{Violation['type']} in {Violation.get('client', 'unknown')} "
                 f"operation {Violation.get('operation', 'unknown')}"
             )
-        
+
         try:
             from agentic_core.L6_observability.telemetry.sovereign_events import emit_event
             emit_event(
@@ -207,16 +207,16 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             )
         except ImportError:
             pass
-    
+
     def generate_report(self) -> str:
         """
         Generate compliance report.
-        
+
         Returns:
             Formatted report string
         """
         scan_results = self.scan_codebase()
-        
+
         report = []
         report.append("=" * 80)
         report.append("MCP GUARDIAN COMPLIANCE REPORT")
@@ -226,7 +226,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         report.append(f"Compliant Files: {len(scan_results['compliant_files'])}")
         report.append(f"Non-Compliant Files: {len(scan_results['non_compliant_files'])}")
         report.append("")
-        
+
         if scan_results['violations']:
             report.append("VIOLATIONS:")
             report.append("-" * 80)
@@ -239,7 +239,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 report.append("")
         else:
             report.append("✅ NO VIOLATIONS FOUND - MCP SOVEREIGNTY MAINTAINED")
-        
+
         report.append("=" * 80)
         return "\n".join(report)
 
@@ -272,10 +272,10 @@ def get_mcp_guardian(project_root: Optional[Path] = None) -> MCPGuardianAgent:
     super().heal_repository()
 
     Get or create the global MCP Guardian instance.
-    
+
     Args:
         project_root: Project root path
-    
+
     Returns:
         MCPGuardianAgent instance
     """

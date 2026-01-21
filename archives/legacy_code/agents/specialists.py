@@ -521,4 +521,3 @@ def create_agent(agent_type: str, config: Optional[Dict[str, Any]] = None) -> Ba
         raise ValueError(f"Unknown agent type: {agent_type}")
 
     return agents[agent_type](config)
-

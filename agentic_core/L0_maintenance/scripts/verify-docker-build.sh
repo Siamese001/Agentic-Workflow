@@ -23,15 +23,15 @@ echo "This will run all 88 tests during the build process..."
 if docker build -t canon-validator:latest .; then
     echo "✅ Docker build successful!"
     echo ""
-    
+
     # Check image size
     echo "📊 Image Information:"
     docker images canon-validator:latest --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}"
-    
+
     # Check security features
     echo ""
     echo "🔒 Security Verification:"
-    
+
     # Check if running as non-root user
     USER_CHECK=$(docker run --rm canon-validator:latest whoami)
     if [ "$USER_CHECK" = "appuser" ]; then
@@ -39,18 +39,18 @@ if docker build -t canon-validator:latest .; then
     else
         echo "❌ WARNING: Container running as root user: $USER_CHECK"
     fi
-    
+
     # Check if Python dependencies are minimal
     echo ""
     echo "📦 Dependency Check:"
     DEPS_COUNT=$(docker run --rm canon-validator:latest pip list | wc -l)
     echo "Total Python packages installed: $DEPS_COUNT"
-    
+
     # Test health check
     echo ""
     echo "🏥 Testing Health Check:"
     docker run --rm -e REDIS_HOST=mock -e REDIS_PASSWORD=mock canon-validator:latest python /app/healthcheck.py || echo "Health check failed (expected without Redis)"
-    
+
     echo ""
     echo "✅ Docker build verification complete!"
     echo ""
@@ -58,7 +58,7 @@ if docker build -t canon-validator:latest .; then
     echo "1. Copy .env.production.template to .env.production and fill in your API keys"
     echo "2. Run: docker-compose up --build"
     echo "3. Monitor logs: docker-compose logs -f validator"
-    
+
 else
     echo "❌ Docker build failed!"
     echo ""

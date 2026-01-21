@@ -124,11 +124,11 @@ class GravityLeakRepairAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         """
         GOLD STANDARD: Post-heal validation confirming gravity compliance.
         Verifies file no longer has upward gravity leaks.
-        
+
         Args:
             file_path: Path to the healed file
             dry_run: If True, only preview without applying
-            
+
         Returns:
             Dict with validation status and details
         """
@@ -173,12 +173,12 @@ class GravityLeakRepairAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
     ) -> List[Dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup gravity violations with import conversion.
-        
+
         Args:
             violations: List of GravityViolation objects
             dry_run: If True, only preview actions
             max_actions: Maximum cleanup actions per run
-            
+
         Returns:
             List of action dicts with results and batch summary
         """
@@ -222,11 +222,11 @@ class GravityLeakRepairAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         """
         GOLD STANDARD: Full gravity repair with autonomous cleanup.
         Scans files, detects gravity leaks, and converts imports.
-        
+
         Args:
             files: Files to scan for gravity violations
             dry_run: If True, only preview cleanup actions
-            
+
         Returns:
             Dict with comprehensive execution and cleanup summaries
         """

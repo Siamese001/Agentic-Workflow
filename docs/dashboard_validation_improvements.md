@@ -35,25 +35,25 @@ Validate that generated dashboard data includes ALL metrics defined in SSOT.
 def validate_ssot_compliance(dashboard_data):
     """Ensure all SSOT-defined metrics are present in dashboard data."""
     from scripts.dashboard_ssot_definitions import (
-        COLUMN_HEAL_CAP, COLUMN_INVOCATION, COLUMN_TEST, 
+        COLUMN_HEAL_CAP, COLUMN_INVOCATION, COLUMN_TEST,
         COLUMN_HARDENED, COLUMN_COMPLEXITY_HEALTH, COLUMN_TYPED,
-        COLUMN_DOCUMENTED, COLUMN_SCHEMA_STRICTNESS, 
+        COLUMN_DOCUMENTED, COLUMN_SCHEMA_STRICTNESS,
         COLUMN_CANONICAL_INHERITANCE, COLUMN_CODE_QUALITY
     )
-    
+
     required_columns = [
         COLUMN_HEAL_CAP, COLUMN_INVOCATION, COLUMN_TEST,
         COLUMN_HARDENED, COLUMN_COMPLEXITY_HEALTH, COLUMN_TYPED,
         COLUMN_DOCUMENTED, COLUMN_SCHEMA_STRICTNESS,
         COLUMN_CANONICAL_INHERITANCE, COLUMN_CODE_QUALITY
     ]
-    
+
     failures = []
     for row in dashboard_data:
         for col in required_columns:
             if col not in row:
                 failures.append(f"{row['Territory']}: missing '{col}'")
-    
+
     return failures
 ```
 
@@ -72,21 +72,21 @@ def validate_field_name_consistency():
         FIELD_TYPED, FIELD_DOCUMENTED, FIELD_SCHEMA_STRICTNESS,
         FIELD_CYCLOMATIC_COMPLEXITY
     )
-    
+
     # Load sample agent from source
     with open('agent_discovery_full.json') as f:
         agents = json.load(f)
         sample = agents[0] if agents else {}
-    
+
     # Check SSOT field names exist in source data
     ssot_fields = [
         FIELD_HAS_HEALING, FIELD_HAS_INVOCATION, FIELD_HAS_TEST,
         FIELD_TYPED, FIELD_DOCUMENTED, FIELD_SCHEMA_STRICTNESS,
         FIELD_CYCLOMATIC_COMPLEXITY
     ]
-    
+
     missing = [f for f in ssot_fields if f not in sample]
-    
+
     if missing:
         return f"❌ SSOT fields missing from source: {missing}"
     return "✅ Field names consistent"
@@ -107,37 +107,37 @@ def validate_calculation_integrity(territory_name):
     from scripts.dashboard_ssot_definitions import (
         calc_heal_cap_pct, calc_complexity_health, calc_avg_cc
     )
-    
+
     # Load source data
     with open('agent_discovery_full.json') as f:
         agents = json.load(f)
-    
+
     # Filter by territory
     territory_agents = [a for a in agents if a.get('territory') == territory_name]
-    
+
     # Calculate expected values
     expected_heal_cap = calc_heal_cap_pct(territory_agents)
     expected_avg_cc = calc_avg_cc(territory_agents)
     expected_complexity = calc_complexity_health(expected_avg_cc)
-    
+
     # Load dashboard data
     with open('agentic_core/L6_observability/dashboards/data/dashboard_data.js') as f:
         content = f.read().replace('window.dashboardData = ', '').strip().rstrip(';')
         dashboard_data = json.loads(content)
-    
+
     # Find territory row
     row = next((r for r in dashboard_data if r['Territory'] == territory_name), None)
-    
+
     # Compare
     tolerance = 0.1  # Allow 0.1% difference for floating point
     failures = []
-    
+
     if abs(row['Heal Cap %'] - expected_heal_cap) > tolerance:
         failures.append(f"Heal Cap: expected {expected_heal_cap}, got {row['Heal Cap %']}")
-    
+
     if abs(row['Complexity Health %'] - expected_complexity) > tolerance:
         failures.append(f"Complexity Health: expected {expected_complexity}, got {row['Complexity Health %']}")
-    
+
     return failures
 ```
 
@@ -152,23 +152,23 @@ Randomly validate 5 territories per test run.
 def validate_random_sample():
     """Spot-check random territories for data integrity."""
     import random
-    
+
     with open('agentic_core/L6_observability/dashboards/data/dashboard_data.js') as f:
         content = f.read().replace('window.dashboardData = ', '').strip().rstrip(';')
         dashboard_data = json.loads(content)
-    
+
     # Exclude TOTAL
     territories = [r for r in dashboard_data if r['Territory'] != 'TOTAL']
-    
+
     # Sample 5 random territories
     sample = random.sample(territories, min(5, len(territories)))
-    
+
     failures = []
     for row in sample:
         territory_failures = validate_calculation_integrity(row['Territory'])
         if territory_failures:
             failures.extend([f"{row['Territory']}: {f}" for f in territory_failures])
-    
+
     return failures
 ```
 
@@ -196,11 +196,11 @@ def validate_source_data_order():
     with open('agentic_core/L6_observability/dashboards/data/dashboard_data.js') as f:
         content = f.read().replace('window.dashboardData = ', '').strip().rstrip(';')
         data = json.loads(content)
-    
+
     expected_order = ['TOTAL', 'Base/Base Class', 'L6_Observability/Metrics', ...]
-    
+
     actual_order = [row['Territory'] for row in data]
-    
+
     if actual_order != expected_order:
         return f"❌ Source data not in canonical order: {actual_order[:5]}..."
     return "✅ Source data in canonical order"
@@ -217,24 +217,24 @@ def validate_source_data_order():
 def validate_data_types(dashboard_data):
     """Ensure all fields have correct data types."""
     failures = []
-    
+
     for row in dashboard_data:
         # Territory should be string
         if not isinstance(row.get('Territory'), str):
             failures.append(f"Territory is not string: {row.get('Territory')}")
-        
+
         # Percentages should be float/int
         percentage_fields = [
             'Heal Cap %', 'Invocation %', 'Test %', 'MCP Hardened %',
             'Complexity Health %', 'Typed %', 'Documented %',
             'Schema Strictness %', 'Canonical Inheritance %'
         ]
-        
+
         for field in percentage_fields:
             value = row.get(field)
             if value is not None and not isinstance(value, (int, float)):
                 failures.append(f"{row['Territory']}: {field} is not numeric: {value}")
-    
+
     return failures
 ```
 
@@ -278,27 +278,27 @@ for field, (min_expected, max_expected) in EXPECTED_RANGES.items():
 def validate_against_baseline():
     """Compare current dashboard data against known-good baseline."""
     import hashlib
-    
+
     # Load current data
     with open('agentic_core/L6_observability/dashboards/data/dashboard_data.js') as f:
         current_content = f.read()
-    
+
     # Calculate hash
     current_hash = hashlib.sha256(current_content.encode()).hexdigest()
-    
+
     # Load baseline hash
     baseline_file = 'tests/dashboard_baseline_hash.txt'
     if os.path.exists(baseline_file):
         with open(baseline_file) as f:
             baseline_hash = f.read().strip()
-        
+
         if current_hash != baseline_hash:
             return "⚠️  Dashboard data changed from baseline (review changes)"
-    
+
     # Update baseline if approved
     with open(baseline_file, 'w') as f:
         f.write(current_hash)
-    
+
     return "✅ Baseline updated"
 ```
 
@@ -312,24 +312,24 @@ def validate_territory_count():
     """Ensure no territories are accidentally dropped."""
     with open('agent_discovery_full.json') as f:
         agents = json.load(f)
-    
+
     source_territories = set(a.get('territory') for a in agents)
-    
+
     with open('agentic_core/L6_observability/dashboards/data/dashboard_data.js') as f:
         content = f.read().replace('window.dashboardData = ', '').strip().rstrip(';')
         dashboard_data = json.loads(content)
-    
+
     dashboard_territories = set(r['Territory'] for r in dashboard_data if r['Territory'] != 'TOTAL')
-    
+
     missing = source_territories - dashboard_territories
     extra = dashboard_territories - source_territories
-    
+
     failures = []
     if missing:
         failures.append(f"Missing territories: {missing}")
     if extra:
         failures.append(f"Extra territories: {extra}")
-    
+
     return failures
 ```
 
@@ -351,34 +351,34 @@ def test_data_generation():
     print("\n" + "="*70)
     print("TEST 1: Data Generation Validation")
     print("="*70)
-    
+
     failures = []
-    
+
     # 1.1 SSOT Compliance
     ssot_failures = validate_ssot_compliance(dashboard_data)
     if ssot_failures:
         failures.extend(ssot_failures)
     else:
         print("✅ SSOT compliance: All metrics present")
-    
+
     # 1.2 Field Name Consistency
     field_check = validate_field_name_consistency()
     print(field_check)
-    
+
     # 1.3 Data Type Validation
     type_failures = validate_data_types(dashboard_data)
     if type_failures:
         failures.extend(type_failures)
     else:
         print("✅ Data types: All correct")
-    
+
     # 1.4 Range Validation
     range_failures = validate_ranges(dashboard_data)
     if range_failures:
         failures.extend(range_failures)
     else:
         print("✅ Value ranges: All valid")
-    
+
     return len(failures) == 0
 
 def test_data_integrity():
@@ -386,7 +386,7 @@ def test_data_integrity():
     print("\n" + "="*70)
     print("TEST 2: Data Integrity Validation")
     print("="*70)
-    
+
     # 2.1 Random Sample Spot Check
     sample_failures = validate_random_sample()
     if sample_failures:
@@ -395,7 +395,7 @@ def test_data_integrity():
             print(f"   {f}")
     else:
         print("✅ Random sample: All calculations correct")
-    
+
     # 2.2 Territory Count
     count_failures = validate_territory_count()
     if count_failures:
@@ -404,7 +404,7 @@ def test_data_integrity():
             print(f"   {f}")
     else:
         print("✅ Territory count: All territories present")
-    
+
     return len(sample_failures) == 0 and len(count_failures) == 0
 
 def test_sort_order():
@@ -429,7 +429,7 @@ if __name__ == "__main__":
     all_passed &= test_sort_order()
     all_passed &= test_mcp_hardening()
     all_passed &= test_browser_rendering()
-    
+
     if all_passed:
         print("\n✅ ALL VALIDATION PASSED - DEPLOYMENT APPROVED")
         sys.exit(0)

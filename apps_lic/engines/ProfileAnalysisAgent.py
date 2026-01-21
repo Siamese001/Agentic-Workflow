@@ -185,7 +185,7 @@ class FailureClassifier(Enum):
 
 class ErrorCodeRegistry:
     """Centralized error codes with remediation guidance"""
-    
+
     CODES = {
         "LIC-E001": {
             "severity": "CRITICAL",
@@ -253,7 +253,7 @@ class ErrorCodeRegistry:
             "remediation": "Adjust constraints or change route"
         }
     }
-    
+
     @classmethod
     def get_error(cls, code: str) -> Dict[str, str]:
         return cls.CODES.get(code, {"severity": "UNKNOWN", "description": "Unknown error", "remediation": "Contact support"})
@@ -273,7 +273,7 @@ class CircuitBreaker:
     Circuit breaker for API calls - prevents cascade failures
     FEATURE 4.1 from SUPREME_SPELL
     """
-    
+
     def __init__(
         self,
         failure_threshold: int = 3,
@@ -284,7 +284,7 @@ class CircuitBreaker:
         self.failure_count = 0
         self.last_failure_time: Optional[datetime] = None
         self.state = CircuitState.CLOSED
-    
+
     def call(self, func: Callable, *args, **kwargs):
         """
         Execute function with circuit breaker protection
@@ -296,24 +296,24 @@ class CircuitBreaker:
                 self.failure_count = 0
             else:
                 raise CircuitBreakerOpenError("API circuit breaker is OPEN - waiting for recovery")
-        
+
         try:
             result = func(*args, **kwargs)
-            
+
             if self.state == CircuitState.HALF_OPEN:
                 # Test request succeeded, close circuit
                 self.state = CircuitState.CLOSED
                 self.failure_count = 0
-            
+
             return result
-        
+
         except Exception as e:
             self.failure_count += 1
             self.last_failure_time = datetime.now()
-            
+
             if self.failure_count >= self.failure_threshold:
                 self.state = CircuitState.OPEN
-            
+
             raise
 
 
@@ -326,7 +326,7 @@ class ContextManager:
     Intelligent context window management with priority-based truncation
     GAP 7.1, 7.2, 7.3 from v10.22
     """
-    
+
     SECTION_PRIORITIES = {
         "job_description": 100,      # Highest - never truncate
         "recipient_profile": 90,
@@ -336,9 +336,9 @@ class ContextManager:
         "rag_historical": 40,
         "examples": 30,              # Lowest - truncate first
     }
-    
+
     MAX_CONTEXT_TOKENS = 180000  # Conservative estimate
-    
+
     @classmethod
     def truncate_intelligently(
         cls,
@@ -351,24 +351,24 @@ class ContextManager:
         # Rough estimate: 4 chars = 1 token
         total_chars = sum(len(text) for text in context_sections.values())
         estimated_tokens = total_chars // 4
-        
+
         if estimated_tokens <= max_tokens:
             return context_sections
-        
+
         # Sort sections by priority
         sorted_sections = sorted(
             context_sections.items(),
             key=lambda x: cls.SECTION_PRIORITIES.get(x[0], 50),
             reverse=True
         )
-        
+
         truncated = {}
         running_tokens = 0
         token_budget = max_tokens
-        
+
         for section_name, section_text in sorted_sections:
             section_tokens = len(section_text) // 4
-            
+
             if running_tokens + section_tokens <= token_budget:
                 truncated[section_name] = section_text
                 running_tokens += section_tokens
@@ -376,19 +376,19 @@ class ContextManager:
                 # Truncate this section to fit remaining budget
                 remaining_tokens = token_budget - running_tokens
                 remaining_chars = remaining_tokens * 4
-                
+
                 if remaining_chars > 100:  # Only include if meaningful
                     truncated[section_name] = section_text[:remaining_chars] + "... [truncated]"
                     running_tokens = token_budget
                 break
-        
+
         return truncated
-    
+
     @classmethod
     def detect_overflow(cls, context_text: str) -> Tuple[bool, int]:
         """
         Detect if context exceeds safe limits
-        
+
         Returns:
             (is_overflow, estimated_tokens)
         """
@@ -406,7 +406,7 @@ class ConfigRegistry:
     v11.5: Single Source of Truth for ALL configuration parameters
     v11.6: Updated for 4-archetype standard (removed HIRING_MANAGER, PEER; added SENIOR_TA)
     """
-    
+
     # Route-specific base constraints
     ROUTE_CONSTRAINTS = {
         Route.INMAIL: {
@@ -449,7 +449,7 @@ class ConfigRegistry:
             "body_min_words": 100,
         }
     }
-    
+
     # PRIORITY 3: Archetype-Specific Word Count Targets (v11.6 updated)
     ARCHETYPE_WORD_TARGETS = {
         Archetype.C_LEVEL: {
@@ -477,7 +477,7 @@ class ConfigRegistry:
             Route.EMAIL: 275
         }
     }
-    
+
     # PRIORITY 1: Archetype-Specific RAG Parameters (v11.6 updated)
     ARCHETYPE_RAG_PARAMS = {
         Archetype.C_LEVEL: {
@@ -505,7 +505,7 @@ class ConfigRegistry:
             "depth_priority": "efficient"
         }
     }
-    
+
     # PRIORITY 1: Archetype-Specific Reasoning Configurations (v11.6 updated)
     ARCHETYPE_REASONING_PARAMS = {
         Archetype.C_LEVEL: {
@@ -541,7 +541,7 @@ class ConfigRegistry:
             "synthesis_enabled": False
         }
     }
-    
+
     # PRIORITY 4: Archetype-Specific Tone Mappings (v11.6 updated)
     ARCHETYPE_TONE_MAPPINGS = {
         Archetype.C_LEVEL: {
@@ -569,7 +569,7 @@ class ConfigRegistry:
             "formality": "moderate"
         }
     }
-    
+
     # NEW v11.9: Context-Aware CTA Templates
     CTA_TEMPLATES = {
         Route.CONNECTION_REQ: {
@@ -597,7 +597,7 @@ class ConfigRegistry:
             "default": "Following up on my previous message - would you have time for a brief conversation this week?"
         }
     }
-    
+
     # NEW v11.9: Archetype-Specific Generation Prompt Templates
     ARCHETYPE_PROMPT_TEMPLATES = {
         Archetype.C_LEVEL: """
@@ -629,7 +629,7 @@ APPROACH: Lead with relevant experience, highlight specific skills that match jo
 AVOID: Generic qualifications, vague interest statements, over-selling unrelated experience.
         """
     }
-    
+
     @classmethod
     def get_target_word_count(cls, archetype: Archetype, route: Route) -> int:
         """Get target word count for archetype+route combination"""
@@ -637,32 +637,32 @@ AVOID: Generic qualifications, vague interest statements, over-selling unrelated
         if target is not None:
             return target
         return cls.ROUTE_CONSTRAINTS[route]["word_range"][1]
-    
+
     @classmethod
     def get_rag_parameter(cls, archetype: Archetype, param_name: str) -> Any:
         """Get RAG parameter for archetype"""
         return cls.ARCHETYPE_RAG_PARAMS.get(archetype, {}).get(param_name)
-    
+
     @classmethod
     def get_reasoning_parameter(cls, archetype: Archetype, param_name: str) -> Any:
         """Get reasoning parameter for archetype"""
         return cls.ARCHETYPE_REASONING_PARAMS.get(archetype, {}).get(param_name)
-    
+
     @classmethod
     def get_tone_mapping(cls, archetype: Archetype, param_name: str) -> Any:
         """Get tone mapping for archetype"""
         return cls.ARCHETYPE_TONE_MAPPINGS.get(archetype, {}).get(param_name)
-    
+
     @classmethod
     def get_route_constraints(cls, route: Route, archetype: Optional[Archetype] = None) -> Dict[str, Any]:
         """Get route constraints with optional archetype override"""
         constraints = cls.ROUTE_CONSTRAINTS[route].copy()
-        
+
         if archetype:
             target_word = cls.get_target_word_count(archetype, route)
             if target_word:
                 constraints["word_target"] = target_word
-        
+
         return constraints
 
 
@@ -812,7 +812,7 @@ class SignalQualityScorer:
     Weights RAG sources by reliability for message generation
     FEATURE 1.1 from SUPREME_SPELL
     """
-    
+
     SOURCE_WEIGHTS = {
         "RECIPIENT_LINKEDIN_ABOUT": 2.0,
         "RECIPIENT_RECENT_POST": 1.8,
@@ -823,9 +823,9 @@ class SignalQualityScorer:
         "GENERIC_INDUSTRY_TREND": 0.6,
         "SENDER_PROFILE_ONLY": 0.3
     }
-    
+
     MINIMUM_SIGNAL_THRESHOLD = 0.70
-    
+
     def calculate_signal_score(
         self,
         rag_results: List[RAGResult],
@@ -836,20 +836,20 @@ class SignalQualityScorer:
         """
         keyword_scores = defaultdict(float)
         source_breakdown = defaultdict(int)
-        
+
         for result in rag_results:
             weight = self.SOURCE_WEIGHTS.get(result.source_type, 0.5)
             for keyword in result.extracted_keywords:
                 if keyword.lower() in message_content.lower():
                     keyword_scores[keyword] += weight
                     source_breakdown[result.source_type] += 1
-        
+
         if not keyword_scores:
             return 0.0, dict(source_breakdown)
-        
+
         signal_score = sum(keyword_scores.values()) / len(keyword_scores)
         return signal_score, dict(source_breakdown)
-    
+
     def validate_minimum_signal(self, score: float) -> bool:
         return score >= self.MINIMUM_SIGNAL_THRESHOLD
 
@@ -863,10 +863,10 @@ class ClaimConfidenceScorer:
     Per-claim confidence scoring with rejection gate
     FEATURE 1.2 from SUPREME_SPELL
     """
-    
+
     MIN_PER_CLAIM_CONFIDENCE = 0.70
     MIN_AGGREGATE_CONFIDENCE = 0.75
-    
+
     def score_claim(
         self,
         claim_text: str,
@@ -879,30 +879,30 @@ class ClaimConfidenceScorer:
         """
         supporting = []
         weights = []
-        
+
         # Simple keyword-based support detection
         claim_words = set(claim_text.lower().split())
-        
+
         for result in rag_results:
             result_words = set(result.text.lower().split())
             overlap = len(claim_words & result_words)
-            
+
             if overlap >= 3:  # At least 3 words in common
                 supporting.append(result.source)
                 weights.append(result.source_weight)
-        
+
         if not supporting:
             confidence = 0.0
         else:
             confidence = min(1.0, (len(supporting) * 0.3) + (sum(weights) / len(weights) * 0.7))
-        
+
         return MessageClaim(
             text=claim_text,
             confidence=confidence,
             supporting_sources=supporting,
             source_weights=weights
         )
-    
+
     def score_message_claims(
         self,
         message: str,
@@ -913,18 +913,18 @@ class ClaimConfidenceScorer:
         """
         # Split message into sentences (claims)
         sentences = [s.strip() for s in message.split('.') if len(s.strip()) > 10]
-        
+
         claims = []
         for sentence in sentences:
             claim = self.score_claim(sentence, rag_results)
             claims.append(claim)
-        
+
         if not claims:
             return [], 0.0
-        
+
         aggregate_confidence = sum(c.confidence for c in claims) / len(claims)
         return claims, aggregate_confidence
-    
+
     def validate_claims(
         self,
         claims: List[MessageClaim],
@@ -934,13 +934,13 @@ class ClaimConfidenceScorer:
         Validate claims meet minimum thresholds
         """
         low_confidence_claims = [c for c in claims if c.confidence < self.MIN_PER_CLAIM_CONFIDENCE]
-        
+
         if low_confidence_claims:
             return False, f"{len(low_confidence_claims)} claims below 0.70 confidence"
-        
+
         if aggregate_confidence < self.MIN_AGGREGATE_CONFIDENCE:
             return False, f"Aggregate confidence {aggregate_confidence:.2f} < 0.75"
-        
+
         return True, ""
 
 
@@ -953,10 +953,10 @@ class RAGReflexionSystem:
     Iterative RAG refinement with critique loop
     FEATURE 1.4 from SUPREME_SPELL
     """
-    
+
     MIN_CONFIDENCE_THRESHOLD = 0.70
     MAX_ITERATIONS = 3
-    
+
     def critique_rag_sufficiency(
         self,
         rag_results: List[RAGResult],
@@ -967,36 +967,36 @@ class RAGReflexionSystem:
         Critique RAG research quality and identify gaps
         """
         gaps = []
-        
+
         # Gap 1: Source diversity
         source_types = set(r.source_type for r in rag_results)
         if "RECIPIENT_LINKEDIN_ABOUT" not in source_types:
             gaps.append("Missing direct recipient profile data")
         if "COMPANY_BLOG_ANNOUNCEMENT" not in source_types:
             gaps.append("Missing recent company announcements")
-        
+
         # Gap 2: Recency for C_LEVEL
         if recipient_archetype == Archetype.C_LEVEL:
             recent_sources = [r for r in rag_results if r.age_days <= 90]
             if len(recent_sources) < 3:
                 gaps.append("Insufficient recent sources for C_LEVEL (need 3+ within 90 days)")
-        
+
         # Gap 3: Personalization depth
         recipient_specific = [r for r in rag_results if r.recipient_specific]
         if len(recipient_specific) < 2:
             gaps.append("Insufficient recipient-specific context (need 2+ personalized insights)")
-        
+
         # Confidence calculation
         confidence = self._calculate_confidence(rag_results, gaps)
-        
+
         # Refinement tasks
         refinement_tasks = self._generate_refinement_tasks(gaps)
-        
+
         is_sufficient = len(gaps) == 0 and confidence >= self.MIN_CONFIDENCE_THRESHOLD
-        
+
         reasoning = f"Iteration {iteration}: {len(rag_results)} results, {len(source_types)} source types. "
         reasoning += f"Gaps: {len(gaps)}. Confidence: {confidence:.2f}"
-        
+
         return RAGCritique(
             confidence_score=confidence,
             gaps_identified=gaps,
@@ -1004,7 +1004,7 @@ class RAGReflexionSystem:
             reasoning=reasoning,
             is_sufficient=is_sufficient
         )
-    
+
     def _calculate_confidence(self, rag_results: List[RAGResult], gaps: List[str]) -> float:
         """
         Calculate confidence score
@@ -1013,19 +1013,19 @@ class RAGReflexionSystem:
         # Improved scoring: more credit for diverse sources
         num_results = len(rag_results)
         num_source_types = len(set(r.source for r in rag_results))
-        
+
         # Base score: 0.15 per result (caps at 0.75 for 5+ results)
         base_score = min(0.75, num_results * 0.15)
-        
+
         # Diversity bonus: 0.10 per unique source type (caps at 0.30)
         diversity_bonus = min(0.30, num_source_types * 0.10)
-        
+
         # Gap penalty: reduced from 0.15 to 0.10 per gap
         gap_penalty = len(gaps) * 0.10
-        
+
         confidence = base_score + diversity_bonus - gap_penalty
         return max(0.0, min(1.0, confidence))
-    
+
     def _generate_refinement_tasks(self, gaps: List[str]) -> List[str]:
         """Generate refinement search tasks from gaps"""
         tasks = []
@@ -1050,7 +1050,7 @@ class AdaptiveTemperatureController:
     Progressive temperature escalation for retry attempts
     FEATURE 2.2 from SUPREME_SPELL
     """
-    
+
     BASE_TEMPERATURES = {
         Archetype.C_LEVEL: 0.45,
         Archetype.EXECUTIVE: 0.50,
@@ -1059,11 +1059,11 @@ class AdaptiveTemperatureController:
     }
     ESCALATION_STEP = 0.15
     MAX_TEMPERATURE = 0.95
-    
+
     def __init__(self):
         self.attempt_history: Dict[str, List[float]] = defaultdict(list)
         self.success_temperatures: Dict[str, float] = {}
-    
+
     def get_temperature(
         self,
         component: str,
@@ -1076,11 +1076,11 @@ class AdaptiveTemperatureController:
             self.MAX_TEMPERATURE,
             base_temp + (attempt - 1) * self.ESCALATION_STEP
         )
-        
+
         self.attempt_history[f"{archetype.value}_{component}"].append(escalated_temp)
-        
+
         return escalated_temp
-    
+
     def record_success(
         self,
         component: str,
@@ -1101,7 +1101,7 @@ class ConstraintFeasibilityChecker:
     Pre-flight check for constraint satisfaction
     FEATURE 2.1 from SUPREME_SPELL
     """
-    
+
     def check_feasibility(
         self,
         route: Route,
@@ -1113,17 +1113,17 @@ class ConstraintFeasibilityChecker:
         (Simplified version - full implementation would use LLM)
         """
         constraints = ConfigRegistry.get_route_constraints(route, archetype)
-        
+
         # Simple heuristic: check if number of required elements fits in word budget
         word_budget = constraints.get("word_target", constraints["word_range"][1])
         words_per_element = word_budget // (len(required_elements) + 2)  # +2 for greeting/signature
-        
+
         # CONNECTION_REQ requires stricter checking (more constrained format)
         min_words_per_element = 8 if route == Route.CONNECTION_REQ else 5
-        
+
         if words_per_element < min_words_per_element:
             return False, f"Too many required elements ({len(required_elements)}) for {route.value} word budget ({word_budget})"
-        
+
         return True, "Constraints are feasible"
 
 
@@ -1136,7 +1136,7 @@ class ContentCleanlinessValidator:
     Forbidden verbs and weak language detection
     FEATURE 3.1 and 3.2 from SUPREME_SPELL
     """
-    
+
     FORBIDDEN_VERBS = [
         "spearheaded", "leveraged", "utilized", "facilitated",
         "orchestrated", "championed", "pioneered", "revolutionized",
@@ -1144,7 +1144,7 @@ class ContentCleanlinessValidator:
         "synergized", "enabled", "empowered", "drove", "drive"
     ]
     MAX_VIOLATIONS = 1
-    
+
     FILLER_PATTERNS = [
         r"(?i)\bi hope\b",
         r"(?i)\bhope (this|you) (finds|are|don't)",
@@ -1154,48 +1154,48 @@ class ContentCleanlinessValidator:
         r"(?i)\bif you('re| are) interested",
         r"(?i)\bjust (wanted|reaching|following)",
     ]
-    
+
     def detect_forbidden_verbs(self, text: str) -> List[str]:
         """Find forbidden verbs in message text"""
         text_lower = text.lower()
         found = []
-        
+
         for verb in self.FORBIDDEN_VERBS:
             if verb in text_lower:
                 found.append(verb)
-        
+
         return found
-    
+
     def detect_fillers(self, text: str) -> List[Tuple[str, str]]:
         """Find filler phrases in message"""
         found = []
-        
+
         for pattern in self.FILLER_PATTERNS:
             matches = re.findall(pattern, text)
             if matches:
                 for match in matches:
                     match_text = match if isinstance(match, str) else " ".join(match) if isinstance(match, tuple) else str(match)
                     found.append((pattern, match_text))
-        
+
         return found
-    
+
     def validate_verbs(self, message: str) -> Tuple[bool, str]:
         """Validate no excessive forbidden verbs"""
         forbidden = self.detect_forbidden_verbs(message)
-        
+
         if len(forbidden) > self.MAX_VIOLATIONS:
             return False, f"Found {len(forbidden)} forbidden verbs: {', '.join(forbidden[:3])}"
-        
+
         return True, ""
-    
+
     def validate_fillers(self, message: str) -> Tuple[bool, str]:
         """Validate message is direct and confident"""
         fillers = self.detect_fillers(message)
-        
+
         if fillers:
             filler_texts = [f[1] for f in fillers]
             return False, f"Found {len(fillers)} filler phrases: {', '.join(filler_texts[:3])}"
-        
+
         return True, ""
 
 
@@ -1204,7 +1204,7 @@ class PlaceholderDetector:
     Comprehensive placeholder detection
     FEATURE 3.3 from SUPREME_SPELL / GAP 1.5
     """
-    
+
     PLACEHOLDER_PATTERNS = [
         r'\[placeholder\]',
         r'\[your name\]',
@@ -1220,25 +1220,25 @@ class PlaceholderDetector:
         r'\[missing[_ ]?context\]',
         r'\[unserializable\]',
     ]
-    
+
     def detect_placeholders(self, text: str) -> List[str]:
         """Detect ALL placeholder patterns"""
         found = []
-        
+
         for pattern in self.PLACEHOLDER_PATTERNS:
             matches = re.findall(pattern, text, re.IGNORECASE)
             if matches:
                 found.extend(matches)
-        
+
         return found
-    
+
     def validate(self, message: str) -> Tuple[bool, str]:
         """CRITICAL: Zero tolerance for placeholders"""
         placeholders = self.detect_placeholders(message)
-        
+
         if placeholders:
             return False, f"CRITICAL: Found {len(placeholders)} placeholders: {', '.join(placeholders[:5])}"
-        
+
         return True, ""
 
 
@@ -1251,43 +1251,43 @@ class MessageDiversityValidator:
     Prevent repetitive messages using cosine similarity
     FEATURE 1.3 from SUPREME_SPELL
     """
-    
+
     MIN_DIVERSITY_THRESHOLD = 0.85  # Messages must be <85% similar
-    
+
     def __init__(self):
         self.message_history: List[str] = []
         self.vectorizer = TfidfVectorizer()
-    
+
     def check_diversity(self, new_message: str) -> Tuple[bool, float, str]:
         """
         Check if new message is sufficiently different from history
-        
+
         Returns:
             (is_diverse, max_similarity, most_similar_message)
         """
         if not self.message_history:
             return True, 0.0, ""
-        
+
         all_messages = self.message_history + [new_message]
-        
+
         try:
             vectors = self.vectorizer.fit_transform(all_messages)
             new_vector = vectors[-1]
             history_vectors = vectors[:-1]
-            
+
             similarities = cosine_similarity(new_vector, history_vectors)[0]
             max_similarity = float(np.max(similarities))
             max_idx = int(np.argmax(similarities))
-            
+
             is_diverse = max_similarity < self.MIN_DIVERSITY_THRESHOLD
             most_similar = self.message_history[max_idx] if max_idx < len(self.message_history) else ""
-            
+
             return is_diverse, max_similarity, most_similar
-        
+
         except:
             # If vectorization fails, assume diverse
             return True, 0.0, ""
-    
+
     def add_to_history(self, message: str):
         """Add message to history"""
         self.message_history.append(message)
@@ -1302,7 +1302,7 @@ class ASCIIEnforcer:
     Enforce ASCII-only characters for LinkedIn compatibility
     GAP 1.10 from v10.22
     """
-    
+
     UNICODE_REPLACEMENTS = {
         "•": "-",
         "–": "-",
@@ -1313,17 +1313,17 @@ class ASCIIEnforcer:
         "'": "'",
         "…": "...",
     }
-    
+
     def enforce_ascii(self, text: str) -> str:
         """Replace Unicode with ASCII equivalents"""
         for unicode_char, ascii_replacement in self.UNICODE_REPLACEMENTS.items():
             text = text.replace(unicode_char, ascii_replacement)
-        
+
         # Remove any remaining non-ASCII
         text = text.encode("ascii", "ignore").decode("ascii")
-        
+
         return text
-    
+
     def validate(self, text: str) -> Tuple[bool, str]:
         """Validate text is ASCII-only"""
         try:
@@ -1343,20 +1343,20 @@ class ProfileAnalysisAgent:
     NEW v11.6: Hardened archetype classification with 4-archetype standard
     Implements deterministic classification logic from v10.22
     """
-    
+
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
         self.status = AgentStatus.IDLE
-    
+
     def analyze_profile(self, mission: OutreachMission) -> ProfileAnalysis:
         """
         NEW v11.6: Hardened static classification with 5-node decision tree
         """
         self.status = AgentStatus.RUNNING
-        
+
         recipient = mission.recipient_profile
         title = recipient.get("title", "").lower()
-        
+
         # Node 1: C_LEVEL detection (CEO, CTO, CFO, COO, CMO, CPO)
         c_level_titles = ["ceo", "cto", "cfo", "coo", "cmo", "cpo", "chief"]
         if any(c_title in title for c_title in c_level_titles):
@@ -1364,40 +1364,40 @@ class ProfileAnalysisAgent:
             archetype = Archetype.C_LEVEL
             reasoning = f"Title '{recipient.get('title')}' contains C-level indicator"
             key_indicators = ["C-level title"]
-        
+
         # Node 2: EXECUTIVE detection (VP, SVP, EVP, Head of, Director)
         elif any(exec_title in title for exec_title in ["vp", "vice president", "svp", "evp", "head of", "director"]):
             confidence = 0.90
             archetype = Archetype.EXECUTIVE
             reasoning = f"Title '{recipient.get('title')}' indicates executive level"
             key_indicators = ["Executive title"]
-        
+
         # Node 3: RECRUITER detection (Recruiter, Talent, Hiring, HR)
         elif any(rec_term in title for rec_term in ["recruit", "talent", "hiring", "human resources", "hr"]):
             confidence = 0.92
             archetype = Archetype.RECRUITER
             reasoning = f"Title '{recipient.get('title')}' indicates recruiting/talent role"
             key_indicators = ["Recruiting title"]
-        
+
         # Node 4: SENIOR_TA detection (Staff, Principal, Distinguished, Fellow, Senior)
         elif any(ta_term in title for ta_term in ["staff", "principal", "distinguished", "fellow", "senior engineer", "senior architect"]):
             confidence = 0.85
             archetype = Archetype.SENIOR_TA
             reasoning = f"Title '{recipient.get('title')}' indicates senior technical authority"
             key_indicators = ["Senior technical title"]
-        
+
         # Node 5: Default to SENIOR_TA for ambiguous technical roles
         else:
             confidence = 0.70
             archetype = Archetype.SENIOR_TA
             reasoning = "Defaulting to SENIOR_TA for ambiguous title"
             key_indicators = ["Ambiguous title"]
-        
+
         # NEW v11.6: Manual override flag for low confidence
         needs_manual_override = confidence < 0.85
-        
+
         self.status = AgentStatus.COMPLETED
-        
+
         return ProfileAnalysis(
             archetype=archetype,
             confidence=confidence,
@@ -1436,7 +1436,7 @@ class RecipientAgent:
                 )
             ]
         }
-    
+
     async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, Any]:
         """Mock: Perform a targeted refinement RAG task."""
         print(f"     S2.RecipientAgent: Running refinement task: '{task[:50]}...'")
@@ -1486,7 +1486,7 @@ class OrganizationAgent:
         """Mock: Perform a targeted refinement RAG task."""
         print(f"     S2.OrganizationAgent: Running refinement task: '{task[:50]}...'")
         await asyncio.sleep(0.1)
-        
+
         # Mock finding evidence for a failed S6 metric validation
         if "metric" in task.lower():
              return {
@@ -1502,7 +1502,7 @@ class OrganizationAgent:
                     )
                 ]
             }
-        
+
         return {
             "rag_results": [
                 RAGResult(
@@ -1554,18 +1554,18 @@ class S2_SupervisorAgent:
     Runs an "Adversarial Self-Verification" step (Enhancement 3).
     Accepts an "S6->S2 Meta-Loop" refinement context (Enhancement 4).
     """
-    
+
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
         self.status = AgentStatus.IDLE
         self.signal_scorer = SignalQualityScorer()
         self.rag_reflexion = RAGReflexionSystem()
-        
+
         # NEW v11.10: Instantiate specialist agent team
         self.recipient_agent = RecipientAgent(circuit_breaker)
         self.organization_agent = OrganizationAgent(circuit_breaker)
         self.internal_agent = InternalAgent(circuit_breaker)
-    
+
     async def conduct_research(
         self,
         mission: OutreachMission,
@@ -1576,45 +1576,45 @@ class S2_SupervisorAgent:
         NEW v11.10: Agentic planner/delegator workflow.
         """
         self.status = AgentStatus.RUNNING
-        
+
         # ---
         # S2 INTERNAL LOOP (Enhancement 1 & 2)
         # ---
         rag_results = []
         reflexion_iterations = 0
-        
+
         # Initial research plan
         print("     S2.Supervisor: Generating initial research plan...")
-        
+
         # Delegation (Parallel Execution)
         print("     S2.Supervisor: Delegating to specialist agents (parallel)...")
         recipient_report_task = self.recipient_agent.get_profile(mission)
         org_report_task = self.organization_agent.get_organization_context(mission)
-        
+
         # Internal agent is sync (mocked as fast)
         internal_report = self.internal_agent.get_internal_context(mission)
         prior_applications = internal_report['prior_applications']
-        
+
         # Gather parallel results
         recipient_report, org_report = await asyncio.gather(
             recipient_report_task,
             org_report_task
         )
-        
+
         # Synthesis
         rag_results.extend(recipient_report['rag_results'])
         rag_results.extend(org_report['rag_results'])
-        
+
         # Internal Critique Loop
         while reflexion_iterations < 2: # Max 2 internal refinement loops
-            
+
             # Critique
             critique = self.rag_reflexion.critique_rag_sufficiency(
                 rag_results,
                 profile_analysis.archetype,
                 iteration=reflexion_iterations + 1
             )
-            
+
             # NEW v11.10: Check for S6->S2 Meta-Loop refinement context
             if refinement_context and reflexion_iterations == 0:
                 print("     S2.Supervisor: Received S6 failure context. Forcing refinement task.")
@@ -1627,28 +1627,28 @@ class S2_SupervisorAgent:
             if critique.is_sufficient:
                 print(f"     S2.Supervisor: Internal critique PASSED (Iteration {reflexion_iterations + 1}).")
                 break
-            
+
             # Refinement
             reflexion_iterations += 1
             task = critique.refinement_tasks[0]
             print(f"     S2.Supervisor: Internal critique FAILED. Refining task: '{task[:50]}...'")
-            
+
             # Delegate refinement task
             refinement_report = None
             if any(kw in task.lower() for kw in ["recipient", "github", "linkedin"]):
                 refinement_report = await self.recipient_agent.run_refinement_task(task, mission)
             else: # Default to organization agent
                 refinement_report = await self.organization_agent.run_refinement_task(task, mission)
-            
+
             rag_results.extend(refinement_report['rag_results'])
-        
+
         # ---
         # END S2 INTERNAL LOOP
         # ---
-        
+
         # NEW v11.9: Extract sender grounding (now done by Supervisor post-synthesis)
         sender_grounding = self._extract_sender_grounding(rag_results, mission)
-        
+
         # Build research context
         context = ResearchContext(
             recipient_insights=[
@@ -1672,23 +1672,23 @@ class S2_SupervisorAgent:
             sender_context=[],
             sender_grounding=sender_grounding
         )
-        
+
         # NEW v11.6: Archetype Self-Correction
         corrected_profile_analysis = self._critique_archetype_classification(
             profile_analysis,
             context
         )
-        
+
         # NEW v11.10: Adversarial Self-Verification (Enhancement 3)
         adversarial_findings = await self._run_adversarial_check(context)
         context.adversarial_findings = adversarial_findings
         if adversarial_findings:
             print(f"     S2.Supervisor: Adversarial check flagged {len(adversarial_findings)} weak claims.")
-        
+
         self.status = AgentStatus.COMPLETED
-        
+
         return context, corrected_profile_analysis
-    
+
     async def _run_adversarial_check(self, context: ResearchContext) -> List[str]:
         """
         NEW v11.10: Mocked "Red Team" adversarial check (Enhancement 3).
@@ -1696,7 +1696,7 @@ class S2_SupervisorAgent:
         """
         print("     S2.Supervisor: Running Adversarial Self-Verification (Red Team)...")
         await asyncio.sleep(0.05) # Simulate LLM call
-        
+
         # Mock finding:
         mock_findings = ["Refuted theme: 'direct experience with scaling' (evidence is tangential)"]
         return mock_findings
@@ -1711,39 +1711,39 @@ class S2_SupervisorAgent:
         (Moved to S2_SupervisorAgent in v11.10)
         """
         grounding = SenderGroundingWhitelists()
-        
+
         # Extract from RAG results
         for result in rag_results:
             text_lower = result.text.lower()
-            
+
             # Team members
             if any(marker in text_lower for marker in ["team member", "colleague", "worked with", "collaborator"]):
                 names = self._extract_names_from_text(result.text)
                 grounding.team_members.extend(names)
                 if names:
                     grounding.raw_evidence["team_members"] = grounding.raw_evidence.get("team_members", []) + [result.text[:200]]
-            
+
             # Products
             if any(marker in text_lower for marker in ["product", "platform", "solution", "service"]):
                 products = self._extract_capitalized_phrases(result.text)
                 grounding.products.extend(products)
                 if products:
                     grounding.raw_evidence["products"] = grounding.raw_evidence.get("products", []) + [result.text[:200]]
-            
+
             # Case studies
             if any(marker in text_lower for marker in ["client", "customer", "case study", "project for"]):
                 cases = self._extract_capitalized_phrases(result.text)
                 grounding.case_studies.extend(cases)
                 if cases:
                     grounding.raw_evidence["case_studies"] = grounding.raw_evidence.get("case_studies", []) + [result.text[:200]]
-        
+
         # Deduplicate
         grounding.team_members = list(set(grounding.team_members))
         grounding.products = list(set(grounding.products))
         grounding.case_studies = list(set(grounding.case_studies))
-        
+
         return grounding
-    
+
     def _extract_names_from_text(self, text: str) -> List[str]:
         """Extract person names from text (simplified - production would use NER)"""
         words = text.split()
@@ -1754,7 +1754,7 @@ class S2_SupervisorAgent:
                     full_name = f"{word} {words[i + 1]}"
                     names.append(full_name)
         return names
-    
+
     def _extract_capitalized_phrases(self, text: str) -> List[str]:
         """Extract capitalized phrases (product/company names)"""
         words = text.split()
@@ -1770,7 +1770,7 @@ class S2_SupervisorAgent:
         if len(current_phrase) >= 2:
             phrases.append(" ".join(current_phrase))
         return phrases
-    
+
     def _critique_archetype_classification(
         self,
         provisional_analysis: ProfileAnalysis,
@@ -1781,21 +1781,21 @@ class S2_SupervisorAgent:
         (Moved to S2_SupervisorAgent in v11.10)
         """
         all_text = " ".join([r.text for r in context.rag_results]).lower()
-        
+
         if provisional_analysis.archetype != Archetype.C_LEVEL:
             if any(term in all_text for term in ["strategic vision", "board member", "company direction"]):
                 critique = "RAG evidence suggests C_LEVEL status (strategic indicators)"
                 provisional_analysis.archetype = Archetype.C_LEVEL
                 provisional_analysis.confidence = 0.90
                 provisional_analysis.critique_history.append(critique)
-        
+
         if provisional_analysis.archetype != Archetype.RECRUITER:
             if any(term in all_text for term in ["talent acquisition", "hiring manager", "recruitment"]):
                 critique = "RAG evidence suggests RECRUITER role (hiring indicators)"
                 provisional_analysis.archetype = Archetype.RECRUITER
                 provisional_analysis.confidence = 0.88
                 provisional_analysis.critique_history.append(critique)
-        
+
         return provisional_analysis
 
 
@@ -1803,11 +1803,11 @@ class RoutingAgent:
     """
     NEW v11.6: Hardened deterministic routing with 5-node tree (GAP 2.1)
     """
-    
+
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
         self.status = AgentStatus.IDLE
-    
+
     def determine_route(
         self,
         mission: OutreachMission,
@@ -1817,32 +1817,32 @@ class RoutingAgent:
         NEW v11.6: 5-node deterministic routing tree from v10.22
         """
         self.status = AgentStatus.RUNNING
-        
+
         # Node 1: route_override - bypass automatic selection
         if mission.route_override:
             reasoning = f"Node 1: Manual route override to {mission.route_override.value}"
             self.status = AgentStatus.COMPLETED
             return mission.route_override, reasoning
-        
+
         # Node 2: job_confirmed=true AND job_outreach → INMAIL
         job_confirmed = bool(mission.job_description.get("title"))
         if job_confirmed:
             reasoning = "Node 2: Job application confirmed → INMAIL for maximum detail"
             self.status = AgentStatus.COMPLETED
             return Route.INMAIL, reasoning
-        
+
         # Node 3: existing_relationship=true → FOLLOW_UP
         if mission.connection_status == "connected" and mission.prior_message_count > 0:
             reasoning = f"Node 3: Existing relationship ({mission.prior_message_count} prior messages) → FOLLOW_UP"
             self.status = AgentStatus.COMPLETED
             return Route.FOLLOW_UP, reasoning
-        
+
         # Node 4: new_recipient=true (not connected, no prior messages) → CONNECTION_REQ
         if mission.connection_status == "not_connected" and mission.prior_message_count == 0:
             reasoning = "Node 4: New recipient, no connection → CONNECTION_REQ"
             self.status = AgentStatus.COMPLETED
             return Route.CONNECTION_REQ, reasoning
-        
+
         # Node 5: Fallback → INMAIL
         reasoning = "Node 5: Fallback to INMAIL for safety"
         self.status = AgentStatus.COMPLETED
@@ -1851,11 +1851,11 @@ class RoutingAgent:
 
 class ScaffoldAgent:
     """Generate message scaffold"""
-    
+
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
         self.status = AgentStatus.IDLE
-    
+
     def create_scaffold(
         self,
         route: Route,
@@ -1867,13 +1867,13 @@ class ScaffoldAgent:
         NEW v11.9: Context-aware CTA generation (SPEC 3)
         """
         self.status = AgentStatus.RUNNING
-        
+
         constraints = ConfigRegistry.get_route_constraints(route, archetype)
-        
+
         # NEW v11.9: Determine CTA requirements based on route and archetype
         context_aware_cta = self._should_use_context_aware_cta(route, archetype)
         cta_required = self._is_cta_required(route, archetype)
-        
+
         sections = {
             "greeting": {
                 "required": True,
@@ -1893,9 +1893,9 @@ class ScaffoldAgent:
                 "word_range": constraints.get("signature_word_range", (2, 4))
             }
         }
-        
+
         self.status = AgentStatus.COMPLETED
-        
+
         return MessageScaffold(
             route=route,
             archetype=archetype,
@@ -1903,7 +1903,7 @@ class ScaffoldAgent:
             constraints=constraints,
             context_aware_cta=context_aware_cta
         )
-    
+
     def _should_use_context_aware_cta(self, route: Route, archetype: Archetype) -> bool:
         """NEW v11.9: Determine if context-aware CTA should be used"""
         # CONNECTION_REQ never has CTA
@@ -1913,7 +1913,7 @@ class ScaffoldAgent:
         if archetype == Archetype.SENIOR_TA:
             return True
         return False
-    
+
     def _is_cta_required(self, route: Route, archetype: Archetype) -> bool:
         """NEW v11.9: Determine if CTA is required"""
         # CONNECTION_REQ has no CTA per SPEC 3
@@ -1927,10 +1927,10 @@ class SelfConsistencySynthesizer:
     NEW v11.7: N-candidate generation with synthesis for C_LEVEL archetype (FEATURE 2.3)
     Implements self-consistency methodology from SUPREME_SPELL
     """
-    
+
     def __init__(self):
         self.n_candidates = 3  # Generate 3 candidates for C_LEVEL
-    
+
     async def synthesize_c_level_message(
         self,
         scaffold: MessageScaffold,
@@ -1944,7 +1944,7 @@ class SelfConsistencySynthesizer:
         """
         if scaffold.archetype != Archetype.C_LEVEL:
             raise ValueError("Self-consistency synthesis only for C_LEVEL")
-        
+
         # Generate N candidates
         candidates = []
         for i in range(self.n_candidates):
@@ -1952,11 +1952,11 @@ class SelfConsistencySynthesizer:
                 scaffold, context, profile_analysis, temperature + (i * 0.05)
             )
             candidates.append(candidate)
-        
+
         # Synthesize best elements
         synthesized = self._synthesize_candidates(candidates, context)
         return synthesized
-    
+
     async def _generate_single_candidate(
         self,
         scaffold: MessageScaffold,
@@ -1967,20 +1967,20 @@ class SelfConsistencySynthesizer:
         """Generate a single candidate message"""
         recipient_name = "Esteemed Executive"
         company = context.company_context[0] if context.company_context else "your organization"
-        
+
         tone = ConfigRegistry.get_tone_mapping(scaffold.archetype, "message_tone")
         verbs = ConfigRegistry.get_tone_mapping(scaffold.archetype, "verb_preference")
-        
+
         # NEW v11.10: Check for adversarial findings
         adversarial_constraints = ""
         if context.adversarial_findings:
             adversarial_constraints = f"\n\n[ADVERSARIAL_CHECK: AVOID CLAIMS: {', '.join(context.adversarial_findings)}]"
-        
+
         # C_LEVEL gets most formal, strategic messaging
         content = f"Dear {recipient_name},\n\nI hope this finds you well. I'm reaching out regarding the strategic opportunity at {company}. Given your leadership in driving organizational transformation, I believe my background in AI/ML innovation could contribute meaningfully to your vision.\n\nI would welcome the chance to {verbs[0] if verbs else 'discuss'} how my experience aligns with {company}'s strategic objectives.\n\nRespectfully yours{adversarial_constraints}"
-        
+
         return content
-    
+
     def _synthesize_candidates(self, candidates: List[str], context: ResearchContext) -> str:
         """
         Synthesize the best elements from N candidates
@@ -1995,14 +1995,14 @@ class GenerationOrchestrator:
     """
     NEW v11.10: Enhanced with S6->S2 failure classification (Enhancement 4)
     """
-    
+
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
         self.status = AgentStatus.IDLE
         self.feasibility_checker = ConstraintFeasibilityChecker()
         self.temp_controller = AdaptiveTemperatureController()
         self.synthesizer = SelfConsistencySynthesizer()
-    
+
     async def generate_message(
         self,
         scaffold: MessageScaffold,
@@ -2015,7 +2015,7 @@ class GenerationOrchestrator:
         S6->S2 failure classification.
         """
         self.status = AgentStatus.RUNNING
-        
+
         # NEW v11.6: Constraint Pre-Flight Test (FEATURE 2.1)
         required_elements = [
             f"Recipient name: {context.recipient_insights[0] if context.recipient_insights else 'N/A'}",
@@ -2023,26 +2023,26 @@ class GenerationOrchestrator:
             "Value proposition",
             "Call to action"
         ]
-        
+
         feasible, reason = self.feasibility_checker.check_feasibility(
             scaffold.route,
             scaffold.archetype,
             required_elements
         )
-        
+
         if not feasible:
             raise ValueError(f"Constraint pre-flight failed: {reason}")
-        
+
         # S5 Generation/Retry Loop
         max_attempts = 5
         for attempt in range(1, max_attempts + 1):
-            
+
             temperature = self.temp_controller.get_temperature(
                 "full_message",
                 scaffold.archetype,
                 attempt
             )
-            
+
             # Generate message
             content = await self._generate_content(
                 scaffold,
@@ -2050,12 +2050,12 @@ class GenerationOrchestrator:
                 profile_analysis,
                 temperature
             )
-            
+
             # Calculate metrics
             word_count = len(content.split())
             char_count = len(content)
             checksum = hashlib.md5(content.encode()).hexdigest()
-            
+
             message = GeneratedMessage(
                 content=content,
                 word_count=word_count,
@@ -2067,19 +2067,19 @@ class GenerationOrchestrator:
                 locked_sections=scaffold.locked_sections.copy(),
                 checksum=checksum
             )
-            
+
             # Validate with S6
             validation_results = validation_agent.validate_message(message, context)
-            
+
             # Check if passed
             critical_failures = [r for r in validation_results if not r.passed and r.severity in [ValidationSeverity.CRITICAL, ValidationSeverity.HIGH]]
-            
+
             if not critical_failures:
                 # Success!
                 self.temp_controller.record_success("full_message", scaffold.archetype, temperature)
                 self.status = AgentStatus.COMPLETED
                 return message
-            
+
             # NEW v11.10: Failure Classification (Enhancement 4)
             print(f"     S5: Generation attempt {attempt} failed validation...")
             failure_type, failure_report = self._classify_failure(critical_failures)
@@ -2094,7 +2094,7 @@ class GenerationOrchestrator:
                 print(f"     S5 REASON: Creative failure detected. {failure_report}")
                 print(f"     S5 ACTION: Retrying with escalated temperature.")
                 # Loop continues to next attempt
-        
+
         # Failed after max attempts
         self.status = AgentStatus.FAILED
         raise ValueError(f"Failed to generate valid message after {max_attempts} creative attempts")
@@ -2134,11 +2134,11 @@ class GenerationOrchestrator:
             return await self.synthesizer.synthesize_c_level_message(
                 scaffold, context, profile_analysis, temperature
             )
-        
+
         # Standard generation for other archetypes
         recipient_name = "Valued Professional"
         company = context.company_context[0] if context.company_context else "your organization"
-        
+
         # Get tone parameters
         tone = ConfigRegistry.get_tone_mapping(scaffold.archetype, "message_tone")
         verbs = ConfigRegistry.get_tone_mapping(scaffold.archetype, "verb_preference")
@@ -2148,7 +2148,7 @@ class GenerationOrchestrator:
         if context.adversarial_findings:
             adversarial_constraints = f"\n\n[ADVERSARIAL_CHECK: AVOID CLAIMS: {', '.join(context.adversarial_findings)}]"
 
-        
+
         if scaffold.route == Route.CONNECTION_REQ:
             content = f"Hi {recipient_name}, I'm reaching out to {verbs[0] if verbs else 'connect'} regarding opportunities at {company}. Looking forward to connecting.{adversarial_constraints}"
         elif scaffold.route == Route.INMAIL:
@@ -2157,7 +2157,7 @@ class GenerationOrchestrator:
             content = f"Hi {recipient_name}, Following up on our previous conversation about {company}. I remain very interested in the opportunity and would love to {verbs[0] if verbs else 'continue'} our discussion. Best regards{adversarial_constraints}"
         else:
             content = f"Dear {recipient_name}, Reaching out regarding {company}. Best regards{adversarial_constraints}"
-        
+
         return content
 
 
@@ -2166,11 +2166,11 @@ class ValidationAgent:
     NEW v11.6: Comprehensive validation framework with 107 rules
     Consolidates all rules from v10.22 + SUPREME_SPELL
     """
-    
+
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
         self.status = AgentStatus.IDLE
-        
+
         # NEW v11.6: Initialize validators
         self.placeholder_detector = PlaceholderDetector()
         self.claim_scorer = ClaimConfidenceScorer()
@@ -2178,7 +2178,7 @@ class ValidationAgent:
         self.content_validator = ContentCleanlinessValidator()
         self.ascii_enforcer = ASCIIEnforcer()
         self.signal_scorer = SignalQualityScorer()
-    
+
     def validate_message(
         self,
         message: GeneratedMessage,
@@ -2190,11 +2190,11 @@ class ValidationAgent:
         """
         self.status = AgentStatus.RUNNING
         results = []
-        
+
         # ========================================
         # CRITICAL RULES (Must Halt)
         # ========================================
-        
+
         # S5.S6_BlockPlaceholders (FEATURE 3.3 / GAP 1.5)
         passed, msg = self.placeholder_detector.validate(message.content)
         if not passed:
@@ -2205,7 +2205,7 @@ class ValidationAgent:
                 message=msg,
                 details=ErrorCodeRegistry.get_error("LIC-E001")
             ))
-        
+
         # S5.S6_BlockHallucinatedClaims (FEATURE 1.2 / GAP 1.2)
         claims, aggregate_conf = self.claim_scorer.score_message_claims(message.content, context.rag_results)
         claims_passed, claims_msg = self.claim_scorer.validate_claims(claims, aggregate_conf)
@@ -2217,7 +2217,7 @@ class ValidationAgent:
                 message=f"Per-claim confidence validation failed: {claims_msg}",
                 details=ErrorCodeRegistry.get_error("LIC-E002")
             ))
-        
+
         # S5.S6_BlockMessageRepetition (FEATURE 1.3)
         is_diverse, similarity, _ = self.diversity_validator.check_diversity(message.content)
         if not is_diverse:
@@ -2230,13 +2230,13 @@ class ValidationAgent:
             ))
         else:
             self.diversity_validator.add_to_history(message.content)
-        
+
         # S5.S6_ValidateSenderClaims (GAP 1.8 / LIC-QA-105)
         # NEW v11.7: Fully implemented with team whitelist validation
         team_keywords = ["my team", "our team", "we built", "we developed", "our work"]
         message_lower = message.content.lower()
         has_team_claim = any(keyword in message_lower for keyword in team_keywords)
-        
+
         if has_team_claim:
             # Check against sender profile team whitelist
             sender_teams = context.mission_context.get("sender_teams", [])
@@ -2248,11 +2248,11 @@ class ValidationAgent:
                     message="Message contains team claims ('my team', 'we built') but sender has no validated team whitelist",
                     details=ErrorCodeRegistry.get_error("LIC-E003")
                 ))
-        
+
         # ========================================
         # HIGH SEVERITY RULES (Must Halt)
         # ========================================
-        
+
         # S5.S6_ValidateJobTitlePlacement (GAP 1.6 / LIC-QA-075)
         # NEW v11.7: Fully implemented
         if message.route == Route.INMAIL:
@@ -2266,7 +2266,7 @@ class ValidationAgent:
                     message=f"Job title '{job_title}' not mentioned in first 50 words of INMAIL",
                     details=ErrorCodeRegistry.get_error("LIC-E005")
                 ))
-        
+
         # S5.S6_ValidateCompanySpelling (GAP 1.7 / LIC-QA-049)
         # NEW v11.7: Fully implemented with fuzzy matching
         company_rag = context.mission_context.get("company", "")
@@ -2279,7 +2279,7 @@ class ValidationAgent:
                 # Check for close matches
                 words = message_lower.split()
                 close_match = any(
-                    self._levenshtein_distance(word, company_lower) <= 2 
+                    self._levenshtein_distance(word, company_lower) <= 2
                     for word in words
                 )
                 if not close_match:
@@ -2290,7 +2290,7 @@ class ValidationAgent:
                         message=f"Company name '{company_rag}' not found or misspelled in message",
                         details=ErrorCodeRegistry.get_error("LIC-E006")
                     ))
-        
+
         # S5.S6_ValidateSafeCharacters (GAP 1.10)
         ascii_passed, ascii_msg = self.ascii_enforcer.validate(message.content)
         if not ascii_passed:
@@ -2301,11 +2301,11 @@ class ValidationAgent:
                 message=ascii_msg,
                 details=ErrorCodeRegistry.get_error("LIC-E007")
             ))
-        
+
         # ========================================
         # MEDIUM SEVERITY RULES (Regenerate, No Halt)
         # ========================================
-        
+
         # S5.S6_BlockCorporateClichés (FEATURE 3.1)
         verbs_passed, verbs_msg = self.content_validator.validate_verbs(message.content)
         if not verbs_passed:
@@ -2316,7 +2316,7 @@ class ValidationAgent:
                 message=verbs_msg,
                 details=ErrorCodeRegistry.get_error("LIC-E008")
             ))
-        
+
         # S5.S6_BlockWeakLanguage (FEATURE 3.2)
         fillers_passed, fillers_msg = self.content_validator.validate_fillers(message.content)
         if not fillers_passed:
@@ -2327,24 +2327,24 @@ class ValidationAgent:
                 message=fillers_msg,
                 details=ErrorCodeRegistry.get_error("LIC-E009")
             ))
-        
+
         # S5.S6_ValidateMetricContext (GAP 1.4 / LIC-QA-043 / LIC-QA-107)
         # NEW v11.7: Fully implemented - metrics must have keyword context from RAG
         metric_pattern = r'\b\d+%|\b\d+x\b|\b\d+\s*(million|billion|thousand)\b'
         metrics_in_message = re.findall(metric_pattern, message.content, re.IGNORECASE)
-        
+
         if metrics_in_message:
             # Extract all keywords from RAG results
             rag_keywords = set()
             for rag_result in context.rag_results:
                 rag_keywords.update(rag_result.extracted_keywords)
-            
+
             # Check each metric has surrounding context words that appear in RAG
             for metric in metrics_in_message:
                 # Get 10 words around the metric
                 metric_context = self._get_context_around_metric(message.content, str(metric))
                 context_words = set(metric_context.lower().split())
-                
+
                 # Check if any context words match RAG keywords
                 has_rag_support = bool(context_words & rag_keywords)
                 if not has_rag_support:
@@ -2355,7 +2355,7 @@ class ValidationAgent:
                         message=f"Metric '{metric}' lacks supporting keyword context from RAG results",
                         details=ErrorCodeRegistry.get_error("LIC-E010")
                     ))
-        
+
         # S5.S6_ValidateSignalQuality (FEATURE 1.1)
         signal_score, _ = self.signal_scorer.calculate_signal_score(context.rag_results, message.content)
         if not self.signal_scorer.validate_minimum_signal(signal_score):
@@ -2366,10 +2366,10 @@ class ValidationAgent:
                 message=f"Signal quality score {signal_score:.2f} below threshold 0.70",
                 details=ErrorCodeRegistry.get_error("LIC-E011")
             ))
-        
+
         self.status = AgentStatus.COMPLETED
         return results
-    
+
     def _get_context_around_metric(self, text: str, metric: str) -> str:
         """Extract 10 words around a metric for context validation"""
         words = text.split()
@@ -2379,14 +2379,14 @@ class ValidationAgent:
                 end = min(len(words), i + 6)
                 return " ".join(words[start:end])
         return ""
-    
+
     def _levenshtein_distance(self, s1: str, s2: str) -> int:
         """Calculate Levenshtein distance between two strings"""
         if len(s1) < len(s2):
             return self._levenshtein_distance(s2, s1)
         if len(s2) == 0:
             return len(s1)
-        
+
         previous_row = range(len(s2) + 1)
         for i, c1 in enumerate(s1):
             current_row = [i + 1]
@@ -2396,7 +2396,7 @@ class ValidationAgent:
                 substitutions = previous_row[j] + (c1 != c2)
                 current_row.append(min(insertions, deletions, substitutions))
             previous_row = current_row
-        
+
         return previous_row[-1]
 
 
@@ -2404,11 +2404,11 @@ class QAAgent:
     """
     NEW v11.6: Enhanced QA report generation
     """
-    
+
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
         self.status = AgentStatus.IDLE
-    
+
     def generate_qa_report(
         self,
         mission: OutreachMission,
@@ -2418,16 +2418,16 @@ class QAAgent:
         NEW v11.6: Generate comprehensive QA report grouped by severity (GAP 1.11)
         """
         self.status = AgentStatus.RUNNING
-        
+
         critical_issues = sum(1 for r in validation_results if r.severity == ValidationSeverity.CRITICAL)
         high_issues = sum(1 for r in validation_results if r.severity == ValidationSeverity.HIGH)
         errors = sum(1 for r in validation_results if r.severity == ValidationSeverity.MEDIUM)
         warnings = sum(1 for r in validation_results if r.severity == ValidationSeverity.INFO)
-        
+
         passed = critical_issues == 0 and high_issues == 0
-        
+
         self.status = AgentStatus.COMPLETED
-        
+
         return QAReport(
             mission_id=mission.mission_id,
             validation_results=validation_results,
@@ -2448,10 +2448,10 @@ class WorkflowOrchestrator:
     """
     NEW v11.10: Updated to manage the S6->S2 "Meta-Loop" (Enhancement 4)
     """
-    
+
     def __init__(self):
         self.circuit_breaker = CircuitBreaker()
-        
+
         # Initialize agents
         self.profile_agent = ProfileAnalysisAgent(self.circuit_breaker)
         # NEW v11.10: Renamed ResearchOrchestrator -> S2_SupervisorAgent
@@ -2461,19 +2461,19 @@ class WorkflowOrchestrator:
         self.generation_orchestrator = GenerationOrchestrator(self.circuit_breaker)
         self.validation_agent = ValidationAgent(self.circuit_breaker)
         self.qa_agent = QAAgent(self.circuit_breaker)
-        
+
         self.events: List[Dict[str, Any]] = []
-    
+
     async def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
         """
         Execute complete workflow
         NEW v11.10: Now contains the S6->S2 "Meta-Loop" (Enhancement 4)
         """
         start_time = datetime.now()
-        
+
         # Define max re-planning loops
         MAX_META_LOOPS = 3
-        
+
         # Initialize state variables outside the loop
         profile_analysis: Optional[ProfileAnalysis] = None
         corrected_profile_analysis: Optional[ProfileAnalysis] = None
@@ -2482,18 +2482,18 @@ class WorkflowOrchestrator:
         scaffold: Optional[MessageScaffold] = None
         message: Optional[GeneratedMessage] = None
         qa_report: Optional[QAReport] = None
-        
+
         try:
             # Stage 1: Profile Analysis (Runs once)
             print("\n[S1] Profile Analysis...")
             profile_analysis = self.profile_agent.analyze_profile(mission)
             print(f"     Archetype: {profile_analysis.archetype.value} (confidence: {profile_analysis.confidence:.2f})")
-            
+
             # Manual Override Check (Runs once)
             if profile_analysis.needs_manual_override:
                 print(f"\n     ⚠️  Low confidence ({profile_analysis.confidence:.2f}). Manual override recommended.")
                 override = input(f"     Confirm archetype {profile_analysis.archetype.value}? (y/n): ").strip().lower()
-                
+
                 if override != 'y':
                     print("     Available archetypes: C_LEVEL, EXECUTIVE, SENIOR_TA, RECRUITER")
                     new_archetype = input("     Enter correct archetype: ").strip().upper()
@@ -2504,7 +2504,7 @@ class WorkflowOrchestrator:
                         print(f"     Updated to: {profile_analysis.archetype.value}")
                     except KeyError:
                         print(f"     Invalid archetype. Keeping {profile_analysis.archetype.value}")
-            
+
             # Initialize corrected analysis
             corrected_profile_analysis = profile_analysis
 
@@ -2512,7 +2512,7 @@ class WorkflowOrchestrator:
             # NEW v11.10: S6 -> S2 META-LOOP (Enhancement 4)
             # ---
             refinement_context_from_s6: List[ValidationResult] = None
-            
+
             for meta_attempt in range(1, MAX_META_LOOPS + 1):
                 print(f"\n{'='*40}")
                 print(f"META-LOOP ATTEMPT {meta_attempt}/{MAX_META_LOOPS}")
@@ -2526,31 +2526,31 @@ class WorkflowOrchestrator:
                         corrected_profile_analysis,
                         refinement_context=refinement_context_from_s6 # Pass S6 failure context
                     )
-                    
+
                     if corrected_profile_analysis.archetype != profile_analysis.archetype and meta_attempt == 1:
                         print(f"     ✨ Archetype corrected: {profile_analysis.archetype.value} → {corrected_profile_analysis.archetype.value}")
                         print(f"     Reason: {corrected_profile_analysis.critique_history[-1] if corrected_profile_analysis.critique_history else 'N/A'}")
-                    
+
                     print(f"     RAG Results: {len(context.rag_results)}")
                     print(f"     Reflexion Iterations (Internal S2): {context.reflexion_iterations}")
                     print(f"     Prior Applications: {len(context.prior_applications)}")
                     if context.adversarial_findings:
                         print(f"     Adversarial Flags: {context.adversarial_findings}")
-                    
+
                     # Stage 3: Routing (Re-runs on meta-loop)
                     print("\n[S3] Route Determination...")
                     route, routing_reasoning = self.routing_agent.determine_route(mission, corrected_profile_analysis)
                     print(f"     Route: {route.value}")
                     print(f"     Reasoning: {routing_reasoning}")
-                    
+
                     # Stage 4: Scaffold (Re-runs on meta-loop)
                     print("\n[S4] Scaffold Creation...")
                     scaffold = self.scaffold_agent.create_scaffold(route, corrected_profile_analysis.archetype, context)
                     print(f"     Target Words: {ConfigRegistry.get_target_word_count(corrected_profile_analysis.archetype, route)}")
-                    
+
                     # Stage 5+6: Generation with Validation Loop
                     print("\n[S5+S6] Generation with Validation...")
-                    
+
                     # This call now runs its *own* retry loop for CREATIVE failures
                     # but will raise FactualGapError for FACTUAL failures.
                     message = await self.generation_orchestrator.generate_message(
@@ -2559,26 +2559,26 @@ class WorkflowOrchestrator:
                         corrected_profile_analysis,
                         self.validation_agent
                     )
-                    
+
                     # If generate_message succeeds without error, break the meta-loop
                     print(f"     S5: Generation SUCCEEDED in meta-attempt {meta_attempt}.")
                     print(f"     Generated: {message.word_count} words in {message.generation_attempts} creative attempts")
                     break # SUCCESS! Exit the meta-loop.
-                
+
                 except FactualGapError as e:
                     # This is the S6->S2 re-planning trigger
                     print(f"\n     🔥 S6->S2 RE-PLANNING (Meta-Attempt {meta_attempt+1}) due to factual failure...")
                     refinement_context_from_s6 = e.args[0]
                     failure_msg = refinement_context_from_s6[0].message
                     print(f"     Failure Context: {failure_msg}")
-                    
+
                     if meta_attempt == MAX_META_LOOPS:
                         print("     FATAL: Factual failure not resolved after max re-planning loops.")
                         raise Exception(f"Factual failure not resolved after {MAX_META_LOOPS} meta-loops: {failure_msg}")
-                    
+
                     # `continue` will re-run the meta-loop (S2, S3, S4, S5)
                     continue
-            
+
             # ---
             # END S6 -> S2 META-LOOP
             # ---
@@ -2589,10 +2589,10 @@ class WorkflowOrchestrator:
             final_validation_results = self.validation_agent.validate_message(message, context)
             qa_report = self.qa_agent.generate_qa_report(mission, final_validation_results)
             print(f"     Critical: {qa_report.critical_issues}, High: {qa_report.high_issues}, Medium: {qa_report.errors}")
-            
+
             end_time = datetime.now()
             workflow_time = (end_time - start_time).total_seconds()
-            
+
             # Build result
             result = {
                 "status": "success",
@@ -2614,62 +2614,62 @@ class WorkflowOrchestrator:
                 },
                 "qa_report": self._format_qa_report(qa_report)
             }
-            
+
             # NEW v11.6: Stage 8 - Post-Send Tracking
             if qa_report.passed:
                 await self._execute_post_send_tracking(mission, message, result)
-            
+
             return result
-        
+
         except Exception as e:
             return {
                 "status": "failed",
                 "error": str(e),
                 "production_ready": False
             }
-    
+
     def _format_qa_report(self, qa_report: QAReport) -> str:
         """Format QA report for display"""
         lines = []
         lines.append("\n" + "="*80)
         lines.append("QA VALIDATION REPORT")
         lines.append("="*80)
-        
+
         if qa_report.passed:
             lines.append("\n✅ ALL VALIDATIONS PASSED")
         else:
             lines.append("\n❌ VALIDATION FAILURES DETECTED")
-        
+
         # Group by severity
         critical = [r for r in qa_report.validation_results if r.severity == ValidationSeverity.CRITICAL]
         high = [r for r in qa_report.validation_results if r.severity == ValidationSeverity.HIGH]
         medium = [r for r in qa_report.validation_results if r.severity == ValidationSeverity.MEDIUM]
         info = [r for r in qa_report.validation_results if r.severity == ValidationSeverity.INFO]
-        
+
         if critical:
             lines.append(f"\n🔴 CRITICAL ISSUES ({len(critical)}):")
             for r in critical:
                 lines.append(f"   - [{r.rule_id}] {r.message}")
-        
+
         if high:
             lines.append(f"\n🟠 HIGH SEVERITY ({len(high)}):")
             for r in high:
                 lines.append(f"   - [{r.rule_id}] {r.message}")
-        
+
         if medium:
             lines.append(f"\n🟡 MEDIUM SEVERITY ({len(medium)}):")
             for r in medium:
                 lines.append(f"   - [{r.rule_id}] {r.message}")
-        
+
         if info:
             lines.append(f"\n🔵 INFO ({len(info)}):")
             for r in info:
                 lines.append(f"   - [{r.rule_id}] {r.message}")
-        
+
         lines.append("\n" + "="*80)
-        
+
         return "\n".join(lines)
-    
+
     async def _execute_post_send_tracking(
         self,
         mission: OutreachMission,
@@ -2682,9 +2682,9 @@ class WorkflowOrchestrator:
         print("\n" + "="*80)
         print("POST-SEND TRACKING")
         print("="*80)
-        
+
         sent = input("\nDid you send this message? (Y/N): ").strip().upper()
-        
+
         if sent == "Y":
             # Generate App Tracker JSON
             tracker = {
@@ -2708,12 +2708,12 @@ class WorkflowOrchestrator:
                 "status": "sent",
                 "follow_up_date": (datetime.now() + timedelta(days=3)).isoformat()
             }
-            
+
             # Save tracker
             tracker_path = Path(f"/home/claude/tracker_{mission.mission_id}.json")
             with open(tracker_path, 'w') as f:
                 json.dump(tracker, f, indent=2)
-            
+
             print(f"\n✅ Application tracker saved: {tracker_path}")
             print(f"   Follow-up reminder: {tracker['follow_up_date'][:10]}")
 
@@ -2732,7 +2732,7 @@ def collect_sender_profile() -> Dict[str, Any]:
     print("\n" + "="*80)
     print("SENDER PROFILE COLLECTION")
     print("="*80)
-    
+
     name = input("Your Name: ").strip()
     title = input("Your Title: ").strip()
     company = None
@@ -2741,10 +2741,10 @@ def collect_sender_profile() -> Dict[str, Any]:
         if len(parts) == 2:
             title = parts[0].strip()
             company = parts[1].strip()
-    
+
     linkedin_url = input("Your LinkedIn URL: ").strip()
     about_section = input("Your About Section (brief): ").strip()
-    
+
     return {
         "name": name,
         "title": title,
@@ -2759,15 +2759,15 @@ def collect_recipient_profile() -> Dict[str, Any]:
     print("\n" + "="*80)
     print("RECIPIENT PROFILE COLLECTION")
     print("="*80)
-    
+
     name = input("Recipient Name: ").strip()
     title = input("Recipient Title: ").strip()
     company = input("Recipient Company: ").strip()
     linkedin_url = input("Recipient LinkedIn URL (optional): ").strip()
-    
+
     connection_input = input("Are you connected on LinkedIn? (yes/no) [default: no]: ").strip().lower()
     connection_status = "connected" if connection_input in ["yes", "y"] else "not_connected"
-    
+
     prior_message_count = 0
     if connection_status == "connected":
         prior_input = input("How many prior messages exchanged? [default: 0]: ").strip()
@@ -2775,7 +2775,7 @@ def collect_recipient_profile() -> Dict[str, Any]:
             prior_message_count = int(prior_input) if prior_input else 0
         except ValueError:
             prior_message_count = 0
-    
+
     return {
         "name": name,
         "title": title or "Not specified",
@@ -2791,11 +2791,11 @@ def collect_job_description() -> Dict[str, Any]:
     print("\n" + "="*80)
     print("JOB DESCRIPTION COLLECTION")
     print("="*80)
-    
+
     job_title = input("Job Title: ").strip()
     job_company = input("Company: ").strip()
     location = input("Location (optional): ").strip()
-    
+
     print("\nJob Requirements (press Enter twice when done):")
     req_lines = []
     empty_count = 0
@@ -2806,9 +2806,9 @@ def collect_job_description() -> Dict[str, Any]:
             empty_count = 0
         else:
             empty_count += 1
-    
+
     requirements = "\n".join(req_lines).strip()
-    
+
     return {
         "title": job_title,
         "company": job_company or "Not specified",
@@ -2823,7 +2823,7 @@ def collect_job_description() -> Dict[str, Any]:
 
 async def main():
     """Main execution"""
-    
+
     print("\n" + "="*80)
     print("LIC v11.10 - LinkedIn Outreach Orchestrator (Dual-Loop Agentic)")
     print("="*80)
@@ -2831,7 +2831,7 @@ async def main():
     print("  1. Interactive (collect profiles)")
     print("  2. Demo (use sample data)")
     mode = input("\nSelect mode (1 or 2): ").strip()
-    
+
     if mode == "1":
         sender_profile = collect_sender_profile()
         recipient_profile = collect_recipient_profile()
@@ -2859,7 +2859,7 @@ async def main():
             "location": "San Francisco, CA",
             "requirements": "10+ years AI/ML leadership, platform scaling experience"
         }
-    
+
     mission = OutreachMission(
         mission_id=str(uuid4()),
         sender_profile=sender_profile,
@@ -2868,7 +2868,7 @@ async def main():
         connection_status=recipient_profile.get("connection_status", "not_connected"),
         prior_message_count=recipient_profile.get("prior_message_count", 0)
     )
-    
+
     print(f"\n{'='*80}")
     print("LIC v11.10 - Workflow Execution")
     print(f"{'='*80}\n")
@@ -2876,15 +2876,15 @@ async def main():
     print(f"Sender: {mission.sender_profile['name']}")
     print(f"Recipient: {mission.recipient_profile['name']}")
     print(f"Job: {mission.job_description['title']} at {mission.job_description['company']}")
-    
+
     orchestrator = create_orchestrator()
     result = await orchestrator.execute_workflow(mission)
-    
+
     print(f"\n{'='*80}")
     print("WORKFLOW RESULTS")
     print(f"{'='*80}\n")
     print(f"Status: {result['status']}")
-    
+
     if result['status'] == 'success':
         print(f"Production Ready: {result['production_ready']}")
         print(f"Workflow Time: {result['workflow_time']:.2f}s")
@@ -2900,7 +2900,7 @@ async def main():
         print(result['qa_report'])
     else:
         print(f"Error: {result.get('error', 'Unknown error')}")
-    
+
     return result
 
 

@@ -4,7 +4,7 @@
 regression_tests:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # Test automation framework
   automation_framework:
     test_scheduling:
@@ -13,32 +13,32 @@ regression_tests:
         - performance_benchmarks: "Response time and resource usage"
         - quality_metrics: "Output quality scoring"
         - error_handling: "Exception and edge case handling"
-        
+
       weekly_tests:
         - full_regression_suite: "Complete prompt library testing"
         - integration_tests: "Cross-engine compatibility"
         - user_acceptance: "Satisfaction and usability metrics"
         - security_checks: "Safety and compliance validation"
-        
+
       monthly_tests:
         - comprehensive_evaluation: "End-to-end system testing"
         - scalability_tests: "High-volume and stress testing"
         - industry_validation: "Industry-specific accuracy testing"
         - competitive_analysis: "Benchmark against industry standards"
-        
+
     test_execution:
       parallel_processing:
         - max_concurrent_tests: 10
         - resource_allocation: "Dynamic based on test complexity"
         - timeout_handling: "Automatic test termination after thresholds"
         - failure_isolation: "Continue testing after individual failures"
-        
+
       result_collection:
         - automated_scoring: "Immediate quality assessment"
         - performance_metrics: "Resource usage and timing data"
         - error_classification: "Categorized failure analysis"
         - trend_analysis: "Historical performance tracking"
-        
+
   # Core regression test suites
   core_test_suites:
     # Resume engine regression tests
@@ -56,7 +56,7 @@ regression_tests:
               - quality_maintenance: ">= 85% average score"
               - consistency_score: ">= 90% across runs"
               - regression_prevention: "No score degradation > 5%"
-              
+
           - name: "skills_categorization_accuracy"
             description: "Validate skills categorization remains accurate"
             test_method:
@@ -68,7 +68,7 @@ regression_tests:
               - categorization_accuracy: ">= 90%"
               - processing_efficiency: "< 3 seconds per skill set"
               - edge_case_handling: ">= 80% accuracy on ambiguous skills"
-              
+
       rewriting_regression:
         test_cases:
           - name: "achievement_quantification_stability"
@@ -82,7 +82,7 @@ regression_tests:
               - quantification_accuracy: ">= 85%"
               - quality_consistency: ">= 90% across versions"
               - processing_speed: "< 2 seconds per achievement"
-              
+
           - name: "ats_optimization_effectiveness"
             description: "Validate ATS optimization maintains effectiveness"
             test_method:
@@ -94,7 +94,7 @@ regression_tests:
               - parsing_success_rate: ">= 95%"
               - keyword_match_rate: ">= 80%"
               - format_compliance: "100%"
-              
+
       scoring_regression:
         test_cases:
           - name: "quality_scoring_consistency"
@@ -108,7 +108,7 @@ regression_tests:
               - scoring_correlation: ">= 0.85 with human experts"
               - bias_absence: "No statistically significant bias"
               - score_distribution: "Normal distribution maintenance"
-              
+
           - name: "industry_specific_accuracy"
             description: "Validate industry-specific scoring accuracy"
             test_method:
@@ -120,7 +120,7 @@ regression_tests:
               - industry_accuracy: ">= 85% per industry"
               - expert_agreement: ">= 80% with industry experts"
               - trend_alignment: "Current standards compliance"
-              
+
       feedback_regression:
         test_cases:
           - name: "improvement_recommendation_quality"
@@ -134,7 +134,7 @@ regression_tests:
               - recommendation_accuracy: ">= 85%"
               - actionability_score: ">= 80%"
               - user_satisfaction: ">= 75% positive feedback"
-              
+
     # Outreach engine regression tests
     outreach_engine_regression:
       system_prompts_regression:
@@ -150,7 +150,7 @@ regression_tests:
               - personalization_score: ">= 85%"
               - relevance_accuracy: ">= 90%"
               - quality_maintenance: "No degradation > 5%"
-              
+
           - name: "value_proposition_effectiveness"
             description: "Validate value proposition effectiveness"
             test_method:
@@ -162,7 +162,7 @@ regression_tests:
               - value_clarity_score: ">= 85%"
               - engagement_prediction: ">= 80% accuracy"
               - professional_compliance: "100%"
-              
+
       rewriting_regression:
         test_cases:
           - name: "message_engagement_optimization"
@@ -176,7 +176,7 @@ regression_tests:
               - engagement_prediction: ">= 80% accuracy"
               - channel_optimization: ">= 85% effectiveness"
               - quality_consistency: ">= 90%"
-              
+
           - name: "follow_up_strategy_effectiveness"
             description: "Validate follow-up strategy effectiveness"
             test_method:
@@ -188,7 +188,7 @@ regression_tests:
               - follow_up_effectiveness: ">= 85%"
               - professional_standards: "100% compliance"
               - relationship_potential: ">= 80% positive indicators"
-              
+
       scoring_regression:
         test_cases:
           - name: "response_prediction_accuracy"
@@ -202,7 +202,7 @@ regression_tests:
               - prediction_accuracy: ">= 80%"
               - confidence_interval: "95% confidence maintained"
               - segment_differentiation: ">= 85% segment accuracy"
-              
+
           - name: "relationship_building_scoring"
             description: "Validate relationship building potential scoring"
             test_method:
@@ -214,7 +214,7 @@ regression_tests:
               - potential_prediction: ">= 85% accuracy"
               - professional_compliance: "100%"
               - success_correlation: ">= 0.80"
-              
+
       feedback_regression:
         test_cases:
           - name: "strategy_optimization_quality"
@@ -228,7 +228,7 @@ regression_tests:
               - recommendation_quality: ">= 85%"
               - implementation_feasibility: ">= 80%"
               - roi_prediction: ">= 75% accuracy"
-              
+
   # Performance regression tests
   performance_regression:
     efficiency_tests:
@@ -243,7 +243,7 @@ regression_tests:
           - average_response_time: "< 5 seconds"
           - percentile_95_response: "< 15 seconds"
           - performance_degradation: "< 10% from baseline"
-          
+
       - name: "resource_utilization_stability"
         description: "Validate resource usage remains efficient"
         test_method:
@@ -255,7 +255,7 @@ regression_tests:
           - memory_efficiency: "< 512MB per prompt"
           - cpu_utilization: "< 50% average"
           - scalability_factor: "> 90% efficiency under load"
-          
+
     quality_regression:
       - name: "output_consistency_regression"
         description: "Ensure output consistency across versions"
@@ -268,7 +268,7 @@ regression_tests:
           - consistency_score: "> 95%"
           - variance_threshold: "< 5%"
           - quality_stability: "No degradation > 5%"
-          
+
       - name: "bias_detection_regression"
         description: "Ensure no bias introduction in updates"
         test_method:
@@ -280,7 +280,7 @@ regression_tests:
           - bias_absence: "No statistically significant bias"
           - fairness_score: "> 90%"
           - cultural_appropriateness: "100%"
-          
+
   # Integration regression tests
   integration_regression:
     cross_engine_tests:
@@ -295,7 +295,7 @@ regression_tests:
           - integration_success: "> 95%"
           - data_consistency: "> 98%"
           - performance_overhead: "< 15%"
-          
+
     external_system_tests:
       - name: "ats_integration_regression"
         description: "Ensure ATS system integration stability"
@@ -308,7 +308,7 @@ regression_tests:
           - api_success_rate: "> 95%"
           - data_accuracy: "> 90%"
           - error_recovery: "100% graceful handling"
-          
+
       - name: "professional_network_integration"
         description: "Validate professional network integration"
         test_method:
@@ -320,7 +320,7 @@ regression_tests:
           - integration_reliability: "> 90%"
           - data_synchronization: "> 95%"
           - rate_limit_compliance: "100%"
-          
+
   # User experience regression tests
   ux_regression:
     usability_tests:
@@ -335,7 +335,7 @@ regression_tests:
           - task_completion_rate: "> 85%"
           - learning_curve: "< 30 minutes to basic proficiency"
           - user_satisfaction: "> 80%"
-          
+
       - name: "expert_user_efficiency_regression"
         description: "Maintain expert user efficiency and productivity"
         test_method:
@@ -347,7 +347,7 @@ regression_tests:
           - efficiency_improvement: "> 50% vs. manual methods"
           - feature_adoption: "> 70%"
           - productivity_gain: "> 40%"
-          
+
   # Automated test execution
   test_automation:
     continuous_integration:
@@ -363,7 +363,7 @@ regression_tests:
           - automated_notifications: "Failure alerts and status updates"
           - trend_analysis: "Historical performance tracking"
           - regression_detection: "Automatic degradation identification"
-          
+
     quality_gates:
       - name: "deployment_quality_gates"
         description: "Quality gates for deployment decisions"
@@ -377,7 +377,7 @@ regression_tests:
           - override_procedures: "Manual override with justification"
           - rollback_triggers: "Automatic rollback on post-deployment failures"
           - monitoring_continuation: "Enhanced monitoring after deployment"
-          
+
   # Regression test data management
   test_data_management:
     dataset_maintenance:
@@ -393,7 +393,7 @@ regression_tests:
           - industry_relevance: "Current industry standards and trends"
           - demographic_diversity: "Representative demographic sampling"
           - edge_case_maintenance: "Edge case scenario updates"
-          
+
     baseline_management:
       - name: "regression_baseline_tracking"
         description: "Track and maintain regression baselines"

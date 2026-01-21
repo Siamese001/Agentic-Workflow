@@ -17,9 +17,9 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Detects when the system has converged (Resume Generator app-specific).
-    
+
     Tracks signal state history to detect convergence and oscillation patterns.
-    
+
     Attributes:
         ctx: Resume engine context
         history: List of signal states from previous cycles
@@ -28,7 +28,7 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
     def __init__(self, ctx: 'ResumeEngineContext') -> None:
         """
         Initialize convergence detector.
-        
+
         Args:
             ctx: Resume engine context
         """
@@ -38,7 +38,7 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
     def record_state(self) -> None:
         """
         Record current signal state to history.
-        
+
         Appends a snapshot of current signals for convergence analysis.
         """
         self.history.append(set(self.ctx.signals))
@@ -46,7 +46,7 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
     def is_converged(self) -> bool:
         """
         Check if system has converged.
-        
+
         Returns:
             True if system has reached stable state, False otherwise
         """
@@ -55,10 +55,10 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
     def is_oscillating(self, window: int = 3) -> bool:
         """
         Check if signals are oscillating (stuck in a loop).
-        
+
         Args:
             window: Number of cycles to check for oscillation (default: 3)
-        
+
         Returns:
             True if signals are repeating in a pattern, False otherwise
         """
@@ -78,7 +78,7 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
     def get_stuck_signals(self) -> Set[str]:
         """
         Get signals that have persisted across multiple cycles.
-        
+
         Returns:
             Set of signals present in both last two cycles
         """
@@ -90,12 +90,12 @@ class ConvergenceDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
-        
+
         Returns:
             Dict with healing summary (violations, fixed, errors)
         """

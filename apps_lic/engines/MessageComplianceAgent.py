@@ -15,7 +15,7 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 class MessageComplianceAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
     """
     Ensures message compliance with regulations and best practices.
-    
+
     Validates:
     - Forbidden words/phrases
     - Unsubscribe link presence
@@ -30,12 +30,12 @@ class MessageComplianceAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMi
     async def execute(self) -> None:
         """
         Execute message compliance check.
-        
+
         Validates all messages for:
         - Forbidden marketing words
         - Required unsubscribe links
         - Length limits
-        
+
         Raises:
             COMPLIANCE_ISSUE signal if violations found
         """

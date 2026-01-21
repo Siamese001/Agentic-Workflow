@@ -34,10 +34,10 @@ def run_all_tests():
     print("=" * 80)
     print("CODEDEDUPLICATIONAGENT COMPREHENSIVE TEST SUITE")
     print("=" * 80)
-    
+
     tests_passed = 0
     tests_total = 0
-    
+
     # Test 1: Initialization
     print("\n[TEST 1/7] Agent Initialization")
     tests_total += 1
@@ -52,7 +52,7 @@ def run_all_tests():
         tests_passed += 1
     except Exception as e:
         print(f"  ✗ Failed: {e}")
-    
+
     # Test 2: Self-tests
     print("\n[TEST 2/7] Self-Tests")
     tests_total += 1
@@ -63,7 +63,7 @@ def run_all_tests():
         tests_passed += 1
     except Exception as e:
         print(f"  ✗ Failed: {e}")
-    
+
     # Test 3: Block similarity method
     print("\n[TEST 3/7] Block Similarity Method")
     tests_total += 1
@@ -71,17 +71,17 @@ def run_all_tests():
         # Identical code
         sim1 = agent._block_similarity("def foo():\n    return 42", "def foo():\n    return 42")
         assert sim1 == 1.0
-        
+
         # Different code
         sim2 = agent._block_similarity("def foo():\n    return 42", "class Bar:\n    pass")
         assert sim2 < 0.5
-        
+
         print(f"  ✓ Identical code: {sim1:.1%}")
         print(f"  ✓ Different code: {sim2:.1%}")
         tests_passed += 1
     except Exception as e:
         print(f"  ✗ Failed: {e}")
-    
+
     # Test 4: Code normalization (bug fix verification)
     print("\n[TEST 4/7] Code Normalization (Bug Fix)")
     tests_total += 1
@@ -96,7 +96,7 @@ def run_all_tests():
         tests_passed += 1
     except Exception as e:
         print(f"  ✗ Failed: {e}")
-    
+
     # Test 5: Scan for duplicates (small sample)
     print("\n[TEST 5/7] Duplicate Detection (Small Sample)")
     tests_total += 1
@@ -105,18 +105,18 @@ def run_all_tests():
         # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
     python_files = [str(f) for f in get_python_files(sample_dir)][:15]
-        
+
         start_time = time.time()
         agent.scan_for_duplicates(python_files)
         elapsed = time.time() - start_time
-        
+
         print(f"  ✓ Scanned {len(python_files)} files in {elapsed:.2f}s")
         print(f"  ✓ Duplicate groups found: {len(agent.duplicate_groups)}")
         print(f"  ✓ Errors: {len(agent.errors)}")
         tests_passed += 1
     except Exception as e:
         print(f"  ✗ Failed: {e}")
-    
+
     # Test 6: File-level duplicates
     print("\n[TEST 6/7] File-Level Duplicate Detection")
     tests_total += 1
@@ -127,7 +127,7 @@ def run_all_tests():
         tests_passed += 1
     except Exception as e:
         print(f"  ✗ Failed: {e}")
-    
+
     # Test 7: Filename duplicates
     print("\n[TEST 7/7] Filename Duplicate Detection")
     tests_total += 1
@@ -137,7 +137,7 @@ def run_all_tests():
         tests_passed += 1
     except Exception as e:
         print(f"  ✗ Failed: {e}")
-    
+
     # Summary
     print("\n" + "=" * 80)
     print("TEST SUMMARY")
@@ -146,12 +146,12 @@ def run_all_tests():
     print(f"Passed: {tests_passed}")
     print(f"Failed: {tests_total - tests_passed}")
     print(f"Pass Rate: {tests_passed / tests_total * 100:.1f}%")
-    
+
     # Detailed validation
     print("\n" + "=" * 80)
     print("VALIDATION CHECKLIST")
     print("=" * 80)
-    
+
     validations = [
         ("✓ Tree-sitter initialization working", agent.ts_parser is not None and len(agent.errors) == 0),
         ("✓ Fuzzy matching threshold at 98%", agent.threshold == 0.98),
@@ -161,12 +161,12 @@ def run_all_tests():
         ("✓ Performance optimization applied", True),  # Verified by fast execution
         ("✓ All self-tests pass", True),  # Verified in test 2
     ]
-    
+
     for desc, passed in validations:
         print(f"  {desc}" if passed else f"  ✗ {desc}")
-    
+
     all_validations_passed = all(v[1] for v in validations)
-    
+
     if tests_passed == tests_total and all_validations_passed:
         print("\n" + "=" * 80)
         print("✅ 100% TESTS PASSED - CODEDEDUPLICATIONAGENT PRODUCTION READY")

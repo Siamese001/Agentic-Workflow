@@ -3,7 +3,7 @@ SafetyStrategy - Consolidated Safety Orchestration Strategy
 
 This module consolidates logic from:
 - ComplianceOrchestratorAgent
-- GuardianOrchestratorAgent  
+- GuardianOrchestratorAgent
 - HealingOrchestratorAgent
 
 SSOT PRINCIPLE:
@@ -24,29 +24,29 @@ Logger = logging.getLogger(__name__)
 class SafetyStrategy:
     """
     Strategy for safety-focused orchestration missions.
-    
+
     Consolidates:
     - Compliance validation (from ComplianceOrchestratorAgent)
     - Guardian protection (from GuardianOrchestratorAgent)
     - Healing coordination (from HealingOrchestratorAgent)
-    
+
     Usage:
         strategy = SafetyStrategy(project_root=Path.cwd())
         orchestrator = UnifiedOrchestratorAgent(strategy=strategy)
         result = orchestrator.run_mission({"dry_run": True})
     """
-    
+
     project_root: Path = field(default_factory=Path.cwd)
-    
+
     @property
     def name(self) -> str:
         """Return the strategy name."""
         return "SafetyStrategy"
-    
+
     def get_tiers(self) -> Dict[str, List[str]]:
         """
         Return the tiered execution plan for safety missions.
-        
+
         Returns:
             Dictionary mapping tier names to lists of agent names.
         """
@@ -66,14 +66,14 @@ class SafetyStrategy:
                 "StructuralHealerAgent",
             ],
         }
-    
+
     def get_agent(self, agent_name: str) -> Optional[Any]:
         """
         Get or create an agent instance by name.
-        
+
         Args:
             agent_name: Name of the agent to retrieve
-            
+
         Returns:
             Agent instance or None if not available
         """
@@ -103,7 +103,7 @@ class SafetyStrategy:
         except ImportError as e:
             Logger.warning(f"[SafetyStrategy] Failed to import {agent_name}: {e}")
             return None
-    
+
     def execute_agent(
         self,
         agent: Any,
@@ -114,25 +114,25 @@ class SafetyStrategy:
     ) -> Dict[str, Any]:
         """
         Execute a single agent and return results.
-        
+
         Args:
             agent: The agent instance to execute
             agent_name: Name of the agent (for logging)
             dry_run: If True, only report violations
             execute: If True, apply fixes
             **kwargs: Additional agent-specific parameters
-            
+
         Returns:
             Dictionary with execution results
         """
         import time
         start_time = time.time()
-        
+
         try:
             if hasattr(agent, 'heal_repository'):
                 result = agent.heal_repository(dry_run=dry_run, execute=execute)
                 execution_time_ms = (time.time() - start_time) * 1000
-                
+
                 return {
                     "status": "PASS" if result.get("errors", 0) == 0 else "FAIL",
                     "violations_found": result.get("violations", 0),
@@ -157,7 +157,7 @@ class SafetyStrategy:
                 "execution_time_ms": execution_time_ms,
                 "error_message": str(e),
             }
-    
+
     def should_abort_tier(
         self,
         tier_name: str,
@@ -166,12 +166,12 @@ class SafetyStrategy:
     ) -> bool:
         """
         Determine if execution should abort after a tier.
-        
+
         Args:
             tier_name: Name of the completed tier
             tier_results: Results from all agents in the tier
             execute: Whether we're in execute mode
-            
+
         Returns:
             True if execution should abort, False to continue
         """
@@ -180,5 +180,5 @@ class SafetyStrategy:
             for result in tier_results:
                 if result.get("status") == "FAIL":
                     return True
-        
+
         return False

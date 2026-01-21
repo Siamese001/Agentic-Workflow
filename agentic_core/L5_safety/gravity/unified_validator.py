@@ -40,7 +40,7 @@ class GravityViolation:
     actual_layer: str
     assigned_layer: str
     agent_name: str
-    
+
     def __str__(self) -> str:
         return f"{self.file_path}: {self.actual_layer} → {self.assigned_layer}"
 
@@ -54,7 +54,7 @@ class ImportViolation:
     import_line: str
     line_number: int
     severity: int = 8
-    
+
     def __str__(self) -> str:
         return f"{self.file_path}:{self.line_number}: L{self.source_layer} → L{self.target_layer}"
 
@@ -66,7 +66,7 @@ class HierarchyViolation:
     actual_depth: int
     max_depth: int
     root_folder: str
-    
+
     def __str__(self) -> str:
         return f"{self.folder_path}: depth {self.actual_depth} > max {self.max_depth}"
 
@@ -77,7 +77,7 @@ class DriftViolation:
     folder_path: str
     parent_folder: str
     violation_type: str  # 'orphaned' or 'missing'
-    
+
     def __str__(self) -> str:
         return f"{self.folder_path}: {self.violation_type} ({self.parent_folder})"
 
@@ -86,7 +86,7 @@ class DriftViolation:
 class SovereignHealthReport:
     """
     Comprehensive SSOT health report.
-    
+
     Consolidates all validation results into a single report.
     """
     # Violation lists
@@ -94,15 +94,15 @@ class SovereignHealthReport:
     import_violations: List[ImportViolation] = field(default_factory=list)
     hierarchy_violations: List[HierarchyViolation] = field(default_factory=list)
     drift_violations: List[DriftViolation] = field(default_factory=list)
-    
+
     # Statistics
     total_agents: int = 0
     total_files_scanned: int = 0
     compliance_score: float = 0.0
-    
+
     # Timestamps
     scan_duration: float = 0.0
-    
+
     @property
     def total_violations(self) -> int:
         """Total number of violations across all categories."""
@@ -112,16 +112,16 @@ class SovereignHealthReport:
             len(self.hierarchy_violations) +
             len(self.drift_violations)
         )
-    
+
     @property
     def is_compliant(self) -> bool:
         """Check if system is fully compliant (zero violations)."""
         return self.total_violations == 0
-    
+
     def to_markdown(self) -> str:
         """Generate Markdown report optimized for LLM/Human consumption."""
         lines = []
-        
+
         # Header
         lines.append("# SSOT Sovereign Health Report")
         lines.append("")
@@ -129,7 +129,7 @@ class SovereignHealthReport:
         lines.append(f"**Total Violations**: {self.total_violations}")
         lines.append(f"**Scan Duration**: {self.scan_duration:.2f}s")
         lines.append("")
-        
+
         # Overall Status
         if self.is_compliant:
             lines.append("## ✅ Status: COMPLIANT")
@@ -139,11 +139,11 @@ class SovereignHealthReport:
             lines.append("## ⚠️ Status: NON-COMPLIANT")
             lines.append("")
             lines.append(f"Found {self.total_violations} violations requiring attention.")
-        
+
         lines.append("")
         lines.append("---")
         lines.append("")
-        
+
         # Gravity Violations
         lines.append("## 1. Gravity Violations (Physical Location)")
         lines.append("")
@@ -158,9 +158,9 @@ class SovereignHealthReport:
                 lines.append(f"| ... and {len(self.gravity_violations) - 10} more | | |")
         else:
             lines.append("✅ **No violations** - All agents in correct layers")
-        
+
         lines.append("")
-        
+
         # Import Violations
         lines.append("## 2. Import Violations (Upward Dependencies)")
         lines.append("")
@@ -175,9 +175,9 @@ class SovereignHealthReport:
                 lines.append(f"| ... and {len(self.import_violations) - 10} more | | | |")
         else:
             lines.append("✅ **No violations** - No illegal upward dependencies")
-        
+
         lines.append("")
-        
+
         # Hierarchy Violations
         lines.append("## 3. Hierarchy Violations (Depth Limits)")
         lines.append("")
@@ -192,9 +192,9 @@ class SovereignHealthReport:
                 lines.append(f"| ... and {len(self.hierarchy_violations) - 10} more | | | |")
         else:
             lines.append("✅ **No violations** - All folders within depth limits")
-        
+
         lines.append("")
-        
+
         # Drift Violations
         lines.append("## 4. Drift Violations (Filesystem vs Blueprint)")
         lines.append("")
@@ -209,11 +209,11 @@ class SovereignHealthReport:
                 lines.append(f"| ... and {len(self.drift_violations) - 10} more | | |")
         else:
             lines.append("✅ **No violations** - Filesystem matches blueprint")
-        
+
         lines.append("")
         lines.append("---")
         lines.append("")
-        
+
         # Summary Statistics
         lines.append("## Summary Statistics")
         lines.append("")
@@ -224,14 +224,14 @@ class SovereignHealthReport:
         lines.append(f"- **Hierarchy Violations**: {len(self.hierarchy_violations)}")
         lines.append(f"- **Drift Violations**: {len(self.drift_violations)}")
         lines.append(f"- **Compliance Score**: {self.compliance_score:.1f}%")
-        
+
         return "\n".join(lines)
 
 
 class UnifiedSSOTValidator:
     """
     Unified SSOT Validator - Single source of truth for all validation.
-    
+
     Consolidates logic from:
     - audit_ssot.py (gravity violations)
     - audit_architectural_violations.py (import violations)
@@ -239,17 +239,17 @@ class UnifiedSSOTValidator:
     - LocationAgent (territory compliance)
     - FilesystemSSOTReconcilerAgent (drift detection)
     """
-    
+
     def __init__(self, project_root: Path):
         """
         Initialize unified validator.
-        
+
         Args:
             project_root: Root directory of the project
         """
         self.project_root = project_root.resolve()
         self.scanner = SSOTScanner(project_root)
-        
+
         # Layer hierarchy for import validation
         self.layer_hierarchy = {
             'L0': 0,
@@ -259,53 +259,53 @@ class UnifiedSSOTValidator:
             'L4': 4,
             'L5': 5,
         }
-    
+
     def validate_all(self) -> SovereignHealthReport:
         """
         Run all validation checks and generate comprehensive report.
-        
+
         Returns:
             SovereignHealthReport with all violations and statistics
         """
         import time
         start_time = time.time()
-        
+
         report = SovereignHealthReport()
-        
+
         # 1. Gravity Violations (Physical Location)
         report.gravity_violations = self._check_gravity_violations()
-        
+
         # 2. Import Violations (Upward Dependencies)
         report.import_violations = self._check_import_violations()
-        
+
         # 3. Hierarchy Violations (Depth Limits)
         report.hierarchy_violations = self._check_hierarchy_violations()
-        
+
         # 4. Drift Violations (Filesystem vs Blueprint)
         report.drift_violations = self._check_drift_violations()
-        
+
         # Calculate statistics
         stats = self.scanner.get_compliance_stats()
         report.total_agents = stats['total_agents']
         # Phase 6.5: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery import get_python_files
         report.total_files_scanned = len(list(get_python_files(self.project_root)))
-        
+
         # Calculate compliance score
         total_checks = report.total_agents * 4  # 4 types of checks per agent
         violations = report.total_violations
         report.compliance_score = max(0.0, ((total_checks - violations) / total_checks * 100)) if total_checks > 0 else 100.0
-        
+
         report.scan_duration = time.time() - start_time
-        
+
         return report
-    
+
     def _check_gravity_violations(self) -> List[GravityViolation]:
         """Check for agents in wrong layers (physical location mismatch)."""
         violations = []
-        
+
         agents = self.scanner.find_gravity_violations()
-        
+
         for agent in agents:
             violations.append(GravityViolation(
                 file_path=agent.relative_path,
@@ -313,37 +313,37 @@ class UnifiedSSOTValidator:
                 assigned_layer=agent.assigned_layer,
                 agent_name=agent.class_name
             ))
-        
+
         return violations
-    
+
     def _check_import_violations(self) -> List[ImportViolation]:
         """Check for illegal upward dependencies (lower layer importing from higher)."""
         violations = []
-        
+
         # Scan agentic_core Python files for imports
         agentic_core = self.project_root / 'agentic_core'
         if not agentic_core.exists():
             return violations
-        
+
         # Phase 6.5: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
         for py_file in get_python_files(agentic_core):
-            
+
             # Determine source layer from file path
             source_layer = self._get_layer_from_path(py_file)
             if not source_layer or source_layer not in self.layer_hierarchy:
                 continue
-            
+
             # Parse imports
             try:
                 content = py_file.read_text(encoding='utf-8')
                 tree = ast.parse(content)
-                
+
                 for node in ast.walk(tree):
                     if isinstance(node, (ast.Import, ast.ImportFrom)):
                         import_line = self._get_import_line(node, content)
                         target_layer = self._extract_target_layer(node)
-                        
+
                         if target_layer and target_layer in self.layer_hierarchy:
                             # Check if importing from higher layer (upward dependency)
                             if self.layer_hierarchy[source_layer] < self.layer_hierarchy[target_layer]:
@@ -357,20 +357,20 @@ class UnifiedSSOTValidator:
                                 ))
             except (SyntaxError, UnicodeDecodeError):
                 continue
-        
+
         return violations
-    
+
     def _check_hierarchy_violations(self) -> List[HierarchyViolation]:
         """Check for folders exceeding maximum depth limits."""
         violations = []
-        
+
         for root_name, config in SOVEREIGN_REGISTRY.items():
             root_path = self.project_root / root_name
             if not root_path.exists():
                 continue
-            
+
             max_depth = config.get('depth', 3)
-            
+
             # Phase 6.5: Use os.walk instead of rglob for directory traversal
             import os
             # Check all subdirectories
@@ -378,16 +378,16 @@ class UnifiedSSOTValidator:
                 dirs[:] = [d for d in dirs if not d.startswith('.')]
                 for dir_name in dirs:
                     folder = Path(root) / dir_name
-                
+
                 # Skip excluded folders
                 if any(excluded in folder.parts for excluded in SOVEREIGN_EXCLUDED_FOLDERS):
                     continue
-                
+
                 # Calculate depth relative to root
                 try:
                     rel_path = folder.relative_to(root_path)
                     actual_depth = len(rel_path.parts)
-                    
+
                     if actual_depth > max_depth:
                         violations.append(HierarchyViolation(
                             folder_path=str(folder.relative_to(self.project_root)),
@@ -397,32 +397,32 @@ class UnifiedSSOTValidator:
                         ))
                 except ValueError:
                     continue
-        
+
         return violations
-    
+
     def _check_drift_violations(self) -> List[DriftViolation]:
         """Check for unauthorized folders not in blueprint."""
         violations = []
-        
+
         # Check agentic_core subfolders against blueprint
         agentic_core = self.project_root / 'agentic_core'
         if not agentic_core.exists():
             return violations
-        
+
         # Get authorized L1 folders from blueprint
         authorized_l1 = set(SOVEREIGN_REGISTRY.get('agentic_core', {}).get('subfolders', []))
-        
+
         # Check actual L1 folders
         for folder in agentic_core.iterdir():
             if not folder.is_dir():
                 continue
-            
+
             folder_name = folder.name
-            
+
             # Skip excluded folders
             if folder_name in SOVEREIGN_EXCLUDED_FOLDERS:
                 continue
-            
+
             # Check if authorized
             if folder_name not in authorized_l1:
                 violations.append(DriftViolation(
@@ -433,17 +433,17 @@ class UnifiedSSOTValidator:
             else:
                 # Check L2 subfolders
                 authorized_l2 = set(CORE_SUBFOLDER_MAP.get(folder_name, []))
-                
+
                 for subfolder in folder.iterdir():
                     if not subfolder.is_dir():
                         continue
-                    
+
                     subfolder_name = subfolder.name
-                    
+
                     # Skip excluded folders
                     if subfolder_name in SOVEREIGN_EXCLUDED_FOLDERS:
                         continue
-                    
+
                     # Check if authorized
                     if authorized_l2 and subfolder_name not in authorized_l2:
                         violations.append(DriftViolation(
@@ -451,19 +451,19 @@ class UnifiedSSOTValidator:
                             parent_folder=folder_name,
                             violation_type='orphaned'
                         ))
-        
+
         return violations
-    
+
     def _get_layer_from_path(self, file_path: Path) -> Optional[str]:
         """Extract layer (L0-L5) from file path."""
         parts = file_path.parts
-        
+
         for part in parts:
             if part.startswith('L') and len(part) >= 2 and part[1].isdigit():
                 return part[:2]  # L0, L1, L2, etc.
-        
+
         return None
-    
+
     def _extract_target_layer(self, node: ast.AST) -> Optional[str]:
         """Extract target layer from import statement."""
         if isinstance(node, ast.ImportFrom):
@@ -479,9 +479,9 @@ class UnifiedSSOTValidator:
                     for part in parts:
                         if part.startswith('L') and len(part) >= 2 and part[1].isdigit():
                             return part[:2]
-        
+
         return None
-    
+
     def _get_import_line(self, node: ast.AST, content: str) -> str:
         """Extract import line text from AST node."""
         lines = content.split('\n')

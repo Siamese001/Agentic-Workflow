@@ -71,35 +71,35 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 class AgentFactory(HealerMixin):
     """
     Centralized factory for sovereign agent injection.
-    
+
     Phase 9A DDD Compliance:
     - Only L3 knows how to instantiate L2 concrete implementations
     - L1 agents receive implementations via dependency injection
     - Maintains separation of concerns across layers
     """
-    
+
     @staticmethod
     def _create_impl(ctx: Optional[Any] = None) -> CanonBaseAgentInterface:
         """
         Create base agent implementation with configurable mode support.
-        
+
         Phase 11: Advanced Factory Pattern
         - Respects global AGENT_IMPLEMENTATION_MODE configuration
         - Supports "real" (standard), "mock" (testing), "aggressive" (fast-healing)
         - Only L3 knows how to instantiate the L2 concrete implementation
-        
+
         Args:
             ctx: Optional context object to pass to the agent implementation
-            
+
         Returns:
             CanonBaseAgentInterface: Concrete implementation based on configured mode
         """
         mode = getattr(config, 'AGENT_IMPLEMENTATION_MODE', 'real') if config else 'real'
-        
+
         if mode == "mock":
             # Zero-cost mock for unit testing without LLM calls
             return MockL2ExecutionBaseAgent(ctx=ctx) if MockL2ExecutionBaseAgent else None
-        
+
         elif mode == "aggressive":
             # Real implementation with aggressive healing enabled
             impl = L2ExecutionBaseAgent(ctx=ctx) if L2ExecutionBaseAgent else None
@@ -107,10 +107,10 @@ class AgentFactory(HealerMixin):
             if impl and hasattr(impl, "enable_aggressive_mode"):
                 impl.enable_aggressive_mode()
             return impl
-        
+
         # Default "real" mode - standard production implementation
         return L2ExecutionBaseAgent(ctx=ctx) if L2ExecutionBaseAgent else None
-    
+
     @staticmethod
     def create_system_architect(ctx: Optional[Any] = None) -> SystemArchitect:
         """
@@ -118,57 +118,57 @@ class AgentFactory(HealerMixin):
         Injects L2 execution capabilities into L1 strategic architecture reasoning.
         """
         return SystemArchitect(AgentFactory._create_impl(ctx))
-    
+
     @staticmethod
     def create_healer_agent(ctx: Optional[Any] = None) -> HealerAgent:
         """
         Create HealerAgent with injected L2 implementation.
-        
+
         Injects L2 repair logic into L1 strategic healing.
         """
         return HealerAgent(AgentFactory._create_impl(ctx)) if HealerAgent else None
-    
+
     @staticmethod
     def create_generative_guard(ctx: Optional[Any] = None) -> GenerativeGuard:
         """
         Create GenerativeGuard with injected L2 implementation.
-        
+
         Injects L2 validation capabilities into L1 generative oversight.
         """
         return GenerativeGuard(AgentFactory._create_impl(ctx))
-    
+
     @staticmethod
     def create_code_janitor(ctx: Optional[Any] = None) -> CodeJanitor:
         """
         Create CodeJanitor with injected L2 implementation.
-        
+
         Injects L2 action into L1 syntax reasoning.
         """
         return CodeJanitor(AgentFactory._create_impl(ctx))
-    
+
     @staticmethod
     def create_dependency_sentinel(ctx: Optional[Any] = None) -> DependencySentinelAgent:
         """
         Create DependencySentinelAgent with injected L2 implementation.
-        
+
         Injects L2 import management into L1 dependency reasoning.
         """
         return DependencySentinelAgent(AgentFactory._create_impl(ctx))
-    
+
     @staticmethod
     def create_safety_inspector(ctx: Optional[Any] = None) -> SafetyInspectorAgent:
         """
         Create SafetyInspectorAgent with injected L2 implementation.
-        
+
         Injects L2 security checks into L1 safety reasoning.
         """
         return SafetyInspectorAgent(AgentFactory._create_impl(ctx))
-    
+
     @staticmethod
     def create_pattern_enforcer(ctx: Optional[Any] = None) -> UnifiedCodeEnforcerAgent:
         """
         Create UnifiedCodeEnforcerAgent with injected L2 implementation.
-        
+
         Injects L2 pattern detection into L1 quality reasoning.
         """
         return UnifiedCodeEnforcerAgent(AgentFactory._create_impl(ctx))
@@ -178,10 +178,10 @@ class AgentFactory(HealerMixin):
 def create_all_agents(ctx: Optional[Any] = None) -> dict:
     """
     Create all L1 agents with injected L2 implementations.
-    
+
     Args:
         ctx: Optional context object to pass to all agents
-        
+
     Returns:
         dict: Dictionary of agent name to agent instance
     """

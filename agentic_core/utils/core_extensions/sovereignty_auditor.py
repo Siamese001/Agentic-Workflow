@@ -20,7 +20,7 @@ required_clients: Any = ['SovereignRedisMCPClient', 'SovereignLLMRouterMCPClient
 class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
     """
     Sovereignty Audit Engine for MCP compliance.
-    
+
     Scans codebase for:
     - Direct SDK usage (Redis, LLM, Vector, HTTP, Filesystem, Git)
     - Path depth violations (SSOT-derived from SOVEREIGN_REGISTRY)
@@ -31,7 +31,7 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
     def __init__(self, root_dir: str='agentic_core'):
         """
         Initialize the auditor.
-        
+
         Args:
             root_dir: Root directory to audit
         """
@@ -42,7 +42,7 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
     async def run_audit(self) -> bool:
         """
         Perform a full system sweep for constitutional purity.
-        
+
         Returns:
             True if no violations found, False otherwise
         """
@@ -71,10 +71,10 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
     def _calculate_depth(self, path: str) -> int:
         """
         Calculate path depth from root.
-        
+
         Args:
             path: Path to calculate depth for
-            
+
         Returns:
             Depth level (0-indexed)
         """
@@ -86,7 +86,7 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
     def _audit_file(self, file_path: str):
         """
         Audit a single Python file for sovereignty violations.
-        
+
         Args:
             file_path: Path to file to audit
         """
@@ -108,7 +108,7 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
     def _add_violation(self, ViolationType: str, message: str, file_path: str):
         """
         Add a Violation to the list.
-        
+
         Args:
             ViolationType: Type of Violation
             message: Violation message
@@ -120,7 +120,7 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
     def _report_results(self) -> bool:
         """
         Report audit results.
-        
+
         Returns:
             True if no violations, False otherwise
         """
@@ -171,10 +171,10 @@ class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
 async def run_sovereignty_audit(root_dir: str='agentic_core') -> bool:
     """
     Run sovereignty audit on codebase.
-    
+
     Args:
         root_dir: Root directory to audit
-        
+
     Returns:
         True if audit passed, False otherwise
     """

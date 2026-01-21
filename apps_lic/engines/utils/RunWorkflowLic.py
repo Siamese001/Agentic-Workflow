@@ -19,13 +19,13 @@ __version__ = "12.0"
 def load_mission_input(filename: str = "mission_input_LIC.json") -> Dict[str, Any]:
     """
     Loads the mission input JSON file.
-    
+
     Args:
         filename: Path to mission input JSON file
-    
+
     Returns:
         Dictionary containing mission parameters
-    
+
     Raises:
         SystemExit: If file not found or invalid JSON
     """
@@ -37,7 +37,7 @@ def load_mission_input(filename: str = "mission_input_LIC.json") -> Dict[str, An
         print("- recipient_profile: Target recipient information")
         print("- job_description: Job details for context")
         sys.exit(1)
-    
+
     try:
         with open(filename, 'r') as f:
             return json.load(f)
@@ -49,50 +49,50 @@ def load_mission_input(filename: str = "mission_input_LIC.json") -> Dict[str, An
 def validate_mission_input(input_data: Dict[str, Any]) -> bool:
     """
     Validate that mission input contains all required fields.
-    
+
     Args:
         input_data: Loaded mission input dictionary
-    
+
     Returns:
         True if valid, False otherwise
     """
     required_keys = ["sender_profile", "recipient_profile", "job_description"]
-    
+
     missing_keys = [key for key in required_keys if key not in input_data]
     if missing_keys:
         print(f"FATAL: mission_input_LIC.json is missing required keys: {', '.join(missing_keys)}")
         return False
-    
+
     # Validate sender_profile
     sender_required = ["name", "title", "company"]
     sender_missing = [key for key in sender_required if key not in input_data["sender_profile"]]
     if sender_missing:
         print(f"FATAL: sender_profile missing required fields: {', '.join(sender_missing)}")
         return False
-    
+
     # Validate recipient_profile
     recipient_required = ["name", "title", "company"]
     recipient_missing = [key for key in recipient_required if key not in input_data["recipient_profile"]]
     if recipient_missing:
         print(f"FATAL: recipient_profile missing required fields: {', '.join(recipient_missing)}")
         return False
-    
+
     # Validate job_description
     job_required = ["title", "company"]
     job_missing = [key for key in job_required if key not in input_data["job_description"]]
     if job_missing:
         print(f"FATAL: job_description missing required fields: {', '.join(job_missing)}")
         return False
-    
+
     return True
 
 def create_orchestrator():
     """
     Create orchestrator instance.
-    
+
     This import is done lazily to avoid loading all dependencies
     until we've validated the mission input.
-    
+
     Returns:
         WorkflowOrchestrator instance
     """
@@ -137,20 +137,20 @@ def print_results(result: Dict[str, Any]):
     print("WORKFLOW RESULTS")
     print(f"{'='*80}\n")
     print(f"Status: {result['status'].upper()}")
-    
+
     if result['status'] == 'success':
         print(f"Production Ready: {'✓ YES' if result['production_ready'] else '✗ NO'}")
         print(f"Workflow Time: {result['workflow_time']:.2f}s")
         print(f"Route: {result.get('route', 'N/A')}")
         print(f"Archetype: {result.get('archetype', 'N/A')}")
-        
+
         print(f"\nQA Summary:")
         qa = result['qa_summary']
         print(f"  Critical Issues: {qa['critical_issues']}")
         print(f"  High Issues:     {qa['high_issues']}")
         print(f"  Medium Issues:   {qa['errors']}")
         print(f"  Warnings:        {qa['warnings']}")
-        
+
         if result['production_ready']:
             print(f"\n{'='*80}")
             print(f"GENERATED MESSAGE ({result['word_count']} words)")
@@ -169,33 +169,33 @@ def print_results(result: Dict[str, Any]):
 async def main():
     """
     Main execution function.
-    
+
     Workflow:
     1. Load and validate mission input
     2. Create orchestrator
     3. Execute workflow
     4. Display results
-    
+
     Returns:
         Workflow result dictionary
     """
     print_header()
-    
+
     # Load mission input
     print("\n📁 Loading mission from mission_input_LIC.json...")
     input_data = load_mission_input()
-    
+
     # Validate input
     if not validate_mission_input(input_data):
         sys.exit(1)
-    
+
     print("✓ Mission input validated")
-    
+
     # Extract mission components
     sender_profile = input_data.get("sender_profile", {})
     recipient_profile = input_data.get("recipient_profile", {})
     job_description = input_data.get("job_description", {})
-    
+
     # Create mission object
     mission = OutreachMission(
         mission_id=str(uuid4()),
@@ -205,9 +205,9 @@ async def main():
         connection_status=recipient_profile.get("connection_status", "not_connected"),
         prior_message_count=recipient_profile.get("prior_message_count", 0)
     )
-    
+
     print_mission_summary(mission)
-    
+
     # Create orchestrator
     print("\n🤖 Initializing workflow orchestrator...")
     try:
@@ -216,13 +216,13 @@ async def main():
     except Exception as e:
         print(f"❌ Failed to initialize orchestrator: {e}")
         sys.exit(1)
-    
+
     # Execute workflow
     print(f"\n{'='*80}")
     print("EXECUTING WORKFLOW")
     print(f"{'='*80}\n")
     print("⏳ Running agentic workflow (this may take 1-3 minutes)...\n")
-    
+
     try:
         result = await orchestrator.execute_workflow(mission)
     except KeyboardInterrupt:
@@ -234,10 +234,10 @@ async def main():
         print("\nStack trace:")
         traceback.print_exc()
         sys.exit(1)
-    
+
     # Display results
     print_results(result)
-    
+
     # Save result to file
     output_file = f"output_{mission.mission_id[:8]}.json"
     try:
@@ -246,21 +246,21 @@ async def main():
         print(f"\n💾 Full results saved to: {output_file}")
     except IOError as e:
         print(f"\n⚠️  Could not save results to file: {e}")
-    
+
     return result
 
 if __name__ == "__main__":
     """
     Entry point for command-line execution.
-    
+
     Usage:
         python run_workflow_LIC.py
-    
+
     Environment Variables Required:
         GEMINI_API_KEY: Google AI Studio API key
         GOOGLE_API_KEY: Google Cloud API key for Custom Search
         GOOGLE_CSE_ID: Google Custom Search Engine ID
-    
+
     Files Required:
         mission_input_LIC.json: Mission specification
         master_resume.json: Sender grounding data (optional)
@@ -270,17 +270,17 @@ if __name__ == "__main__":
     # Check for required environment variables
     required_env_vars = ["GEMINI_API_KEY"]  # Others are optional depending on features used
     missing_env_vars = [var for var in required_env_vars if not os.environ.get(var)]
-    
+
     if missing_env_vars:
         print(f"\n⚠️  WARNING: Missing environment variables: {', '.join(missing_env_vars)}")
         print("\nSome features may not work without these variables.")
         print("Set them with: export VARIABLE_NAME='value'")
         print("\nContinuing anyway...")
-    
+
     # Run the workflow
     try:
         result = asyncio.run(main())
-        
+
         # Exit with appropriate code
         if result['status'] == 'success' and result['production_ready']:
             sys.exit(0)

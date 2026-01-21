@@ -51,13 +51,13 @@ def load_yaml_config():
 
 def generate_python_constants(config):
     """Generate Python constants file from YAML config."""
-    
+
     # Read existing file to preserve calculation functions
     existing_content = ""
     if PYTHON_OUTPUT.exists():
         with open(PYTHON_OUTPUT, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-            
+
         # Find where calculation functions start (after column definitions)
         calc_start_idx = None
         for i, line in enumerate(lines):
@@ -65,10 +65,10 @@ def generate_python_constants(config):
                 if "METRIC CALCULATION FUNCTIONS" in lines[i+1] if i+1 < len(lines) else "":
                     calc_start_idx = i
                     break
-        
+
         if calc_start_idx:
             existing_content = ''.join(lines[calc_start_idx:])
-    
+
     # Generate new header and constants
     output = f'''"""
 Dashboard SSOT Definitions
@@ -97,14 +97,14 @@ from typing import Dict, Any, List, Set
 # Auto-generated from dashboard_ssot.yaml - DO NOT EDIT MANUALLY
 
 '''
-    
+
     # Add column constants
     for key, value in config['columns'].items():
         const_name = f"COL_{key.upper()}"
         output += f"{const_name} = '{value}'\n"
-    
+
     output += "\n\n"
-    
+
     # Add field name constants
     output += '''# ============================================================================
 # METRIC FIELD NAMES (canonical names used in agent_discovery_full.json)
@@ -112,13 +112,13 @@ from typing import Dict, Any, List, Set
 # Auto-generated from dashboard_ssot.yaml - DO NOT EDIT MANUALLY
 
 '''
-    
+
     for key, value in config['fields'].items():
         const_name = f"FIELD_{key.upper()}"
         output += f"{const_name} = '{value}'\n"
-    
+
     output += "\n\n"
-    
+
     # Add threshold constants
     output += '''# ============================================================================
 # METRIC THRESHOLDS
@@ -126,13 +126,13 @@ from typing import Dict, Any, List, Set
 # Auto-generated from dashboard_ssot.yaml - DO NOT EDIT MANUALLY
 
 '''
-    
+
     for key, value in config['thresholds'].items():
         const_name = f"THRESHOLD_{key.upper()}"
         output += f"{const_name} = {value}\n"
-    
+
     output += "\n\n"
-    
+
     # Add health score weights
     output += '''# ============================================================================
 # HEALTH SCORE FORMULA WEIGHTS
@@ -140,18 +140,18 @@ from typing import Dict, Any, List, Set
 # Auto-generated from dashboard_ssot.yaml - DO NOT EDIT MANUALLY
 
 '''
-    
+
     for key, value in config['health_weights'].items():
         const_name = f"WEIGHT_HEALTH_{key.upper()}"
         output += f"{const_name} = {value}\n"
-    
+
     output += "\n# L0-specific weights (infrastructure layer)\n"
     for key, value in config['health_weights_l0'].items():
         const_name = f"WEIGHT_HEALTH_L0_{key.upper()}"
         output += f"{const_name} = {value}\n"
-    
+
     output += "\n\n"
-    
+
     # Add code quality weights
     output += '''# ============================================================================
 # CODE QUALITY FORMULA WEIGHTS
@@ -159,11 +159,11 @@ from typing import Dict, Any, List, Set
 # Auto-generated from dashboard_ssot.yaml - DO NOT EDIT MANUALLY
 
 '''
-    
+
     for key, value in config['code_quality_weights'].items():
         const_name = f"WEIGHT_CODE_QUALITY_{key.upper()}"
         output += f"{const_name} = {value}\n"
-    
+
     # SSOT INTEGRITY CONSTRAINTS - Strict validation (AFTER all weights defined)
     output += "\n# ============================================================================\n"
     output += "# SSOT INTEGRITY CONSTRAINTS\n"
@@ -175,10 +175,10 @@ from typing import Dict, Any, List, Set
     output += "except AssertionError as e:\n"
     output += "    print(f'❌ CRITICAL: SSOT Weight mismatch detected in dashboard_ssot.yaml')\n"
     output += "    raise\n"
-    
-    
+
+
     output += "\n\n"
-    
+
     # Add placeholders
     output += '''# ============================================================================
 # PLACEHOLDERS
@@ -186,13 +186,13 @@ from typing import Dict, Any, List, Set
 # Auto-generated from dashboard_ssot.yaml - DO NOT EDIT MANUALLY
 
 '''
-    
+
     for key, value in config['placeholders'].items():
         const_name = f"PLACEHOLDER_{key.upper()}"
         output += f"{const_name} = {value}  # {key.replace('_', ' ').title()} awaiting implementation\n"
-    
+
     output += "\n\n"
-    
+
     # Add layer definitions
     output += '''# ============================================================================
 # LAYER DEFINITIONS
@@ -219,7 +219,7 @@ HEALER_BASES = {
 
 
 '''
-    
+
     # Append existing calculation functions
     if existing_content:
         output += existing_content
@@ -242,13 +242,13 @@ def calc_heal_cap_pct(agents: List[Dict], is_l0: bool = False) -> float:
 
 # Add other calculation functions as needed...
 '''
-    
+
     return output
 
 
 def generate_js_constants(config):
     """Generate JavaScript constants file from YAML config."""
-    
+
     output = f'''// ============================================================================
 // DASHBOARD CONSTANTS
 // ============================================================================
@@ -266,13 +266,13 @@ def generate_js_constants(config):
 
 window.COLUMNS = {{
 '''
-    
+
     for key, value in config['columns'].items():
         js_key = key.upper()
         output += f'    {js_key}: "{value}",\n'
-    
+
     output += '};\n\n'
-    
+
     # Add field names
     output += '''// ============================================================================
 // FIELD NAMES
@@ -281,13 +281,13 @@ window.COLUMNS = {{
 
 window.FIELDS = {
 '''
-    
+
     for key, value in config['fields'].items():
         js_key = key.upper()
         output += f'    {js_key}: "{value}",\n'
-    
+
     output += '};\n\n'
-    
+
     # Add thresholds
     output += '''// ============================================================================
 // METRIC THRESHOLDS
@@ -296,13 +296,13 @@ window.FIELDS = {
 
 window.THRESHOLDS = {
 '''
-    
+
     for key, value in config['thresholds'].items():
         js_key = key.upper()
         output += f'    {js_key}: {value},\n'
-    
+
     output += '};\n\n'
-    
+
     # Add JS metric keys
     output += '''// ============================================================================
 // JAVASCRIPT METRIC KEYS
@@ -311,12 +311,12 @@ window.THRESHOLDS = {
 
 window.METRIC_KEYS = {
 '''
-    
+
     for key, value in config['js_keys'].items():
         output += f'    {key.upper()}: "{value}",\n'
-    
+
     output += '};\n\n'
-    
+
     # Add health weights
     output += '''// ============================================================================
 // HEALTH SCORE WEIGHTS
@@ -324,20 +324,20 @@ window.METRIC_KEYS = {
 
 window.HEALTH_WEIGHTS = {
 '''
-    
+
     for key, value in config['health_weights'].items():
         js_key = key.upper()
         output += f'    {js_key}: {value},\n'
-    
+
     output += '};\n\n'
-    
+
     output += 'window.HEALTH_WEIGHTS_L0 = {\n'
     for key, value in config['health_weights_l0'].items():
         js_key = key.upper()
         output += f'    {js_key}: {value},\n'
-    
+
     output += '};\n\n'
-    
+
     # Add code quality weights
     output += '''// ============================================================================
 // CODE QUALITY WEIGHTS
@@ -345,13 +345,13 @@ window.HEALTH_WEIGHTS = {
 
 window.CODE_QUALITY_WEIGHTS = {
 '''
-    
+
     for key, value in config['code_quality_weights'].items():
         js_key = key.upper()
         output += f'    {js_key}: {value},\n'
-    
+
     output += '};\n\n'
-    
+
     # Add placeholders
     output += '''// ============================================================================
 // PLACEHOLDERS
@@ -359,13 +359,13 @@ window.CODE_QUALITY_WEIGHTS = {
 
 window.PLACEHOLDERS = {
 '''
-    
+
     for key, value in config['placeholders'].items():
         js_key = key.upper()
         output += f'    {js_key}: {value},\n'
-    
+
     output += '};\n'
-    
+
     return output
 
 
@@ -375,37 +375,37 @@ def main():
     print("DASHBOARD SSOT SYNCHRONIZATION ENGINE")
     print("=" * 70)
     print()
-    
+
     # Load YAML config
     print(f"📖 Loading YAML config: {YAML_CONFIG}")
     config = load_yaml_config()
     print(f"   ✅ Loaded {len(config)} sections")
     print()
-    
+
     # Generate Python constants
     print(f"🐍 Generating Python constants: {PYTHON_OUTPUT}")
     python_content = generate_python_constants(config)
-    
+
     with open(PYTHON_OUTPUT, 'w', encoding='utf-8') as f:
         f.write(python_content)
-    
+
     print(f"   ✅ Generated {len(python_content.splitlines())} lines")
     print()
-    
+
     # Generate JavaScript constants
     print(f"📜 Generating JavaScript constants: {JS_OUTPUT}")
-    
+
     # Ensure directory exists
     JS_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    
+
     js_content = generate_js_constants(config)
-    
+
     with open(JS_OUTPUT, 'w', encoding='utf-8') as f:
         f.write(js_content)
-    
+
     print(f"   ✅ Generated {len(js_content.splitlines())} lines")
     print()
-    
+
     # Summary
     print("=" * 70)
     print("✅ SYNCHRONIZATION COMPLETE")

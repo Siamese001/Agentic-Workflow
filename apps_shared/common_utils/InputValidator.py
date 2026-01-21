@@ -52,10 +52,10 @@ class ValidationRule:
 
 class InputValidationError(Exception):
     """Raised when input validation fails."""
-    
+
     def __init__(self, field: str, message: str, value: Any = None):
         """Initialize validation error.
-        
+
         Args:
             field: Field that failed validation
             message: Error message
@@ -69,168 +69,168 @@ class InputValidationError(Exception):
 
 class InputValidator:
     """Validates input data against schema and rules."""
-    
+
     def __init__(self, name: str = "default"):
         """Initialize the validator.
-        
+
         Args:
             name: Validator name for logging
         """
         self.name = name
         self._rules: Dict[str, ValidationRule] = {}
         self._schemas: Dict[str, Dict[str, Any]] = {}
-        
+
         logger.debug(f"Initialized InputValidator: {name}")
-    
+
     def add_rule(self, field: str, rule: ValidationRule) -> None:
         """Add a validation rule.
-        
+
         Args:
             field: Field name
             rule: Validation rule
         """
         self._rules[field] = rule
         logger.debug(f"Added validation rule for field: {field}")
-    
+
     def add_schema(self, schema_name: str, schema: Dict[str, Any]) -> None:
         """Add a JSON schema.
-        
+
         Args:
             schema_name: Name for the schema
             schema: JSON schema dictionary
         """
         self._schemas[schema_name] = schema
         logger.debug(f"Added schema: {schema_name}")
-    
+
     def validate(self, data: Dict[str, Any], strict: bool = True) -> Dict[str, Any]:
         """Validate input data.
-        
+
         Args:
             data: Input data to validate
             strict: Whether to raise errors for unknown fields
-            
+
         Returns:
             Validated and sanitized data
-            
+
         Raises:
             InputValidationError: If validation fails
         """
         validated = {}
         errors = []
-        
+
         # Check all rules
         for field, rule in self._rules.items():
             try:
                 value = data.get(field)
-                
+
                 # Check required
                 if rule.required and value is None:
                     raise InputValidationError(field, "Field is required")
-                
+
                 # Skip validation if not required and value is None
                 if value is None and not rule.required:
                     continue
-                
+
                 # Validate based on type
                 validated_value = self._validate_field(field, value, rule)
                 validated[field] = validated_value
-                
+
             except InputValidationError as e:
                 errors.append(e)
-        
+
         # Check for unknown fields in strict mode
         if strict:
             for field in data:
                 if field not in self._rules:
                     logger.warning(f"Unknown field in input: {field}")
-        
+
         # Raise errors if any
         if errors:
             error_messages = [f"{e.field}: {e.message}" for e in errors]
             raise InputValidationError("multiple", f"Validation failed: {', '.join(error_messages)}")
-        
+
         return validated
-    
+
     def _validate_field(self, field: str, value: Any, rule: ValidationRule) -> Any:
         """Validate a single field.
-        
+
         Args:
             field: Field name
             value: Field value
             rule: Validation rule
-            
+
         Returns:
             Validated and sanitized value
-            
+
         Raises:
             InputValidationError: If validation fails
         """
         # Type validation
         validated_value = self._validate_type(value, rule)
-        
+
         # Length validation
         if rule.min_length is not None:
             if isinstance(validated_value, (str, list, dict)):
                 if len(validated_value) < rule.min_length:
                     raise InputValidationError(field, f"Minimum length is {rule.min_length}")
-        
+
         if rule.max_length is not None:
             if isinstance(validated_value, (str, list, dict)):
                 if len(validated_value) > rule.max_length:
                     raise InputValidationError(field, f"Maximum length is {rule.max_length}")
-        
+
         # Value validation
         if rule.min_value is not None:
             if isinstance(validated_value, (int, float)):
                 if validated_value < rule.min_value:
                     raise InputValidationError(field, f"Minimum value is {rule.min_value}")
-        
+
         if rule.max_value is not None:
             if isinstance(validated_value, (int, float)):
                 if validated_value > rule.max_value:
                     raise InputValidationError(field, f"Maximum value is {rule.max_value}")
-        
+
         # Pattern validation
         if rule.pattern:
             if isinstance(validated_value, str):
                 if not re.match(rule.pattern, validated_value):
                     raise InputValidationError(field, f"Value does not match pattern: {rule.pattern}")
-        
+
         # Allowed values validation
         if rule.allowed_values:
             if validated_value not in rule.allowed_values:
                 raise InputValidationError(field, f"Value must be one of: {rule.allowed_values}")
-        
+
         # Schema validation
         if rule.schema:
             if rule.validation_type == ValidationType.JSON:
                 self._validate_json_schema(validated_value, rule.schema)
             elif rule.validation_type == ValidationType.DICT:
                 self._validate_dict_schema(validated_value, rule.schema)
-        
+
         # Custom validation
         if rule.custom_validator:
             try:
                 validated_value = rule.custom_validator(validated_value)
             except Exception as e:
                 raise InputValidationError(field, f"Custom validation failed: {e}")
-        
+
         # Sanitize if requested
         if rule.sanitize:
             validated_value = self._sanitize_value(validated_value, rule)
-        
+
         return validated_value
-    
+
     def _validate_type(self, value: Any, rule: ValidationRule) -> Any:
         """Validate value type.
-        
+
         Args:
             value: Value to validate
             rule: Validation rule
-            
+
         Returns:
             Value converted to correct type
-            
+
         Raises:
             InputValidationError: If type conversion fails
         """
@@ -289,17 +289,17 @@ class InputValidator:
                 raise ValueError("XML must be a string")
             else:
                 return value
-                
+
         except (ValueError, TypeError, json.JSONDecodeError, ET.ParseError) as e:
             raise InputValidationError("type", f"Invalid type conversion: {e}")
-    
+
     def _validate_json_schema(self, value: Any, schema: Dict[str, Any]) -> None:
         """Validate JSON against schema.
-        
+
         Args:
             value: JSON value
             schema: JSON schema
-            
+
         Raises:
             InputValidationError: If validation fails
         """
@@ -313,7 +313,7 @@ class InputValidator:
                 raise InputValidationError("json", f"Expected array, got {type(value)}")
             elif expected_type == "string" and not isinstance(value, str):
                 raise InputValidationError("json", f"Expected string, got {type(value)}")
-        
+
         if "properties" in schema and isinstance(value, dict):
             for prop, prop_schema in schema["properties"].items():
                 if prop in value:
@@ -326,14 +326,14 @@ class InputValidator:
                     )
                     validator.add_rule(prop, rule)
                     validator.validate({prop: value[prop]}, strict=False)
-    
+
     def _validate_dict_schema(self, value: Dict[str, Any], schema: Dict[str, Any]) -> None:
         """Validate dictionary against schema.
-        
+
         Args:
             value: Dictionary value
             schema: Schema definition
-            
+
         Raises:
             InputValidationError: If validation fails
         """
@@ -343,13 +343,13 @@ class InputValidator:
                 expected_type = key_schema.get("type")
                 if expected_type and not isinstance(value[key], expected_type):
                     raise InputValidationError(key, f"Expected {expected_type.__name__}")
-    
+
     def _get_validation_type_from_schema(self, schema: Dict[str, Any]) -> ValidationType:
         """Get validation type from schema.
-        
+
         Args:
             schema: Schema definition
-            
+
         Returns:
             Validation type
         """
@@ -362,36 +362,36 @@ class InputValidator:
             "object": ValidationType.DICT
         }
         return type_map.get(schema.get("type", "string"), ValidationType.STRING)
-    
+
     def _sanitize_value(self, value: Any, rule: ValidationRule) -> Any:
         """Sanitize a value.
-        
+
         Args:
             value: Value to sanitize
             rule: Validation rule
-            
+
         Returns:
             Sanitized value
         """
         if isinstance(value, str):
             # Remove control characters
             value = ''.join(char for char in value if ord(char) >= 32 or char in '\n\r\t')
-            
+
             # Limit length
             if rule.max_length:
                 value = value[:rule.max_length]
-            
+
             # Normalize whitespace
             value = ' '.join(value.split())
-            
+
         elif isinstance(value, list):
             # Remove None values
             value = [v for v in value if v is not None]
-            
+
             # Limit length
             if rule.max_length:
                 value = value[:rule.max_length]
-        
+
         return value
 
 
@@ -442,22 +442,22 @@ COMMON_RULES = {
 
 def create_default_validator() -> InputValidator:
     """Create a validator with common rules.
-    
+
     Returns:
         InputValidator with predefined rules
     """
     validator = InputValidator("default")
-    
+
     for name, rule in COMMON_RULES.items():
         validator.add_rule(name, rule)
-    
+
     return validator
 
 
 # Pydantic model for automatic validation
 class ValidatedInput(BaseModel):
     """Base model for validated input."""
-    
+
     class Config:
         # Validate assignment
         validate_assignment = True
@@ -465,7 +465,7 @@ class ValidatedInput(BaseModel):
         use_enum_values = True
         # Extra fields forbidden
         extra = "forbid"
-    
+
     @validator('*')
     def sanitize_strings(cls, v):
         """Sanitize string fields."""
@@ -475,7 +475,7 @@ class ValidatedInput(BaseModel):
             # Strip whitespace
             v = v.strip()
         return v
-    
+
     @validator('*')
     def check_size(cls, v):
         """Check size limits."""
@@ -488,14 +488,14 @@ class ValidatedInput(BaseModel):
 
 def validate_with_pydantic(data: Dict[str, Any], model_class: Type[ValidatedInput]) -> ValidatedInput:
     """Validate data using Pydantic model.
-    
+
     Args:
         data: Data to validate
         model_class: Pydantic model class
-        
+
     Returns:
         Validated model instance
-        
+
     Raises:
         ValidationError: If validation fails
     """

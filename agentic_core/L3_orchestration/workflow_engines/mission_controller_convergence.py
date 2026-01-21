@@ -42,13 +42,13 @@ class ConvergenceEngine:
 
         while len(current_violations) > 0 and round_num <= self.max_rounds:
             print(f"🌀 Convergence Round {round_num}: {len(current_violations)} remaining")
-            
+
             # PHASE 6: Toxicity-Weighted Triage
             # Sort violations so Toxic Hubs (highest impact) are healed first
             # Formula: Impact = (100 - Metric) * (1 + ln(FanIn))
             prioritized_violations = sorted(
-                current_violations, 
-                key=lambda v: v.get('impact_score', 0), 
+                current_violations,
+                key=lambda v: v.get('impact_score', 0),
                 reverse=True
             )
 
@@ -57,7 +57,7 @@ class ConvergenceEngine:
                 # If an agent fails to heal over multiple cycles, escalate priority
                 if violation.get('audit_fail_count', 0) > 3:
                     print(f"🧟 ZOMBIE DETECTED: {violation.get('path')} - Escalating to Sub-atomic Refactor...")
-                
+
                 # Fission-Aware Healing: Snapshot before healing
                 file_path = Path(violation.get('path', ''))
                 pre_hash = None
@@ -65,16 +65,16 @@ class ConvergenceEngine:
                 if file_path.exists():
                     pre_hash = self.get_file_hash(file_path)
                     file_size = file_path.stat().st_size
-                
+
                 # Execute targeted healing mission
                 await healer.heal(violation)
-                
+
                 # Fission Detection: Check if large file failed to change
                 if pre_hash and file_path.exists():
                     post_hash = self.get_file_hash(file_path)
                     if self.detect_fission(pre_hash, post_hash, file_size):
                         print(f"⚛️ FISSION DETECTED: {violation.get('path')} unchanged after healing (>{file_size//1024}KB) - Terminating mission for this file.")
-            
+
             # Re-validate state
             current_violations = await validator.validate()
             self.round_history.append(len(current_violations))
@@ -84,5 +84,5 @@ class ConvergenceEngine:
             print(f"✅ CONVERGENCE ACHIEVED in {round_num - 1} rounds.")
         else:
             print(f"⚠️ CONVERGENCE FAILED: {len(current_violations)} violations persist.")
-        
+
         return len(current_violations) == 0

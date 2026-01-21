@@ -57,7 +57,7 @@ def load_exemplar_prompts() -> Dict[str, object]:
 
 def load_golden_cases() -> List[GoldenCase]:
     """Load golden test cases from inputs and convert to GoldenCase format.
-    
+
     Returns:
         List of GoldenCase objects with expected behaviors and criteria
     """
@@ -77,6 +77,3 @@ def load_golden_cases() -> List[GoldenCase]:
 
 def load_golden_baseline_scores() -> Dict[str, object]:
     return load_baseline_scores()
-
-
-

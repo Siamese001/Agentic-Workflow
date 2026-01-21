@@ -19,17 +19,17 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 
 class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
     """Manages the dynamic DAG with mutation capabilities.
-    
+
     HARDENED: Redis caching + Pinecone vector support for DAG structure caching.
     """
-    
+
     # [PHASE 5] Redis/Pinecone integration
     _cache_prefix: str = "dag_manager"
     _namespace: str = "l3_dags"
-    
+
     def __init__(self, config: Optional[DAGConfig] = None) -> None:
         """Initialize the DAG Manager.
-        
+
         Args:
             config: Optional configuration
         """
@@ -39,7 +39,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
         self.execution_queue: List[str] = []
         self.node_registry: Dict[str, SubatomicHop] = {}
         self.function_registry: Dict[str, Callable] = {}
-        
+
         # Statistics
         self.stats = {
             "total_mutations": 0,
@@ -49,32 +49,32 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
             "skipped_nodes": 0,
             "replaced_nodes": 0
         }
-        
+
         Logger.info("Initialized DAGManagerAgent with dynamic mutation support")
-    
+
     def register_function(self, name: str, function: Callable) -> None:
         """Register a hop function that can be spawned.
-        
+
         Args:
             name: Function name
             function: The function to register
         """
         self.function_registry[name] = function
         Logger.debug(f"Registered function: {name}")
-    
+
     def add_node(
         self,
         hop: SubatomicHop,
         predecessors: Optional[List[str]] = None
     ) -> None:
         """Add a node to the DAG.
-        
+
         Args:
             hop: The SubatomicHop to add
             predecessors: Optional list of predecessor node IDs
         """
         self.node_registry[hop.config.hop_id] = hop
-        
+
         # Add to graph
         self.graph.add_node(
             hop.config.hop_id,
@@ -82,38 +82,38 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
             depth=0,
             created_at=datetime.now()
         )
-        
+
         # Add edges from predecessors
         if predecessors:
             for pred in predecessors:
                 if pred in self.graph.nodes:
                     self.graph.add_edge(pred, hop.config.hop_id)
-        
+
         # Update depths
         self.mutator._update_depths(self.graph)
-        
+
         # Add to execution queue if no predecessors
         if not predecessors:
             self.execution_queue.append(hop.config.hop_id)
-        
+
         Logger.info(f"Added node {hop.config.hop_id} to DAG")
-    
+
     def request_mutation(self, mutation: DAGMutation) -> MutationResult:
         """Request a mutation to the DAG.
-        
+
         Args:
             mutation: The mutation to request
-            
+
         Returns:
             Result of the mutation
         """
         self.stats["total_mutations"] += 1
-        
+
         result = self.mutator.apply_mutation(self.graph, mutation)
-        
+
         if result.success:
             self.stats["successful_mutations"] += 1
-            
+
             # Update specific stats
             if mutation.action == MutationAction.SPAWN_PREDECESSOR:
                 self.stats["spawned_predecessors"] += 1
@@ -126,9 +126,9 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
                 self.stats["skipped_nodes"] += 1
             elif mutation.action == MutationAction.REPLACE_NODE:
                 self.stats["replaced_nodes"] += 1
-        
+
         return result
-    
+
     def create_mutation_request(
         self,
         action: MutationAction,
@@ -139,7 +139,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
         **kwargs
     ) -> DAGMutation:
         """Create a mutation request.
-        
+
         Args:
             action: Type of mutation
             target_hop_id: Target node ID
@@ -147,7 +147,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
             reason: Reason for mutation
             requester_hop_id: ID of requesting node
             **kwargs: Additional hop spec parameters
-            
+
         Returns:
             DAGMutation object
         """
@@ -155,7 +155,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
             hop_function=hop_function,
             **kwargs
         )
-        
+
         return DAGMutation(
             action=action,
             target_hop_id=target_hop_id,
@@ -163,25 +163,25 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
             reason=reason,
             requester_hop_id=requester_hop_id
         )
-    
+
     def get_next_node(self) -> Optional[SubatomicHop]:
         """Get the next node to execute.
-        
+
         Returns:
             Next SubatomicHop or None if queue is empty
         """
         if not self.execution_queue:
             return None
-        
+
         hop_id = self.execution_queue.pop(0)
         return self.node_registry.get(hop_id)
-    
+
     def pause_node(self, hop_id: str) -> bool:
         """Pause a node's execution.
-        
+
         Args:
             hop_id: Node ID to pause
-            
+
         Returns:
             True if paused successfully
         """
@@ -192,13 +192,13 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
                 Logger.info(f"Paused node {hop_id}")
                 return True
         return False
-    
+
     def resume_node(self, hop_id: str) -> bool:
         """Resume a paused node.
-        
+
         Args:
             hop_id: Node ID to resume
-            
+
         Returns:
             True if resumed successfully
         """
@@ -211,7 +211,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
                 Logger.info(f"Resumed node {hop_id}")
                 return True
         return False
-    
+
     def get_graph_stats(self) -> Dict[str, Any]:
         """Get graph statistics."""
         return {
@@ -221,20 +221,20 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
             "registered_functions": len(self.function_registry),
             **self.stats
         }
-    
+
     def visualize_graph(self) -> Dict[str, Any]:
         """Get graph data for visualization.
-        
+
         Returns:
             Dictionary with nodes and edges
         """
         nodes = []
         edges = []
-        
+
         for node_id in self.graph.nodes:
             node_data = self.graph.nodes[node_id]
             hop = node_data.get('hop')
-            
+
             nodes.append({
                 "id": node_id,
                 "depth": node_data.get('depth', 0),
@@ -242,7 +242,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
                 "skipped": node_data.get('skipped', False),
                 "replaced": node_data.get('replaced', False)
             })
-        
+
         for edge in self.graph.edges:
             edge_data = self.graph.edges[edge]
             edges.append({
@@ -250,7 +250,7 @@ class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, Re
                 "target": edge[1],
                 "bridge": edge_data.get('bridge_created', False)
             })
-        
+
         return {
             "nodes": nodes,
             "edges": edges

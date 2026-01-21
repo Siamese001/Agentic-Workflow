@@ -23,10 +23,10 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 class StateValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Validates state files against expected schemas.
-    
+
     Provides schema validation for HOP-based workflow states.
     """
-    
+
     # Expected schemas for each HOP
     SCHEMAS = {
         "HOP-1": {
@@ -58,20 +58,20 @@ class StateValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             "decision_values": ["FACTUAL_FAILURE", "CREATIVE_FAILURE", "PASS"]
         }
     }
-    
+
     @classmethod
-    
+
     def test_self(self) -> dict:
         """
         SubatomicTestingMixin self-test implementation.
         Returns test results for this agent's core functionality.
         """
         results = {"agent": "StateValidatorAgent", "tests": [], "passed": 0, "failed": 0}
-        
+
         # Test 1: Agent can be instantiated (already proven by reaching here)
         results["tests"].append({"name": "instantiation", "passed": True})
         results["passed"] += 1
-        
+
         # Test 2: Required methods exist
         required_methods = ["heal_repository"] if hasattr(self, "heal_repository") else []
         for method in required_methods:
@@ -81,40 +81,40 @@ class StateValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             else:
                 results["tests"].append({"name": f"has_{method}", "passed": False})
                 results["failed"] += 1
-        
+
         # Test 3: MCP hardening check
         if hasattr(self, '_mcp_tools'):
             results["tests"].append({"name": "mcp_hardened", "passed": True})
             results["passed"] += 1
-        
+
         return results
 
 def validate_state(cls, hop_id: str, state_data: Dict[str, Any]) -> Tuple[bool, List[str]]:
         """
         Validate state data against expected schema.
-        
+
         Args:
             hop_id: HOP identifier
             state_data: State data to validate
-        
+
         Returns:
             (is_valid, list_of_errors)
         """
         # Normalize hop_id
         if not hop_id.startswith("HOP-"):
             hop_id = f"HOP-{hop_id}"
-        
+
         if hop_id not in cls.SCHEMAS:
             return True, []  # No schema defined, skip validation
-        
+
         schema = cls.SCHEMAS[hop_id]
         errors = []
-        
+
         # Check required fields
         for field in schema.get("required_fields", []):
             if field not in state_data:
                 errors.append(f"Missing required field: {field}")
-        
+
         # Check enum values if specified
         for field_suffix in ["values"]:
             for key, valid_values in schema.items():
@@ -123,9 +123,9 @@ def validate_state(cls, hop_id: str, state_data: Dict[str, Any]) -> Tuple[bool, 
                     if field_name in state_data:
                         if state_data[field_name] not in valid_values:
                             errors.append(f"Invalid value for {field_name}: {state_data[field_name]}")
-        
+
         is_valid = len(errors) == 0
-        
+
         return is_valid, errors
 
     def heal_repository(self) -> dict:

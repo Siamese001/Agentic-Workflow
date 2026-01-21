@@ -23,7 +23,7 @@ MCP servers require Node.js 18+ to run. Install it first:
    npm --version
    npx --version
    ```
-   
+
    You should see version numbers for all three commands.
 
 4. **Restart PowerShell/Terminal** after installation to refresh PATH.
@@ -245,7 +245,7 @@ After installation:
 4. **Start using MCP-enhanced agents**:
    ```python
    from runtime.shared.workflow.mcp_integration import K11MCPEnhancer
-   
+
    enhancer = K11MCPEnhancer()
    research = await enhancer.autonomous_company_research("TechCorp")
    ```

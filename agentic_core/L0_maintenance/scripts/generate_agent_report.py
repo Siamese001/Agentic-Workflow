@@ -118,12 +118,12 @@ for layer in layer_order:
     layer_agents = by_layer[layer]
     if not layer_agents:
         continue
-    
+
     lines.append(f"### {layer} Layer ({len(layer_agents)} agents)")
     lines.append("")
     lines.append("| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |")
     lines.append("|------------|-------------|-------|--------|---------|---------|-----|-------------|")
-    
+
     for a in sorted(layer_agents, key=lambda x: x['class_name']):
         name = a['class_name'][:35]
         inherit = ', '.join(a['inheritance'][:2])[:25] if a['inheritance'] else '-'
@@ -133,9 +133,9 @@ for layer in layer_order:
         testing_v = a['testing'][0] if a['testing'] != 'None' else '-'
         loc = a['loc']
         desc = (a['description'][:35] if a['description'] else '-').replace('|', '-')
-        
+
         lines.append(f"| {name} | {inherit} | {tools_v} | {memory_v} | {healing_v} | {testing_v} | {loc} | {desc} |")
-    
+
     lines.append("")
 
 # Compliance highlights
@@ -185,10 +185,10 @@ for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5']:
     layer_agents = by_layer[layer][:3]
     if not layer_agents:
         continue
-    
+
     lines.append(f"### {layer} Layer Examples")
     lines.append("")
-    
+
     for a in layer_agents:
         lines.append(f"**{a['class_name']}**")
         lines.append(f"- Path: `{a['path']}`")

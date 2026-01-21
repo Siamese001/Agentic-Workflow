@@ -15,10 +15,3 @@ def test_choose_agents_for_strategy_task_prefers_planner() -> None:
 
     chosen = choose_agents_for_task("strategy", registry)
     assert planner in chosen
-
-
-
-
-
-
-

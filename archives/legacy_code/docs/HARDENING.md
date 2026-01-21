@@ -1,8 +1,8 @@
 # System Hardening Guide
 ## Sub-Atomic Reliability Through Integrity Checks
 
-**Version:** 1.0  
-**Last Updated:** December 15, 2025  
+**Version:** 1.0
+**Last Updated:** December 15, 2025
 **Status:** Implementation In Progress
 
 ---
@@ -47,7 +47,7 @@ This document outlines critical hardening measures to prevent "stale state" vuln
 
 #### ✅ Step 1: Librarian - Data Integrity
 
-**Status:** PLANNED  
+**Status:** PLANNED
 **Priority:** HIGH
 
 **Current Logic:**
@@ -66,7 +66,7 @@ def get_ast_hash(file_path: str) -> str:
     """
     with open(file_path, 'r') as f:
         code = f.read()
-    
+
     tree = ast.parse(code)
     ast_dump = ast.dump(tree)
     return hashlib.sha256(ast_dump.encode()).hexdigest()
@@ -78,7 +78,7 @@ def get_ast_hash(file_path: str) -> str:
 
 #### ⏳ Step 2: Architect - Import Validation
 
-**Status:** PLANNED  
+**Status:** PLANNED
 **Priority:** MEDIUM
 
 **Current Logic:**
@@ -95,15 +95,15 @@ def validate_imports(code: str, allowed_libs: set) -> bool:
     Validate that all imports exist in environment.
     """
     tree = ast.parse(code)
-    
+
     for node in ast.walk(tree):
         if isinstance(node, (ast.Import, ast.ImportFrom)):
             module = node.module if isinstance(node, ast.ImportFrom) else node.names[0].name
             base_module = module.split('.')[0]
-            
+
             if base_module not in allowed_libs:
                 raise ImportError(f"Hallucinated import: {module}")
-    
+
     return True
 ```
 
@@ -113,7 +113,7 @@ def validate_imports(code: str, allowed_libs: set) -> bool:
 
 #### ⏳ Step 3: Surgeon - Scope Integrity Check
 
-**Status:** PLANNED  
+**Status:** PLANNED
 **Priority:** LOW
 
 **Current Logic:**
@@ -132,16 +132,16 @@ def check_scope_integrity(original: str, fixed: str) -> bool:
     try:
         orig_tree = ast.parse(original)
         fixed_tree = ast.parse(fixed)
-        
-        orig_names = {node.name for node in ast.walk(orig_tree) 
+
+        orig_names = {node.name for node in ast.walk(orig_tree)
                       if isinstance(node, (ast.FunctionDef, ast.ClassDef))}
-        fixed_names = {node.name for node in ast.walk(fixed_tree) 
+        fixed_names = {node.name for node in ast.walk(fixed_tree)
                        if isinstance(node, (ast.FunctionDef, ast.ClassDef))}
-        
+
         missing = orig_names - fixed_names
         if missing:
             raise ValueError(f"Scope integrity violated. Missing: {missing}")
-        
+
         return True
     except SyntaxError:
         return True  # Original was too broken to parse
@@ -153,7 +153,7 @@ def check_scope_integrity(original: str, fixed: str) -> bool:
 
 #### ✅ Step 4: Orchestrator - Freshness Check
 
-**Status:** IMPLEMENTED  
+**Status:** IMPLEMENTED
 **Priority:** CRITICAL
 
 **Current Logic:**
@@ -172,11 +172,11 @@ def get_max_mtime(root_dir: str, excluded_dirs: set = None) -> float:
     """Get maximum modification time of all Python files."""
     if excluded_dirs is None:
         excluded_dirs = {'.git', '.venv', 'venv', '__pycache__', 'node_modules', 'logs'}
-    
+
     max_mtime = 0.0
     for root, dirs, files in os.walk(root_dir):
         dirs[:] = [d for d in dirs if d not in excluded_dirs]
-        
+
         for file in files:
             if file.endswith('.py'):
                 file_path = os.path.join(root, file)
@@ -185,7 +185,7 @@ def get_max_mtime(root_dir: str, excluded_dirs: set = None) -> float:
                     max_mtime = max(max_mtime, mtime)
                 except OSError:
                     continue
-    
+
     return max_mtime
 
 # In run_agentic_loop:
@@ -204,7 +204,7 @@ if newest_file_time > manifest_mtime:
 
 #### ✅ Step 5: Canon Validator - Compound Cache Keys
 
-**Status:** IMPLEMENTED  
+**Status:** IMPLEMENTED
 **Priority:** HIGH
 
 **Current Logic:**
@@ -224,10 +224,10 @@ def _generate_compound_cache_key(self, entry: CanonEntry, user_query: str = "") 
     Key Structure: sha256(UserQuery + FileContentHash)
     """
     import hashlib
-    
+
     compound_input = f"{user_query}:{entry.ast_hash}"
     compound_key = hashlib.sha256(compound_input.encode('utf-8')).hexdigest()
-    
+
     return compound_key
 ```
 
@@ -237,7 +237,7 @@ def _generate_compound_cache_key(self, entry: CanonEntry, user_query: str = "") 
 
 #### ⏳ Step 6: Cognitive Node - Temperature Decay
 
-**Status:** PLANNED  
+**Status:** PLANNED
 **Priority:** MEDIUM
 
 **Current Logic:**
@@ -260,18 +260,18 @@ def think_with_decay(self, user_goal: str, max_steps: int = 10, base_temp: float
     for i in range(max_steps):
         # Calculate decaying temperature
         temp = base_temp * (1 - (i / max_steps))
-        
+
         # Ensure minimum temperature
         temp = max(temp, 0.1)
-        
+
         response = self.llm.generate(
             prompt=user_goal,
             temperature=temp
         )
-        
+
         if self._is_solution_complete(response):
             return response
-    
+
     # Force return even if not perfect
     return response
 ```
@@ -282,7 +282,7 @@ def think_with_decay(self, user_goal: str, max_steps: int = 10, base_temp: float
 
 #### ⏳ Step 7: Connection Manager - Circuit Breaker
 
-**Status:** PLANNED  
+**Status:** PLANNED
 **Priority:** MEDIUM
 
 **Current Logic:**
@@ -307,14 +307,14 @@ class CircuitBreaker:
         self.timeout = timeout
         self.last_failure_time = None
         self.state = "CLOSED"  # CLOSED, OPEN, HALF_OPEN
-    
+
     def call(self, func, *args, **kwargs):
         if self.state == "OPEN":
             if time.time() - self.last_failure_time > self.timeout:
                 self.state = "HALF_OPEN"
             else:
                 raise ServiceUnavailableError("Circuit breaker is OPEN")
-        
+
         try:
             result = func(*args, **kwargs)
             self.failure_count = 0
@@ -323,10 +323,10 @@ class CircuitBreaker:
         except Exception as e:
             self.failure_count += 1
             self.last_failure_time = time.time()
-            
+
             if self.failure_count >= self.failure_threshold:
                 self.state = "OPEN"
-            
+
             raise ServiceUnavailableError(f"Service failed: {e}")
 
 # In connection_manager.py:
@@ -424,6 +424,6 @@ These hardening measures transform the system from "happy path" assumptions to "
 
 ---
 
-**Document Maintainer:** Agentic Workflow Team  
-**Last Review:** December 15, 2025  
+**Document Maintainer:** Agentic Workflow Team
+**Last Review:** December 15, 2025
 **Next Review:** December 22, 2025

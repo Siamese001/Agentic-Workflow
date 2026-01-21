@@ -18,22 +18,22 @@ CORE_HYGIENE_AGENTS: dict[str, list[str]] = {
     ],
     "tier_1_structural": [
         "ImportAgent",
-        "LocationAgent", 
+        "LocationAgent",
         "NamingAgent",
         "HierarchyAgent",
         "CodeDeduplicationAgent",
-        "HygieneGuardianAgent",
+        "HygieneGuardianAgent",  # Now includes FileCleanupAgent logic (consolidated 2026-01-21)
     ],
     "tier_2_architectural": [
         "UnifiedStructureEnforcerAgent",
         "FilesystemSSOTReconcilerAgent",
         "DDDAlignmentAgent",
         "GitHygieneAgent",
-        "FileCleanupAgent",
+        # FileCleanupAgent - ARCHIVED: Consolidated into HygieneGuardianAgent (2026-01-21)
     ],
     "tier_3_autonomy": [
         "AutonomyGuardianAgent",
-        "CodeJanitorAgent",
+        # CodeJanitorAgent - ARCHIVED: Redundant with UnifiedCodeValidatorAgent (2026-01-21)
     ],
 }
 
@@ -52,14 +52,15 @@ AGENT_DESCRIPTIONS: dict[str, str] = {
     "NamingAgent": "Naming conventions, *Agent suffix enforcement",
     "HierarchyAgent": "L2/L3 structure creation, depth enforcement, orphan purging",
     "CodeDeduplicationAgent": "Filename uniqueness, whole-file duplicate detection",
-    "HygieneGuardianAgent": "Empty files, orphaned __init__.py, backup/temp file cleanup",
+    "HygieneGuardianAgent": "Empty files, orphaned __init__.py, backup/temp cleanup, repeated filenames, copy patterns (consolidated)",
     "UnifiedStructureEnforcerAgent": "Gravity/layer import enforcement, hierarchy validation",
     "FilesystemSSOTReconcilerAgent": "Blueprint → Filesystem alignment, drift detection",
     "DDDAlignmentAgent": "DDD bounded context enforcement, cross-context import detection",
     "GitHygieneAgent": "Stale branches, large files, uncommitted changes",
-    "FileCleanupAgent": "Repeated filename strings, duplicate file removal",
     "AutonomyGuardianAgent": "Agent autonomy enforcement, heal_repository() requirement",
-    "CodeJanitorAgent": "Syntax, style, formatting validation",
+    # ARCHIVED AGENTS (kept for reference):
+    # "FileCleanupAgent": "ARCHIVED - Consolidated into HygieneGuardianAgent (2026-01-21)",
+    # "CodeJanitorAgent": "ARCHIVED - Redundant with UnifiedCodeValidatorAgent (2026-01-21)",
 }
 
 def get_all_hygiene_agents() -> list[str]:
@@ -72,10 +73,10 @@ def get_all_hygiene_agents() -> list[str]:
 def get_tier_agents(tier: int) -> list[str]:
     """
     Get agents for a specific tier.
-    
+
     Args:
         tier: Tier number (0-3)
-        
+
     Returns:
         List of agent names for that tier
     """
@@ -85,7 +86,7 @@ def get_tier_agents(tier: int) -> list[str]:
         2: "tier_2_architectural",
         3: "tier_3_autonomy",
     }
-    
+
     tier_key = tier_map.get(tier)
     if tier_key:
         return CORE_HYGIENE_AGENTS.get(tier_key, [])

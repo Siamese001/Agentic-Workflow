@@ -26,12 +26,12 @@ Logger: Any = logging.getLogger(__name__)
 class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     """
     Official Pinecone MCP client — L3 routed, L5 shielded.
-    
+
     All vector operations flow through the Sovereign MCP Router for:
     - L5 safety validation
     - L3 orchestration coordination
     - L4 state persistence
-    
+
     [HARDENING] Inherits MCPHardenedMixin for:
     - Exponential backoff retry (3 attempts)
     - SovereignEvent emission on connect/fail/success
@@ -60,14 +60,14 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
     async def search(self, query_text: str, top_k: int=10, namespace: Optional[str]=None, rerank: bool=True, filters: Optional[Dict]=None) -> Dict[str, Any]:
         """
         Execute semantic search with optional server-side reranking.
-        
+
         Args:
             query_text: Text to search for
             top_k: Number of results to return
             namespace: Optional namespace to search in
             rerank: Whether to apply reranking
             filters: Optional metadata filters
-            
+
         Returns:
             Search results with scores and metadata
         """
@@ -91,11 +91,11 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
     async def upsert(self, vectors: List[Dict], namespace: Optional[str]=None) -> Dict[str, Any]:
         """
         Upsert vectors to the index.
-        
+
         Args:
             vectors: List of vector records to upsert
             namespace: Optional namespace
-            
+
         Returns:
             Upsert result with count
         """
@@ -117,10 +117,10 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
     async def inference_embed(self, texts: List[str]) -> Dict[str, Any]:
         """
         Generate embeddings via the Inference MCP tool.
-        
+
         Args:
             texts: List of texts to embed
-            
+
         Returns:
             Embeddings result with 'data' key containing embedding vectors
         """
@@ -142,11 +142,11 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
     async def delete(self, ids: List[str], namespace: Optional[str]=None) -> Dict[str, Any]:
         """
         Delete vectors by ID.
-        
+
         Args:
             ids: List of vector IDs to delete
             namespace: Optional namespace
-            
+
         Returns:
             Deletion result
         """
@@ -162,7 +162,7 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
     async def describe_index_stats(self) -> Dict[str, Any]:
         """
         Get index statistics.
-        
+
         Returns:
             Index statistics
         """
@@ -184,7 +184,7 @@ class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTesti
     async def health_check(self) -> Dict[str, Any]:
         """
         Perform health check on Pinecone connection.
-        
+
         Returns:
             Health status
         """

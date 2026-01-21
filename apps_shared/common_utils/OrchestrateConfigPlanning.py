@@ -101,30 +101,30 @@ class ConfigPlanningOrchestrator:
 
     def execute(self, config_request: Dict[str, Any]) -> ConfigPlanningResult:
         """Execute the config planning orchestration.
-        
+
         Args:
             config_request: Dictionary containing configuration requirements
-            
+
         Returns:
             ConfigPlanningResult: Complete planning result with validated configs and deployment plan
         """
         self.logger.info(f"Starting config planning for: {config_request.get('service', 'unknown')}")
-        
+
         try:
             # Validate input request
             self._validate_request(config_request)
-            
+
             # Parse and validate configurations
             validated_configs = []
             if self.config.enable_validation:
                 validated_configs = self._validate_configs(config_request)
-            
+
             # Create deployment plan
             deployment_plan = self._create_deployment_plan(config_request, validated_configs)
-            
+
             # Collect validation errors
             validation_errors = self._collect_validation_errors(config_request)
-            
+
             result = ConfigPlanningResult(
                 success=len(validation_errors) == 0,
                 validated_configs=validated_configs,
@@ -137,10 +137,10 @@ class ConfigPlanningOrchestrator:
                     "orchestrator": "ConfigPlanningOrchestrator"
                 }
             )
-            
+
             self.logger.info(f"Successfully planned configuration: {len(validated_configs)} configs validated")
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Config planning failed: {str(e)}")
             return ConfigPlanningResult(
@@ -156,10 +156,10 @@ class ConfigPlanningOrchestrator:
         """Validate config planning request."""
         if not request:
             raise ValueError("Config request cannot be empty")
-        
+
         if "service" not in request:
             raise ValueError("Service name is required in config request")
-        
+
         if "environment" not in request:
             raise ValueError("Target environment is required in config request")
 
@@ -168,7 +168,7 @@ class ConfigPlanningOrchestrator:
         configs = []
         raw_configs = request.get("configs", [])
         environment_str = request.get("environment")
-        
+
         # Map string to enum
         env_mapping = {
             "dev": ConfigEnvironment.DEVELOPMENT,
@@ -180,9 +180,9 @@ class ConfigPlanningOrchestrator:
             "production": ConfigEnvironment.PRODUCTION,
             "dr": ConfigEnvironment.DR
         }
-        
+
         environment = env_mapping.get(environment_str.lower(), ConfigEnvironment.DEVELOPMENT)
-        
+
         for raw_config in raw_configs:
             if isinstance(raw_config, dict):
                 config = ConfigDefinition(
@@ -196,17 +196,17 @@ class ConfigPlanningOrchestrator:
                     tags=raw_config.get("tags", [])
                 )
                 configs.append(config)
-        
+
         return configs
 
     def _create_deployment_plan(self, request: Dict[str, Any], configs: List[ConfigDefinition]) -> Optional[DeploymentPlan]:
         """Create deployment plan for configurations."""
         if not configs:
             return None
-        
+
         deployment_config = request.get("deployment", {})
         strategy_str = deployment_config.get("strategy", "atomic")
-        
+
         # Map string to enum
         strategy_mapping = {
             "blue_green": DeploymentStrategy.BLUE_GREEN,
@@ -215,13 +215,13 @@ class ConfigPlanningOrchestrator:
             "atomic": DeploymentStrategy.ATOMIC,
             "shadow": DeploymentStrategy.SHADOW
         }
-        
+
         strategy = strategy_mapping.get(strategy_str.lower(), DeploymentStrategy.ATOMIC)
-        
+
         # Get target environments
         target_envs_str = deployment_config.get("target_environments", [request.get("environment")])
         target_envs = []
-        
+
         for env_str in target_envs_str:
             env_mapping = {
                 "dev": ConfigEnvironment.DEVELOPMENT,
@@ -235,7 +235,7 @@ class ConfigPlanningOrchestrator:
             }
             env = env_mapping.get(env_str.lower(), ConfigEnvironment.DEVELOPMENT)
             target_envs.append(env)
-        
+
         return DeploymentPlan(
             strategy=strategy,
             target_environments=target_envs,
@@ -249,23 +249,23 @@ class ConfigPlanningOrchestrator:
         """Collect validation errors from configurations."""
         errors = []
         configs = request.get("configs", [])
-        
+
         for config in configs:
             if not isinstance(config, dict):
                 errors.append("Invalid config format")
                 continue
-            
+
             if "name" not in config:
                 errors.append("Config missing name")
-            
+
             if "content" not in config:
                 errors.append("Config missing content")
-            
+
             # Check config size
             content_size = len(str(config.get("content", {})))
             if content_size > self.config.max_config_size:
                 errors.append(f"Config exceeds maximum size: {content_size} > {self.config.max_config_size}")
-        
+
         return errors
 
 # Factory function for easy instantiation
@@ -291,14 +291,14 @@ def plan_config_deployment(
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Plan configuration deployment from simple parameters.
-    
+
     Args:
         service: Name of the service
         environment: Target environment
         configs: List of configuration definitions
         deployment: Optional deployment configuration
         config: Optional orchestrator configuration overrides
-        
+
     Returns:
         Dict: Planning result with validated configs and deployment plan
     """
@@ -309,12 +309,12 @@ def plan_config_deployment(
         "configs": configs,
         "deployment": deployment or {}
     }
-    
+
     # Create orchestrator and execute
     orchestrator_config = ConfigPlanningConfig(**config) if config else None
     orchestrator = ConfigPlanningOrchestrator(orchestrator_config)
     result = orchestrator.execute(request)
-    
+
     # Convert result to dict for JSON serialization
     return {
         "success": result.success,
@@ -355,7 +355,7 @@ if __name__ == "__main__":
             "version": "1.0.0"
         }
     ]
-    
+
     result = plan_config_deployment(
         service="user_service",
         environment="production",

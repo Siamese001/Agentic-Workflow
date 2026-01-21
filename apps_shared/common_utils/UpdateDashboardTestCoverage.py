@@ -12,7 +12,7 @@ html = dashboard_path.read_text(encoding='utf-8')
 
 # 1. Update dashboardData - find all "Test %" values and set to 100.0
 # Pattern: "Test %": <number>
-old_test_pattern = r'"Test %":\s*[\d.]+' 
+old_test_pattern = r'"Test %":\s*[\d.]+'
 def replace_test(match):
     return '"Test %": 100.0'
 

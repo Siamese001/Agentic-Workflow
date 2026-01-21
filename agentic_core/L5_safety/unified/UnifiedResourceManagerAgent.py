@@ -63,17 +63,17 @@ class ResourceBudget:
     reserved: float = 0.0
     hard_cap: bool = True  # If True, halt execution at 100%
     warning_threshold: float = 0.8  # Warn at 80%
-    
+
     @property
     def available(self) -> float:
         return max(0.0, self.total - self.used - self.reserved)
-    
+
     @property
     def utilization(self) -> float:
         if self.total == 0:
             return 0.0
         return (self.used + self.reserved) / self.total
-    
+
     @property
     def is_exhausted(self) -> bool:
         return self.available <= 0
@@ -93,26 +93,26 @@ class ResourceConfig:
 class UnifiedResourceManagerAgent:
     """
     Thread-safe unified resource manager.
-    
+
     Consolidates:
     - BudgetManagerAgent (budget tracking)
     - ProactiveResourceManagerAgent (proactive allocation)
     - FallbackManagerAgent (fallback strategies)
-    
+
     Usage:
         manager = UnifiedResourceManagerAgent()
-        
+
         # Set budget
         manager.set_budget(ResourceType.BUDGET, total=1000.0)
-        
+
         # Request allocation
         result = manager.allocate("agent_1", ResourceType.BUDGET, 100.0)
-        
+
         # Check if exhausted
         if manager.is_exhausted(ResourceType.BUDGET):
             print("Budget exhausted!")
     """
-    
+
     def __init__(self, config: Optional[ResourceConfig] = None):
         self.config = config or ResourceConfig()
         self._lock = threading.RLock()
@@ -121,9 +121,9 @@ class UnifiedResourceManagerAgent:
         self._agent_allocations: Dict[str, List[ResourceAllocation]] = {}
         self._pending_queue: List[tuple] = []
         self._initialized = False
-        
+
         Logger.info("UnifiedResourceManagerAgent initialized")
-    
+
     def set_budget(
         self,
         resource_type: ResourceType,
@@ -140,7 +140,7 @@ class UnifiedResourceManagerAgent:
                 warning_threshold=warning_threshold,
             )
             Logger.info(f"Budget set: {resource_type.name} = {total}")
-    
+
     def allocate(
         self,
         agent_id: str,
@@ -150,15 +150,15 @@ class UnifiedResourceManagerAgent:
     ) -> ResourceAllocation:
         """
         Allocate resources to an agent.
-        
+
         Thread-safe allocation with hard cap enforcement.
-        
+
         Args:
             agent_id: Requesting agent identifier
             resource_type: Type of resource to allocate
             amount: Amount to allocate
             priority: Priority level (higher = more important)
-            
+
         Returns:
             ResourceAllocation with status
         """
@@ -169,9 +169,9 @@ class UnifiedResourceManagerAgent:
                     resource_type=resource_type,
                     total=float('inf'),
                 )
-            
+
             budget = self._budgets[resource_type]
-            
+
             # Check hard cap
             if budget.hard_cap and budget.is_exhausted:
                 Logger.warning(f"HARD CAP: {resource_type.name} exhausted, denying {agent_id}")
@@ -181,7 +181,7 @@ class UnifiedResourceManagerAgent:
                     agent_id=agent_id,
                     status=AllocationStatus.EXHAUSTED,
                 )
-            
+
             # Check if allocation is possible
             if amount <= budget.available:
                 # Allocate
@@ -193,24 +193,24 @@ class UnifiedResourceManagerAgent:
                     status=AllocationStatus.ALLOCATED,
                 )
                 self._allocations.append(allocation)
-                
+
                 if agent_id not in self._agent_allocations:
                     self._agent_allocations[agent_id] = []
                 self._agent_allocations[agent_id].append(allocation)
-                
+
                 # Check warning threshold
                 if budget.utilization >= budget.warning_threshold:
                     Logger.warning(
                         f"WARNING: {resource_type.name} at {budget.utilization*100:.1f}% utilization"
                     )
-                
+
                 Logger.debug(f"Allocated {amount} {resource_type.name} to {agent_id}")
                 return allocation
-            
+
             # Try fallback strategies
             if self.config.enable_fallback:
                 return self._apply_fallback(agent_id, resource_type, amount, priority)
-            
+
             # Deny allocation
             return ResourceAllocation(
                 resource_type=resource_type,
@@ -218,7 +218,7 @@ class UnifiedResourceManagerAgent:
                 agent_id=agent_id,
                 status=AllocationStatus.DENIED,
             )
-    
+
     def _apply_fallback(
         self,
         agent_id: str,
@@ -251,7 +251,7 @@ class UnifiedResourceManagerAgent:
                         agent_id=agent_id,
                         status=AllocationStatus.FALLBACK,
                     )
-        
+
         # All strategies failed
         return ResourceAllocation(
             resource_type=resource_type,
@@ -259,39 +259,39 @@ class UnifiedResourceManagerAgent:
             agent_id=agent_id,
             status=AllocationStatus.DENIED,
         )
-    
+
     def release(self, agent_id: str, resource_type: ResourceType, amount: float) -> bool:
         """Release allocated resources."""
         with self._lock:
             if resource_type not in self._budgets:
                 return False
-            
+
             budget = self._budgets[resource_type]
             budget.used = max(0, budget.used - amount)
-            
+
             Logger.debug(f"Released {amount} {resource_type.name} from {agent_id}")
             return True
-    
+
     def is_exhausted(self, resource_type: ResourceType) -> bool:
         """Check if a resource type is exhausted."""
         with self._lock:
             if resource_type not in self._budgets:
                 return False
             return self._budgets[resource_type].is_exhausted
-    
+
     def get_utilization(self, resource_type: ResourceType) -> float:
         """Get current utilization for a resource type."""
         with self._lock:
             if resource_type not in self._budgets:
                 return 0.0
             return self._budgets[resource_type].utilization
-    
+
     def get_budget_status(self, resource_type: ResourceType) -> Dict[str, Any]:
         """Get detailed budget status."""
         with self._lock:
             if resource_type not in self._budgets:
                 return {"error": "Budget not found"}
-            
+
             budget = self._budgets[resource_type]
             return {
                 "resource_type": resource_type.name,
@@ -303,7 +303,7 @@ class UnifiedResourceManagerAgent:
                 "is_exhausted": budget.is_exhausted,
                 "hard_cap": budget.hard_cap,
             }
-    
+
     def get_all_budgets(self) -> Dict[str, Dict[str, Any]]:
         """Get status of all budgets."""
         with self._lock:

@@ -169,15 +169,15 @@ HEALER_BASES = {
 def calc_heal_cap_pct(agents: List[Dict], is_l0: bool = False) -> float:
     """
     Calculate Heal Capability % for a set of agents.
-    
+
     Definition: Percentage of agents that have healing capability through:
     1. Direct implementation (heal, apply_fix, heal_violation, heal_repository)
     2. Inheritance from HealerMixin or layer base classes
-    
+
     Args:
         agents: List of agent dictionaries from discovery
         is_l0: If True, return "N/A" equivalent (L0 is infrastructure layer)
-    
+
     Returns:
         Percentage (0-100) or 0.0 if L0
     """
@@ -192,14 +192,14 @@ def calc_heal_cap_pct(agents: List[Dict], is_l0: bool = False) -> float:
 def calc_invocation_pct(agents: List[Dict], is_l0: bool = False) -> float:
     """
     Calculate Heal Invocation % for a set of agents.
-    
+
     Definition: Percentage of agents that call super().heal_repository()
     in their heal_repository() method (ensures healing propagates through MRO).
-    
+
     Args:
         agents: List of agent dictionaries from discovery
         is_l0: If True, return "N/A" equivalent (L0 is infrastructure layer)
-    
+
     Returns:
         Percentage (0-100) or 0.0 if L0
     """
@@ -214,13 +214,13 @@ def calc_invocation_pct(agents: List[Dict], is_l0: bool = False) -> float:
 def calc_test_pct(agents: List[Dict]) -> float:
     """
     Calculate Test Coverage % for a set of agents.
-    
+
     Definition: Percentage of agents that have associated test files.
     Uses 'has_tests' boolean field from discovery.
-    
+
     Args:
         agents: List of agent dictionaries from discovery
-    
+
     Returns:
         Percentage (0-100)
     """
@@ -233,13 +233,13 @@ def calc_test_pct(agents: List[Dict]) -> float:
 def calc_hardened_pct(agents: List[Dict]) -> float:
     """
     Calculate MCP Hardened % for a set of agents.
-    
+
     Definition: Percentage of agents with MCPHardenedMixin for tool boundary security.
     Detection is MRO-aware: agents inheriting from hardened bases are considered hardened.
-    
+
     Args:
         agents: List of agent dictionaries from discovery
-    
+
     Returns:
         Percentage (0-100)
     """
@@ -252,12 +252,12 @@ def calc_hardened_pct(agents: List[Dict]) -> float:
 def calc_typed_pct(agents: List[Dict]) -> float:
     """
     Calculate average Typed % for a set of agents.
-    
+
     Definition: Average percentage of code with type hints across all agents.
-    
+
     Args:
         agents: List of agent dictionaries from discovery
-    
+
     Returns:
         Percentage (0-100)
     """
@@ -270,12 +270,12 @@ def calc_typed_pct(agents: List[Dict]) -> float:
 def calc_documented_pct(agents: List[Dict]) -> float:
     """
     Calculate average Documented % for a set of agents.
-    
+
     Definition: Average percentage of code with docstrings across all agents.
-    
+
     Args:
         agents: List of agent dictionaries from discovery
-    
+
     Returns:
         Percentage (0-100)
     """
@@ -288,12 +288,12 @@ def calc_documented_pct(agents: List[Dict]) -> float:
 def calc_schema_strictness_pct(agents: List[Dict]) -> float:
     """
     Calculate average Schema Strictness % for a set of agents.
-    
+
     Definition: Average schema strictness score across all agents.
-    
+
     Args:
         agents: List of agent dictionaries from discovery
-    
+
     Returns:
         Percentage (0-100)
     """
@@ -306,12 +306,12 @@ def calc_schema_strictness_pct(agents: List[Dict]) -> float:
 def calc_canonical_inheritance_pct(agents: List[Dict]) -> float:
     """
     Calculate Canonical Inheritance % for a set of agents.
-    
+
     Definition: Percentage of agents inheriting from proper layer base class.
-    
+
     Args:
         agents: List of agent dictionaries from discovery
-    
+
     Returns:
         Percentage (0-100)
     """
@@ -324,10 +324,10 @@ def calc_canonical_inheritance_pct(agents: List[Dict]) -> float:
 def calc_avg_cc(agents: List[Dict]) -> float:
     """
     Calculate average Cyclomatic Complexity for a set of agents.
-    
+
     Args:
         agents: List of agent dictionaries from discovery
-    
+
     Returns:
         Average CC value
     """
@@ -340,13 +340,13 @@ def calc_avg_cc(agents: List[Dict]) -> float:
 def calc_complexity_health(avg_cc: float) -> float:
     """
     Calculate Complexity Health score from average CC.
-    
+
     Definition: 100 - (CC * 2), capped at 0 minimum.
     Lower CC = higher health.
-    
+
     Args:
         avg_cc: Average cyclomatic complexity
-    
+
     Returns:
         Complexity health score (0-100)
     """
@@ -363,17 +363,17 @@ def calc_health_score(
 ) -> float:
     """
     Calculate overall Health score for a territory using SSOT weights.
-    
+
     Definition (standard):
-        Health = (Heal Cap * WEIGHT_HEALTH_HEAL_CAP) + (Invocation * WEIGHT_HEALTH_INVOCATION) + 
-                 (Test * WEIGHT_HEALTH_TEST) + (Observable * WEIGHT_HEALTH_OBSERVABLE) + 
+        Health = (Heal Cap * WEIGHT_HEALTH_HEAL_CAP) + (Invocation * WEIGHT_HEALTH_INVOCATION) +
+                 (Test * WEIGHT_HEALTH_TEST) + (Observable * WEIGHT_HEALTH_OBSERVABLE) +
                  (Complexity Health * WEIGHT_HEALTH_COMPLEXITY)
-    
+
     Definition (L0 - infrastructure layer):
-        Health = (Test * WEIGHT_HEALTH_L0_TEST) + (Hardened * WEIGHT_HEALTH_L0_HARDENED) + 
+        Health = (Test * WEIGHT_HEALTH_L0_TEST) + (Hardened * WEIGHT_HEALTH_L0_HARDENED) +
                  (Complexity Health * WEIGHT_HEALTH_L0_COMPLEXITY)
         Note: L0 excludes healing metrics as they are N/A
-    
+
     Args:
         heal_cap_pct: Heal Capability %
         invocation_pct: Heal Invocation %
@@ -381,7 +381,7 @@ def calc_health_score(
         observable_pct: Observability % (placeholder at 50 currently)
         complexity_health: Complexity Health score
         is_l0: If True, use L0-specific formula
-    
+
     Returns:
         Health score (0-100)
     """
@@ -411,17 +411,17 @@ def calc_code_quality_score(
 ) -> float:
     """
     Calculate Code Quality Score using SSOT weights.
-    
+
     Definition: Weighted composite of code quality metrics.
-        Quality = (Typed * WEIGHT_CODE_QUALITY_TYPED) + (Documented * WEIGHT_CODE_QUALITY_DOCUMENTED) + 
+        Quality = (Typed * WEIGHT_CODE_QUALITY_TYPED) + (Documented * WEIGHT_CODE_QUALITY_DOCUMENTED) +
                   (Schema * WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS) + (Canonical * WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE)
-    
+
     Args:
         typed_pct: Typed %
         documented_pct: Documented %
         schema_pct: Schema Strictness %
         canonical_pct: Canonical Inheritance %
-    
+
     Returns:
         Code quality score (0-100)
     """
@@ -460,7 +460,7 @@ def get_invocation_display(pct: float, is_l0: bool) -> Any:
 def get_territory_sort_key(territory: str) -> tuple:
     """
     Get sort key for territory ordering.
-    
+
     Order:
     1. Base/Root (SovereignBaseAgent) - ALWAYS FIRST
     2. L0 Maintenance
@@ -471,17 +471,17 @@ def get_territory_sort_key(territory: str) -> tuple:
     7. L5 Safety
     8. L6 Observability
     9. Apps (alphabetically)
-    
+
     Args:
         territory: Territory name
-    
+
     Returns:
         Tuple for sorting (layer_order, suborder, name)
     """
     # Base/Root always first
     if territory in ('Base/Root', 'Base/Base Class'):
         return (0, 0, territory)
-    
+
     # Layer-based ordering
     for i, layer in enumerate(LAYER_ORDER):
         if territory.startswith(layer):
@@ -492,11 +492,11 @@ def get_territory_sort_key(territory: str) -> tuple:
                 return (i + 1, 1, territory)
             else:
                 return (i + 1, 2, territory)
-    
+
     # Apps at the end
     if 'Apps' in territory:
         return (100, 0, territory)
-    
+
     # Unknown territories last
     return (999, 0, territory)
 
@@ -509,7 +509,7 @@ def sort_territories(territories: List[str]) -> List[str]:
 def sort_dashboard_data(dashboard_data: List[Dict]) -> List[Dict]:
     """
     Sort dashboard data with correct ordering.
-    
+
     Order:
     1. Base/Root (SovereignBaseAgent) FIRST - the root of all agents
     2. L0 through L6 layers in order
@@ -518,20 +518,20 @@ def sort_dashboard_data(dashboard_data: List[Dict]) -> List[Dict]:
     """
     total_row = None
     territory_rows = []
-    
+
     for row in dashboard_data:
         if row.get('Territory') == 'TOTAL':
             total_row = row
         else:
             territory_rows.append(row)
-    
+
     # Sort territories with Base/Root first
     territory_rows.sort(key=lambda r: get_territory_sort_key(r.get('Territory', '')))
-    
+
     # TOTAL at end
     if total_row:
         territory_rows.append(total_row)
-    
+
     return territory_rows
 
 
@@ -543,7 +543,7 @@ def validate_agent_has_required_fields(agent: Dict) -> List[str]:
     """Validate an agent dictionary has all required fields."""
     required = [
         'path', 'class_name', 'layer', FIELD_HAS_HEALING, FIELD_INVOCATION,
-        FIELD_HAS_TESTS, FIELD_MCP_HARDENED, FIELD_TYPED_PCT, 
+        FIELD_HAS_TESTS, FIELD_MCP_HARDENED, FIELD_TYPED_PCT,
         FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS, FIELD_PROPER_BASE_CLASS
     ]
     missing = [f for f in required if f not in agent]
@@ -553,14 +553,14 @@ def validate_agent_has_required_fields(agent: Dict) -> List[str]:
 def get_canonical_health_score(metrics_dict: Dict[str, Any], is_l0: bool = False) -> float:
     """
     Calculate health score using SSOT weights and field constants.
-    
+
     This is the canonical implementation that should be used everywhere
     health scores are calculated. It uses SSOT weights from the YAML config.
-    
+
     Args:
         metrics_dict: Dictionary with agent metrics (uses FIELD_* constants as keys)
         is_l0: If True, uses L0-specific formula (no healing metrics)
-    
+
     Returns:
         Health score (0-100)
     """
@@ -572,7 +572,7 @@ def get_canonical_health_score(metrics_dict: Dict[str, Any], is_l0: bool = False
             safe_numeric(metrics_dict.get(FIELD_CYCLOMATIC_COMPLEXITY, 0)) * WEIGHT_HEALTH_L0_COMPLEXITY,
             2
         )
-    
+
     # Standard health formula
     return round(
         safe_numeric(metrics_dict.get(FIELD_HAS_HEALING, 0)) * WEIGHT_HEALTH_HEAL_CAP +
@@ -587,13 +587,13 @@ def get_canonical_health_score(metrics_dict: Dict[str, Any], is_l0: bool = False
 def get_canonical_code_quality_score(metrics_dict: Dict[str, Any]) -> float:
     """
     Calculate code quality score using SSOT weights and field constants.
-    
+
     This is the canonical implementation that should be used everywhere
     code quality scores are calculated.
-    
+
     Args:
         metrics_dict: Dictionary with agent metrics (uses FIELD_* constants as keys)
-    
+
     Returns:
         Code quality score (0-100)
     """

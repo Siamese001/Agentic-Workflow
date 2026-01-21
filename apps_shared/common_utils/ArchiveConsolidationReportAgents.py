@@ -32,23 +32,23 @@ LEGACY_AGENTS: Dict[str, List[str]] = {
         "DangerousBuiltinsValidatorAgent.py",
         "DebuggerValidatorAgent.py",
     ],
-    
+
     # Priority 2: L4 Checkpoint Managers -> UnifiedCheckpointManagerAgent
     "L4_Checkpoint_Managers": [
         "CheckpointManagerAgent.py",
         "AutonomousCheckpointManagerAgent.py",
     ],
-    
+
     # Priority 3: L5 Hygiene Validators (already archived in legacy_validators)
     # Skipping - already handled
-    
+
     # Priority 4: L5 Pattern Enforcers -> CodeStandardsEnforcerAgent
     "L5_Pattern_Enforcers": [
         "BaseClassEnforcerAgent.py",
         "PatternEnforcerAgent.py",
         "TypeHintEnforcementAgent.py",
     ],
-    
+
     # Priority 5: L4 State Management -> UnifiedStateManagementAgent
     "L4_State_Management": [
         "AutonomousStateGuardianAgent.py",
@@ -56,14 +56,14 @@ LEGACY_AGENTS: Dict[str, List[str]] = {
         "MemoryManagerAgent.py",
         "ValidationContextManagerAgent.py",
     ],
-    
+
     # Additional from report appendix
     "L0_Test_Utilities": [
         "MockOrchestratorAgent.py",
         "ScriptToAgentClassifierAgent.py",
         "TestAgent.py",
     ],
-    
+
     "L3_Exercisers": [
         "GeneralExerciserAgent.py",
         "L1CognitionExerciserAgent.py",
@@ -80,19 +80,19 @@ def find_agent(filename: str) -> Path | None:
         path_str = str(path).lower()
         if "__pycache__" not in path_str and "archive" not in path_str:
             return path
-    
+
     # Search in apps_lic
     for path in (PROJECT_ROOT / "apps_lic").rglob(filename):
         path_str = str(path).lower()
         if "__pycache__" not in path_str and "archive" not in path_str:
             return path
-    
+
     # Search in apps_rg
     for path in (PROJECT_ROOT / "apps_rg").rglob(filename):
         path_str = str(path).lower()
         if "__pycache__" not in path_str and "archive" not in path_str:
             return path
-    
+
     return None
 
 
@@ -100,13 +100,13 @@ def archive_file(source: Path, category: str, dry_run: bool = False) -> Tuple[bo
     """Archive a single file to category subfolder."""
     target_dir = ARCHIVE_DIR / category
     target = target_dir / source.name
-    
+
     if target.exists():
         return False, "Already archived"
-    
+
     if dry_run:
         return True, f"Would archive to {target.relative_to(PROJECT_ROOT)}"
-    
+
     try:
         target_dir.mkdir(parents=True, exist_ok=True)
         shutil.move(str(source), str(target))
@@ -119,31 +119,31 @@ def main():
     parser = argparse.ArgumentParser(description='Archive legacy agents from consolidation report')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be done')
     args = parser.parse_args()
-    
+
     print("=" * 70)
     print("WORKER_AGENT_CONSOLIDATION_REPORT.md - Legacy Agent Archive")
     print("=" * 70)
-    
+
     if args.dry_run:
         print("\n[DRY RUN MODE]\n")
-    
+
     total_archived = 0
     total_skipped = 0
     total_not_found = 0
-    
+
     for category, agents in LEGACY_AGENTS.items():
         print(f"\n--- {category} ---")
-        
+
         for filename in agents:
             source = find_agent(filename)
-            
+
             if source is None:
                 print(f"  ⊘ NOT FOUND: {filename}")
                 total_not_found += 1
                 continue
-            
+
             success, message = archive_file(source, category, args.dry_run)
-            
+
             if success:
                 icon = "○" if args.dry_run else "✓"
                 print(f"  {icon} {filename}")
@@ -154,18 +154,18 @@ def main():
                     total_skipped += 1
                 else:
                     print(f"  ✗ ERROR: {filename} - {message}")
-    
+
     print(f"\n{'=' * 70}")
     print("Summary:")
     print(f"  Archived:  {total_archived}")
     print(f"  Skipped:   {total_skipped}")
     print(f"  Not Found: {total_not_found}")
-    
+
     if args.dry_run:
         print("\n[DRY RUN COMPLETE]")
     else:
         print("\n✓ CONSOLIDATION REPORT ARCHIVE COMPLETE")
-    
+
     return 0
 
 

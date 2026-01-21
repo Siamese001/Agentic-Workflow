@@ -52,10 +52,3 @@ def test_allowed_tools_enforced_by_llm_base_agent_helper() -> None:
     # Disallowed tool should raise a PermissionError.
     with pytest.raises(PermissionError):
         agent._check_tool_allowed("tool_c")  # type: ignore[attr-defined]
-
-
-
-
-
-
-

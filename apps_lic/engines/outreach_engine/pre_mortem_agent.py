@@ -37,7 +37,7 @@ class ImpactLevel(str, Enum):
 
 class FailureMode(BaseModel):
     """A potential failure mode with risk assessment."""
-    
+
     risk: str = Field(..., description="Description of the risk")
     category: RiskCategory = Field(..., description="Risk category")
     probability: float = Field(..., ge=0.0, le=1.0, description="Probability of occurrence (0-1)")
@@ -45,7 +45,7 @@ class FailureMode(BaseModel):
     mitigation_strategy: str = Field(..., description="Specific mitigation approach")
     early_warning_signs: List[str] = Field(default_factory=list, description="Early warning indicators")
     owner: Optional[str] = Field(None, description="Who owns this risk")
-    
+
     @property
     def risk_score(self) -> float:
         """Calculate overall risk score (probability x impact weight)."""
@@ -60,7 +60,7 @@ class FailureMode(BaseModel):
 
 class PreMortemReport(BaseModel):
     """Complete pre-mortem analysis report."""
-    
+
     plan_summary: str = Field(..., description="Summary of the plan being analyzed")
     top_risks: List[FailureMode] = Field(..., description="Top identified risks")
     overall_risk_score: float = Field(..., ge=0.0, le=1.0, description="Overall plan risk score")
@@ -71,10 +71,10 @@ class PreMortemReport(BaseModel):
 
 class SimpleAgentBase:
     """Simple base class for standalone agents."""
-    
+
     def __init__(self, name: str, model_name: str = "gpt-4"):
         """Initialize the agent.
-        
+
         Args:
             name: Agent name for logging
             model_name: LLM model to use
@@ -86,15 +86,15 @@ class SimpleAgentBase:
 
 class PreMortemAgent(SimpleAgentBase):
     """Agent that performs pre-mortem analysis on plans."""
-    
+
     def __init__(self, model_name: str = "gpt-4"):
         """Initialize the Pre-Mortem Agent.
-        
+
         Args:
             model_name: LLM model to use for risk analysis
         """
         super().__init__(name="Pre-Mortem Analyzer", model_name=model_name)
-        
+
         # Risk category focus areas
         self.risk_focus_areas = {
             RiskCategory.CULTURAL_INERTIA: [
@@ -140,42 +140,42 @@ class PreMortemAgent(SimpleAgentBase):
                 "Regulatory changes"
             ]
         }
-    
+
     async def analyze_plan(self, plan_text: str, plan_type: str = "onboarding") -> PreMortemReport:
         """Perform pre-mortem analysis on a plan.
-        
+
         Args:
             plan_text: The plan to analyze
             plan_type: Type of plan (onboarding, migration, project, etc.)
-            
+
         Returns:
             Complete pre-mortem report
         """
         logger.info(f"Performing pre-mortem analysis on {plan_type} plan")
-        
+
         # Identify failure modes
         failure_modes = await self._identify_failure_modes(plan_text, plan_type)
-        
+
         # Generate mitigations for each failure mode
         for failure in failure_modes:
             failure.mitigation_strategy = self._generate_mitigation(failure, plan_text)
             failure.early_warning_signs = self._identify_warning_signs(failure)
-        
+
         # Select top risks
         top_risks = sorted(failure_modes, key=lambda x: x.risk_score, reverse=True)[:5]
-        
+
         # Calculate overall risk score
         overall_risk = self._calculate_overall_risk(top_risks)
-        
+
         # Generate recommendation
         recommendation = self._generate_recommendation(overall_risk, top_risks)
-        
+
         # Identify critical success factors
         success_factors = self._identify_success_factors(plan_text, top_risks)
-        
+
         # Create monitoring plan
         monitoring = self._create_monitoring_plan(top_risks)
-        
+
         return PreMortemReport(
             plan_summary=self._summarize_plan(plan_text),
             top_risks=top_risks,
@@ -184,31 +184,31 @@ class PreMortemAgent(SimpleAgentBase):
             critical_success_factors=success_factors,
             monitoring_plan=monitoring
         )
-    
+
     async def _identify_failure_modes(self, plan_text: str, plan_type: str) -> List[FailureMode]:
         """Identify potential failure modes using LLM.
-        
+
         Args:
             plan_text: Plan to analyze
             plan_type: Type of plan
-            
+
         Returns:
             List of identified failure modes
         """
         prompt = f"""
-        You are a cynical Chief Risk Officer reviewing a {plan_type} plan. 
+        You are a cynical Chief Risk Officer reviewing a {plan_type} plan.
         Assume this plan FAILS in 6 months. List the top 7 reasons why it might fail.
-        
+
         Plan:
         {plan_text[:2000]}
-        
+
         For each failure mode, provide:
         1. Risk description (what could go wrong)
-        2. Category (Cultural Inertia, Technical Debt, Resource Constraints, Team Adoption, 
+        2. Category (Cultural Inertia, Technical Debt, Resource Constraints, Team Adoption,
                     Stakeholder Alignment, Execution Risk, External Dependencies)
         3. Probability (0.0-1.0)
         4. Impact (Low, Medium, High, Critical)
-        
+
         Format as JSON:
         {{
             "failure_modes": [
@@ -220,15 +220,15 @@ class PreMortemAgent(SimpleAgentBase):
                 }}
             ]
         }}
-        
+
         Be realistic but not fatalistic. Focus on solvable challenges.
         """
-        
+
         try:
             response = await self._call_llm(prompt, temperature=0.2)
             import json
             result = json.loads(response.content.strip())
-            
+
             failure_modes = []
             for fm in result.get("failure_modes", []):
                 try:
@@ -243,9 +243,9 @@ class PreMortemAgent(SimpleAgentBase):
                 except (KeyError, ValueError) as e:
                     logger.warning(f"Skipping invalid failure mode: {e}")
                     continue
-            
+
             return failure_modes
-            
+
         except Exception as e:
             logger.error(f"Failed to identify failure modes: {e}")
             # Return generic failure modes
@@ -258,49 +258,49 @@ class PreMortemAgent(SimpleAgentBase):
                     mitigation_strategy=""
                 )
             ]
-    
+
     async def _generate_mitigation(self, failure: FailureMode, plan_text: str) -> str:
         """Generate specific mitigation strategy for a failure mode.
-        
+
         Args:
             failure: The failure mode to mitigate
             plan_text: Original plan for context
-            
+
         Returns:
             Mitigation strategy
         """
         prompt = f"""
         For this risk, provide a specific, actionable mitigation strategy:
-        
+
         Risk: {failure.risk}
         Category: {failure.category}
         Probability: {failure.probability}
         Impact: {failure.impact}
-        
+
         Plan context: {plan_text[:500]}
-        
+
         Provide a concrete mitigation that:
         1. Addresses the root cause
         2. Is practical to implement
         3. Has clear success criteria
         4. Can be executed within the plan timeline
-        
+
         Keep it to 2-3 sentences maximum.
         """
-        
+
         try:
             response = await self._call_llm(prompt, temperature=0.3)
             return response.content.strip()
         except Exception as e:
             logger.error(f"Failed to generate mitigation: {e}")
             return "Implement regular check-ins and monitoring to address early signs of this risk."
-    
+
     def _identify_warning_signs(self, failure: FailureMode) -> List[str]:
         """Identify early warning signs for a failure mode.
-        
+
         Args:
             failure: The failure mode to analyze
-            
+
         Returns:
             List of early warning signs
         """
@@ -342,39 +342,39 @@ class PreMortemAgent(SimpleAgentBase):
                 "Regulatory announcements"
             ]
         }
-        
+
         return warning_signs_map.get(failure.category, ["Unexpected deviations from plan"])
-    
+
     def _calculate_overall_risk(self, risks: List[FailureMode]) -> float:
         """Calculate overall risk score for the plan.
-        
+
         Args:
             risks: List of failure modes
-            
+
         Returns:
             Overall risk score (0-1)
         """
         if not risks:
             return 0.0
-        
+
         # Weighted average of top risks
         total_weight = sum(2 ** i for i in range(len(risks)))  # Exponential weighting
         weighted_score = sum(risk.risk_score * (2 ** i) for i, risk in enumerate(risks))
-        
+
         return min(1.0, weighted_score / total_weight * 2)  # Normalize and amplify
-    
+
     def _generate_recommendation(self, risk_score: float, risks: List[FailureMode]) -> str:
         """Generate go/no-go recommendation.
-        
+
         Args:
             risk_score: Overall risk score
             risks: Top risks identified
-            
+
         Returns:
             Recommendation string
         """
         critical_risks = [r for r in risks if r.impact == ImpactLevel.CRITICAL and r.probability > 0.5]
-        
+
         if critical_risks:
             return "NO-GO: Address critical risks before proceeding"
         elif risk_score > 0.7:
@@ -383,77 +383,77 @@ class PreMortemAgent(SimpleAgentBase):
             return "GO: Monitor risks closely"
         else:
             return "GO: Low risk, proceed as planned"
-    
+
     def _identify_success_factors(self, plan_text: str, risks: List[FailureMode]) -> List[str]:
         """Identify critical success factors.
-        
+
         Args:
             plan_text: Original plan
             risks: Identified risks
-            
+
         Returns:
             List of critical success factors
         """
         factors = []
-        
+
         # Based on risks, identify corresponding success factors
         risk_categories = set(r.category for r in risks)
-        
+
         if RiskCategory.TEAM_ADOPTION in risk_categories:
             factors.append("Strong change management and team buy-in")
-        
+
         if RiskCategory.STAKEHOLDER_ALIGNMENT in risk_categories:
             factors.append("Clear executive sponsorship and aligned expectations")
-        
+
         if RiskCategory.TECHNICAL_DEBT in risk_categories:
             factors.append("Thorough technical assessment and phased migration")
-        
+
         if RiskCategory.RESOURCE_CONSTRAINTS in risk_categories:
             factors.append("Adequate resource allocation and realistic timeline")
-        
+
         # Add generic factors
         factors.extend([
             "Clear communication plan",
             "Defined success metrics",
             "Regular progress reviews"
         ])
-        
+
         return factors[:5]  # Top 5 factors
-    
+
     def _create_monitoring_plan(self, risks: List[FailureMode]) -> Dict[str, str]:
         """Create risk monitoring plan.
-        
+
         Args:
             risks: Risks to monitor
-            
+
         Returns:
             Monitoring plan mapping risks to monitoring actions
         """
         monitoring = {}
-        
+
         for risk in risks[:3]:  # Top 3 risks
             monitoring[risk.risk] = f"Weekly check-ins, track {risk.early_warning_signs[0] if risk.early_warning_signs else 'key metrics'}"
-        
+
         return monitoring
-    
+
     def _summarize_plan(self, plan_text: str) -> str:
         """Create brief summary of the plan.
-        
+
         Args:
             plan_text: Plan to summarize
-            
+
         Returns:
             Plan summary
         """
         # Simple truncation for now
         return plan_text[:200] + "..." if len(plan_text) > 200 else plan_text
-    
+
     def render_risk_assessment(self, report: PreMortemReport) -> str:
         """Render pre-mortem report as Markdown.
-        
+
         Args:
             report: Pre-mortem report to render
-            
+
         Returns:
             Formatted Markdown string
         """
@@ -468,50 +468,50 @@ class PreMortemAgent(SimpleAgentBase):
             "| Risk | Category | Probability | Impact | Mitigation |",
             "|------|----------|-------------|---------|------------|"
         ]
-        
+
         for risk in report.top_risks:
             mitigation = risk.mitigation_strategy[:50] + "..." if len(risk.mitigation_strategy) > 50 else risk.mitigation_strategy
             lines.append(
                 f"| {risk.risk[:40]}... | {risk.category} | {risk.probability:.0%} | {risk.impact} | {mitigation} |"
             )
-        
+
         lines.extend([
             "",
             "### Critical Success Factors",
             ""
         ])
-        
+
         for factor in report.critical_success_factors:
             lines.append(f"- {factor}")
-        
+
         lines.extend([
             "",
             "### Risk Monitoring Plan",
             ""
         ])
-        
+
         for risk, monitoring in report.monitoring_plan.items():
             lines.append(f"- **{risk}**: {monitoring}")
-        
+
         return "\n".join(lines)
-    
+
     async def _call_llm(self, prompt: str, temperature: float = 0.3) -> LLMResponse:
         """Call the LLM with the given prompt.
-        
+
         Args:
             prompt: Prompt to send to LLM
             temperature: Sampling temperature
-            
+
         Returns:
             LLM response
         """
         try:
             # Import here to avoid circular imports
             from .multi_provider_clients import get_client, Provider
-            
+
             # Get Anthropic client
             client = get_client(Provider.ANTHROPIC)
-            
+
             # Call LLM
             response = await client.messages.create(
                 model="claude-3-5-sonnet-20241022",
@@ -519,18 +519,18 @@ class PreMortemAgent(SimpleAgentBase):
                 temperature=temperature,
                 messages=[{"role": "user", "content": prompt}]
             )
-            
+
             class LLMResponseImpl:
                 def __init__(self, content: str):
                     self.content = content
-            
+
             return LLMResponseImpl(response.content[0].text)
-            
+
         except Exception as e:
             logger.error(f"LLM call failed: {e}")
             # Return fallback response
             class LLMResponseImpl:
                 def __init__(self, content: str):
                     self.content = content
-            
+
             return LLMResponseImpl('{"failure_modes": []}')

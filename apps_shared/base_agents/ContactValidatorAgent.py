@@ -16,7 +16,7 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 class ContactValidatorAgent(HealerMixin, SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
     """
     Validates contact information.
-    
+
     Validates:
     - Email format using regex pattern
     - Presence of required contact fields
@@ -28,7 +28,7 @@ class ContactValidatorAgent(HealerMixin, SubatomicTestingMixin, OutreachAgent, M
     async def execute(self) -> None:
         """
         Execute contact validation.
-        
+
         Validates all contacts in context for:
         - Email presence
         - Email format validity
@@ -64,12 +64,12 @@ class ContactValidatorAgent(HealerMixin, SubatomicTestingMixin, OutreachAgent, M
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
-        
+
         Returns:
             Dict with healing summary (violations, fixed, errors)
         """

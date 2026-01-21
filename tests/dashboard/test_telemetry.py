@@ -17,7 +17,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 @pytest.mark.dashboard
 class TestRuntimeStateSchema:
     """Test runtime state schema structure."""
-    
+
     def test_runtime_state_has_basic_fields(self):
         """Verify runtime state schema has basic required fields."""
         required_fields = [
@@ -26,7 +26,7 @@ class TestRuntimeStateSchema:
         ]
         # This is a schema validation test - actual implementation would check the schema
         assert len(required_fields) == 6
-    
+
     def test_meta_learning_section_structure(self):
         """Verify meta-learning section has required structure."""
         meta_learning_fields = [
@@ -34,7 +34,7 @@ class TestRuntimeStateSchema:
             'last_update', 'active_strategies'
         ]
         assert len(meta_learning_fields) == 5
-    
+
     def test_redis_section_structure(self):
         """Verify Redis section has required structure."""
         redis_fields = [
@@ -47,12 +47,12 @@ class TestRuntimeStateSchema:
 @pytest.mark.dashboard
 class TestTelemetryCallbacks:
     """Test telemetry callback functionality."""
-    
+
     def test_telemetry_callback_registration(self):
         """Verify telemetry callbacks can be registered."""
         # Placeholder for actual callback registration test
         assert True
-    
+
     def test_telemetry_callback_invocation(self):
         """Verify telemetry callbacks are invoked on state changes."""
         # Placeholder for actual callback invocation test
@@ -62,12 +62,12 @@ class TestTelemetryCallbacks:
 @pytest.mark.dashboard
 class TestAPIEndpoints:
     """Test FastAPI runtime API endpoints."""
-    
+
     def test_runtime_api_endpoint_exists(self):
         """Verify runtime API endpoint is defined."""
         # Placeholder for actual API endpoint test
         assert True
-    
+
     def test_api_response_format(self):
         """Verify API response format is correct."""
         # Placeholder for actual response format test

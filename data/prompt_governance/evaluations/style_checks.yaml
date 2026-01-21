@@ -4,7 +4,7 @@
 style_checks:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # Style validation framework
   validation_framework:
     automated_checks:
@@ -17,7 +17,7 @@ style_checks:
             - required_fields: "All mandatory fields present"
             - data_type_consistency: "Field types match schema"
           severity: "critical"
-          
+
         - name: "naming_convention_compliance"
           description: "Ensure consistent naming conventions"
           checks:
@@ -26,7 +26,7 @@ style_checks:
             - descriptive_names: "Clear, descriptive field names"
             - no_reserved_words: "Avoid YAML reserved keywords"
           severity: "high"
-          
+
       content_formatting:
         - name: "content_structure_validation"
           description: "Validate content organization and structure"
@@ -36,7 +36,7 @@ style_checks:
             - completeness_coverage: "All required sections included"
             - cross_reference_integrity: "Valid internal references"
           severity: "high"
-          
+
         - name: "documentation_standards"
           description: "Ensure documentation meets quality standards"
           checks:
@@ -45,7 +45,7 @@ style_checks:
             - example_inclusion: "Relevant examples provided"
             - version_consistency: "Version information accurate"
           severity: "medium"
-          
+
     manual_review_checks:
       content_quality:
         - name: "prompt_effectiveness_assessment"
@@ -56,7 +56,7 @@ style_checks:
             - completeness_review: "Coverage of necessary aspects"
             - actionability_assessment: "Practical implementation feasibility"
           reviewer_expertise: "prompt_engineering, subject_matter_expert"
-          
+
         - name: "industry_standards_compliance"
           description: "Validate compliance with industry standards"
           review_criteria:
@@ -65,7 +65,7 @@ style_checks:
             - regulatory_compliance: "Adherence to relevant regulations"
             - ethical_guidelines: "Compliance with ethical standards"
           reviewer_expertise: "industry_expert, compliance_specialist"
-          
+
   # Specific style guidelines
   style_guidelines:
     yaml_formatting:
@@ -74,39 +74,39 @@ style_checks:
         - line_length: "Maximum 120 characters per line"
         - trailing_whitespace: "No trailing whitespace allowed"
         - file_ending: "Single newline at file end"
-        
+
       content_organization:
         - version_header: "Version and last_updated fields at top"
         - logical_grouping: "Related items grouped together"
         - alphabetical_ordering: "Lists ordered alphabetically where appropriate"
         - hierarchical_structure: "Clear parent-child relationships"
-        
+
     prompt_content:
       language_standards:
         - professional_tone: "Maintain professional, business-appropriate language"
         - inclusive_language: "Use inclusive, non-discriminatory terminology"
         - active_voice: "Prefer active voice over passive voice"
         - clarity_focus: "Prioritize clarity over complexity"
-        
+
         - consistency_requirements:
           - terminology: "Consistent terminology throughout"
           - formatting: "Uniform formatting patterns"
           - style: "Consistent writing style"
           - voice: "Consistent narrative voice"
-          
+
       content_quality:
         - specificity_standards:
           - actionable_guidance: "Provide specific, actionable instructions"
           - concrete_examples: "Include concrete, relevant examples"
           - measurable_outcomes: "Define measurable success criteria"
           - clear_expectations: "Set clear user expectations"
-          
+
         - completeness_requirements:
           - comprehensive_coverage: "Address all relevant aspects"
           - edge_case_handling: "Consider and address edge cases"
           - error_scenarios: "Include error handling guidance"
           - context_provision: "Provide sufficient context"
-          
+
   # Engine-specific style checks
   engine_specific_checks:
     resume_engine_style:
@@ -119,7 +119,7 @@ style_checks:
             - ats_optimization: "ATS system optimization best practices"
             - professional_standards: "Resume writing professional standards"
           validation_method: "expert_review + automated_keyword_check"
-          
+
         - name: "career_level_appropriateness"
           description: "Validate content appropriateness for different career levels"
           checks:
@@ -128,7 +128,7 @@ style_checks:
             - executive_standards: "Executive-level quality and sophistication"
             - transition_support: "Career transition guidance quality"
           validation_method: "segmented_testing + expert_validation"
-          
+
       rewriting_prompts:
         - name: "achievement_enhancement_style"
           description: "Validate achievement enhancement writing style"
@@ -138,7 +138,7 @@ style_checks:
             - impact articulation: "Clear impact and benefit communication"
             - conciseness_balance: "Brevity without sacrificing detail"
           validation_method: "sample_analysis + quality_scoring"
-          
+
         - name: "ats_compliance_formatting"
           description: "Ensure ATS-compliant formatting guidance"
           checks:
@@ -147,7 +147,7 @@ style_checks:
             - parsing_optimization: "System parsing optimization"
             - compatibility_guidance: "Multi-ATS compatibility"
           validation_method: "ats_simulation + compliance_checking"
-          
+
       scoring_prompts:
         - name: "evaluation_criteria_style"
           description: "Validate scoring criteria presentation style"
@@ -157,7 +157,7 @@ style_checks:
             - bias_prevention: "Unbiased evaluation guidance"
             - calibration_support: "Score calibration assistance"
           validation_method: "inter_rater_reliability + bias_analysis"
-          
+
       feedback_prompts:
         - name: "improvement_guidance_style"
           description: "Validate feedback and improvement guidance style"
@@ -167,7 +167,7 @@ style_checks:
             - priority_guidance: "Improvement prioritization assistance"
             - educational_value: "Learning and development support"
           validation_method: "user_testing + educational_assessment"
-          
+
     outreach_engine_style:
       system_prompts:
         - name: "professional_networking_style"
@@ -178,7 +178,7 @@ style_checks:
             - professional_standards: "Business communication standards"
             - authenticity_balance: "Professional yet authentic tone"
           validation_method: "communication_analysis + professional_review"
-          
+
         - name: "personalization_quality_style"
           description: "Validate personalization approach and quality"
           checks:
@@ -187,7 +187,7 @@ style_checks:
             - customization_depth: "Appropriate customization level"
             - scalability_consideration: "Scalable personalization methods"
           validation_method: "effectiveness_testing + scalability_analysis"
-          
+
       rewriting_prompts:
         - name: "engagement_optimization_style"
           description: "Validate engagement optimization writing style"
@@ -197,7 +197,7 @@ style_checks:
             - persistence_balance: "Professional persistence guidance"
             - value_addition: "Value-driven follow-up strategies"
           validation_method: "engagement_metrics + channel_analysis"
-          
+
         - name: "follow_up_strategy_style"
           description: "Validate follow-up strategy communication style"
           checks:
@@ -206,7 +206,7 @@ style_checks:
             - professional_boundaries: "Professional boundary maintenance"
             - relationship_building: "Long-term relationship focus"
           validation_method: "relationship_analysis + professional_standards_check"
-          
+
       scoring_prompts:
         - name: "response_prediction_style"
           description: "Validate response rate prediction approach"
@@ -216,7 +216,7 @@ style_checks:
             - confidence_communication: "Clear confidence interval communication"
             - practical_application: "Practical implementation guidance"
           validation_method: "statistical_validation + practicality_assessment"
-          
+
         - name: "relationship_potential_style"
           description: "Validate relationship building potential assessment"
           checks:
@@ -225,7 +225,7 @@ style_checks:
             - ethical_considerations: "Ethical networking guidance"
             - professional_standards: "Professional relationship standards"
           validation_method: "ethical_review + professional_standards_validation"
-          
+
       feedback_prompts:
         - name: "strategy_optimization_style"
           description: "Validate outreach strategy feedback style"
@@ -235,7 +235,7 @@ style_checks:
             - measurement_focus: "Result measurement guidance"
             - continuous_improvement: "Ongoing optimization support"
           validation_method: "strategic_analysis + implementation_testing"
-          
+
   # Quality assurance procedures
   quality_assurance:
     automated_validation:
@@ -251,7 +251,7 @@ style_checks:
           - trend_analysis: "Style quality trend monitoring"
           - compliance_metrics: "Overall compliance percentage tracking"
           - improvement_recommendations: "Automated improvement suggestions"
-          
+
     manual_review_processes:
       - name: "expert_style_review"
         description: "Expert review of style and quality standards"
@@ -265,7 +265,7 @@ style_checks:
           - quality_evaluation: "Overall quality assessment"
           - usability_review: "User experience and usability evaluation"
           - standards_compliance: "Compliance with established standards"
-          
+
   # Style improvement framework
   style_improvement:
     continuous_enhancement:
@@ -281,7 +281,7 @@ style_checks:
           - backward_compatibility: "Maintain backward compatibility where possible"
           - change_communication: "Communicate style changes effectively"
           - training_support: "Provide training for style standard updates"
-          
+
     feedback_integration:
       - name: "style_feedback_system"
         description: "Systematic collection and integration of style feedback"
@@ -295,7 +295,7 @@ style_checks:
           - impact_assessment: "Assess impact of proposed style changes"
           - implementation_planning: "Plan style improvement implementation"
           - effectiveness_measurement: "Measure improvement effectiveness"
-          
+
   # Documentation and training
   documentation_standards:
     style_guides:
@@ -311,7 +311,7 @@ style_checks:
           - version_control: "Versioned style guide management"
           - accessibility: "Easy access and navigation"
           - training_integration: "Integration with training programs"
-          
+
     training_materials:
       - name: "style_compliance_training"
         description: "Training materials for style standard compliance"
@@ -325,7 +325,7 @@ style_checks:
           - online_modules: "Self-paced online style training"
           - mentoring_programs: "One-on-one style mentoring"
           - community_practice: "Community-based style practice sessions"
-          
+
   # Compliance and governance
   governance_framework:
     style_governance:
@@ -341,7 +341,7 @@ style_checks:
           - exception_handling: "Process for handling style exceptions"
           - conflict_resolution: "Process for resolving style conflicts"
           - change_communication: "Process for communicating style changes"
-          
+
     compliance_monitoring:
       - name: "ongoing_compliance_assessment"
         description: "Continuous monitoring of style compliance"

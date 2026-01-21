@@ -110,10 +110,10 @@ if violations:
 # In canon_validator_agentic_v2.py (main loop)
 for idx, file_path in enumerate(ctx.python_files, 1):
     file_path_obj = Path(file_path)
-    
+
     # === L6 RUNTIME: Determine Applicable Keys ===
     applicable_keys = get_applicable_keys_for_file(file_path_obj, project_root_path)
-    
+
     print(f"🔍 [{idx}/{total}] {file_name} [Keys: {sorted(applicable_keys)}]")
 ```
 
@@ -145,7 +145,7 @@ class ArchitectureGovernor:
     async def execute(self, file_path: str):
         # Check if this file should be validated for architecture keys
         applicable_keys = getattr(self.ctx, 'current_file_applicable_keys', set())
-        
+
         # Keys 40-42 are architecture-related
         if not applicable_keys or any(k in [40, 41, 42] for k in applicable_keys):
             # Run architecture checks

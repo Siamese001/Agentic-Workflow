@@ -27,7 +27,7 @@ class ProactiveFissionScanner:
     """
     L3 Orchestrator: Scans the L4 State for structural patterns
     matching known 'Critical Bloat' profiles.
-    
+
     Process:
     1. Scan repository for files exceeding line threshold
     2. Query Brave Search for modular design patterns
@@ -39,7 +39,7 @@ class ProactiveFissionScanner:
     def __init__(self, McpRouterAgent, line_threshold: int=600):
         """
         Initialize Proactive Fission Scanner.
-        
+
         Args:
             McpRouterAgent: MCPRouter instance for MCP calls
             line_threshold: Line count threshold for bloat detection
@@ -51,10 +51,10 @@ class ProactiveFissionScanner:
     def get_line_count(self, file_path: str) -> int:
         """
         Get line count for a file.
-        
+
         Args:
             file_path: Path to file
-            
+
         Returns:
             Number of lines in file
         """
@@ -68,10 +68,10 @@ class ProactiveFissionScanner:
     async def scan_repository(self, target_dir: str) -> List[Dict[str, any]]:
         """
         Identifies files that meet the 'Atomic Criticality' criteria.
-        
+
         Args:
             target_dir: Directory to scan
-            
+
         Returns:
             List of candidate files with metadata
         """
@@ -91,10 +91,10 @@ class ProactiveFissionScanner:
     def _calculate_severity(self, line_count: int) -> str:
         """
         Calculate Severity level based on line count.
-        
+
         Args:
             line_count: Number of lines
-            
+
         Returns:
             Severity level (LOW, MEDIUM, HIGH, CRITICAL)
         """
@@ -110,10 +110,10 @@ class ProactiveFissionScanner:
     async def generate_pre_emptive_strategy(self, file_path: str) -> Dict[str, any]:
         """
         Uses Brave Search to find the best modular split for the specific file type.
-        
+
         Args:
             file_path: Path to file
-            
+
         Returns:
             Strategy dictionary with design patterns
         """
@@ -133,10 +133,10 @@ class ProactiveFissionScanner:
     def _recommend_split(self, file_path: str) -> Dict[str, str]:
         """
         Recommend split pattern based on file name and content.
-        
+
         Args:
             file_path: Path to file
-            
+
         Returns:
             Dictionary of recommended file splits
         """
@@ -147,10 +147,10 @@ class ProactiveFissionScanner:
     async def create_refactor_proposal(self, candidates: List[Dict[str, any]]) -> str:
         """
         Creates a GitKraken refactor proposal branch.
-        
+
         Args:
             candidates: List of bloat candidates
-            
+
         Returns:
             Branch name created
         """
@@ -172,10 +172,10 @@ class ProactiveFissionScanner:
     async def generate_audit_report(self, candidates: List[Dict[str, any]]) -> Dict[str, any]:
         """
         Generate comprehensive audit report.
-        
+
         Args:
             candidates: List of bloat candidates
-            
+
         Returns:
             Audit report dictionary
         """
@@ -196,11 +196,11 @@ class ProactiveFissionScanner:
 def get_proactive_scanner(McpRouterAgent: Any, line_threshold: int=600) -> ProactiveFissionScanner:
     """
     Factory function to create ProactiveFissionScanner instance.
-    
+
     Args:
         McpRouterAgent: MCPRouter instance
         line_threshold: Line count threshold
-        
+
     Returns:
         ProactiveFissionScanner instance
     """

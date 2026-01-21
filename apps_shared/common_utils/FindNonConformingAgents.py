@@ -146,7 +146,7 @@ def main():
     # Output table
     # Count excluded classes
     total_excluded = sum(len(f.get('excluded', [])) for f in [{'excluded': []}])  # placeholder
-    
+
     if suspects:
         print(f"\nFound {len(suspects)} non-conforming agent-like classes (excluding NOT_AN_AGENT marked):\n")
         print(f"{'File':<60} {'Line':<6} {'Class Name':<30} {'Suspicious Methods'}")

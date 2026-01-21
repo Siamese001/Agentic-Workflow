@@ -35,7 +35,7 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
     """
     L5 Safety Layer: Uses GitKraken MCP to manage rollback points
     and hardened commits for Atomic Fission events.
-    
+
     Process:
     1. Create backup branch before L4 mutation
     2. Execute fission with L1 Cognition
@@ -47,7 +47,7 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
     def __init__(self, McpRouterAgent: Any) -> None:
         """
         Initialize Git Safety Handler.
-        
+
         Args:
             McpRouterAgent: MCPRouter instance for MCP calls
         """
@@ -57,10 +57,10 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
     async def create_rollback_point(self, file_path: str) -> str:
         """
         Creates a temporary branch before L4 mutation.
-        
+
         Args:
             file_path: File being fissioned
-            
+
         Returns:
             Branch name created
         """
@@ -78,10 +78,10 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
     async def verify_clean_state(self, file_path: str) -> bool:
         """
         Verify that the current branch is clean before fission.
-        
+
         Args:
             file_path: File to check for uncommitted changes
-            
+
         Returns:
             True if working directory is clean, False otherwise
         """
@@ -101,13 +101,13 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
     async def stage_files(self, file_paths: List[str]) -> bool:
         """
         Stage files for commit.
-        
+
         Args:
             file_paths: List of file paths to stage
-        
+
         Returns:
             True if staging succeeded, False otherwise
-            
+
         Returns:
             True if successful, False otherwise
         """
@@ -124,11 +124,11 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
     async def finalize_fission(self, original_file: str, new_files: List[str]) -> bool:
         """
         Commits changes only after L5 Verification passes.
-        
+
         Args:
             original_file: Original monolithic file
             new_files: List of new decomposed files
-            
+
         Returns:
             True if successful, False otherwise
         """
@@ -151,10 +151,10 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
     async def rollback_to_branch(self, branch_name: str) -> bool:
         """
         Rollback to a specific backup branch.
-        
+
         Args:
             branch_name: Branch to rollback to
-            
+
         Returns:
             True if successful, False otherwise
         """
@@ -170,11 +170,11 @@ class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin
     async def get_commit_history(self, file_path: str, limit: int=10) -> List[Dict]:
         """
         Get commit history for a file.
-        
+
         Args:
             file_path: File to get history for
             limit: Maximum number of commits to retrieve
-            
+
         Returns:
             List of commit information
         """
@@ -213,10 +213,10 @@ def get_git_safety_handler(McpRouterAgent: Any) -> GitSafetyHandlerAgent:
     super().heal_repository()
 
     Factory function to create GitSafetyHandlerAgent instance.
-    
+
     Args:
         McpRouterAgent: MCPRouter instance
-        
+
     Returns:
         GitSafetyHandlerAgent instance
     """

@@ -44,13 +44,13 @@ Logger: Any = logging.getLogger(__name__)
 class MemoryArchitectSync:
     """
     L4 State Sync: Updates Pinecone to reflect new modular architecture.
-    
+
     Process:
     1. Purge old monolith from vector database
     2. Embed and upsert new sub-modules
     3. Cross-link with parent_monolith metadata
     4. Ensure RAG consistency
-    
+
     Prevents:
     - Stale embeddings pointing to non-existent code
     - Hallucinated code snippets during RAG queries
@@ -90,11 +90,11 @@ class MemoryArchitectSync:
     def sync_fission_state(self, monolith_path: str, new_files: List[str]) -> bool:
         """
         L4 State Sync: Updates Pinecone to reflect the new modular architecture.
-        
+
         Args:
             monolith_path: Path to original monolithic file
             new_files: List of new sub-module file paths
-            
+
         Returns:
             True if successful, False otherwise
         """
@@ -116,7 +116,7 @@ class MemoryArchitectSync:
     def _purge_monolith(self, monolith_path: str):
         """
         Purge old monolith embeddings from Pinecone.
-        
+
         Args:
             monolith_path: Path to monolithic file
         """
@@ -129,7 +129,7 @@ class MemoryArchitectSync:
     def _index_file(self, file_path: str, parent_monolith: Optional[str]=None):
         """
         Index a file in Pinecone with embeddings.
-        
+
         Args:
             file_path: Path to file to index
             parent_monolith: Optional parent monolith path for cross-linking
@@ -154,10 +154,10 @@ class MemoryArchitectSync:
     def _generate_embedding(self, text: str) -> Optional[List[float]]:
         """
         Generate embedding vector for text.
-        
+
         Args:
             text: Text to embed
-            
+
         Returns:
             Embedding vector or None if failed
         """
@@ -177,10 +177,10 @@ class MemoryArchitectSync:
     def verify_sync(self, file_paths: List[str]) -> Dict[str, bool]:
         """
         Verify files are properly indexed in Pinecone.
-        
+
         Args:
             file_paths: List of file paths to verify
-            
+
         Returns:
             Dictionary mapping file paths to verification status
         """
@@ -205,11 +205,11 @@ class MemoryArchitectSync:
     def query_related_files(self, file_path: str, top_k: int=5) -> List[Dict]:
         """
         Query Pinecone for files related to given file.
-        
+
         Args:
             file_path: File path to find related files for
             top_k: Number of related files to return
-            
+
         Returns:
             List of related file metadata
         """
@@ -233,7 +233,7 @@ class MemoryArchitectSync:
 def get_memory_architect_sync() -> MemoryArchitectSync:
     """
     Factory function to create MemoryArchitectSync instance.
-    
+
     Returns:
         MemoryArchitectSync instance
     """

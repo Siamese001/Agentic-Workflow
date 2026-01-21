@@ -237,25 +237,25 @@ class HardenedSubatomicHop:
     async def __init__(self, role: str, trace_id: str):
         # Semantic Cache
         self.cache = SemanticCache()
-        
+
         # MCP Integration
         self.mcp_manager = await create_mcp_manager(role=role)
-        
+
         # Cognitive Hardening
         self.structured_engine = StructuredEngine(api_key=api_key)
         self.sandbox = await create_sandbox()
-        
+
         # Telemetry
         self.telemetry = TelemetryRecorder()
         self.trace_id = trace_id
-    
+
     async def run(self, query: str):
         # Check cache first
         query_vector = await self.embedder.embed(query)
         cached = await self.cache.lookup(query, query_vector)
         if cached:
             return cached
-        
+
         # Think with structured output
         self.telemetry.record_event(TraceEvent(
             trace_id=self.trace_id,
@@ -265,34 +265,34 @@ class HardenedSubatomicHop:
             payload={},
             timestamp=time.time()
         ))
-        
+
         decision = await self.structured_engine.think_structured(
             system_prompt=self.system_prompt,
             user_prompt=query
         )
-        
+
         # Execute in sandbox if code
         if decision.tool_choice == "CODE":
             result = await self.sandbox.run_code(
                 code=decision.tool_arguments["code"],
                 timeout=30
             )
-            
+
             if result.exit_code != 0:
                 # Self-correction loop
                 return await self._repair_code(decision, result.stderr)
-        
+
         # Use MCP tools
         elif decision.tool_choice == "SEARCH":
             result = await self.mcp_manager.execute_tool(
                 "search_brave",
                 decision.tool_arguments
             )
-        
+
         # Cache high-quality results
         if decision.confidence_score > 0.8:
             await self.cache.store(query, query_vector, result)
-        
+
         return result
 ```
 

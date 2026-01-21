@@ -29,7 +29,7 @@ Logger: Any = logging.getLogger(__name__)
 class SovereignHealingEngine:
     """
     The brain of L0: Detects and transactionally repairs constitutional breaches.
-    
+
     Features:
     - Autonomous Violation detection and correction
     - Transactional safety with rollback capability
@@ -49,10 +49,10 @@ class SovereignHealingEngine:
     async def execute_autonomous_cycle(self, issues: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Full autonomous self-healing cycle with rollback safety.
-        
+
         Args:
             issues: List of violations detected by auditor
-            
+
         Returns:
             Healing cycle results
         """
@@ -106,10 +106,10 @@ class SovereignHealingEngine:
     async def _apply_fix(self, issue: Dict[str, Any]) -> bool:
         """
         Determines the fix strategy and applies it via MCP.
-        
+
         Args:
             issue: Violation details from auditor
-            
+
         Returns:
             True if fix applied successfully, False otherwise
         """
@@ -148,10 +148,10 @@ class SovereignHealingEngine:
     async def _exec_replace_import(self, fix: Dict) -> bool:
         """
         Handles both import swap and instantiation swap.
-        
+
         Args:
             fix: Fix dictionary with old_import, new_import, old_usage, new_usage
-            
+
         Returns:
             True if fix applied successfully, False otherwise
         """
@@ -176,10 +176,10 @@ class SovereignHealingEngine:
     async def _exec_replace_llm(self, fix: Dict) -> bool:
         """
         Sophisticated LLM SDK removal.
-        
+
         Args:
             fix: Fix dictionary with sdk, new_client, import_path
-            
+
         Returns:
             True if fix applied successfully, False otherwise
         """
@@ -205,10 +205,10 @@ class SovereignHealingEngine:
     async def _exec_replace_io(self, fix: Dict) -> bool:
         """
         Replace direct file I/O with Filesystem MCP client.
-        
+
         Args:
             fix: Fix dictionary with operation, new_client, import_path
-            
+
         Returns:
             True if fix applied successfully, False otherwise
         """
@@ -235,12 +235,12 @@ class SovereignHealingEngine:
     async def _generate_fix(self, content: str, ViolationType: str, message: str) -> Optional[str]:
         """
         Generate fixed content based on Violation type (legacy method).
-        
+
         Args:
             content: Original file content
             ViolationType: Type of Violation (IMPORT_BREACH, PATH_BREACH, etc.)
             message: Violation message
-            
+
         Returns:
             Fixed content or None if no fix available
         """
@@ -263,7 +263,7 @@ class SovereignHealingEngine:
     async def _create_healing_commit(self, affected_files: List[str]):
         """
         Create a git commit for healed files.
-        
+
         Args:
             affected_files: List of file paths that were healed
         """
@@ -291,10 +291,10 @@ class SovereignHealingEngine:
 async def run_autonomous_healing(issues: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Run autonomous healing cycle on detected violations.
-    
+
     Args:
         issues: List of violations from sovereignty auditor
-        
+
     Returns:
         Healing cycle results
     """

@@ -64,7 +64,7 @@ def dashboard_data(dashboard_dir) -> List[Dict[str, Any]]:
     data_file = dashboard_dir / "data" / "dashboard_data.js"
     if not data_file.exists():
         pytest.skip(f"Dashboard data file not found: {data_file}")
-    
+
     content = data_file.read_text(encoding='utf-8')
     lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
     content_clean = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')

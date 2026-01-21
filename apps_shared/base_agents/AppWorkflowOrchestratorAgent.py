@@ -39,7 +39,7 @@ class WorkflowPhase(Enum):
     VALIDATION = auto()
     COMPLETE = auto()
     ERROR = auto()
-    
+
     # LIC (Outreach) phases
     LIC_PHASE_1_PROFILE = auto()
     LIC_PHASE_2_RESEARCH = auto()
@@ -49,7 +49,7 @@ class WorkflowPhase(Enum):
     LIC_PHASE_6_VALIDATION = auto()
     LIC_PHASE_7_GATE = auto()
     LIC_PHASE_8_QA = auto()
-    
+
     # RG (Resume) phases
     RG_PHASE_1_INTAKE = auto()
     RG_PHASE_2_ANALYSIS = auto()
@@ -105,12 +105,12 @@ class WorkflowState:
     started_at: datetime = field(default_factory=datetime.now)
     completed_at: Optional[datetime] = None
     error: Optional[str] = None
-    
+
     @property
     def is_complete(self) -> bool:
         """Check if workflow is complete."""
         return self.current_phase in (WorkflowPhase.COMPLETE, WorkflowPhase.ERROR)
-    
+
     @property
     def is_error(self) -> bool:
         """Check if workflow ended in error."""
@@ -248,26 +248,26 @@ RG_PHASE_CONFIGS: List[PhaseConfig] = [
 class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Unified application-layer orchestrator for LIC and RG workflows.
-    
+
     Consolidates:
     - LicWorkflowOrchestratorAgent
     - OutreachPhase5OrchestratorAgent
     - Phase4/6/7OrchestratorAgent
-    
+
     Features:
     - Configuration-driven state machine
     - Dependency gate validation
     - Phase-specific execution
-    
+
     Usage:
         agent = AppWorkflowOrchestratorAgent(workflow_type=WorkflowType.LIC)
         state = await agent.execute_workflow({"recipient_id": "123"})
     """
-    
+
     workflow_type: WorkflowType = WorkflowType.LIC
     custom_phase_configs: Optional[List[PhaseConfig]] = None
     phase_handlers: Dict[WorkflowPhase, Callable] = field(default_factory=dict)
-    
+
     def __post_init__(self) -> None:
         """Initialize the workflow orchestrator."""
         # Load phase configs based on workflow type
@@ -277,17 +277,17 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
             self._phase_configs = {pc.phase: pc for pc in LIC_PHASE_CONFIGS}
         else:
             self._phase_configs = {pc.phase: pc for pc in RG_PHASE_CONFIGS}
-        
+
         # Build phase order
         self._phase_order = self._build_phase_order()
         Logger.info(f"AppWorkflowOrchestratorAgent initialized for {self.workflow_type.value}")
-    
+
     def _build_phase_order(self) -> List[WorkflowPhase]:
         """Build execution order based on dependencies."""
         # Simple topological sort
         order = []
         remaining = set(self._phase_configs.keys())
-        
+
         while remaining:
             # Find phases with all dependencies satisfied
             ready = []
@@ -295,20 +295,20 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
                 config = self._phase_configs[phase]
                 if all(dep in order or dep not in self._phase_configs for dep in config.dependencies):
                     ready.append(phase)
-            
+
             if not ready:
                 # Circular dependency or missing dependency
                 Logger.warning(f"Could not resolve dependencies for: {remaining}")
                 order.extend(remaining)
                 break
-            
+
             # Add ready phases in enum order for determinism
             ready.sort(key=lambda p: p.value)
             order.extend(ready)
             remaining -= set(ready)
-        
+
         return order
-    
+
     def register_phase_handler(
         self,
         phase: WorkflowPhase,
@@ -317,7 +317,7 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
         """Register a custom handler for a phase."""
         self.phase_handlers[phase] = handler
         Logger.info(f"Registered handler for phase {phase.name}")
-    
+
     def validate_phase_dependencies(
         self,
         phase: WorkflowPhase,
@@ -325,31 +325,31 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
     ) -> tuple[bool, Optional[str]]:
         """
         Validate that all dependencies for a phase are satisfied.
-        
+
         Returns:
             (is_valid, error_message)
         """
         config = self._phase_configs.get(phase)
         if not config:
             return False, f"Unknown phase: {phase}"
-        
+
         # Check phase dependencies
         for dep in config.dependencies:
             if dep not in state.completed_phases:
                 return False, f"Dependency not met: {dep.name} must complete before {phase.name}"
-            
+
             # Check if dependency succeeded
             dep_result = state.phase_results.get(dep)
             if dep_result and not dep_result.success and not dep_result.skipped:
                 return False, f"Dependency failed: {dep.name}"
-        
+
         # Check required inputs
         for required_input in config.required_inputs:
             if required_input not in state.context:
                 return False, f"Missing required input: {required_input}"
-        
+
         return True, None
-    
+
     async def _execute_phase(
         self,
         phase: WorkflowPhase,
@@ -358,9 +358,9 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
         """Execute a single phase."""
         config = self._phase_configs[phase]
         start_time = datetime.now()
-        
+
         Logger.info(f"Executing phase {config.name} ({phase.name})")
-        
+
         # Validate dependencies
         is_valid, error = self.validate_phase_dependencies(phase, state)
         if not is_valid:
@@ -370,7 +370,7 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
                 success=False,
                 error=error,
             )
-        
+
         # Check for custom handler
         if phase in self.phase_handlers:
             try:
@@ -385,24 +385,24 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
                     error=str(e),
                     execution_time=(datetime.now() - start_time).total_seconds(),
                 )
-        
+
         # Default execution (mock for now - real handlers should be registered)
         Logger.info(f"Phase {config.name}: Using default handler")
-        
+
         # Simulate phase execution
         result_data = {}
         for output in config.produces_outputs:
             result_data[output] = f"{output}_from_{phase.name}"
-        
+
         execution_time = (datetime.now() - start_time).total_seconds()
-        
+
         return PhaseResult(
             phase=phase,
             success=True,
             data=result_data,
             execution_time=execution_time,
         )
-    
+
     async def execute_workflow(
         self,
         initial_context: Dict[str, Any],
@@ -410,48 +410,48 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
     ) -> WorkflowState:
         """
         Execute the complete workflow.
-        
+
         Args:
             initial_context: Initial context/inputs for the workflow
             workflow_id: Optional workflow identifier
-            
+
         Returns:
             Final workflow state
         """
         import uuid
-        
+
         state = WorkflowState(
             workflow_id=workflow_id or str(uuid.uuid4()),
             workflow_type=self.workflow_type,
             current_phase=WorkflowPhase.INIT,
             context=initial_context.copy(),
         )
-        
+
         Logger.info(f"Starting {self.workflow_type.value} workflow {state.workflow_id}")
-        
+
         try:
             for phase in self._phase_order:
                 state.current_phase = phase
                 config = self._phase_configs[phase]
-                
+
                 # Execute phase with retry
                 result = None
                 for attempt in range(config.max_retries + 1):
                     result = await self._execute_phase(phase, state)
-                    
+
                     if result.success:
                         break
-                    
+
                     if not config.retry_on_failure:
                         break
-                    
+
                     if attempt < config.max_retries:
                         Logger.info(f"Retrying phase {phase.name} (attempt {attempt + 2})")
                         result.retries_used = attempt + 1
-                
+
                 # Store result
                 state.phase_results[phase] = result
-                
+
                 if result.success:
                     state.completed_phases.add(phase)
                     # Add outputs to context
@@ -466,28 +466,28 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
                     state.error = result.error
                     Logger.error(f"Workflow failed at phase {phase.name}: {result.error}")
                     break
-            
+
             if state.current_phase != WorkflowPhase.ERROR:
                 state.current_phase = WorkflowPhase.COMPLETE
-            
+
         except Exception as e:
             state.current_phase = WorkflowPhase.ERROR
             state.error = str(e)
             Logger.error(f"Workflow execution error: {e}")
-        
+
         state.completed_at = datetime.now()
         Logger.info(f"Workflow {state.workflow_id} completed with status {state.current_phase.name}")
-        
+
         return state
-    
+
     def get_phase_config(self, phase: WorkflowPhase) -> Optional[PhaseConfig]:
         """Get configuration for a phase."""
         return self._phase_configs.get(phase)
-    
+
     def get_workflow_phases(self) -> List[WorkflowPhase]:
         """Get ordered list of phases for this workflow."""
         return self._phase_order.copy()
-    
+
     @timeout(300)
     def heal_repository(
         self,
@@ -500,13 +500,13 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
         """Apps orchestration agent - operational healing."""
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"errors": 1, "cycle_detected": True}
         if depth > max_depth:
             return {"errors": 1, "depth_limited": True}
-        
+
         _call_path.add(agent_name)
         try:
             Logger.info(f"[{agent_name}] Apps orchestration healing")
@@ -522,7 +522,7 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
 def create_legacy_lic_workflow_orchestrator(**kwargs: Any) -> AppWorkflowOrchestratorAgent:
     """
     Factory for backward compatibility with LicWorkflowOrchestratorAgent.
-    
+
     DEPRECATED: Use AppWorkflowOrchestratorAgent directly.
     """
     warnings.warn(
@@ -541,7 +541,7 @@ def create_legacy_phase_orchestrator(
 ) -> AppWorkflowOrchestratorAgent:
     """
     Factory for backward compatibility with Phase4/6/7OrchestratorAgent.
-    
+
     DEPRECATED: Use AppWorkflowOrchestratorAgent directly.
     """
     warnings.warn(
@@ -557,7 +557,7 @@ def create_legacy_phase_orchestrator(
 def create_legacy_outreach_phase5_orchestrator(**kwargs: Any) -> AppWorkflowOrchestratorAgent:
     """
     Factory for backward compatibility with OutreachPhase5OrchestratorAgent.
-    
+
     DEPRECATED: Use AppWorkflowOrchestratorAgent directly.
     """
     warnings.warn(

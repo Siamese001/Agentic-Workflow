@@ -112,7 +112,7 @@ while IFS= read -r line; do
     if [[ $line =~ ^([^:]+):\ (.+)$ ]]; then
         file="${BASH_REMATCH[1]}"
         expected_hash="${BASH_REMATCH[2]}"
-        
+
         if [[ -f "$file" ]]; then
             actual_hash=$(sha256sum "$file" | cut -d' ' -f1)
             if [[ "$actual_hash" == "$expected_hash" ]]; then

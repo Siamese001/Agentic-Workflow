@@ -36,11 +36,11 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     def __init__(self, ctx: Any, project_root: Optional[str] = None) -> None:
         """
         Initialize with mandatory ctx for sovereign operation.
-        
+
         Args:
             ctx: Execution context (mandatory)
             project_root: Optional project root directory
-        
+
         Raises:
             ValueError: If ctx is None
         """
@@ -52,10 +52,10 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     async def execute(self, file_path: str) -> Dict[str, Any]:
         """
         Execute method for validator compatibility.
-        
+
         Args:
             file_path: Path to file to validate
-        
+
         Returns:
             Dict with healed status
         """
@@ -64,11 +64,11 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     async def heal_violation(self, file_path: Path, ctx: Optional[Any] = None) -> Dict[str, Any]:
         """
         Per-file healing: add missing docstrings.
-        
+
         Args:
             file_path: Path to file to heal
             ctx: Optional execution context (uses self.ctx if None)
-        
+
         Returns:
             Dict with healed status and violations fixed count
         """
@@ -130,7 +130,7 @@ class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         if depth > max_depth:
             return {"errors": 0, "skipped": 1, "depth_limited": True}
         _call_path.add(self.__class__.__name__)
-        
+
         try:
             print(f"[DocstringCompliance HEAL @ depth {depth}] Requires ctx parameter - operational mode only")
             return {"skipped": 1, "requires_ctx": True}

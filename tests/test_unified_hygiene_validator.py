@@ -38,25 +38,25 @@ def run_self_tests() -> Dict[str, Any]:
 def test_gap4_duplicate_detection() -> Dict[str, Any]:
     """
     GAP-4 Verification: Test duplicate file detection.
-    
+
     Creates two identical files in different directories and verifies
     the validator detects them as duplicates via MD5 hash.
     """
     from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
-    
+
     # Use the test fixtures directory
     fixtures_dir = PROJECT_ROOT / "tests" / "hygiene_test_fixtures"
-    
+
     if not fixtures_dir.exists():
         return {
             "status": "SKIP",
             "reason": f"Test fixtures directory not found: {fixtures_dir}"
         }
-    
+
     validator = UnifiedStructureValidatorAgent(project_root=fixtures_dir)
     validator._scan_repository()
     duplicates = validator._find_duplicates()
-    
+
     # Check if our test duplicates were detected
     duplicate_found = False
     for dup in duplicates:
@@ -64,7 +64,7 @@ def test_gap4_duplicate_detection() -> Dict[str, Any]:
         if any('duplicate_a' in f for f in files) and any('duplicate_b' in f for f in files):
             duplicate_found = True
             break
-    
+
     return {
         "status": "PASS" if duplicate_found else "FAIL",
         "duplicates_found": len(duplicates),
@@ -76,27 +76,27 @@ def test_gap4_duplicate_detection() -> Dict[str, Any]:
 def test_orphan_detection() -> Dict[str, Any]:
     """
     Orphan Logic Test: Test dead code detection.
-    
+
     Verifies the validator identifies files not imported anywhere.
     """
     from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
-    
+
     # Use the test fixtures directory
     fixtures_dir = PROJECT_ROOT / "tests" / "hygiene_test_fixtures"
-    
+
     if not fixtures_dir.exists():
         return {
             "status": "SKIP",
             "reason": f"Test fixtures directory not found: {fixtures_dir}"
         }
-    
+
     validator = UnifiedStructureValidatorAgent(project_root=fixtures_dir)
     validator._scan_repository()
     orphans = validator._find_orphans()
-    
+
     # Check if our test orphan was detected (renamed to avoid test_ prefix filtering)
     orphan_found = any('orphan_dead_code_file' in o.get('file', '') for o in orphans)
-    
+
     return {
         "status": "PASS" if orphan_found else "FAIL",
         "orphans_found": len(orphans),
@@ -108,33 +108,33 @@ def test_orphan_detection() -> Dict[str, Any]:
 def test_marker_scanning() -> Dict[str, Any]:
     """
     Marker Scanning Test: Test technical debt marker detection.
-    
+
     Verifies the validator finds TODO, FIXME, HACK, XXX, BUG markers.
     """
     from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
-    
+
     # Use the test fixtures directory
     fixtures_dir = PROJECT_ROOT / "tests" / "hygiene_test_fixtures"
-    
+
     if not fixtures_dir.exists():
         return {
             "status": "SKIP",
             "reason": f"Test fixtures directory not found: {fixtures_dir}"
         }
-    
+
     validator = UnifiedStructureValidatorAgent(project_root=fixtures_dir)
     validator._scan_repository()
     markers = validator._scan_markers()
-    
+
     # Check marker types found
     marker_types = set(m.get('type', '') for m in markers)
     expected_markers = {'TODO', 'FIXME', 'HACK', 'XXX', 'BUG'}
-    
+
     # Check if markers are from our test file
     test_file_markers = [m for m in markers if 'marker_test_file' in m.get('file', '')]
-    
+
     all_expected_found = expected_markers.issubset(marker_types)
-    
+
     return {
         "status": "PASS" if all_expected_found and len(test_file_markers) > 0 else "FAIL",
         "total_markers_found": len(markers),
@@ -151,19 +151,19 @@ def test_full_validation() -> Dict[str, Any]:
     Full Validation Test: Run complete repository validation.
     """
     from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
-    
+
     # Use the test fixtures directory for controlled testing
     fixtures_dir = PROJECT_ROOT / "tests" / "hygiene_test_fixtures"
-    
+
     if not fixtures_dir.exists():
         return {
             "status": "SKIP",
             "reason": f"Test fixtures directory not found: {fixtures_dir}"
         }
-    
+
     validator = UnifiedStructureValidatorAgent(project_root=fixtures_dir)
     results = validator.validate_repository()
-    
+
     return {
         "status": results.get('status', 'UNKNOWN'),
         "total_violations": results.get('total_violations', 0),
@@ -179,23 +179,23 @@ def main():
     parser.add_argument('--markers-only', action='store_true', help='Run only marker scanning test')
     parser.add_argument('--output-dir', type=str, default='test_results', help='Output directory for JSON results')
     args = parser.parse_args()
-    
+
     output_dir = PROJECT_ROOT / args.output_dir
     output_dir.mkdir(exist_ok=True)
-    
+
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    
+
     print("=" * 60)
     print("UnifiedStructureValidatorAgent Test Suite (Phase 2)")
     print("=" * 60)
-    
+
     results = {
         'timestamp': timestamp,
         'tests': {},
     }
-    
+
     all_passed = True
-    
+
     # Self-tests
     if args.self_test or not any([args.duplicates_only, args.orphans_only, args.markers_only]):
         print("\n[1/5] Running self-tests...")
@@ -214,14 +214,14 @@ def main():
             print(f"  ✗ Self-tests failed: {e}")
             results['tests']['self_tests'] = {'error': str(e)}
             all_passed = False
-    
+
     # GAP-4 Duplicate Detection
     if args.duplicates_only or not any([args.self_test, args.orphans_only, args.markers_only]):
         print("\n[2/5] Running GAP-4 duplicate detection test...")
         try:
             dup_results = test_gap4_duplicate_detection()
             results['tests']['gap4_duplicates'] = dup_results
-            
+
             if dup_results.get('status') == 'PASS':
                 print(f"  ✓ GAP-4 PASSED: Duplicate files detected ({dup_results.get('duplicates_found')} groups)")
             elif dup_results.get('status') == 'SKIP':
@@ -233,14 +233,14 @@ def main():
             print(f"  ✗ GAP-4 test failed: {e}")
             results['tests']['gap4_duplicates'] = {'error': str(e)}
             all_passed = False
-    
+
     # Orphan Detection
     if args.orphans_only or not any([args.self_test, args.duplicates_only, args.markers_only]):
         print("\n[3/5] Running orphan detection test...")
         try:
             orphan_results = test_orphan_detection()
             results['tests']['orphan_detection'] = orphan_results
-            
+
             if orphan_results.get('status') == 'PASS':
                 print(f"  ✓ Orphan detection PASSED: {orphan_results.get('orphans_found')} orphans found")
             elif orphan_results.get('status') == 'SKIP':
@@ -252,14 +252,14 @@ def main():
             print(f"  ✗ Orphan detection test failed: {e}")
             results['tests']['orphan_detection'] = {'error': str(e)}
             all_passed = False
-    
+
     # Marker Scanning
     if args.markers_only or not any([args.self_test, args.duplicates_only, args.orphans_only]):
         print("\n[4/5] Running marker scanning test...")
         try:
             marker_results = test_marker_scanning()
             results['tests']['marker_scanning'] = marker_results
-            
+
             if marker_results.get('status') == 'PASS':
                 print(f"  ✓ Marker scanning PASSED: {marker_results.get('total_markers_found')} markers found")
                 print(f"    Types: {marker_results.get('marker_types_found')}")
@@ -274,14 +274,14 @@ def main():
             print(f"  ✗ Marker scanning test failed: {e}")
             results['tests']['marker_scanning'] = {'error': str(e)}
             all_passed = False
-    
+
     # Full Validation
     if not any([args.self_test, args.duplicates_only, args.orphans_only, args.markers_only]):
         print("\n[5/5] Running full validation test...")
         try:
             full_results = test_full_validation()
             results['tests']['full_validation'] = full_results
-            
+
             print(f"  ✓ Full validation completed")
             print(f"    Status: {full_results.get('status')}")
             print(f"    Total violations: {full_results.get('total_violations')}")
@@ -292,15 +292,15 @@ def main():
             print(f"  ✗ Full validation test failed: {e}")
             results['tests']['full_validation'] = {'error': str(e)}
             all_passed = False
-    
+
     # Save results
     output_file = output_dir / f'unified_hygiene_validator_test_{timestamp}.json'
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(results, f, indent=2, default=str)
-    
+
     print(f"\n{'=' * 60}")
     print(f"Results saved to: {output_file}")
-    
+
     if all_passed:
         print("✓ ALL TESTS PASSED")
         return 0

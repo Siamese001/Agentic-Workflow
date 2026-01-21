@@ -31,7 +31,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, CanonBaseAgent):
     """
     System Architect validates core architecture and import dependencies.
-    
+
     Validates:
     - Core modules exist and are accessible
     - No deep nesting (max 4 levels)
@@ -159,7 +159,7 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
     def check_no_large_files(self) -> Tuple[bool, List[str]]:
         """
         Check for files exceeding 1000 lines.
-        
+
         Returns:
             Tuple of (passed, list of violations)
         """

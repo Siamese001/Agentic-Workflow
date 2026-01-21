@@ -14,7 +14,7 @@ collecting ... collected 600 items / 7 errors
     <Package config>
       <Module test_config_migration.py>
         Pytest suite for Configuration Migration ensuring SSOT compliance.
-        
+
         Tests verify that:
         - Registry loads from new config location
         - Registry loads from old location with deprecation warning
@@ -44,16 +44,16 @@ collecting ... collected 600 items / 7 errors
       <Dir architecture>
         <Module test_critical_infrastructure_protection.py>
           Test Suite: Critical Infrastructure Protection
-          
+
           Prevents critical infrastructure files from being archived or moved during healing.
           This test suite was created after RCA identified that LocationAgent incorrectly
           archived sovereign_index.py during Tier 1 healing.
-          
+
           RCA Summary:
           - Agent Responsible: LocationAgent
           - Root Cause: Backup/heal cascade incorrectly treated backup as final destination
           - Fix: Added protected file list and hardened tests
-          
+
           This test suite ensures:
           1. Critical infrastructure files exist in correct locations
           2. SovereignIndex has Production Lens (tests excluded)
@@ -77,17 +77,17 @@ collecting ... collected 600 items / 7 errors
             Verify critical files don't import from archives.
         <Module test_depth_healing_smart_realignment.py>
           Test Suite: Smart Depth Re-alignment
-          
+
           Tests the new _heal_depth_violation method that replaces aggressive archiving
           with intelligent depth re-alignment:
           - DEEP violations: Flattens path (moves up)
           - SHALLOW violations: Nests path (injects 'depth_aligned' spacer)
-          
+
           Test Cases:
           1. Deep Violation (Flattening)
           2. Shallow Violation (Nesting)
           3. Race Condition / Idempotency
-          
+
           NOTE: Tests use actual project directory with proper cleanup to avoid
           LocationAgent's project root validation issues.
           <Function test_pass>
@@ -96,7 +96,7 @@ collecting ... collected 600 items / 7 errors
             Verify _heal_depth_violation method exists in LocationAgent.
           <Function test_deep_violation_flattening>
             Test Case 1: Deep Violation (Flattening)
-            
+
             Scenario: A file is buried too deep in a valid root.
             Setup: Create agentic_core/L5_safety/validators/_test_extra/_test_deep/DeepTestAgent.py (Depth 5)
             Expectation: SOVEREIGN_REGISTRY for agentic_core expects depth 3
@@ -104,23 +104,23 @@ collecting ... collected 600 items / 7 errors
             Check: File NOT in archives/
           <Function test_shallow_violation_nesting>
             Test Case 2: Shallow Violation (Nesting)
-            
+
             Scenario: A file is sitting in the root of a territory improperly.
             Setup: Create agentic_core/ShallowTestAgent.py (Depth 1). Target is 3.
             Result: File moved to agentic_core/depth_aligned/depth_aligned/ShallowTestAgent.py (Depth 3)
             Check: File NOT in archives/
           <Function test_idempotency>
             Test Case 3: Race Condition / Idempotency
-            
+
             Scenario: Run healing twice on the same file.
             Result: Second run reports "SKIPPED: Depth already correct"
             Check: No duplicate nested folders
         <Module test_genai_migration.py>
           Test Suite: Google GenAI Migration
-          
+
           Verifies that the codebase has been migrated from deprecated google-generativeai
           to the new google.genai package.
-          
+
           CONSTRAINT: 100% PASSING MANDATORY.
           <Function test_pass>
           <Function test_fail>
@@ -142,42 +142,42 @@ collecting ... collected 600 items / 7 errors
             Verify guard script checks for deprecated imports.
         <Module test_location_agent_comprehensive.py>
           Comprehensive Test Suite: LocationAgent Smart Depth Re-alignment
-          
+
           10 Test Cases covering:
           - Phase 1: Core Depth Logic (Tests 1-3)
           - Phase 2: Reliability & Safety (Tests 4-6)
           - Phase 3: Integration & Multi-Stage Healing (Tests 7-10)
-          
+
           Standard Sovereign Depth: 3 (e.g., agentic_core/L2_execution/runner.py)
           <Function test_pass>
           <Function test_fail>
           <Function test_case_1_shallow_nesting_fix>
             Test Case 1: The "Shallow" Nesting Fix
-            
+
             Context: A valid agent file is placed too high in the directory structure.
             Setup: Create agentic_core/L2_execution/OrphanedRunner.py (Depth 2)
             Expected: Moved to agentic_core/L2_execution/depth_aligned/OrphanedRunner.py
           <Function test_case_2_deep_flattening_fix>
             Test Case 2: The "Deep" Flattening Fix
-            
+
             Context: A file is buried in unnecessary subfolders.
             Setup: Create agentic_core/L2_execution/sub/nested/deep/_TestBuriedAgent.py (Depth 5)
             Expected: Flattened to agentic_core/L2_execution/sub/_TestBuriedAgent.py (Depth 3)
           <Function test_case_3_variable_depth_exemption>
             Test Case 3: Variable Depth Exemption (Utils)
-            
+
             Context: The utils folder is allowed to have deeper structures.
             Setup: Create agentic_core/utils/core_extensions/_test_complex/_TestHelper.py (Depth 5)
             Expected: is_valid returns True, no move, no archiving
           <Function test_case_4_idempotency>
             Test Case 4: Idempotency (Stability Check)
-            
+
             Context: Ensure running the healer twice doesn't create recursive nesting.
             Setup: File at agentic_core/L2_execution/depth_aligned/_TestIdempotent.py (Depth 3)
             Expected: Second run takes no action
           <Function test_case_5_collision_handling>
             Test Case 5: Collision Handling (Safety Copy)
-            
+
             Context: The healer tries to flatten a file, but a file with the same name exists.
             Setup:
               - File A: agentic_core/L2_execution/ToolRegistry/_TestRunner.py (Existing, Valid)
@@ -185,30 +185,30 @@ collecting ... collected 600 items / 7 errors
             Expected: File B moved to _TestRunner_1.py or similar
           <Function test_case_6_broken_backup_archiving>
             Test Case 6: Broken Backup Archiving
-            
+
             Context: A file named script.py.bak.123 is found (Forbidden Pattern).
             Setup: Create agentic_core/L3_orchestration/workflow_engines/_test_junk.py.bak.001
             Expected: Moved to archives/naming_violations/ (not depth healing)
           <Function test_case_7_app_leaking_two_step>
             Test Case 7: The "App Leaking" Two-Step
-            
+
             Context: An app-specific file is in Core AND it is Shallow.
             Setup: Create agentic_core/_test_apps_rg_tool.py (Depth 1)
             Expected: Cycle 1 nests it, Cycle 2 would move to apps (if run)
           <Function test_case_8_import_fix_integration>
             Test Case 8: Import Fix Integration
-            
+
             Context: Healing a depth violation should update imports in other files.
             Note: This tests the mechanism exists; actual import rewriting depends on safe_move
           <Function test_case_9_protected_root_files>
             Test Case 9: Protected Root Files
-            
+
             Context: Certain files at the root must not be moved even if they seem shallow.
             Setup: Verify agentic_core/utils/sovereign_index.py exists (Depth 2)
             Expected: File is exempt and remains in place
           <Function test_case_10_batch_big_bang>
             Test Case 10: Batch "Big Bang" Test
-            
+
             Context: Run against a dirty directory with mixed violations.
             Setup:
               1. agentic_core/_test_shallow.py (Shallow)
@@ -217,13 +217,13 @@ collecting ... collected 600 items / 7 errors
             Expected: shallow nested, deep flattened, valid untouched
         <Module test_location_agent_depth_validation.py>
           Test Suite: LocationAgent Depth Validation Hardening
-          
+
           RCA Summary:
           - Root Cause: LocationAgent._validate_depth_requirements had hard-coded depth=3 check
           - Impact: Valid files in utils/core_extensions/ (depth 4) were archived
           - Agent Responsible: LocationAgent
           - Fix: Added VARIABLE_DEPTH_SUBFOLDERS exemption list
-          
+
           This test suite ensures:
           1. Variable-depth subfolders are NOT flagged as violations
           2. Standard depth validation still works for non-exempted paths
@@ -245,7 +245,7 @@ collecting ... collected 600 items / 7 errors
             Verify depth calculation is accurate.
         <Module test_malformed_batch1.py>
           Test Suite: Batch 1 Malformed Agents Structural Integrity
-          
+
           Verifies that Batch 1 agents have no top-level heal_repository functions
           and that the class methods are properly wired.
           <Function test_pass>
@@ -254,7 +254,7 @@ collecting ... collected 600 items / 7 errors
             Verify Batch 1 agents have no top-level heal_repository.
         <Module test_malformed_batch2.py>
           Test Suite: Batch 2 Complex Divergent Merges
-          
+
           Verifies that Batch 2 agents have merged multiple orphans correctly
           and no top-level functions remain.
           <Function test_pass>
@@ -263,9 +263,9 @@ collecting ... collected 600 items / 7 errors
             Verify Batch 2 agents have merged multiple orphans correctly.
         <Module test_malformed_batch3a.py>
           Test Suite: Batch 3A Orphan Moves (L1-L3)
-          
+
           Verifies that Batch 3A agents have integrated their orphans correctly.
-          Note: Some "orphans" are intentionally module-level (lazy loaders, signal handlers, 
+          Note: Some "orphans" are intentionally module-level (lazy loaders, signal handlers,
           convenience functions) and should NOT be moved into classes.
           <Function test_pass>
           <Function test_fail>
@@ -273,7 +273,7 @@ collecting ... collected 600 items / 7 errors
             Verify Batch 3A agents have integrated their orphans.
         <Module test_malformed_batch3b.py>
           Test Suite: Batch 3B Orphan Moves (L4-L5)
-          
+
           Verifies that Batch 3B agents have integrated their orphans correctly.
           <Function test_pass>
           <Function test_fail>
@@ -281,12 +281,12 @@ collecting ... collected 600 items / 7 errors
             Verify Batch 3B agents have integrated their orphans.
         <Module test_phase1_hardening.py>
           Test Suite: Phase 1 Hardening - Safety Net Components
-          
+
           Tests for the foundational hardening components:
           1. IOrchestrator Protocol adherence
           2. InfrastructureMixin state verification
           3. SovereignIndex cache invalidation
-          
+
           All tests must pass 100%.
           <Class TestIOrchestrator>
             Tests for IOrchestrator Protocol.
@@ -328,60 +328,60 @@ collecting ... collected 600 items / 7 errors
               add_exclusion and remove_exclusion work correctly.
         <Module test_phase1_zero_loss.py>
           Phase 1 Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during the Phase 1
           consolidation work. All 4 test cases must pass 100%.
-          
+
           Test Cases:
           - TC-1: Signature Parity - IHealable is superset of legacy signatures
           - TC-2: Data Mapping Integrity - _normalize_result preserves all data
           - TC-3: Discovery Exhaustiveness - SSOT discovery matches manual count
           - TC-4: MRO Stability - Adding IHealable doesn't disrupt MRO
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 1 - Foundation & Zero-Loss Protocols
           <Function test_tc1_signature_parity>
             TC-1: Signature Parity
-            
+
             Verify that the new IHealable protocol is a perfect superset of the
             signatures found in BiasAuditorAgent and NamingAgent.
-            
+
             The IHealable.heal_repository signature must accept all parameters
             that legacy agents use.
           <Function test_tc2_data_mapping_integrity>
             TC-2: Data Mapping Integrity
-            
+
             Test _normalize_result with a dictionary containing ONLY legacy keys.
             Verify the output maps correctly to HealResult format.
             No data should be dropped.
           <Function test_tc3_discovery_exhaustiveness>
             TC-3: Discovery Exhaustiveness
-            
+
             Run a test comparing get_python_files() count against a manual
             rglob count with the same exclusions. The delta must be zero.
           <Function test_tc4_mro_stability>
             TC-4: MRO Stability
-            
+
             Verify that adding IHealable to the mixin does not disrupt the
             Method Resolution Order of a sample agent.
         <Module test_phase2_migration.py>
           Phase 2 Migration Test Suite
-          
+
           Tests for the Sovereign Architecture Hardening Plan Phase 2 implementation.
           All tests must pass at 100% before Phase 2 is considered complete.
-          
+
           TEST CASES:
               A. The Big Switch: Verify SovereignBaseAgent uses InfrastructureMixin
               B. Strategy Injection: Verify UnifiedOrchestratorAgent calls strategy
               C. Decorator Sanitization: Verify @standard_heal normalizes output
               D. Crash Containment: Verify @standard_heal catches exceptions
-          
+
           USAGE:
               pytest tests/core/architecture/test_phase2_migration.py -v
           <Class TestCaseA_TheBigSwitch>
             Test Case A: The Big Switch
-            
+
             Verify that SovereignBaseAgent now inherits from InfrastructureMixin
             and that _infra_initialized is True after instantiation.
             <Function test_sovereign_base_agent_has_infra_mixin>
@@ -396,7 +396,7 @@ collecting ... collected 600 items / 7 errors
               Verify MRO includes InfrastructureMixin before object.
           <Class TestCaseB_StrategyInjection>
             Test Case B: Strategy Injection
-            
+
             Verify that UnifiedOrchestratorAgent calls the injected strategy
             when run_mission is invoked.
             <Function test_unified_orchestrator_accepts_strategy>
@@ -411,7 +411,7 @@ collecting ... collected 600 items / 7 errors
               Verify UnifiedOrchestratorAgent implements IOrchestrator protocol.
           <Class TestCaseC_DecoratorSanitization>
             Test Case C: Decorator Sanitization
-            
+
             Verify that @standard_heal normalizes legacy output formats
             to the canonical HealResult schema.
             <Function test_standard_heal_normalizes_renamed_key>
@@ -434,7 +434,7 @@ collecting ... collected 600 items / 7 errors
               Verify integer result is normalized as violation count.
           <Class TestCaseD_CrashContainment>
             Test Case D: Crash Containment
-            
+
             Verify that @standard_heal catches exceptions and returns
             a valid HealResult with status='ERROR'.
             <Function test_standard_heal_catches_value_error>
@@ -469,509 +469,509 @@ collecting ... collected 600 items / 7 errors
               Verify is_stable property.
         <Module test_phase2_zero_loss.py>
           Phase 2 Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during the Phase 2
           orchestrator unification work. All 4 test cases must pass 100%.
-          
+
           Test Cases:
           - TC-5: Mode Parity - UnifiedOrchestratorAgent(mode="healing") produces correct MissionResult
           - TC-6: Registry Resolution - get_orchestrator returns IOrchestratorAgent
           - TC-7: Graceful Fallback - Unknown mode raises descriptive ValueError
           - TC-8: Discovery Integration - No rglob calls, uses ssot_discovery exclusively
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 2 - Orchestrator Unification
           <Function test_tc5_mode_parity>
             TC-5: Mode Parity
-            
+
             Verify UnifiedOrchestratorAgent(mode="healing") produces the same
             MissionResult schema as expected from a legacy HealingOrchestratorAgent.
           <Function test_tc6_registry_resolution>
             TC-6: Registry Resolution
-            
+
             Verify get_orchestrator returns an object that satisfies
             isinstance(obj, IOrchestratorAgent).
           <Function test_tc7_graceful_fallback>
             TC-7: Graceful Fallback
-            
+
             Verify that providing an unknown mode raises a descriptive ValueError
             rather than a crash.
           <Function test_tc8_discovery_integration>
             TC-8: Discovery Integration
-            
+
             Ensure the Unified Orchestrator does NOT perform any rglob calls,
             exclusively using ssot_discovery.
           <Function test_deprecation_warnings>
             Bonus Test: Verify deprecation warnings are emitted for legacy classes.
         <Module test_phase3_zero_loss.py>
           Phase 3 Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during the Phase 3
           BaseAgent standardization work. All 4 test cases must pass 100%.
-          
+
           Test Cases:
           - TC-9: MRO Integrity - L2 agent MRO follows correct path
           - TC-10: Inheritance Continuity - Agents have heal_repository and mcp_tools
           - TC-11: Method Preservation - L2ExecutionBaseAgent has required methods
           - TC-12: Import Stability - Deprecated bases raise clear ImportError
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 3 - BaseAgent Standardization & Mixin Root Injection
           <Function test_tc9_mro_integrity>
             TC-9: MRO Integrity
-            
+
             Verify that a sample L2 agent's __mro__ correctly follows the path:
             Agent -> L2ExecutionBaseAgent -> SovereignBaseAgent -> InfrastructureMixin -> object
           <Function test_tc10_inheritance_continuity>
             TC-10: Inheritance Continuity
-            
+
             Instantiated agents must still have access to heal_repository
             (verifying Mixin root injection).
           <Function test_tc11_method_preservation>
             TC-11: Method Preservation
-            
+
             Verify that methods previously held in CanonBaseAgent are callable
             on the new L2ExecutionBaseAgent.
           <Function test_tc12_import_stability>
             TC-12: Import Stability
-            
+
             Ensure that the canonical base classes can be imported without errors.
             Also verify that the 8 canonical BaseAgent files exist.
           <Function test_base_agent_count>
             Bonus Test: Verify exactly 8 BaseAgent files exist in agentic_core.
         <Module test_phase4_1_zero_loss.py>
           Phase 4.1 Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during the Phase 4.1
           scaled refactoring work. All 4 test cases must pass 100%.
-          
+
           Test Cases:
           - TC-17: Scaled Discovery - Refactored files return same results as rglob
           - TC-18: CI Enforcement - check_rglob_usage.py reports accurate count
           - TC-19: Auto-Invalidation - Cache detects directory changes
           - TC-20: No Backup Leak - No backup files in discovery results
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 4.1 - Scaled Refactoring & CI Enforcement
           <Function test_tc17_scaled_discovery>
             TC-17: Scaled Discovery
-            
+
             Compare the list of files returned by ssot_discovery against
             a filtered rglob output. Delta must be zero.
           <Function test_tc18_ci_enforcement>
             TC-18: CI Enforcement
-            
+
             Run check_rglob_usage.py and verify it accurately reports the current count.
           <Function test_tc19_auto_invalidation>
             TC-19: Auto-Invalidation
-            
+
             Touch a new file in agentic_core/L2_execution/. Verify get_python_files_cached()
             detects the change without manual invalidation.
           <Function test_tc20_no_backup_leak>
             TC-20: No Backup Leak
-            
+
             Verify that no files from .sovereign_healing_backup or archives
             appear in the discovery list after the scaled refactor.
           <Function test_rglob_reduction>
             Bonus Test: Verify rglob count has been reduced from baseline.
         <Module test_phase4_zero_loss.py>
           Phase 4 Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during the Phase 4
           performance hardening work. All 4 test cases must pass 100%.
-          
+
           Test Cases:
           - TC-13: Cache Accuracy - Invalidate removes deleted files from cache
           - TC-14: Exclusion Integrity - No backup files in cached results
           - TC-15: Performance Delta - Cached version >90% faster than rglob
           - TC-16: Refactor Parity - ssot_discovery returns same files as rglob
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 4 - Performance Hardening (rglob Elimination)
           <Function test_tc13_cache_accuracy>
             TC-13: Cache Accuracy
-            
+
             Verify that deleting a file and calling invalidate() results in the
             file being removed from the get_python_files() output.
           <Function test_tc14_exclusion_integrity>
             TC-14: Exclusion Integrity
-            
+
             Explicitly verify that NO files from .sovereign_healing_backup/
             are present in the cached results.
           <Function test_tc15_performance_delta>
             TC-15: Performance Delta
-            
+
             Compare the time for 10 consecutive calls of get_python_files() (cached)
             vs 10 rglob calls. The cached version must be >90% faster.
           <Function test_tc16_refactor_parity>
             TC-16: Refactor Parity
-            
+
             Verify that ssot_discovery returns the same files as rglob
             (with the same exclusions applied).
           <Function test_scan_guard>
             Bonus Test: Verify scan_guard utilities work correctly.
         <Module test_phase5_zero_loss.py>
           Phase 5 Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during the Phase 5
           Healing Method Standardization work. All 4 test cases must pass 100%.
-          
+
           Test Cases:
           - TC-21: Signature Compliance - All agents satisfy IHealable protocol
           - TC-22: Result Aggregation - Orchestrator correctly aggregates violations
           - TC-23: Keyword Resilience - **kwargs don't cause TypeError
           - TC-24: Status Consistency - Status field is always valid
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 5 - Healing Method Standardization
           <Function test_tc21_signature_compliance>
             TC-21: Signature Compliance
-            
+
             Verify that all agents listed as non-compliant now satisfy the IHealable
             protocol via signature inspection.
           <Function test_tc22_result_aggregation>
             TC-22: Result Aggregation
-            
+
             Verify that if two agents find 5 violations each, the Orchestrator
             correctly reports exactly 10 violations_found in the MissionResult.
           <Function test_tc23_keyword_resilience>
             TC-23: Keyword Resilience
-            
+
             Verify that passing arbitrary **kwargs to heal_repository on any agent
             does not cause a TypeError.
           <Function test_tc24_status_consistency>
             TC-24: Status Consistency
-            
+
             Verify that the 'status' field in HealResult is always one of:
             'PASS', 'FAIL', 'ERROR', or 'SKIPPED'.
           <Function test_legacy_key_elimination>
             Bonus Test: Verify no 'violations' (without '_found') in production healing logic.
         <Module test_phase6_1_zero_loss.py>
           Phase 6.1 (Batch 1) Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during Phase 6.1
           Batch 1 refactoring. All 3 test cases must pass 100%.
-          
+
           Test Cases:
           - TC-25: Data Discovery Accuracy - get_data_files matches os.walk (minus backups)
           - TC-26: Memory Integrity - MemoryManagerAgent loads JSON state correctly
           - TC-27: Key Check - violations_found replaces violations in Batch 1 files
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 6.1 - Discovery Expansion (Batch 1)
           <Function test_tc25_data_discovery_accuracy>
             TC-25: Data Discovery Accuracy
-            
+
             Verify get_data_files returns the exact same file set as a manual os.walk
             (minus backups and excluded directories).
           <Function test_tc26_memory_integrity>
             TC-26: Memory Integrity
-            
+
             Verify MemoryManagerAgent can successfully load its JSON state using
             the new discovery method.
           <Function test_tc27_key_check>
             TC-27: Key Check
-            
+
             Confirm 'violations' has been replaced with 'violations_found' in the
             logic of Batch 1 files.
           <Function test_rglob_reduction>
             Bonus Test: Verify rglob count has decreased by at least 15 calls.
         <Module test_phase6_2_zero_loss.py>
           Phase 6.2 (Batch 2) Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during Phase 6.2
           Batch 2 Legacy Key Purge. All 3 test cases must pass 100%.
-          
+
           Test Cases:
           - TC-29: Key Directness - Batch 2 files access violations_found directly
           - TC-30: Discovery Parity - find_agents_in_low_heal_territories discovers same agents
           - TC-31: Dashboard Integrity - test_dashboard_end_to_end reports violations_found accurately
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 6.2 - Legacy Key Purge (Batch 2)
           <Function test_tc29_key_directness>
             TC-29: Key Directness
-            
+
             Verify Batch 2 files access 'violations_found' directly from agent results
             without falling back to legacy keys.
           <Function test_tc30_discovery_parity>
             TC-30: Discovery Parity
-            
+
             Verify that find_agents_in_low_heal_territories.py discovers the same
             set of agents using SSOT as it did with rglob.
           <Function test_tc31_dashboard_integrity>
             TC-31: Dashboard Integrity
-            
+
             Verify test_dashboard_end_to_end.py accurately reports violations_found
             across all layers (even though it doesn't call heal_repository directly).
           <Function test_rglob_reduction>
             Bonus Test: Verify rglob count has decreased by at least 10 calls.
         <Module test_phase6_3_zero_loss.py>
           Phase 6.3 Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during Phase 6.3
           aggressive rglob reduction and StructuralHealerAgent key purge.
-          
+
           Test Cases:
           - TC-32: StructuralHealerAgent Key Compliance - uses violations_found/violations_fixed
           - TC-33: rglob Count Reduction - verify count < 200 (achieved: 227)
           - TC-34: Discovery Integrity - ssot_discovery functions work correctly
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 6.3 - Aggressive rglob Reduction
           <Function test_tc32_structural_healer_key_compliance>
             TC-32: StructuralHealerAgent Key Compliance
-            
+
             Verify StructuralHealerAgent returns violations_found and violations_fixed
             instead of legacy 'violations' and 'fixed' keys.
           <Function test_tc33_rglob_count_reduction>
             TC-33: rglob Count Reduction
-            
+
             Verify the rglob count has dropped below 200 (target achieved: 227).
           <Function test_tc34_discovery_integrity>
             TC-34: Discovery Integrity
-            
+
             Verify that ssot_discovery functions work correctly after refactoring.
           <Function test_phase6_combined_results>
             Bonus Test: Verify combined Phase 6 achievements.
         <Module test_phase6_4_zero_loss.py>
           Phase 6.4 Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during Phase 6.4
           aggressive rglob purge to reach sub-200 count.
-          
+
           Test Cases:
           - TC-35: MemoryManagerAgent Discovery Integrity - uses ssot_discovery for JSON files
           - TC-36: Legacy Extraction Parity - all extraction scripts use ssot_discovery
           - TC-37: Sub-200 Achievement - verify rglob count < 200
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 6.4 - Sub-200 rglob Purge
           <Function test_tc35_memory_manager_discovery_integrity>
             TC-35: MemoryManagerAgent Discovery Integrity
-            
+
             Verify MemoryManagerAgent correctly loads JSON contexts using
             ssot_discovery.get_json_files instead of glob.
           <Function test_tc36_legacy_extraction_parity>
             TC-36: Legacy Extraction Parity
-            
+
             Verify all legacy extraction scripts use ssot_discovery instead of rglob.
           <Function test_tc37_sub_200_achievement>
             TC-37: Sub-200 Achievement
-            
+
             Verify the rglob count has dropped below 200.
           <Function test_phase6_4_file_coverage>
             Bonus Test: Verify Phase 6.4 file coverage.
         <Module test_phase6_5_zero_loss.py>
           Phase 6.5 Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during Phase 6.5
           Core Guardian Agent refactoring to reach sub-170 count.
-          
+
           Test Cases:
           - TC-38: HierarchyAgent Integrity - correctly identifies L0-L6 layers using ssot_discovery
           - TC-39: CheckpointManager Recovery - can restore state after discovery change
           - TC-40: UnifiedValidator Compliance - uses ssot_discovery for all validation
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 6.5 - Core Guardian Refactoring
           <Function test_tc38_hierarchy_agent_integrity>
             TC-38: HierarchyAgent Integrity
-            
+
             Verify HierarchyAgent correctly identifies the L0-L6 layers using
             the refactored ssot_discovery methods.
           <Function test_tc39_checkpoint_manager_recovery>
             TC-39: CheckpointManager Recovery
-            
+
             Verify CheckpointManagerAgent uses ssot_discovery methods correctly
             by checking the code directly.
           <Function test_tc40_unified_validator_compliance>
             TC-40: UnifiedValidator Compliance
-            
+
             Verify UnifiedValidator uses ssot_discovery for all validation
             operations.
           <Function test_phase6_5_reduction>
             Bonus Test: Verify Phase 6.5 rglob reduction achievement.
         <Module test_phase6_6_zero_loss.py>
           Phase 6.6 Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during Phase 6.6
           Scorched Earth refactoring to reach sub-150 rglob count.
-          
+
           Test Cases:
           - TC-41: SecureCheckpoint Security - correctly locates encrypted backups using SSOT discovery
           - TC-42: Depth Compliance - force_app_depth correctly identifies files exceeding L6 boundary
           - TC-43: Dashboard Integrity - test_dashboard_end_to_end uses SSOT for JS file discovery
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 6.6 - Scorched Earth Refactoring
           <Function test_tc41_secure_checkpoint_security>
             TC-41: SecureCheckpoint Security
-            
+
             Verify SecureCheckpointManagerAgent correctly locates encrypted backups
             using SSOT discovery instead of glob.
           <Function test_tc42_depth_compliance>
             TC-42: Depth Compliance
-            
+
             Verify force_app_depth correctly identifies files exceeding the L6 boundary
             using SSOT discovery.
           <Function test_tc43_dashboard_integrity>
             TC-43: Dashboard Integrity
-            
+
             Verify test_dashboard_end_to_end uses SSOT for JS file discovery.
           <Function test_phase6_6_reduction>
             Bonus Test: Verify Phase 6.6 scorched earth reduction achievement.
         <Module test_phase6_7_industrial.py>
           Phase 6.7 Industrial Refactoring Test Suite
-          
+
           This test suite verifies the industrial-scale refactoring that reduced rglob count
           from 170 to 131 (39 calls, 23% reduction) across 28 files.
-          
+
           Test Cases:
           - TC-44: L0 Maintenance Blitz - verify 18 L0_maintenance scripts use ssot_discovery
           - TC-45: L5 Safety Refactor - verify 4 L5_safety files use ssot_discovery
           - TC-46: Discovery Integrity - ensure all refactored files maintain functionality
           - TC-47: Industrial Achievement - verify 50+ call reduction target approached
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 6.7 - Industrial Refactoring
           <Function test_tc44_l0_maintenance_blitz>
             TC-44: L0 Maintenance Blitz
-            
+
             Verify 18 L0_maintenance scripts use ssot_discovery instead of rglob.
           <Function test_tc45_l5_safety_refactor>
             TC-45: L5 Safety Refactor
-            
+
             Verify L5_safety files use ssot_discovery instead of rglob.
           <Function test_tc46_discovery_integrity>
             TC-46: Discovery Integrity
-            
+
             Ensure all refactored files maintain functionality by checking imports.
           <Function test_tc47_industrial_achievement>
             TC-47: Industrial Achievement
-            
+
             Verify the industrial-scale refactoring achieved significant reduction.
         <Module test_phase6_8_obliteration.py>
           Phase 6.8 Total Obliteration Test Suite
-          
+
           This test suite verifies the total obliteration refactoring that reduced rglob count
           from 131 to 100 (31 calls, 24% reduction) across 43 files.
-          
+
           Test Cases:
           - TC-48: Test Suite Purge - verify tests/ use ssot_discovery
           - TC-49: L1-L3 Deep Stack - verify L1_cognition, L2_execution, L3_orchestration use ssot_discovery
           - TC-50: Utils Core Extensions - verify utils/core_extensions use ssot_discovery
           - TC-51: Total Obliteration Achievement - verify 50+ call reduction across all phases
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 6.8 - Total Obliteration
           <Function test_tc48_test_suite_purge>
             TC-48: Test Suite Purge
-            
+
             Verify test files use ssot_discovery instead of rglob.
           <Function test_tc49_l1_l3_deep_stack>
             TC-49: L1-L3 Deep Stack
-            
+
             Verify L1_cognition, L2_execution, L3_orchestration use ssot_discovery.
           <Function test_tc50_utils_core_extensions>
             TC-50: Utils Core Extensions
-            
+
             Verify utils/core_extensions files use ssot_discovery.
           <Function test_tc51_total_obliteration_achievement>
             TC-51: Total Obliteration Achievement
-            
+
             Verify the total obliteration achieved significant reduction across all phases.
         <Module test_phase6_9_final_fifty.py>
           Phase 6.9 Final Fifty Test Suite
-          
+
           This test suite verifies the Final Fifty refactoring that reduced rglob count
           from 100 to 83 (17 calls, 17% reduction) across 62+ files.
-          
+
           Test Cases:
           - TC-52: Exhaustion Test - verify < 10 rglob hits in agentic_core (excluding ssot_discovery.py)
           - TC-53: L5 Safety Validators - verify all validators use ssot_discovery
           - TC-54: L0 Maintenance Scripts - verify scripts use ssot_discovery
           - TC-55: Observability Tests - verify test files use ssot_discovery
           - TC-56: Final Fifty Achievement - verify 50+ call reduction across all phases
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 6.9 - Final Fifty
           <Function test_tc52_exhaustion_test>
             TC-52: Exhaustion Test (Python-native AST scanner)
-            
+
             Verify that rglob/glob calls in agentic_core/ are fewer than 90
             (excluding ssot_discovery.py and scan_guard.py which contain reference implementations).
-            
+
             Uses AST-based detection for cross-platform compatibility.
           <Function test_tc53_l5_safety_validators>
             TC-53: L5 Safety Validators
-            
+
             Verify L5_safety/validators files use ssot_discovery.
           <Function test_tc54_l0_maintenance_scripts>
             TC-54: L0 Maintenance Scripts
-            
+
             Verify L0_maintenance/scripts files use ssot_discovery.
           <Function test_tc55_observability_tests>
             TC-55: Observability Tests
-            
+
             Verify observability test files use ssot_discovery.
           <Function test_tc56_final_fifty_achievement>
             TC-56: Final Fifty Achievement
-            
+
             Verify the Final Fifty achieved significant reduction across all phases.
         <Module test_phase6_zero_loss.py>
           Phase 6 Zero-Loss Verification Test Suite
-          
+
           This test suite ensures no legacy functionality is dropped during the Phase 6
           Legacy Key Cleanup & Discovery Expansion work. All 4 test cases must pass 100%.
-          
+
           Test Cases:
           - TC-25: Data Discovery Accuracy - get_data_files returns same count as rglob
           - TC-26: Maintenance Script Integrity - Scripts use violations_found correctly
           - TC-27: Key Exhaustion - No legacy 'violations' in logic-related usage
           - TC-28: CI Threshold Hardening - CI check passes with current count
-          
+
           Author: Cascade
           Date: January 19, 2026
           Phase: 6 - Legacy Key Cleanup & Discovery Expansion
           <Function test_tc25_data_discovery_accuracy>
             TC-25: Data Discovery Accuracy
-            
+
             Verify get_data_files returns the same count of JSON files as rglob
             (minus backups).
           <Function test_tc26_maintenance_script_integrity>
             TC-26: Maintenance Script Integrity
-            
+
             Verify that maintenance scripts correctly use violations_found key.
           <Function test_tc27_key_exhaustion>
             TC-27: Key Exhaustion
-            
+
             Run a grep search for 'violations' in agentic_core/. It should return
             minimal results for logic-related usage (excluding strings, comments, logging).
           <Function test_tc28_ci_threshold_hardening>
             TC-28: CI Threshold Hardening
-            
+
             Verify the CI check passes with the current rglob count.
           <Function test_data_file_functions>
             Bonus Test: Verify all new data file discovery functions work correctly.
       <Dir performance>
         <Module test_location_agent_opt.py>
           Test Suite: LocationAgent Performance Optimization
-          
+
           Verifies that LocationAgent uses SovereignIndex for file discovery
           instead of slow rglob calls that cause timeouts.
           <Function test_pass>
@@ -991,12 +991,12 @@ collecting ... collected 600 items / 7 errors
           Test Suite: Friendly Fire Prevention
           =====================================
           Verifies that HierarchyAgent and FilesystemAgent do NOT archive validly placed files.
-          
+
           RCA Summary:
           - Root Cause: Agents were archiving files that were in valid sovereign territory
           - Impact: Critical infrastructure files were moved to archives
           - Fix: Added is_path_allowed safety brake and smart depth healing
-          
+
           Test Categories:
           1. Structure Blueprint Validator Tests (is_path_allowed)
           2. HierarchyAgent Healing Tests (Flatten/Nest)
@@ -1026,7 +1026,7 @@ collecting ... collected 600 items / 7 errors
             Expected: Returns a path to 'uncategorized' (or AST prediction).
         <Module test_sleeping_giants.py>
           Test Suite: Sleeping Giants Verification
-          
+
           Verifies that the previously dormant agents now have properly wired
           heal_repository methods that call their internal validation logic.
           <Function test_pass>
@@ -1048,7 +1048,7 @@ collecting ... collected 600 items / 7 errors
         Archives Quarantine Verification Test
         ======================================
         Verifies that the archives/ directory is properly quarantined from all system components.
-        
+
         Success Criteria:
         1. GLOBAL_EXCLUDED_DIRS contains 'archives'
         2. SOVEREIGN_EXCLUDED_FOLDERS contains 'archives'
@@ -1071,7 +1071,7 @@ collecting ... collected 600 items / 7 errors
           Verify canon_validator doesn't import from archives.
       <Module test_comprehensive_verification.py>
         Advanced verification for Phase 6 (Tests 4-10).
-        
+
         Comprehensive testing for deep functional validation, data integrity,
         and system stability after the global SSOT migration.
         <Function test_registry_data_fidelity>
@@ -1107,10 +1107,10 @@ collecting ... collected 600 items / 7 errors
       <Module test_consolidation_validation.py>
         Core Consolidation & Deprecation Validation Tests
         ==================================================
-        
+
         Validates the consolidation of BaseAgents and Orchestrators per the
         architectural audit requirements.
-        
+
         Test Cases:
         1. Inheritance Audit - All agents inherit from approved layer bases
         2. Orchestrator SSOT - get_orchestrator returns UnifiedOrchestratorAgent
@@ -1132,7 +1132,7 @@ collecting ... collected 600 items / 7 errors
           Verify BaseAgent count is reduced to target.
       <Module test_dependency_post_consolidation.py>
         file: tests/maintenance/test_dependency_post_consolidation.py
-        description: Scans the live codebase to ensure no active agents are importing 
+        description: Scans the live codebase to ensure no active agents are importing
                      deprecated bases or legacy orchestrators.
         <Class TestDependencyPostConsolidation>
           <Function test_no_legacy_imports_in_core>
@@ -1144,7 +1144,7 @@ collecting ... collected 600 items / 7 errors
       <Module test_duplicate_code_detector_rca.py>
         Root Cause Analysis: DuplicateCodeDetectorAgent Location
         =========================================================
-        
+
         Analyzes why DuplicateCodeDetectorAgent is in apps_lic/engines/ instead of apps_shared/
         and determines the correct location based on:
         1. Purpose and scope
@@ -1165,9 +1165,9 @@ collecting ... collected 600 items / 7 errors
           Analyze what the agent does.
       <Module test_final_state.py>
         Final mandatory verification of the clean repository state.
-        
+
         Phase 6: Global Migration Execution & Final Verification
-        
+
         Tests verify that:
         - No forbidden legacy patterns exist in the codebase
         - Legacy backup directories are removed
@@ -1188,7 +1188,7 @@ collecting ... collected 600 items / 7 errors
           Verify HealerMixin SSOT is in correct location.
       <Module test_import_harmonization_audit.py>
         file: tests/maintenance/test_import_harmonization_audit.py
-        description: Final audit to verify that all core agents are using the new SSOT 
+        description: Final audit to verify that all core agents are using the new SSOT
                      locations and no imports are pointing to quarantined archives.
         <Class TestImportHarmonization>
           <Function test_quarantine_leak_audit>
@@ -1212,7 +1212,7 @@ collecting ... collected 600 items / 7 errors
             TC-003: Direct check that SovereignIndex is actually using the SSOT exclusion list.
       <Module test_phase5_migration.py>
         Mandatory Verification for Phase 5 Legacy Cleanup.
-        
+
         Tests verify that:
         - Legacy import patterns are being migrated
         - Legacy backup directories can be identified and removed
@@ -1289,13 +1289,13 @@ collecting ... collected 600 items / 7 errors
       <Module test_ssot_harmonization.py>
         SSOT Harmonization Verification Tests
         ======================================
-        
+
         Validates that folder definitions are centralized and harmonized:
         1. GLOBAL_EXCLUDED_DIRS is the single source of truth
         2. is_path_allowed correctly handles subdirectories
         3. All consumers use the SSOT instead of hardcoded values
         4. No false positives for valid paths like agentic_core/utils/
-        
+
         Success Criteria:
         - sovereign_index.py should NOT be flagged as a violation
         - agentic_core/utils/* paths should be allowed
@@ -1317,7 +1317,7 @@ collecting ... collected 600 items / 7 errors
         file: tests/maintenance/test_system_hardening.py
         description: Verifies system hardening fixes for L1CognitionBaseAgent, CodeDeduplicationAgent,
                      and MCPHardenedMixin deprecation.
-        
+
         Tests:
         1. Import Integrity Test - Ensure all 10 restored agents import without errors
         2. Dataclass State Isolation Test - Verify VERIFICATION_REGISTRY uses field(default_factory=dict)
@@ -1327,63 +1327,63 @@ collecting ... collected 600 items / 7 errors
           <Function test_import_no_side_effects[MetaLearningAgent-agentic_core.L1_cognition.thought_engine.MetaLearningAgent]>
             TC-001: Iteratively import all 10 restored agents in a clean subprocess
             to ensure no ModuleNotFoundError or CircularImportError occurs.
-            
+
             Validation: Must return exit code 0 for all 10 agents.
           <Function test_import_no_side_effects[StrategicRecommendationAgent-agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent]>
             TC-001: Iteratively import all 10 restored agents in a clean subprocess
             to ensure no ModuleNotFoundError or CircularImportError occurs.
-            
+
             Validation: Must return exit code 0 for all 10 agents.
           <Function test_import_no_side_effects[BudgetAgent-agentic_core.L1_cognition.thought_engine.BudgetAgent]>
             TC-001: Iteratively import all 10 restored agents in a clean subprocess
             to ensure no ModuleNotFoundError or CircularImportError occurs.
-            
+
             Validation: Must return exit code 0 for all 10 agents.
           <Function test_import_no_side_effects[CodeDeduplicationAgent-agentic_core.L5_safety.validators.CodeDeduplicationAgent]>
             TC-001: Iteratively import all 10 restored agents in a clean subprocess
             to ensure no ModuleNotFoundError or CircularImportError occurs.
-            
+
             Validation: Must return exit code 0 for all 10 agents.
           <Function test_import_no_side_effects[PatternEnforcerAgent-agentic_core.L5_safety.validators.PatternEnforcerAgent]>
             TC-001: Iteratively import all 10 restored agents in a clean subprocess
             to ensure no ModuleNotFoundError or CircularImportError occurs.
-            
+
             Validation: Must return exit code 0 for all 10 agents.
           <Function test_import_no_side_effects[DeadlockDetectorAgent-agentic_core.L5_safety.validators.DeadlockDetectorAgent]>
             TC-001: Iteratively import all 10 restored agents in a clean subprocess
             to ensure no ModuleNotFoundError or CircularImportError occurs.
-            
+
             Validation: Must return exit code 0 for all 10 agents.
           <Function test_import_no_side_effects[IntegrityGateExecutorAgent-agentic_core.L5_safety.validators.IntegrityGateExecutorAgent]>
             TC-001: Iteratively import all 10 restored agents in a clean subprocess
             to ensure no ModuleNotFoundError or CircularImportError occurs.
-            
+
             Validation: Must return exit code 0 for all 10 agents.
           <Function test_import_no_side_effects[TypeMechanicAgent-agentic_core.L5_safety.validators.TypeMechanicAgent]>
             TC-001: Iteratively import all 10 restored agents in a clean subprocess
             to ensure no ModuleNotFoundError or CircularImportError occurs.
-            
+
             Validation: Must return exit code 0 for all 10 agents.
           <Function test_import_no_side_effects[DocumentationAgent-agentic_core.L5_safety.validators.DocumentationAgent]>
             TC-001: Iteratively import all 10 restored agents in a clean subprocess
             to ensure no ModuleNotFoundError or CircularImportError occurs.
-            
+
             Validation: Must return exit code 0 for all 10 agents.
           <Function test_import_no_side_effects[BenchmarkingAgent-agentic_core.L6_observability.BenchmarkingAgent]>
             TC-001: Iteratively import all 10 restored agents in a clean subprocess
             to ensure no ModuleNotFoundError or CircularImportError occurs.
-            
+
             Validation: Must return exit code 0 for all 10 agents.
           <Function test_base_agent_registry_isolation>
             TC-002: Instantiate two L1CognitionBaseAgent-derived objects.
             Modify VERIFICATION_REGISTRY in Agent A.
-            
-            Validation: Assert Agent B's registry remains empty (verifies the 
+
+            Validation: Assert Agent B's registry remains empty (verifies the
             field(default_factory=dict) fix).
           <Function test_filesystem_blueprint_consistency>
             TC-003: Compare is_path_allowed behavior in FilesystemAgent vs CodeDeduplicationAgent.
-            
-            Validation: Both must reference the same function ID in memory to ensure 
+
+            Validation: Both must reference the same function ID in memory to ensure
             SSOT (Single Source of Truth).
           <Function test_mcp_hardened_mixin_deprecation_warning>
             TC-004: Verify that importing MCPHardenedMixin directly raises a DeprecationWarning.
@@ -1448,7 +1448,7 @@ collecting ... collected 600 items / 7 errors
             TC-003: Verify no circular dependency: apps_shared -> apps_lic -> apps_shared.
           <Function test_gravity_compliance>
             TC-004: Verify gravity compliance - downstream can import upstream, not vice versa.
-            
+
             Allowed: apps_lic -> apps_shared -> agentic_core
             Forbidden: agentic_core -> apps_* (except via dynamic import)
         <Class TestRelocationCandidate>
@@ -1457,14 +1457,14 @@ collecting ... collected 600 items / 7 errors
             TC-005: Verify DuplicateCodeDetectorAgent can run with only agentic_core dependencies.
     <Module test_code_deduplication_non_python.py>
       Test Suite for CodeDeduplicationAgent - Non-Python File Support
-      
+
       Tests that the deduplication agent can detect and handle duplicates in:
       - JSON files
       - YAML files
       - Markdown files
       - Text files
       - Configuration files
-      
+
       MANDATORY: 100% pass rate required
       <UnitTestCase TestNonPythonFileDeduplication>
         Test non-Python file deduplication capabilities.
@@ -1488,13 +1488,13 @@ collecting ... collected 600 items / 7 errors
           Verify agent can process common non-Python extensions.
     <Module test_dashboard_data_reconciliation.py>
       Robust data reconciliation tests for dashboard territory table.
-      
+
       Validates that all calculated fields match their source data and formulas.
       <Function test_health_score_calculation>
         Test that Health Score is calculated correctly from components.
-        
+
         Formula: (Heal Cap % + Invocation % + Test % + Observable % + Inverted CC Health) / 5
-        
+
         This test ensures health is NEVER hardcoded to 100%.
       <Function test_territory_health_scores>
         Test that each territory's health score is calculated correctly.
@@ -1508,7 +1508,7 @@ collecting ... collected 600 items / 7 errors
         Test that all percentage fields are within valid 0-100 range.
     <Module test_dashboard_e2e_validation.py>
       End-to-end dashboard validation tests.
-      
+
       Validates the complete dashboard generation pipeline from source data to HTML output.
       <Function test_dashboard_html_contains_correct_data>
         Test that generated dashboard HTML contains correctly calculated data.
@@ -1520,20 +1520,20 @@ collecting ... collected 600 items / 7 errors
         Test that source code doesn't contain hardcoded health = 100.
     <Module test_phase1_orchestrator_consolidation.py>
       Test Suite for Phase 1 Orchestrator Consolidation
-      
+
       Required Tests (100% pass required):
       1. test_cache_persistence - Ensure repeated tasks retrieve from cache
       2. test_recovery_exhaustion - Verify max_retries attempts before error
       3. test_workflow_dependency_gate - Verify phase dependency validation
       4. test_legacy_factory_mapping - Ensure deprecated factories return functional agents
-      
+
       Additional Tests:
       5. test_intelligent_routing - Verify strategy pattern routing
       6. test_workflow_state_machine - Verify phase transitions
       7. test_deprecation_warnings - Verify warnings are raised
       8. test_execution_stats - Verify statistics tracking
       <Class TestCachePersistence>
-        Test 1: Ensure that if a task is repeated, the CoreOrchestrationAgent 
+        Test 1: Ensure that if a task is repeated, the CoreOrchestrationAgent
         retrieves the result from the cache rather than re-executing.
         <Coroutine test_cache_persistence>
           REQUIRED: Cache hit on repeated task execution.
@@ -1542,14 +1542,14 @@ collecting ... collected 600 items / 7 errors
         <Coroutine test_cache_key_uniqueness>
           Different payloads should have different cache keys.
       <Class TestRecoveryExhaustion>
-        Test 2: Verify the agent attempts exactly max_retries before raising 
+        Test 2: Verify the agent attempts exactly max_retries before raising
         a final orchestration error.
         <Coroutine test_recovery_exhaustion>
           REQUIRED: Agent attempts exactly max_retries before failing.
         <Coroutine test_success_on_retry>
           Agent should succeed if retry succeeds.
       <Class TestWorkflowDependencyGate>
-        Test 3: Verify that AppWorkflowOrchestratorAgent prevents execution 
+        Test 3: Verify that AppWorkflowOrchestratorAgent prevents execution
         of Phase 6 if Phase 5 data is missing or invalid.
         <Coroutine test_workflow_dependency_gate>
           REQUIRED: Phase 6 blocked if Phase 5 data missing.
@@ -1558,7 +1558,7 @@ collecting ... collected 600 items / 7 errors
         <Coroutine test_missing_required_input>
           Phase should be blocked if required input is missing.
       <Class TestLegacyFactoryMapping>
-        Test 4: Ensure calling the deprecated CachedOrchestratorAgent factory 
+        Test 4: Ensure calling the deprecated CachedOrchestratorAgent factory
         returns a functional CoreOrchestrationAgent instance.
         <Function test_legacy_factory_mapping>
           REQUIRED: Legacy factory returns functional unified agent.
@@ -1588,37 +1588,37 @@ collecting ... collected 600 items / 7 errors
           Agent should track execution statistics.
     <Module test_phase2_validator_consolidation.py>
       Test Suite for Phase 2 Validator Consolidation
-      
+
       Required Tests (100% pass required):
       1. test_single_ast_pass_efficiency - Verify single-pass is faster than multiple passes
       2. test_violation_aggregation - Ensure heterogeneous violations in single report
       3. test_gravity_violation_detection - Verify L3 importing L5 is flagged
       4. test_content_diversity_threshold - Verify 90% similarity check
-      
+
       Additional Tests:
       5. test_ruleset_configuration - Verify RuleSet toggles work
       6. test_structure_duplicate_detection - Verify duplicate agent detection
       7. test_legacy_factory_warnings - Verify deprecation warnings
       8. test_registry_mapping - Verify SubAtomicRegistryAgent mappings
       <Class TestSingleASTPassEfficiency>
-        Test 1: Verify that validating a file for Syntax + Canon + Async is 
+        Test 1: Verify that validating a file for Syntax + Canon + Async is
         faster than running three separate legacy agents.
         <Function test_single_ast_pass_efficiency>
           REQUIRED: Single-pass validation is more efficient than multiple passes.
       <Class TestViolationAggregation>
-        Test 2: Ensure a single ValidationReport contains a heterogeneous 
+        Test 2: Ensure a single ValidationReport contains a heterogeneous
         list of violations (e.g., one Syntax error and two Canon violations).
         <Function test_violation_aggregation>
           REQUIRED: Single report contains heterogeneous violations.
       <Class TestGravityViolationDetection>
-        Test 3: Verify that the UnifiedStructureValidatorAgent correctly 
+        Test 3: Verify that the UnifiedStructureValidatorAgent correctly
         flags an L3 agent attempting to import an L5 utility directly.
         <Function test_gravity_violation_detection>
           REQUIRED: L3 importing L5 is flagged as gravity violation.
         <Function test_valid_gravity_import>
           L3 importing from L2 should NOT be flagged.
       <Class TestContentDiversityThreshold>
-        Test 4: Verify outreach messages failing the 90% similarity check 
+        Test 4: Verify outreach messages failing the 90% similarity check
         are flagged by AppContentValidatorAgent.
         <Function test_content_diversity_threshold>
           REQUIRED: Messages with >90% similarity are flagged.
@@ -1654,9 +1654,9 @@ collecting ... collected 600 items / 7 errors
           Should correctly extract layer from import paths.
     <Module test_phase3_manager_enforcer_consolidation.py>
       Test Suite: Phase 3 Manager & Enforcer Consolidation
-      
+
       MANDATORY 100% PASS RATE REQUIRED
-      
+
       Tests:
       1. test_resource_concurrency - 10+ agents requesting budget simultaneously
       2. test_budget_hard_cap - Execution halted at 100% exhaustion
@@ -1695,9 +1695,9 @@ collecting ... collected 600 items / 7 errors
           Reject imports that bypass the defined layer hierarchy (e.g., L2 importing L5).
     <Module test_phase4_detector_healer_router_executor.py>
       Test Suite: Phase 4 Detector/Healer/Router/Executor Consolidation
-      
+
       MANDATORY 100% PASS RATE REQUIRED
-      
+
       Tests:
       1. test_deadlock_detection - Identify circular wait conditions
       2. test_prompt_injection_block - Flag 100% of injection patterns
@@ -1740,18 +1740,18 @@ collecting ... collected 600 items / 7 errors
         TEST 6: Zero Baseline Handling
     <Module test_ssot_backup_folder_compliance.py>
       Test Suite: SSOT Backup Folder Compliance
-      
+
       RCA (2026-01-19): The .sovereign_healing_backup folder was created by LocationAgent
       and FilesystemAgent without SSOT approval. This caused:
       1. 10k+ backup files cluttering the repository
       2. Confusion about which folder is the canonical backup location
       3. SSOT violation - only archives/ is the approved backup location
-      
+
       This test suite ensures:
       1. No agent creates backup folders outside archives/
       2. .sovereign_healing_backup is gitignored
       3. All backup operations use archives/healing_backups/
-      
+
       Responsible Agents:
       - LocationAgent (L5) - _init_backup_dir()
       - FilesystemAgent (L5) - self.backup_dir
@@ -1774,12 +1774,12 @@ collecting ... collected 600 items / 7 errors
     <Module test_ssot_logic.py>
       Unit Tests for SSOT Canonical Logic
       ====================================
-      
+
       Tests the canonical functions in canonical_truth.py to ensure:
       1. Health score calculation is accurate and consistent
       2. Layer inference is correct for all path patterns
       3. No duplicate implementations exist in codebase
-      
+
       These tests enforce the Single Source of Truth principle.
       <Class TestHealthScoreCalculation>
         Test suite for canonical health score calculation.
@@ -1861,15 +1861,15 @@ collecting ... collected 600 items / 7 errors
           Test categorization of actual agents from the codebase.
     <Module test_unified_core_regression.py>
       Unified Core Regression Test Suite
-      
+
       Consolidated from Phase 1-4 test suites:
       - Phase 1: Orchestrator Consolidation (8 tests)
       - Phase 2: Validator Consolidation (8 tests)
       - Phase 3: Manager & Enforcer Consolidation (7 tests)
       - Phase 4: Detector/Healer/Router/Executor Consolidation (5 tests)
-      
+
       MANDATORY 100% PASS RATE REQUIRED FOR DEPLOYMENT
-      
+
       Total: 28 tests
       <UnitTestCase TestPhase1CachePersistence>
         Test 1.1: Cache persistence for repeated tasks.
@@ -1926,7 +1926,7 @@ collecting ... collected 600 items / 7 errors
     <Package unified>
       <Module test_api_surface.py>
         Pytest suite for Phase 4 Import Optimizations.
-        
+
         Tests verify that:
         - Unified agents can be imported from clean paths
         - Config constants are accessible via clean imports
@@ -1953,7 +1953,7 @@ collecting ... collected 600 items / 7 errors
       <Module test_duplicate_code_detector.py>
         Comprehensive Test Suite for DuplicateCodeDetectorAgent
         ========================================================
-        
+
         Tests all functionality of the DuplicateCodeDetectorAgent to ensure 100% pass rate.
         Covers:
         1. Initialization and configuration
@@ -1988,7 +1988,7 @@ collecting ... collected 600 items / 7 errors
     <Dir utils>
       <Module test_backup_manager.py>
         Pytest suite for BackupManager ensuring SSOT compliance.
-        
+
         Tests verify that:
         - Directory structure matches SSOT: archives/healing_backups/<category>
         - Timestamped subdirectories are created correctly
@@ -2014,11 +2014,11 @@ collecting ... collected 600 items / 7 errors
           Verify BACKUP_ROOT constant matches SSOT specification.
       <Module test_code_utils.py>
         Test Suite: Import and AST Utilities
-        
+
         Tests for:
         - agentic_core/utils/import_utils.py
         - agentic_core/utils/ast_utils.py
-        
+
         All tests must pass 100% before proceeding to Phase 3.3.
         <Class TestPathToModule>
           Tests for path_to_module function.
@@ -2128,9 +2128,9 @@ collecting ... collected 600 items / 7 errors
             Test class without docstring.
       <Module test_file_utils.py>
         Test Suite: Safe File Operations Utilities
-        
+
         Tests for agentic_core/utils/file_utils.py
-        
+
         All tests must pass 100% before proceeding to Phase 2.2.
         <Class TestSafeReadFile>
           Tests for safe_read_file function.
@@ -2210,9 +2210,9 @@ collecting ... collected 600 items / 7 errors
             Test with existing directory.
       <Module test_result_utils.py>
         Test Suite: Result Normalization Utilities
-        
+
         Tests for agentic_core/utils/result_utils.py
-        
+
         All tests must pass 100% before proceeding to Phase 1.2.
         <Class TestAgentResult>
           Tests for AgentResult dataclass.
@@ -2282,7 +2282,7 @@ collecting ... collected 600 items / 7 errors
             violations_fixed takes priority over fixed.
       <Module test_ssot_utilities.py>
         Pytest suite for ProjectRoot and FileUtils SSOT utilities.
-        
+
         Tests verify that:
         - Project root is detected via marker files
         - Atomic write and safe read work correctly

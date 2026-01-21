@@ -92,13 +92,13 @@ class NestVisitor(ast.NodeVisitor):
         self.scope_stack.append(f"func {node.name}")
         self.generic_visit(node)
         self.scope_stack.pop()
-    
+
     def visit_ClassDef(self, node: ast.ClassDef):
         """Visits a class definition, pushing its name onto the scope stack."""
         self.scope_stack.append(f"class {node.name}")
         self.generic_visit(node)
         self.scope_stack.pop()
-    
+
     def _check_and_report_nesting(self, node: ast.AST):
         """Helper to check if current depth exceeds max and report Violation."""
         if self.depth > self.MAX_NESTING_DEPTH:

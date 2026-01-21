@@ -201,7 +201,7 @@ HEALING_BASES = {
 
 **Role**: Tier 1 - Validates file locations against SSOT structure
 
-**Import Path**: 
+**Import Path**:
 ```python
 from agentic_core.L5_safety.validators.LocationAgent import get_location_agent
 ```

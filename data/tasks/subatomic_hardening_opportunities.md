@@ -148,16 +148,16 @@ To avoid code duplication, extract common patterns into reusable components:
 ```python
 class HardeningMixin:
     """Provides common hardening patterns for all components."""
-    
+
     def __init__(self, config: HardeningConfig):
         self.circuit_breaker = CircuitBreaker(...)
         self.retry_config = RetryConfig(...)
         self.telemetry = TelemetryLogger(...)
-    
+
     async def execute_with_hardening(self, operation, *args, **kwargs):
         """Execute operation with full hardening stack."""
         self.circuit_breaker.raise_if_open()
-        
+
         @retry(**self.retry_config)
         async def _execute():
             start_time = time.time()
@@ -170,7 +170,7 @@ class HardeningMixin:
                 self.circuit_breaker.record_failure()
                 self.telemetry.log_failure(...)
                 raise
-        
+
         return await _execute()
 ```
 
@@ -178,7 +178,7 @@ class HardeningMixin:
 ```python
 class SystemTelemetry:
     """Unified telemetry for all hardened components."""
-    
+
     def log_operation(self, component, operation, duration, tokens, error=None):
         """Structured logging for observability."""
         log_entry = {
@@ -232,11 +232,11 @@ class SystemTelemetry:
 ```python
 class Hardened[ComponentName](HardeningMixin):
     """Military-grade [ComponentName] with full resilience."""
-    
+
     def __init__(self, config):
         super().__init__(config)
         self.component = [ComponentName](config.component_config)
-    
+
     async def [operation_name](self, *args, **kwargs):
         """Execute [operation] with full hardening."""
         return await self.execute_with_hardening(

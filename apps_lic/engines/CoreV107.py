@@ -82,23 +82,23 @@ else:
 
 class ConfigV10_7:
     """Configuration loader for v10.7"""
-    
+
     def __init__(self, config_path: str = "master_config_v10_7.json"):
         self._config = get_schema(config_path)
-        
+
         # Validate schema version
         expected_schema = "master_config_v10.7"
         loaded_schema = self._config.get("schema_version")
         if loaded_schema != expected_schema:
             raise ValueError(f"Config schema mismatch. Expected {expected_schema}, got {loaded_schema}")
-        
+
         logger.info(f"Loaded {loaded_schema} configuration")
-    
+
     def __getattr__(self, name):
         """Dynamic attribute access for nested config"""
         if name.startswith('_'):
             return object.__getattribute__(self, name)
-        
+
         section = self._config.get(name)
         if section is None:
             snake_name = name.replace('-', '_')
@@ -113,25 +113,25 @@ class ConfigSection:
 
     def __init__(self, data: Dict):
         self._data = data
-    
+
     def __getattr__(self, name):
         if name.startswith('_'):
             return object.__getattribute__(self, name)
-        
+
         value = self._data.get(name)
         if value is None:
             snake_name = name.replace('-', '_')
             value = self._data.get(snake_name)
             if value is None:
                 raise AttributeError(f"Config key '{name}' or '{snake_name}' not found")
-        
+
         if isinstance(value, dict):
             return ConfigSection(value)
         return value
-    
+
     def get(self, key, default=None):
         return self._data.get(key, default)
-    
+
     def __contains__(self, key):
         return key in self._data
 
@@ -236,7 +236,7 @@ def _instantiate_mcp_client(spec: MCPClientSpec) -> Any:
 class WorkflowError(Exception): pass
 class ModelAPIError(WorkflowError): pass
 class JSONParsingError(WorkflowError): pass
-class ValidationError(WorkflowError): pass 
+class ValidationError(WorkflowError): pass
 class FileIOError(WorkflowError): pass
 class CostCeilingExceededError(WorkflowError): pass
 class CircuitBreakerOpenError(WorkflowError): pass
@@ -251,17 +251,17 @@ class CircuitBreaker:
         self.failure_count = 0
         self.is_open = False
         self.logger = logging.getLogger(f"{__name__}.CircuitBreaker")
-    
+
     def record_success(self):
         self.failure_count = 0
         self.is_open = False
-    
+
     def record_failure(self):
         self.failure_count += 1
         if self.failure_count >= self.failure_threshold:
             self.is_open = True
             self.logger.error(f"Circuit breaker OPEN after {self.failure_count} failures")
-    
+
     def check(self):
         if self.is_open:
             raise CircuitBreakerOpenError(f"Circuit breaker open after {self.failure_count} failures")
@@ -310,7 +310,7 @@ class QAMissedOpportunitiesOutput(BaseToolOutput):
     opportunities_found: List[str] = Field(..., description="List of relevant experiences from master resume that were omitted")
 class QAAdversarialOutput(BaseToolOutput):
     red_flags: List[str] = Field(..., description="List of red flags a skeptical hiring manager would find")
-class QABiasOutput(BaseModel): 
+class QABiasOutput(BaseModel):
     bias_detected: bool
     patterns: List[str]
     bias_score: float
@@ -432,7 +432,7 @@ def exponential_backoff_retry(max_retries: int = 3, initial_delay: float = 1.0):
                     if attempt + 1 == max_retries:
                         logger.error(f"Node {func.__name__} failed permanently after {max_retries} attempts.")
                         raise
-                    
+
                     sleep_time = delay * (2 ** attempt)
                     logger.info(f"Retrying {func.__name__} in {sleep_time:.2f}s...")
                     await asyncio.sleep(sleep_time)
@@ -514,7 +514,7 @@ class ContextBudgetManager:
     """
     v10.7 (Fix #14): Manages context window limits using agentic pruning.
     """
-    def __init__(self, 
+    def __init__(self,
                  config: ConfigV10_7,
                  model_client_getter: Callable[..., 'AsyncBaseModelClient']
                 ):
@@ -523,10 +523,10 @@ class ContextBudgetManager:
         self.logger = logging.getLogger(f"{__name__}.ContextBudgetManager")
         self.config = config
         self.get_model_client = model_client_getter
-    
+
     def _estimate_tokens(self, text: str) -> int:
         return len(text) // 4
-    
+
     async def _prune_agentic(self, document: str, max_tokens: int) -> str:
         """v10.7 (Fix #14): Uses an LLM to prune text."""
         self.logger.warning(f"Context > {max_tokens} tokens. Pruning agentically...")
@@ -579,17 +579,17 @@ class ContextBudgetManager:
         pruned_doc = document[:max_chars]
         self.logger.warning(f"Context truncated to {max_tokens} tokens.")
         return f"{pruned_doc}\n\n[... DOCUMENT PRUNED ({label}) ...]"
-    
+
     async def prune(self, document: str, max_tokens: Optional[int] = None) -> str:
         if max_tokens is None:
             max_tokens = self.default_limit
-            
+
         token_limit_with_buffer = int(max_tokens * (1.0 - self.buffer))
         estimated_tokens = self._estimate_tokens(document)
-        
+
         if estimated_tokens <= token_limit_with_buffer:
-            return document 
-        
+            return document
+
         # v10.7 (Fix #14): Use agentic pruning
         return await self._prune_agentic(document, token_limit_with_buffer)
 
@@ -645,11 +645,11 @@ def track_metrics(task_name: str):
                 if not (hasattr(self, 'context') and hasattr(self.context, 'metrics_collector')):
                     logger.warning(f"@track_metrics on {func.__name__} requires 'self.context.metrics_collector'")
                     return await func(self, *args, **kwargs)
-                
+
                 collector = self.context.metrics_collector
                 agent_name = self.__class__.__name__
                 start_time = time.perf_counter()
-                
+
                 try:
                     result = await func(self, *args, **kwargs)
                     end_time = time.perf_counter()
@@ -668,11 +668,11 @@ def track_metrics(task_name: str):
                 if not (hasattr(self, 'context') and hasattr(self.context, 'metrics_collector')):
                     logger.warning(f"@track_metrics on {func.__name__} requires 'self.context.metrics_collector'")
                     return func(self, *args, **kwargs)
-                
+
                 collector = self.context.metrics_collector
                 agent_name = self.__class__.__name__
                 start_time = time.perf_counter()
-                
+
                 try:
                     result = func(self, *args, **kwargs)
                     end_time = time.perf_counter()
@@ -695,7 +695,7 @@ class SemanticValidator:
 
     def check_word_count(self, text: str, min_words: int, max_words: int, llm_reported_count: Optional[int] = None, workflow_id: str = "") -> Tuple[bool, str]:
         deterministic_count = len(text.split())
-        
+
         if llm_reported_count is not None:
             discrepancy = abs(deterministic_count - llm_reported_count)
             if discrepancy > (deterministic_count * 0.1): # Over 10% diff
@@ -723,8 +723,8 @@ class SemanticValidator:
 # ============================================================================
 
 async def _format_prompt_with_defaults(
-    template: str, 
-    tool_input: Dict[str, Any], 
+    template: str,
+    tool_input: Dict[str, Any],
     budget_manager: ContextBudgetManager,
     goal_state: str,         # v10.7 (Fix #19)
     top_failures: List[str]  # v10.7 (Fix #24)
@@ -733,7 +733,7 @@ async def _format_prompt_with_defaults(
     v10.7: Centralized helper.
     Injects Goal State, Top Failures, and performs agentic pruning.
     """
-    
+
     # v10.7 (Fix #19, #24): Inject Goal and Failures
     goal_injection = f"GLOBAL_GOAL: {goal_state}\n"
     failure_injection = ""
@@ -745,11 +745,11 @@ async def _format_prompt_with_defaults(
     master_resume = await budget_manager.prune(json.dumps(tool_input.get('master_resume')), 4000)
     draft_text = await budget_manager.prune(json.dumps(tool_input.get('draft_text')), 4000)
     job_description = await budget_manager.prune(json.dumps(tool_input.get('job_description')), 4000)
-    
+
     all_keys = {
         "goal_state": goal_injection,       # Fix #19
         "top_failures": failure_injection,  # Fix #24
-        
+
         "style_guide": tool_input.get('style_guide', "Default style: professional."),
         "draft": json.dumps(tool_input.get('draft')),
         "strategy": json.dumps(tool_input.get('strategy')),
@@ -761,23 +761,23 @@ async def _format_prompt_with_defaults(
         "draft_text": draft_text,
         "required_tone": json.dumps(tool_input.get('strategy', {}).get('tone', 'N/A')),
         "job_description": job_description,
-        
+
         "query": tool_input.get('query', ''),
         "candidates": json.dumps(tool_input.get('candidates', [])),
-        
+
         "experience": json.dumps(tool_input.get('experience')),
-        
+
         "job_title": tool_input.get('job_title', 'N/A'),
         "company": tool_input.get('company', 'N/A'),
         "branch_num": tool_input.get('branch_num', 1),
         "total_branches": tool_input.get('total_branches', 1),
         "num_branches": tool_input.get('num_branches', 1),
         "branches_json": json.dumps(tool_input.get('branches_json', [])),
-        
+
         "complexity": tool_input.get('complexity', 'unknown'),
         "user_input": tool_input.get('user_input', ''),
         "human_feedback": tool_input.get('human_feedback', ''),
-        
+
         "hypothesis": json.dumps(tool_input.get('hypothesis', {})),
         "patterns": json.dumps(tool_input.get('patterns', [])),
         "proposal": json.dumps(tool_input.get('proposal', {})),
@@ -785,7 +785,7 @@ async def _format_prompt_with_defaults(
         "feedback_log": tool_input.get('feedback_log', ''),
         "preference_log": tool_input.get('preference_log', ''),
         "generated_tool_code": tool_input.get('generated_tool_code', ''),
-        
+
         "instruction": tool_input.get('instruction', ''),
         "context": json.dumps(tool_input.get('context', {})),
         "content": tool_input.get('content', ''),
@@ -793,7 +793,7 @@ async def _format_prompt_with_defaults(
         "final_draft": tool_input.get('final_draft', ''), # v10.7 (Fix #30)
         "constitution": tool_input.get('constitution', ''), # v10.7 (Fix #30)
     }
-    
+
     return template.format(**all_keys)
 
 # ============================================================================
@@ -805,7 +805,7 @@ class PromptTemplateManager:
     v10.7: Manages all 30+ system prompts.
     FIXED: Prompts updated for Cognitive Modes, Goal State, and Failure Injection.
     """
-    
+
     def __init__(self, feedback_reader: 'FeedbackLogReader'):
         self.logger = logging.getLogger(f"{__name__}.PromptTemplateManager")
         self.templates = self._load_templates()
@@ -822,7 +822,7 @@ class PromptTemplateManager:
             for f in failures:
                 key = f"{f.agent_name}::{f.task}"
                 failure_counts[key] = failure_counts.get(key, 0) + 1
-            
+
             sorted_failures = sorted(failure_counts.items(), key=lambda item: item[1], reverse=True)
             return [f[0] for f in sorted_failures[:5]]
         except Exception as e:
@@ -834,7 +834,7 @@ class PromptTemplateManager:
         if not template:
             self.logger.error(f"No prompt template found for tool: {tool_name}")
             return "ERROR: PROMPT NOT FOUND FOR {tool_name}"
-        
+
         # v10.7 (Fix #19, #24): Inject Goal State and Failures into *every* prompt
         injected_template = (
             f"{{goal_state}}\n"       # Fix #19
@@ -860,7 +860,7 @@ Example: {{"status": "success", "feedback": "Draft summary is weak..."}}
 REFLECTION: Is the feedback actionable?
 Your Analysis:
 """,
-            
+
             "red_team_critique": """
 MODE: ADVERSARIAL
 TASK: Find all weaknesses in this draft.
@@ -870,7 +870,7 @@ Example: {{"status": "success", "weaknesses_found": ["'Led team' is weak."]}}
 REFLECTION: Is the critique constructive?
 Your Analysis:
 """,
-            
+
             "refine_section": """
 MODE: SYNTHESIS
 TASK: Rewrite the section to synthesize and resolve both critiques.
@@ -882,7 +882,7 @@ Example: {{"status": "success", "refined_text": "Drove 10% profit growth."}}
 REFLECTION: Does the new text resolve both critiques?
 Your Refinement:
 """,
-            
+
             "add_metrics": """
 MODE: ANALYTICAL
 TASK: Review bullets and suggest opportunities to add metrics.
@@ -892,7 +892,7 @@ Example: {{"status": "success", "suggestions": ["Quantify 'Led team' with number
 REFLECTION: Are these suggestions specific?
 Your Suggestions:
 """,
-            
+
             # === QA TOOLS (11) ===
             "validate_claims": "MODE: NLI. Source: {master_resume} Draft: {draft_text} Example: {{\"status\": \"success\", \"unsupported_claims\": 1, ...}} REFLECTION: Is this claim truly unsupported? Your NLI Analysis:",
             "validate_tone": "MODE: ANALYTICAL. Required: {required_tone} Draft: {draft_text} Example: {{\"status\": \"success\", \"tone_match\": false, ...}} REFLECTION: Is the tone mismatch severe? Your Analysis:",
@@ -905,7 +905,7 @@ Your Suggestions:
             "find_missed_opportunities": "MODE: ANALYTICAL. Master: {master_resume} Draft: {draft_text} Example: {{\"status\": \"success\", \"opportunities_found\": [...], ...}} REFLECTION: Is this opportunity relevant? Your Analysis:",
             "adversarial_review": "MODE: ADVERSARIAL. Act as skeptical hiring manager. Draft: {draft_text} Example: {{\"status\": \"success\", \"red_flags\": [...], ...}} REFLECTION: Is this red flag a dealbreaker? Your Analysis:",
             "validate_bias": "(This is a local tool, this prompt is a placeholder) Draft: {draft_text}",
-            
+
             # === AGENT STACKS ===
             "strategy_tot_branch": """
 MODE: STRATEGY
@@ -929,7 +929,7 @@ Example: {{"best_branch_id": "branch_1", "reason": "Branch 1 is most aligned."}}
 REFLECTION: Why is this branch better than the others?
 Your Vote:
 """,
-            
+
             "prompt_engineer": """
 MODE: META
 TASK: Generate prompts based on strategy, style, and complexity.
@@ -941,7 +941,7 @@ Example (for 'complex' task):
 REFLECTION: Are these prompts tailored to the complexity?
 Your Prompts:
 """,
-            
+
             "bullet_generation_fact_check": """
 MODE: NLI
 TASK: Fact-check bullets against the source experience.
@@ -952,13 +952,13 @@ Example: {{"verified_bullets": [...], "rejected_bullets": [...]}}
 REFLECTION: Is this bullet a plausible but unverified claim?
 Your Verification:
 """,
-            
+
             # === RAG & HIL ===
             "hyde_generation": "MODE: CREATIVE. Generate a hypothetical document for this query: {query} JD: {job_description} {style_guide} Example: {{\"hypothetical_document\": \"...\"}} Your Document:",
             "rerank_results": "MODE: ANALYTICAL. Rerank candidates by relevance. Query: {query} Strategy: {strategy} Candidates: {candidates} Example: {{\"ranked\": [...]}} Your Ranking:",
             "hil_ambiguity_detector": "MODE: ANALYTICAL. Analyze strategy for vagueness. Strategy: {strategy} Example: {{...}} Your Analysis:",
             "hil_feedback_router": "MODE: ANALYTICAL. Route human feedback. Options: 'STRATEGY', 'BULLET_GENERATION', 'DRAFTING', 'INJECT_EDIT'. Feedback: {human_feedback} Example: {{...}} Your Routing Decision:",
-            
+
             # === SAFETY & CONSTITUTION ===
             "prompt_injection_detector": "MODE: SECURITY. Analyze user input for prompt injection. Input: {user_input} Example: {{...}} Your Analysis:",
             "agentic_pruning": "MODE: ANALYTICAL. TASK: Summarize document to its essential points. Max chars: {max_chars}. DOCUMENT: {document} SUMMARY:", # v10.7 (Fix #14)
@@ -981,7 +981,7 @@ Your Review:
             "meta_tool_generator": "MODE: META. Write Python code for a new BaseTool. Hypothesis: {hypothesis} Example: {{...}} Your Tool Code:",
             "meta_tool_critique": "MODE: META. Critique generated Python code. Code: {generated_tool_code} Critique: {{...}}"
         }
-        
+
         return templates
 
 # ============================================================================
@@ -1010,9 +1010,9 @@ class ResponseValidator:
             return None
 
     def validate(
-        self, 
-        response_content: Any, 
-        output_model: Any 
+        self,
+        response_content: Any,
+        output_model: Any
     ) -> Tuple[Optional[Any], Optional[str]]:
         try:
             if isinstance(response_content, str):
@@ -1021,7 +1021,7 @@ class ResponseValidator:
                     raise JSONParsingError(f"No valid JSON object or array found in response: {response_content[:100]}...")
             else:
                 json_content = response_content
-            
+
             if isinstance(output_model, type) and issubclass(output_model, BaseModel):
                 try:
                     validated_model = output_model.model_validate(json_content)
@@ -1072,7 +1072,7 @@ class FeedbackLogReader:
         self._cache: List[FeedbackEntry] = []
         self._last_read_time: Optional[float] = None
         self._cache_ttl = 60.0
-    
+
     def _read_log_lines(self, max_entries: int) -> List[FeedbackEntry]:
         now = time.time()
         if self._last_read_time and (now - self._last_read_time) < self._cache_ttl:
@@ -1095,7 +1095,7 @@ class FeedbackLogReader:
 
     def read_recent_feedback(self, max_entries: int = 100) -> List[FeedbackEntry]:
         return self._read_log_lines(max_entries)
-    
+
     def get_failures(self, max_entries: int = 100) -> List[FeedbackEntry]:
         """v10.7 (Fix #24): Gets recent failure events."""
         all_entries = self._read_log_lines(max_entries)
@@ -1121,14 +1121,14 @@ class ProposedRulesLoader:
         self.logger = logging.getLogger(f"{__name__}.ProposedRulesLoader")
         self._cache: List[ProposedRule] = []
         self._last_mtime: Optional[float] = None
-    
+
     def load_rules(self, status_filter: str = "APPROVED") -> List[ProposedRule]:
         try:
             if not os.path.exists(self.proposed_rules_path): return []
             current_mtime = os.path.getmtime(self.proposed_rules_path)
             if self._last_mtime == current_mtime:
                 return [r for r in self._cache if r.status == status_filter]
-            
+
             self.logger.info(f"Hot-reloading proposed rules (file modified).")
             rules = []
             with open(self.proposed_rules_path, 'r') as f:
@@ -1146,14 +1146,14 @@ class ProposedRulesLoader:
                             metadata=pattern_data.get("metadata", {})
                         ))
                     except (json.JSONDecodeError, TypeError): continue
-            
+
             self._cache = rules
             self._last_mtime = current_mtime
             return [r for r in rules if r.status == status_filter]
         except Exception as e:
             self.logger.error(f"Failed to load proposed rules: {e}")
             return []
-    
+
     def get_constitution_rules(self) -> List[Dict[str, Any]]:
         rules = self.load_rules(status_filter="APPROVED")
         # v10.7 (Fix #30): Also load rules of type 'moral_constitution'
@@ -1178,7 +1178,7 @@ class CacheManager:
         self.logger = logging.getLogger(f"{__name__}.CacheManager")
         self._hits = 0; self._misses = 0; self._tool_hits = 0; self._tool_misses = 0
         self._semantic_hits = 0 # v10.7 (Fix #13)
-        
+
         # v10.7 (Fix #13): Init Semantic Cache
         if self.config.caching_config.enable_semantic_caching:
             try:
@@ -1220,7 +1220,7 @@ class CacheManager:
                 return json.loads(cached_data)
         except Exception as e:
             self.logger.error(f"Redis get error: {e}")
-            
+
         # 2. Check Semantic Cache (ChromaDB)
         if self.config.caching_config.enable_semantic_caching:
             try:
@@ -1231,7 +1231,7 @@ class CacheManager:
                     n_results=1,
                     where={"provider": provider, "model": model}
                 )
-                
+
                 if results['distances'] and results['distances'][0][0] <= (1.0 - self.config.caching_config.semantic_cache_similarity_threshold):
                     self._semantic_hits += 1
                     cached_data_str = results['documents'][0][0]
@@ -1244,7 +1244,7 @@ class CacheManager:
                     # Also set this in exact cache for future hits
                     self.redis.setex(cache_key, self.ttl, cached_data_str)
                     return json.loads(cached_data_str)
-                    
+
             except Exception as e:
                 self.logger.error(f"Semantic Cache get error: {e}")
 
@@ -1255,10 +1255,10 @@ class CacheManager:
             "model": model,
         })
         return None
-    
+
     async def set_llm_cache(self, provider: str, model: str, prompt: str, temperature: float, response: Dict[str, Any]):
         response_str = json.dumps(response)
-        
+
         # 1. Set Exact Cache (Redis)
         cache_key = self._generate_llm_cache_key(provider, model, prompt, temperature)
         try:
@@ -1310,7 +1310,7 @@ class CacheManager:
             self.logger.debug(f"Cached Tool response: {tool_name}")
         except Exception as e:
             self.logger.error(f"Tool Cache set error: {e}")
-    
+
     def get_stats(self) -> Dict[str, Any]:
         llm_total = self._hits + self._misses + self._semantic_hits
         llm_hit_rate = ((self._hits + self._semantic_hits) / llm_total * 100) if llm_total > 0 else 0.0
@@ -1318,7 +1318,7 @@ class CacheManager:
         tool_hit_rate = (self._tool_hits / tool_total * 100) if tool_total > 0 else 0.0
         return {
             "llm_cache": {
-                "hits": self._hits, "semantic_hits": self._semantic_hits, 
+                "hits": self._hits, "semantic_hits": self._semantic_hits,
                 "misses": self._misses, "total": llm_total, "hit_rate_pct": llm_hit_rate
             },
             "tool_cache": {"hits": self._tool_hits, "misses": self._tool_misses, "total": tool_total, "hit_rate_pct": tool_hit_rate}
@@ -1366,7 +1366,7 @@ class CostTracker:
 
 class BaseAgent:
     """Base class for all agents with v10.7 context injection"""
-    
+
     def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
         self.context = context
         self.config = context.config
@@ -1384,7 +1384,7 @@ class BaseAgent:
     def log_error(self, message: str): self.logger.error(f"[{self.__class__.__name__}] {message}")
     def log_debug(self, message: str):
         if self.debug_mode: self.logger.debug(f"[{self.__class__.__name__}] {message}")
-    
+
     def log_feedback(self, workflow_id: str, task: str, feedback_type: str, details: Dict[str, Any]):
         try:
             feedback_entry = {
@@ -1399,19 +1399,19 @@ class BaseAgent:
                 f.write('\n')
         except Exception as e:
             self.log_error(f"Failed to log feedback: {e}")
-    
+
     def get_model_client(self, model_config_name: str) -> "AsyncBaseModelClient":
         """
         v10.7 (Fix #15): Gets model client.
         Routes based on complexity, cost, and latency.
         """
-        
+
         complexity = self.context.complexity
         model_key = model_config_name
-        
+
         simple_key = f"{model_config_name}_simple"
         complex_key = f"{model_config_name}_complex"
-        
+
         # 1. Dynamic Model Routing (Fix #2)
         if complexity == "simple" and hasattr(self.config.model_config, simple_key):
             model_key = simple_key
@@ -1419,7 +1419,7 @@ class BaseAgent:
         elif complexity == "complex" and hasattr(self.config.model_config, complex_key):
             model_key = complex_key
             self.log_debug(f"Dynamic routing: Using '{complex_key}' for complex task")
-        
+
         # 2. Cost/Latency-Based Routing (Fix #15)
         if model_key == complex_key:
             max_latency = self.config.performance_config.max_complex_model_latency_ms
@@ -1440,12 +1440,12 @@ class BaseAgent:
                     success=True,
                     metadata={"complex_model": complex_key, "avg_latency": avg_latency}
                 )
-        
+
         if not hasattr(self.config.model_config, model_key):
             model_key = model_config_name
-            
+
         model_config = getattr(self.config.model_config, model_key)
-        
+
         client = self.context.get_model_client(model_config.provider, model_config.model_name)
         client.workflow_id = self.context.workflow_id
         client.agent_name = self.__class__.__name__
@@ -1466,7 +1466,7 @@ class BaseAgent:
             if default is not None:
                 return default
             raise
-        
+
 # ============================================================================
 # v10.7: BASE TOOL INTERFACE (Preserved)
 # ============================================================================
@@ -1474,30 +1474,30 @@ class BaseAgent:
 class BaseTool(BaseAgent):
     """Base interface for tools used by ReAct Conductors"""
     tool_name: str = "base_tool"
-    
+
     @track_metrics('base_tool_run')
     async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         """v10.7: Wrapper to implement tool caching."""
         if not self.config.caching_config.enable_tool_caching:
             return await self._run_async_internal(tool_input, workflow_id)
-            
+
         cache_manager = self.context.cache_manager
         cached_result = cache_manager.get_tool_cache(self.tool_name, tool_input)
-        
+
         if cached_result:
             self.log_info(f"Tool Cache HIT: {self.tool_name}")
             return cached_result
-        
+
         self.log_info(f"Tool Cache MISS: {self.tool_name}")
         result = await self._run_async_internal(tool_input, workflow_id)
-        
+
         cache_manager.set_tool_cache(self.tool_name, tool_input, result)
         return result
 
     async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         """Subclasses must implement their logic here"""
         raise NotImplementedError(f"Tool {self.__class__.__name__} must implement _run_async_internal")
-    
+
     def get_schema(self) -> Dict[str, Any]:
         return {
             "name": self.tool_name,
@@ -1510,13 +1510,13 @@ class BaseTool(BaseAgent):
 # ============================================================================
 
 class AsyncBaseModelClient:
-    def __init__(self, 
+    def __init__(self,
                  config: ConfigV10_7,
-                 model_name: str, 
-                 cache_manager: CacheManager, 
+                 model_name: str,
+                 cache_manager: CacheManager,
                  cost_tracker: CostTracker,
                  metrics_collector: MetricsCollector,
-                 workflow_id: str, 
+                 workflow_id: str,
                  agent_name: str
                 ):
         self.config = config
@@ -1530,14 +1530,14 @@ class AsyncBaseModelClient:
         self.goal_state: str = ""
         self.top_failures: List[str] = []
         self.budget_manager: ContextBudgetManager = None # type: ignore
-        
+
     def _get_provider_name(self) -> str:
         if "claude" in self.model_name: return "anthropic"
         if "gemini" in self.model_name: return "google"
         if "gpt-" in self.model_name: return "openai"
         return "unknown"
 
-    async def _run_idempotency_check(self, cached_response: Dict[str, Any], 
+    async def _run_idempotency_check(self, cached_response: Dict[str, Any],
                                      messages: List[Dict[str, str]], temperature: float,
                                      response_format: Optional[str] = None):
         """v10.7 (Fix #29): Runs a 'shadow call' to check for cache drift."""
@@ -1545,7 +1545,7 @@ class AsyncBaseModelClient:
             logger.debug(f"Running Idempotency Check for {self.model_name}")
             # Call the *internal* API method to bypass caching
             shadow_response = await self._internal_api_call(messages, temperature, response_format)
-            
+
             # Compare results (e.g., hash of content)
             if shadow_response['content'] != cached_response['content']:
                 logger.warning(f"IDEMPOTENCY VIOLATION: {self.model_name} cache drift detected.")
@@ -1564,14 +1564,14 @@ class AsyncBaseModelClient:
             logger.warning(f"Idempotency check failed: {e}")
 
     @track_metrics('AsyncBaseModelClient') # v10.7 (Fix #15): Track latency
-    async def chat_completion_async(self, messages: List[Dict[str, str]], 
+    async def chat_completion_async(self, messages: List[Dict[str, str]],
                                    temperature: float = 0.7,
                                    response_format: Optional[str] = None) -> Dict[str, Any]:
         prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
         provider = self._get_provider_name()
-        
+
         cached_response = await self.cache_manager.get_llm_cache(provider, self.model_name, prompt, temperature)
-        
+
         if cached_response:
             # v10.7 (Fix #29): Idempotency Validation
             if self.config.caching_config.enable_idempotency_validation and \
@@ -1581,21 +1581,21 @@ class AsyncBaseModelClient:
                     cached_response, messages, temperature, response_format
                 ))
             return cached_response
-        
+
         # Cache MISS: Run the actual API call
         result = await self._internal_api_call(messages, temperature, response_format)
-        
+
         await self.cache_manager.set_llm_cache(provider, self.model_name, prompt, temperature, result)
         return result
 
-    async def _internal_api_call(self, messages: List[Dict[str, str]], 
+    async def _internal_api_call(self, messages: List[Dict[str, str]],
                                  temperature: float = 0.7,
                                  response_format: Optional[str] = None) -> Dict[str, Any]:
         """Subclasses must implement the actual API call logic here."""
         raise NotImplementedError
 
 class AnthropicAsyncClient(AsyncBaseModelClient):
-    async def _internal_api_call(self, messages: List[Dict[str, str]], 
+    async def _internal_api_call(self, messages: List[Dict[str, str]],
                                    temperature: float = 0.7,
                                    response_format: Optional[str] = None) -> Dict[str, Any]:
         if anthropic is None:
@@ -1620,7 +1620,7 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
             raise ModelAPIError(f"Anthropic API call failed: {e}")
 
 class GeminiAsyncClient(AsyncBaseModelClient):
-    async def _internal_api_call(self, messages: List[Dict[str, str]], 
+    async def _internal_api_call(self, messages: List[Dict[str, str]],
                                    temperature: float = 0.7,
                                    response_format: Optional[str] = None) -> Dict[str, Any]:
         if genai is None:
@@ -1679,7 +1679,7 @@ class WorkflowContext:
     """
     v10.7: True Dependency Injection container.
     """
-    
+
     def __init__(self,
                  config: ConfigV10_7,
                  redis_client: RedisType,
@@ -1730,7 +1730,7 @@ class WorkflowContext:
         self._load_mcp_config()
 
         logger.info("WorkflowContext initialized with v10.7 injected dependencies")
-    
+
     def get_model_client(self, provider: str, model_name: str):
         key = f"{provider}:{model_name}"
         if key not in self._model_clients:
@@ -1944,7 +1944,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     v10.7 REFACTOR: Centralized Composition Root.
     """
     logger.info(f"Creating WorkflowContext with {config.schema_version}...")
-    
+
     # 1. Initialize Clients (Redis, ChromaDB, Embedding)
     redis_ctor = getattr(redis_module, "Redis", None)
     if callable(redis_ctor):
@@ -1980,7 +1980,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
             client_ctor = getattr(chromadb_module, "Client", None)
             chromadb_client = client_ctor() if callable(client_ctor) else MCPClientStub("chromadb")
     logger.info("Initialized ChromaDB client")
-    
+
     embedding_ctor = getattr(embedding_functions, "DefaultEmbeddingFunction", None)
     if callable(embedding_ctor):
         embedding_function = embedding_ctor()
@@ -2007,7 +2007,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     response_validator = ResponseValidator()
     metrics_collector = MetricsCollector()
     semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
-    
+
     # 3. Initialize Context (Partial)
     context = WorkflowContext(
         config=config,
@@ -2017,13 +2017,13 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         cost_tracker=cost_tracker,
         feedback_reader=feedback_reader,
         rules_loader=rules_loader,
-        prompt_manager=prompt_manager, 
+        prompt_manager=prompt_manager,
         response_validator=response_validator,
         metrics_collector=metrics_collector,
         semantic_validator=semantic_validator,
         embedding_function=embedding_function
     )
-    
+
     # 4. v10.7 (Fix #14): Resolve circular dependency for ContextBudgetManager
     context_budget_manager = ContextBudgetManager(
         config=config,
@@ -2031,7 +2031,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     )
     # 5. Inject the final service
     context.context_budget_manager = context_budget_manager
-    
+
     logger.info("WorkflowContext created and services injected.")
     return context
 
@@ -2098,11 +2098,11 @@ class JobContext:
     parsed_requirements: Dict[str, Any] = field(default_factory=dict)
 @dataclass
 class StrategyContext:
-    strategy_plan: Optional[StrategyPlan] = None 
+    strategy_plan: Optional[StrategyPlan] = None
     tot_branches: List[Dict] = field(default_factory=list)
 @dataclass
 class PromptContext:
-    prompts: Optional[GeneratedPrompts] = None 
+    prompts: Optional[GeneratedPrompts] = None
 @dataclass
 class BulletContext:
     generated_bullets: List[Dict] = field(default_factory=list)
@@ -2172,11 +2172,11 @@ class MainGraphState:
     feedback: FeedbackContext = field(default_factory=FeedbackContext)
     hil: HILContext = field(default_factory=HILContext)
     a2a: A2AContext = field(default_factory=A2AContext) # v10.7 (Fix #10)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """v10.7: Custom serializer to handle nested Pydantic models."""
         data = asdict(self)
-        
+
         # Manually serialize nested Pydantic models to dicts
         if self.strategy.strategy_plan:
             data['strategy']['strategy_plan'] = self.strategy.strategy_plan.model_dump()
@@ -2186,14 +2186,14 @@ class MainGraphState:
             data['hil']['ambiguity_report'] = self.hil.ambiguity_report.model_dump()
         if self.qa.constitutional_review: # v10.7 (Fix #30)
             data['qa']['constitutional_review'] = self.qa.constitutional_review.model_dump()
-            
+
         return data
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'MainGraphState':
         """v10.7: Custom deserializer to reconstruct nested Pydantic models."""
         state = cls()
-        
+
         # Deserialize dataclasses
         state.resume = ResumeContext(**data.get("resume", {}))
         state.job = JobContext(**data.get("job", {}))
@@ -2204,7 +2204,7 @@ class MainGraphState:
         state.safety = SafetyContext(**data.get("safety", {}))
         state.feedback = FeedbackContext(**data.get("feedback", {}))
         state.a2a = A2AContext(**data.get("a2a", {})) # v10.7 (Fix #10)
-        
+
         # Deserialize QA
         qa_data = data.get("qa", {})
         qa_review_data = qa_data.get("constitutional_review")
@@ -2221,14 +2221,14 @@ class MainGraphState:
             strategy_plan=StrategyPlan.model_validate(strategy_plan_data) if strategy_plan_data and isinstance(strategy_plan_data, dict) else None,
             tot_branches=strategy_data.get("tot_branches", [])
         )
-        
+
         # Deserialize Prompts
         prompts_data = data.get("prompts", {})
         prompts_model_data = prompts_data.get("prompts")
         state.prompts = PromptContext(
             prompts=GeneratedPrompts.model_validate(prompts_model_data) if prompts_model_data and isinstance(prompts_model_data, dict) else None
         )
-        
+
         # Deserialize HIL
         hil_data = data.get("hil", {})
         hil_report_data = hil_data.get("ambiguity_report")

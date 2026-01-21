@@ -71,10 +71,10 @@ class DarkReasoningVisitor(ast.NodeVisitor):
 def check_dark_reasoning(filepath: Path) -> List[Dict]:
     """
     Check a Python file for dark reasoning violations.
-    
+
     Args:
         filepath: Path to Python file to check
-        
+
     Returns:
         List of issue dictionaries with line, function, and reason
     """

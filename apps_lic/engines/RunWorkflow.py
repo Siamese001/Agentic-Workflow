@@ -35,15 +35,15 @@ def create_orchestrator() -> WorkflowOrchestrator:
 
 async def main():
     """Main execution"""
-    
+
     print("\n" + "="*80)
     print(f"LIC v{__version__} - LinkedIn Outreach Orchestrator (Dual-Loop Agentic)")
     print("="*80)
-    
+
     # Load data from JSON file
     print("\nLoading mission from mission_input.json...")
     input_data = load_mission_input()
-    
+
     sender_profile = input_data.get("sender_profile", {})
     recipient_profile = input_data.get("recipient_profile", {})
     job_description = input_data.get("job_description", {})
@@ -61,7 +61,7 @@ async def main():
         connection_status=recipient_profile.get("connection_status", "not_connected"),
         prior_message_count=recipient_profile.get("prior_message_count", 0)
     )
-    
+
     print(f"\n{'='*80}")
     print("LIC v11.10 - Workflow Execution")
     print(f"{'='*80}\n")
@@ -69,15 +69,15 @@ async def main():
     print(f"Sender: {mission.sender_profile.get('name', 'N/A')}")
     print(f"Recipient: {mission.recipient_profile.get('name', 'N/A')}")
     print(f"Job: {mission.job_description.get('title', 'N/A')} at {mission.job_description.get('company', 'N/A')}")
-    
+
     orchestrator = create_orchestrator()
     result = await orchestrator.execute_workflow(mission)
-    
+
     print(f"\n{'='*80}")
     print("WORKFLOW RESULTS")
     print(f"{'='*80}\n")
     print(f"Status: {result['status']}")
-    
+
     if result['status'] == 'success':
         print(f"Production Ready: {result['production_ready']}")
         print(f"Workflow Time: {result['workflow_time']:.2f}s")
@@ -93,7 +93,7 @@ async def main():
         print(result['qa_report'])
     else:
         print(f"Error: {result.get('error', 'Unknown error')}")
-    
+
     return result
 
 if __name__ == "__main__":

@@ -39,25 +39,25 @@ class TaskType(Enum):
 @dataclass
 class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Routes tasks to appropriate reasoning strategies.
-    
+
     Implements a simple strategy selector that uses ReAct for tasks
     requiring tool use and simpler approaches for basic Q&A or classification.
     """
-    
+
     def __init__(
         self,
         default_mode: ReasoningMode = ReasoningMode.REACT,
         enable_adaptive_routing: bool = True,
     ) -> None:
         """Initialize reasoning router.
-        
+
         Args:
             default_mode: Default reasoning mode if no specific match
             enable_adaptive_routing: Enable adaptive strategy selection
         """
         self.default_mode: ReasoningMode = default_mode
         self.enable_adaptive_routing: bool = enable_adaptive_routing
-        
+
         self._strategy_map: Dict[TaskType, ReasoningMode] = {
             TaskType.TOOL_USE: ReasoningMode.REACT,
             TaskType.QUESTION_ANSWERING: ReasoningMode.CHAIN_OF_THOUGHT,
@@ -67,7 +67,7 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             TaskType.PLANNING: ReasoningMode.TREE_OF_THOUGHTS,
             TaskType.UNKNOWN: self.default_mode,
         }
-    
+
     # Indicator lists for task classification
     _TOOL_INDICATORS = ["search", "retrieve", "lookup", "find", "fetch", "call", "execute", "run"]
     _QA_INDICATORS = ["what is", "who is", "when did", "where is", "why", "how", "explain", "describe"]
@@ -95,9 +95,9 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
         context_type = self._get_task_type_from_context(context)
         if context_type:
             return context_type
-        
+
         task_lower = Task.lower()
-        
+
         # Check indicators in priority order
         checks = [
             (self._TOOL_INDICATORS, TaskType.TOOL_USE),
@@ -105,35 +105,35 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
             (self._PLANNING_INDICATORS, TaskType.PLANNING),
             (self._QA_INDICATORS, TaskType.QUESTION_ANSWERING),
         ]
-        
+
         for indicators, task_type in checks:
             result = self._match_indicators(task_lower, indicators, task_type)
             if result:
                 return result
-        
+
         if len(Task.split()) > 50:
             return TaskType.ANALYSIS
-        
+
         return TaskType.UNKNOWN
-    
+
     def select_strategy(
         self,
         Task: str,
         context: Optional[Dict[str, Any]] = None,
     ) -> ReasoningMode:
         """Select appropriate reasoning strategy for Task.
-        
+
         Args:
             Task: The Task to solve
             context: Optional context with hints
-            
+
         Returns:
             Selected ReasoningMode
         """
         TaskType = self.classify_task(Task, context)
-        
+
         strategy = self._strategy_map.get(TaskType, self.default_mode)
-        
+
         Logger.info(
             "reasoning_strategy_selected",
             extra={
@@ -142,18 +142,18 @@ class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin)
                 "task_preview": Task[:100],
             }
         )
-        
+
         return strategy
-    
+
     def override_strategy(self, TaskType: TaskType, mode: ReasoningMode) -> None:
         """Override strategy mapping for a Task type.
-        
+
         Args:
             TaskType: The Task type to override
             mode: The reasoning mode to use
         """
         self._strategy_map[TaskType] = mode
-        
+
         Logger.info(
             "reasoning_strategy_override",
             extra={
@@ -187,7 +187,7 @@ def select_reasoning_strategy(
     router: Optional[ReasoningRouterAgent] = None,
 ) -> ReasoningMode:
     """Convenience function to select reasoning strategy.
-    
+
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
 
@@ -195,11 +195,11 @@ def select_reasoning_strategy(
         Task: The Task to solve
         context: Optional context
         router: Optional custom router (creates default if None)
-        
+
     Returns:
         Selected ReasoningMode
     """
     if router is None:
         router = ReasoningRouterAgent()
-    
+
     return router.select_strategy(Task, context)

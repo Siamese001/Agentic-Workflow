@@ -380,4 +380,3 @@ logger.error(f"Failed to analyze failure patterns: {e}")
         except Exception as e:
 logger.error(f"Failed to get Qdrant stats: {e}")
             return {"error": str(e)}
-

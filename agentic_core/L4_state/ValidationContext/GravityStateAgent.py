@@ -58,31 +58,31 @@ class HealingRecord:
 class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
     """
     [L4 STATE] Tracks gravity healing operations and prevents re-flagging.
-    
+
     Maintains persistent state of healed files to ensure:
     - Converted dynamic imports are not re-flagged as violations
     - Healing history is preserved for audit and rollback
     - Multiple healing sessions can be coordinated
     """
-    
+
     STATE_FILE = "gravity_healing_state.json"
-    
+
 
     @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
         super().heal_repository()
 
-        return {"violations": 0, "fixed": 0, "errors": 0}
+        return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
     def __init__(self, project_root: Path) -> None:
         """Initialize the instance."""
@@ -90,13 +90,13 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
         self.state_dir = self.root / ".gravity_state"
         self.state_file = self.state_dir / self.STATE_FILE
         self.logger = Logger
-        
+
         # Ensure state directory exists
         self.state_dir.mkdir(exist_ok=True)
-        
+
         # Load existing state
         self.state = self._load_state()
-    
+
     def _load_state(self) -> Dict[str, Any]:
         """Load healing state from disk."""
         if not self.state_file.exists():
@@ -109,14 +109,14 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
                     "total_healings": 0,
                 }
             }
-        
+
         try:
             with open(self.state_file, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
             self.logger.error(f"Failed to load state: {e}")
             return self._load_state()  # Return fresh state on error
-    
+
     def _save_state(self) -> None:
         """Persist healing state to disk."""
         try:
@@ -125,7 +125,7 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
                 json.dump(self.state, f, indent=2)
         except Exception as e:
             self.logger.error(f"Failed to save state: {e}")
-    
+
     def _normalize_and_hash(self, import_line: str) -> str:
         """
         Normalizes an import statement by removing whitespace and comments
@@ -135,46 +135,46 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
         normalized = re.sub(r'#.*$', '', import_line).strip()
         normalized = re.sub(r'\s+', ' ', normalized)
         return hashlib.sha256(normalized.encode('utf-8')).hexdigest()
-    
+
     def record_healing(self, record: HealingRecord) -> None:
         """
         Record a successful healing operation.
-        
+
         Args:
             record: HealingRecord with details of the healing
         """
         file_key = str(Path(record.file_path).relative_to(self.root))
         import_hash = self._normalize_and_hash(record.original_import)
-        
+
         # Append hash to record for robust lookup
         record_data = asdict(record)
         record_data["import_hash"] = import_hash
-        
+
         # Add to healed files registry
         if file_key not in self.state["healed_files"]:
             self.state["healed_files"][file_key] = []
-        
+
         self.state["healed_files"][file_key].append(record_data)
-        
+
         # Add to healing history
         self.state["healing_history"].append(record_data)
-        
+
         # Update metadata
         self.state["metadata"]["total_healings"] += 1
-        
+
         # Persist to disk
         self._save_state()
-        
+
         self.logger.info(f"Recorded healing: {file_key} - {record.original_import}")
-    
+
     def is_healed(self, file_path: Path, import_line: str) -> bool:
         """
         Check if a specific import has already been healed.
-        
+
         Args:
             file_path: Path to the file
             import_line: The import statement to check
-            
+
         Returns:
             True if this import has been healed, False otherwise
         """
@@ -183,25 +183,25 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
         except ValueError:
             # File not in project root
             return False
-        
+
         if file_key not in self.state["healed_files"]:
             return False
-        
+
         current_hash = self._normalize_and_hash(import_line)
-        
+
         for healing in self.state["healed_files"][file_key]:
             if healing.get("import_hash") == current_hash:
                 return True
-        
+
         return False
-    
+
     def get_file_healings(self, file_path: Path) -> List[HealingRecord]:
         """
         Get all healing records for a specific file.
-        
+
         Args:
             file_path: Path to the file
-            
+
         Returns:
             List of HealingRecord objects for this file
         """
@@ -209,37 +209,37 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
             file_key = str(file_path.relative_to(self.root))
         except ValueError:
             return []
-        
+
         if file_key not in self.state["healed_files"]:
             return []
-        
+
         return [
             HealingRecord(**healing)
             for healing in self.state["healed_files"][file_key]
         ]
-    
+
     def get_healing_summary(self) -> Dict[str, Any]:
         """
         Get summary of all healing operations.
-        
+
         Returns:
             Dict with healing statistics and summary
         """
         total_files = len(self.state["healed_files"])
         total_healings = self.state["metadata"]["total_healings"]
-        
+
         # Group by violation type
         by_type = {}
         for healing in self.state["healing_history"]:
             vtype = healing["violation_type"]
             by_type[vtype] = by_type.get(vtype, 0) + 1
-        
+
         # Group by strategy
         by_strategy = {}
         for healing in self.state["healing_history"]:
             strategy = healing["healing_strategy"]
             by_strategy[strategy] = by_strategy.get(strategy, 0) + 1
-        
+
         return {
             "total_files_healed": total_files,
             "total_healings": total_healings,
@@ -248,50 +248,50 @@ class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
             "created_at": self.state["metadata"]["created_at"],
             "last_updated": self.state["metadata"]["last_updated"],
         }
-    
+
     def create_checkpoint(self, name: str) -> str:
         """
         Create a checkpoint of current healing state for rollback.
-        
+
         Args:
             name: Name for this checkpoint
-            
+
         Returns:
             Path to the checkpoint file
         """
         checkpoint_file = self.state_dir / f"checkpoint_{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        
+
         try:
             with open(checkpoint_file, "w", encoding="utf-8") as f:
                 json.dump(self.state, f, indent=2)
-            
+
             self.logger.info(f"Created checkpoint: {checkpoint_file.name}")
             return str(checkpoint_file)
         except Exception as e:
             self.logger.error(f"Failed to create checkpoint: {e}")
             return ""
-    
+
     def rollback_to_checkpoint(self, checkpoint_file: str) -> bool:
         """
         Rollback state to a previous checkpoint.
-        
+
         Args:
             checkpoint_file: Path to the checkpoint file
-            
+
         Returns:
             True if rollback successful, False otherwise
         """
         try:
             with open(checkpoint_file, "r", encoding="utf-8") as f:
                 self.state = json.load(f)
-            
+
             self._save_state()
             self.logger.info(f"Rolled back to checkpoint: {checkpoint_file}")
             return True
         except Exception as e:
             self.logger.error(f"Failed to rollback: {e}")
             return False
-    
+
     def clear_state(self) -> None:
         """Clear all healing state (use with caution)."""
         self.state = {

@@ -8,19 +8,19 @@
 function computeDistributionStats(values) {
     // Filter out N/A and non-numbers
     const numbers = values.filter(v => typeof v === 'number' && !isNaN(v));
-    
+
     if (numbers.length === 0) return { min: 0, max: 0, avg: 0, stdDev: 0, count: 0 };
-    
+
     const min = Math.min(...numbers);
     const max = Math.max(...numbers);
     const sum = numbers.reduce((a, b) => a + b, 0);
     const avg = sum / numbers.length;
-    
+
     // Standard Deviation
     const sqDiff = numbers.map(v => Math.pow(v - avg, 2));
     const avgSqDiff = sqDiff.reduce((a, b) => a + b, 0) / numbers.length;
     const stdDev = Math.sqrt(avgSqDiff);
-    
+
     return { min, max, avg, stdDev, count: numbers.length };
 }
 
@@ -37,13 +37,13 @@ function getOutlierSummary(values, threshold = THRESHOLDS.OUTLIER_THRESHOLD_DEFA
     const numbers = values.filter(v => typeof v === 'number' && !isNaN(v));
     let atZero = 0;
     let belowThreshold = 0;
-    
+
     numbers.forEach(v => {
         if (v === 0) atZero++;
         if (direction === 'below' && v < threshold) belowThreshold++;
         if (direction === 'above' && v > threshold) belowThreshold++;
     });
-    
+
     return { atZero, belowThreshold, total: numbers.length, hasCritical: atZero > 0, hasWarning: belowThreshold > atZero };
 }
 
@@ -68,7 +68,7 @@ function formatDistributionCell(avg, stats, showStdDev = true) {
     if (typeof avg !== 'number' || isNaN(avg)) {
         return `<span style="color:#6b7280;">--</span>`;
     }
-    
+
     // FIX: Only hide distribution stats when:
     // 1. No stats available or count <= 1 (single agent - no distribution)
     // 2. All values are BOTH identical AND at 100% (perfect uniform score)
@@ -77,12 +77,12 @@ function formatDistributionCell(avg, stats, showStdDev = true) {
     if (!stats || stats.count <= 1) {
         return `${avg.toFixed(1)}%`;
     }
-    
+
     // Only hide stats if ALL values are identical AND perfect (100%)
     if (stats.min === stats.max && stats.min >= 99.9) {
         return `${avg.toFixed(1)}%`;
     }
-    
+
     const rangeStr = `${stats.min.toFixed(0)}-${stats.max.toFixed(0)}`;
     if (showStdDev && stats.stdDev > 0) {
         return `${avg.toFixed(1)}% <span style="font-size:0.8em; color:#6b7280;">(${rangeStr}, σ=${stats.stdDev.toFixed(1)})</span>`;
@@ -101,7 +101,7 @@ function getWorstPerformerForMetric(territory, metricKey, criticalThreshold = 50
     if (!agentData || !agentData[metricKey] || agentData[metricKey].length === 0) {
         return { agent: null, value: 0 };
     }
-    
+
     const values = agentData[metricKey];
     let minIndex = 0;
     let minValue = values[0];
@@ -111,13 +111,13 @@ function getWorstPerformerForMetric(territory, metricKey, criticalThreshold = 50
             minIndex = i;
         }
     }
-    
+
     const agents = agentData.agents || [];
     const realAgent = agents[minIndex] || {
         name: `Agent_${minIndex + 1}`,
         path: `agentic_core/${territory.toLowerCase().replace(/[\s\/]+/g, '_')}/agent_${minIndex + 1}.py`
     };
-    
+
     return { agent: realAgent, value: minValue };
 }
 
@@ -130,7 +130,7 @@ function formatWorstPerformerLink(agent, value, criticalThreshold = 50) {
     const path = agent.path || agent.file_path || '';
     const name = agent.name || agent.agent_name || path.split('/').pop() || 'Unknown';
     const displayName = name.length > 20 ? name.substring(0, 18) + '...' : name;
-    
+
     if (path) {
         return `<a href="vscode://file/${path}" style="color:${textColor}; text-decoration:none; background:${bgColor}; padding:2px 6px; border-radius:4px; font-size:0.85em; white-space:nowrap;" title="Open ${name} in VS Code (${path})">${displayName} (${value.toFixed(0)}%)</a>`;
     }
@@ -141,17 +141,17 @@ function formatWorstPerformerLink(agent, value, criticalThreshold = 50) {
 function hasRowCriticalOutliers(territory) {
     const agentData = window.realAgentData ? window.realAgentData[territory] : null;
     if (!agentData) return { hasCritical: false, hasWarning: false, criticalCount: 0, warningCount: 0 };
-    
+
     let criticalCount = 0;
     let warningCount = 0;
-    
+
     const metrics = ['healCap', 'invocation', 'hardened', 'test', 'complexityHealth', 'health'];
     metrics.forEach(key => {
         const summary = getOutlierSummary(agentData[key] || [], 50);
         criticalCount += summary.atZero;
         warningCount += summary.belowThreshold - summary.atZero;
     });
-    
+
     return { hasCritical: criticalCount > 0, hasWarning: warningCount > 0, criticalCount, warningCount };
 }
 

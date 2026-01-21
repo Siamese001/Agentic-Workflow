@@ -70,20 +70,20 @@ class ThreatAnalysisResult:
 class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin):
     """
     Consolidated Threat Detection Guardrail.
-    
+
     HARDENED: Redis caching + Pinecone vector support for threat signature caching.
-    
+
     Provides unified threat analysis with:
     - Adversarial input detection
     - Evolving threat pattern matching
     - Automated immune response
     - Red team attack simulation
     """
-    
+
     # [PHASE 5] Redis/Pinecone integration
     _cache_prefix: str = "threat_detection"
     _namespace: str = "l5_threats"
-    
+
     def __init__(self):
         """Initialize threat detection guardrail."""
         self.enabled_rules: List[str] = [
@@ -91,7 +91,7 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
             "threat_evolution",
             "immune_response",
         ]
-        
+
         # Adversarial patterns
         self.adversarial_patterns = [
             r"ignore\s+(previous|all)\s+instructions",
@@ -102,7 +102,7 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
             r"DAN\s+mode",
             r"developer\s+mode",
         ]
-        
+
         # Injection patterns
         self.injection_patterns = [
             r"<script[^>]*>",
@@ -113,7 +113,7 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
             r"__import__",
             r"subprocess\.",
         ]
-        
+
         # Evasion patterns
         self.evasion_patterns = [
             r"unicode[\s_]*(escape|bypass)",
@@ -121,51 +121,51 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
             r"rot13",
             r"hex[\s_]*encode",
         ]
-        
+
         # Threat history for evolution tracking
         self.threat_history: List[ThreatIndicator] = []
         self.evolved_patterns: List[str] = []
-        
+
         # Statistics
         self.scans_performed = 0
         self.threats_detected = 0
         self.threats_blocked = 0
-    
+
     async def analyze(self, input_data: str, context: Optional[Dict[str, Any]] = None) -> ThreatAnalysisResult:
         """
         Analyze input for threats.
-        
+
         Args:
             input_data: Input to analyze
             context: Optional context
-            
+
         Returns:
             ThreatAnalysisResult
         """
         start_time = time.time()
         self.scans_performed += 1
         indicators = []
-        
+
         # Apply enabled rules
         if "adversarial_detection" in self.enabled_rules:
             indicators.extend(self._detect_adversarial(input_data))
-        
+
         if "threat_evolution" in self.enabled_rules:
             indicators.extend(self._detect_evolved_threats(input_data))
-        
+
         # Determine overall threat level
         threat_level = self._calculate_threat_level(indicators)
-        
+
         # Determine response action
         response = self._determine_response(threat_level, indicators)
-        
+
         if indicators:
             self.threats_detected += 1
             self.threat_history.extend(indicators)
-        
+
         if response in ("block", "quarantine"):
             self.threats_blocked += 1
-        
+
         return ThreatAnalysisResult(
             safe=threat_level in (ThreatLevel.NONE, ThreatLevel.LOW),
             threat_level=threat_level,
@@ -173,12 +173,12 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
             response_action=response,
             analysis_time_ms=(time.time() - start_time) * 1000
         )
-    
+
     def _detect_adversarial(self, input_data: str) -> List[ThreatIndicator]:
         """Detect adversarial patterns."""
         indicators = []
         input_lower = input_data.lower()
-        
+
         # Check adversarial patterns
         for pattern in self.adversarial_patterns:
             if re.search(pattern, input_lower, re.IGNORECASE):
@@ -189,7 +189,7 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
                     confidence=0.9,
                     pattern_matched=pattern
                 ))
-        
+
         # Check injection patterns
         for pattern in self.injection_patterns:
             if re.search(pattern, input_data, re.IGNORECASE):
@@ -200,7 +200,7 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
                     confidence=0.95,
                     pattern_matched=pattern
                 ))
-        
+
         # Check evasion patterns
         for pattern in self.evasion_patterns:
             if re.search(pattern, input_lower, re.IGNORECASE):
@@ -211,13 +211,13 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
                     confidence=0.7,
                     pattern_matched=pattern
                 ))
-        
+
         return indicators
-    
+
     def _detect_evolved_threats(self, input_data: str) -> List[ThreatIndicator]:
         """Detect evolved threat patterns from history."""
         indicators = []
-        
+
         # Check evolved patterns
         for pattern in self.evolved_patterns:
             if re.search(pattern, input_data, re.IGNORECASE):
@@ -228,14 +228,14 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
                     confidence=0.6,
                     pattern_matched=pattern
                 ))
-        
+
         return indicators
-    
+
     def _calculate_threat_level(self, indicators: List[ThreatIndicator]) -> ThreatLevel:
         """Calculate overall threat level from indicators."""
         if not indicators:
             return ThreatLevel.NONE
-        
+
         # Find highest threat level
         level_priority = {
             ThreatLevel.CRITICAL: 4,
@@ -244,10 +244,10 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
             ThreatLevel.LOW: 1,
             ThreatLevel.NONE: 0
         }
-        
+
         max_level = max(indicators, key=lambda x: level_priority[x.level])
         return max_level.level
-    
+
     def _determine_response(self, level: ThreatLevel, indicators: List[ThreatIndicator]) -> str:
         """Determine response action based on threat level."""
         if level == ThreatLevel.CRITICAL:
@@ -258,35 +258,35 @@ class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, P
             return "alert"
         else:
             return "allow"
-    
+
     def add_evolved_pattern(self, pattern: str) -> None:
         """Add new evolved threat pattern."""
         if pattern not in self.evolved_patterns:
             self.evolved_patterns.append(pattern)
-    
+
     def immune_response(self, indicator: ThreatIndicator) -> Dict[str, Any]:
         """
         Execute immune response to threat.
-        
+
         Args:
             indicator: Threat indicator
-            
+
         Returns:
             Response action taken
         """
         if "immune_response" not in self.enabled_rules:
             return {"action": "none", "reason": "immune_response disabled"}
-        
+
         # Add pattern to evolved patterns for future detection
         if indicator.pattern_matched:
             self.add_evolved_pattern(indicator.pattern_matched)
-        
+
         return {
             "action": "learned",
             "pattern_added": indicator.pattern_matched,
             "threat_type": indicator.threat_type.value
         }
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get threat detection statistics."""
         return {

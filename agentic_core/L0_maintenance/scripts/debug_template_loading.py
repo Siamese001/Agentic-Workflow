@@ -46,7 +46,7 @@ if template_path.exists():
     print(f"Template size: {len(content):,} bytes")
     print(f"Has 'Strategic Recommendations': {'Strategic Recommendations' in content}")
     print(f"Has 'STRATEGIC_REVIEW_INSERT': {'STRATEGIC_REVIEW_INSERT' in content}")
-    
+
     # Show the section around Strategic Recommendations
     if 'Strategic Recommendations' in content:
         idx = content.find('Strategic Recommendations')

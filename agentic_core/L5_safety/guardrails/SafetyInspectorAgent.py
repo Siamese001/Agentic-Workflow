@@ -7,7 +7,7 @@ This module provides safety validation for action requests, including:
 Typical usage:
     overseer = create_overseer()
     result = await overseer.validate_action(request)
-    
+
     inspector = create_safety_inspector()
     violations = await inspector.scan_file("path/to/file.py")
 """

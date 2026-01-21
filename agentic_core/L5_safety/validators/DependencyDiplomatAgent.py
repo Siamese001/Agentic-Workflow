@@ -60,7 +60,7 @@ class BlastRadius:
     indirect_dependents: List[str]
     total_affected: int
     depth: int
-    
+
     def _run_self_tests(self) -> bool:
         """Phase 1 Final: Minimal self-testing for data container."""
         assert hasattr(self, "modified_file"), "Missing modified_file"
@@ -68,7 +68,7 @@ class BlastRadius:
         assert isinstance(self.direct_dependents, list), "direct_dependents must be list"
         assert isinstance(self.indirect_dependents, list), "indirect_dependents must be list"
         return True
-    
+
     def __post_init__(self) -> None:
         """Run self-tests after dataclass initialization."""
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
@@ -77,11 +77,11 @@ class BlastRadius:
 class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
     The Dependency Diplomat - Graph Optimizer
-    
+
     Maintains live DAG of imports in Redis.
     Calculates blast radius for modified files.
     Provides surgical target lists to orchestrator.
-    
+
     Process:
     1. Parse all Python files for imports
     2. Build adjacency lists in Redis
@@ -92,7 +92,7 @@ class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
     def __init__(self, ctx: Any) -> None:
         """
         Initialize Dependency Diplomat.
-        
+
         Args:
             ctx: ValidationContext
         """
@@ -111,7 +111,7 @@ class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
     async def execute(self) -> Any:
         """
         Execute dependency graph construction and analysis.
-        
+
         Builds import graph and provides blast radius analysis.
         """
         Logger.info('🔗 Dependency Diplomat: Building import graph...')
@@ -186,13 +186,13 @@ class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
     def _calculate_blast_radius(self, modified_file: str, max_depth: int=5) -> BlastRadius:
         """
         Calculate blast radius for a modified file.
-        
+
         Walks graph in reverse to find all dependent files.
-        
+
         Args:
             modified_file: File that was modified
             max_depth: Maximum depth to traverse
-            
+
         Returns:
             Blast radius analysis
         """
@@ -244,15 +244,15 @@ class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
     def calculate_impact_scope(self, modified_files: List[str], max_depth: int=2) -> List[str]:
         """
         Calculate impact scope for modified files using BFS on reverse dependency graph.
-        
+
         This is the primary method for orchestrator integration.
         Performs BFS on deps:reverse graph to find all files that import the changed files.
         Depth is capped at 2 levels to keep testing focused.
-        
+
         Args:
             modified_files: List of files changed by SystemArchitect
             max_depth: Maximum depth for BFS traversal (default: 2)
-            
+
         Returns:
             List of files that need healing/testing (surgical target list)
         """
@@ -278,12 +278,12 @@ class DependencyDiplomatAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
     def get_surgical_target_list(self, modified_files: List[str]) -> List[str]:
         """
         Get surgical target list for modified files.
-        
+
         This is an alias for calculate_impact_scope() for backward compatibility.
-        
+
         Args:
             modified_files: List of modified files
-            
+
         Returns:
             List of files that need healing/testing
         """

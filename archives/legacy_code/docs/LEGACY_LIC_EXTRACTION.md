@@ -105,11 +105,11 @@ cxo_tokens = ["CEO", "CXO", "CRO", "President", "COO", "CTO", "CIO", "CFO", "CDO
 
 if any(token in title for token in cxo_tokens):
     archetype = "C_LEVEL"  # IMMEDIATE assignment, skip other checks
-    
+
 # Step 2: Else check Executive tokens
 elif any(token in title for token in ["EVP", "SVP", "VP", "Head of", "GM"]):
     archetype = "EXECUTIVE"
-    
+
 # Step 3: Else check TA tokens
 elif any(token in title for token in ["Talent Acquisition", "TA", "Recruiter"]):
     archetype = "SENIOR_TA"
@@ -491,18 +491,18 @@ class K3_MessageBodyAgent(Agent):
     def __init__(self, route: Route, archetype: Archetype):
         self.route = route
         self.archetype = archetype
-        
+
         # Load route config
         route_config = get_route_config(route)
         self.char_limit = route_config.char_limit
         self.constraints = route_config.constraints
-        
+
         # Load archetype config
         archetype_config = get_archetype_config(archetype)
         self.temperature = archetype_config.temperature
         self.rag_hops = archetype_config.rag_hops
         self.self_consistency = archetype_config.self_consistency_runs
-        
+
         # Set goal
         self.goal = Goal(
             objective=f"Generate {route.value} message for {archetype.value}",
@@ -523,11 +523,11 @@ class OutreachValidationAgent(Agent):
     def __init__(self):
         self.rules = VALIDATION_RULES
         self.confidence_thresholds = CONFIDENCE_THRESHOLDS
-    
+
     async def validate(self, message, phase):
         rules = get_validation_rules(phase)
         results = []
-        
+
         for rule in rules:
             result = await self.apply_rule(rule, message)
             if rule.severity == ValidationSeverity.CRITICAL and not result.passed:
@@ -538,7 +538,7 @@ class OutreachValidationAgent(Agent):
                     action="BLOCK",
                 )
             results.append(result)
-        
+
         return ValidationResult(passed=all(r.passed for r in results))
 ```
 
@@ -551,17 +551,17 @@ class ArchetypeClassificationAgent(Agent):
         for token in CXO_PRECEDENCE_TOKENS:
             if token.upper() in title.upper():
                 return Archetype.C_LEVEL, 1.0  # Confidence = 1.0
-        
+
         # Use RAG for authority signals
         rag_signals = await self.rag_tool.retrieve(f"P&L ownership {title}")
-        
+
         # Classify with confidence
         archetype, confidence = self.classify_with_rag(title, about, rag_signals)
-        
+
         # Manual override if confidence < 0.85
         if confidence < 0.85:
             archetype = await self.prompt_user_override(archetype, confidence)
-        
+
         return archetype, confidence
 ```
 
@@ -569,20 +569,20 @@ class ArchetypeClassificationAgent(Agent):
 
 ## Summary of Value Extracted
 
-✅ **Route configurations** with char limits and K-node enablement  
-✅ **Archetype configs** with temperature, RAG, and self-consistency settings  
-✅ **CXO precedence rule** for classification  
-✅ **107 validation rules** with severity and enforcement  
-✅ **Entity grounding framework** for metric source binding  
-✅ **RAG signal quality scoring** with weighted formula  
-✅ **Adaptive temperature escalation** for retries  
-✅ **Message type transitions** for dynamic regeneration  
-✅ **Similarity thresholds** for diversity and continuity  
-✅ **Confidence thresholds** for quality assurance  
-✅ **Circuit breaker pattern** for API reliability  
-✅ **Constraint pre-flight test** for feasibility  
-✅ **Boot validator** for system startup checks  
-✅ **CTA templates** per route  
-✅ **Error code registry** with remediation guidance  
+✅ **Route configurations** with char limits and K-node enablement
+✅ **Archetype configs** with temperature, RAG, and self-consistency settings
+✅ **CXO precedence rule** for classification
+✅ **107 validation rules** with severity and enforcement
+✅ **Entity grounding framework** for metric source binding
+✅ **RAG signal quality scoring** with weighted formula
+✅ **Adaptive temperature escalation** for retries
+✅ **Message type transitions** for dynamic regeneration
+✅ **Similarity thresholds** for diversity and continuity
+✅ **Confidence thresholds** for quality assurance
+✅ **Circuit breaker pattern** for API reliability
+✅ **Constraint pre-flight test** for feasibility
+✅ **Boot validator** for system startup checks
+✅ **CTA templates** per route
+✅ **Error code registry** with remediation guidance
 
 These patterns are now available in `apps_lic/L3_orchestration/outreach_orchestration_config.py` and can be used to configure agent behavior, validation gates, and quality controls in the agentic LinkedIn outreach architecture.

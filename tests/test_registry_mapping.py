@@ -18,14 +18,14 @@ def test_registry_mapping():
     print("=" * 60)
     print("Unified Agent Registry Mapping Test")
     print("=" * 60)
-    
+
     # Import unified agents directly to test the mapping
     from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import UnifiedASTValidatorAgent
     from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent
     from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import UnifiedCheckpointManagerAgent
     from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
     from agentic_core.L4_state.ValidationContext.UnifiedStateManagementAgent import UnifiedStateManagementAgent
-    
+
     # Define the mapping inline (mirrors SubAtomicRegistryAgent)
     def _get_unified_agent_mapping():
         return {
@@ -50,26 +50,26 @@ def test_registry_mapping():
             "MemoryManager": UnifiedStateManagementAgent,
             "AutonomousStateGuardian": UnifiedStateManagementAgent,
         }
-    
+
     def get_unified_agent_class(agent_id):
         mapping = _get_unified_agent_mapping()
         if agent_id in mapping:
             return mapping[agent_id]
         raise ValueError(f"Agent ID '{agent_id}' not found")
-    
+
     def is_legacy_agent(agent_id):
         return agent_id in _get_unified_agent_mapping()
-    
+
     # Get the full mapping
     mapping = _get_unified_agent_mapping()
-    
+
     print(f"\nTotal legacy agent mappings: {len(mapping)}")
-    
+
     # Test each phase
     phases = {
         "Phase 1 (AST Validators)": [
             "BareExceptValidator",
-            "EmptyExceptValidator", 
+            "EmptyExceptValidator",
             "EvalExecValidator",
             "DangerousBuiltinsValidator",
             "DebuggerValidator",
@@ -93,9 +93,9 @@ def test_registry_mapping():
             "AutonomousStateGuardian",
         ],
     }
-    
+
     all_passed = True
-    
+
     for phase_name, agent_ids in phases.items():
         print(f"\n{phase_name}:")
         for agent_id in agent_ids:
@@ -105,32 +105,32 @@ def test_registry_mapping():
             except Exception as e:
                 print(f"  ✗ {agent_id} -> ERROR: {e}")
                 all_passed = False
-    
+
     # Test is_legacy_agent function
     print("\n" + "=" * 60)
     print("is_legacy_agent() tests:")
     print("=" * 60)
-    
+
     legacy_tests = [
         ("BareExceptValidator", True),
         ("UnifiedASTValidatorAgent", False),
         ("NonExistentAgent", False),
     ]
-    
+
     for agent_id, expected in legacy_tests:
         result = is_legacy_agent(agent_id)
         status = "✓" if result == expected else "✗"
         print(f"  {status} is_legacy_agent('{agent_id}') = {result} (expected: {expected})")
         if result != expected:
             all_passed = False
-    
+
     print("\n" + "=" * 60)
     if all_passed:
         print("✓ ALL REGISTRY MAPPING TESTS PASSED")
     else:
         print("✗ SOME TESTS FAILED")
     print("=" * 60)
-    
+
     return 0 if all_passed else 1
 
 

@@ -85,7 +85,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
     async def act(self) -> Dict[str, Any]:
         """Execute boundary testing."""
         logger.info(f"[{self.name}] Starting boundary and edge case testing")
-        
+
         results = {
             "agent": self.name,
             "tests_executed": 0,
@@ -99,7 +99,7 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
             for test in self.boundary_tests:
                 test_result = await self._execute_boundary_test(test)
                 results["tests_executed"] += 1
-                
+
                 if test_result.get("edge_case_found"):
                     results["edge_cases_found"] += 1
                     results["boundary_violations"].append({
@@ -254,4 +254,4 @@ class BoundaryTestingAgent(HealerMixin, MCPHardenedMixin):
     def heal_repository(self, dry_run: bool = True, **kwargs) -> Dict[str, Any]:
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
-        return {"healed": 0, "skipped": 0, "parent": result}
+        return {"violations_fixed": 0, "skipped": 0, "parent": result}

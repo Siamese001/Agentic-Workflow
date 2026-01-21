@@ -1,6 +1,6 @@
 # Implementation Plan: Dashboard Guardrails & Controls
-**Date:** 2026-01-11  
-**Status:** PROPOSED (NOT IMPLEMENTED)  
+**Date:** 2026-01-11
+**Status:** PROPOSED (NOT IMPLEMENTED)
 **Related:** RCA_Dashboard_Table_Rendering_Failure.md
 
 ---
@@ -42,22 +42,22 @@ Prevent duplicate declarations and malformed HTML from being written to disk.
 def validate_html_before_write(html: str) -> tuple[bool, List[str]]:
     """
     Validate HTML content before writing to disk.
-    
+
     Returns:
         (is_valid, error_messages)
     """
     errors = []
-    
+
     # Check 1: Detect duplicate const declarations
     const_declarations = {
         'dashboardData': re.findall(r'const dashboardData\s*=', html),
         'realAgentData': re.findall(r'const realAgentData\s*=', html),
     }
-    
+
     for var_name, matches in const_declarations.items():
         if len(matches) > 1:
             errors.append(f"CRITICAL: Found {len(matches)} declarations of 'const {var_name}' (expected 1)")
-    
+
     # Check 2: Validate file size (should be 300KB-500KB)
     size_bytes = len(html.encode('utf-8'))
     size_kb = size_bytes / 1024
@@ -65,14 +65,14 @@ def validate_html_before_write(html: str) -> tuple[bool, List[str]]:
         errors.append(f"WARNING: HTML size is {size_kb:.1f}KB (expected <500KB) - possible duplication")
     if size_kb < 300:
         errors.append(f"WARNING: HTML size is {size_kb:.1f}KB (expected >300KB) - possible data missing")
-    
+
     # Check 3: Validate line count (should be 10K-15K lines)
     line_count = html.count('\n')
     if line_count > 15000:
         errors.append(f"WARNING: HTML has {line_count:,} lines (expected <15K) - possible duplication")
     if line_count < 10000:
         errors.append(f"WARNING: HTML has {line_count:,} lines (expected >10K) - possible data missing")
-    
+
     # Check 4: Validate JavaScript syntax (basic check)
     script_blocks = re.findall(r'<script>(.*?)</script>', html, re.DOTALL)
     for i, script in enumerate(script_blocks):
@@ -83,13 +83,13 @@ def validate_html_before_write(html: str) -> tuple[bool, List[str]]:
             errors.append(f"ERROR: Script block {i+1} has mismatched parentheses")
         if script.count('[') != script.count(']'):
             errors.append(f"ERROR: Script block {i+1} has mismatched brackets")
-    
+
     # Check 5: Verify required data structures exist
     required_vars = ['dashboardData', 'realAgentData', 'loadData', 'renderTerritorySummaryTable']
     for var in required_vars:
         if var not in html:
             errors.append(f"ERROR: Required variable/function '{var}' not found in HTML")
-    
+
     # Check 6: Verify dashboardData has expected structure
     dashboard_match = re.search(r'const dashboardData = (\[.*?\]);', html, re.DOTALL)
     if dashboard_match:
@@ -103,7 +103,7 @@ def validate_html_before_write(html: str) -> tuple[bool, List[str]]:
                 errors.append("ERROR: First row in dashboardData is not TOTAL")
         except json.JSONDecodeError as e:
             errors.append(f"ERROR: dashboardData is not valid JSON: {e}")
-    
+
     return (len(errors) == 0, errors)
 ```
 
@@ -112,23 +112,23 @@ def validate_html_before_write(html: str) -> tuple[bool, List[str]]:
 def update_dashboard_html(self, data: List[Dict[str, Any]], per_agent_data: Dict[str, Dict]) -> bool:
     """Update dashboard HTML with new data and real per-agent data."""
     # ... existing code to build new_html ...
-    
+
     # VALIDATE BEFORE WRITING
     is_valid, errors = validate_html_before_write(new_html)
-    
+
     if not is_valid:
         print("❌ VALIDATION FAILED - HTML NOT WRITTEN")
         for error in errors:
             print(f"   {error}")
         return False
-    
+
     # Only write if validation passes
     self.dashboard_path.write_text(new_html, encoding='utf-8')
     print(f"✅ Updated {self.dashboard_path}")
     return True
 ```
 
-**Estimated Effort:** 2-3 hours  
+**Estimated Effort:** 2-3 hours
 **Risk Reduction:** 90% (prevents duplicate declarations, size bloat, syntax errors)
 
 ---
@@ -142,25 +142,25 @@ def update_dashboard_html(self, data: List[Dict[str, Any]], per_agent_data: Dict
 def update_dashboard_html(self, data: List[Dict[str, Any]], per_agent_data: Dict[str, Dict]) -> bool:
     """Update dashboard HTML with new data and real per-agent data."""
     html = self.dashboard_path.read_text(encoding='utf-8')
-    
+
     # Step 1: Find dashboardData boundaries
     data_start_marker = 'const dashboardData = ['
     data_start_idx = html.find(data_start_marker)
     if data_start_idx == -1:
         print("❌ ERROR: Could not find dashboardData in HTML")
         return False
-    
+
     # Find the closing ]; for dashboardData
     data_end_idx = html.find('];', data_start_idx)
     if data_end_idx == -1:
         print("❌ ERROR: Could not find end of dashboardData")
         return False
     data_end_idx += len('];')
-    
+
     # Step 2: Find realAgentData boundaries (if it exists)
     agent_start_marker = 'const realAgentData = {'
     agent_start_idx = html.find(agent_start_marker, data_end_idx)
-    
+
     if agent_start_idx != -1:
         # realAgentData exists, find its end
         # Use brace counting to find the matching closing }
@@ -179,7 +179,7 @@ def update_dashboard_html(self, data: List[Dict[str, Any]], per_agent_data: Dict
         else:
             print("❌ ERROR: Could not find end of realAgentData")
             return False
-        
+
         # Replace from dashboardData start to realAgentData end
         replace_start = data_start_idx
         replace_end = agent_end_idx
@@ -187,17 +187,17 @@ def update_dashboard_html(self, data: List[Dict[str, Any]], per_agent_data: Dict
         # realAgentData doesn't exist, insert after dashboardData
         replace_start = data_start_idx
         replace_end = data_end_idx
-    
+
     # Step 3: Build replacement block
     new_json = json.dumps(data, indent=2)
     new_data_block = f'const dashboardData = {new_json};'
-    
+
     agent_json = json.dumps(per_agent_data, indent=2)
     real_agent_block = f'\n\n        // Real per-agent data (replaces generateMockAgentData)\n        const realAgentData = {agent_json};'
-    
+
     # Step 4: Replace and validate
     new_html = html[:replace_start] + new_data_block + real_agent_block + html[replace_end:]
-    
+
     # VALIDATE before writing
     is_valid, errors = validate_html_before_write(new_html)
     if not is_valid:
@@ -205,14 +205,14 @@ def update_dashboard_html(self, data: List[Dict[str, Any]], per_agent_data: Dict
         for error in errors:
             print(f"   {error}")
         return False
-    
+
     # Write validated HTML
     self.dashboard_path.write_text(new_html, encoding='utf-8')
     print(f"✅ Updated {self.dashboard_path}")
     return True
 ```
 
-**Estimated Effort:** 2 hours  
+**Estimated Effort:** 2 hours
 **Risk Reduction:** 95% (proper brace matching, validation before write)
 
 ---
@@ -253,7 +253,7 @@ el.textContent = value;
 - `updateRuntime()` - TODO
 - All event handlers - TODO
 
-**Estimated Effort:** 4-6 hours (audit all 50+ DOM access points)  
+**Estimated Effort:** 4-6 hours (audit all 50+ DOM access points)
 **Risk Reduction:** 80% (prevents null access crashes)
 
 ---
@@ -278,7 +278,7 @@ safeInitialize(initializeRuntimeMonitoring, 'Runtime Monitoring');
 safeInitialize(loadData, 'Dashboard Data');
 ```
 
-**Estimated Effort:** 1 hour  
+**Estimated Effort:** 1 hour
 **Risk Reduction:** 70% (prevents initialization failures from cascading)
 
 ---
@@ -295,7 +295,7 @@ function renderTerritorySummaryTable(territoryData) {
         showErrorMessage('Dashboard container not found. Please refresh the page.');
         return;
     }
-    
+
     try {
         // Rendering logic
         globalAgentData = realAgentData;
@@ -304,7 +304,7 @@ function renderTerritorySummaryTable(territoryData) {
         console.error('[ERROR] Table rendering failed:', e);
         container.innerHTML = `
             <div style="padding: 20px; background: #fee; border: 1px solid #c00; border-radius: 4px;">
-                <strong>⚠️ Error:</strong> Failed to render table. 
+                <strong>⚠️ Error:</strong> Failed to render table.
                 <a href="#" onclick="location.reload()">Refresh page</a>
             </div>
         `;
@@ -316,13 +316,13 @@ function showErrorMessage(message) {
     errorDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #fee; border: 2px solid #c00; padding: 15px; border-radius: 8px; z-index: 9999; max-width: 400px;';
     errorDiv.innerHTML = `<strong>⚠️ Error:</strong> ${message}`;
     document.body.appendChild(errorDiv);
-    
+
     // Auto-dismiss after 10 seconds
     setTimeout(() => errorDiv.remove(), 10000);
 }
 ```
 
-**Estimated Effort:** 2 hours  
+**Estimated Effort:** 2 hours
 **Risk Reduction:** 60% (provides user feedback instead of silent failure)
 
 ---
@@ -345,38 +345,38 @@ def test_javascript_syntax_validation(self):
     print("\n" + "─" * 70)
     print("Test: JavaScript Syntax Validation")
     print("─" * 70)
-    
+
     html = self.dashboard_path.read_text(encoding='utf-8')
-    
+
     # Extract all script blocks
     script_blocks = re.findall(r'<script>(.*?)</script>', html, re.DOTALL)
-    
+
     errors = []
-    
+
     for i, script in enumerate(script_blocks):
         # Check for balanced braces
         if script.count('{') != script.count('}'):
             errors.append(f"Script block {i+1}: Mismatched braces")
-        
+
         # Check for balanced parentheses
         if script.count('(') != script.count(')'):
             errors.append(f"Script block {i+1}: Mismatched parentheses")
-        
+
         # Check for balanced brackets
         if script.count('[') != script.count(']'):
             errors.append(f"Script block {i+1}: Mismatched brackets")
-    
+
     if errors:
         print(f"❌ FAILED: JavaScript syntax errors found:")
         for error in errors:
             print(f"   - {error}")
         return False
-    
+
     print(f"✅ PASSED: All {len(script_blocks)} script blocks have valid syntax")
     return True
 ```
 
-**Estimated Effort:** 1 hour  
+**Estimated Effort:** 1 hour
 **Risk Reduction:** 50% (catches syntax errors before deployment)
 
 ---
@@ -390,33 +390,33 @@ def test_no_duplicate_declarations(self):
     print("\n" + "─" * 70)
     print("Test: No Duplicate Declarations")
     print("─" * 70)
-    
+
     html = self.dashboard_path.read_text(encoding='utf-8')
-    
+
     # Check for duplicate const declarations
     const_vars = ['dashboardData', 'realAgentData']
     errors = []
-    
+
     for var_name in const_vars:
         pattern = rf'const {var_name}\s*='
         matches = re.findall(pattern, html)
-        
+
         if len(matches) > 1:
             errors.append(f"Found {len(matches)} declarations of 'const {var_name}' (expected 1)")
         elif len(matches) == 0:
             errors.append(f"Found 0 declarations of 'const {var_name}' (expected 1)")
-    
+
     if errors:
         print(f"❌ FAILED: Duplicate declaration errors:")
         for error in errors:
             print(f"   - {error}")
         return False
-    
+
     print(f"✅ PASSED: All const declarations are unique")
     return True
 ```
 
-**Estimated Effort:** 30 minutes  
+**Estimated Effort:** 30 minutes
 **Risk Reduction:** 95% (directly catches the root cause from RCA)
 
 ---
@@ -444,51 +444,51 @@ async def test_dashboard_renders_in_browser():
         stderr=subprocess.DEVNULL
     )
     time.sleep(2)  # Wait for server to start
-    
+
     try:
         async with async_playwright() as p:
             browser = await p.chromium.launch()
             page = await browser.new_page()
-            
+
             # Capture console errors
             console_errors = []
-            page.on('console', lambda msg: 
+            page.on('console', lambda msg:
                 console_errors.append(msg.text) if msg.type == 'error' else None
             )
-            
+
             # Load dashboard
             await page.goto('http://localhost:8080/autonomy_dashboard.html')
             await page.wait_for_timeout(2000)  # Wait for rendering
-            
+
             # Check for JavaScript errors
             if console_errors:
                 print(f"❌ FAILED: JavaScript errors in browser console:")
                 for error in console_errors:
                     print(f"   - {error}")
                 return False
-            
+
             # Check if tables are rendered
             kpi_grid = await page.query_selector('#kpiGrid')
             kpi_content = await kpi_grid.inner_html() if kpi_grid else ''
-            
+
             if not kpi_content or len(kpi_content) < 100:
                 print(f"❌ FAILED: #kpiGrid is empty (length: {len(kpi_content)})")
                 return False
-            
+
             # Check for table elements
             tables = await page.query_selector_all('table')
             if len(tables) == 0:
                 print(f"❌ FAILED: No <table> elements found")
                 return False
-            
+
             print(f"✅ PASSED: Dashboard renders correctly in browser")
             print(f"   - No JavaScript errors")
             print(f"   - #kpiGrid has content ({len(kpi_content)} chars)")
             print(f"   - Found {len(tables)} table elements")
-            
+
             await browser.close()
             return True
-            
+
     finally:
         server_process.terminate()
         server_process.wait()
@@ -500,7 +500,7 @@ if __name__ == '__main__':
 
 **Dependencies:** `pip install playwright && playwright install chromium`
 
-**Estimated Effort:** 3-4 hours  
+**Estimated Effort:** 3-4 hours
 **Risk Reduction:** 90% (catches all rendering failures in real browser)
 
 ---
@@ -514,39 +514,39 @@ def test_file_size_and_line_count(self):
     print("\n" + "─" * 70)
     print("Test: File Size & Line Count Validation")
     print("─" * 70)
-    
+
     html = self.dashboard_path.read_text(encoding='utf-8')
-    
+
     # Check file size (should be 300KB-500KB)
     size_bytes = len(html.encode('utf-8'))
     size_kb = size_bytes / 1024
-    
+
     # Check line count (should be 10K-15K)
     line_count = html.count('\n')
-    
+
     errors = []
-    
+
     if size_kb > 500:
         errors.append(f"File size {size_kb:.1f}KB exceeds 500KB (possible duplication)")
     elif size_kb < 300:
         errors.append(f"File size {size_kb:.1f}KB below 300KB (possible missing data)")
-    
+
     if line_count > 15000:
         errors.append(f"Line count {line_count:,} exceeds 15K (possible duplication)")
     elif line_count < 10000:
         errors.append(f"Line count {line_count:,} below 10K (possible missing data)")
-    
+
     if errors:
         print(f"❌ FAILED: File size/line count validation errors:")
         for error in errors:
             print(f"   - {error}")
         return False
-    
+
     print(f"✅ PASSED: File size {size_kb:.1f}KB, {line_count:,} lines (within expected ranges)")
     return True
 ```
 
-**Estimated Effort:** 30 minutes  
+**Estimated Effort:** 30 minutes
 **Risk Reduction:** 70% (catches bloat from duplicates)
 
 ---
@@ -566,21 +566,21 @@ Provide user-visible error messages and graceful degradation when JavaScript fai
 window.addEventListener('error', (event) => {
     console.error('[GLOBAL ERROR]', event.message, event.filename, event.lineno, event.colno);
     console.error('[ERROR STACK]', event.error?.stack);
-    
+
     // Show user-visible error message
     showCriticalError(
         'JavaScript Error',
         `${event.message} at line ${event.lineno}`,
         'The dashboard encountered an error. Please refresh the page or contact support.'
     );
-    
+
     // Prevent default error handling
     event.preventDefault();
 });
 
 window.addEventListener('unhandledrejection', (event) => {
     console.error('[UNHANDLED PROMISE REJECTION]', event.reason);
-    
+
     showCriticalError(
         'Promise Rejection',
         event.reason?.message || String(event.reason),
@@ -604,7 +604,7 @@ function showCriticalError(title, message, suggestion) {
         align-items: center;
         justify-content: center;
     `;
-    
+
     overlay.innerHTML = `
         <div style="background: white; padding: 30px; border-radius: 8px; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
             <h2 style="color: #c00; margin-top: 0;">⚠️ ${title}</h2>
@@ -624,12 +624,12 @@ function showCriticalError(title, message, suggestion) {
             </details>
         </div>
     `;
-    
+
     document.body.appendChild(overlay);
 }
 ```
 
-**Estimated Effort:** 2 hours  
+**Estimated Effort:** 2 hours
 **Risk Reduction:** 50% (provides user feedback instead of silent failure)
 
 ---
@@ -644,7 +644,7 @@ function renderWithFallback(renderFn, containerId, fallbackMessage) {
         console.error(`[ERROR] Container #${containerId} not found`);
         return;
     }
-    
+
     try {
         renderFn(container);
     } catch (e) {
@@ -669,7 +669,7 @@ renderWithFallback(
 );
 ```
 
-**Estimated Effort:** 1 hour  
+**Estimated Effort:** 1 hour
 **Risk Reduction:** 40% (provides fallback UI instead of blank screen)
 
 ---
@@ -690,13 +690,13 @@ Ensure users always load the latest version of the dashboard without manual hard
 def update_dashboard_html(self, data: List[Dict[str, Any]], per_agent_data: Dict[str, Dict]) -> bool:
     """Update dashboard HTML with new data and real per-agent data."""
     # ... existing code ...
-    
+
     # Add version metadata to HTML
     version = datetime.now().strftime('%Y%m%d_%H%M%S')
     version_comment = f'\n<!-- Dashboard Version: {version} -->\n'
-    
+
     new_html = version_comment + new_html
-    
+
     # ... rest of code ...
 ```
 
@@ -718,7 +718,7 @@ with socketserver.TCPServer(("", PORT), NoCacheHTTPRequestHandler) as httpd:
     httpd.serve_forever()
 ```
 
-**Estimated Effort:** 1 hour  
+**Estimated Effort:** 1 hour
 **Risk Reduction:** 80% (prevents cache-related confusion)
 
 ---
@@ -770,7 +770,7 @@ function showUpdateNotification(newVersion) {
 setInterval(checkForUpdates, 5 * 60 * 1000);
 ```
 
-**Estimated Effort:** 1 hour  
+**Estimated Effort:** 1 hour
 **Risk Reduction:** 60% (notifies users of updates)
 
 ---
@@ -791,10 +791,10 @@ Detect anomalies in dashboard generation and alert developers.
 def run(self) -> bool:
     """Run the complete dashboard generation pipeline with metrics."""
     start_time = time.time()
-    
+
     try:
         # ... existing generation code ...
-        
+
         # Collect metrics
         metrics = {
             'timestamp': datetime.now().isoformat(),
@@ -805,17 +805,17 @@ def run(self) -> bool:
             'html_line_count': self.dashboard_path.read_text().count('\n'),
             'validation_passed': True,
         }
-        
+
         # Write metrics to log file
         metrics_file = self.dashboard_path.parent / 'generation_metrics.jsonl'
         with open(metrics_file, 'a') as f:
             f.write(json.dumps(metrics) + '\n')
-        
+
         # Check for anomalies
         check_for_anomalies(metrics)
-        
+
         return True
-        
+
     except Exception as e:
         # Log failure metrics
         metrics = {
@@ -832,16 +832,16 @@ def run(self) -> bool:
 def check_for_anomalies(metrics: dict):
     """Check metrics for anomalies and alert if found."""
     alerts = []
-    
+
     if metrics['html_size_kb'] > 500:
         alerts.append(f"⚠️ HTML size {metrics['html_size_kb']:.1f}KB exceeds 500KB threshold")
-    
+
     if metrics['html_line_count'] > 15000:
         alerts.append(f"⚠️ HTML line count {metrics['html_line_count']:,} exceeds 15K threshold")
-    
+
     if metrics['duration_seconds'] > 30:
         alerts.append(f"⚠️ Generation took {metrics['duration_seconds']:.1f}s (expected <30s)")
-    
+
     if alerts:
         print("\n" + "=" * 70)
         print("⚠️  ANOMALY ALERTS")
@@ -851,7 +851,7 @@ def check_for_anomalies(metrics: dict):
         print("=" * 70 + "\n")
 ```
 
-**Estimated Effort:** 2 hours  
+**Estimated Effort:** 2 hours
 **Risk Reduction:** 30% (early detection of issues)
 
 ---
@@ -873,47 +873,47 @@ on:
 jobs:
   validate-dashboard:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      
+
       - name: Install dependencies
         run: |
           pip install playwright
           playwright install chromium
-      
+
       - name: Generate dashboard
         run: python agentic_core/L6_observability/dashboards/generate_dashboard.py
-      
+
       - name: Run structural tests
         run: python agentic_core/L6_observability/dashboards/test_dashboard.py
-      
+
       - name: Run browser rendering test
         run: python agentic_core/L6_observability/dashboards/test_dashboard_browser.py
-      
+
       - name: Check for anomalies
         run: |
           python -c "
           import json
           with open('agentic_core/L6_observability/dashboards/generation_metrics.jsonl') as f:
               metrics = json.loads(f.readlines()[-1])
-          
+
           if metrics['html_size_kb'] > 500:
               print('❌ FAIL: HTML size exceeds 500KB')
               exit(1)
-          
+
           if metrics['html_line_count'] > 15000:
               print('❌ FAIL: HTML line count exceeds 15K')
               exit(1)
-          
+
           print('✅ PASS: All metrics within normal ranges')
           "
-      
+
       - name: Upload dashboard artifact
         if: failure()
         uses: actions/upload-artifact@v3
@@ -922,7 +922,7 @@ jobs:
           path: agentic_core/L6_observability/dashboards/autonomy_dashboard.html
 ```
 
-**Estimated Effort:** 2 hours  
+**Estimated Effort:** 2 hours
 **Risk Reduction:** 40% (catches issues before merge)
 
 ---
@@ -930,7 +930,7 @@ jobs:
 ## Implementation Roadmap
 
 ### Phase 1: Critical Fixes (Week 1)
-**Priority:** P0  
+**Priority:** P0
 **Effort:** 10-12 hours
 
 1. ✅ Implement generator validation function (2-3 hours)
@@ -948,7 +948,7 @@ jobs:
 ---
 
 ### Phase 2: Enhanced Testing (Week 2)
-**Priority:** P0-P1  
+**Priority:** P0-P1
 **Effort:** 6-8 hours
 
 1. ✅ Implement browser-based rendering test with Playwright (3-4 hours)
@@ -964,7 +964,7 @@ jobs:
 ---
 
 ### Phase 3: Cache & Monitoring (Week 3)
-**Priority:** P1-P2  
+**Priority:** P1-P2
 **Effort:** 6-8 hours
 
 1. ✅ Implement cache-busting with version parameter (1 hour)

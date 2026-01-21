@@ -34,7 +34,7 @@ from agentic_core.utils.sovereign_index import SovereignIndex
 def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
     """
     [NEW] Detailed DDD Violation detector — structured output for L0 healing/forensics.
-    
+
     Returns:
         List of dicts with keys: file, line, type, description, Severity
     """
@@ -47,10 +47,10 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
     # Phase 6.9: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
     python_files = list(get_python_files(root))
-    
+
     if not python_files:
         return violations
-    
+
     for py_file in python_files:
         try:
             relative_path = py_file.relative_to(root)
@@ -62,7 +62,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
         # [SOVEREIGN FILTER] Adjusted to catch more valid code while skipping infrastructure
         if any(skip in str(relative_path) for skip in [TESTS_DIR, "migrations", "__pycache__", ".venv", "venv"]) or py_file.name.startswith("_"):
             continue
-        
+
         try:
             code = py_file.read_text(encoding="utf-8", errors="ignore") # [ROBUSTNESS] Ignore encoding errors
             tree = ast.parse(code, filename=str(py_file))
@@ -84,11 +84,11 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                 "Severity": "LOW"
             })
             continue
-        
+
         for node in ast.walk(tree):
             if not isinstance(node, ast.ClassDef):
                 continue
-            
+
             # Extract class body analysis
             methods = [n for n in node.body if isinstance(n, ast.FunctionDef) and not n.name.startswith("__")]
             attrs = [n for n in node.body if isinstance(n, ast.Assign)]
@@ -96,7 +96,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
             ann_attrs = [n for n in node.body if isinstance(n, ast.AnnAssign)]
             total_methods = len(methods)
             total_attrs = len(attrs) + len(ann_attrs)
-            
+
             # 1. Anemic Domain Model Detection
             # High attributes + low behavior = likely DTO/anemic entity
             if total_attrs >= 6 and total_methods <= 2:
@@ -106,7 +106,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                 # - @dataclass decorated classes (check decorator)
                 path_str = str(relative_path).lower()
                 class_name_lower = node.name.lower()
-                
+
                 # Check for @dataclass decorator
                 has_dataclass_decorator = any(
                     (isinstance(d, ast.Name) and d.id == "dataclass") or
@@ -117,7 +117,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                     ))
                     for d in node.decorator_list
                 )
-                
+
                 is_data_class_exempt = (
                     has_dataclass_decorator or
                     "schemas" in path_str or
@@ -171,7 +171,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                         "description": f"Class '{node.name}' has {total_attrs} attributes but only {total_methods} behaviors — probable data holder without domain logic",
                         "Severity": "HIGH"
                     })
-            
+
             # 2. God Class Detection
             # Excessive methods indicate SRP Violation
             if total_methods > 25:
@@ -182,7 +182,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                     "description": f"Class '{node.name}' has {total_methods} methods — potential Violation of Single Responsibility Principle",
                     "Severity": "MEDIUM"
                 })
-            
+
             # 3. Mutable Value Object Detection
             # Value Objects must be immutable — no setters or mutable ops
             bases = []
@@ -191,7 +191,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                     bases.append(base.id)
                 elif isinstance(base, ast.Attribute):
                     bases.append(base.attr)
-            
+
             # [HEURISTIC] Check for naming conventions like "ValueObject" or "VO"
             if any(vo_indicator in bases for vo_indicator in ["ValueObject", "VO", "Immutable"]) or "ValueObject" in node.name:
                 setters_or_mutators = [m for m in methods if m.name.startswith(("set_", "update_", "add_", "remove_")) or "mutat" in m.name.lower()]
@@ -203,7 +203,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                         "description": f"Value Object '{node.name}' contains mutating methods ({[m.name for m in setters_or_mutators]}) — VOs must be immutable",
                         "Severity": "CRITICAL"
                     })
-            
+
             # 4. Service Layer Bloat (heuristic)
             # Services should orchestrate, not contain domain logic
             if node.name.endswith("Service") or node.name.endswith("Manager"):
@@ -214,7 +214,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                     method_complexity = len([n for n in ast.walk(method) if isinstance(n, (ast.If, ast.For, ast.While, ast.Try))])
                     if method_complexity > 8: # Slightly relaxed threshold
                         complex_methods += 1
-                
+
                 if complex_methods > 5:
                     violations.append({
                         "file": str(relative_path),
@@ -223,7 +223,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                         "description": f"Service '{node.name}' has {complex_methods} complex methods — likely containing domain logic instead of orchestration",
                         "Severity": "MEDIUM"
                     })
-    
+
     return violations
 
 
@@ -233,21 +233,21 @@ def validate_ddd_alignment(root_path: str) -> Tuple[float, List[str]]:
     Used directly by Sovereign Auditor v3.1.
     """
     detailed_violations = get_ddd_violations_detailed(root_path)
-    
+
     # Scoring: 5 points per Violation, clamped to 0-100
     base_score = 100.0
     penalty_per_violation = 5.0
-    
+
     # [SOVEREIGN SCORING] Critical violations hit harder
     critical_count = sum(1 for v in detailed_violations if v['Severity'] == 'CRITICAL')
     penalty_per_violation += (critical_count * 10.0) # Bonus penalty for criticals
 
     score = max(0.0, base_score - len(detailed_violations) * penalty_per_violation)
-    
+
     # Format issues as strings for Auditor consumption
     issues: List[str] = []
     for v in detailed_violations:
         line_info = f"line {v['line']}" if v['line'] > 0 else ""
         issues.append(f"{v['file']}:{line_info} [{v['Severity']}] {v['type']}: {v['description']}")
-    
+
     return score, issues

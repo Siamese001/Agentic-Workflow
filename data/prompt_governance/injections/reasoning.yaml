@@ -5,12 +5,12 @@
 reasoning_injection:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # V5 Instructional Injection Framework - Reasoning Layer
   v5_reasoning_injections:
     enabled: true
     injection_count: 5
-    
+
     # 11. Failure Anticipation Injection
     failure_anticipation:
       description: "Predict likely mistakes before reasoning and mitigate proactively"
@@ -20,7 +20,7 @@ reasoning_injection:
         - Common Mistakes: {common_mistakes}
         - Mitigation Strategies: {mitigation_strategies}
         - Prevention Measures: {prevention_measures}
-        
+
         Before proceeding, identify and address these potential failure points.
         Apply preventive measures throughout the reasoning process.
       usage_context:
@@ -31,7 +31,7 @@ reasoning_injection:
         - "Failure modes identified"
         - "Preventive measures applied"
         - "Error rates reduced"
-        
+
     # 12. Self-Consistency / Multi-Branch Thinking
     multi_branch_thinking:
       description: "Generate multiple branches and vote for strongest reasoning path"
@@ -40,11 +40,11 @@ reasoning_injection:
         Branch A: {branch_a_reasoning}
         Branch B: {branch_b_reasoning}
         Branch C: {branch_c_reasoning}
-        
+
         Evaluation Criteria: {evaluation_criteria}
         Selected Branch: {selected_branch}
         Rationale: {selection_rationale}
-        
+
         Generate multiple reasoning paths, evaluate against criteria, and select strongest.
       usage_context:
         - "Complex decision making"
@@ -54,7 +54,7 @@ reasoning_injection:
         - "Multiple perspectives considered"
         - "Systematic evaluation applied"
         - "Optimal path selected"
-        
+
     # 13. Confidence & Uncertainty Injection
     confidence_uncertainty:
       description: "Provide numeric confidence with clear justification for uncertainty"
@@ -64,7 +64,7 @@ reasoning_injection:
         - Confidence Level: {confidence_level} (0-100%)
         - Uncertainty Factors: {uncertainty_factors}
         - Confidence Justification: {confidence_justification}
-        
+
         If confidence < 80%, identify additional information needed to increase certainty.
       usage_context:
         - "Risk assessment"
@@ -74,19 +74,19 @@ reasoning_injection:
         - "Confidence quantified"
         - "Uncertainty acknowledged"
         - "Justification provided"
-        
+
     # 14. Reason-Then-Answer Structure
     reason_then_answer:
       description: "Think privately first, then output final structured result"
       prompt_template: |
         [REASONING - PRIVATE]
         {private_reasoning_process}
-        
+
         [ANALYSIS COMPLETE]
-        
+
         [FINAL ANSWER]
         {structured_final_output}
-        
+
         Complete full reasoning process privately before generating final output.
         Do not show reasoning process in final answer unless explicitly requested.
       usage_context:
@@ -97,7 +97,7 @@ reasoning_injection:
         - "Complete reasoning performed"
         - "Private process maintained"
         - "Structured output delivered"
-        
+
     # 15. Error Simulation Injection
     error_simulation:
       description: "Simulate potential failures and correct output before finalizing"
@@ -108,7 +108,7 @@ reasoning_injection:
         3. Error Impact Assessment: {error_impact}
         4. Corrected Output: {corrected_output}
         5. Final Validation: {final_validation}
-        
+
         Simulate failure scenarios, identify impacts, and apply corrections before finalizing.
       usage_context:
         - "Critical decision making"
@@ -118,19 +118,19 @@ reasoning_injection:
         - "Error scenarios simulated"
         - "Corrections applied"
         - "Output validated"
-        
+
   # Global reasoning principles
   global_principles:
     enabled: true
     reasoning_level: "systematic"
-    
+
     # Core reasoning frameworks
     frameworks:
       logical_reasoning: true
       critical_thinking: true
       analytical_reasoning: true
       strategic_reasoning: true
-      
+
   # Logical reasoning frameworks
   logical_reasoning:
     # Deductive reasoning
@@ -140,24 +140,24 @@ reasoning_injection:
         - "establish_general_premise"
         - "apply_specific_conditions"
         - "derive_logical_conclusion"
-        
+
       resume_applications:
         skill_transferability:
           premise: "Technical skills are transferable across industries"
           application: "Analyze specific technical skills for new industry"
           conclusion: "Identify transfer opportunities and gaps"
-          
+
         career_progression:
           premise: "Career advancement requires demonstrated growth"
           application: "Evaluate experience progression"
           conclusion: "Assess readiness for next level"
-          
+
       outreach_applications:
         relevance_assessment:
           premise: "Professional value increases with relevance"
           application: "Analyze recipient's needs and interests"
           conclusion: "Determine optimal value proposition"
-          
+
     # Inductive reasoning
     inductive_reasoning:
       description: "Forming general principles from specific observations"
@@ -165,24 +165,24 @@ reasoning_injection:
         - "observe_specific_patterns"
         - "identify_common_elements"
         - "form_general_principle"
-        
+
       resume_applications:
         skill_patterns:
           observations: "Analyze multiple job descriptions"
           patterns: "Identify common skill requirements"
           principle: "Determine market-valued skill categories"
-          
+
         success_indicators:
           observations: "Review successful career transitions"
           patterns: "Extract common success factors"
           principle: "Establish transition success framework"
-          
+
       outreach_applications:
         engagement_patterns:
           observations: "Analyze response patterns"
           patterns: "Identify effective approaches"
           principle: "Develop outreach optimization strategy"
-          
+
     # Abductive reasoning
     abductive_reasoning:
       description: "Finding the best explanation for observations"
@@ -190,19 +190,19 @@ reasoning_injection:
         - "observe_phenomenon"
         - "generate_hypotheses"
         - "evaluate_best_explanation"
-        
+
       resume_applications:
         gap_analysis:
           observation: "Identify resume-job description gaps"
           hypotheses: "Generate possible explanations"
           best_explanation: "Determine most likely improvement areas"
-          
+
       outreach_applications:
         response_analysis:
           observation: "Analyze low response rates"
           hypotheses: "Generate potential causes"
           best_explanation: "Identify most likely improvement areas"
-          
+
   # Critical thinking frameworks
   critical_thinking:
     # Evaluation criteria
@@ -213,21 +213,21 @@ reasoning_injection:
           - "Does this directly address the goal?"
           - "Is this information essential?"
           - "What impact does this have on outcomes?"
-          
+
       accuracy:
         description: "Verify factual accuracy"
         questions:
           - "Is this information verifiable?"
           - "Are there supporting evidence?"
           - "Are there potential biases?"
-          
+
       completeness:
         description: "Ensure comprehensive coverage"
         questions:
           - "Are all relevant aspects covered?"
           - "What information might be missing?"
           - "Are there alternative perspectives?"
-          
+
     # Resume critical thinking
     resume_critical_thinking:
       experience_evaluation:
@@ -235,17 +235,17 @@ reasoning_injection:
           - "How does this experience relate to target role?"
           - "What specific skills demonstrate capability?"
           - "What achievements show impact?"
-          
+
         accuracy_verification:
           - "Can these achievements be quantified?"
           - "Are these skills current and applicable?"
           - "Is this experience presented truthfully?"
-          
+
         completeness_analysis:
           - "What critical experiences might be missing?"
           - "Are there gaps in the career narrative?"
           - "What additional context would strengthen this?"
-          
+
     # Outreach critical thinking
     outreach_critical_thinking:
       message_evaluation:
@@ -253,17 +253,17 @@ reasoning_injection:
           - "How does this message address recipient needs?"
           - "What specific value is being offered?"
           - "Is this approach appropriate for the context?"
-          
+
         accuracy_verification:
           - "Are claims about recipient accurate?"
           - "Is company research current and correct?"
           - "Are proposed benefits realistic?"
-          
+
         completeness_analysis:
           - "What essential information might be missing?"
           - "Are there unanswered questions?"
           - "What additional context would improve this?"
-          
+
   # Analytical reasoning
   analytical_reasoning:
     # Problem decomposition
@@ -273,7 +273,7 @@ reasoning_injection:
         - "break_into_sub_problems"
         - "analyze_relationships"
         - "prioritize_components"
-        
+
       resume_decomposition:
         career_analysis:
           core_problem: "Optimize resume for target role"
@@ -282,7 +282,7 @@ reasoning_injection:
             - "evaluate current qualifications"
             - "identify skill gaps"
             - "optimize experience presentation"
-            
+
       outreach_decomposition:
         engagement_analysis:
           core_problem: "Increase response rates"
@@ -291,7 +291,7 @@ reasoning_injection:
             - "evaluate current approach"
             - "identify improvement opportunities"
             - "optimize message strategy"
-            
+
     # Pattern recognition
     pattern_recognition:
       techniques:
@@ -299,21 +299,21 @@ reasoning_injection:
         - "correlation_analysis"
         - "anomaly_detection"
         - "pattern_extraction"
-        
+
       resume_patterns:
         success_patterns:
           - "achievement_quantification"
           - "skill_progression"
           - "industry_transitions"
           - "role_advancement"
-          
+
       outreach_patterns:
         engagement_patterns:
           - "personalization_effectiveness"
           - "timing_optimization"
           - "value_proposition_impact"
           - "follow_up_strategy"
-          
+
   # Strategic reasoning
   strategic_reasoning:
     # Goal alignment
@@ -323,31 +323,31 @@ reasoning_injection:
         - "identify_supporting_goals"
         - "establish_success_metrics"
         - "create_action_plan"
-        
+
       resume_strategy:
         career_objectives:
           primary_goals:
             - "secure_target_role interviews"
             - "demonstrate qualifications"
             - "differentiate_from_competition"
-            
+
           supporting_goals:
             - "show_cultural_fit"
             - "demonstrate_growth_potential"
             - "establish_professional_brand"
-            
+
       outreach_strategy:
         networking_objectives:
           primary_goals:
             - "establish_professional_connections"
             - "create_opportunity_conversations"
             - "build_relationship_network"
-            
+
           supporting_goals:
             - "demonstrate_industry_knowledge"
             - "show_collaboration_interest"
             - "provide_reciprocal_value"
-            
+
     # Risk assessment
     risk_assessment:
       methodology:
@@ -355,29 +355,29 @@ reasoning_injection:
         - "assess_probability_impact"
         - "develop_mitigation_strategies"
         - "create_contingency_plans"
-        
+
       resume_risks:
         content_risks:
           - "overqualification_perception"
           - "skill_obsolescence_concerns"
           - "employment_gaps_questions"
-          
+
         presentation_risks:
           - "format_inconsistencies"
           - "typos_grammar_errors"
           - "length_readability_issues"
-          
+
       outreach_risks:
         messaging_risks:
           - "spam_filter_triggers"
           - "unprofessional_perception"
           - "irrelevant_content"
-          
+
         timing_risks:
           - "inappropriate_contact_times"
           - "excessive_followup_frequency"
           - "missed_opportunity_windows"
-          
+
   # Decision-making frameworks
   decision_making:
     # Multi-criteria decision analysis
@@ -387,7 +387,7 @@ reasoning_injection:
         - "assign_weight_importance"
         - "evaluate_alternatives"
         - "calculate_optimal_choice"
-        
+
       resume_decisions:
         content_selection:
           criteria:
@@ -395,13 +395,13 @@ reasoning_injection:
             - "demonstrated_impact"
             - "skill_level_advancement"
             - "career_progression"
-            
+
           weights:
             relevance: 0.4
             impact: 0.3
             advancement: 0.2
             progression: 0.1
-            
+
       outreach_decisions:
         approach_selection:
           criteria:
@@ -409,13 +409,13 @@ reasoning_injection:
             - "value_proposition_strength"
             - "relationship_building"
             - "conversion_probability"
-            
+
           weights:
             personalization: 0.3
             value_proposition: 0.3
             relationship: 0.2
             conversion: 0.2
-            
+
     # Cost-benefit analysis
     cost_benefit_analysis:
       framework:
@@ -423,16 +423,16 @@ reasoning_injection:
         - "quantify_all_benefits"
         - "compare_alternatives"
         - "make_recommendation"
-        
+
       resume_optimization:
         time_investment:
           costs: "time_and_effort_required"
           benefits: "improved_interview_rates"
-          
+
         skill_development:
           costs: "learning_time_and_resources"
           benefits: "increased_market_value"
-          
+
   # Reasoning optimization
   optimization:
     # Reasoning efficiency
@@ -442,19 +442,19 @@ reasoning_injection:
         - "heuristics"
         - "decision_shortcuts"
         - "pattern_matching"
-        
+
       resume_efficiency:
         quick_assessment:
           - "6_second_scan_simulation"
           - "keyword_density_analysis"
           - "visual_hierarchy_evaluation"
-          
+
       outreach_efficiency:
         rapid_personalization:
           - "template_adaptation"
           - "research_prioritization"
           - "message_optimization"
-          
+
     # Reasoning quality
     quality:
       metrics:
@@ -462,7 +462,7 @@ reasoning_injection:
         - "evidence_support"
         - "bias_identification"
         - "alternative_consideration"
-        
+
       improvement_strategies:
         - "peer_review_process"
         - "feedback_integration"

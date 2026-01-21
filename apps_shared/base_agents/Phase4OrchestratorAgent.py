@@ -35,7 +35,7 @@ from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin i
 class MutationMode(Enum):
     """
     Mutation output modes for code changes.
-    
+
     Defines the different formats in which code mutations can be expressed,
     including full code replacement, unified diffs, and JSON patches.
     """
@@ -48,7 +48,7 @@ class MutationMode(Enum):
 class FileBackup:
     """
     Backup of a file for rollback.
-    
+
     Attributes:
         path: File path
         content: File content snapshot
@@ -65,7 +65,7 @@ class FileBackup:
 class MutationResult:
     """
     Result of a mutation operation.
-    
+
     Attributes:
         success: Whether mutation succeeded
         original_content: Original file content
@@ -90,7 +90,7 @@ class MutationResult:
 class RepairProposal:
     """
     A proposed repair from collective intelligence.
-    
+
     Attributes:
         agent_name: Name of proposing agent
         proposal: Repair proposal text

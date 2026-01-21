@@ -86,8 +86,8 @@ Sudeep Das (Head of ML for New Verticals) - Personalization algorithms
 
 ### VG_K2_5_DEEP_RESEARCH_INTEGRITY
 
-**Execution Point:** POST_K2_5_GENERATION  
-**Blocking:** True  
+**Execution Point:** POST_K2_5_GENERATION
+**Blocking:** True
 **Severity:** CRITICAL
 
 **Checks:**
@@ -256,7 +256,7 @@ The DoorDash Executive Summary serves as the **gold standard** for K.2.5 output 
 The K.2.5 agent integrates into the resume generation pipeline at the **Competitive Positioning** phase:
 
 ```
-K.0 (Job Description) 
+K.0 (Job Description)
   → K.1 (Executive Summary)
   → K.2 (Thematic Analysis)
   → **K.2.5 (Competitive Intelligence)** ← Deep Research Protocol
@@ -308,15 +308,15 @@ Expected output:
 
 ### ❌ Surface-Level Summary
 ```
-"DoorDash is a leading food delivery company that uses innovative 
+"DoorDash is a leading food delivery company that uses innovative
 technology and has a strong leadership team driving growth."
 ```
 
 ### ✅ Deep Research Output
 ```
-"DoorDash achieved Q2 2025 GAAP profitability ($285M net income) 
-through logistics optimization powered by Gated MoE models (20% ETA 
-accuracy improvement) and autonomous delivery pilots (Dot robot), 
+"DoorDash achieved Q2 2025 GAAP profitability ($285M net income)
+through logistics optimization powered by Gated MoE models (20% ETA
+accuracy improvement) and autonomous delivery pilots (Dot robot),
 led by Stanley Tang (Labs) and Ravi Inukonda (CFO/Risk)."
 ```
 

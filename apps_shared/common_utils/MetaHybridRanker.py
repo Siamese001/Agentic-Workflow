@@ -59,10 +59,3 @@ def test_fuse_and_rank_applies_council_weights() -> None:
     rag = fuse_and_rank(lex_results=lex, dense_results=dense, cfg=cfg, council_vote=council)
     scores = {e.text: e.score for e in rag.evidence}
     assert scores["preferred candidate"] > scores["other"]
-
-
-
-
-
-
-

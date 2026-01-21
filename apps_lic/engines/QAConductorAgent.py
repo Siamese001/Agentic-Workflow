@@ -185,15 +185,15 @@ def load_dynamic_tools(context: WorkflowContext, debug_mode: bool) -> Dict[str, 
                 spec = importlib.util.spec_from_file_location(filename[:-3], file_path)
                 if spec is None:
                     raise ImportError(f"Could not create spec for {file_path}")
-                
+
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
-                
+
                 for name, obj in inspect.getmembers(module):
                     if inspect.isclass(obj) and \
                        issubclass(obj, BaseTool) and \
                        obj is not BaseTool:
-                        
+
                         tool_instance = obj(context, debug_mode)
                         tool_name = tool_instance.tool_name
 
@@ -228,13 +228,13 @@ def load_dynamic_tools(context: WorkflowContext, debug_mode: bool) -> Dict[str, 
                                 )
                         if tool_name in dynamic_tools:
                             logger.warning(f"Duplicate dynamic tool name '{tool_name}'. Overwriting.")
-                        
+
                         dynamic_tools[tool_name] = tool_instance
                         logger.info(f"Successfully loaded dynamic tool: {name} (as '{tool_name}')")
-            
+
             except Exception as e:
                 logger.error(f"Failed to load dynamic tool from {filename}: {e}")
-                
+
     return dynamic_tools
 
 # QA CONDUCTOR (v10.7: Fix #7, #8, #17, #19, #20, #24)
@@ -242,7 +242,7 @@ def load_dynamic_tools(context: WorkflowContext, debug_mode: bool) -> Dict[str, 
 
 class QAConductorAgent(BaseAgent):
     """v10.7: ReAct QA Conductor with dynamic/UI tooling and cognitive modes."""
-    
+
     def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
         super().__init__(context, debug_mode)
         static_tools: List[Tuple[str, BaseTool]] = [
@@ -285,9 +285,9 @@ class QAConductorAgent(BaseAgent):
                     tool_name,
                 )
         self.tools.update(dynamic_tools)
-        
+
         self.tool_schemas = [t.get_schema() for t in self.tools.values()]
-        
+
         self.tool_breakers = {
             name: CircuitBreaker(
                 failure_threshold=self.config.batch_config.circuit_breaker_failure_threshold
@@ -309,7 +309,7 @@ class QAConductorAgent(BaseAgent):
             json.dumps(state['resume']['master_resume']), 4000
         )
         pruned_jd = await self.budget_manager.prune(state['job']['raw_jd'], 2000)
-        
+
         strategy_plan = state['strategy']['strategy_plan']
         if isinstance(strategy_plan, dict):
             strategy_plan = StrategyPlan.model_validate(strategy_plan)
@@ -339,39 +339,39 @@ When finished, output:
 {{"thought": "QA complete", "final_qa_report": {{"qa_passed": true/false, "issues": [...]}}}}
 """
         messages = [{"role": "user", "content": react_prompt}]
-        
+
         final_report = {}
         all_tool_results = []
-        
+
         tool_context = {
             "draft_text": pruned_draft,
-            "master_resume": pruned_master_resume, 
-            "job_description": pruned_jd,           
-            "strategy": strategy_plan.model_dump(), 
+            "master_resume": pruned_master_resume,
+            "job_description": pruned_jd,
+            "strategy": strategy_plan.model_dump(),
             "style_guide": self.style_guide
         }
-        
+
         for step in range(max_steps):
             response = await client.chat_completion_async(
                 messages=messages,
                 temperature=self.config.agent_stacks.conductor_temperature,
                 response_format="json_object"
             )
-            
+
             step_data, error = self.validator.validate(response["content"], dict)
             if error:
                 logger.warning(f"QA step {step} failed validation: {error}")
                 messages.append({"role": "user", "content": f"Error: Invalid JSON response from LLM. {error}"})
                 continue
-            
+
             messages.append({"role": "assistant", "content": json.dumps(step_data)})
-            
+
             if "final_qa_report" in step_data:
                 final_report = step_data["final_qa_report"]
                 final_report["all_tool_results"] = all_tool_results
                 self.log_feedback(workflow_id, "react_conductor_qa", "success", {"steps_executed": step})
                 return final_report
-            
+
             if "tool_call" in step_data:
                 tool_name = step_data["tool_call"].get("name")
                 tool_input = step_data["tool_call"].get("input", {})
@@ -379,9 +379,9 @@ When finished, output:
                 if not tool_name or tool_name not in self.tools:
                     messages.append({"role": "user", "content": f"Error: Tool '{tool_name}' not found."})
                     continue
-                
+
                 tool_input.update(tool_context)
-                
+
                 try:
                     breaker = self.tool_breakers[tool_name]
                     breaker.check()
@@ -390,16 +390,16 @@ When finished, output:
                     breaker.record_success()
                     all_tool_results.append({tool_name: tool_result})
                     messages.append({"role": "user", "content": f"Tool Result: {json.dumps(tool_result)}"})
-                
+
                 except (CircuitBreakerOpenError, PydanticSchemaError, Exception) as e:
                     self.log_error(f"QA Tool {tool_name} failed: {e}")
                     if not isinstance(e, CircuitBreakerOpenError):
                         if tool_name in self.tool_breakers:
                             self.tool_breakers[tool_name].record_failure()
-                    
+
                     error_msg = f"Error: Tool '{tool_name}' failed. Do not call it again. Reason: {str(e)}"
                     messages.append({"role": "user", "content": error_msg})
-        
+
         self.log_feedback(workflow_id, "react_conductor_qa", "failure", {"reason": "Max steps reached"})
         return {"error": "Max steps reached", "steps": max_steps, "all_tool_results": all_tool_results, "qa_passed": False}
 
@@ -426,11 +426,11 @@ async def run_sanitize_pii(state: dict, workflow_context: WorkflowContext) -> di
     context.complexity = state.get('metadata', {}).get('complexity', 'unknown')
     pii_agent = PIISanitizerAgent(context)
     sanitized = await asyncio.to_thread(pii_agent.run, state['resume']['master_resume'])
-    
+
     bias_agent = BiasDetectorAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     bias_result = await asyncio.to_thread(bias_agent.run, state['job']['raw_jd'], workflow_id)
-    
+
     return {
         "resume": {"sanitized_resume": sanitized},
         "safety": {"bias_detected": bias_result['bias_detected']}
@@ -487,19 +487,19 @@ async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -
     context = workflow_context
     if not context.config.agent_stacks.enable_hil_stack:
         return {"hil": {"ambiguity_report": {"ambiguity_detected": False, "confidence": 1.0, "reason": "HIL disabled", "question_for_human": ""}}}
-        
+
     detector = HILAmbiguityDetectorAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    
+
     strategy_plan = state['strategy']['strategy_plan']
     if isinstance(strategy_plan, dict):
         strategy_plan = StrategyPlan.model_validate(strategy_plan)
-    
+
     ambiguity_result = await detector.run_async(strategy_plan, workflow_id)
     report = ambiguity_result.get("ambiguity_report")
     if report.confidence < context.config.agent_stacks.ambiguity_confidence_threshold:
             report.ambiguity_detected = False
-    
+
     return {"hil": {"ambiguity_report": report.model_dump()}}
 
 # v10.7 (Fix #5): Dummy node for parallel fork
@@ -518,7 +518,7 @@ async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext)
     strategy_plan = state['strategy']['strategy_plan']
     if isinstance(strategy_plan, dict):
         strategy_plan = StrategyPlan.model_validate(strategy_plan)
-    
+
     complexity = state.get('metadata', {}).get('complexity', 'unknown')
     prompts_result = await prompt_agent.run_async(strategy_plan, complexity, workflow_id)
     return {"prompts": {"prompts": prompts_result.get("prompts").model_dump()}}
@@ -549,9 +549,9 @@ async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -
     strategy = state['strategy']['strategy_plan']
     if isinstance(strategy, dict):
         strategy = StrategyPlan.model_validate(strategy)
-    
+
     all_bullets = []
-    for exp in state['resume']['experience_bullets'][:3]: 
+    for exp in state['resume']['experience_bullets'][:3]:
         bullets = await bullet_gen.run_async(prompt, exp, strategy, workflow_id)
         all_bullets.extend([{"text": b, "experience": exp} for b in bullets])
     return {"bullets": {"generated_bullets": all_bullets}}
@@ -582,7 +582,7 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     strategy_plan = state['strategy']['strategy_plan']
     if isinstance(strategy_plan, dict):
         strategy_plan = StrategyPlan.model_validate(strategy_plan)
-    
+
     task_context = {
         "bullets": good_bullets,
         "strategy": strategy_plan,
@@ -596,10 +596,10 @@ async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> d
     """Node 9: Final QA with ReAct Conductor"""
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    
+
     if isinstance(state['strategy']['strategy_plan'], dict):
         state['strategy']['strategy_plan'] = StrategyPlan.model_validate(state['strategy']['strategy_plan'])
-    
+
     validation = await route_to_stack("QAStack", context, state, workflow_id)
     log_event("QAStack", "completed", {"workflow_id": workflow_id})
     return {
@@ -640,7 +640,7 @@ def human_in_the_loop_node(state: dict) -> dict:
         logger.warning("HIL not available. Skipping pause.")
         return {}
     try:
-        human_in_the_loop(timeout=3600) 
+        human_in_the_loop(timeout=3600)
     except GraphRecursionError:
         logger.info("HIL pause interrupted by user feedback.")
     except Exception as e:
@@ -715,12 +715,12 @@ def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
         state['metadata']['retries']['bullet_retries'] = retries + 1
         return "retry_bullets"
     return "global_replanner"
-    
+
 def check_qa_passed(state: dict) -> str:
     """Node 9 conditional: Check QA and retries (v10.7: Rerouted)"""
     if state.get('qa', {}).get('qa_passed', False):
         return "qa_passed" # Route to constitutional review
-    
+
     retries = state.get('metadata', {}).get('retries', {}).get('qa_retries', 0)
     if retries < 1: # Max 1 QA retry
         if 'metadata' not in state: state['metadata'] = {}
@@ -798,41 +798,41 @@ def get_graph_app(
     add_async_node("run_feedback_router", partial(run_feedback_router, workflow_context=workflow_context)) # 11
     add_async_node("run_reconcile_specialists", partial(run_reconcile_specialists, workflow_context=workflow_context)) # 11.5
     add_async_node("run_inject_hil_edit", partial(run_inject_hil_edit, workflow_context=workflow_context)) # 12
-    
+
     # --- CONNECT NODES (v10.7: Rerouted for new nodes) ---
     workflow.set_entry_point("run_sanitize_pii")
     workflow.add_edge("run_sanitize_pii", "run_detect_prompt_injection") # 0 -> 0.5
-    
+
     workflow.add_conditional_edges(
         "run_detect_prompt_injection", check_prompt_injection,
         {"injection_detected": END, "injection_safe": "run_classify_complexity"}
     ) # 0.5 -> 1 or END
-    
+
     workflow.add_edge("run_classify_complexity", "run_tot_strategy") # 1 -> 2
     workflow.add_edge("run_tot_strategy", "run_detect_ambiguity") # 2 -> 3
-    
+
     # v10.7 (Fix #5): Reroute for parallel execution
     workflow.add_conditional_edges(
         "run_detect_ambiguity", check_ambiguity,
         {"pause_for_human": "HIL_PAUSE", "continue_workflow": "prepare_parallel_run"}
     ) # 3 -> 10 or 3.5
-    
+
     workflow.add_edge("prepare_parallel_run", "run_prompt_engineering") # 3.5 -> 4
     workflow.add_edge("prepare_parallel_run", "run_rag_stack") # 3.5 -> 5
     workflow.add_edge("run_prompt_engineering", "join_rag_and_prompt") # 4 -> 5.5
     workflow.add_edge("run_rag_stack", "join_rag_and_prompt") # 5 -> 5.5
-    
+
     workflow.add_edge("join_rag_and_prompt", "run_generate_bullets") # 5.5 -> 6
-    
+
     workflow.add_edge("run_generate_bullets", "run_critique_bullets") # 6 -> 7
-    
+
     workflow.add_conditional_edges(
         "run_critique_bullets", partial(check_bullets_passed, workflow_context=workflow_context),
         {"bullets_passed": "run_drafting", "retry_bullets": "run_generate_bullets", "global_replanner": END}
     ) # 7 -> 8 or 6 or END
-    
+
     workflow.add_edge("run_drafting", "run_qa_validation") # 8 -> 9
-    
+
     # v10.7 (Fix #30): Reroute for constitutional review
     workflow.add_conditional_edges(
         "run_qa_validation", check_qa_passed,
@@ -842,7 +842,7 @@ def get_graph_app(
             "global_replanner": END
         }
     )
-    
+
     workflow.add_conditional_edges(
         "run_constitutional_review", check_constitution,
         {
@@ -850,9 +850,9 @@ def get_graph_app(
             "failed_constitution": END # Fail the job
         }
     )
-    
+
     workflow.add_edge("HIL_PAUSE", "run_feedback_router") # 10 -> 11
-    
+
     workflow.add_conditional_edges(
         "run_feedback_router", route_feedback,
         {
@@ -865,9 +865,9 @@ def get_graph_app(
     )
 
     workflow.add_edge("run_reconcile_specialists", "run_inject_hil_edit") # 11.5 -> 12
-    
+
     workflow.add_edge("run_inject_hil_edit", "run_qa_validation") # 12 -> 9 (Re-run QA)
-    
+
     return workflow.compile(checkpointer=checkpointer)
 
 # ============================================================================

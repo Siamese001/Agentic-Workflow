@@ -22,26 +22,26 @@ def main():
     print("HIERARCHY HEALER - DRY RUN MODE")
     print("=" * 80)
     print("Scanning for hierarchy violations (no changes will be made)...\n")
-    
+
     # Initialize with healing_enabled=False for dry-run
     project_root = Path.cwd()
     agent = HierarchyHealerAgent(project_root, healing_enabled=False)
-    
+
     # Run hierarchy violation detection
     result = agent.heal_hierarchy_violations()
-    
+
     print("\n" + "=" * 80)
     print("DRY RUN RESULTS")
     print("=" * 80)
     print(f"Files that would be relocated: {result['files_relocated']}")
     print(f"Folders that would be removed: {result['folders_removed']}")
     print(f"Errors encountered: {len(result['errors'])}")
-    
+
     if result['errors']:
         print("\nErrors:")
         for error in result['errors']:
             print(f"  - {error}")
-    
+
     print("\n" + "=" * 80)
     print("DRY RUN COMPLETE - No changes were made")
     print("=" * 80)

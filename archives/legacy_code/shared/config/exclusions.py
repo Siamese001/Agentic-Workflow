@@ -102,4 +102,3 @@ def get_python_files(root_dir: str = '.') -> list[str]:
                     python_files.append(file_path)
 
     return python_files
-

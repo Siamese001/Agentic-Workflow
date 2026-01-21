@@ -1,7 +1,7 @@
 # Deep Architectural Review: Top 5 Consolidation & Hardening Opportunities
 
-**Date:** January 19, 2026  
-**Scope:** `agentic_core/` and `scripts/` directories  
+**Date:** January 19, 2026
+**Scope:** `agentic_core/` and `scripts/` directories
 **Objective:** Identify structural friction, redundant logic, and dependency risks
 
 ---
@@ -80,7 +80,7 @@ class IOrchestratorAgent(Protocol):
         dry_run: bool = True,
         execute: bool = False
     ) -> Dict[str, Any]: ...
-    
+
     def run_agent(
         self,
         agent_name: str,
@@ -95,7 +95,7 @@ class IOrchestratorAgent(Protocol):
 class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
     """
     Single entry point for all orchestration needs.
-    
+
     Modes:
     - HEALING: Run healing agents (replaces HealingOrchestratorAgent)
     - COMPLIANCE: Run compliance checks (replaces ComplianceOrchestratorAgent)
@@ -175,7 +175,7 @@ SovereignBaseAgent.py (root)
   L6ObservabilityBaseAgent.py
 ```
 
-**Friction:** 
+**Friction:**
 - Unclear which base to inherit from
 - Duplicate functionality across bases
 - MRO complexity when combining mixins
@@ -325,14 +325,14 @@ def get_files_by_layer(
 # agentic_core/utils/file_cache.py
 class FileCache:
     """Cached file listing to avoid repeated rglob scans."""
-    
+
     def __init__(self, project_root: Path):
         self._cache_file = project_root / ".file_cache.json"
         self._files = self._load_or_scan()
-    
+
     def get_python_files(self) -> List[Path]:
         return self._files.get("python", [])
-    
+
     def invalidate(self):
         """Called when files are added/removed."""
         self._files = self._scan()
@@ -401,7 +401,7 @@ def check_rglob_count(max_allowed: int = 50) -> bool:
 
 **Key Mixins (by usage):**
 - `HealerMixin` - 321 files
-- `MCPHardenedMixin` - 321 files  
+- `MCPHardenedMixin` - 321 files
 - `SubatomicTestingMixin` - 321 files
 
 **Problem:** Every agent inherits all three, creating a 3-way diamond pattern.
@@ -437,10 +437,10 @@ DELETE: agentic_core/L3_orchestration/fission_logic/subatomic_testing_mixin.py
 class InfrastructureMixin(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
     """
     Unified infrastructure mixin combining all standard capabilities.
-    
+
     Agents should inherit from this instead of individual mixins.
     """
-    
+
     def __init__(self):
         super().__init__()
         # Unified initialization
@@ -473,14 +473,14 @@ def validate_mro(agent_class: type) -> bool:
     Agent -> Specialized -> Layer -> Sovereign -> Infrastructure -> object
     """
     mro = agent_class.__mro__
-    
+
     # Check Infrastructure is near the end
     infra_idx = mro.index(InfrastructureMixin)
     object_idx = mro.index(object)
-    
+
     if infra_idx > object_idx - 2:
         return False
-    
+
     return True
 ```
 
@@ -562,19 +562,19 @@ def validate_heal_signature(agent_class: type) -> bool:
     method = getattr(agent_class, 'heal_repository', None)
     if not method:
         return False
-    
+
     sig = inspect.signature(method)
     params = list(sig.parameters.keys())
-    
+
     required = ['self', 'dry_run', 'execute']
     for req in required:
         if req not in params:
             return False
-    
+
     # Must accept **kwargs
     if not any(p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()):
         return False
-    
+
     return True
 ```
 
@@ -636,13 +636,13 @@ def run_agent(agent: IHealable) -> AgentResult:
 def validate_all_healers() -> bool:
     """Validate all agents with heal_repository match protocol."""
     from agentic_core.utils.ssot_discovery import get_healers
-    
+
     failures = []
     for agent_data in get_healers():
         cls = import_agent_class(agent_data)
         if not validate_heal_signature(cls):
             failures.append(agent_data['class_name'])
-    
+
     if failures:
         print(f"FAIL: {len(failures)} agents have non-compliant heal_repository")
         return False

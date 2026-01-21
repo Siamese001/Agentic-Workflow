@@ -6,14 +6,14 @@ Using runtime_checkable allows isinstance() checks to verify protocol adherence.
 
 USAGE:
     from agentic_core.L3_orchestration.interfaces.orchestrator import IOrchestrator
-    
+
     class MyOrchestrator:
         def run_mission(self, context: dict) -> dict:
             ...
-        
+
         def validate_stability(self, result: dict) -> bool:
             ...
-    
+
     # Verify adherence
     assert isinstance(MyOrchestrator(), IOrchestrator)
 
@@ -37,29 +37,29 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 class IOrchestrator(Protocol):
     """
     Immutable contract for orchestration agents.
-    
+
     All orchestrators must implement these methods to ensure:
     1. Consistent mission execution interface
     2. Stability validation after mission completion
     3. Predictable return value structures
-    
+
     This protocol enables:
     - Runtime type checking via isinstance()
     - Static type checking via mypy/pyright
     - Documentation of expected behavior
     """
-    
+
     def run_mission(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute a healing/validation mission across agents.
-        
+
         Args:
             context: Mission configuration containing:
                 - dry_run (bool): If True, only report without fixing
                 - execute (bool): If True, execute healing actions
                 - agents (List[str], optional): Specific agents to run
                 - max_depth (int, optional): Maximum recursion depth
-                
+
         Returns:
             Mission result dictionary containing:
                 - status (str): 'SUCCESS', 'PARTIAL', 'FAILED'
@@ -70,21 +70,21 @@ class IOrchestrator(Protocol):
                 - is_stable (bool): Whether repository is stable
         """
         ...
-    
+
     def validate_stability(self, result: Dict[str, Any]) -> bool:
         """
         Validate whether the mission result indicates a stable repository.
-        
+
         This method provides a standardized way to determine if the
         repository is in a healthy state after a mission run.
-        
+
         Args:
             result: Mission result from run_mission()
-            
+
         Returns:
             True if repository is stable (no unfixed violations, no errors)
             False if repository has issues requiring attention
-            
+
         Stability Criteria:
             - No unfixed violations (total_violations <= total_fixed)
             - No error status in agent results
@@ -97,11 +97,11 @@ class IOrchestrator(Protocol):
 class IHealable(Protocol):
     """
     Protocol for agents that can heal repository issues.
-    
+
     This is the canonical signature for heal_repository that all
     healing agents must implement.
     """
-    
+
     @standard_heal
     def heal_repository(
         self,
@@ -111,12 +111,12 @@ class IHealable(Protocol):
     ) -> Dict[str, Any]:
         """
         Heal repository issues within this agent's domain.
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, execute healing actions
             **kwargs: Additional agent-specific parameters
-            
+
         Returns:
             Dictionary with standardized keys:
                 - violations_found (int): Number of violations detected
@@ -131,16 +131,16 @@ class IHealable(Protocol):
 class ITieredAgent(Protocol):
     """
     Protocol for agents that operate within the tiered execution model.
-    
+
     Tiered agents have a defined execution tier (0-4) that determines
     when they run in the healing sequence.
     """
-    
+
     @property
     def tier(self) -> int:
         """
         Return the execution tier for this agent.
-        
+
         Tier 0: Pre-flight (syntax validation)
         Tier 1: Structural stabilization
         Tier 2: Architectural alignment
@@ -148,11 +148,11 @@ class ITieredAgent(Protocol):
         Tier 4: Final safety gate
         """
         ...
-    
+
     def is_ready(self) -> bool:
         """
         Check if the agent is ready to execute.
-        
+
         Returns:
             True if all prerequisites are met
             False if agent should be skipped

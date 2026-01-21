@@ -108,14 +108,14 @@ skipped_count = 0
 for agent in agents_without_tests:
     class_name = agent['class_name']
     agent_path = agent['path']
-    
+
     # Convert path to import path
     # e.g., "apps_lic\domain\validators\ASCIIEnforcerAgent.py" -> "apps_lic.domain.validators.ASCIIEnforcerAgent"
     import_path = agent_path.replace('\\', '.').replace('/', '.').replace('.py', '')
-    
+
     # Determine test directory based on agent location
     path_parts = agent_path.replace('\\', '/').split('/')
-    
+
     if path_parts[0] == 'agentic_core':
         # For agentic_core agents, put tests in tests/unit/agentic_core/
         test_dir = Path('tests/unit/agentic_core')
@@ -127,10 +127,10 @@ for agent in agents_without_tests:
         test_dir = Path('tests/unit/apps') / path_parts[0]
     else:
         test_dir = Path('tests/unit/other')
-    
+
     # Create test directory
     test_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Create __init__.py files
     init_path = test_dir
     while init_path != Path('tests'):
@@ -138,19 +138,19 @@ for agent in agents_without_tests:
         if not init_file.exists():
             init_file.write_text('"""Test package."""\n')
         init_path = init_path.parent
-    
+
     # Generate test file
     test_file = test_dir / f"test_{class_name.lower()}.py"
-    
+
     if test_file.exists():
         skipped_count += 1
         continue
-    
+
     test_content = TEST_TEMPLATE.format(
         class_name=class_name,
         import_path=import_path
     )
-    
+
     test_file.write_text(test_content)
     created_count += 1
     print(f"✅ Created: {test_file}")

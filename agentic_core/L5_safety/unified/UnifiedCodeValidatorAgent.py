@@ -58,7 +58,7 @@ class Violation:
     severity: str = "error"  # error, warning, info
     rule_id: Optional[str] = None
     suggestion: Optional[str] = None
-    
+
     def __str__(self) -> str:
         loc = f"{self.file_path}:{self.line_number}:{self.column}" if self.file_path else f"line {self.line_number}"
         return f"[{self.violation_type.name}] {loc}: {self.message}"
@@ -71,26 +71,26 @@ class ValidationReport:
     violations: List[Violation] = field(default_factory=list)
     execution_time: float = 0.0
     checks_performed: Set[str] = field(default_factory=set)
-    
+
     @property
     def has_errors(self) -> bool:
         return any(v.severity == "error" for v in self.violations)
-    
+
     @property
     def has_warnings(self) -> bool:
         return any(v.severity == "warning" for v in self.violations)
-    
+
     @property
     def error_count(self) -> int:
         return sum(1 for v in self.violations if v.severity == "error")
-    
+
     @property
     def warning_count(self) -> int:
         return sum(1 for v in self.violations if v.severity == "warning")
-    
+
     def by_type(self, violation_type: ViolationType) -> List[Violation]:
         return [v for v in self.violations if v.violation_type == violation_type]
-    
+
     def merge(self, other: "ValidationReport") -> "ValidationReport":
         """Merge another report into this one."""
         self.violations.extend(other.violations)
@@ -110,25 +110,25 @@ class RuleSet:
     check_naming: bool = True
     check_type_hints: bool = False
     check_docstrings: bool = False
-    
+
     # Canon-specific rules
     require_dataclass: bool = True
     require_healer_mixin: bool = True
     require_mcp_mixin: bool = False
     require_subatomic_mixin: bool = True
-    
+
     # Async-specific rules
     forbid_sync_in_async: bool = True
     forbid_blocking_calls: bool = True
-    
+
     # Print-specific rules
     allow_debug_prints: bool = False
     allow_logger_prints: bool = True
-    
+
     # Naming rules
     agent_suffix_required: bool = True
     class_naming_pattern: str = r"^[A-Z][a-zA-Z0-9]*Agent$"
-    
+
     @classmethod
     def strict(cls) -> "RuleSet":
         """Create a strict rule set with all checks enabled."""
@@ -137,7 +137,7 @@ class RuleSet:
             check_docstrings=True,
             require_mcp_mixin=True,
         )
-    
+
     @classmethod
     def minimal(cls) -> "RuleSet":
         """Create a minimal rule set for quick validation."""
@@ -154,10 +154,10 @@ class RuleSet:
 class UnifiedASTVisitor(ast.NodeVisitor):
     """
     Single-pass AST visitor that performs all validation checks simultaneously.
-    
+
     This is more efficient than running multiple separate visitors.
     """
-    
+
     def __init__(
         self,
         rules: RuleSet,
@@ -168,7 +168,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
         self.file_path = file_path
         self.source_code = source_code
         self.violations: List[Violation] = []
-        
+
         # State tracking
         self._in_async_function = False
         self._current_class: Optional[str] = None
@@ -176,7 +176,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
         self._class_decorators: Dict[str, List[str]] = {}
         self._imports: Set[str] = set()
         self._from_imports: Dict[str, Set[str]] = {}
-    
+
     def _add_violation(
         self,
         violation_type: ViolationType,
@@ -189,7 +189,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
         """Add a violation to the list."""
         line = getattr(node, "lineno", 0) if node else 0
         col = getattr(node, "col_offset", 0) if node else 0
-        
+
         self.violations.append(Violation(
             violation_type=violation_type,
             message=message,
@@ -200,13 +200,13 @@ class UnifiedASTVisitor(ast.NodeVisitor):
             rule_id=rule_id,
             suggestion=suggestion,
         ))
-    
+
     def visit_Import(self, node: ast.Import) -> None:
         """Track imports."""
         for alias in node.names:
             self._imports.add(alias.name)
         self.generic_visit(node)
-    
+
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         """Track from imports."""
         module = node.module or ""
@@ -215,11 +215,11 @@ class UnifiedASTVisitor(ast.NodeVisitor):
         for alias in node.names:
             self._from_imports[module].add(alias.name)
         self.generic_visit(node)
-    
+
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         """Validate class definitions."""
         self._current_class = node.name
-        
+
         # Track bases
         bases = []
         for base in node.bases:
@@ -228,7 +228,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
             elif isinstance(base, ast.Attribute):
                 bases.append(base.attr)
         self._class_bases[node.name] = bases
-        
+
         # Track decorators
         decorators = []
         for dec in node.decorator_list:
@@ -237,19 +237,19 @@ class UnifiedASTVisitor(ast.NodeVisitor):
             elif isinstance(dec, ast.Attribute):
                 decorators.append(dec.attr)
         self._class_decorators[node.name] = decorators
-        
+
         # Canon checks
         if self.rules.check_canon and node.name.endswith("Agent"):
             self._check_canon_compliance(node, bases, decorators)
-        
+
         # Naming checks
         if self.rules.check_naming and node.name.endswith("Agent"):
             self._check_naming_compliance(node)
-        
+
         # Visit children
         self.generic_visit(node)
         self._current_class = None
-    
+
     def _check_canon_compliance(
         self,
         node: ast.ClassDef,
@@ -267,7 +267,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
                 rule_id="CANON-001",
                 suggestion="Add @dataclass decorator to agent class",
             )
-        
+
         # Check for HealerMixin
         if self.rules.require_healer_mixin and "HealerMixin" not in bases:
             self._add_violation(
@@ -278,7 +278,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
                 rule_id="CANON-002",
                 suggestion="Add HealerMixin to class inheritance",
             )
-        
+
         # Check for SubatomicTestingMixin
         if self.rules.require_subatomic_mixin and "SubatomicTestingMixin" not in bases:
             self._add_violation(
@@ -289,7 +289,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
                 rule_id="CANON-003",
                 suggestion="Add SubatomicTestingMixin to class inheritance",
             )
-        
+
         # Check for MCPHardenedMixin
         if self.rules.require_mcp_mixin and "MCPHardenedMixin" not in bases:
             self._add_violation(
@@ -300,7 +300,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
                 rule_id="CANON-004",
                 suggestion="Add MCPHardenedMixin to class inheritance",
             )
-    
+
     def _check_naming_compliance(self, node: ast.ClassDef) -> None:
         """Check naming compliance for agent classes."""
         if self.rules.agent_suffix_required and not node.name.endswith("Agent"):
@@ -311,7 +311,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
                 severity="warning",
                 rule_id="NAME-001",
             )
-        
+
         if self.rules.class_naming_pattern:
             pattern = re.compile(self.rules.class_naming_pattern)
             if not pattern.match(node.name):
@@ -322,35 +322,35 @@ class UnifiedASTVisitor(ast.NodeVisitor):
                     severity="warning",
                     rule_id="NAME-002",
                 )
-    
+
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
         """Track async function context."""
         self._in_async_function = True
         self.generic_visit(node)
         self._in_async_function = False
-    
+
     def visit_Call(self, node: ast.Call) -> None:
         """Check for forbidden calls."""
         # Check for print statements
         if self.rules.check_print:
             self._check_print_call(node)
-        
+
         # Check for blocking calls in async context
         if self.rules.check_async and self._in_async_function:
             self._check_blocking_call(node)
-        
+
         self.generic_visit(node)
-    
+
     def _check_print_call(self, node: ast.Call) -> None:
         """Check for forbidden print statements."""
         func = node.func
-        
+
         is_print = False
         if isinstance(func, ast.Name) and func.id == "print":
             is_print = True
         elif isinstance(func, ast.Attribute) and func.attr == "print":
             is_print = True
-        
+
         if is_print:
             # Check if it's a debug print (allowed if configured)
             if self.rules.allow_debug_prints:
@@ -359,7 +359,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
                     if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
                         if "DEBUG" in arg.value.upper() or "debug" in arg.value.lower():
                             return
-            
+
             self._add_violation(
                 ViolationType.PRINT_STATEMENT,
                 "Forbidden print() statement found. Use logging instead.",
@@ -368,7 +368,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
                 rule_id="PRINT-001",
                 suggestion="Replace print() with Logger.info() or Logger.debug()",
             )
-    
+
     def _check_blocking_call(self, node: ast.Call) -> None:
         """Check for blocking calls in async context."""
         blocking_calls = {
@@ -380,10 +380,10 @@ class UnifiedASTVisitor(ast.NodeVisitor):
             "open",
             "input",
         }
-        
+
         func = node.func
         call_name = ""
-        
+
         if isinstance(func, ast.Name):
             call_name = func.id
         elif isinstance(func, ast.Attribute):
@@ -391,7 +391,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
                 call_name = f"{func.value.id}.{func.attr}"
             else:
                 call_name = func.attr
-        
+
         if call_name in blocking_calls or call_name.split(".")[-1] in ["sleep", "get", "post"]:
             self._add_violation(
                 ViolationType.ASYNC_BLOCKING,
@@ -401,7 +401,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
                 rule_id="ASYNC-001",
                 suggestion=f"Use async version of {call_name}",
             )
-    
+
     def visit_Expr(self, node: ast.Expr) -> None:
         """Check expression statements."""
         self.generic_visit(node)
@@ -411,29 +411,29 @@ class UnifiedASTVisitor(ast.NodeVisitor):
 class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Unified code validation with single-pass AST analysis.
-    
+
     Consolidates:
     - SyntaxValidatorAgent (syntax)
     - CanonAstValidatorAgent (canon AST rules)
     - CanonValidatorAgent (canon compliance)
     - AsyncBlockingValidatorAgent (async patterns)
     - PrintStatementValidatorAgent (print detection)
-    
+
     Usage:
         agent = UnifiedCodeValidatorAgent()
         report = agent.validate_file(Path("my_agent.py"))
-        
+
         # Or with custom rules
         rules = RuleSet(check_async=False)
         report = agent.validate_file(path, rules=rules)
     """
-    
+
     default_rules: RuleSet = field(default_factory=RuleSet)
-    
+
     def __post_init__(self) -> None:
         """Initialize the validator."""
         Logger.info("UnifiedCodeValidatorAgent initialized")
-    
+
     def validate_source(
         self,
         source_code: str,
@@ -442,19 +442,19 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
     ) -> ValidationReport:
         """
         Validate source code string.
-        
+
         Args:
             source_code: Python source code to validate
             file_path: Optional path for error reporting
             rules: Optional custom rule set
-            
+
         Returns:
             ValidationReport with all violations found
         """
         rules = rules or self.default_rules
         report = ValidationReport(file_path=file_path)
         start_time = datetime.now()
-        
+
         # Track which checks were performed
         if rules.check_syntax:
             report.checks_performed.add("syntax")
@@ -466,7 +466,7 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
             report.checks_performed.add("print")
         if rules.check_naming:
             report.checks_performed.add("naming")
-        
+
         # Step 1: Syntax check (parse the AST)
         try:
             tree = ast.parse(source_code)
@@ -482,15 +482,15 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
             ))
             report.execution_time = (datetime.now() - start_time).total_seconds()
             return report
-        
+
         # Step 2: Single-pass AST validation
         visitor = UnifiedASTVisitor(rules, file_path, source_code)
         visitor.visit(tree)
         report.violations.extend(visitor.violations)
-        
+
         report.execution_time = (datetime.now() - start_time).total_seconds()
         return report
-    
+
     def validate_file(
         self,
         file_path: Path,
@@ -498,11 +498,11 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
     ) -> ValidationReport:
         """
         Validate a Python file.
-        
+
         Args:
             file_path: Path to Python file
             rules: Optional custom rule set
-            
+
         Returns:
             ValidationReport with all violations found
         """
@@ -517,9 +517,9 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                 severity="error",
             ))
             return report
-        
+
         return self.validate_source(source_code, file_path, rules)
-    
+
     def validate_files(
         self,
         file_paths: List[Path],
@@ -527,11 +527,11 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
     ) -> Dict[Path, ValidationReport]:
         """
         Validate multiple files.
-        
+
         Args:
             file_paths: List of paths to validate
             rules: Optional custom rule set
-            
+
         Returns:
             Dictionary mapping file paths to their reports
         """
@@ -539,7 +539,7 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         for path in file_paths:
             results[path] = self.validate_file(path, rules)
         return results
-    
+
     def validate_directory(
         self,
         directory: Path,
@@ -549,18 +549,18 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
     ) -> Dict[Path, ValidationReport]:
         """
         Validate all Python files in a directory.
-        
+
         Args:
             directory: Directory to scan
             rules: Optional custom rule set
             pattern: Glob pattern for files
             exclude_patterns: Patterns to exclude
-            
+
         Returns:
             Dictionary mapping file paths to their reports
         """
         exclude_patterns = exclude_patterns or ["**/test_*", "**/__pycache__/*"]
-        
+
         files = []
         for path in directory.glob(pattern):
             # Check exclusions
@@ -571,9 +571,9 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
                     break
             if not excluded:
                 files.append(path)
-        
+
         return self.validate_files(files, rules)
-    
+
     @timeout(300)
     def heal_repository(
         self,
@@ -586,13 +586,13 @@ class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedM
         """L5 validation agent - operational healing."""
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"errors": 1, "cycle_detected": True}
         if depth > max_depth:
             return {"errors": 1, "depth_limited": True}
-        
+
         _call_path.add(agent_name)
         try:
             Logger.info(f"[{agent_name}] L5 code validation healing")

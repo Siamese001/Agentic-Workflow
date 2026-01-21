@@ -39,9 +39,9 @@ for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5']:
     if count == 0:
         print(f"| {layer} | 0 | 0% | 0% | 0% |")
         continue
-    
+
     testing = sum(1 for a in agents if a.get('has_tests', False))
     healing = sum(1 for a in agents if a.get('has_healing', False))
     mcp = sum(1 for a in agents if a.get('has_mcp_hardening', False))
-    
+
     print(f"| {layer} | {count} | {testing*100//count}% | {healing*100//count}% | {mcp*100//count}% |")

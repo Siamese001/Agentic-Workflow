@@ -33,16 +33,16 @@ from agentic_core.utils.security import safe_execute
 @dataclass
 class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """L5 Safety agent that detects and removes unused Python dependencies.
-    
+
     This batch agent uses 'deptry' for accurate AST-based detection of unused
     dependencies and can remove them from requirements.txt.
-    
+
     Attributes:
         project_root: Root directory of the project.
         ctx: Execution context with reporting capabilities.
         dry_run: If True, only report what would be removed (default: True).
         requirements_path: Path to requirements.txt file.
-        
+
     Inherits:
         SubatomicTestingMixin: Provides testing utilities.
         HealerMixin: Provides healing chain support.
@@ -50,7 +50,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
 
     def __init__(self, project_root: Path, ctx: Any) -> None:
         """Initialize the dependency pruning agent.
-        
+
         Args:
             project_root: Root directory of the project.
             ctx: Execution context with optional report() method.
@@ -62,7 +62,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
 
     def _find_unused_deptry(self) -> List[str]:
         """Use deptry to find unused dependencies via AST analysis.
-        
+
         Returns:
             List of unused package names, empty if deptry fails or not installed.
         """
@@ -86,10 +86,10 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
 
     def _remove_from_requirements_txt(self, unused: List[str]) -> Dict[str, Any]:
         """Remove unused packages from requirements.txt.
-        
+
         Args:
             unused: List of package names to remove.
-            
+
         Returns:
             Dictionary with removal results:
                 - removed: Count of packages removed
@@ -137,17 +137,17 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         _call_path: Optional[Set[str]] = None
     ) -> Dict[str, int]:
         """Execute L5 safety healing operations.
-        
+
         This is an operational agent - no repository healing required.
         Implements cycle detection and depth limiting.
-        
+
         Args:
             dry_run: If True, only report what would be done (default: True).
             execute: If True, execute healing actions (default: False).
             depth: Current recursion depth for cycle detection (default: 0).
             max_depth: Maximum recursion depth allowed (default: 3).
             _call_path: Set of agent names in current call chain for cycle detection.
-            
+
         Returns:
             Dictionary with healing results: {"skipped": 1} for operational agents.
         """
@@ -168,7 +168,7 @@ class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
 
     async def execute(self) -> Dict[str, Any]:
         """Scan for and optionally remove unused dependencies.
-        
+
         Returns:
             Dictionary with scan results:
                 - unused_found: Count of unused dependencies found

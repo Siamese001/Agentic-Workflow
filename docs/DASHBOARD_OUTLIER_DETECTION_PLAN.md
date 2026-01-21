@@ -347,10 +347,10 @@ AgentName.py (12%)
 ```javascript
 function aggregateOutlierAlerts(territoryData, table = 'both') {
     const alerts = { table1: [], table2: [] };
-    
+
     territoryData.forEach(territory => {
         if (!territory.agents) return;
-        
+
         // Table 1 metrics
         if (table === 'both' || table === 'table1') {
             const testZeros = territory.agents.filter(a => (a.test_pct || 0) === 0);
@@ -365,7 +365,7 @@ function aggregateOutlierAlerts(territoryData, table = 'both') {
             }
             // ... similar for Heal Cap, Heal Inv, MCP, Complexity, Health
         }
-        
+
         // Table 2 metrics
         if (table === 'both' || table === 'table2') {
             const typedZeros = territory.agents.filter(a => (a.typed_pct || 0) === 0);
@@ -381,7 +381,7 @@ function aggregateOutlierAlerts(territoryData, table = 'both') {
             // ... similar for Documented, Schema, Proper Base, Quality Score
         }
     });
-    
+
     alerts.table1.sort((a, b) => b.count - a.count);
     alerts.table2.sort((a, b) => b.count - a.count);
     return alerts;
@@ -459,7 +459,7 @@ function calculateDriftAge(agentName, currentAuditId) {
     // Query audit history for this agent
     const history = getAuditHistory(agentName);
     let consecutiveOutlierCount = 0;
-    
+
     for (let i = history.length - 1; i >= 0; i--) {
         if (history[i].isOutlier) {
             consecutiveOutlierCount++;
@@ -467,7 +467,7 @@ function calculateDriftAge(agentName, currentAuditId) {
             break;
         }
     }
-    
+
     return {
         driftAge: consecutiveOutlierCount,
         isZombie: consecutiveOutlierCount >= 3,
@@ -502,7 +502,7 @@ async function triggerHeal(agentPath, metric) {
             source: 'dashboard_manual'
         })
     });
-    
+
     if (response.ok) {
         showNotification(`Healing initiated for ${agentPath}`);
         // Refresh dashboard after 30 seconds
@@ -550,10 +550,10 @@ agentic_core/L6_observability/
 function renderHistorySparkline(agentName, metric) {
     const history = getMetricHistory(agentName, metric, 5);
     // Returns array like [75, 72, 68, 45, 30] (declining = regression)
-    
+
     const trend = history[4] - history[0];
     const color = trend > 0 ? '#16a34a' : trend < 0 ? '#dc2626' : '#6b7280';
-    
+
     return generateSparkline(history, color);
 }
 ```
@@ -601,34 +601,34 @@ function renderHistorySparkline(agentName, metric) {
 {
     "Territory": "L5 Safety/Validators",
     "Total": 18,
-    
+
     // Table 1 Metrics (with distribution)
     "Heal Cap %": 72.2,
     "Heal Cap Min": 0, "Heal Cap Max": 100, "Heal Cap StdDev": 28.5,
     "Heal Cap Zeros": 2, "Heal Cap Worst": "BrokenValidator.py",
-    
+
     "Test %": 72.2,
     "Test Min": 0, "Test Max": 100, "Test StdDev": 35.2,
     "Test Zeros": 3, "Test Worst": "UntestableAgent.py",
-    
+
     // Table 2 Metrics (with distribution)
     "Typed %": 85.3,
     "Typed Min": 50, "Typed Max": 100, "Typed StdDev": 12.3,
     "Typed Zeros": 0, "Typed Worst": "LegacyAgent.py",
-    
+
     "Code Quality Score": 91.2,
     "Quality Min": 60, "Quality Max": 100, "Quality StdDev": 9.4,
     "Quality Below60": 1, "Quality Worst": "OldAgent.py",
-    
+
     // Per-agent data for drill-down
     "agents": [
-        { 
-            "name": "ValidatorA.py", 
+        {
+            "name": "ValidatorA.py",
             "path": "agentic_core/L5_safety/validators/ValidatorA.py",
             "heal_cap": 100, "test": 100, "health": 95,
             "typed": 92, "documented": 88, "quality": 94
         },
-        { 
+        {
             "name": "BrokenValidator.py",
             "path": "agentic_core/L5_safety/validators/BrokenValidator.py",
             "heal_cap": 0, "test": 0, "health": 25,
@@ -779,7 +779,7 @@ function aggregateOutlierAlerts(territoryData) {
     const alerts = { table1: [], table2: [] };
     territoryData.forEach(territory => {
         if (!territory.agents) return;
-        
+
         // Table 1: Test coverage zeros
         const testZeros = territory.agents.filter(a => (a.test_pct || 0) === 0);
         if (testZeros.length > 0) {
@@ -791,7 +791,7 @@ function aggregateOutlierAlerts(territoryData) {
                 agents: testZeros.map(a => a.name)
             });
         }
-        
+
         // Table 2: Typed zeros
         const typedZeros = territory.agents.filter(a => (a.typed_pct || 0) === 0);
         if (typedZeros.length > 0) {
@@ -804,7 +804,7 @@ function aggregateOutlierAlerts(territoryData) {
             });
         }
     });
-    
+
     alerts.table1.sort((a, b) => b.count - a.count);
     alerts.table2.sort((a, b) => b.count - a.count);
     return alerts;

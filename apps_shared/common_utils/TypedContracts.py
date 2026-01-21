@@ -78,10 +78,3 @@ def test_validate_schema_version_rejects_mismatched_version() -> None:
         raise AssertionError(
             "validate_schema_version did not reject mismatched version"
         )
-
-
-
-
-
-
-

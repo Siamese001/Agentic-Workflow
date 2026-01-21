@@ -22,8 +22,8 @@ class SovereignDependencyError(Exception):
 class SubatomicHop:
     """
     Sovereign SubatomicHop with Dependency Injection.
-    
-    This is a 'Pure Engine.' It has no knowledge of higher layers (L3-L5) 
+
+    This is a 'Pure Engine.' It has no knowledge of higher layers (L3-L5)
     at the import level. All required logic is injected at runtime.
     """
 
@@ -47,7 +47,7 @@ class SubatomicHop:
         telemetry: Optional[Any] = None,
     ) -> None:
         """Initialize SubatomicHop with injected dependencies.
-        
+
         Args:
             role: Agent role identifier
             config: Configuration dictionary
@@ -64,14 +64,14 @@ class SubatomicHop:
             StructuredEngine: StructuredEngine instance (injected)
             gatekeeper: SemanticGatekeeper instance (injected)
             telemetry: TelemetryRecorder instance (injected)
-            
+
         Raises:
             SovereignDependencyError: If required dependencies are Missing
         """
         self.role = role
         self.id = str(uuid.uuid4())
         self.config = config
-        
+
         # Bedrock Validation: Ensure the 'Boss' handed us the tools we need
         self.storage = self._ensure_dep(storage, "LocalDiskAdapter")
         self.genealogy = self._ensure_dep(genealogy, "GenealogyRegistry")
@@ -89,14 +89,14 @@ class SubatomicHop:
 
     def _ensure_dep(self, dep: Any, name: str) -> Any:
         """Validate that a required dependency was injected.
-        
+
         Args:
             dep: The dependency instance
             name: Human-readable name for error messages
-            
+
         Returns:
             The validated dependency
-            
+
         Raises:
             SovereignDependencyError: If dependency is None
         """
@@ -120,7 +120,7 @@ class SubatomicHop:
             results, act_cost = await self._execute_act_stage(plan, trace_id)
             validated_output = await self._execute_critique_stage(results, trace_id)
             final_output = await self._execute_commit_stage(validated_output, trace_id)
-            
+
             self.telemetry.record(
                 TraceEvent(
                     trace_id=trace_id,
@@ -143,10 +143,10 @@ class SubatomicHop:
         context_hash = str(hash(str(context)))
         self.genealogy.register_attempt(trace_id, str(context.get('Task', '')), context_hash)
         await self.mcp.connect(self.role)
-        
+
         sanitized_context = await self._sanitize_input(context, trace_id)
         context.update(sanitized_context)
-        
+
         self.telemetry.record(
             TraceEvent(
                 trace_id=trace_id,
@@ -184,7 +184,7 @@ class SubatomicHop:
         """Execute the thinking stage with multi-model consensus."""
         risk_level = self._assess_task_risk(context.get('Task', ''))
         await self._check_past_failures(context.get('Task', ''))
-        
+
         try:
             Verdict = await self.SupremeCourt.deliberate(
                 CONTEXT=str(context),
@@ -196,7 +196,7 @@ class SubatomicHop:
                 tool_calls=[{'name': 'execute_plan', 'args': {'plan': Verdict.chosen_plan}}]
             )
             think_cost = self.governor.track('gpt-4', 300, 150)
-            
+
             self.telemetry.record(
                 TraceEvent(
                     trace_id=trace_id,
@@ -229,7 +229,7 @@ class SubatomicHop:
         """Assess the risk level of a Task."""
         task_lower = Task.lower()
         high_risk_keywords = ['delete', 'remove', 'drop', 'truncate', 'destroy']
-        
+
         if any(keyword in task_lower for keyword in high_risk_keywords):
             return 'high'
         elif any(keyword in task_lower for keyword in ['modify', 'update', 'change']):
@@ -248,14 +248,14 @@ class SubatomicHop:
         """Execute the action stage with airlock protection."""
         results = []
         total_cost = 0.0
-        
+
         for call in plan.tool_calls:
             tool_name = call.get('name', 'unknown')
             tool_args = call.get('args', {})
-            
+
             try:
                 await self.airlock.acquire_permission(tool_name, tool_args)
-                
+
                 if tool_name == 'run_python' or tool_args.get('code'):
                     code = tool_args.get('code', '')
                     result = self.sandbox.run_code(code)
@@ -265,7 +265,7 @@ class SubatomicHop:
                     if isinstance(result, str):
                         result = await self.membrane.sanitize(result, f'tool_output_{tool_name}')
                     results.append({'tool': tool_name, 'result': result})
-                
+
                 total_cost += self.governor.track('tool_execution', 10, 10)
             except Exception as e:
                 self.telemetry.record(
@@ -279,7 +279,7 @@ class SubatomicHop:
                     )
                 )
                 raise
-        
+
         self.telemetry.record(
             TraceEvent(
                 trace_id=trace_id,
@@ -301,12 +301,12 @@ class SubatomicHop:
         output_text = f'Plan executed. Results: {results}'
         sanitized_output = await self.membrane.sanitize(output_text, 'agent_output')
         await self.overseer.verify(sanitized_output)
-        
+
         if self.governor.spend > self.governor.limit:
             raise Exception(
                 f'Budget exceeded: ${self.governor.limit:.2f} (current: ${self.governor.spend:.2f})'
             )
-        
+
         self.telemetry.record(
             TraceEvent(
                 trace_id=trace_id,
@@ -322,7 +322,7 @@ class SubatomicHop:
     async def _execute_commit_stage(self, output_text: str, trace_id: str) -> str:
         """Commit results to storage."""
         final_output = self.pii.restore(trace_id, output_text)
-        
+
         await self.storage.write_blob(
             f'hops/{self.id}.txt',
             final_output.encode(),
@@ -333,7 +333,7 @@ class SubatomicHop:
                 'zero_trust': True
             }
         )
-        
+
         self.telemetry.record(
             TraceEvent(
                 trace_id=trace_id,
@@ -349,7 +349,7 @@ class SubatomicHop:
     def _handle_error(self, trace_id: str, error: Exception) -> None:
         """Handle execution errors with unified telemetry."""
         error_type = type(error).__name__
-        
+
         self.telemetry.record(
             TraceEvent(
                 trace_id=trace_id,

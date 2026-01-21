@@ -124,7 +124,7 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Autonomous distributed tracing agent.
     Manages trace context and Span lifecycle.
-    
+
     Sovereign tracing Provider:
     - Default: Pure mock (no deps)
     - Optional: OpenTelemetry + OTLP export (if OTEL_EXPORTER_OTLP_ENDPOINT set)
@@ -152,7 +152,7 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
 
         if self.export_path:
             Logger.info(f"[TracingAgent] File export enabled: {self.export_path} (timestamped={timestamped_exports})")
-        
+
         # Sovereign tracing Provider setup
         self.tracer = self._setup_sovereign_tracer()
 

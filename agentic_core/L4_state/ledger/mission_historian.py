@@ -20,7 +20,7 @@ class MissionHistorian:
     def __init__(self, log_path: Path=None):
         """
         Initialize the MissionHistorian.
-        
+
         Args:
             log_path: Path to the audit log CSV file
         """
@@ -34,7 +34,7 @@ class MissionHistorian:
     def record(self, file_name: str, action: str, source: str, destination: str, reason: str) -> Any:
         """
         Record a mission action to the audit log.
-        
+
         Args:
             file_name: Name of the file affected
             action: Action performed (e.g., 'move', 'delete', 'create')
@@ -53,10 +53,10 @@ class MissionHistorian:
     def get_history(self, file_name: Optional[str]=None) -> list:
         """
         Retrieve mission history.
-        
+
         Args:
             file_name: Optional filter by file name
-            
+
         Returns:
             List of history records
         """
@@ -76,7 +76,7 @@ class MissionHistorian:
     def get_summary(self) -> Dict[str, Any]:
         """
         Get summary statistics of mission history.
-        
+
         Returns:
             Dictionary with summary statistics
         """

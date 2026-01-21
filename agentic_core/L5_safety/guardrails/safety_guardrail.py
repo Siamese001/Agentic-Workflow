@@ -12,7 +12,7 @@ class SafetyGuardrail:
     def __init__(self, deletion_limit: int=110):
         """
         Initialize SafetyGuardrail.
-        
+
         Args:
             deletion_limit: Maximum number of lines that can be deleted in standard mode
         """
@@ -21,12 +21,12 @@ class SafetyGuardrail:
     def verify_change(self, original_code: str, new_code: str, fission_active: bool=False) -> Tuple[bool, str]:
         """
         Verify that code changes are safe and don't violate zero-loss principles.
-        
+
         Args:
             original_code: Original code before mutation
             new_code: New code after mutation
             fission_active: Whether atomic fission is active (allows mass deletion)
-            
+
         Returns:
             Tuple of (is_safe, message)
         """

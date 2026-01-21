@@ -18,17 +18,17 @@ updated = 0
 
 for agent in data:
     path = Path(agent['path'])
-    
+
     if not path.exists():
         continue
-    
+
     try:
         content = path.read_text(encoding='utf-8')
-        
+
         # Check if agent has MCPHardenedMixin
         has_mcp = 'MCPHardenedMixin' in content
         currently_marked = agent.get('mcp_hardened', False)
-        
+
         if has_mcp and not currently_marked:
             agent['mcp_hardened'] = True
             updated += 1
@@ -37,7 +37,7 @@ for agent in data:
             agent['mcp_hardened'] = False
             updated += 1
             print(f"⚠️  {agent['class_name']}: removed MCP hardened flag")
-    
+
     except Exception as e:
         print(f"❌ {agent['class_name']}: error - {e}")
 

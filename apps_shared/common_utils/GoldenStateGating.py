@@ -15,9 +15,3 @@ def test_gate_experiment_enforces_avg_and_pass_count() -> None:
     assert gate_experiment(better, baseline) is True
     assert gate_experiment(worse_avg, baseline) is False
     assert gate_experiment(worse_pass, baseline) is False
-
-
-
-
-
-

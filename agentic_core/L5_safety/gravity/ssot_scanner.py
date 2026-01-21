@@ -25,21 +25,21 @@ class AgentMetadata:
     assigned_layer: str
     base_classes: List[str]
     signals: Set[str]
-    
+
     @property
     def has_gravity_violation(self) -> bool:
         """
         Check if agent is in wrong layer (gravity violation).
-        
+
         Only L0-L5 layers can have violations. APP and UNKNOWN are not violations.
         """
         # Skip if either layer is APP or UNKNOWN (not subject to gravity rules)
         if self.layer in ('APP', 'UNKNOWN') or self.assigned_layer in ('APP', 'UNKNOWN'):
             return False
-        
+
         # Violation if actual layer doesn't match assigned layer
         return self.layer != self.assigned_layer
-    
+
     @property
     def is_compliant(self) -> bool:
         """Check if agent is in correct Gospel-assigned layer."""
@@ -49,11 +49,11 @@ class AgentMetadata:
 class SSOTScanner:
     """
     Direct filesystem scanner for SSOT enforcement.
-    
+
     Replaces agent_discovery_full.json with instant, always-current scanning.
     Uses on-demand AST parsing to minimize overhead.
     """
-    
+
     # Layer assignment rules from structure_blueprint.py
     LAYER_ASSIGNMENTS: Dict[str, str] = {
         'L0_maintenance': 'L0',
@@ -71,48 +71,48 @@ class SSOTScanner:
         'runtime': 'L2',  # Runtime is L2 execution
         'semantic_memory': 'L2',  # Semantic memory is L2
     }
-    
+
     # Canonical signals for Phase 4 compliance
     CANON_SIGNALS: Set[str] = {
         'healing', 'testing', 'validation', 'execution', 'orchestration',
         'state', 'safety', 'cognition', 'intent', 'learning', 'planning'
     }
-    
+
     def __init__(self, project_root: Path):
         """
         Initialize SSOT scanner.
-        
+
         Args:
             project_root: Root directory of the project
         """
         self.project_root = project_root.resolve()
         self._cache: Dict[str, AgentMetadata] = {}
-    
+
     def scan_agents(self, use_cache: bool = False) -> List[AgentMetadata]:
         """
         Scan filesystem for all agent files.
-        
+
         Args:
             use_cache: If True, return cached results (for performance)
-            
+
         Returns:
             List of agent metadata
         """
         if use_cache and self._cache:
             return list(self._cache.values())
-        
+
         agents = []
-        
+
         # Find all *Agent.py files
         # Operation Zero: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery import get_agent_files
         agent_files = list(get_agent_files(self.project_root))
-        
+
         for agent_file in agent_files:
             # Skip vendor/cache directories
             if self._should_exclude(agent_file):
                 continue
-            
+
             try:
                 metadata = self._parse_agent_file(agent_file)
                 if metadata:
@@ -121,105 +121,105 @@ class SSOTScanner:
             except Exception as e:
                 # Skip files that can't be parsed
                 continue
-        
+
         return agents
-    
+
     def get_layer_assignment(self, file_path: Path) -> str:
         """
         Derive layer assignment from file path.
-        
+
         Args:
             file_path: Path to agent file
-            
+
         Returns:
             Layer assignment (L0-L5)
         """
         relative_path = file_path.relative_to(self.project_root)
         parts = relative_path.parts
-        
+
         # Check if in agentic_core
         if parts[0] == 'agentic_core' and len(parts) > 1:
             folder = parts[1]
             return self.LAYER_ASSIGNMENTS.get(folder, 'UNKNOWN')
-        
+
         # Apps are not assigned to layers
         if parts[0].startswith('apps_'):
             return 'APP'
-        
+
         return 'UNKNOWN'
-    
+
     def get_actual_layer(self, file_path: Path) -> str:
         """
         Get actual layer from file path (where file currently is).
-        
+
         Args:
             file_path: Path to agent file
-            
+
         Returns:
             Actual layer (L0-L5)
         """
         relative_path = file_path.relative_to(self.project_root)
         parts = relative_path.parts
-        
+
         # Check if in agentic_core
         if parts[0] == 'agentic_core' and len(parts) > 1:
             folder = parts[1]
-            
+
             # Direct layer folders
             if folder.startswith('L') and folder[1].isdigit():
                 return folder[:2]  # L0, L1, L2, etc.
-            
+
             # Infrastructure folders map to layers
             return self.LAYER_ASSIGNMENTS.get(folder, 'UNKNOWN')
-        
+
         return 'UNKNOWN'
-    
+
     def find_gravity_violations(self) -> List[AgentMetadata]:
         """
         Find all agents with gravity violations (wrong layer).
-        
+
         Checks agentic_core and apps_* folders.
-        
+
         Returns:
             List of agents in wrong layers
         """
         agents = self.scan_agents()
         return [agent for agent in agents if agent.has_gravity_violation]
-    
+
     def get_compliance_stats(self) -> Dict[str, any]:
         """
         Get compliance statistics.
-        
+
         Returns:
             Dictionary with compliance metrics
         """
         agents = self.scan_agents()
         violations = [a for a in agents if a.has_gravity_violation]
-        
+
         return {
             'total_agents': len(agents),
             'compliant_agents': len(agents) - len(violations),
             'gravity_violations': len(violations),
             'compliance_percentage': round((len(agents) - len(violations)) / len(agents) * 100, 1) if agents else 100.0
         }
-    
+
     def _should_exclude(self, file_path: Path) -> bool:
         """Check if file should be excluded from scanning."""
         exclude_patterns = [
             '.venv', 'venv', 'node_modules', '__pycache__',
             '.git', '.pytest_cache', 'vendor', 'archives'
         ]
-        
+
         path_str = str(file_path)
         return any(pattern in path_str for pattern in exclude_patterns)
-    
+
     def _parse_agent_file(self, file_path: Path) -> Optional[AgentMetadata]:
         """
         Parse agent file to extract metadata.
-        
+
         Args:
             file_path: Path to agent file
-            
+
         Returns:
             Agent metadata or None if not a valid agent
         """
@@ -228,7 +228,7 @@ class SSOTScanner:
             tree = ast.parse(content)
         except (SyntaxError, UnicodeDecodeError):
             return None
-        
+
         # Find agent class
         agent_class = None
         for node in ast.walk(tree):
@@ -236,10 +236,10 @@ class SSOTScanner:
                 if node.name.endswith('Agent'):
                     agent_class = node
                     break
-        
+
         if not agent_class:
             return None
-        
+
         # Extract base classes
         base_classes = []
         for base in agent_class.bases:
@@ -247,16 +247,16 @@ class SSOTScanner:
                 base_classes.append(base.id)
             elif isinstance(base, ast.Attribute):
                 base_classes.append(base.attr)
-        
+
         # Extract signals from class body (simple heuristic)
         signals = self._extract_signals(content)
-        
+
         # Get layer assignments
         actual_layer = self.get_actual_layer(file_path)
         assigned_layer = self.get_layer_assignment(file_path)
-        
+
         relative_path = str(file_path.relative_to(self.project_root))
-        
+
         return AgentMetadata(
             file_path=file_path,
             relative_path=relative_path.replace('\\', '/'),
@@ -266,22 +266,22 @@ class SSOTScanner:
             base_classes=base_classes,
             signals=signals
         )
-    
+
     def _extract_signals(self, content: str) -> Set[str]:
         """
         Extract canonical signals from agent code.
-        
+
         Args:
             content: File content
-            
+
         Returns:
             Set of detected signals
         """
         signals = set()
         content_lower = content.lower()
-        
+
         for signal in self.CANON_SIGNALS:
             if signal in content_lower:
                 signals.add(signal)
-        
+
         return signals

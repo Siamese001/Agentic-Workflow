@@ -6,11 +6,11 @@
 const RefreshController = {
     timer: null,
     timeLeft: 300, // 5 minutes default
-    
+
     init: function(intervalSeconds = 300) {
         this.timeLeft = intervalSeconds;
         this.updateUI();
-        
+
         // Setup interval
         if (this.timer) clearInterval(this.timer);
         this.timer = setInterval(() => {

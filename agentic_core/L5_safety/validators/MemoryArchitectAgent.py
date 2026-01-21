@@ -15,7 +15,7 @@ Level 5 Autonomy: No manual prompts required - learns from every successful fix.
 
 Architecture:
     Detection → Reflection → Generalization → Inoculation
-    
+
 Integration:
     Monitors Atomic Blackboard for file_health transitions (FAIL → PASS)
     Analyzes before/after AST diffs
@@ -89,14 +89,14 @@ class HealingSuccess:
     after_metrics: Dict
     timestamp: str
     healing_round: int
-    
+
     def _run_self_tests(self) -> bool:
         """Phase 1 Final: Minimal self-testing for data container."""
         assert hasattr(self, "file_path"), "Missing file_path"
         assert hasattr(self, "key_id"), "Missing key_id"
         assert isinstance(self.before_metrics, dict), "before_metrics must be dict"
         return True
-    
+
     def __post_init__(self) -> None:
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
@@ -115,14 +115,14 @@ class DistilledPattern:
     generalized_rule: str
     code_examples: Dict
     timestamp: str
-    
+
     def _run_self_tests(self) -> bool:
         """Phase 1 Final: Minimal self-testing for data container."""
         assert hasattr(self, "pattern_id"), "Missing pattern_id"
         assert hasattr(self, "pattern_type"), "Missing pattern_type"
         assert isinstance(self.transformation_steps, list), "transformation_steps must be list"
         return True
-    
+
     def __post_init__(self) -> None:
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
@@ -139,10 +139,10 @@ class HealingDiffAnalyzer:
     def analyze_diff(self, success: HealingSuccess) -> Optional[Dict]:
         """
         Analyze the before/after AST to identify the specific refactoring mutation.
-        
+
         Args:
             success: Healing success to analyze
-            
+
         Returns:
             Diff analysis dictionary
         """
@@ -198,16 +198,16 @@ class HealingDiffAnalyzer:
 class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     """
     Autonomous Knowledge Distillation Agent
-    
+
     Monitors healing successes and automatically distills them into
     long-term patterns stored in Pinecone Deep Brain.
-    
+
     Four-Stage Process:
     1. Detection: Monitor Atomic Blackboard for FAIL → PASS transitions
     2. Reflection: Analyze before/after AST diffs
     3. Generalization: Synthesize reusable pattern with Gemini Deep Think
     4. Inoculation: Upsert to Pinecone structural_patterns namespace
-    
+
     L4 Checkpoint Integration:
     - Distilled knowledge checkpointed for persistence
     - Rollback on corruption
@@ -216,7 +216,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     def __init__(self, ctx: Any) -> None:
         """
         Initialize Memory Architect.
-        
+
         Args:
             ctx: ValidationContext with Gemini client and Pinecone access
         """
@@ -256,7 +256,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     async def execute(self) -> Any:
         """
         Execute Memory Architect autonomous monitoring.
-        
+
         This is called by the orchestrator after each healing cycle.
         """
         Logger.info(' Memory Architect: Scanning for healing successes...')
@@ -274,10 +274,10 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     def _detect_healing_successes(self) -> List[HealingSuccess]:
         """
         Stage 1: Detection
-        
+
         Monitor Atomic Blackboard for file_health transitions from FAIL to PASS
         on Keys 41 (nesting) and 42 (file size).
-        
+
         Returns:
             List of healing successes
         """
@@ -304,7 +304,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     async def _harvest_success(self, success: HealingSuccess) -> Any:
         """
         Harvest a successful healing operation and distill into pattern.
-        
+
         Args:
             success: Healing success to harvest
         """
@@ -323,13 +323,13 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     async def _synthesize_pattern(self, success: HealingSuccess, diff_analysis: Dict) -> Optional[DistilledPattern]:
         """
         Stage 3: Generalization - Rule Synthesis
-        
+
         Use Gemini Deep Think to convert the fix into a generalized Subatomic Pattern.
-        
+
         Args:
             success: Healing success
             diff_analysis: Diff analysis from reflection stage
-            
+
         Returns:
             Distilled pattern
         """
@@ -382,9 +382,9 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     async def _inoculate_pattern(self, pattern: DistilledPattern) -> Any:
         """
         Stage 4: Inoculation - Deep Brain Write
-        
+
         Upsert the generalized pattern to Pinecone structural_patterns namespace.
-        
+
         Args:
             pattern: Distilled pattern to store
         """
@@ -421,11 +421,11 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         """
         GOLD STANDARD: Post-heal validation confirming pattern inoculation.
         Verifies pattern was successfully stored in Pinecone or locally.
-        
+
         Args:
             pattern: The distilled pattern to validate
             dry_run: If True, only preview without applying
-            
+
         Returns:
             Dict with validation status and details
         """
@@ -477,12 +477,12 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     ) -> List[Dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup memory violations with pattern re-inoculation.
-        
+
         Args:
             violations: List of MemoryViolation objects
             dry_run: If True, only preview actions
             max_actions: Maximum cleanup actions per run
-            
+
         Returns:
             List of action dicts with results and batch summary
         """
@@ -531,10 +531,10 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         """
         GOLD STANDARD: Full memory orchestration with autonomous cleanup.
         Detects healing successes, distills patterns, and validates storage.
-        
+
         Args:
             dry_run: If True, only preview cleanup actions
-            
+
         Returns:
             Dict with comprehensive execution and cleanup summaries
         """
@@ -543,7 +543,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         patterns_stored = 0
 
         successes = self._detect_healing_successes()
-        
+
         for success in successes:
             try:
                 diff_analysis = self.diff_analyzer.analyze_diff(success)

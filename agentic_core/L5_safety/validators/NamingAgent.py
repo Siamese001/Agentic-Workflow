@@ -25,17 +25,17 @@ TREE_SITTER_AVAILABLE = False  # Stub - tree-sitter not required for tests
 class PlacementResult:
     """
     Result of placement analysis.
-    
+
     Attributes:
         path: Suggested file path for the code
         confidence: Confidence score (0.0 to 1.0) for the placement suggestion
         suggestions: List of alternative placement suggestions
     """
-    
+
     def __init__(self, path: str = "", confidence: float = 1.0) -> None:
         """
         Initialize placement result.
-        
+
         Args:
             path: Suggested file path
             confidence: Confidence score for the suggestion
@@ -52,7 +52,7 @@ except ImportError:
     class NamingAgent(SubatomicTestingMixin, MCPHardenedMixin):
         """
         Stub NamingAgent for backwards compatibility.
-        
+
         Provides minimal implementation when the full L5_safety NamingAgent
         is not available. Used for testing and development environments.
         """
@@ -60,13 +60,13 @@ except ImportError:
         def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any) -> Dict[str, Any]:
             """
             Autonomous healing method (Canon Key 51 compliance).
-            
+
             Args:
                 dry_run: If True, only report violations without fixing
                 execute: If True, apply fixes
                 depth: Recursion depth for cycle detection
                 **kwargs: Additional healing parameters
-            
+
             Returns:
                 Dict with healing summary (violations_found, violations_fixed, errors)
             """
@@ -74,10 +74,10 @@ except ImportError:
                 super().heal_repository(dry_run=dry_run)
             except (AttributeError, TypeError):
                 pass  # Parent chain may not have heal_repository
-            
+
             # Phase 6.2: Use standardized HealResult keys
             metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0}
-            
+
             # === ZOMBIE VACCINATION: Wired orphaned methods ===
             if hasattr(self, 'validate_name'):
                 try:
@@ -90,13 +90,13 @@ except ImportError:
                     Logger.error(f'Error in validate_name: {e}')
                     metrics['errors'] += 1
             # === END VACCINATION ===
-            
+
             return metrics
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             """
             Initialize the stub NamingAgent.
-            
+
             Args:
                 *args: Positional arguments (ignored in stub)
                 **kwargs: Keyword arguments (ignored in stub)
@@ -106,10 +106,10 @@ except ImportError:
         def validate_name(self, name: str) -> bool:
             """
             Validate a name against naming conventions.
-            
+
             Args:
                 name: The name to validate
-            
+
             Returns:
                 True if valid (stub always returns True)
             """
@@ -118,10 +118,10 @@ except ImportError:
         def suggest_name(self, context: str) -> str:
             """
             Suggest a name based on context.
-            
+
             Args:
                 context: Context string for name generation
-            
+
             Returns:
                 Suggested name (stub returns context unchanged)
             """
@@ -130,10 +130,10 @@ except ImportError:
         def analyze_placement(self, code: str) -> PlacementResult:
             """
             Analyze code and suggest file placement.
-            
+
             Args:
                 code: Source code to analyze
-            
+
             Returns:
                 PlacementResult with suggested path and confidence
             """
@@ -143,12 +143,12 @@ except ImportError:
 def get_naming_agent(project_root: Optional[str] = None) -> NamingAgent:
     """
     Get a NamingAgent instance.
-    
+
     Factory function to create a NamingAgent with optional project root.
-    
+
     Args:
         project_root: Optional path to project root directory
-    
+
     Returns:
         Configured NamingAgent instance
     """

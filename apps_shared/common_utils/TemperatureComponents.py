@@ -38,7 +38,7 @@ class DepthScore(BaseModel):
     level: int = Field(..., ge=0, le=3, description="0=Generic, 3=Deep")
     score: float = Field(..., ge=0.0, le=1.0, description="Depth score")
     rationale: List[str] = Field(default_factory=list, description="Reasoning for score")
-    
+
     @property
     def is_deep(self) -> bool:
         """Check if this represents deep personalization."""
@@ -50,7 +50,7 @@ class MicroHook(BaseModel):
     phrase: str = Field(..., description="Hook phrase template")
     trigger_type: str = Field(..., description="Type of trigger that generated this")
     relevance: float = Field(..., ge=0.0, le=1.0, description="Relevance score")
-    
+
     @property
     def is_highly_relevant(self) -> bool:
         """Check if hook is highly relevant."""
@@ -62,7 +62,7 @@ class SentimentProfile(BaseModel):
     mood: SentimentMood = Field(..., description="Detected mood")
     risk_level: RiskLevel = Field(..., description="Associated risk level")
     keywords_detected: List[str] = Field(default_factory=list, description="Keywords that determined mood")
-    
+
     @property
     def is_safe_to_contact(self) -> bool:
         """Check if it's safe to contact based on sentiment."""
@@ -78,10 +78,10 @@ class WarmthSetting(BaseModel):
 
 class DepthScorer:
     """Calculates personalization depth based on profile information."""
-    
+
     def __init__(self, target_keywords: Optional[List[str]] = None):
         """Initialize the depth scorer.
-        
+
         Args:
             target_keywords: Keywords to match against profile
         """
@@ -90,13 +90,13 @@ class DepthScorer:
             "engineering", "product", "growth", "startup", "technology"
         ]
         logger.info(f"Initialized DepthScorer with {len(self.target_keywords)} keywords")
-    
+
     def calculate_depth(self, profile: Dict[str, Any]) -> DepthScore:
         """Calculate personalization depth from profile.
-        
+
         Args:
             profile: Recipient profile dictionary
-            
+
         Returns:
             DepthScore with level and rationale
         """
@@ -105,32 +105,32 @@ class DepthScorer:
             level = 0
             score = 0.1
             rationale = ["Basic contact info"]
-            
+
             # Safe access to profile fields
             skills = profile.get("skills", [])
             about = profile.get("about", "")
             recent_posts = profile.get("recent_posts", [])
             mutual_connections = profile.get("mutual_connections", 0)
             pain_points = profile.get("pain_points", [])
-            
+
             # Check 1: Keywords in skills/about
             skills_text = " ".join(skills) if isinstance(skills, list) else str(skills)
             combined_text = f"{skills_text} {about}".lower()
-            
-            keyword_matches = sum(1 for keyword in self.target_keywords 
+
+            keyword_matches = sum(1 for keyword in self.target_keywords
                                 if keyword.lower() in combined_text)
-            
+
             if keyword_matches > 0:
                 score += 0.2
                 level = max(level, 1)
                 rationale.append(f"Matched {keyword_matches} target keywords")
-            
+
             # Check 2: Recent activity
             if recent_posts and isinstance(recent_posts, list):
                 # Look for posts within last 90 days
                 cutoff_date = datetime.now() - timedelta(days=90)
                 recent_count = 0
-                
+
                 for post in recent_posts:
                     if isinstance(post, dict):
                         post_date_str = post.get("date", "")
@@ -145,12 +145,12 @@ class DepthScorer:
                                 continue
                     elif isinstance(post, str) and len(post) > 20:  # Assume recent if non-empty string
                         recent_count += 1
-                
+
                 if recent_count > 0:
                     score += 0.3
                     level = max(level, 2)
                     rationale.append(f"Active within 90 days ({recent_count} posts)")
-            
+
             # Check 3: Connections or pain points
             if mutual_connections and mutual_connections > 0:
                 score += 0.4
@@ -160,20 +160,20 @@ class DepthScorer:
                 score += 0.4
                 level = 3
                 rationale.append("Has identified pain points")
-            
+
             # Clamp score to maximum
             score = min(1.0, score)
-            
+
             depth_score = DepthScore(
                 level=level,
                 score=score,
                 rationale=rationale
             )
-            
+
             logger.debug(f"Calculated depth: level={level}, score={score:.2f}")
-            
+
             return depth_score
-            
+
         except Exception as e:
             logger.error(f"Error calculating depth: {str(e)}")
             return DepthScore(level=0, score=0.1, rationale=["Error in calculation"])
@@ -181,35 +181,35 @@ class DepthScorer:
 
 class MicroHookGenerator:
     """Generates unique bridge phrases to kill template fatigue."""
-    
+
     def __init__(self, my_education: Optional[Dict[str, str]] = None):
         """Initialize the hook generator.
-        
+
         Args:
             my_education: My education background for alumni matching
         """
         self.my_education = my_education or {}
         logger.info("Initialized MicroHookGenerator")
-    
+
     def generate_hooks(self, profile: Dict[str, Any]) -> List[MicroHook]:
         """Generate micro-hooks based on profile triggers.
-        
+
         Args:
             profile: Recipient profile dictionary
-            
+
         Returns:
             List of MicroHook objects sorted by relevance
         """
         try:
             hooks = []
-            
+
             # Safe access to profile fields
             company_news = profile.get("company_news", "")
             recent_posts = profile.get("recent_posts", [])
             education = profile.get("education", [])
             company_name = profile.get("company_name", "Unknown Company")
             industry = profile.get("industry", "technology")
-            
+
             # News trigger
             if company_news and isinstance(company_news, str) and len(company_news) > 10:
                 # Extract topic (simple approach)
@@ -220,7 +220,7 @@ class MicroHookGenerator:
                     relevance=0.9
                 )
                 hooks.append(hook)
-            
+
             # Recent posts trigger (highest priority)
             if recent_posts and isinstance(recent_posts, list) and len(recent_posts) > 0:
                 latest_post = recent_posts[0]
@@ -230,7 +230,7 @@ class MicroHookGenerator:
                     post_topic = latest_post[:30]
                 else:
                     post_topic = "your recent post"
-                
+
                 if post_topic:
                     hook = MicroHook(
                         phrase=f"I was just reading your thoughts on {post_topic}...",
@@ -238,7 +238,7 @@ class MicroHookGenerator:
                         relevance=1.0
                     )
                     hooks.append(hook)
-            
+
             # Education/alumni trigger
             if education and isinstance(education, list) and self.my_education:
                 my_school = self.my_education.get("school", "").lower()
@@ -249,7 +249,7 @@ class MicroHookGenerator:
                         their_school = edu.lower()
                     else:
                         continue
-                    
+
                     if my_school and their_school and my_school in their_school:
                         hook = MicroHook(
                             phrase=f"Always great to connect with a fellow {edu.get('school', 'alum')} alum...",
@@ -258,7 +258,7 @@ class MicroHookGenerator:
                         )
                         hooks.append(hook)
                         break
-            
+
             # Generic fallback
             if not hooks:
                 hook = MicroHook(
@@ -267,14 +267,14 @@ class MicroHookGenerator:
                     relevance=0.3
                 )
                 hooks.append(hook)
-            
+
             # Sort by relevance descending
             hooks.sort(key=lambda h: h.relevance, reverse=True)
-            
+
             logger.debug(f"Generated {len(hooks)} hooks, top relevance: {hooks[0].relevance:.2f}")
-            
+
             return hooks
-            
+
         except Exception as e:
             logger.error(f"Error generating hooks: {str(e)}")
             # Return generic hook as fallback
@@ -287,35 +287,35 @@ class MicroHookGenerator:
 
 class SentimentAnalyzer:
     """Analyzes recipient text to prevent tone-deafness."""
-    
+
     def __init__(self):
         """Initialize the sentiment analyzer."""
         # Word dictionaries for sentiment analysis
         self.optimistic_words = {
-            "hiring", "growth", "excited", "happy", "launch", "celebrate", 
+            "hiring", "growth", "excited", "happy", "launch", "celebrate",
             "congrats", "opportunity", "success", "thriving", "expanding",
             "achievement", "milestone", "breakthrough", "innovation"
         }
-        
+
         self.cautious_words = {
             "layoff", "reduction", "restructure", "downsize", "challenging",
             "tough", "sad", "difficult", "uncertain", "cautious", "concern",
             "struggle", "setback", "obstacle", "hurdle", "pressure"
         }
-        
+
         self.hostile_words = {
             "spam", "stop", "unsubscribe", "annoying", "hate", "remove",
             "go away", "leave me alone", "bothering", "pestering"
         }
-        
+
         logger.info("Initialized SentimentAnalyzer with word dictionaries")
-    
+
     def assess_sentiment(self, text_samples: List[str]) -> SentimentProfile:
         """Assess sentiment from text samples.
-        
+
         Args:
             text_samples: List of text samples to analyze
-            
+
         Returns:
             SentimentProfile with mood and risk level
         """
@@ -327,20 +327,20 @@ class SentimentAnalyzer:
                     risk_level=RiskLevel.LOW,
                     keywords_detected=[]
                 )
-            
+
             # Combine and tokenize text
             combined_text = " ".join(str(s) for s in text_samples if s).lower()
             words = re.findall(r'\b\w+\b', combined_text)
             word_set = set(words)
-            
+
             # Count matches for each category
             optimistic_count = len(word_set.intersection(self.optimistic_words))
             cautious_count = len(word_set.intersection(self.cautious_words))
             hostile_count = len(word_set.intersection(self.hostile_words))
-            
+
             # Determine mood and risk
             keywords_detected = []
-            
+
             if hostile_count > 0:
                 mood = SentimentMood.HOSTILE
                 risk = RiskLevel.CRITICAL
@@ -357,17 +357,17 @@ class SentimentAnalyzer:
                 mood = SentimentMood.NEUTRAL
                 risk = RiskLevel.LOW
                 keywords_detected = []
-            
+
             profile = SentimentProfile(
                 mood=mood,
                 risk_level=risk,
                 keywords_detected=keywords_detected[:5]  # Limit to top 5
             )
-            
+
             logger.info(f"Assessed sentiment: {mood.value} (risk: {risk.value})")
-            
+
             return profile
-            
+
         except Exception as e:
             logger.error(f"Error assessing sentiment: {str(e)}")
             return SentimentProfile(
@@ -379,7 +379,7 @@ class SentimentAnalyzer:
 
 class WarmthManager:
     """Manages contextual warmth and formality adjustments."""
-    
+
     def __init__(self):
         """Initialize the warmth manager."""
         # Base formality levels by archetype
@@ -396,9 +396,9 @@ class WarmthManager:
             "manager": 0.5,
             "director": 0.6
         }
-        
+
         logger.info("Initialized WarmthManager with formality mappings")
-    
+
     def determine_warmth(
         self,
         archetype: str,
@@ -406,12 +406,12 @@ class WarmthManager:
         sentiment: SentimentMood
     ) -> WarmthSetting:
         """Determine warmth settings based on context.
-        
+
         Args:
             archetype: Recipient's job archetype
             relationship_stage: Current relationship stage
             sentiment: Detected sentiment mood
-            
+
         Returns:
             WarmthSetting with formality and strategy
         """
@@ -419,14 +419,14 @@ class WarmthManager:
             # Get base formality
             archetype_key = archetype.lower().strip()
             base_formality = self.base_formality.get(archetype_key, 0.5)
-            
+
             # Apply relationship modifier
             stage_upper = relationship_stage.upper().strip()
             if stage_upper == "COLD":
                 base_formality += 0.2
             elif stage_upper == "WARM":
                 base_formality -= 0.2
-            
+
             # Apply sentiment modifier
             if sentiment == SentimentMood.OPTIMISTIC:
                 base_formality -= 0.1  # Match their energy
@@ -434,10 +434,10 @@ class WarmthManager:
                 base_formality += 0.2  # Show deference
             elif sentiment == SentimentMood.HOSTILE:
                 base_formality += 0.3  # Be extra formal
-            
+
             # Clamp to valid range
             base_formality = max(0.0, min(1.0, base_formality))
-            
+
             # Determine strategy and emoji allowance
             if base_formality > 0.8:
                 strategy = "Respectful Intrusion"
@@ -448,17 +448,17 @@ class WarmthManager:
             else:
                 strategy = "Professional Connect"
                 max_emojis = 1
-            
+
             warmth = WarmthSetting(
                 formality_level=base_formality,
                 strategy_name=strategy,
                 max_emojis=max_emojis
             )
-            
+
             logger.debug(f"Determined warmth: {strategy} (formality: {base_formality:.2f})")
-            
+
             return warmth
-            
+
         except Exception as e:
             logger.error(f"Error determining warmth: {str(e)}")
             return WarmthSetting(
@@ -470,14 +470,14 @@ class WarmthManager:
 
 class TemperatureEngine:
     """Facade class that orchestrates all temperature components."""
-    
+
     def __init__(
         self,
         target_keywords: Optional[List[str]] = None,
         my_education: Optional[Dict[str, str]] = None
     ):
         """Initialize the temperature engine.
-        
+
         Args:
             target_keywords: Keywords for depth scoring
             my_education: Education background for alumni matching
@@ -486,20 +486,20 @@ class TemperatureEngine:
         self.hook_generator = MicroHookGenerator(my_education)
         self.sentiment_analyzer = SentimentAnalyzer()
         self.warmth_manager = WarmthManager()
-        
+
         logger.info("Initialized TemperatureEngine with all components")
-    
+
     def analyze_temperature(
         self,
         profile: Dict[str, Any],
         context: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Analyze all temperature aspects for a recipient.
-        
+
         Args:
             profile: Recipient profile dictionary
             context: Additional context (archetype, relationship_stage, text_samples)
-            
+
         Returns:
             Dictionary with all temperature analysis results
         """
@@ -508,7 +508,7 @@ class TemperatureEngine:
             archetype = context.get("archetype", "peer")
             relationship_stage = context.get("relationship_stage", "COLD")
             text_samples = context.get("text_samples", [])
-            
+
             # Early sentiment check - exit if hostile
             sentiment_profile = self.sentiment_analyzer.assess_sentiment(text_samples)
             if sentiment_profile.risk_level == RiskLevel.CRITICAL:
@@ -521,14 +521,14 @@ class TemperatureEngine:
                     "recommendations": ["DO NOT CONTACT - recipient appears hostile"],
                     "abort": True
                 }
-            
+
             # Run remaining analyses
             depth_score = self.depth_scorer.calculate_depth(profile)
             hooks = self.hook_generator.generate_hooks(profile)
             warmth_setting = self.warmth_manager.determine_warmth(
                 archetype, relationship_stage, sentiment_profile.mood
             )
-            
+
             # Aggregate results
             results = {
                 "depth_score": depth_score.dict(),
@@ -540,11 +540,11 @@ class TemperatureEngine:
                 ),
                 "abort": False
             }
-            
+
             logger.info(f"Temperature analysis complete for {profile.get('name', 'Unknown')}")
-            
+
             return results
-            
+
         except Exception as e:
             logger.error(f"Error in temperature analysis: {str(e)}")
             return {
@@ -556,7 +556,7 @@ class TemperatureEngine:
                 "recommendations": ["Proceed with caution due to analysis error"],
                 "abort": False
             }
-    
+
     def _generate_recommendations(
         self,
         depth: DepthScore,
@@ -564,23 +564,23 @@ class TemperatureEngine:
         warmth: WarmthSetting
     ) -> List[str]:
         """Generate recommendations based on analysis.
-        
+
         Args:
             depth: Depth score result
             sentiment: Sentiment profile
             warmth: Warmth settings
-            
+
         Returns:
             List of recommendation strings
         """
         recommendations = []
-        
+
         # Depth-based recommendations
         if depth.level == 0:
             recommendations.append("Use generic opener - limited personalization available")
         elif depth.level >= 2:
             recommendations.append("High personalization possible - reference specific details")
-        
+
         # Sentiment-based recommendations
         if sentiment.risk_level == RiskLevel.CRITICAL:
             recommendations.append("DO NOT CONTACT - recipient appears hostile")
@@ -588,13 +588,13 @@ class TemperatureEngine:
             recommendations.append("Use deferential tone, acknowledge current challenges")
         elif sentiment.mood == SentimentMood.OPTIMISTIC:
             recommendations.append("Match their positive energy, focus on opportunities")
-        
+
         # Warmth-based recommendations
         if warmth.max_emojis == 0:
             recommendations.append("Maintain professional tone, no emojis")
         elif warmth.max_emojis >= 2:
             recommendations.append("Casual tone acceptable, 1-2 emojis may be used")
-        
+
         return recommendations
 
 

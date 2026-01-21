@@ -19,7 +19,7 @@ class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMi
     Comprehensive placeholder detection
     FEATURE 3.3 from SUPREME_SPELL / GAP 1.5
     """
-    
+
     PLACEHOLDER_PATTERNS = [
         r'\[placeholder\]',
         r'\[your name\]',
@@ -35,25 +35,25 @@ class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMi
         r'\[Missing[_ ]?context\]',
         r'\[unserializable\]',
     ]
-    
+
     def detect_placeholders(self, text: str) -> List[str]:
         """Detect ALL placeholder patterns"""
         found = []
-        
+
         for pattern in self.PLACEHOLDER_PATTERNS:
             matches = re.findall(pattern, text, re.IGNORECASE)
             if matches:
                 found.extend(matches)
-        
+
         return found
-    
+
     def validate(self, message: str) -> Tuple[bool, str]:
         """CRITICAL: Zero tolerance for placeholders"""
         placeholders = self.detect_placeholders(message)
-        
+
         if placeholders:
             return False, f"CRITICAL: Found {len(placeholders)} placeholders: {', '.join(placeholders[:5])}"
-        
+
         return True, ""
 
     def heal_repository(self) -> dict:

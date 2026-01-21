@@ -12,7 +12,7 @@ span_id_var = contextvars.ContextVar("span_id", default=None)
 class ContextPropagationMixin:
     """
     Phase 3 Advanced Infrastructure: Context Propagation (Report 4.7).
-    
+
     Enables distributed tracing by propagating request context across async calls.
     Features:
     - Thread/Async-safe ContextVars
@@ -51,7 +51,7 @@ class ContextPropagationMixin:
             # Generate trace_id if none exists in the current context
             if not trace_id_var.get():
                 trace_id_var.set(str(uuid.uuid4()))
-            
+
             # Create a new span_id for this specific method execution
             old_span = span_id_var.get()
             new_span = str(uuid.uuid4())[:8]
@@ -62,9 +62,9 @@ class ContextPropagationMixin:
 
             if func.__name__.startswith("_critical"):
                 ContextPropagationMixin._validate_context()
-            
+
             self._cp_logger.debug(f"Entering {func.__name__} [Trace: {trace_id_var.get()}, Span: {new_span}]")
-            
+
             try:
                 result = await func(self, *args, **kwargs)
                 return result

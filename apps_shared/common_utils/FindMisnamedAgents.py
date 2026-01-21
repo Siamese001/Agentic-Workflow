@@ -40,7 +40,7 @@ from agentic_core.utils.sovereign_index import SovereignIndex
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
-AGENT_SUFFIXES = {'Agent', 'Handler', 'Manager', 'Controller', 'Executor', 'Validator', 
+AGENT_SUFFIXES = {'Agent', 'Handler', 'Manager', 'Controller', 'Executor', 'Validator',
                   'Orchestrator', 'Governor', 'Enforcer', 'Analyzer', 'Sentinel'}
 
 EXCLUDE = {'Mixin', 'Base', 'Abstract', 'Protocol'}
@@ -51,7 +51,7 @@ def has_agent_class(path: Path) -> list:
         tree = ast.parse(path.read_text(encoding='utf-8', errors='ignore'))
     except:
         return []
-    
+
     agents = []
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
@@ -73,7 +73,7 @@ for d in scan_dirs:
     for py_file in get_python_files(dir_path):
         if '__pycache__' in str(py_file):
             continue
-        
+
         agents = has_agent_class(py_file)
         if agents:
             if 'Agent' in py_file.name:

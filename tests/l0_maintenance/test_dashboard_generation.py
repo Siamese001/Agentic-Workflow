@@ -45,13 +45,13 @@ def test_dashboard_generation():
     print("=" * 80)
     print("E2E DASHBOARD GENERATION TEST - MANDATORY DATA INJECTION")
     print("=" * 80)
-    
+
     try:
         from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent
-        
+
         agent = AutonomyGuardianAgent(project_root)
         print("✓ AutonomyGuardianAgent initialized")
-        
+
         # Generate dashboard - this MUST inject data or fail
         try:
             agent.generate_compliance_report(markdown=False)
@@ -61,21 +61,21 @@ def test_dashboard_generation():
                 print(f"✓ Dashboard generation correctly failed with injection error:\n{e}")
                 return False
             raise
-        
+
         # Verify dashboard file exists
         dashboard_path = project_root / REPORTS_DIR / "autonomy_dashboard.html"
         if not dashboard_path.exists():
             print("✗ CRITICAL: Dashboard file not found after generation")
             return False
-        
+
         print(f"✓ Dashboard file exists: {dashboard_path}")
-        
+
         # Read dashboard content
         content = dashboard_path.read_text(encoding='utf-8')
-        
+
         # MANDATORY CHECKS - These must all pass or generation should have failed
         failures = []
-        
+
         # Check 1: Dashboard data injection
         if 'const dashboardData = [];' in content:
             failures.append("dashboardData placeholder not replaced (empty array still present)")
@@ -94,7 +94,7 @@ def test_dashboard_generation():
                     failures.append("dashboardData injected but contains invalid JSON")
             else:
                 print("✓ Dashboard data injected with content")
-        
+
         # Check 2: Recommendations data injection
         if 'const recommendationsData = [];' in content:
             failures.append("recommendationsData placeholder not replaced")
@@ -102,7 +102,7 @@ def test_dashboard_generation():
             failures.append("recommendationsData variable not found")
         else:
             print("✓ Recommendations data injected")
-        
+
         # Check 3: Last updated timestamp
         if 'const lastUpdatedStr = "";' in content:
             failures.append("lastUpdatedStr placeholder not replaced")
@@ -110,7 +110,7 @@ def test_dashboard_generation():
             failures.append("lastUpdatedStr not properly formatted")
         else:
             print("✓ Last updated timestamp injected")
-        
+
         # Check 4: Gauge data injection
         if 'const gaugeData = {};' in content:
             failures.append("gaugeData placeholder not replaced (empty object still present)")
@@ -126,36 +126,36 @@ def test_dashboard_generation():
                         failures.append("gaugeData missing 'overallHealth' key")
                 except json.JSONDecodeError:
                     failures.append("gaugeData contains invalid JSON")
-        
+
         # Check 5: Strategic review injection
         if '<!-- STRATEGIC_REVIEW_INSERT -->' in content:
             failures.append("Strategic review placeholder not replaced")
         else:
             print("✓ Strategic review placeholder replaced")
-        
+
         # Check 6: Top recommendations injection
         if '<!-- TOP_RECS_INSERT -->' in content:
             failures.append("Top recommendations placeholder not replaced")
         else:
             print("✓ Top recommendations placeholder replaced")
-        
+
         # Check 6.1: Strategic Observations injection (Phase 5 Requirement)
         if 'const strategicObservationsData = {};' in content:
             failures.append("strategicObservationsData placeholder not replaced")
-        
+
         # Check 7: Verify actual data content
         if '"Territory"' not in content:
             failures.append("Dashboard data missing Territory field - data may be malformed")
         else:
             print("✓ Dashboard data contains expected fields")
-        
+
         # Check 8: Verify risk matrix data source consistency
         territory_count = content.count('"Territory":')
         if territory_count < 5:
             failures.append(f"Only {territory_count} territories found - data may be incomplete")
         else:
             print(f"✓ Found {territory_count} territories in dashboard data")
-        
+
         # FAIL HARD if any checks failed
         if failures:
             print("\n" + "=" * 80)
@@ -166,14 +166,14 @@ def test_dashboard_generation():
             print("\nThis should not happen - generation should have failed earlier.")
             print("Check AutonomyGuardianAgent._generate_self_contained_dashboard()")
             return False
-        
+
         print("\n" + "=" * 80)
         print("✅ ALL MANDATORY INJECTION CHECKS PASSED")
         print("=" * 80)
         print("Dashboard generation and data injection are atomic.")
         print("All required data has been injected successfully.")
         return True
-        
+
     except Exception as e:
         print(f"\n✗ Unexpected error: {e}")
         import traceback

@@ -89,14 +89,14 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
     The Structural Guard - Schema Evolution Agent
     Monitors all Pydantic definitions and database schemas.
     Runs forward-propagation checks to prevent breaking changes.
-    
+
     Capabilities:
     1. Schema Discovery - Find all Pydantic models and DB schemas
     2. Dependency Tracking - Map which files use which schemas
     3. Change Detection - Identify proposed schema modifications
     4. Impact Analysis - Forward-propagate changes to find breaks
     5. Transformation Mapping - Suggest migration strategies
-    
+
     Integration:
     - Runs before SystemArchitect applies structural changes
     - Blocks breaking changes or suggests transformations
@@ -106,7 +106,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
     def __init__(self, ctx: Any) -> None:
         """
         Initialize Schema Evolver.
-        
+
         Args:
             ctx: ValidationContext
         """
@@ -117,7 +117,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
     async def execute(self) -> Any:
         """
         Execute schema evolution monitoring.
-        
+
         Discovers schemas, tracks dependencies, and analyzes changes.
         """
         Logger.info('🛡️  Schema Evolver: Monitoring data contracts...')
@@ -196,7 +196,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
     def _analyze_impact(self, change: SchemaChange) -> ImpactAnalysis:
         """
         Analyze impact of a schema change.
-        
+
         Performs forward-propagation to find all affected files.
         """
         schema_name = change.schema_name
@@ -279,7 +279,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
     def propose_schema_change(self, schema_name: str, change_type: str, field_name: str, old_value: Optional[str]=None, new_value: Optional[str]=None, file_path: str='') -> ImpactAnalysis:
         """
         Propose a schema change and get impact analysis.
-        
+
         Args:
             schema_name: Name of schema to change
             change_type: Type of change
@@ -287,7 +287,7 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
             old_value: Old value (for modify/rename)
             new_value: New value (for modify/rename/add)
             file_path: File containing schema
-            
+
         Returns:
             Impact analysis
         """
@@ -312,16 +312,16 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
     @timeout(300)
     @standard_heal
     def heal_repository(
-        self, 
-        dry_run: bool = True, 
-        execute: bool = False, 
-        depth: int = 0, 
-        max_depth: int = 3, 
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
         _call_path: Optional[set] = None
     ) -> Dict[str, int]:
         """
         Schema Evolution Healing - Discovers and validates Pydantic/DB schemas.
-        
+
         WIRED CAPABILITIES:
         - _discover_schemas(): Parse codebase for schema definitions.
         - _track_dependencies(): Build dependency graph.
@@ -338,18 +338,18 @@ class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent
             # 1. Update Schema Registry
             self._discover_schemas()
             metrics["fixed"] = metrics.get("fixed", 0) + len(self.registry.schemas)
-            
+
             # 2. Track Usage
             self._track_dependencies()
-            
+
             # 3. Log Drift Report (Dry Run or Execute)
             report = self.generate_drift_report()
             Logger.info(report)
-            
+
         except Exception as e:
             Logger.error(f"Schema healing failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1
-            
+
         return metrics
 
 _schema_evolver = None

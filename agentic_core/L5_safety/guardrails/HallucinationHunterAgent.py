@@ -141,11 +141,11 @@ class ClaimVerifier:
     def verify_claim(self, generated_claim: AtomicClaim, source_claims: List[AtomicClaim]) -> VerificationResult:
         """
         Verify a generated Claim against source claims.
-        
+
         Args:
             generated_claim: Claim from generated output
             source_claims: Claims from source truth
-            
+
         Returns:
             Verification result
         """
@@ -165,7 +165,7 @@ class ClaimVerifier:
     def _calculate_similarity(self, text1: str, text2: str) -> float:
         """
         Calculate similarity between two texts.
-        
+
         Simple implementation using word overlap.
         Production would use cosine similarity of embeddings.
         """
@@ -179,11 +179,11 @@ class ClaimVerifier:
 class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
     """
     The Hallucination Hunter - Ground Truth Verifier
-    
+
     Runs in HOP inference stages (Phase 2 & 3).
     Compares generated output against source truth.
     Flags unsupported claims as FACTUAL_RISK.
-    
+
     Process:
     1. Break source and generated text into atomic claims
     2. For each generated Claim, search source via vector similarity
@@ -195,7 +195,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
     def __init__(self, ctx: Any) -> None:
         """
         Initialize Hallucination Hunter.
-        
+
         Args:
             ctx: ValidationContext
         """
@@ -226,7 +226,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
     async def execute(self) -> Any:
         """
         Execute hallucination hunting.
-        
+
         Listens for PIPELINE_OUTPUT signals and audits factual integrity.
         """
         Logger.info('[SCAN] Hallucination Hunter: Monitoring for PIPELINE_OUTPUT signals...')
@@ -255,10 +255,10 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
 
     def _determine_risk_level(self, integrity_score: float) -> str:
         """Determine risk level based on integrity score.
-        
+
         Args:
             integrity_score: Score between 0 and 1.
-            
+
         Returns:
             Risk level string: 'low', 'medium', 'high', or 'critical'.
         """
@@ -272,10 +272,10 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
 
     def _build_audit_trail(self, verification_results: List[VerificationResult]) -> Dict[str, str]:
         """Build audit trail from verification results.
-        
+
         Args:
             verification_results: List of verification results.
-            
+
         Returns:
             Dict mapping claim text to source citation.
         """
@@ -287,12 +287,12 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
 
     async def _audit_integrity(self, stage_name: str, source_truth: str, generated_artifact: str) -> IntegrityReport:
         """Audit integrity of generated Artifact against source truth.
-        
+
         Args:
             stage_name: Name of pipeline stage.
             source_truth: Ground truth source data.
             generated_artifact: Generated output.
-            
+
         Returns:
             Integrity report with verification results.
         """
@@ -300,22 +300,22 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
         generated_claims = await self._claim_extractor.extract_claims(generated_artifact)
         source_claims = await self._claim_embedder.embed_claims(source_claims)
         generated_claims = await self._claim_embedder.embed_claims(generated_claims)
-        
+
         verification_results = [
             self._claim_verifier.verify_claim(gen_claim, source_claims)
             for gen_claim in generated_claims
         ]
-        
+
         total_claims = len(generated_claims)
         supported_claims = sum(1 for r in verification_results if r.is_supported)
         unsupported_claims = total_claims - supported_claims
         integrity_score = supported_claims / total_claims if total_claims > 0 else 1.0
         hallucination_percentage = unsupported_claims / total_claims if total_claims > 0 else 0.0
-        
+
         risk_level = self._determine_risk_level(integrity_score)
         audit_trail = self._build_audit_trail(verification_results)
         unsupported_details = [r for r in verification_results if not r.is_supported]
-        
+
         return IntegrityReport(
             total_claims=total_claims,
             supported_claims=supported_claims,
@@ -369,7 +369,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
     def _emit_factual_integrity_fail(self, stage_name: str, report: IntegrityReport) -> Any:
         """
         Emit FACTUAL_INTEGRITY_FAIL signal when hallucination threshold exceeded.
-        
+
         Prevents resume from being sent to output folder.
         """
         Logger.error(f'[ALERT] FACTUAL_INTEGRITY_FAIL for {stage_name}')
@@ -384,7 +384,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
     async def _audit_pipeline_output(self, file_path: str) -> Any:
         """
         Audit a pipeline output file for factual integrity.
-        
+
         Args:
             file_path: Path to pipeline output file
         """
@@ -413,7 +413,7 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
     def _inject_audit_trail(self, file_path: str, report: IntegrityReport) -> Any:
         """
         Inject audit trail metadata into output file or create sidecar file.
-        
+
         Maps every Claim in the resume to a specific line in the source document.
         """
         if not report.audit_trail:
@@ -453,11 +453,11 @@ class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomi
         super().heal_repository()
 
         Inject citation metadata into generated text.
-        
+
         Args:
             generated_text: Generated output
             source_text: Source truth
-            
+
         Returns:
             Text with citation metadata
         """

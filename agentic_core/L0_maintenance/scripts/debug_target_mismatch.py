@@ -17,7 +17,7 @@ mismatches = []
 for row in non_total:
     target_inv = row.get('Target Invocation')
     territory = row.get('Territory', '')
-    
+
     expected = None
     if 'L0 Maintenance' in territory:
         if 'Infrastructure' in territory or 'Infrast' in territory:
@@ -30,7 +30,7 @@ for row in non_total:
         expected = 'N/A'
     else:
         expected = 100
-    
+
     if target_inv != expected:
         mismatches.append((territory, target_inv, expected))
         print(f"❌ {territory}")

@@ -17,10 +17,10 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, RedisCacheMixin, EventEmissionMixin, ContextPropagationMixin):
     """
     L6 Observability Agent: The Consumer (Report 4.3 Part C).
-    
+
     Responsible for reading the global event stream and updating KPIs.
     Consumes events from Redis streams and performs real-time observability analysis.
-    
+
     Attributes:
         name: Agent instance name
         redis_client: Redis client for stream operations
@@ -34,21 +34,21 @@ class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, Redis
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
         super().heal_repository(dry_run, execute)
-        return {"violations": 0, "fixed": 0, "errors": 0}
+        return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
     def __init__(self, **kwargs: Any) -> None:
         """
         Initialize the SovereignObservabilityAgent.
-        
+
         Args:
             **kwargs: Additional configuration parameters
                 name: Optional agent name (defaults to class name)
@@ -64,7 +64,7 @@ class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, Redis
     def _setup_consumer_group(self) -> None:
         """
         Ensures the Redis Consumer Group exists for the stream.
-        
+
         Creates a consumer group if it doesn't exist. Ignores BUSYGROUP errors
         which indicate the group already exists.
         """
@@ -81,10 +81,10 @@ class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, Redis
     async def process_stream(self, count: int = 10) -> None:
         """
         Polls the stream and processes events.
-        
+
         Reads events from the Redis stream using consumer group semantics,
         processes each event, and acknowledges successful processing.
-        
+
         Args:
             count: Maximum number of events to read in one batch (default: 10)
         """
@@ -107,10 +107,10 @@ class SovereignObservabilityAgent(SubatomicTestingMixin, MCPHardenedMixin, Redis
     async def _analyze_event(self, event: Dict[str, Any]) -> None:
         """
         Analyze an event and update KPIs.
-        
+
         Placeholder for KPI calculation and health scoring logic.
         Emits an analysis_complete event after processing.
-        
+
         Args:
             event: Event data dictionary containing event_id and event_type
         """

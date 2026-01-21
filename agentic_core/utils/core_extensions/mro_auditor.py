@@ -18,7 +18,7 @@ from pathlib import Path
 class MROAuditor:
     """
     Harden MRO: Ensures the L0-L6 inheritance chain is never broken.
-    
+
     Critical for detecting:
     - Missing super().__post_init__() calls in mixins
     - Incorrect inheritance order (SovereignBaseAgent not at tail)
@@ -29,16 +29,16 @@ class MROAuditor:
     def audit_class_hierarchy(agent_cls: Type) -> List[str]:
         """
         Validates that SovereignBaseAgent is at the correct position in MRO.
-        
+
         Args:
             agent_cls: The agent class to audit
-            
+
         Returns:
             List of error messages (empty if no errors)
         """
         from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-        
+
         mro = inspect.getmro(agent_cls)
         errors = []
 
@@ -52,7 +52,7 @@ class MROAuditor:
         sovereign_idx = mro.index(SovereignBaseAgent)
         mcp_idx = mro.index(MCPHardenedMixin) if MCPHardenedMixin in mro else None
         object_idx = mro.index(object)
-        
+
         # Check: SovereignBaseAgent should be immediately before MCPHardenedMixin
         if mcp_idx is not None:
             if sovereign_idx != mcp_idx - 1:
@@ -60,7 +60,7 @@ class MROAuditor:
                     f"MRO ORDER ERROR: {agent_cls.__name__} has SovereignBaseAgent at position {sovereign_idx}, "
                     f"but MCPHardenedMixin at {mcp_idx}. Expected SovereignBaseAgent -> MCPHardenedMixin."
                 )
-        
+
         # Rule 3: No custom classes should appear AFTER SovereignBaseAgent (except MCPHardenedMixin)
         # Everything after SovereignBaseAgent should be framework/stdlib classes
         allowed_after_sovereign = {MCPHardenedMixin, object}
@@ -80,17 +80,17 @@ class MROAuditor:
     def verify_initialization_propagation(agent_instance: object) -> Tuple[bool, Optional[str]]:
         """
         Check if SovereignBaseAgent's initialization was actually reached.
-        
+
         Requires SovereignBaseAgent to set a sentinel attribute: _sovereign_initialized
-        
+
         Args:
             agent_instance: An instantiated agent object
-            
+
         Returns:
             Tuple of (success: bool, error_message: Optional[str])
         """
         sentinel = getattr(agent_instance, "_sovereign_initialized", None)
-        
+
         if sentinel is True:
             return True, None
         elif sentinel is None:
@@ -108,20 +108,20 @@ class MROAuditor:
     def audit_agent_class(agent_cls: Type, instantiate: bool = False) -> Tuple[bool, List[str]]:
         """
         Comprehensive audit of an agent class.
-        
+
         Args:
             agent_cls: The agent class to audit
             instantiate: If True, also instantiate and check propagation (may fail for some agents)
-            
+
         Returns:
             Tuple of (passed: bool, errors: List[str])
         """
         errors = []
-        
+
         # Static check
         static_errors = MROAuditor.audit_class_hierarchy(agent_cls)
         errors.extend(static_errors)
-        
+
         # Dynamic check (optional)
         if instantiate and not static_errors:
             try:
@@ -132,61 +132,61 @@ class MROAuditor:
                 else:
                     # Regular class
                     instance = agent_cls()
-                
+
                 success, error = MROAuditor.verify_initialization_propagation(instance)
                 if not success:
                     errors.append(error)
-                    
+
             except Exception as e:
                 # Instantiation failed - not necessarily an MRO error
                 errors.append(f"WARNING: Could not instantiate {agent_cls.__name__} for propagation test: {e}")
-        
+
         return len(errors) == 0, errors
 
 
 def find_all_agent_classes(root_dir: Path) -> List[Type]:
     """
     Find all classes ending in 'Agent' in the agentic_core directory.
-    
+
     Args:
         root_dir: Root directory to search (should be agentic_core)
-        
+
     Returns:
         List of agent classes found
     """
     import sys
     import importlib.util
-    
+
     agent_classes = []
-    
+
     # Find all Python files
     # Phase 6.8: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
     for py_file in get_python_files(root_dir):
         if py_file.name.startswith("__"):
             continue
-        
+
         # Convert path to module name
         try:
             relative_path = py_file.relative_to(root_dir.parent)
             module_name = str(relative_path.with_suffix("")).replace("/", ".").replace("\\", ".")
-            
+
             # Import module
             spec = importlib.util.spec_from_file_location(module_name, py_file)
             if spec and spec.loader:
                 module = importlib.util.module_from_spec(spec)
                 sys.modules[module_name] = module
                 spec.loader.exec_module(module)
-                
+
                 # Find Agent classes
                 for name, obj in inspect.getmembers(module, inspect.isclass):
                     if name.endswith("Agent") and obj.__module__ == module_name:
                         agent_classes.append(obj)
-                        
+
         except Exception as e:
             # Skip files that can't be imported
             pass
-    
+
     return agent_classes
 
 
@@ -194,19 +194,19 @@ def find_all_agent_classes(root_dir: Path) -> List[Type]:
 def test_all_agents_mro_compliance():
     """
     Test function to audit all agents in the codebase.
-    
+
     This should be run as part of CI/CD to catch MRO violations early.
     """
     from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
-    
+
     # Test L1CognitionBaseAgent as example
     agent = L1CognitionBaseAgent(name="TestL1CognitionBaseAgent")
     auditor = MROAuditor()
-    
+
     # Check 1: Static order
     errors = auditor.audit_class_hierarchy(L1CognitionBaseAgent)
     assert not errors, f"MRO Order Violations: {errors}"
-    
+
     # Check 2: Dynamic propagation
     success, error = auditor.verify_initialization_propagation(agent)
     assert success, f"Chain Broken: {error}"

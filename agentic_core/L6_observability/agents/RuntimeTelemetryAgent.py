@@ -38,17 +38,17 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
         super().heal_repository()
 
-        return {"violations": 0, "fixed": 0, "errors": 0}
+        return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
     def __init__(self, limit_multiplier: float = 2.0) -> None:
         """
@@ -73,7 +73,7 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
             duration = end_time - start_time
             agent_name = getattr(agent_instance, "__class__", type("UnknownAgent", (), {})).__name__ if agent_instance else "UnknownAgent"
             self.metrics[agent_name] = duration
-        
+
         return agent_instance, duration
 
     def audit_security_overhead(self, baseline_time: float, current_time: float) -> Dict[str, Any]:
@@ -82,15 +82,15 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
         Alerts if the 2x Gospel limit is breached by security enforcers.
         """
         overhead_ratio = current_time / baseline_time if baseline_time > 0 else 0
-        
+
         status = "✅ OPTIMAL"
         is_breached = False
-        
+
         if overhead_ratio > self.limit_multiplier:
             status = "☢️ CRITICAL OVERHEAD"
             is_breached = True
             self.logger.warning(f"SOVEREIGN ALERT: Performance overhead ratio {overhead_ratio:.2f}x exceeds Gospel limit.")
-        
+
         return {
             "ratio": round(overhead_ratio, 3),
             "status": status,
@@ -123,9 +123,9 @@ if __name__ == "__main__":
 
     telemetry = RuntimeTelemetryAgent()
     _, duration = telemetry.benchmark_startup(MockSovereignAgent)
-    
+
     # Audit against a 30ms theoretical baseline
     report = telemetry.audit_security_overhead(0.03, duration)
-    
+
     telemetry.report_performance()
     print(f"Overhead Audit: {report['status']} ({report['ratio']}x)")

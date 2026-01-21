@@ -39,7 +39,7 @@ def test_exact_duplicate():
     print("\n" + "=" * 70)
     print("Test 1: The Clone (EXACT_DUPLICATE)")
     print("=" * 70)
-    
+
     # Create a temporary file with exact duplicate
     code = '''
 class TestAgent:
@@ -49,37 +49,37 @@ class TestAgent:
 def run(self):
     pass
 '''
-    
+
     with tempfile.NamedTemporaryFile(mode='w', suffix='Agent.py', delete=False, encoding='utf-8') as f:
         f.write(code)
         temp_path = Path(f.name)
-    
+
     try:
         result = analyze_file(temp_path)
-        
+
         if result is None:
             test_fail("CLONE-01", "analyze_file returned None, expected MalformedAgent")
             return
-        
+
         # Check that orphan was detected
         if len(result.orphaned_functions) > 0:
             test_pass("CLONE-01a", f"Detected {len(result.orphaned_functions)} orphan(s)")
         else:
             test_fail("CLONE-01a", "No orphans detected")
             return
-        
+
         # Check status is EXACT_DUPLICATE
         if result.status == "EXACT_DUPLICATE":
             test_pass("CLONE-01b", "Status: EXACT_DUPLICATE")
         else:
             test_fail("CLONE-01b", f"Status: {result.status}, expected EXACT_DUPLICATE")
-        
+
         # Check action
         if "DELETE" in result.action:
             test_pass("CLONE-01c", f"Action: {result.action}")
         else:
             test_fail("CLONE-01c", f"Action: {result.action}, expected DELETE")
-            
+
     finally:
         temp_path.unlink()
 
@@ -91,7 +91,7 @@ def test_divergent():
     print("\n" + "=" * 70)
     print("Test 2: The Mutant (DIVERGENT)")
     print("=" * 70)
-    
+
     # Create a temporary file with divergent methods
     code = '''
 class TestAgent:
@@ -104,37 +104,37 @@ def run(self):
     process(result)
     return result
 '''
-    
+
     with tempfile.NamedTemporaryFile(mode='w', suffix='Agent.py', delete=False, encoding='utf-8') as f:
         f.write(code)
         temp_path = Path(f.name)
-    
+
     try:
         result = analyze_file(temp_path)
-        
+
         if result is None:
             test_fail("MUTANT-01", "analyze_file returned None, expected MalformedAgent")
             return
-        
+
         # Check that orphan was detected
         if len(result.orphaned_functions) > 0:
             test_pass("MUTANT-01a", f"Detected {len(result.orphaned_functions)} orphan(s)")
         else:
             test_fail("MUTANT-01a", "No orphans detected")
             return
-        
+
         # Check status is DIVERGENT
         if result.status == "DIVERGENT":
             test_pass("MUTANT-01b", "Status: DIVERGENT")
         else:
             test_fail("MUTANT-01b", f"Status: {result.status}, expected DIVERGENT")
-        
+
         # Check action
         if "MERGE" in result.action:
             test_pass("MUTANT-01c", f"Action: {result.action}")
         else:
             test_fail("MUTANT-01c", f"Action: {result.action}, expected MERGE")
-            
+
     finally:
         temp_path.unlink()
 
@@ -146,7 +146,7 @@ def test_orphan_only():
     print("\n" + "=" * 70)
     print("Test 3: The Stray (ORPHAN_ONLY)")
     print("=" * 70)
-    
+
     # Create a temporary file with orphan only
     code = '''
 class TestAgent:
@@ -156,37 +156,37 @@ def run(self):
     # This method has no home
     return "orphan"
 '''
-    
+
     with tempfile.NamedTemporaryFile(mode='w', suffix='Agent.py', delete=False, encoding='utf-8') as f:
         f.write(code)
         temp_path = Path(f.name)
-    
+
     try:
         result = analyze_file(temp_path)
-        
+
         if result is None:
             test_fail("STRAY-01", "analyze_file returned None, expected MalformedAgent")
             return
-        
+
         # Check that orphan was detected
         if len(result.orphaned_functions) > 0:
             test_pass("STRAY-01a", f"Detected {len(result.orphaned_functions)} orphan(s)")
         else:
             test_fail("STRAY-01a", "No orphans detected")
             return
-        
+
         # Check status is ORPHAN_ONLY
         if result.status == "ORPHAN_ONLY":
             test_pass("STRAY-01b", "Status: ORPHAN_ONLY")
         else:
             test_fail("STRAY-01b", f"Status: {result.status}, expected ORPHAN_ONLY")
-        
+
         # Check action
         if "MOVE" in result.action:
             test_pass("STRAY-01c", f"Action: {result.action}")
         else:
             test_fail("STRAY-01c", f"Action: {result.action}, expected MOVE")
-            
+
     finally:
         temp_path.unlink()
 
@@ -197,11 +197,11 @@ def main():
     print("\n" + "=" * 70)
     print("AUDIT SCRIPT TEST SUITE")
     print("=" * 70)
-    
+
     test_exact_duplicate()
     test_divergent()
     test_orphan_only()
-    
+
     print("\n" + "=" * 70)
     print("TEST SUMMARY")
     print("=" * 70)
@@ -210,7 +210,7 @@ def main():
     print(f"  Passed: {PASSED}")
     print(f"  Failed: {FAILED}")
     print(f"  Pass Rate: {100 * PASSED / total:.1f}%")
-    
+
     if FAILED == 0:
         print("\n  ✅ ALL TESTS PASSED - AUDIT SCRIPT VERIFIED")
         return 0

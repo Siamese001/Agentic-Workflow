@@ -6,14 +6,14 @@ dramatically reducing the performance impact of repeated rglob calls.
 
 USAGE:
     from agentic_core.utils.sovereign_index import SovereignIndex
-    
+
     # Get the singleton instance
     index = SovereignIndex.get_instance(project_root)
-    
+
     # Get files matching a pattern
     python_files = index.get_files("*.py")
     agent_files = index.get_files("*Agent.py")
-    
+
     # Force refresh if needed
     index.refresh()
 
@@ -50,11 +50,11 @@ Logger = logging.getLogger(__name__)
 class SovereignIndex:
     """
     Singleton file indexer with caching and auto-invalidation.
-    
+
     This class replaces ad-hoc rglob calls with a centralized,
     cached file index that automatically invalidates when the
     filesystem changes.
-    
+
     Features:
     1. Singleton pattern ensures single source of truth
     2. In-memory cache for fast repeated queries
@@ -62,10 +62,10 @@ class SovereignIndex:
     4. Thread-safe operations
     5. Configurable exclusion patterns
     """
-    
+
     _instance: Optional[SovereignIndex] = None
     _lock: threading.Lock = threading.Lock()
-    
+
     # Default exclusion patterns - Use SSOT from structure_blueprint if available
     # PRODUCTION LENS: Excludes test directories to focus on production code
     DEFAULT_EXCLUDED_DIRS: Set[str] = (
@@ -78,14 +78,14 @@ class SovereignIndex:
             'tests',  # Production Lens - exclude test files from healing scans
         }
     )
-    
+
     def __init__(self, project_root: Path) -> None:
         """
         Initialize the SovereignIndex.
-        
+
         Note: Use get_instance() instead of direct instantiation
         to ensure singleton behavior.
-        
+
         Args:
             project_root: Root directory to index
         """
@@ -97,20 +97,20 @@ class SovereignIndex:
         self._excluded_dirs: Set[str] = self.DEFAULT_EXCLUDED_DIRS.copy()
         self._initialized: bool = False
         self._scan_lock: threading.Lock = threading.Lock()
-        
+
         Logger.debug(f"[INDEX] SovereignIndex created for {self._project_root}")
-    
+
     @classmethod
     def get_instance(cls, project_root: Optional[Path] = None) -> SovereignIndex:
         """
         Get the singleton instance of SovereignIndex.
-        
+
         Args:
             project_root: Root directory to index (required on first call)
-            
+
         Returns:
             The singleton SovereignIndex instance
-            
+
         Raises:
             ValueError: If project_root is not provided on first call
         """
@@ -129,114 +129,114 @@ class SovereignIndex:
                     )
                     cls._instance = cls(project_root)
             return cls._instance
-    
+
     @classmethod
     def reset_instance(cls) -> None:
         """
         Reset the singleton instance.
-        
+
         This is primarily for testing purposes.
         """
         with cls._lock:
             cls._instance = None
-    
+
     def get_files(self, pattern: str = "*") -> List[Path]:
         """
         Get files matching a glob pattern.
-        
+
         Args:
             pattern: Glob pattern to match (e.g., "*.py", "*Agent.py")
-            
+
         Returns:
             List of Path objects matching the pattern
-            
+
         Example:
             python_files = index.get_files("*.py")
             agent_files = index.get_files("*Agent.py")
         """
         # Ensure index is fresh
         self._ensure_fresh()
-        
+
         # Check cache first
         if pattern in self._cache:
             Logger.info(f"[INDEX] Cache Hit: Pattern '{pattern}' -> {len(self._cache[pattern])} files (from cache)")
             return self._cache[pattern].copy()
-        
+
         # Cache miss - need to scan
         Logger.info(f"[INDEX] Cache Miss: Pattern '{pattern}' -> scanning {len(self._all_files)} indexed files")
-        
+
         # Filter files by pattern
         matched = []
         for file_path in self._all_files:
             if fnmatch.fnmatch(file_path.name, pattern):
                 matched.append(file_path)
-        
+
         # Cache the result
         self._cache[pattern] = matched
-        
+
         Logger.info(f"[INDEX] Disk Scan: Pattern '{pattern}' matched {len(matched)} files (now cached)")
         return matched.copy()
-    
+
     def get_python_files(self) -> List[Path]:
         """
         Get all Python files in the index.
-        
+
         Convenience method equivalent to get_files("*.py").
-        
+
         Returns:
             List of all .py files
         """
         return self.get_files("*.py")
-    
+
     def get_agent_files(self) -> List[Path]:
         """
         Get all agent files in the index.
-        
+
         Returns:
             List of files matching *Agent.py pattern
         """
         return self.get_files("*Agent.py")
-    
+
     def file_exists(self, relative_path: str) -> bool:
         """
         Check if a file exists in the index.
-        
+
         Args:
             relative_path: Path relative to project root
-            
+
         Returns:
             True if file exists in index
         """
         self._ensure_fresh()
         full_path = self._project_root / relative_path
         return full_path in self._all_files
-    
+
     def refresh(self) -> int:
         """
         Force a refresh of the file index.
-        
+
         Returns:
             Number of files indexed
         """
         with self._scan_lock:
             return self._scan_filesystem()
-    
+
     def invalidate(self) -> None:
         """
         Invalidate the cache without rescanning.
-        
+
         The next get_files() call will trigger a rescan.
         """
         self._cache.clear()
         self._initialized = False
         Logger.debug("[INDEX] Cache invalidated")
-    
+
     def force_refresh(self) -> int:
         """
         Invalidates the cache and rescans the sovereign territory.
-        
+
         Use this after structural changes like archive purges.
-        
+
         Returns:
             Number of files indexed
         """
@@ -246,31 +246,31 @@ class SovereignIndex:
         count = self._scan_filesystem()
         Logger.info("[INDEX] Structural Purge Detected: Cache invalidated and rebuilt.")
         return count
-    
+
     def add_exclusion(self, dir_name: str) -> None:
         """
         Add a directory to the exclusion list.
-        
+
         Args:
             dir_name: Directory name to exclude
         """
         self._excluded_dirs.add(dir_name)
         self.invalidate()
-    
+
     def remove_exclusion(self, dir_name: str) -> None:
         """
         Remove a directory from the exclusion list.
-        
+
         Args:
             dir_name: Directory name to stop excluding
         """
         self._excluded_dirs.discard(dir_name)
         self.invalidate()
-    
+
     def get_stats(self) -> Dict[str, any]:
         """
         Get statistics about the index.
-        
+
         Returns:
             Dictionary with index statistics
         """
@@ -282,11 +282,11 @@ class SovereignIndex:
             "excluded_dirs": list(self._excluded_dirs),
             "initialized": self._initialized,
         }
-    
+
     def _ensure_fresh(self) -> None:
         """
         Ensure the index is fresh, rescanning if needed.
-        
+
         Auto-invalidation is based on:
         1. Index not initialized
         2. Project root mtime changed
@@ -294,7 +294,7 @@ class SovereignIndex:
         if not self._initialized:
             self.refresh()
             return
-        
+
         # Check if project root mtime changed
         try:
             current_mtime = os.path.getmtime(self._project_root)
@@ -304,41 +304,41 @@ class SovereignIndex:
         except OSError:
             # If we can't check mtime, assume cache is valid
             pass
-    
+
     def _scan_filesystem(self) -> int:
         """
         Scan the filesystem and populate the index.
-        
+
         Uses os.scandir for better performance than pathlib.rglob.
-        
+
         Returns:
             Number of files indexed
         """
         start_time = time.time()
         self._all_files.clear()
         self._cache.clear()
-        
+
         try:
             self._root_mtime = os.path.getmtime(self._project_root)
         except OSError:
             self._root_mtime = 0.0
-        
+
         # Use os.scandir for performance
         self._scan_directory(self._project_root)
-        
+
         self._last_scan_time = time.time() - start_time
         self._initialized = True
-        
+
         Logger.info(
             f"[INDEX] Scanned {len(self._all_files)} files in {self._last_scan_time:.2f}s"
         )
-        
+
         return len(self._all_files)
-    
+
     def _scan_directory(self, directory: Path) -> None:
         """
         Recursively scan a directory using os.scandir.
-        
+
         Args:
             directory: Directory to scan
         """

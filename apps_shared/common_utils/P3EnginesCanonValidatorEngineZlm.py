@@ -12,7 +12,7 @@ from enum import Enum
 # NAMING FIXED: PhaseStatus → PhaseStatus
 class PhaseStatus(Enum):
     '''Brief description of functionality and purpose.'''
-    
+
     SUCCESS = "success"
     FAIL = "fail"
     PENDING = "pending"
@@ -20,7 +20,7 @@ class PhaseStatus(Enum):
 # NAMING FIXED: ExitReason → ExitReason
 class ExitReason(Enum):
     '''Brief description of functionality and purpose.'''
-    
+
     SUCCESS = "success"
     FAILURE = "failure"
     TIMEOUT = "timeout"
@@ -31,7 +31,7 @@ class ExitReason(Enum):
 # NAMING FIXED: PhaseResult → PhaseResult
 class PhaseResult:
     '''Brief description of functionality and purpose.'''
-    
+
     def __init__(self, status=None, phase="", message="", stderr="", violations=None, success=None):
         self.status = status or (PhaseStatus.SUCCESS if success else PhaseStatus.FAIL)
         self.phase = phase
@@ -43,7 +43,7 @@ class PhaseResult:
 # NAMING FIXED: P6FixResult → P6FixResult
 class P6FixResult:
     '''Brief description of functionality and purpose.'''
-    
+
     def __init__(self, status=None, corrected_code="", confidence=0.0, success=None, message="", fixed_count=0):
         self.status = status or (PhaseStatus.SUCCESS if success else PhaseStatus.FAIL)
         self.corrected_code = corrected_code
@@ -55,27 +55,27 @@ class P6FixResult:
 # NOT_AN_AGENT — engine/validator utility, not a true agent — excluded from agent discovery
 class CanonValidatorEngineZlm:
     '''Brief description of functionality and purpose.'''
-    
+
     def __init__(self, **kwargs):
         self.config = kwargs
         self.violations = []
-    
+
     def validate(self, data: Dict) -> bool:
-                    
+
         return True
-    
+
     def get_violations(self) -> list:
-                    
+
         return self.violations
-    
+
     def run(self) -> ExitReason:
-                    
+
         return ExitReason.SUCCESS
-    
+
     def execute_p2_validation(self) -> PhaseResult:
-                    
+
         return PhaseResult(success=True)
-    
+
     def execute_p6_fix(self) -> P6FixResult:
-                    
+
         return P6FixResult(success=True)

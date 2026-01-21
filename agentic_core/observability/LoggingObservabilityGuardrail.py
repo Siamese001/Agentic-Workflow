@@ -56,21 +56,21 @@ class AuditEntry:
 class LoggingObservabilityGuardrail:
     """
     Consolidated Logging & Observability Guardrail.
-    
+
     Provides unified logging with:
     - Secure log handling (PII scrubbing)
     - Audit trail management
     - Log correlation
     - Retention policies
     """
-    
+
     def __init__(self):
         """Initialize logging guardrail."""
         self.enabled_rules: List[str] = [
             "secure_logging",
             "audit_trails",
         ]
-        
+
         # PII patterns to scrub
         self.pii_patterns = {
             "email": r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}",
@@ -79,18 +79,18 @@ class LoggingObservabilityGuardrail:
             "credit_card": r"\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b",
             "api_key": r"(sk-|api[_-]?key)[a-zA-Z0-9]{20,}",
         }
-        
+
         # Log storage
         self.logs: List[LogEntry] = []
         self.audit_trail: List[AuditEntry] = []
         self.max_log_size = 10000
         self.max_audit_size = 5000
-        
+
         # Statistics
         self.logs_written = 0
         self.pii_scrubbed = 0
         self.audits_created = 0
-    
+
     def log(
         self,
         level: LogLevel,
@@ -101,26 +101,26 @@ class LoggingObservabilityGuardrail:
     ) -> LogEntry:
         """
         Create secure log entry.
-        
+
         Args:
             level: Log level
             message: Log message
             source: Source of log
             correlation_id: Optional correlation ID
             metadata: Optional metadata
-            
+
         Returns:
             LogEntry
         """
         self.logs_written += 1
-        
+
         # Sanitize message if secure logging enabled
         sanitized_message = message
         was_sanitized = False
-        
+
         if "secure_logging" in self.enabled_rules:
             sanitized_message, was_sanitized = self._sanitize_message(message)
-        
+
         entry = LogEntry(
             level=level,
             message=sanitized_message,
@@ -130,15 +130,15 @@ class LoggingObservabilityGuardrail:
             metadata=metadata or {},
             sanitized=was_sanitized
         )
-        
+
         self.logs.append(entry)
-        
+
         # Enforce max size
         while len(self.logs) > self.max_log_size:
             self.logs.pop(0)
-        
+
         return entry
-    
+
     def audit(
         self,
         action: str,
@@ -149,14 +149,14 @@ class LoggingObservabilityGuardrail:
     ) -> AuditEntry:
         """
         Create audit trail entry.
-        
+
         Args:
             action: Action performed
             actor: Who performed action
             target: Target of action
             outcome: Outcome (success/failure/blocked)
             details: Optional details
-            
+
         Returns:
             AuditEntry
         """
@@ -169,12 +169,12 @@ class LoggingObservabilityGuardrail:
                 timestamp=time.time(),
                 outcome=outcome
             )
-        
+
         self.audits_created += 1
-        
+
         # Generate audit ID
         audit_id = f"audit_{self.audits_created}_{hashlib.sha256(f'{action}{actor}{time.time()}'.encode()).hexdigest()[:8]}"
-        
+
         entry = AuditEntry(
             audit_id=audit_id,
             action=action,
@@ -184,28 +184,28 @@ class LoggingObservabilityGuardrail:
             outcome=outcome,
             details=details or {}
         )
-        
+
         self.audit_trail.append(entry)
-        
+
         # Enforce max size
         while len(self.audit_trail) > self.max_audit_size:
             self.audit_trail.pop(0)
-        
+
         return entry
-    
+
     def _sanitize_message(self, message: str) -> tuple[str, bool]:
         """Sanitize message by scrubbing PII."""
         sanitized = message
         was_sanitized = False
-        
+
         for pii_type, pattern in self.pii_patterns.items():
             if re.search(pattern, sanitized):
                 sanitized = re.sub(pattern, f"[{pii_type.upper()}_REDACTED]", sanitized)
                 was_sanitized = True
                 self.pii_scrubbed += 1
-        
+
         return sanitized, was_sanitized
-    
+
     def get_logs(
         self,
         level: Optional[LogLevel] = None,
@@ -214,23 +214,23 @@ class LoggingObservabilityGuardrail:
     ) -> List[Dict[str, Any]]:
         """
         Get logs with optional filtering.
-        
+
         Args:
             level: Filter by level
             source: Filter by source
             limit: Maximum entries
-            
+
         Returns:
             List of log entries
         """
         filtered = self.logs
-        
+
         if level:
             filtered = [l for l in filtered if l.level == level]
-        
+
         if source:
             filtered = [l for l in filtered if l.source == source]
-        
+
         return [
             {
                 "level": l.level.value,
@@ -242,7 +242,7 @@ class LoggingObservabilityGuardrail:
             }
             for l in filtered[-limit:]
         ]
-    
+
     def get_audit_trail(
         self,
         action: Optional[str] = None,
@@ -251,23 +251,23 @@ class LoggingObservabilityGuardrail:
     ) -> List[Dict[str, Any]]:
         """
         Get audit trail with optional filtering.
-        
+
         Args:
             action: Filter by action
             actor: Filter by actor
             limit: Maximum entries
-            
+
         Returns:
             List of audit entries
         """
         filtered = self.audit_trail
-        
+
         if action:
             filtered = [a for a in filtered if a.action == action]
-        
+
         if actor:
             filtered = [a for a in filtered if a.actor == actor]
-        
+
         return [
             {
                 "audit_id": a.audit_id,
@@ -279,7 +279,7 @@ class LoggingObservabilityGuardrail:
             }
             for a in filtered[-limit:]
         ]
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get logging statistics."""
         return {

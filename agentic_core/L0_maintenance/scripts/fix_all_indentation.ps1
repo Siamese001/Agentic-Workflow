@@ -8,7 +8,7 @@ $fixedCount = 0
 
 foreach ($file in $files) {
     $content = Get-Content $file -Raw
-    
+
     # Multiple patterns to catch all variations
     $patterns = @(
         '(?s)(\s+except\s+.*?:\s*\n)\s+pass\n\s+pass\n(.+?logger\.)',
@@ -17,7 +17,7 @@ foreach ($file in $files) {
         '(?s)\n\s+pass\n\s+pass\n(.+?logger\.)',
         '(?s)\n\s+pass\n\s+pass\n(.+?return)'
     )
-    
+
     $changed = $false
     foreach ($pattern in $patterns) {
         if ($content -match $pattern) {
@@ -26,7 +26,7 @@ foreach ($file in $files) {
             $changed = $true
         }
     }
-    
+
     if ($changed) {
         Set-Content $file $content -NoNewline
         Write-Host "Fixed: $($file.FullName)"

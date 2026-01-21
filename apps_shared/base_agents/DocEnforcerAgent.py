@@ -23,7 +23,7 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 class DocEnforcerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """ROLE: Documentation Surgeon."""
     async def execute(self) -> None:
-                    
+
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Documentation Standards...")
         await asyncio.sleep(0)
 

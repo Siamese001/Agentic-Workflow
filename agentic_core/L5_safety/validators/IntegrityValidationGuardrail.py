@@ -40,20 +40,20 @@ class IntegrityResult:
 class IntegrityValidationGuardrail:
     """
     Consolidated Integrity Validation Guardrail.
-    
+
     Provides unified integrity checks with:
     - Data integrity validation (checksums, signatures)
     - Gravity compliance (import structure enforcement)
     - State consistency checks
     """
-    
+
     def __init__(self):
         """Initialize integrity validation guardrail."""
         self.enabled_rules: List[str] = [
             "integrity_checks",
             "gravity_compliance",
         ]
-        
+
         # Gravity rules (layer import restrictions)
         self.gravity_rules = {
             "L0": [],  # L0 can't import anything
@@ -63,15 +63,15 @@ class IntegrityValidationGuardrail:
             "L4": ["L0", "L1", "L2", "L3"],
             "L5": ["L0", "L1", "L2", "L3", "L4"],
         }
-        
+
         # Checksum registry
         self.checksums: Dict[str, str] = {}
-        
+
         # Statistics
         self.validations_performed = 0
         self.violations_found = 0
         self.gravity_violations = 0
-    
+
     async def validate_integrity(
         self,
         data: Any,
@@ -80,23 +80,23 @@ class IntegrityValidationGuardrail:
     ) -> IntegrityResult:
         """
         Validate data integrity.
-        
+
         Args:
             data: Data to validate
             expected_checksum: Expected checksum (optional)
             data_id: Data identifier for tracking
-            
+
         Returns:
             IntegrityResult
         """
         start_time = time.time()
         self.validations_performed += 1
         violations = []
-        
+
         # Calculate checksum
         data_str = str(data)
         actual_checksum = hashlib.sha256(data_str.encode()).hexdigest()
-        
+
         # Check against expected if provided
         if "integrity_checks" in self.enabled_rules:
             if expected_checksum and actual_checksum != expected_checksum:
@@ -107,7 +107,7 @@ class IntegrityValidationGuardrail:
                     expected=expected_checksum,
                     actual=actual_checksum
                 ))
-            
+
             # Check against stored checksum
             if data_id and data_id in self.checksums:
                 if self.checksums[data_id] != actual_checksum:
@@ -118,20 +118,20 @@ class IntegrityValidationGuardrail:
                         expected=self.checksums[data_id],
                         actual=actual_checksum
                     ))
-        
+
         # Store checksum
         if data_id:
             self.checksums[data_id] = actual_checksum
-        
+
         self.violations_found += len(violations)
-        
+
         return IntegrityResult(
             valid=len(violations) == 0,
             violations=violations,
             checksum=actual_checksum,
             validation_time_ms=(time.time() - start_time) * 1000
         )
-    
+
     async def validate_gravity(
         self,
         source_layer: str,
@@ -140,28 +140,28 @@ class IntegrityValidationGuardrail:
     ) -> IntegrityResult:
         """
         Validate gravity compliance (layer import rules).
-        
+
         Args:
             source_layer: Layer making imports (e.g., "L3")
             imported_layers: List of layers being imported
             file_path: Optional file path for context
-            
+
         Returns:
             IntegrityResult
         """
         start_time = time.time()
         self.validations_performed += 1
         violations = []
-        
+
         if "gravity_compliance" not in self.enabled_rules:
             return IntegrityResult(
                 valid=True,
                 violations=[],
                 validation_time_ms=(time.time() - start_time) * 1000
             )
-        
+
         allowed_imports = self.gravity_rules.get(source_layer, [])
-        
+
         for imported in imported_layers:
             if imported not in allowed_imports and imported != source_layer:
                 violations.append(IntegrityViolation(
@@ -173,29 +173,29 @@ class IntegrityValidationGuardrail:
                     location=file_path
                 ))
                 self.gravity_violations += 1
-        
+
         self.violations_found += len(violations)
-        
+
         return IntegrityResult(
             valid=len(violations) == 0,
             violations=violations,
             validation_time_ms=(time.time() - start_time) * 1000
         )
-    
+
     def register_checksum(self, data_id: str, checksum: str) -> None:
         """Register expected checksum for data."""
         self.checksums[data_id] = checksum
-    
+
     def calculate_checksum(self, data: Any) -> str:
         """Calculate SHA256 checksum for data."""
         data_str = str(data)
         return hashlib.sha256(data_str.encode()).hexdigest()
-    
+
     def verify_checksum(self, data: Any, expected: str) -> bool:
         """Verify data matches expected checksum."""
         actual = self.calculate_checksum(data)
         return actual == expected
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get integrity validation statistics."""
         return {

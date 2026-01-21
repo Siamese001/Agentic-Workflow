@@ -62,7 +62,7 @@ class ViolationPrediction:
 class AdaptiveLearningEngine:
     """
     Learns from healing patterns to predict and prevent violations.
-    
+
     Features:
     - Pattern recognition from successful healing attempts
     - Predictive Violation detection
@@ -148,7 +148,7 @@ class AdaptiveLearningEngine:
     def learn_from_healing(self, file_path: str, violation_key: int, violation_details: str, fix_code: str, success: bool, rounds_taken: int) -> Any:
         """
         Learn from a healing attempt.
-        
+
         Args:
             file_path: Path to the healed file
             violation_key: Canon key that was fixed
@@ -206,11 +206,11 @@ class AdaptiveLearningEngine:
     async def predict_violations(self, file_path: str, code: str) -> List[ViolationPrediction]:
         """
         Predict potential violations in a file before they occur.
-        
+
         Args:
             file_path: Path to the file
             code: File contents
-            
+
         Returns:
             List of predicted violations with confidence scores
         """
@@ -242,12 +242,12 @@ class AdaptiveLearningEngine:
     def get_recommended_fix(self, violation_key: int, violation_details: str, file_path: str) -> Optional[str]:
         """
         Get recommended fix based on learned patterns.
-        
+
         Args:
             violation_key: Canon key
             violation_details: Violation description
             file_path: File path
-            
+
         Returns:
             Recommended fix strategy or None
         """

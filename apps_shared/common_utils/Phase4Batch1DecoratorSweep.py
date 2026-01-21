@@ -77,10 +77,10 @@ def find_import_insertion_point(content: str) -> int:
     last_import_line = 0
     in_docstring = False
     docstring_char = None
-    
+
     for i, line in enumerate(lines):
         stripped = line.strip()
-        
+
         # Track docstrings
         if not in_docstring:
             if stripped.startswith('"""') or stripped.startswith("'''"):
@@ -94,17 +94,17 @@ def find_import_insertion_point(content: str) -> int:
             if docstring_char in stripped:
                 in_docstring = False
             continue
-        
+
         # Track imports
         if stripped.startswith('import ') or stripped.startswith('from '):
             last_import_line = i
-    
+
     return last_import_line
 
 
 def add_decorator_to_heal_repository(content: str) -> Tuple[str, int]:
     """Add @standard_heal decorator to heal_repository methods.
-    
+
     Returns:
         Tuple of (modified_content, number_of_decorators_added)
     """
@@ -112,10 +112,10 @@ def add_decorator_to_heal_repository(content: str) -> Tuple[str, int]:
     modified_lines = []
     decorators_added = 0
     i = 0
-    
+
     while i < len(lines):
         line = lines[i]
-        
+
         # Check if this line defines heal_repository
         if re.match(r'\s*def heal_repository\s*\(', line):
             # Check if previous line already has @standard_heal
@@ -124,24 +124,24 @@ def add_decorator_to_heal_repository(content: str) -> Tuple[str, int]:
                 modified_lines.append(line)
                 i += 1
                 continue
-            
+
             # Get the indentation of the def line
             indent_match = re.match(r'^(\s*)', line)
             indent = indent_match.group(1) if indent_match else ''
-            
+
             # Add the decorator with same indentation
             modified_lines.append(f'{indent}{DECORATOR_NAME}')
             decorators_added += 1
-        
+
         modified_lines.append(line)
         i += 1
-    
+
     return '\n'.join(modified_lines), decorators_added
 
 
 def process_file(file_path: Path, dry_run: bool = True) -> dict:
     """Process a single file, adding decorator and import if needed.
-    
+
     Returns:
         dict with processing results
     """
@@ -152,28 +152,28 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
         "skipped": False,
         "reason": None,
     }
-    
+
     try:
         content = file_path.read_text(encoding='utf-8')
     except Exception as e:
         result["skipped"] = True
         result["reason"] = f"Read error: {e}"
         return result
-    
+
     # Skip if no heal_repository method
     if not has_heal_repository_method(content):
         result["skipped"] = True
         result["reason"] = "No heal_repository method"
         return result
-    
+
     # Skip if already fully decorated
     if already_has_decorator(content):
         result["skipped"] = True
         result["reason"] = "Already has @standard_heal"
         return result
-    
+
     modified_content = content
-    
+
     # Add import if missing
     if not already_has_import(content):
         insert_line = find_import_insertion_point(content)
@@ -181,11 +181,11 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
         lines.insert(insert_line + 1, DECORATOR_IMPORT)
         modified_content = '\n'.join(lines)
         result["import_added"] = True
-    
+
     # Add decorator
     modified_content, decorators_added = add_decorator_to_heal_repository(modified_content)
     result["decorators_added"] = decorators_added
-    
+
     # Write if not dry run and changes were made
     if not dry_run and (result["import_added"] or decorators_added > 0):
         try:
@@ -193,7 +193,7 @@ def process_file(file_path: Path, dry_run: bool = True) -> dict:
         except Exception as e:
             result["skipped"] = True
             result["reason"] = f"Write error: {e}"
-    
+
     return result
 
 
@@ -202,25 +202,25 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Show what would be changed without modifying files")
     parser.add_argument("--execute", action="store_true", help="Actually modify files")
     args = parser.parse_args()
-    
+
     if not args.dry_run and not args.execute:
         print("Please specify --dry-run or --execute")
         return
-    
+
     dry_run = args.dry_run
-    
+
     root = Path(__file__).parent.parent / "agentic_core"
     if not root.exists():
         print(f"Error: agentic_core directory not found at {root}")
         return
-    
+
     print(f"{'[DRY RUN]' if dry_run else '[EXECUTE]'} Phase 4 Batch 1: Decorator Sweep")
     print(f"Scanning: {root}")
     print("-" * 60)
-    
+
     files = find_python_files(root)
     print(f"Found {len(files)} Python files to analyze")
-    
+
     stats = {
         "files_processed": 0,
         "files_modified": 0,
@@ -228,23 +228,23 @@ def main():
         "decorators_added": 0,
         "files_skipped": 0,
     }
-    
+
     modified_files = []
-    
+
     for file_path in files:
         result = process_file(file_path, dry_run=dry_run)
         stats["files_processed"] += 1
-        
+
         if result["skipped"]:
             stats["files_skipped"] += 1
             continue
-        
+
         if result["import_added"] or result["decorators_added"] > 0:
             stats["files_modified"] += 1
             stats["imports_added"] += 1 if result["import_added"] else 0
             stats["decorators_added"] += result["decorators_added"]
             modified_files.append(result)
-            
+
             # Show progress for modified files
             rel_path = file_path.relative_to(root.parent)
             print(f"  {'[WOULD MODIFY]' if dry_run else '[MODIFIED]'} {rel_path}")
@@ -252,7 +252,7 @@ def main():
                 print(f"    + Added import")
             if result["decorators_added"]:
                 print(f"    + Added {result['decorators_added']} decorator(s)")
-    
+
     print("-" * 60)
     print("Summary:")
     print(f"  Files processed: {stats['files_processed']}")
@@ -260,7 +260,7 @@ def main():
     print(f"  Imports added:   {stats['imports_added']}")
     print(f"  Decorators added: {stats['decorators_added']}")
     print(f"  Files skipped:   {stats['files_skipped']}")
-    
+
     if dry_run:
         print("\n[DRY RUN] No files were modified. Run with --execute to apply changes.")
 

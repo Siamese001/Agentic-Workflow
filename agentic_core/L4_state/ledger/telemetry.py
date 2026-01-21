@@ -19,7 +19,7 @@ Logger = logging.getLogger(__name__)
 # NAMING FIXED: TraceEvent → TraceEvent
 class TraceEvent:
     '''Brief description of functionality and purpose.'''
-    
+
     trace_id: str
     span_id: str
     role: str
@@ -31,13 +31,13 @@ class TraceEvent:
 # NAMING FIXED: TelemetryRecorder → TelemetryRecorder
 class TelemetryRecorder:
     '''Brief description of functionality and purpose.'''
-    
+
     def __init__(self: Any, db_path: Any) -> None:
         self.conn = duckdb.connect(db_path)
         self.conn.execute(""" """)
 
     def record(self: Any, event: TraceEvent) -> None:
-                    
+
         self.conn.execute(
             "INSERT INTO traces VALUES (?, ?, ?, ?, ?, ?)",
             (event.trace_id,
@@ -47,4 +47,3 @@ class TelemetryRecorder:
                 json.dumps(event.payload),
                 event.timestamp)
         )
-

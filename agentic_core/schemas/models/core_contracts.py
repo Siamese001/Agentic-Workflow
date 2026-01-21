@@ -43,7 +43,7 @@ CORE_CONTRACTS_REGISTRY: Dict[str, Any] = {
 
 __all__ = [
     "RetryPolicy",
-    "HopSpec", 
+    "HopSpec",
     "AgentContract",
     "CORE_CONTRACTS_REGISTRY",
 ]

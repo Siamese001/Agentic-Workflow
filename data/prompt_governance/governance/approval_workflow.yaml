@@ -4,7 +4,7 @@
 approval_workflow:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # Workflow configuration
   workflow_configuration:
     approval_stages:
@@ -14,41 +14,41 @@ approval_workflow:
         approver_roles: ["prompt_engineer", "subject_matter_expert"]
         timeout_hours: 48
         auto_approve: false
-        
+
       - name: "technical_review"
         description: "Technical implementation and quality review"
         required_approvers: 2
         approver_roles: ["technical_lead", "quality_assurance"]
         timeout_hours: 72
         auto_approve: false
-        
+
       - name: "compliance_review"
         description: "Compliance and ethical review"
         required_approvers: 1
         approver_roles: ["compliance_officer", "ethics_reviewer"]
         timeout_hours: 96
         auto_approve: false
-        
+
       - name: "business_review"
         description: "Business impact and strategy review"
         required_approvers: 1
         approver_roles: ["product_manager", "business_stakeholder"]
         timeout_hours: 48
         auto_approve: false
-        
+
       - name: "final_approval"
         description: "Final approval for deployment"
         required_approvers: 1
         approver_roles: ["governance_committee", "release_manager"]
         timeout_hours: 24
         auto_approve: false
-        
+
     workflow_rules:
       parallel_processing: true
       sequential_dependencies: ["technical_review -> compliance_review -> final_approval"]
       emergency_expedite: "critical_fixes can skip business_review"
       rollback_authority: "technical_lead + release_manager"
-      
+
   # Role-based permissions
   role_permissions:
     prompt_engineer:
@@ -57,70 +57,70 @@ approval_workflow:
       can_review: true
       can_deploy: false
       can_rollback: false
-      
+
     subject_matter_expert:
       can_submit: false
       can_approve: ["initial_review", "technical_review"]
       can_review: true
       can_deploy: false
       can_rollback: false
-      
+
     technical_lead:
       can_submit: true
       can_approve: ["technical_review", "final_approval"]
       can_review: true
       can_deploy: true
       can_rollback: true
-      
+
     quality_assurance:
       can_submit: false
       can_approve: ["technical_review"]
       can_review: true
       can_deploy: false
       can_rollback: false
-      
+
     compliance_officer:
       can_submit: false
       can_approve: ["compliance_review"]
       can_review: true
       can_deploy: false
       can_rollback: false
-      
+
     ethics_reviewer:
       can_submit: false
       can_approve: ["compliance_review"]
       can_review: true
       can_deploy: false
       can_rollback: false
-      
+
     product_manager:
       can_submit: true
       can_approve: ["business_review"]
       can_review: true
       can_deploy: false
       can_rollback: false
-      
+
     business_stakeholder:
       can_submit: false
       can_approve: ["business_review"]
       can_review: true
       can_deploy: false
       can_rollback: false
-      
+
     governance_committee:
       can_submit: false
       can_approve: ["final_approval"]
       can_review: true
       can_deploy: true
       can_rollback: true
-      
+
     release_manager:
       can_submit: false
       can_approve: ["final_approval"]
       can_review: true
       can_deploy: true
       can_rollback: true
-      
+
   # Approval criteria
   approval_criteria:
     initial_review:
@@ -134,7 +134,7 @@ approval_workflow:
         - "Scope creep or inappropriate scope"
         - "Insufficient documentation"
         - "Missing or inadequate test cases"
-        
+
     technical_review:
       requirements:
         - implementation_correct: "Technically sound implementation"
@@ -146,7 +146,7 @@ approval_workflow:
         - "Performance below standards"
         - "Security vulnerabilities"
         - "Integration issues"
-        
+
     compliance_review:
       requirements:
         - regulatory_compliant: "Meets all regulatory requirements"
@@ -158,7 +158,7 @@ approval_workflow:
         - "Ethical concerns"
         - "Privacy issues"
         - "Accessibility barriers"
-        
+
     business_review:
       requirements:
         - business_value: "Clear business value proposition"
@@ -170,7 +170,7 @@ approval_workflow:
         - "Stakeholder misalignment"
         - "Inadequate resource planning"
         - "Unacceptable risks"
-        
+
     final_approval:
       requirements:
         - all_previous_approved: "All previous stages approved"
@@ -182,39 +182,39 @@ approval_workflow:
         - "Not deployment ready"
         - "Insufficient monitoring plan"
         - "Inadequate rollback procedures"
-        
+
   # Workflow automation
   automation_rules:
     automatic_transitions:
       - trigger: "stage_approved"
         action: "advance_to_next_stage"
         conditions: "all_approvers_approved"
-        
+
       - trigger: "stage_rejected"
         action: "return_to_submitter"
         conditions: "any_rejection"
-        
+
       - trigger: "timeout_exceeded"
         action: "escalate_to_manager"
         conditions: "timeout_hours_exceeded"
-        
+
     notifications:
       submission_received:
         recipients: ["submitter", "initial_review_approvers"]
         template: "submission_notification"
-        
+
       stage_approved:
         recipients: ["submitter", "next_stage_approvers"]
         template: "stage_approval_notification"
-        
+
       stage_rejected:
         recipients: ["submitter", "rejection_approvers"]
         template: "rejection_notification"
-        
+
       workflow_completed:
         recipients: ["submitter", "all_approvers", "release_team"]
         template: "workflow_completion_notification"
-        
+
   # Emergency procedures
   emergency_procedures:
     emergency_approval:
@@ -222,29 +222,29 @@ approval_workflow:
         - critical_production_issue: "Production system affected"
         - security_vulnerability: "Security vulnerability requiring immediate fix"
         - regulatory_deadline: "Regulatory compliance deadline"
-        
+
       expedited_workflow:
         - skip_stages: ["business_review"]
         - reduced_approvers: "50% reduction in required approvers"
         - accelerated_timeouts: "50% reduction in timeout periods"
         - enhanced_monitoring: "Post-deployment enhanced monitoring"
-        
+
       approval_authority:
         - required_roles: ["technical_lead", "release_manager", "governance_committee"]
         - minimum_approvers: 2
         - documentation_requirement: "Detailed justification required"
-        
+
     emergency_rollback:
       trigger_conditions:
         - production_impact: "Significant production impact"
         - security_breach: "Security breach detected"
         - compliance_violation: "Regulatory compliance violation"
-        
+
       rollback_authority:
         - authorized_roles: ["technical_lead", "release_manager"]
         - approval_requirement: "At least one authorized role approval"
         - documentation_requirement: "Incident report and impact assessment"
-        
+
   # Audit and compliance
   audit_trail:
     required_events:
@@ -253,23 +253,23 @@ approval_workflow:
       - rejections: "All rejections with reasons"
       - escalations: "All escalations and their resolutions"
       - emergency_actions: "All emergency approvals and rollbacks"
-      
+
     retention_policy:
       audit_data_retention: "7 years"
       approval_documents: "5 years"
       emergency_records: "10 years"
-      
+
     compliance_reporting:
       monthly_reports:
         - approval_cycle_times: "Average time per approval stage"
         - rejection_rates: "Rejection rates by stage and reason"
         - emergency_usage: "Emergency procedure usage statistics"
-        
+
       quarterly_reports:
         - compliance_metrics: "Overall compliance metrics"
         - process_efficiency: "Workflow efficiency analysis"
         - risk_assessment: "Risk assessment and mitigation"
-        
+
   # Performance metrics
   performance_metrics:
     efficiency_metrics:
@@ -277,19 +277,19 @@ approval_workflow:
       - stage_efficiency: "Efficiency metrics for each approval stage"
       - bottlenecks: "Identification of workflow bottlenecks"
       - escalation_rates: "Frequency and reasons for escalations"
-      
+
     quality_metrics:
       - rejection_rates: "Rejection rates by category and stage"
       - approval_accuracy: "Accuracy of approval decisions"
       - post_deployment_issues: "Issues detected post-deployment"
       - rollback_frequency: "Frequency of emergency rollbacks"
-      
+
     compliance_metrics:
       - policy_adherence: "Adherence to approval policies"
       - audit_compliance: "Compliance with audit requirements"
       - regulatory_alignment: "Alignment with regulatory requirements"
       - ethical_standards: "Adherence to ethical guidelines"
-      
+
   # Continuous improvement
   improvement_process:
     feedback_collection:
@@ -297,13 +297,13 @@ approval_workflow:
       - stakeholder_interviews: "Annual stakeholder interviews"
       - performance_reviews: "Monthly performance reviews"
       - incident_analysis: "Post-incident analysis"
-      
+
     optimization_activities:
       - process_streamlining: "Regular process optimization reviews"
       - automation_enhancement: "Continuous automation improvement"
       - policy_updates: "Regular policy review and updates"
       - training_improvement: "Training program enhancements"
-      
+
     success_metrics:
       - cycle_time_reduction: "Target: 20% reduction in cycle time"
       - approval_accuracy: "Target: 95% approval accuracy"

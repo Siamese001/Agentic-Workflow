@@ -2,11 +2,11 @@ from __future__ import annotations
 """
 Runtime Shared Schemas (Phase 2C Residuals)
 ==========================================
-This module serves as the centralized repository for residual models 
-discovered during the Phase 2C sweep. These models are critical for 
+This module serves as the centralized repository for residual models
+discovered during the Phase 2C sweep. These models are critical for
 the LLM response cycle, RAG state management, and workflow checkpoints.
 
-Note: 'Residual' prefixes are maintained to prevent collisions with 
+Note: 'Residual' prefixes are maintained to prevent collisions with
 legacy Phase 1 models during the final migration.
 """
 

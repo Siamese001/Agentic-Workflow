@@ -1,7 +1,7 @@
 # Dashboard Data Pipeline: SSOT Architecture Review & Recommendations
 
-**Date:** 2026-01-05  
-**Author:** Cascade AI  
+**Date:** 2026-01-05
+**Author:** Cascade AI
 **Status:** PROPOSAL
 
 ---
@@ -76,7 +76,7 @@ Source Files → [HOP 1] → full_agent_discovery.py (AST parse)
             → [HOP 2] → agent_discovery_full.json
             → [HOP 3] → AutonomyGuardianAgent._load_registry()
             → [HOP 4] → _process_territories() re-reads files
-            → [HOP 5] → _save_markdown_report() re-reads files  
+            → [HOP 5] → _save_markdown_report() re-reads files
             → [HOP 6] → _generate_self_contained_dashboard() re-reads
             → [HOP 7] → autonomy_dashboard.html (embedded JSON)
 
@@ -145,7 +145,7 @@ Add these fields to `full_agent_discovery.py` output:
     'layer': layer,
     'invocation': invocation,           # ✓ Already added
     'has_healing': has_healing,         # ✓ Already exists
-    
+
     # NEW FIELDS TO ADD:
     'has_tests': detect_tests(node, source),
     'mcp_hardened': detect_mcp_hardened(node, source),
@@ -271,40 +271,40 @@ def is_discovery_stale() -> bool:
     """Check if discovery JSON needs refresh."""
     if not DISCOVERY_JSON.exists():
         return True
-    
+
     # Check JSON age
     json_mtime = datetime.fromtimestamp(DISCOVERY_JSON.stat().st_mtime)
     if datetime.now() - json_mtime > STALENESS_THRESHOLD:
         return True
-    
+
     # Check if any source files are newer than JSON
     for py_file in (PROJECT_ROOT / "agentic_core").rglob("*.py"):
         if py_file.stat().st_mtime > DISCOVERY_JSON.stat().st_mtime:
             return True
-    
+
     return False
 
 def get_changed_files() -> list[Path]:
     """Get files changed since last discovery."""
     if not MANIFEST_JSON.exists():
         return []  # Force full scan
-    
+
     manifest = json.loads(MANIFEST_JSON.read_text())
     file_hashes = manifest.get("file_hashes", {})
     changed = []
-    
+
     for py_file in (PROJECT_ROOT / "agentic_core").rglob("*.py"):
         rel_path = str(py_file.relative_to(PROJECT_ROOT))
         current_hash = hashlib.md5(py_file.read_bytes()).hexdigest()
         if file_hashes.get(rel_path) != current_hash:
             changed.append(py_file)
-    
+
     return changed
 
 def run_discovery(incremental: bool = True) -> None:
     """Run discovery with smart mode selection."""
     changed = get_changed_files()
-    
+
     if not incremental or len(changed) > 50:  # Full scan threshold
         print("Running FULL discovery scan...")
         import subprocess
@@ -370,7 +370,7 @@ def test_ssot_parity():
     # Run both modes
     json_metrics = generate_report(ssot_mode=True)
     file_metrics = generate_report(ssot_mode=False)
-    
+
     # Compare key metrics
     assert json_metrics["invocation_pct"] == file_metrics["invocation_pct"]
     assert json_metrics["healing_cap_pct"] == file_metrics["healing_cap_pct"]
@@ -411,4 +411,3 @@ def test_ssot_parity():
 | `structure_blueprint.py` | Add SSOT validation rules |
 | `.git/hooks/pre-commit` | Add discovery trigger |
 | `scripts/smart_discovery.py` | New file - smart execution logic |
-

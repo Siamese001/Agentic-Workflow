@@ -37,10 +37,10 @@ class CognitiveContractEnforcer:
     """Enforcer for cognitive contracts."""
     def __init__(self, contracts: Optional[List[CognitiveContract]] = None):
         self.contracts = contracts or []
-    
+
     def enforce(self, data: Dict[str, Any]) -> bool:
         return True
-    
+
     def add_contract(self, contract: CognitiveContract) -> None:
         self.contracts.append(contract)
 
@@ -72,36 +72,36 @@ class ConsistencyError(Exception):
 class CognitiveContractValidatorSchema(MCPHardenedMixin):
     """
     Schema validator for cognitive contracts (data model, not an agent).
-    
+
     This is a schema/model class that provides validation structures for cognitive contracts.
     Distinct from the active CognitiveContractValidatorAgent in L1_cognition which performs
     runtime contract validation.
     """
-    
+
     def __init__(self):
         self.contracts: List[CognitiveContract] = []
         self.enforcer = CognitiveContractEnforcer()
-    
+
     def add_contract(self, contract: CognitiveContract) -> None:
         """Add a contract to the validator schema."""
         self.contracts.append(contract)
         self.enforcer.add_contract(contract)
-    
+
     def validate_contract(self, contract_name: str, data: Dict[str, Any]) -> bool:
         """Validate data against a named contract schema."""
         contract = next((c for c in self.contracts if c.name == contract_name), None)
         if not contract:
             logger.warning(f"Contract not found: {contract_name}")
             return False
-        
+
         # Check required fields
         for field in contract.required:
             if field not in data:
                 logger.error(f"Missing required field: {field}")
                 return False
-        
+
         return self.enforcer.enforce(data)
-    
+
     def list_contracts(self) -> List[str]:
         """List all registered contract schemas."""
         return [c.name for c in self.contracts]

@@ -20,4 +20,3 @@ def test_load_baselines_and_exemplars_present() -> None:
 
     assert "avg_score" in baselines
     assert "gs_basic_1" in exemplars
-

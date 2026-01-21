@@ -21,11 +21,11 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 def dynamic_import(module_path: str, class_name: str) -> Optional[Any]:
     """
     Dynamically import classes to avoid gravity violations.
-    
+
     Args:
         module_path: Dotted module path (e.g., 'agentic_core.L5_safety.guardrails.SafetyGuardrail')
         class_name: Name of the class to import
-        
+
     Returns:
         The imported class, or None if import fails
     """
@@ -40,10 +40,10 @@ def get_layer_rank(path_str: str) -> int:
     """
     Get the authority rank of a layer based on its position in the SSOT registry.
     Lower index = higher authority.
-    
+
     Args:
         path_str: File path string to check
-        
+
     Returns:
         Layer rank (0-based index), or -1 if not found
     """
@@ -57,11 +57,11 @@ def get_layer_rank(path_str: str) -> int:
 def get_legal_l2_for_l1(root: str, l1_name: str) -> List[str]:
     """
     Pull valid L2 folders directly from imported SSOT maps.
-    
+
     Args:
         root: Root territory name (agentic_core, apps_rg, apps_lic, apps_shared)
         l1_name: L1 folder name
-        
+
     Returns:
         List of approved L2 subfolder names
     """
@@ -79,15 +79,15 @@ def get_legal_l2_for_l1(root: str, l1_name: str) -> List[str]:
 def get_placement_guidance(content_preview: str) -> str:
     """
     Heuristically determine the best L1 placement for code based on content signals.
-    
+
     Args:
         content_preview: First ~500 chars of file content
-        
+
     Returns:
         Suggested L1 path (e.g., 'agentic_core/L1_cognition')
     """
     content_lower = content_preview.lower()
-    
+
     if any(x in content_lower for x in ['planner', 'strategy', 'reasoning', 'mission']):
         return 'agentic_core/L1_cognition'
     if 'node' in content_lower or 'execute' in content_lower:
@@ -104,7 +104,7 @@ def get_placement_guidance(content_preview: str) -> str:
         return 'agentic_core/prompt_governance'
     if any(x in content_lower for x in ['schema', 'model', 'request', 'response']):
         return 'agentic_core/schemas'
-    
+
     # Default fallback
     return 'agentic_core/L1_cognition'
 
@@ -112,16 +112,16 @@ def get_placement_guidance(content_preview: str) -> str:
 def get_best_target_l1(folder_name: str, approved_l1: set) -> str:
     """
     Heuristically determine the best approved L1 folder for a non-approved folder.
-    
+
     Args:
         folder_name: Name of the folder to relocate
         approved_l1: Set of approved L1 folder names
-        
+
     Returns:
         Best matching approved L1 folder name
     """
     name_lower = folder_name.lower()
-    
+
     # Mapping based on common patterns
     if any(x in name_lower for x in ["cognit", "thought", "reason", "intent", "strateg"]):
         return "L1_cognition"
@@ -153,7 +153,7 @@ def get_best_target_l1(folder_name: str, approved_l1: set) -> str:
         return "semantic_memory"
     if any(x in name_lower for x in ["knowledge", "rag", "document", "research"]):
         return "knowledge"
-    
+
     # Default fallback
     return "utils"
 
@@ -161,24 +161,24 @@ def get_best_target_l1(folder_name: str, approved_l1: set) -> str:
 def get_best_target_l2(l1_name: str, item_name: str) -> str:
     """
     Heuristically determine the best approved L2 folder within an L1.
-    
+
     Args:
         l1_name: L1 folder name
         item_name: Name of file/folder to place
-        
+
     Returns:
         Best matching L2 folder name
     """
     approved_l2 = CORE_SUBFOLDER_MAP.get(l1_name, [])
     if not approved_l2:
         return "workflow_engines"  # Fallback default
-    
+
     name_lower = item_name.lower()
-    
+
     # Try to match based on name patterns
     for l2 in approved_l2:
         if l2.lower() in name_lower or name_lower in l2.lower():
             return l2
-    
+
     # Return first approved L2 as fallback
     return approved_l2[0]

@@ -76,48 +76,48 @@ def check_file(file_path: Path) -> tuple:
     layer = detect_layer(file_path)
     if layer == "UNKNOWN" or layer not in LAYER_BASE_MAP:
         return True, "Skip non-agent file"
-    
+
     expected_base = LAYER_BASE_MAP[layer]
-    
+
     try:
         tree = ast.parse(file_path.read_text(encoding="utf-8"))
     except Exception as e:
         return False, f"Parse error: {e}"
-    
+
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef) and node.name.endswith("Agent"):
             bases = get_base_names(node)
             if expected_base not in bases:
                 return False, f"{file_path}: {node.name} missing {expected_base} (found {bases})"
-    
+
     return True, "OK"
 
 def main() -> int:
     """Pre-commit entrypoint - check staged Python files."""
     from subprocess import check_output
-    
+
     # Get staged .py files
     try:
         staged = check_output(["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"]).decode().strip().splitlines()
     except Exception:
         print("Error: Not a git repo or no staged files")
         return 1
-    
+
     python_files = [Path(p) for p in staged if p.endswith(".py") and AGENTIC_CORE_DIR in p]
-    
+
     failures = []
     for file_path in python_files:
         ok, msg = check_file(PROJECT_ROOT / file_path)
         if not ok:
             failures.append(msg)
-    
+
     if failures:
         print("\n❌ BASE CLASS COMPLIANCE FAILED (Phase 5 enforcement)\n")
         for failure in failures:
             print(f"   {failure}")
         print("\nFix: Ensure agent inherits from correct layer base (see LAYER_BASE_MAP)")
         return 1
-    
+
     print("✓ All staged agents comply with base class hierarchy")
     return 0
 

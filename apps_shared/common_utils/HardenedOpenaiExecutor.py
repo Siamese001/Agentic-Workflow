@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class HardenedOpenAIConfig:
     """Configuration for HardenedOpenAIExecutor."""
-    
+
     # Model context limits (tokens)
     MODEL_LIMITS = {
         "gpt-4": 8192,
@@ -42,7 +42,7 @@ class HardenedOpenAIConfig:
         "gpt-3.5-turbo-0613": 4096,
         "gpt-3.5-turbo-16k-0613": 16384,
     }
-    
+
     def __init__(
         self,
         model: str = "gpt-4o-2024-08-06",
@@ -60,7 +60,7 @@ class HardenedOpenAIConfig:
         self.max_retries = max_retries
         self.failure_threshold = failure_threshold
         self.reset_timeout_s = reset_timeout_s
-    
+
     @property
     def max_context_tokens(self) -> int:
         """Get maximum context tokens for the model."""
@@ -69,24 +69,24 @@ class HardenedOpenAIConfig:
 
 class HardenedOpenAIExecutor(HardeningMixin):
     """Military-grade executor for OpenAI API.
-    
+
     Wraps the OpenAI client with circuit breaking, retries,
     token validation, and structured telemetry.
     """
-    
+
     def __init__(
         self,
         config: Optional[HardenedOpenAIConfig] = None,
         telemetry: Optional[SystemTelemetry] = None,
     ):
         """Initialize hardened OpenAI executor.
-        
+
         Args:
             config: Optional configuration
             telemetry: Optional telemetry instance
         """
         self.config = config or HardenedOpenAIConfig()
-        
+
         # Initialize hardening mixin
         super().__init__(
             component_name="openai_executor",
@@ -95,34 +95,34 @@ class HardenedOpenAIExecutor(HardeningMixin):
             max_retries=self.config.max_retries,
             telemetry=telemetry,
         )
-        
+
         # Initialize OpenAI client
         self._client = None
         self._setup_client()
-    
+
     def _setup_client(self) -> None:
         """Setup OpenAI client."""
         try:
             import openai
         except ImportError as exc:
             raise ImportError("OpenAI package not installed. Install with: pip install openai") from exc
-        
+
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY environment variable must be set")
-        
+
         self._client = openai.OpenAI(
             api_key=api_key,
             timeout=self.config.timeout_s,
             max_retries=0,  # We handle retries ourselves
         )
-    
+
     def _validate_token_budget(self, prompt: str) -> None:
         """Validate token budget before API call.
-        
+
         Args:
             prompt: Input prompt text
-            
+
         Raises:
             TokenLimitError: If prompt exceeds model limits
         """
@@ -131,39 +131,39 @@ class HardenedOpenAIExecutor(HardeningMixin):
             model=self.config.model,
             max_tokens=self.config.max_context_tokens - self.config.max_tokens,
         )
-    
+
     def _build_messages(
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
     ) -> List[Dict[str, str]]:
         """Build OpenAI message format.
-        
+
         Args:
             messages: Agent messages
             system_prompt: Optional system prompt
-            
+
         Returns:
             Formatted messages for OpenAI API
         """
         openai_messages = []
-        
+
         # Add system prompt if provided
         if system_prompt:
             openai_messages.append({
                 "role": "system",
                 "content": system_prompt
             })
-        
+
         # Add user/assistant messages
         for msg in messages:
             openai_messages.append({
                 "role": msg.role,
                 "content": msg.content
             })
-        
+
         return openai_messages
-    
+
     async def run_llm(
         self,
         prompt: str,
@@ -174,14 +174,14 @@ class HardenedOpenAIExecutor(HardeningMixin):
         messages: Optional[List[AgentMessage]] = None,
     ) -> str:
         """Run OpenAI completion with hardening.
-        
+
         Args:
             prompt: Input prompt (used if messages not provided)
             temperature: Sampling temperature override
             max_tokens: Max tokens override
             system_prompt: Optional system prompt
             messages: Alternative to prompt - list of messages
-            
+
         Returns:
             Generated text response
         """
@@ -195,7 +195,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
                 openai_messages.append({"role": "system", "content": system_prompt})
             openai_messages.append({"role": "user", "content": prompt})
             combined_prompt = prompt
-        
+
         # Define async operation
         async def _completion():
             response = self._client.chat.completions.create(
@@ -204,12 +204,12 @@ class HardenedOpenAIExecutor(HardeningMixin):
                 temperature=temperature or self.config.temperature,
                 max_tokens=max_tokens or self.config.max_tokens,
             )
-            
+
             # Extract content
             if response.choices:
                 return response.choices[0].message.content or ""
             return ""
-        
+
         # Execute with hardening
         return await self.execute_hardened(
             operation="chat_completion",
@@ -221,7 +221,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
                 "max_tokens": max_tokens or self.config.max_tokens,
             },
         )
-    
+
     async def run_llm_with_response(
         self,
         prompt: str,
@@ -232,14 +232,14 @@ class HardenedOpenAIExecutor(HardeningMixin):
         messages: Optional[List[AgentMessage]] = None,
     ) -> AgentResponse:
         """Run OpenAI completion with full response metadata.
-        
+
         Args:
             prompt: Input prompt (used if messages not provided)
             temperature: Sampling temperature override
             max_tokens: Max tokens override
             system_prompt: Optional system prompt
             messages: Alternative to prompt - list of messages
-            
+
         Returns:
             AgentResponse with content and metadata
         """
@@ -253,7 +253,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
                 openai_messages.append({"role": "system", "content": system_prompt})
             openai_messages.append({"role": "user", "content": prompt})
             combined_prompt = prompt
-        
+
         # Define async operation with response capture
         async def _completion():
             response = self._client.chat.completions.create(
@@ -263,7 +263,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
                 max_tokens=max_tokens or self.config.max_tokens,
             )
             return response
-        
+
         # Execute with hardening
         raw_response = await self.execute_hardened(
             operation="chat_completion",
@@ -275,29 +275,29 @@ class HardenedOpenAIExecutor(HardeningMixin):
                 "max_tokens": max_tokens or self.config.max_tokens,
             },
         )
-        
+
         # Extract response data
         content = ""
         usage = None
-        
+
         if raw_response.choices:
             choice = raw_response.choices[0]
             content = choice.message.content or ""
-        
+
         if hasattr(raw_response, 'usage'):
             usage = {
                 "prompt_tokens": raw_response.usage.prompt_tokens,
                 "completion_tokens": raw_response.usage.completion_tokens,
                 "total_tokens": raw_response.usage.total_tokens,
             }
-        
+
         return AgentResponse(
             content=content,
             model=self.config.model,
             usage=usage,
             finish_reason=raw_response.choices[0].finish_reason if raw_response.choices else None,
         )
-    
+
     def run_llm_sync(
         self,
         prompt: str,
@@ -308,25 +308,25 @@ class HardenedOpenAIExecutor(HardeningMixin):
         messages: Optional[List[AgentMessage]] = None,
     ) -> str:
         """Synchronous version of run_llm.
-        
+
         Args:
             prompt: Input prompt
             temperature: Sampling temperature override
             max_tokens: Max tokens override
             system_prompt: Optional system prompt
             messages: Alternative to prompt - list of messages
-            
+
         Returns:
             Generated text response
         """
         import asyncio
-        
+
         # Run async method in event loop
         loop = asyncio.get_event_loop()
         if loop.is_running():
             # If already in event loop, use run_in_executor
             import concurrent.futures
-            
+
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(
                     asyncio.run,
@@ -348,12 +348,12 @@ def create_hardened_openai_executor(
     **kwargs
 ) -> HardenedOpenAIExecutor:
     """Create a hardened OpenAI executor.
-    
+
     Args:
         model: OpenAI model name
         temperature: Sampling temperature
         **kwargs: Additional configuration parameters
-        
+
     Returns:
         HardenedOpenAIExecutor instance
     """

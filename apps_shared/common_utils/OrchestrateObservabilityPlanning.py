@@ -109,44 +109,44 @@ class ObservabilityPlanningOrchestrator:
 
     def execute(self, observability_request: Dict[str, Any]) -> ObservabilityPlanningResult:
         """Execute the observability planning orchestration.
-        
+
         Args:
             observability_request: Dictionary containing observability requirements
-            
+
         Returns:
             ObservabilityPlanningResult: Complete planning result with observability setup
         """
         self.logger.info(f"Starting observability planning for service: {observability_request.get('service_name', 'unknown')}")
-        
+
         try:
             # Validate input request
             self._validate_request(observability_request)
-            
+
             # Plan metrics if enabled
             metric_definitions = []
             if self.config.enable_metrics:
                 metric_definitions = self._plan_metrics(observability_request)
-            
+
             # Plan logging if enabled
             log_configuration = None
             if self.config.enable_logging:
                 log_configuration = self._plan_logging(observability_request)
-            
+
             # Plan tracing if enabled
             trace_configuration = None
             if self.config.enable_tracing:
                 trace_configuration = self._plan_tracing(observability_request)
-            
+
             # Plan alerts if enabled
             alert_rules = []
             if self.config.enable_alerts:
                 alert_rules = self._plan_alerts(observability_request)
-            
+
             # Calculate resource estimates
             resource_estimates = self._estimate_resources(
                 metric_definitions, log_configuration, trace_configuration
             )
-            
+
             result = ObservabilityPlanningResult(
                 success=True,
                 metric_definitions=metric_definitions,
@@ -162,10 +162,10 @@ class ObservabilityPlanningOrchestrator:
                     "orchestrator": "ObservabilityPlanningOrchestrator"
                 }
             )
-            
+
             self.logger.info(f"Successfully planned observability for {len(metric_definitions)} metrics")
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Observability planning failed: {str(e)}")
             return ObservabilityPlanningResult(
@@ -181,10 +181,10 @@ class ObservabilityPlanningOrchestrator:
         """Validate observability planning request."""
         if not request:
             raise ValueError("Observability request cannot be empty")
-        
+
         if "service_name" not in request:
             raise ValueError("Service name is required in observability request")
-        
+
         if "service_type" not in request:
             raise ValueError("Service type is required in observability request")
 
@@ -192,9 +192,9 @@ class ObservabilityPlanningOrchestrator:
         """Plan metrics for the service."""
         service_name = request.get("service_name")
         service_type = request.get("service_type")
-        
+
         metrics = []
-        
+
         # Common metrics for all services
         metrics.append(MetricDefinition(
             name=f"{service_name}_requests_total",
@@ -202,7 +202,7 @@ class ObservabilityPlanningOrchestrator:
             description="Total number of requests",
             labels={"service": service_name, "method": "*"}
         ))
-        
+
         metrics.append(MetricDefinition(
             name=f"{service_name}_request_duration_seconds",
             metric_type=MetricType.HISTOGRAM,
@@ -210,7 +210,7 @@ class ObservabilityPlanningOrchestrator:
             labels={"service": service_name},
             aggregation="percentile"
         ))
-        
+
         # Service-specific metrics
         if service_type == "api":
             metrics.append(MetricDefinition(
@@ -232,14 +232,14 @@ class ObservabilityPlanningOrchestrator:
                 description="Current queue size",
                 labels={"service": service_name}
             ))
-        
+
         return metrics
 
     def _plan_logging(self, request: Dict[str, Any]) -> LogConfiguration:
         """Plan logging configuration for the service."""
         service_name = request.get("service_name")
         log_level_str = request.get("log_level", "info")
-        
+
         # Map string to enum
         log_level_mapping = {
             "debug": LogLevel.DEBUG,
@@ -248,9 +248,9 @@ class ObservabilityPlanningOrchestrator:
             "error": LogLevel.ERROR,
             "critical": LogLevel.CRITICAL
         }
-        
+
         log_level = log_level_mapping.get(log_level_str.lower(), LogLevel.INFO)
-        
+
         return LogConfiguration(
             service_name=service_name,
             log_level=log_level,
@@ -264,7 +264,7 @@ class ObservabilityPlanningOrchestrator:
         """Plan tracing configuration for the service."""
         service_name = request.get("service_name")
         sampling_rate = request.get("tracing_sampling_rate", self.config.default_sampling_rate)
-        
+
         return TraceConfiguration(
             service_name=service_name,
             sampling_rate=sampling_rate,
@@ -277,9 +277,9 @@ class ObservabilityPlanningOrchestrator:
         """Plan alert rules for the service."""
         service_name = request.get("service_name")
         service_type = request.get("service_type")
-        
+
         alerts = []
-        
+
         # Common alerts
         alerts.append(AlertRule(
             name=f"{service_name}_high_error_rate",
@@ -289,7 +289,7 @@ class ObservabilityPlanningOrchestrator:
             duration=300,  # 5 minutes
             notification_channels=["slack", "email"]
         ))
-        
+
         alerts.append(AlertRule(
             name=f"{service_name}_high_latency",
             condition="p95_latency > 1000",
@@ -298,7 +298,7 @@ class ObservabilityPlanningOrchestrator:
             duration=600,  # 10 minutes
             notification_channels=["slack"]
         ))
-        
+
         # Service-specific alerts
         if service_type == "api":
             alerts.append(AlertRule(
@@ -318,13 +318,13 @@ class ObservabilityPlanningOrchestrator:
                 duration=300,  # 5 minutes
                 notification_channels=["slack", "email"]
             ))
-        
+
         return alerts
 
     def _estimate_resources(
-        self, 
-        metrics: List[MetricDefinition], 
-        logs: Optional[LogConfiguration], 
+        self,
+        metrics: List[MetricDefinition],
+        logs: Optional[LogConfiguration],
         traces: Optional[TraceConfiguration]
     ) -> Dict[str, Any]:
         """Estimate resource requirements for observability."""
@@ -334,11 +334,11 @@ class ObservabilityPlanningOrchestrator:
             "cpu_cores": 0.1,
             "memory_mb": 100
         }
-        
+
         # Metrics storage
         metric_points_per_day = len(metrics) * 86400  # 1 point per second per metric
         estimates["storage_gb_per_day"] += (metric_points_per_day * 16) / (1024 ** 3)  # 16 bytes per point
-        
+
         # Logs storage
         if logs:
             log_events_per_second = 100  # Estimate
@@ -346,7 +346,7 @@ class ObservabilityPlanningOrchestrator:
             daily_log_volume = log_events_per_second * 86400 * log_size_bytes
             estimates["storage_gb_per_day"] += daily_log_volume / (1024 ** 3)
             estimates["network_mb_per_day"] += daily_log_volume / (1024 ** 2)
-        
+
         # Traces storage
         if traces:
             spans_per_second = 10  # Estimate
@@ -354,11 +354,11 @@ class ObservabilityPlanningOrchestrator:
             daily_trace_volume = spans_per_second * 86400 * span_size_bytes * traces.sampling_rate
             estimates["storage_gb_per_day"] += daily_trace_volume / (1024 ** 3)
             estimates["network_mb_per_day"] += daily_trace_volume / (1024 ** 2)
-        
+
         # CPU and memory for processing
         estimates["cpu_cores"] = 0.2 if logs else 0.1
         estimates["memory_mb"] = 200 if traces else 100
-        
+
         return estimates
 
 # Factory function for easy instantiation
@@ -384,12 +384,12 @@ def plan_observability(
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Plan observability setup from simple parameters.
-    
+
     Args:
         service_name: Name of the service
         service_type: Type of service (api, worker, batch, etc.)
         config: Optional configuration overrides
-        
+
     Returns:
         Dict: Planning result with observability configuration
     """
@@ -400,12 +400,12 @@ def plan_observability(
         "log_level": config.get("log_level", "info") if config else "info",
         "tracing_sampling_rate": config.get("tracing_sampling_rate", 0.1) if config else 0.1
     }
-    
+
     # Create orchestrator and execute
     orchestrator_config = ObservabilityPlanningConfig(**config) if config else None
     orchestrator = ObservabilityPlanningOrchestrator(orchestrator_config)
     result = orchestrator.execute(request)
-    
+
     # Convert result to dict for JSON serialization
     return {
         "success": result.success,

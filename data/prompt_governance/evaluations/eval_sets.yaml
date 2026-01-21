@@ -4,7 +4,7 @@
 evaluation_sets:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # Test suite categories
   test_suites:
     # Resume engine evaluation sets
@@ -21,7 +21,7 @@ evaluation_sets:
               expected_output:
                 clarity_score: ">= 85"
                 specificity_indicators: "career_level, industry_focus, leadership_abilities"
-                
+
             - name: "skills_analysis_clarity"
               description: "Test skills analysis prompt for clear categorization"
               input:
@@ -31,7 +31,7 @@ evaluation_sets:
               expected_output:
                 categorization_accuracy: ">= 90%"
                 skill_relevance_score: ">= 85"
-                
+
           effectiveness_tests:
             - name: "ats_optimization_effectiveness"
               description: "Test ATS optimization prompt effectiveness"
@@ -42,7 +42,7 @@ evaluation_sets:
               expected_output:
                 keyword_match_rate: ">= 80%"
                 parsing_success_rate: ">= 95%"
-                
+
             - name: "career_transition_guidance"
               description: "Test career transition prompt guidance quality"
               input:
@@ -53,7 +53,7 @@ evaluation_sets:
               expected_output:
                 transition_strategy_quality: ">= 85"
                 skill_bridge_effectiveness: ">= 80"
-                
+
       rewriting_evaluation:
         test_cases:
           achievement_enhancement:
@@ -66,7 +66,7 @@ evaluation_sets:
               expected_output:
                 quantification_success: ">= 90%"
                 impact_clarity_score: ">= 85"
-                
+
             - name: "action_verb_optimization"
               description: "Test action verb enhancement in experience descriptions"
               input:
@@ -76,7 +76,7 @@ evaluation_sets:
               expected_output:
                 active_voice_conversion: "100%"
                 verb_strength_score: ">= 85"
-                
+
       scoring_evaluation:
         test_cases:
           quality_assessment:
@@ -89,7 +89,7 @@ evaluation_sets:
               expected_output:
                 scoring_accuracy: ">= 90%"
                 consistency_score: ">= 85"
-                
+
             - name: "ats_compatibility_scoring"
               description: "Test ATS compatibility scoring precision"
               input:
@@ -99,7 +99,7 @@ evaluation_sets:
               expected_output:
                 compatibility_prediction: ">= 85%"
                 format_recommendation_accuracy: ">= 90"
-                
+
       feedback_evaluation:
         test_cases:
           improvement_guidance:
@@ -112,7 +112,7 @@ evaluation_sets:
               expected_output:
                 recommendation_specificity: ">= 85%"
                 actionability_score: ">= 90"
-                
+
             - name: "career_level_appropriate_feedback"
               description: "Test feedback appropriateness for different career levels"
               input:
@@ -122,7 +122,7 @@ evaluation_sets:
               expected_output:
                 level_appropriateness: ">= 90%"
                 guidance_relevance: ">= 85"
-                
+
     # Outreach engine evaluation sets
     outreach_engine_tests:
       system_prompts_evaluation:
@@ -137,7 +137,7 @@ evaluation_sets:
               expected_output:
                 personalization_depth: ">= 85"
                 relevance_score: ">= 90"
-                
+
             - name: "value_proposition_clarity"
               description: "Test value proposition articulation"
               input:
@@ -147,7 +147,7 @@ evaluation_sets:
               expected_output:
                 value_clarity_score: ">= 85"
                 mutual_benefit_alignment: ">= 80"
-                
+
       rewriting_evaluation:
         test_cases:
           message_optimization:
@@ -160,7 +160,7 @@ evaluation_sets:
               expected_output:
                 engagement_prediction: ">= 80%"
                 personalization_score: ">= 85"
-                
+
             - name: "follow_up_enhancement"
               description: "Test follow-up message enhancement"
               input:
@@ -170,7 +170,7 @@ evaluation_sets:
               expected_output:
                 follow_up_effectiveness: ">= 85%"
                 value_addition_quality: ">= 80"
-                
+
       scoring_evaluation:
         test_cases:
           response_prediction:
@@ -183,7 +183,7 @@ evaluation_sets:
               expected_output:
                 prediction_accuracy: ">= 80%"
                 segment_differentiation: ">= 85"
-                
+
             - name: "relationship_building_potential"
               description: "Test relationship building scoring"
               input:
@@ -193,7 +193,7 @@ evaluation_sets:
               expected_output:
                 relationship_potential_accuracy: ">= 85%"
                 long_term_value_prediction: ">= 80"
-                
+
       feedback_evaluation:
         test_cases:
           optimization_guidance:
@@ -206,7 +206,7 @@ evaluation_sets:
               expected_output:
                 strategy_recommendation_quality: ">= 85%"
                 implementation_feasibility: ">= 80"
-                
+
             - name: "channel_optimization_feedback"
               description: "Test channel-specific optimization feedback"
               input:
@@ -216,7 +216,7 @@ evaluation_sets:
               expected_output:
                 channel_recommendation_accuracy: ">= 90%"
                 optimization_effectiveness: ">= 85"
-                
+
   # Performance benchmarking sets
   performance_benchmarks:
     efficiency_tests:
@@ -231,7 +231,7 @@ evaluation_sets:
             - average_response_time: "< 5 seconds"
             - percentile_95_response: "< 15 seconds"
             - consistency_score: "> 90%"
-            
+
         - name: "resource_utilization"
           description: "Test computational resource efficiency"
           metrics:
@@ -241,7 +241,7 @@ evaluation_sets:
           success_criteria:
             - resource_efficiency_score: "> 85%"
             - scalability_factor: "> 90%"
-            
+
     quality_benchmarks:
       output_consistency:
         - name: "consistency_across_runs"
@@ -250,7 +250,7 @@ evaluation_sets:
           success_criteria:
             - consistency_score: "> 95%"
             - variance_threshold: "< 5%"
-            
+
         - name: "quality_degradation_resistance"
           description: "Test quality maintenance under various conditions"
           stress_conditions:
@@ -260,7 +260,7 @@ evaluation_sets:
           success_criteria:
             - quality_maintenance: "> 90%"
             - error_rate: "< 1%"
-            
+
   # Edge case testing
   edge_cases:
     boundary_conditions:
@@ -273,7 +273,7 @@ evaluation_sets:
         expected_behavior:
           - graceful_error_handling: "100%"
           - helpful_guidance_provision: "> 80%"
-          
+
       - name: "maximum_capacity_handling"
         description: "Test behavior with maximum complexity inputs"
         test_cases:
@@ -283,7 +283,7 @@ evaluation_sets:
         expected_behavior:
           - processing_success: "> 95%"
           - quality_maintenance: "> 85%"
-          
+
     error_scenarios:
       - name: "invalid_input_handling"
         description: "Test response to malformed or invalid inputs"
@@ -294,7 +294,7 @@ evaluation_sets:
         expected_behavior:
           - safe_error_handling: "100%"
           - user_guidance_provision: "> 90%"
-          
+
       - name: "system_failure_recovery"
         description: "Test system resilience and recovery mechanisms"
         failure_scenarios:
@@ -304,7 +304,7 @@ evaluation_sets:
         expected_behavior:
           - graceful_degradation: "> 90%"
           - recovery_success: "> 95%"
-          
+
   # Integration testing
   integration_tests:
     cross_engine_compatibility:
@@ -317,7 +317,7 @@ evaluation_sets:
         success_criteria:
           - integration_success: "> 90%"
           - data_consistency: "> 95%"
-          
+
     external_system_integration:
       - name: "ats_system_integration"
         description: "Test integration with external ATS systems"
@@ -328,7 +328,7 @@ evaluation_sets:
         success_criteria:
           - api_success_rate: "> 95%"
           - data_accuracy: "> 90%"
-          
+
       - name: "professional_network_integration"
         description: "Test integration with professional networks"
         test_platforms:
@@ -338,7 +338,7 @@ evaluation_sets:
         success_criteria:
           - integration_reliability: "> 90%"
           - data_synchronization: "> 95%"
-          
+
   # User acceptance testing
   user_acceptance_tests:
     usability_tests:
@@ -351,7 +351,7 @@ evaluation_sets:
         success_criteria:
           - task_completion_rate: "> 85%"
           - user_satisfaction: "> 80%"
-          
+
       - name: "expert_user_efficiency"
         description: "Test system efficiency for experienced users"
         user_profiles:
@@ -361,7 +361,7 @@ evaluation_sets:
         success_criteria:
           - efficiency_improvement: "> 50%"
           - advanced_feature_adoption: "> 70%"
-          
+
     satisfaction_metrics:
       - name: "overall_user_satisfaction"
         description: "Measure overall user satisfaction with prompt outputs"
@@ -372,7 +372,7 @@ evaluation_sets:
         success_criteria:
           - satisfaction_threshold: "> 80%"
           - recommendation_likelihood: "> 75%"
-          
+
   # Continuous evaluation
   continuous_evaluation:
     monitoring_framework:
@@ -386,7 +386,7 @@ evaluation_sets:
           - quality_degradation: "Alert if < 80% for 24 hours"
           - error_rate_increase: "Alert if > 5% for 1 hour"
           - user_satisfaction_drop: "Alert if < 70% for 48 hours"
-          
+
       - name: "automated_regression_testing"
         description: "Automated testing to prevent quality regression"
         test_frequency: "Daily for critical prompts, weekly for all prompts"

@@ -5,34 +5,34 @@ prompt_index:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
   total_prompts: 0
-  
+
   # Prompt categories
   categories:
     system:
       description: "System-level prompts for orchestration and control"
       count: 0
       prompts: []
-      
+
     user:
       description: "User-facing prompts for resume and outreach generation"
       count: 0
       prompts: []
-      
+
     developer:
       description: "Developer prompts for debugging and testing"
       count: 0
       prompts: []
-      
+
     safety:
       description: "Safety and governance prompts"
       count: 0
       prompts: []
-      
+
     evaluation:
       description: "Evaluation and scoring prompts"
       count: 0
       prompts: []
-      
+
   # Engine-specific prompts
   engines:
     resume_engine:
@@ -42,22 +42,22 @@ prompt_index:
           file: "engines/resume_engine/system_prompts.yaml"
           version: "1.0.0"
           status: "active"
-          
+
         rewriting:
           file: "engines/resume_engine/rewriting.yaml"
           version: "1.0.0"
           status: "active"
-          
+
         scoring:
           file: "engines/resume_engine/scoring.yaml"
           version: "1.0.0"
           status: "active"
-          
+
         summarization:
           file: "engines/resume_engine/summarization.yaml"
           version: "1.0.0"
           status: "active"
-          
+
     outreach_engine:
       description: "Outreach generation and personalization prompts"
       prompts:
@@ -65,22 +65,22 @@ prompt_index:
           file: "engines/outreach_engine/archetype.yaml"
           version: "1.0.0"
           status: "active"
-          
+
         personalization:
           file: "engines/outreach_engine/personalization.yaml"
           version: "1.0.0"
           status: "active"
-          
+
         messaging:
           file: "engines/outreach_engine/messaging.yaml"
           version: "1.0.0"
           status: "active"
-          
+
         reflective_checks:
           file: "engines/outreach_engine/reflective_checks.yaml"
           version: "1.0.0"
           status: "active"
-          
+
   # Injection prompts
   injections:
     constraints:
@@ -88,43 +88,43 @@ prompt_index:
       version: "1.0.0"
       status: "active"
       description: "Constraint and boundary enforcement prompts"
-      
+
     context_engineering:
       file: "injections/context_engineering.yaml"
       version: "1.0.0"
       status: "active"
       description: "Context building and engineering prompts"
-      
+
     framing:
       file: "injections/framing.yaml"
       version: "1.0.0"
       status: "active"
       description: "Problem framing and perspective prompts"
-      
+
     output_governance:
       file: "injections/output_governance.yaml"
       version: "1.0.0"
       status: "active"
       description: "Output format and governance prompts"
-      
+
     reasoning:
       file: "injections/reasoning.yaml"
       version: "1.0.0"
       status: "active"
       description: "Reasoning and logic prompts"
-      
+
     safety:
       file: "injections/safety.yaml"
       version: "1.0.0"
       status: "active"
       description: "Safety and ethical consideration prompts"
-      
+
     tool_use:
       file: "injections/tool_use.yaml"
       version: "1.0.0"
       status: "active"
       description: "Tool usage and integration prompts"
-      
+
   # Template prompts
   templates:
     resume:
@@ -132,33 +132,33 @@ prompt_index:
         file: "templates/resume/summary_template.md"
         version: "1.0.0"
         status: "active"
-        
+
       experience_template:
         file: "templates/resume/experience_template.md"
         version: "1.0.0"
         status: "active"
-        
+
       skills_template:
         file: "templates/resume/skills_template.md"
         version: "1.0.0"
         status: "active"
-        
+
     outreach:
       cold_outreach_template:
         file: "templates/outreach/cold_outreach_template.md"
         version: "1.0.0"
         status: "active"
-        
+
       connection_request:
         file: "templates/outreach/connection_request.md"
         version: "1.0.0"
         status: "active"
-        
+
       followup_template:
         file: "templates/outreach/followup_template.md"
         version: "1.0.0"
         status: "active"
-        
+
   # Evaluation prompts
   evaluations:
     rubric:
@@ -166,25 +166,25 @@ prompt_index:
       version: "1.0.0"
       status: "active"
       description: "Evaluation rubric and scoring criteria"
-      
+
     eval_sets:
       file: "evaluations/eval_sets.yaml"
       version: "1.0.0"
       status: "active"
       description: "Evaluation datasets and test sets"
-      
+
     regression_tests:
       file: "evaluations/regression_tests.yaml"
       version: "1.0.0"
       status: "active"
       description: "Regression test prompts and cases"
-      
+
     style_checks:
       file: "evaluations/style_checks.yaml"
       version: "1.0.0"
       status: "active"
       description: "Style and quality check prompts"
-      
+
   # Governance prompts
   governance:
     approval_workflow:
@@ -192,39 +192,39 @@ prompt_index:
       version: "1.0.0"
       status: "active"
       description: "Prompt approval and workflow prompts"
-      
+
     change_history:
       file: "governance/change_history.yaml"
       version: "1.0.0"
       status: "active"
       description: "Change tracking and history prompts"
-      
+
     semantic_versioning:
       file: "governance/semantic_versioning.yaml"
       version: "1.0.0"
       status: "active"
       description: "Version control and semantic versioning prompts"
-      
+
     ownership:
       file: "governance/ownership.yaml"
       version: "1.0.0"
       status: "active"
       description: "Ownership and responsibility prompts"
-      
+
   # Metadata and statistics
   metadata:
     created_by: "system"
     created_at: "2024-01-01T00:00:00Z"
     updated_by: "system"
     updated_at: "2024-01-01T00:00:00Z"
-    
+
     # Statistics
     statistics:
       total_prompts: 0
       active_prompts: 0
       deprecated_prompts: 0
       draft_prompts: 0
-      
+
       # By category
       by_category:
         system: 0
@@ -232,12 +232,12 @@ prompt_index:
         developer: 0
         safety: 0
         evaluation: 0
-        
+
       # By engine
       by_engine:
         resume_engine: 0
         outreach_engine: 0
-        
+
     # Health metrics
     health:
       last_validation: "2024-01-01T00:00:00Z"

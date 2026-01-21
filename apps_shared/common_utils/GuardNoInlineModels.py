@@ -25,9 +25,9 @@ exempt = {"agentic_core/schemas/models/core_contracts.py"}
 # NAMING FIXED: ModelVisitor → ModelVisitor
 class ModelVisitor(ast.NodeVisitor):
     '''Brief description of functionality and purpose.'''
-    
+
     def visit_ClassDef(self, node):
-                    
+
         is_pydantic = any(isinstance(base, ast.Name) and base.id in {"BaseModel", "RootModel"} for base in node.bases)
         is_contract = any(node.name.endswith(s) for s in CONTRACT_SIGNALS)
         has_dataclass = any(isinstance(d, ast.Name) and d.id == "dataclass" for d in node.decorator_list)
@@ -39,7 +39,7 @@ class ModelVisitor(ast.NodeVisitor):
 
 def main():
     '''Brief description of functionality and purpose.'''
-    
+
     for arg in sys.argv[1:]:
         if arg in EXEMPT or "tests/" in arg:
             Logger.info(f"Skipping Exempt: {arg}")

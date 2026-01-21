@@ -65,6 +65,3 @@ def end_span(span_record: Dict[str, object]) -> None:
             },
         )
     )
-
-
-

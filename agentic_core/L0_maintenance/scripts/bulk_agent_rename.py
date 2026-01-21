@@ -180,39 +180,39 @@ def rename_in_file(file_path: Path, renames: Dict[str, str], dry_run: bool = Tru
         content = file_path.read_text(encoding="utf-8", errors="ignore")
     except Exception as e:
         return []
-    
+
     original_content = content
     changes = []
-    
+
     for old_name, new_name in renames.items():
         # Skip if already renamed (ends with Agent and matches new name)
         if old_name not in content:
             continue
-            
+
         # Use word boundary to avoid partial matches
         pattern = rf'\b{re.escape(old_name)}\b'
-        
+
         # Check if this would match the new name (avoid double-renaming)
         if old_name + "Agent" == new_name and re.search(rf'\b{re.escape(new_name)}\b', content):
             # Already has Agent suffix in some places, only rename bare occurrences
             pass
-        
+
         if re.search(pattern, content):
             # Don't rename if it's already the new name
             new_content = re.sub(pattern, new_name, content)
             if new_content != content:
                 changes.append((old_name, new_name))
                 content = new_content
-    
+
     if changes and not dry_run:
         file_path.write_text(content, encoding="utf-8")
-    
+
     return changes
 
 
 def main():
     dry_run = "--dry-run" in sys.argv or len(sys.argv) == 1
-    
+
     if dry_run:
         print("=" * 60)
         print("DRY RUN - No changes will be made")
@@ -222,19 +222,19 @@ def main():
         print("=" * 60)
         print("EXECUTING BULK RENAMES")
         print("=" * 60)
-    
+
     root = Path("C:/Git/Agentic-Workflow")
-    
+
     """Find all agent files to rename."""
     # Phase 6.9: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_agent_files
     agent_files = list(get_agent_files(root_dir=root))
     agent_files = [f for f in agent_files if should_process_file(f)]
-    
+
     total_changes = 0
     files_changed = 0
     all_changes = {}
-    
+
     for py_file in agent_files:
         changes = rename_in_file(py_file, RENAMES, dry_run)
         if changes:
@@ -245,7 +245,7 @@ def main():
             print(f"\n{rel_path}:")
             for old, new in changes:
                 print(f"  {old} -> {new}")
-    
+
     print("\n" + "=" * 60)
     print(f"SUMMARY: {total_changes} renames across {files_changed} files")
     if dry_run:

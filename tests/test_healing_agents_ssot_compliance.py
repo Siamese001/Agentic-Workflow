@@ -26,37 +26,37 @@ def test_location_agent_backup_path():
     print("\n" + "=" * 70)
     print("TEST 1: LocationAgent._init_backup_dir()")
     print("=" * 70)
-    
+
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        
+
         # Create agent with project root
         agent = LocationAgent(project_root=PROJECT_ROOT)
-        
+
         # Call _init_backup_dir
         backup_dir = agent._init_backup_dir()
-        
+
         print(f"   Backup dir: {backup_dir}")
-        
+
         # Verify path structure
         backup_str = str(backup_dir)
-        
+
         # Must contain archives/healing_backups
         assert "archives" in backup_str, f"Path must contain 'archives': {backup_str}"
         assert "healing_backups" in backup_str, f"Path must contain 'healing_backups': {backup_str}"
         assert "location" in backup_str, f"Path must contain 'location': {backup_str}"
-        
+
         # Must NOT contain .sovereign_healing_backup
         assert ".sovereign_healing_backup" not in backup_str, \
             f"Path must NOT contain '.sovereign_healing_backup': {backup_str}"
-        
+
         # Clean up created directory
         if backup_dir.exists():
             shutil.rmtree(backup_dir)
-        
+
         print("   ✅ PASSED: LocationAgent uses archives/healing_backups/location/")
         return True
-        
+
     except ImportError as e:
         print(f"   ⚠️  SKIPPED: Could not import LocationAgent: {e}")
         return True  # Skip if import fails
@@ -70,33 +70,33 @@ def test_filesystem_agent_backup_path():
     print("\n" + "=" * 70)
     print("TEST 2: FilesystemAgent.backup_dir")
     print("=" * 70)
-    
+
     try:
         from agentic_core.L5_safety.validators.FilesystemAgent import FilesystemAgent
-        
+
         # Create agent with project root (dry_run=True to avoid creating dirs)
         agent = FilesystemAgent(project_root=PROJECT_ROOT, dry_run=True)
-        
+
         # Check backup_dir attribute
         backup_dir = agent.backup_dir
-        
+
         print(f"   Backup dir: {backup_dir}")
-        
+
         # Verify path structure
         backup_str = str(backup_dir)
-        
+
         # Must contain archives/healing_backups
         assert "archives" in backup_str, f"Path must contain 'archives': {backup_str}"
         assert "healing_backups" in backup_str, f"Path must contain 'healing_backups': {backup_str}"
         assert "filesystem" in backup_str, f"Path must contain 'filesystem': {backup_str}"
-        
+
         # Must NOT contain .sovereign_healing_backup
         assert ".sovereign_healing_backup" not in backup_str, \
             f"Path must NOT contain '.sovereign_healing_backup': {backup_str}"
-        
+
         print("   ✅ PASSED: FilesystemAgent uses archives/healing_backups/filesystem/")
         return True
-        
+
     except ImportError as e:
         print(f"   ⚠️  SKIPPED: Could not import FilesystemAgent: {e}")
         return True
@@ -110,33 +110,33 @@ def test_healing_transaction_manager_backup_path():
     print("\n" + "=" * 70)
     print("TEST 3: HealingTransaction.backup_dir")
     print("=" * 70)
-    
+
     try:
         from agentic_core.L4_state.ledger.healing_transaction_manager import HealingTransaction
-        
+
         # Create transaction
         manager = HealingTransaction()
-        
+
         # Check backup_dir attribute
         backup_dir = manager.backup_dir
-        
+
         print(f"   Backup dir: {backup_dir}")
-        
+
         # Verify path structure
         backup_str = str(backup_dir)
-        
+
         # Must contain archives/healing_backups
         assert "archives" in backup_str, f"Path must contain 'archives': {backup_str}"
         assert "healing_backups" in backup_str, f"Path must contain 'healing_backups': {backup_str}"
         assert "transactions" in backup_str, f"Path must contain 'transactions': {backup_str}"
-        
+
         # Must NOT contain .sovereign_healing_backup
         assert ".sovereign_healing_backup" not in backup_str, \
             f"Path must NOT contain '.sovereign_healing_backup': {backup_str}"
-        
+
         print("   ✅ PASSED: HealingTransaction uses archives/healing_backups/transactions/")
         return True
-        
+
     except ImportError as e:
         print(f"   ⚠️  SKIPPED: Could not import HealingTransaction: {e}")
         return True
@@ -150,40 +150,40 @@ def test_backup_file_creation():
     print("\n" + "=" * 70)
     print("TEST 4: Backup File Creation (Integration)")
     print("=" * 70)
-    
+
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        
+
         # Create a temp file to backup
         with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
             f.write("# Test file for backup\nprint('hello')\n")
             temp_file = Path(f.name)
-        
+
         try:
             # Create agent
             agent = LocationAgent(project_root=PROJECT_ROOT)
-            
+
             # Initialize backup dir
             backup_dir = agent._init_backup_dir()
-            
+
             print(f"   Created backup dir: {backup_dir}")
-            
+
             # Verify the backup dir is under archives/
             assert backup_dir.is_relative_to(PROJECT_ROOT / "archives"), \
                 f"Backup dir must be under archives/: {backup_dir}"
-            
+
             # Clean up
             if backup_dir.exists():
                 shutil.rmtree(backup_dir.parent.parent)  # Remove healing_backups/location
-            
+
             print("   ✅ PASSED: Backup directory created under archives/")
             return True
-            
+
         finally:
             # Clean up temp file
             if temp_file.exists():
                 temp_file.unlink()
-                
+
     except ImportError as e:
         print(f"   ⚠️  SKIPPED: Could not import LocationAgent: {e}")
         return True
@@ -197,10 +197,10 @@ def test_no_sovereign_healing_backup_created():
     print("\n" + "=" * 70)
     print("TEST 5: No .sovereign_healing_backup Creation")
     print("=" * 70)
-    
+
     # Check if .sovereign_healing_backup exists
     forbidden_dir = PROJECT_ROOT / ".sovereign_healing_backup"
-    
+
     if forbidden_dir.exists():
         print(f"   ❌ FAILED: .sovereign_healing_backup exists with "
               f"{sum(1 for _ in forbidden_dir.rglob('*'))} files")
@@ -216,26 +216,26 @@ def test_source_code_compliance():
     print("\n" + "=" * 70)
     print("TEST 6: Source Code Compliance")
     print("=" * 70)
-    
+
     agents_to_check = [
         ("LocationAgent", PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "LocationAgent.py"),
         ("FilesystemAgent", PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "FilesystemAgent.py"),
         ("HealingTransaction", PROJECT_ROOT / "agentic_core" / "L4_state" / "ledger" / "healing_transaction_manager.py"),
     ]
-    
+
     all_passed = True
-    
+
     for agent_name, agent_path in agents_to_check:
         if not agent_path.exists():
             print(f"   ⚠️  {agent_name}: File not found")
             continue
-        
+
         content = agent_path.read_text(encoding="utf-8")
-        
+
         # Check for archives/healing_backups (handles both quoted and f-string formats)
         has_archives = ('archives' in content and 'healing_backups' in content and
                        ('archives/healing_backups' in content or '"archives"' in content))
-        
+
         # Check for .sovereign_healing_backup in active code (not comments or explanations)
         has_forbidden = False
         for line in content.split("\n"):
@@ -255,13 +255,13 @@ def test_source_code_compliance():
                     if "Path(" in line and "=" in line and "archives" not in line:
                         has_forbidden = True
                         break
-        
+
         if has_archives and not has_forbidden:
             print(f"   ✅ {agent_name}: Uses archives/healing_backups/")
         else:
             print(f"   ❌ {agent_name}: SSOT violation detected")
             all_passed = False
-    
+
     return all_passed
 
 
@@ -269,9 +269,9 @@ def main():
     print("=" * 70)
     print("Healing Agents SSOT Compliance - Detailed Testing")
     print("=" * 70)
-    
+
     results = []
-    
+
     # Run all tests
     results.append(("LocationAgent._init_backup_dir()", test_location_agent_backup_path()))
     results.append(("FilesystemAgent.backup_dir", test_filesystem_agent_backup_path()))
@@ -279,21 +279,21 @@ def main():
     results.append(("Backup File Creation", test_backup_file_creation()))
     results.append(("No .sovereign_healing_backup", test_no_sovereign_healing_backup_created()))
     results.append(("Source Code Compliance", test_source_code_compliance()))
-    
+
     # Summary
     print("\n" + "=" * 70)
     print("SUMMARY")
     print("=" * 70)
-    
+
     passed = sum(1 for _, r in results if r)
     failed = sum(1 for _, r in results if not r)
-    
+
     for name, result in results:
         status = "✅ PASS" if result else "❌ FAIL"
         print(f"   {status}: {name}")
-    
+
     print(f"\n   Total: {passed}/{len(results)} passed")
-    
+
     if failed == 0:
         print("\n✅ ALL TESTS PASSED - Healing agents are SSOT compliant")
         return 0

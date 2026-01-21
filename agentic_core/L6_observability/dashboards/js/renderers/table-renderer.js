@@ -36,7 +36,7 @@ function getHealthTooltip(row) {
     const weights = window.HEALTH_WEIGHTS || {};
     const cols = window.COLUMNS || {};
     const placeholders = window.PLACEHOLDERS || {};
-    
+
     // These weights are driven by scripts/config/dashboard_ssot.yaml
     return `Health Calculation Breakdown:
 -----------------------------
@@ -66,7 +66,7 @@ function getScoreClass(score) {
 function formatProblemAgentsTooltip(territory, metricKey, metricLabel, threshold = 50) {
     // FIX: Try exact match first, then case-insensitive fallback
     let agentData = window.realAgentData ? window.realAgentData[territory] : null;
-    
+
     // Fallback: try to find territory with case-insensitive match
     if (!agentData && window.realAgentData) {
         const territories = Object.keys(window.realAgentData);
@@ -75,23 +75,23 @@ function formatProblemAgentsTooltip(territory, metricKey, metricLabel, threshold
             agentData = window.realAgentData[match];
         }
     }
-    
+
     if (!agentData || !agentData[metricKey] || agentData[metricKey].length === 0) {
         // Debug: show what's available
         const availableKeys = agentData ? Object.keys(agentData).filter(k => Array.isArray(agentData[k])).join(', ') : 'none';
         return `${metricLabel}: No data for '${metricKey}' (available: ${availableKeys || 'none'})`;
     }
-    
+
     const values = agentData[metricKey];
     const agents = agentData.agents || [];
     const stats = computeDistributionStats(values);
-    
+
     // Build comprehensive tooltip
     let tooltip = `📊 ${metricLabel} Distribution\n`;
     tooltip += `━━━━━━━━━━━━━━━━━━━━━━\n`;
     tooltip += `Avg: ${stats.avg.toFixed(1)}% | Range: ${stats.min.toFixed(0)}-${stats.max.toFixed(0)}%\n`;
     tooltip += `StdDev: ${stats.stdDev.toFixed(1)} | Agents: ${stats.count}\n`;
-    
+
     // Find problem agents (below threshold)
     const problems = [];
     for (let i = 0; i < values.length; i++) {
@@ -101,35 +101,35 @@ function formatProblemAgentsTooltip(territory, metricKey, metricLabel, threshold
         }
     }
     problems.sort((a, b) => a.value - b.value);
-    
+
     if (problems.length === 0) {
         tooltip += `\n✅ All ${stats.count} agents meet threshold (≥${threshold}%)`;
         return tooltip;
     }
-    
+
     // Calculate remediation effort
     const criticalCount = problems.filter(p => p.value === 0).length;
     const warningCount = problems.length - criticalCount;
     const avgDeficit = problems.reduce((sum, p) => sum + (threshold - p.value), 0) / problems.length;
-    
+
     tooltip += `\n⚠️ ${problems.length} agent(s) below ${threshold}% threshold\n`;
     if (criticalCount > 0) {
         tooltip += `🔴 Critical (0%): ${criticalCount} | `;
     }
     tooltip += `🟡 Warning: ${warningCount}\n`;
     tooltip += `Avg deficit: ${avgDeficit.toFixed(1)} points to threshold\n`;
-    
+
     tooltip += `\n🔧 TOP REMEDIATION TARGETS:\n`;
     const topProblems = problems.slice(0, 3);
     topProblems.forEach((p, idx) => {
         const shortPath = p.path ? p.path.split('/').slice(-2).join('/') : 'path unknown';
         tooltip += `${idx + 1}. ${p.name} (${p.value.toFixed(0)}%) → ${shortPath}\n`;
     });
-    
+
     if (problems.length > 3) {
         tooltip += `   ... +${problems.length - 3} more agents need attention`;
     }
-    
+
     return tooltip;
 }
 
@@ -172,10 +172,10 @@ function getFanInData(territory) {
 function hasRowCriticalOutliers(territory) {
     const agentData = window.realAgentData ? window.realAgentData[territory] : null;
     if (!agentData) return { hasCritical: false, hasWarning: false, criticalCount: 0, warningCount: 0 };
-    
+
     let criticalCount = 0;
     let warningCount = 0;
-    
+
     const allMetrics = ['healCap', 'invocation', 'hardened', 'test', 'complexityHealth', 'health', 'typed', 'documented', 'schemaStrictness', 'properBase', 'codeQuality'];
     allMetrics.forEach(key => {
         const values = agentData[key] || [];
@@ -184,7 +184,7 @@ function hasRowCriticalOutliers(territory) {
         criticalCount += atZero;
         warningCount += (belowThreshold - atZero);
     });
-    
+
     return { hasCritical: criticalCount > 0, hasWarning: warningCount > 0, criticalCount, warningCount };
 }
 
@@ -241,7 +241,7 @@ function renderTerritorySummaryTable(territoryData) {
     // Create index map from original dashboardData order
     const orderMap = {};
     window.dashboardData.forEach((row, idx) => { orderMap[row.Territory] = idx; });
-    
+
     if (state.sortByOutliers) {
         filteredData.sort((a, b) => {
             if (a.Territory === 'TOTAL') return -1;
@@ -283,7 +283,7 @@ function renderTerritorySummaryTable(territoryData) {
     filteredData.forEach((row, index) => {
         // Use utilities for stats
         const territoryAgents = window.realAgentData ? (window.realAgentData[row.Territory] || {}) : {};
-        
+
         // Helper to safely get distribution
         const getStats = (key) => computeDistributionStats(territoryAgents[key] || []);
         const getOutliers = (key, thresh) => getOutlierSummary(territoryAgents[key] || [], thresh);
@@ -293,27 +293,27 @@ function renderTerritorySummaryTable(territoryData) {
         const hardenedStats = getStats('hardened');
         const testStats = getStats('test');
         const complexityStats = getStats('complexityHealth');
-        
+
         const healthColor = getWorstCaseColor(row[COLUMNS.HEALTH] || 0);
         const rowBg = index % 2 === 0 ? '#f9fafb' : 'white';
 
         html += `
-            <tr style="border-bottom:1px solid #e5e7eb; background:${rowBg}; cursor:pointer;" 
+            <tr style="border-bottom:1px solid #e5e7eb; background:${rowBg}; cursor:pointer;"
                 onclick="openDrillModal('${row.Territory}')"
-                onmouseover="this.style.background='#f0f9ff'" 
+                onmouseover="this.style.background='#f0f9ff'"
                 onmouseout="this.style.background='${rowBg}'">
-                
+
                 <td style="padding:12px; font-weight:600; color:var(--primary);">
                     ${formatRowWarningIcon(row.Territory)}${row.Territory}${formatToxicityBadge(row.Territory)}
                 </td>
                 <td style="padding:12px; text-align:center;">${row.Total}</td>
-                
+
                 <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row[COLUMNS.HEAL_CAP])}">
                     <div>${formatDistributionCell(row[COLUMNS.HEAL_CAP], healCapStats)}
                     ${formatOutlierBadge(getOutliers(METRIC_KEYS.HEALCAP, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT).atZero, getOutliers(METRIC_KEYS.HEALCAP, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT).belowThreshold, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT)}</div>
                     <div class="custom-tooltip">${formatProblemAgentsTooltip(row.Territory, METRIC_KEYS.HEALCAP, 'Heal Capability', THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT)}</div>
                 </td>
-                
+
                 <td class="metric-cell" style="padding:12px; text-align:center; background:${getGradientBg(row[COLUMNS.INVOCATION])}">
                     ${formatDistributionCell(row[COLUMNS.INVOCATION], invocationStats)}
                     ${formatOutlierBadge(getOutliers(METRIC_KEYS.INVOCATION, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT).atZero, getOutliers(METRIC_KEYS.INVOCATION, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT).belowThreshold, THRESHOLDS.OUTLIER_THRESHOLD_DEFAULT)}
@@ -346,7 +346,7 @@ function renderTerritorySummaryTable(territoryData) {
     });
 
     html += `</tbody></table></div>
-        
+
         <!-- Footnotes & Legend -->
         <div style="margin-top:16px; padding:16px; background:#f8fafc; border-radius:8px; border-left:4px solid var(--primary);">
             <div style="display:flex; flex-wrap:wrap; gap:24px; margin-bottom:12px;">
@@ -401,16 +401,16 @@ function renderCodeQualityTable(data) {
         console.warn('[renderCodeQualityTable] codeQualityGrid container not found');
         return;
     }
-    
+
     // Filter out TOTAL row for the table body
     const territoryData = data.filter(row => row.Territory !== 'TOTAL');
     const totalRow = data.find(row => row.Territory === 'TOTAL');
-    
+
     if (!totalRow) {
         container.innerHTML = '<div style="color:#dc2626; padding:20px;">TOTAL row not found in data</div>';
         return;
     }
-    
+
     // Build table HTML
     let html = `
         <div style="overflow-x: auto;">
@@ -427,7 +427,7 @@ function renderCodeQualityTable(data) {
                     </tr>
                 </thead>
                 <tbody>`;
-    
+
     // Add TOTAL row first (simple values, no distribution stats for TOTAL)
     html += `
             <tr style="background: #f8fafc; border-bottom: 3px solid #94a3b8; font-weight: 700; font-size: 1.05em;">
@@ -439,35 +439,35 @@ function renderCodeQualityTable(data) {
                 <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow[COLUMNS.CANONICAL_INHERITANCE])};">${totalRow[COLUMNS.CANONICAL_INHERITANCE].toFixed(1)}%</td>
                 <td style="padding: 12px 8px; text-align: center; color: ${getColor(totalRow[COLUMNS.CODE_QUALITY])}; font-size: 1.2em;">${totalRow[COLUMNS.CODE_QUALITY].toFixed(1)}</td>
             </tr>`;
-    
+
     // Render each territory row with distribution stats (MATCH TABLE 1 FUNCTIONALITY)
     territoryData.forEach(row => {
         const territory = row.Territory;
         const agentCount = row.Total || 0;
-        
+
         // Get distribution stats for each metric (SAME AS TABLE 1)
         const territoryAgents = window.realAgentData ? (window.realAgentData[territory] || {}) : {};
         const getStats = (key) => computeDistributionStats(territoryAgents[key] || []);
-        
+
         const typedStats = getStats('typed');
         const documentedStats = getStats('documented');
         const schemaStats = getStats('schemaStrictness');
         const baseClassStats = getStats('properBase');
-        
+
         // Get metrics with N/A handling
         const typed = row[COLUMNS.TYPED];
         const documented = row[COLUMNS.DOCUMENTED];
         const schema = row[COLUMNS.SCHEMA_STRICTNESS];
         const baseClass = row[COLUMNS.CANONICAL_INHERITANCE];
         const quality = row[COLUMNS.CODE_QUALITY];
-        
+
         // Color coding with gradient backgrounds (MATCH TABLE 1)
         const typedBg = typed === 'N/A' ? 'transparent' : getGradientBg(typed);
         const docBg = documented === 'N/A' ? 'transparent' : getGradientBg(documented);
         const schemaBg = schema === 'N/A' ? 'transparent' : getGradientBg(schema);
         const baseBg = baseClass === 'N/A' ? 'transparent' : getGradientBg(baseClass);
         const qualityBg = quality === 'N/A' ? 'transparent' : getGradientBg(quality);
-        
+
         html += `
             <tr style="border-bottom: 1px solid #e2e8f0; hover: background-color: #f8fafc;">
                 <td style="padding: 12px 8px; font-weight: 500; position: sticky; left: 0; background: white; z-index: 5;">${territory}</td>
@@ -493,7 +493,7 @@ function renderCodeQualityTable(data) {
                 </td>
             </tr>`;
     });
-    
+
     html += `
         </tbody>
     </table>
@@ -508,7 +508,7 @@ function renderCodeQualityTable(data) {
         </div>
     </div>
     `;
-    
+
     container.innerHTML = html;
 }
 
@@ -556,19 +556,19 @@ function loadData() {
     console.log('🚀 loadData() called');
     const data = window.dashboardData;
     console.log('📊 dashboardData:', data ? data.length + ' rows' : 'UNDEFINED');
-    
+
     if (!data || data.length === 0) {
         console.error('❌ No dashboard data available');
         return;
     }
-    
+
     const territoryData = data.filter(row => row.Territory !== 'TOTAL');
     console.log('🗺️ territoryData:', territoryData.length + ' territories');
-    
+
     // Render tables
     renderTerritorySummaryTable(data);
     renderCodeQualityTable(data);
-    
+
     console.log('✅ Tables rendered');
 }
 
@@ -579,13 +579,13 @@ function openDrillModal(territoryName) {
         console.error(`Territory not found: ${territoryName}`);
         return;
     }
-    
+
     // Get agents from realAgentData
     const territoryAgentData = window.realAgentData ? window.realAgentData[territoryName] : null;
     const agents = territoryAgentData ? territoryAgentData.agents : [];
 
     document.getElementById('modalTitle').textContent = `${territoryName} Territory Drill-Down`;
-    
+
     // Helper to safely format values that might be "N/A"
     const safeFormat = (val) => val === "N/A" ? "N/A" : (typeof val === 'number' ? val.toFixed(1) + '%' : val);
     document.getElementById('modalSubtitle').textContent = `${row.Total} agents • Code Quality ${safeFormat(row[COLUMNS.CODE_QUALITY])} • Invocation ${safeFormat(row[COLUMNS.INVOCATION])}`;
@@ -601,7 +601,7 @@ function openDrillModal(territoryName) {
     content += `<li style="margin:5px 0;">Complexity Health: <strong>${safeFormat(row[COLUMNS.COMPLEXITY_HEALTH])}</strong></li>`;
     content += `<li style="margin:5px 0; font-weight:700; color:#166534;">Code Quality Score: <strong>${safeFormat(row[COLUMNS.CODE_QUALITY])}</strong></li>`;
     content += '</ul></div>';
-    
+
     // Code Quality Metrics Section
     content += '<div style="background:#eff6ff; padding:15px; border-radius:8px; border-left:4px solid #2563eb;">';
     content += '<strong style="font-size:1.1em; color:#1e40af;">📊 Code Quality Metrics</strong><ul style="margin-top:10px; list-style:none; padding:0;">';
@@ -627,25 +627,25 @@ function openDrillModal(territoryName) {
 
         agents.forEach((agent, idx) => {
             const rowBg = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
-            
-            const healingIcon = agent.has_healing 
-                ? '<span style="color:#16a34a; font-weight:700;">✓</span>' 
+
+            const healingIcon = agent.has_healing
+                ? '<span style="color:#16a34a; font-weight:700;">✓</span>'
                 : '<span style="color:#dc2626; font-weight:700;">✗</span>';
-            
-            const testIcon = agent.has_tests 
-                ? '<span style="color:#16a34a; font-weight:700;">✓</span>' 
+
+            const testIcon = agent.has_tests
+                ? '<span style="color:#16a34a; font-weight:700;">✓</span>'
                 : '<span style="color:#dc2626; font-weight:700;">✗</span>';
-            
-            const mcpIcon = agent.mcp_hardened 
-                ? '<span style="color:#16a34a; font-weight:700;">✓</span>' 
+
+            const mcpIcon = agent.mcp_hardened
+                ? '<span style="color:#16a34a; font-weight:700;">✓</span>'
                 : '<span style="color:#dc2626; font-weight:700;">✗</span>';
-            
+
             const typedColor = getColor(agent.typed_pct || 0, true);
             const complexityColor = getColor(100 - (agent.cyclomatic_complexity || 0) * 2, true);
-            
+
             const filePath = agent.path || agent.file_path || 'unknown';
             const fileName = filePath.split('/').pop() || filePath;
-            
+
             content += `<tr style="border-bottom:1px solid var(--border); background:${rowBg};">
                 <td style="padding:12px;">
                     <a href="vscode://file/${filePath}" target="_blank" style="color:var(--primary); font-family:monospace; font-size:0.9em; font-weight:600;">
@@ -660,7 +660,7 @@ function openDrillModal(territoryName) {
             </tr>`;
         });
         content += '</tbody></table>';
-        
+
         content += '<p style="margin-top:15px; font-size:0.9em; color:var(--text-light); font-style:italic;">';
         content += 'Click any file link to open in VS Code. Add HealerMixin, tests, MCP hardening, or type annotations as needed.';
         content += '</p>';

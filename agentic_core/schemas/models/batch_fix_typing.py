@@ -17,8 +17,8 @@ def get_agents_needing_fixes() -> List[Dict]:
     data = json.load(open(PROJECT_ROOT / 'agent_discovery_full.json'))
     # Filter to agents with typed_pct < 100 and in agentic_core (not test files)
     low_typed = [
-        a for a in data 
-        if a.get('typed_pct', 100) < 100 
+        a for a in data
+        if a.get('typed_pct', 100) < 100
         and 'agentic_core' in a.get('path', '')
         and 'test' not in a.get('path', '').lower()
     ]
@@ -29,7 +29,7 @@ def fix_missing_return_types(source: str) -> Tuple[str, int]:
     """Add missing return types to functions."""
     fixes = 0
     lines = source.split('\n')
-    
+
     for i, line in enumerate(lines):
         # Match function definitions without return type
         # Pattern: def func_name(...): or async def func_name(...):
@@ -38,11 +38,11 @@ def fix_missing_return_types(source: str) -> Tuple[str, int]:
             indent = match.group(1)
             is_async = match.group(2) is not None
             func_name = match.group(3)
-            
+
             # Skip if already has return type (->)
             if '->' in line:
                 continue
-            
+
             # Determine return type based on function name
             if func_name in ('__init__', '__post_init__', '__del__'):
                 return_type = 'None'
@@ -60,12 +60,12 @@ def fix_missing_return_types(source: str) -> Tuple[str, int]:
                 return_type = 'List[Any]'
             else:
                 return_type = 'Any'
-            
+
             # Insert return type before the colon
             new_line = line.rstrip(':') + f' -> {return_type}:'
             lines[i] = new_line
             fixes += 1
-    
+
     return '\n'.join(lines), fixes
 
 
@@ -73,7 +73,7 @@ def fix_missing_param_types(source: str) -> Tuple[str, int]:
     """Add missing parameter types to functions."""
     fixes = 0
     lines = source.split('\n')
-    
+
     # Common parameter type mappings
     param_types = {
         'ctx': 'Any',
@@ -112,7 +112,7 @@ def fix_missing_param_types(source: str) -> Tuple[str, int]:
         'genai_client': 'Any',
         'genai_available': 'bool',
     }
-    
+
     for i, line in enumerate(lines):
         # Match function definition lines
         if re.match(r'^\s*(async\s+)?def\s+\w+\s*\(', line):
@@ -130,16 +130,16 @@ def fix_missing_param_types(source: str) -> Tuple[str, int]:
                     if re.search(pattern, line) and f'{param}:' not in line:
                         line = re.sub(pattern, replacement, line)
                         fixes += 1
-            
+
             lines[i] = line
-    
+
     return '\n'.join(lines), fixes
 
 
 def ensure_typing_imports(source: str) -> str:
     """Ensure typing imports are present."""
     needed_types = set()
-    
+
     if 'Dict[' in source:
         needed_types.add('Dict')
     if 'List[' in source:
@@ -152,13 +152,13 @@ def ensure_typing_imports(source: str) -> str:
         needed_types.add('Tuple')
     if 'Set[' in source:
         needed_types.add('Set')
-    
+
     if not needed_types:
         return source
-    
+
     # Check if typing import exists
     typing_import_match = re.search(r'^from typing import (.+)$', source, re.MULTILINE)
-    
+
     if typing_import_match:
         existing = set(t.strip() for t in typing_import_match.group(1).split(','))
         missing = needed_types - existing
@@ -176,7 +176,7 @@ def ensure_typing_imports(source: str) -> str:
             )
         else:
             source = f'from typing import {", ".join(sorted(needed_types))}\n' + source
-    
+
     return source
 
 
@@ -187,14 +187,14 @@ def fix_file(file_path: Path, dry_run: bool = True) -> Dict:
         original = source
     except Exception as e:
         return {"error": str(e), "file": str(file_path)}
-    
+
     # Apply fixes
     source, return_fixes = fix_missing_return_types(source)
     source, param_fixes = fix_missing_param_types(source)
     source = ensure_typing_imports(source)
-    
+
     total_fixes = return_fixes + param_fixes
-    
+
     if source != original:
         if not dry_run:
             file_path.write_text(source, encoding='utf-8')
@@ -205,7 +205,7 @@ def fix_file(file_path: Path, dry_run: bool = True) -> Dict:
             "total_fixes": total_fixes,
             "applied": not dry_run
         }
-    
+
     return {
         "file": str(file_path),
         "total_fixes": 0,
@@ -216,22 +216,22 @@ def fix_file(file_path: Path, dry_run: bool = True) -> Dict:
 def main(dry_run: bool = True):
     """Main entry point."""
     agents = get_agents_needing_fixes()
-    
+
     print("=" * 70)
     print(f"BATCH TYPING FIX {'(DRY RUN)' if dry_run else '(LIVE)'}")
     print("=" * 70)
     print(f"Found {len(agents)} agents with typed_pct < 100%")
-    
+
     total_fixes = 0
     files_fixed = 0
-    
+
     for agent in agents:
         file_path = PROJECT_ROOT / agent['path']
         if not file_path.exists():
             continue
-        
+
         result = fix_file(file_path, dry_run)
-        
+
         if result.get('total_fixes', 0) > 0:
             files_fixed += 1
             total_fixes += result['total_fixes']
@@ -239,7 +239,7 @@ def main(dry_run: bool = True):
             print(f"  File: {agent['path']}")
             print(f"  Return type fixes: {result.get('return_type_fixes', 0)}")
             print(f"  Param type fixes: {result.get('param_type_fixes', 0)}")
-    
+
     print("\n" + "=" * 70)
     print(f"Summary:")
     print(f"  Files with fixes: {files_fixed}")

@@ -59,7 +59,7 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     def __init__(self, ctx: Optional[Any] = None, project_root: Optional[str] = None) -> None:
         """
         Initialize the naming normalization agent.
-        
+
         Args:
             ctx: Optional execution context
             project_root: Optional project root directory
@@ -70,10 +70,10 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     async def execute(self, file_path: str) -> Dict[str, Any]:
         """
         Execute method for validator compatibility.
-        
+
         Args:
             file_path: Path to file to validate
-        
+
         Returns:
             Dictionary with execution results
         """
@@ -83,10 +83,10 @@ class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
     def _to_snake_case(self, name: str) -> str:
         """
         Convert CamelCase/PascalCase/kebab-case to snake_case.
-        
+
         Args:
             name: Name to convert
-        
+
         Returns:
             snake_case version of name
         """

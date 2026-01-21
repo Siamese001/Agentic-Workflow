@@ -49,7 +49,7 @@ from archives.location_violations.file_utils import safe_read_file, safe_write_f
 class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Manages JSON-based persistence for validation state.
-    
+
     Features:
     - Load/save conversation history
     - Load/save validation results
@@ -61,7 +61,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def __init__(self, base_dir: str=None) -> None:
         """
         Initialize memory manager.
-        
+
         Args:
             base_dir: Base directory for memory files (default: .canon_memory/)
         """
@@ -79,10 +79,10 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def load_conversation_history(self, file_path: str) -> List[Dict[str, Any]]:
         """
         Load conversation history for a file.
-        
+
         Args:
             file_path: Path to file
-            
+
         Returns:
             List of conversation turns
         """
@@ -100,7 +100,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def save_conversation_history(self, file_path: str, history: List[Dict[str, Any]]) -> Any:
         """
         Save conversation history for a file.
-        
+
         Args:
             file_path: Path to file
             history: List of conversation turns
@@ -115,7 +115,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def clear_conversation_history(self, file_path: str) -> Any:
         """
         Clear conversation history for a file.
-        
+
         Args:
             file_path: Path to file
         """
@@ -130,10 +130,10 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def load_validation_results(self, session_id: str=None) -> Dict[str, Any]:
         """
         Load validation results.
-        
+
         Args:
             session_id: Optional session ID (default: latest)
-            
+
         Returns:
             Dictionary of validation results
         """
@@ -158,7 +158,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def save_validation_results(self, results: Dict[str, Any], session_id: str=None) -> Any:
         """
         Save validation results.
-        
+
         Args:
             results: Dictionary of validation results
             session_id: Optional session ID (default: timestamp)
@@ -174,10 +174,10 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def load_agent_state(self, agent_name: str) -> Dict[str, Any]:
         """
         Load state for a specific agent.
-        
+
         Args:
             agent_name: Name of agent
-            
+
         Returns:
             Dictionary of agent state
         """
@@ -194,7 +194,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def save_agent_state(self, agent_name: str, state: Dict[str, Any]) -> Any:
         """
         Save state for a specific agent.
-        
+
         Args:
             agent_name: Name of agent
             state: Dictionary of agent state
@@ -208,11 +208,11 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def load_memory(self, key: str, category: str='general') -> Optional[Any]:
         """
         Load arbitrary memory by key.
-        
+
         Args:
             key: Memory key
             category: Memory category (subdirectory)
-            
+
         Returns:
             Memory value or None
         """
@@ -233,7 +233,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def save_memory(self, key: str, value: Any, category: str='general') -> Any:
         """
         Save arbitrary memory by key.
-        
+
         Args:
             key: Memory key
             value: Memory value (must be JSON-serializable)
@@ -252,7 +252,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def delete_memory(self, key: str, category: str='general') -> Any:
         """
         Delete memory by key.
-        
+
         Args:
             key: Memory key
             category: Memory category
@@ -269,7 +269,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def cleanup_old_memories(self, days: int=7) -> Any:
         """
         Clean up memories older than specified days.
-        
+
         Args:
             days: Number of days to keep
         """
@@ -288,17 +288,17 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def get_memory_stats(self) -> Dict[str, Any]:
         """
         Get statistics about stored memories.
-        
+
         Returns:
             Dictionary of memory statistics
         """
         # Phase 6.4: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery import get_json_files
         stats: Any = {
-            'base_dir': str(self.base_dir), 
-            'conversations': len(list(get_json_files(self.conversations_dir))), 
-            'results': len(list(get_json_files(self.results_dir))), 
-            'agent_states': len(list(get_json_files(self.state_dir))), 
+            'base_dir': str(self.base_dir),
+            'conversations': len(list(get_json_files(self.conversations_dir))),
+            'results': len(list(get_json_files(self.results_dir))),
+            'agent_states': len(list(get_json_files(self.state_dir))),
             'total_size_mb': 0
         }
         total_size: Any = 0
@@ -314,10 +314,10 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def _sanitize_filename(self, name: str) -> str:
         """
         Sanitize a string to be safe for use as filename.
-        
+
         Args:
             name: Original name
-            
+
         Returns:
             Sanitized name
         """
@@ -333,7 +333,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     def _atomic_write(self, file_path: Path, data: Any) -> Any:
         """
         Atomically write data to file with backup.
-        
+
         Args:
             file_path: Path to file
             data: Data to write (will be JSON-serialized)
@@ -354,16 +354,16 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     @timeout(120)
     @standard_heal
     def heal_repository(
-        self, 
-        dry_run: bool = True, 
-        execute: bool = False, 
-        depth: int = 0, 
-        max_depth: int = 3, 
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
         _call_path: Optional[set] = None
     ) -> Dict[str, int]:
         """
         Wired Memory Hygiene - Validates vector stores and reconciles memory state.
-        
+
         WIRED CAPABILITIES:
         - _validate_memory_integrity(): Checks for corruption in local state/memory files.
         - _cleanup_stale_memories(): Removes orphaned or expired memory vectors.
@@ -371,7 +371,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         """
         # CRITICAL: Chain up to HealerMixin
         super().heal_repository(dry_run=dry_run, execute=execute)
-        
+
         # Cycle/Depth Detection
         if _call_path is None:
             _call_path = set()
@@ -379,17 +379,17 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         if agent_name in _call_path or depth > max_depth:
             return {"errors": 1, "skipped": 1}
         _call_path.add(agent_name)
-        
+
         # Phase 6.1: Use standardized HealResult keys
         metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             # 1. Integrity Validation (Corruption Check)
             if hasattr(self, '_validate_memory_integrity'):
                 integrity_results = self._validate_memory_integrity(dry_run=dry_run)
                 metrics["violations_found"] += integrity_results.get("violations_found", integrity_results.get("violations", 0))
                 metrics["violations_fixed"] += integrity_results.get("violations_fixed", integrity_results.get("fixed", 0))
-                
+
             # 2. Staleness Cleanup
             if hasattr(self, '_cleanup_stale_memories'):
                 cleanup_results = self._cleanup_stale_memories(dry_run=dry_run)
@@ -407,7 +407,7 @@ class MemoryManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-            
+
         return metrics
 
 _memory_manager = None
@@ -418,10 +418,10 @@ def get_memory_manager(base_dir: str=None) -> MemoryManagerAgent:
     super().heal_repository()
 
     Get or create global memory manager instance.
-    
+
     Args:
         base_dir: Base directory for memory storage
-        
+
     Returns:
         MemoryManagerAgent instance
     """

@@ -4,24 +4,24 @@
 constraints_injection:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # Global constraints
   global_constraints:
     enabled: true
     enforcement_level: "strict"
-    
+
     # Output constraints
     output_constraints:
       max_tokens: 4000
       min_tokens: 50
       max_response_time: 30  # seconds
-      
+
       # Format constraints
       format_requirements:
         - "valid_json_or_yaml"
         - "no_malicious_content"
         - "professional_language"
-        
+
     # Content constraints
     content_constraints:
       forbidden_topics:
@@ -29,12 +29,12 @@ constraints_injection:
         - "harmful_instructions"
         - "discriminatory_content"
         - "personal_data_requests"
-        
+
       required_elements:
         - "professional_tone"
         - "factually_accurate"
         - "ethically_sound"
-        
+
   # Engine-specific constraints
   engine_constraints:
     resume_engine:
@@ -43,7 +43,7 @@ constraints_injection:
         max_sections: 10
         max_bullets_per_section: 8
         max_years_experience: 50
-        
+
         # Required sections
         required_sections:
           - "contact_information"
@@ -51,68 +51,68 @@ constraints_injection:
           - "work_experience"
           - "education"
           - "skills"
-          
+
         # Forbidden content
         forbidden_content:
           - "personal_identifiers"
           - "age_birth_date"
           - "marital_status"
           - "religious_information"
-          
+
       # Format constraints
       format_constraints:
         max_page_length: 2
         font_size_range: [10, 12]
         margin_requirements: "standard"
-        
+
     outreach_engine:
       # Outreach-specific constraints
       content_constraints:
         max_message_length: 500
         min_personalization_elements: 3
         max_call_to_actions: 1
-        
+
         # Required elements
         required_elements:
           - "professional_greeting"
           - "context_reference"
           - "value_proposition"
           - "clear_call_to_action"
-          
+
         # Forbidden content
         forbidden_content:
           - "spam_indicators"
           - "misleading_claims"
           - "excessive_urgency"
           - "personal_data_requests"
-          
+
       # Timing constraints
       timing_constraints:
         max_followup_frequency: "7_days"
         min_interval_between_messages: "3_days"
-        
+
   # Safety constraints
   safety_constraints:
     enabled: true
     priority: "highest"
-    
+
     # Content safety
     content_safety:
       hate_speech_detection: true
       violence_detection: true
       self_harm_detection: true
       sexual_content_detection: true
-      
+
       # Thresholds
       toxicity_threshold: 0.1
       hate_threshold: 0.05
       violence_threshold: 0.05
-      
+
     # PII constraints
     pii_constraints:
       detection_enabled: true
       redaction_enabled: true
-      
+
       protected_fields:
         - "social_security_numbers"
         - "credit_card_numbers"
@@ -120,7 +120,7 @@ constraints_injection:
         - "email_addresses"
         - "phone_numbers"
         - "home_addresses"
-        
+
   # Performance constraints
   performance_constraints:
     # Latency constraints
@@ -128,13 +128,13 @@ constraints_injection:
       max_response_time: 30  # seconds
       max_processing_time: 25  # seconds
       max_network_time: 5  # seconds
-      
+
     # Resource constraints
     resources:
       max_memory_usage: "1GB"
       max_cpu_usage: "80%"
       max_concurrent_requests: 100
-      
+
   # Business constraints
   business_constraints:
     # Cost constraints
@@ -142,13 +142,13 @@ constraints_injection:
       max_cost_per_request: 0.10  # USD
       max_daily_budget: 100.00  # USD
       cost_optimization_enabled: true
-      
+
     # Quality constraints
     quality:
       min_quality_score: 0.8
       min_accuracy_score: 0.85
       min_relevance_score: 0.9
-      
+
   # Legal and compliance constraints
   legal_constraints:
     # Regulatory compliance
@@ -156,13 +156,13 @@ constraints_injection:
       gdpr_compliant: true
       ccpa_compliant: true
       sox_compliant: false
-      
+
     # Data handling
     data_handling:
       data_encryption: true
       audit_logging: true
       retention_policy: "90_days"
-      
+
   # Constraint validation rules
   validation_rules:
     # Pre-processing validation
@@ -171,23 +171,23 @@ constraints_injection:
         - "check_input_format"
         - "validate_input_size"
         - "scan_for_malicious_content"
-        
+
       context_validation:
         - "verify_context_relevance"
         - "check_context_completeness"
-        
+
     # Post-processing validation
     post_processing:
       output_validation:
         - "verify_output_format"
         - "check_output_length"
         - "scan_for_violations"
-        
+
       quality_validation:
         - "assess_content_quality"
         - "verify_factual_accuracy"
         - "check_tone_appropriateness"
-        
+
   # Constraint violation handling
   violation_handling:
     # Severity levels
@@ -195,36 +195,36 @@ constraints_injection:
       critical:
         action: "immediate_rejection"
         notification: "security_team"
-        
+
       high:
         action: "automatic_correction"
         notification: "ops_team"
-        
+
       medium:
         action: "warning_and_correction"
         notification: "user"
-        
+
       low:
         action: "log_only"
         notification: "none"
-        
+
     # Violation responses
     responses:
       content_violation:
         - "sanitize_content"
         - "apply_filters"
         - "request_revision"
-        
+
       format_violation:
         - "reformat_output"
         - "apply_template"
         - "validate_structure"
-        
+
       performance_violation:
         - "optimize_processing"
         - "reduce_complexity"
         - "cache_results"
-        
+
   # Constraint monitoring
   monitoring:
     # Metrics to track
@@ -232,46 +232,46 @@ constraints_injection:
       - name: "constraint_violations_total"
         type: "counter"
         labels: ["constraint_type", "severity"]
-        
+
       - name: "constraint_enforcement_rate"
         type: "gauge"
-        
+
       - name: "constraint_processing_time"
         type: "histogram"
-        
+
     # Alerting thresholds
     alerting:
       violation_rate_threshold: 0.05
       critical_violation_threshold: 1
-      
+
   # Constraint updates and maintenance
   maintenance:
     # Update schedule
     update_schedule:
       review_frequency: "monthly"
       update_frequency: "quarterly"
-      
+
     # Version control
     version_control:
       track_changes: true
       require_approval: true
       rollback_available: true
-      
+
   # Environment-specific constraints
   environments:
     development:
       enforcement_level: "moderate"
       monitoring_enabled: true
-      
+
     staging:
       enforcement_level: "strict"
       monitoring_enabled: true
-      
+
     production:
       enforcement_level: "strictest"
       monitoring_enabled: true
       real_time_alerting: true
-      
+
   # Integration constraints
   integrations:
     # API constraints
@@ -279,13 +279,13 @@ constraints_injection:
       rate_limiting: true
       authentication_required: true
       request_validation: true
-      
+
     # Database constraints
     database_constraints:
       connection_pool_size: 10
       query_timeout: 30
       transaction_size_limit: "100MB"
-      
+
   # Constraint templates
   templates:
     # Common constraint patterns
@@ -294,11 +294,11 @@ constraints_injection:
         type: "range"
         min: 50
         max: 4000
-        
+
       format_constraint:
         type: "regex"
         pattern: "^[\\w\\s\\.,!?-]+$"
-        
+
       content_constraint:
         type: "list"
         allowed_values: ["professional", "informative", "helpful"]

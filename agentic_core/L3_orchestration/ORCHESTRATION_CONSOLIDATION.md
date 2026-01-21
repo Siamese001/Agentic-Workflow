@@ -160,15 +160,15 @@ UnifiedWorkflowEngine
 ```python
 class WorkflowCoordinator(HealerMixin):
     """Base coordinator for specialized orchestration domains."""
-    
+
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute coordination logic."""
         pass
-    
+
     def get_capabilities(self) -> List[str]:
         """Return coordinator capabilities."""
         pass
-    
+
     def can_handle(self, workflow_type: str) -> bool:
         """Check if coordinator can handle workflow."""
         pass

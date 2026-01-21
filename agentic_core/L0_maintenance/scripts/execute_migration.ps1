@@ -42,32 +42,32 @@ $migrations = @{
     # Runtime shared
     "archives/runtime/core/reflection_engine.py" = "agentic_core/runtime/shared_runtime/reflection_engine.py"
     "archives/runtime/core/quality/signal_enhancer.py" = "agentic_core/runtime/shared_runtime/signal_enhancer.py"
-    
+
     # Orchestration
     "archives/runtime/core/dynamic_dag_manager.py" = "agentic_core/L3_orchestration/dynamic_dag_manager.py"
     "archives/schemas/core_interfaces/orchestrator.py" = "agentic_core/L3_orchestration/interfaces/orchestrator.py"
-    
+
     # Prompt governance
     "archives/runtime/core/prompt_assembler.py" = "agentic_core/prompt_governance/prompt_assembler.py"
-    
+
     # Schema models
     "archives/runtime/core/cognitive_contracts.py" = "agentic_core/schemas/models/cognitive_contracts.py"
     "archives/runtime/core/shared_models.py" = "agentic_core/schemas/models/runtime_models.py"
-    
+
     # Safety
     "archives/runtime/core/security/input_validator.py" = "agentic_core/L5_safety/guardrails/input_validator.py"
     "archives/runtime/core/security/secure_config.py" = "agentic_core/L5_safety/guardrails/secure_config.py"
     "archives/runtime/core/security/secure_error.py" = "agentic_core/L5_safety/guardrails/secure_error.py"
     "archives/runtime/core/security/secure_checkpoint.py" = "agentic_core/L5_safety/guardrails/secure_checkpoint.py"
     "archives/runtime/core/security/secure_logger.py" = "agentic_core/L5_safety/guardrails/secure_logger.py"
-    
+
     # MCP
     "archives/shared/mcp/client.py" = "agentic_core/L2_execution/mcp/archive_client.py"
     "archives/shared/mcp/factory.py" = "agentic_core/L2_execution/mcp/archive_factory.py"
     "archives/shared/mcp/exceptions.py" = "agentic_core/L2_execution/mcp/archive_exceptions.py"
     "archives/shared/mcp/providers.py" = "agentic_core/L2_execution/mcp/archive_providers.py"
     "archives/runtime/shared/mcp_tools.py" = "agentic_core/L2_execution/mcp/mcp_tools.py"
-    
+
     # Config
     "archives/shared/configuration/config.py" = "agentic_core/config/archive_config.py"
     "archives/shared/configuration/reasoning_config.py" = "agentic_core/config/reasoning_config.py"

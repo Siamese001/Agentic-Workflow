@@ -1,7 +1,7 @@
 {
   "schema_version": "13.0",
   "description": "Externalized validation rules for LIC v13.0 - All error codes, thresholds, and validation logic",
-  
+
   "error_code_registry": {
     "LIC-E001": {
       "severity": "CRITICAL",
@@ -79,7 +79,7 @@
       "remediation": "Trigger S6->S2 meta-loop to re-research strategic brief alignment"
     }
   },
-  
+
   "content_cleanliness_rules": {
     "forbidden_verbs": {
       "list": [
@@ -134,7 +134,7 @@
       "error_code": "LIC-E001"
     }
   },
-  
+
   "ascii_enforcement": {
     "unicode_replacements": {
       "\\u2013": "-",
@@ -149,7 +149,7 @@
     "severity": "HIGH",
     "error_code": "LIC-E007"
   },
-  
+
   "signal_quality_scoring": {
     "source_weights": {
       "RECIPIENT_LINKEDIN_ABOUT": 1.0,
@@ -181,7 +181,7 @@
     "severity": "HIGH",
     "error_code": "LIC-E011"
   },
-  
+
   "claim_confidence_scoring": {
     "min_claim_confidence": 0.7,
     "min_overlap_words": 2,
@@ -194,7 +194,7 @@
     "severity": "CRITICAL",
     "error_code": "LIC-E002"
   },
-  
+
   "message_diversity_validation": {
     "similarity_threshold": 0.85,
     "ledger_file": "message_ledger.json",
@@ -202,7 +202,7 @@
     "severity": "CRITICAL",
     "error_code": "LIC-E004"
   },
-  
+
   "sender_grounding_validation": {
     "team_keywords": [
       "my team",
@@ -231,7 +231,7 @@
     "severity": "CRITICAL",
     "error_code": "LIC-E003"
   },
-  
+
   "strategic_alignment_validation": {
     "min_keyword_overlap": 3,
     "min_keyword_length": 4,
@@ -241,14 +241,14 @@
     "failure_classifier": "FACTUAL_FAILURE",
     "_comment": "v12.0 MASTER RULE: Ensures message aligns with strategic brief, triggers S6->S2 meta-loop on failure"
   },
-  
+
   "voice_profile_validation": {
     "rule_id": "LIC-QA-200-VOICE",
     "severity": "HIGH",
     "error_code": "LIC-E014",
     "_comment": "Validates against sender_voice_profile.json forbidden phrases"
   },
-  
+
   "job_title_placement_validation": {
     "first_n_words": 50,
     "applicable_routes": ["INMAIL"],
@@ -256,14 +256,14 @@
     "severity": "HIGH",
     "error_code": "LIC-E005"
   },
-  
+
   "company_spelling_validation": {
     "max_levenshtein_distance": 2,
     "rule_id": "LIC-QA-049",
     "severity": "HIGH",
     "error_code": "LIC-E006"
   },
-  
+
   "metric_validation": {
     "metric_patterns": [
       "\\d+%",
@@ -277,7 +277,7 @@
     "severity": "HIGH",
     "error_code": "LIC-E010"
   },
-  
+
   "constraint_feasibility_rules": {
     "min_words_per_element": {
       "CONNECTION_REQ": 8,
@@ -290,7 +290,7 @@
     "severity": "CRITICAL",
     "error_code": "LIC-E013"
   },
-  
+
   "structural_validation": {
     "word_count": {
       "rule_id": "LIC-QA-WORD-COUNT",
@@ -311,7 +311,7 @@
       "_comment": "Validates subject line for routes that require it"
     }
   },
-  
+
   "factual_failure_rules": {
     "_comment": "Rules that trigger FACTUAL_FAILURE classification, causing S6->S2 meta-loop",
     "factual_rule_ids": [
@@ -322,7 +322,7 @@
       "LIC-QA-003"
     ]
   },
-  
+
   "validation_severity_thresholds": {
     "critical_halt": true,
     "high_halt": true,
@@ -330,7 +330,7 @@
     "info_log_only": true,
     "_comment": "Defines behavior for each severity level"
   },
-  
+
   "qa_scoring": {
     "perfect_score": 100,
     "critical_penalty": 50,
@@ -340,7 +340,7 @@
     "minimum_passing_score": 70,
     "_comment": "Scoring system for QA report"
   },
-  
+
   "validation_execution_order": {
     "_comment": "Order in which validation rules are executed (CRITICAL rules first)",
     "priority_1_critical": [
@@ -370,7 +370,7 @@
       "LIC-QA-SUBJECT"
     ]
   },
-  
+
   "temperature_escalation_strategy": {
     "_comment": "Adaptive temperature control for creative failure retry (S5)",
     "base_temperatures": {

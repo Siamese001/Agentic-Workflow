@@ -69,7 +69,7 @@ class MCPHardenedMixin:
     DEFAULT_TIMEOUT: float = 30.0
     MAX_RESPONSE_SIZE: int = 10 * 1024 * 1024  # 10MB
     MAX_RESPONSE_DEPTH: int = 50
-    
+
     # Tool whitelist - tools allowed to be called
     TOOL_WHITELIST: Set[str] = {
         "read_file", "write_file", "edit", "run_command",
@@ -80,7 +80,7 @@ class MCPHardenedMixin:
         "http_get", "http_post", "http_put", "http_delete",
         "brave_search", "fetch_url",
     }
-    
+
     # Dangerous patterns to detect in responses
     CODE_INJECTION_PATTERNS: List[str] = [
         r"__import__\s*\(",
@@ -95,7 +95,7 @@ class MCPHardenedMixin:
         r"<script>",
         r"javascript:",
     ]
-    
+
     def __init__(self, *args, **kwargs):
         """Initialize MCP hardening."""
         super().__init__(*args, **kwargs)
@@ -233,23 +233,23 @@ class MCPHardenedMixin:
     def get_redis_connection(self, url: Optional[str] = None):
         """
         Get hardened Redis connection with SSL enforcement and pooling.
-        
+
         Args:
             url: Optional Redis URL (defaults to MCP_REDIS_URL env var)
-            
+
         Returns:
             Redis client with connection pool
         """
         import os
         from redis import ConnectionPool, Redis
-        
+
         redis_url = url or os.getenv("MCP_REDIS_URL") or os.getenv("REDIS_URL")
         if not redis_url:
             raise ValueError("MCP_REDIS_URL or REDIS_URL must be set")
-        
+
         # SSL enforcement
         ssl_enabled = os.getenv("MCP_REDIS_SSL", "false").lower() == "true"
-        
+
         pool_kwargs = {
             "max_connections": int(os.getenv("MCP_REDIS_MAX_CONNECTIONS", "20")),
             "socket_connect_timeout": int(os.getenv("MCP_REDIS_TIMEOUT", "5")),
@@ -258,22 +258,22 @@ class MCPHardenedMixin:
             "retry_on_timeout": True,
             "health_check_interval": 30,
         }
-        
+
         if ssl_enabled:
             import ssl as ssl_module
             ssl_context = ssl_module.create_default_context()
-            
+
             # Load custom certs if provided
             cert_path = os.getenv("MCP_REDIS_SSL_CERT_PATH")
             if cert_path:
                 ssl_context.load_verify_locations(cert_path)
-            
+
             pool_kwargs.update({
                 "ssl": True,
                 "ssl_cert_reqs": "required",
                 "ssl_check_hostname": True,
             })
-        
+
         pool = ConnectionPool.from_url(redis_url, **pool_kwargs)
         return Redis(connection_pool=pool)
 
@@ -285,25 +285,25 @@ class MCPHardenedMixin:
     ):
         """
         Get hardened Neo4j driver with SSL enforcement and connection pooling.
-        
+
         Args:
             uri: Optional Neo4j URI (defaults to NEO4J_URI env var)
             username: Optional username (defaults to NEO4J_USERNAME env var)
             password: Optional password (defaults to NEO4J_PASSWORD env var)
-            
+
         Returns:
             Neo4j driver with connection pool
         """
         import os
         from neo4j import GraphDatabase
-        
+
         neo4j_uri = uri or os.getenv("NEO4J_URI", "bolt://localhost:7687")
         neo4j_user = username or os.getenv("NEO4J_USERNAME", "neo4j")
         neo4j_password = password or os.getenv("NEO4J_PASSWORD")
-        
+
         if not neo4j_password:
             raise ValueError("[MCP HARDENED] NEO4J_PASSWORD must be set - no default allowed")
-        
+
         # Force SSL/TLS encryption
         driver = GraphDatabase.driver(
             neo4j_uri,
@@ -314,7 +314,7 @@ class MCPHardenedMixin:
             max_connection_pool_size=int(os.getenv("NEO4J_MAX_POOL_SIZE", "50")),
             connection_acquisition_timeout=int(os.getenv("NEO4J_TIMEOUT", "60")),
         )
-        
+
         return driver
 
     async def safe_mcp_call(
@@ -327,17 +327,17 @@ class MCPHardenedMixin:
     ) -> Any:
         """
         Execute MCP call with full validation and sandboxing.
-        
+
         Args:
             tool_name: Name of the tool to call
             args: Arguments for the tool
             validate_response: Whether to validate the response
             timeout: Optional timeout in seconds
             caller: Optional caller identifier for audit
-            
+
         Returns:
             Validated and sanitized result
-            
+
         Raises:
             ValueError: If tool not in whitelist or validation fails
             RuntimeError: If call fails after retries
@@ -345,7 +345,7 @@ class MCPHardenedMixin:
         start_time = time.time()
         self._mcp_call_count += 1
         caller = caller or self.__class__.__name__
-        
+
         # 1. Validate tool name against whitelist
         if not self._validate_tool_name(tool_name):
             self._mcp_failure_count += 1
@@ -353,7 +353,7 @@ class MCPHardenedMixin:
                 "reason": "Tool not in whitelist"
             })
             raise ValueError(f"Tool '{tool_name}' not in whitelist")
-        
+
         # 2. Validate arguments
         validation_errors = self._validate_args(tool_name, args)
         if validation_errors:
@@ -362,7 +362,7 @@ class MCPHardenedMixin:
                 "errors": validation_errors
             })
             raise ValueError(f"Invalid arguments: {validation_errors}")
-        
+
         # 3. Execute call with hardened wrapper
         try:
             result = await self._execute_sandboxed(tool_name, args, timeout)
@@ -374,7 +374,7 @@ class MCPHardenedMixin:
                 "duration_ms": duration_ms
             })
             raise
-        
+
         # 4. Validate response
         if validate_response:
             validation = self.validate_mcp_response(result)
@@ -387,62 +387,62 @@ class MCPHardenedMixin:
                 })
                 raise ValueError(f"Response validation failed: {validation.reasons}")
             result = validation.sanitized_output
-        
+
         # 5. Log audit trail
         self._mcp_success_count += 1
         duration_ms = (time.time() - start_time) * 1000
         self.audit_mcp_call(tool_name, args, "SUCCESS", caller, {
             "duration_ms": duration_ms
         })
-        
+
         return result
-    
+
     def _validate_tool_name(self, tool_name: str) -> bool:
         """
         Validate tool name against whitelist.
-        
+
         Args:
             tool_name: Tool name to validate
-            
+
         Returns:
             True if tool is allowed
         """
         # Normalize tool name
         normalized = tool_name.lower().strip()
-        
+
         # Check exact match
         if normalized in self.TOOL_WHITELIST:
             return True
-        
+
         # Check prefix match for namespaced tools
         for allowed in self.TOOL_WHITELIST:
             if normalized.startswith(f"{allowed}_") or normalized.endswith(f"_{allowed}"):
                 return True
-        
+
         return False
-    
+
     def _validate_args(self, tool_name: str, args: Dict[str, Any]) -> List[str]:
         """
         Validate arguments for tool call.
-        
+
         Args:
             tool_name: Tool being called
             args: Arguments to validate
-            
+
         Returns:
             List of validation errors (empty if valid)
         """
         errors = []
-        
+
         # Check for None args
         if args is None:
             return errors  # None is allowed (no args)
-        
+
         # Check args is dict
         if not isinstance(args, dict):
             errors.append("Arguments must be a dictionary")
             return errors
-        
+
         # Check for dangerous patterns in string values
         for key, value in args.items():
             if isinstance(value, str):
@@ -450,9 +450,9 @@ class MCPHardenedMixin:
                     if re.search(pattern, value, re.IGNORECASE):
                         errors.append(f"Dangerous pattern in argument '{key}'")
                         break
-        
+
         return errors
-    
+
     async def _execute_sandboxed(
         self,
         tool_name: str,
@@ -461,72 +461,72 @@ class MCPHardenedMixin:
     ) -> Any:
         """
         Execute tool call in sandboxed environment.
-        
+
         Args:
             tool_name: Tool to execute
             args: Arguments
             timeout: Optional timeout
-            
+
         Returns:
             Tool result
         """
         timeout = timeout or self.DEFAULT_TIMEOUT
-        
+
         # Create mock execution for now - actual implementation would
         # delegate to real MCP client
         async def mock_execute():
             return {"status": "success", "tool": tool_name, "args": args}
-        
+
         return await asyncio.wait_for(mock_execute(), timeout=timeout)
-    
+
     def validate_mcp_response(self, response: Any) -> MCPValidationResult:
         """
         Validate MCP response for safety.
-        
+
         Checks for:
         - Code injection patterns
         - Response size limits
         - Response depth limits
         - Policy violations
-        
+
         Args:
             response: Response to validate
-            
+
         Returns:
             MCPValidationResult with validation status
         """
         reasons = []
-        
+
         # 1. Check for code injection in string responses
         if isinstance(response, str):
             for pattern in self.CODE_INJECTION_PATTERNS:
                 if re.search(pattern, response, re.IGNORECASE):
                     reasons.append(f"Code injection pattern detected: {pattern}")
-        
+
         # 2. Check response size
         response_str = str(response)
         if len(response_str) > self.MAX_RESPONSE_SIZE:
             reasons.append(f"Response exceeds size limit: {len(response_str)} > {self.MAX_RESPONSE_SIZE}")
-        
+
         # 3. Check response depth for nested structures
         depth = self._get_depth(response)
         if depth > self.MAX_RESPONSE_DEPTH:
             reasons.append(f"Response exceeds depth limit: {depth} > {self.MAX_RESPONSE_DEPTH}")
-        
+
         # 4. Sanitize response
         sanitized = self._sanitize_response(response)
-        
+
         return MCPValidationResult(
             valid=len(reasons) == 0,
             reasons=reasons,
             sanitized_output=sanitized
         )
-    
+
     def _get_depth(self, obj: Any, current_depth: int = 0) -> int:
         """Get maximum depth of nested structure."""
         if current_depth > self.MAX_RESPONSE_DEPTH:
             return current_depth
-        
+
         if isinstance(obj, dict):
             if not obj:
                 return current_depth + 1
@@ -537,14 +537,14 @@ class MCPHardenedMixin:
             return max(self._get_depth(v, current_depth + 1) for v in obj)
         else:
             return current_depth
-    
+
     def _sanitize_response(self, response: Any) -> Any:
         """
         Sanitize response by removing dangerous patterns.
-        
+
         Args:
             response: Response to sanitize
-            
+
         Returns:
             Sanitized response
         """
@@ -559,7 +559,7 @@ class MCPHardenedMixin:
             return [self._sanitize_response(v) for v in response]
         else:
             return response
-    
+
     def audit_mcp_call(
         self,
         tool_name: str,
@@ -570,7 +570,7 @@ class MCPHardenedMixin:
     ) -> None:
         """
         Log MCP call for audit trail.
-        
+
         Args:
             tool_name: Tool that was called
             args: Arguments passed
@@ -581,7 +581,7 @@ class MCPHardenedMixin:
         # Hash args for privacy
         args_str = str(sorted(args.items())) if args else ""
         args_hash = hashlib.sha256(args_str.encode()).hexdigest()[:16]
-        
+
         entry = MCPAuditEntry(
             timestamp=time.time(),
             tool_name=tool_name,
@@ -591,9 +591,9 @@ class MCPHardenedMixin:
             caller=caller,
             metadata=metadata or {}
         )
-        
+
         self._audit_log.append(entry)
-        
+
         # Emit event for observability
         self._emit_sovereign_event("MCP_AUDIT", {
             "tool": tool_name,
@@ -601,15 +601,15 @@ class MCPHardenedMixin:
             "caller": caller,
             "duration_ms": entry.duration_ms
         })
-        
+
         # Alert on anomalies
         if result_status in ("BLOCKED", "INVALID_RESPONSE"):
             Logger.warning(f"[MCP AUDIT] Anomaly: {tool_name} - {result_status} by {caller}")
-    
+
     def get_audit_log(self, limit: int = 100) -> List[MCPAuditEntry]:
         """Get recent audit log entries."""
         return self._audit_log[-limit:]
-    
+
     def get_mcp_statistics(self) -> Dict[str, Any]:
         """Get MCP call statistics."""
         return {
@@ -622,16 +622,16 @@ class MCPHardenedMixin:
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """MRO chain stub for heal_repository.
-        
+
         This stub exists to support the MRO chain when agents inherit from
         MCPHardenedMixin and call super().heal_repository(). Without this,
         the super() call would fail with AttributeError.
-        
+
         Args:
             dry_run: If True, only report what would be done
             execute: If True, apply fixes
             **kwargs: Additional parameters passed through the chain
-            
+
         Returns:
             Empty dict - actual healing is done by concrete agent classes
         """

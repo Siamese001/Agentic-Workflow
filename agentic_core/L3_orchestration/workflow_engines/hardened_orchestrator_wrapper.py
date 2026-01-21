@@ -30,15 +30,15 @@ Logger: Any = logging.getLogger(__name__)
 async def run_hardened_orchestrator(workflow_id: str, WorkflowType: str='resume_generation', storage_path: Optional[str]=None, run_base_dir: str='./pipeline_runs') -> Any:
     """
     Run hardened workflow orchestrator with atomic state management.
-    
+
     This is a thin wrapper that delegates to the consolidated orchestrator.
-    
+
     Args:
         workflow_id: Workflow identifier
         WorkflowType: Type of workflow
         storage_path: Path for atomic state storage
         run_base_dir: Base directory for run outputs
-        
+
     Returns:
         Workflow execution results
     """

@@ -57,7 +57,7 @@ LEGACY_AGENTS = {
         "unified": "UnifiedASTValidatorAgent",
         "phase": 1,
     },
-    
+
     # Phase 2: Hygiene Validators -> UnifiedHygieneValidatorAgent
     "HygieneGuardianAgent": {
         "source": "agentic_core/L5_safety/validators/HygieneGuardianAgent.py",
@@ -69,7 +69,7 @@ LEGACY_AGENTS = {
         "unified": "UnifiedHygieneValidatorAgent",
         "phase": 2,
     },
-    
+
     # Phase 3: Checkpoint Managers -> UnifiedCheckpointManagerAgent
     "CheckpointManagerAgent": {
         "source": "agentic_core/L4_state/ValidationContext/CheckpointManagerAgent.py",
@@ -81,7 +81,7 @@ LEGACY_AGENTS = {
         "unified": "UnifiedCheckpointManagerAgent",
         "phase": 3,
     },
-    
+
     # Phase 4: Code Standards Enforcers -> CodeStandardsEnforcerAgent
     "BaseClassEnforcerAgent": {
         "source": "agentic_core/L5_safety/validators/BaseClassEnforcerAgent.py",
@@ -98,7 +98,7 @@ LEGACY_AGENTS = {
         "unified": "CodeStandardsEnforcerAgent",
         "phase": 4,
     },
-    
+
     # Phase 5: State Managers -> UnifiedStateManagementAgent
     "ManifestManagerAgent": {
         "source": "agentic_core/L4_state/ValidationContext/ManifestManagerAgent.py",
@@ -122,31 +122,31 @@ def create_archive_directory() -> Path:
     """Create the archives/consolidated_agents directory structure."""
     archive_dir = PROJECT_ROOT / "archives" / "consolidated_agents"
     archive_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Create phase subdirectories
     for phase in range(1, 6):
         (archive_dir / f"phase_{phase}").mkdir(exist_ok=True)
-    
+
     return archive_dir
 
 
 def archive_agent(agent_name: str, info: Dict[str, Any], archive_dir: Path, dry_run: bool = False) -> Dict[str, Any]:
     """
     Archive a single legacy agent.
-    
+
     Args:
         agent_name: Name of the agent
         info: Agent info dict with source, unified, phase
         archive_dir: Archive directory path
         dry_run: If True, only report what would be done
-        
+
     Returns:
         Result dict with status
     """
     source_path = PROJECT_ROOT / info["source"]
     phase_dir = archive_dir / f"phase_{info['phase']}"
     dest_path = phase_dir / source_path.name
-    
+
     result = {
         "agent": agent_name,
         "source": str(source_path),
@@ -155,15 +155,15 @@ def archive_agent(agent_name: str, info: Dict[str, Any], archive_dir: Path, dry_
         "phase": info["phase"],
         "status": "pending",
     }
-    
+
     if not source_path.exists():
         result["status"] = "not_found"
         return result
-    
+
     if dry_run:
         result["status"] = "would_move"
         return result
-    
+
     try:
         # Move the file
         shutil.move(str(source_path), str(dest_path))
@@ -171,7 +171,7 @@ def archive_agent(agent_name: str, info: Dict[str, Any], archive_dir: Path, dry_
     except Exception as e:
         result["status"] = "error"
         result["error"] = str(e)
-    
+
     return result
 
 
@@ -215,11 +215,11 @@ def create_consolidation_manifest(results: List[Dict[str, Any]], archive_dir: Pa
             "Test suites created for each unified agent",
         ],
     }
-    
+
     manifest_path = archive_dir / "CONSOLIDATION_MANIFEST.json"
     with open(manifest_path, 'w', encoding='utf-8') as f:
         json.dump(manifest, f, indent=2, default=str)
-    
+
     # Also create a README
     readme_content = f"""# Consolidated Agents Archive
 
@@ -261,7 +261,7 @@ Legacy agent IDs will automatically resolve to their unified replacements.
 
 ## Archived: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 """
-    
+
     readme_path = archive_dir / "README.md"
     with open(readme_path, 'w', encoding='utf-8') as f:
         f.write(readme_content)
@@ -271,37 +271,37 @@ def main():
     parser = argparse.ArgumentParser(description='Archive consolidated legacy agents')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be done without moving files')
     args = parser.parse_args()
-    
+
     print("=" * 60)
     print("Legacy Agent Archival Script")
     print("=" * 60)
-    
+
     if args.dry_run:
         print("\n[DRY RUN MODE - No files will be moved]\n")
-    
+
     # Create archive directory
     archive_dir = create_archive_directory()
     print(f"Archive directory: {archive_dir}")
-    
+
     # Archive each agent
     results = []
     archived_count = 0
     not_found_count = 0
     error_count = 0
-    
+
     for agent_name, info in LEGACY_AGENTS.items():
         result = archive_agent(agent_name, info, archive_dir, args.dry_run)
         results.append(result)
-        
+
         status_icon = {
             "archived": "✓",
             "would_move": "○",
             "not_found": "⊘",
             "error": "✗",
         }.get(result["status"], "?")
-        
+
         print(f"  {status_icon} {agent_name} -> phase_{info['phase']}/")
-        
+
         if result["status"] == "archived":
             archived_count += 1
         elif result["status"] == "would_move":
@@ -311,25 +311,25 @@ def main():
         elif result["status"] == "error":
             error_count += 1
             print(f"      Error: {result.get('error', 'Unknown')}")
-    
+
     # Create manifest
     if not args.dry_run:
         create_consolidation_manifest(results, archive_dir)
         print(f"\n  ✓ Created CONSOLIDATION_MANIFEST.json")
         print(f"  ✓ Created README.md")
-    
+
     # Summary
     print(f"\n{'=' * 60}")
     print("Summary:")
     print(f"  Archived: {archived_count}")
     print(f"  Not found: {not_found_count}")
     print(f"  Errors: {error_count}")
-    
+
     if args.dry_run:
         print("\n[DRY RUN COMPLETE - Run without --dry-run to execute]")
     else:
         print("\n✓ ARCHIVAL COMPLETE")
-    
+
     return 0 if error_count == 0 else 1
 
 

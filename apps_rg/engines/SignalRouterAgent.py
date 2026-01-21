@@ -94,10 +94,10 @@ class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
     def get_agents_for_signals(cls, signals: Set[str]) -> List[str]:
         """
         Get list of agent names that should handle the given signals.
-        
+
         Args:
             signals: Set of signal names to route
-        
+
         Returns:
             List of agent class names that should handle these signals
         """
@@ -111,10 +111,10 @@ class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
     def has_critical_signal(cls, signals: Set[str]) -> bool:
         """
         Check if any critical signals are present.
-        
+
         Args:
             signals: Set of signal names to check
-        
+
         Returns:
             True if any signal is critical (requires rollback), False otherwise
         """
@@ -124,12 +124,12 @@ class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
     def determine_strategy(cls, cycle: int, signals: Set[str], modified_sections: Set[str]) -> HealingStrategy:
         """
         Determine the healing strategy based on current state.
-        
+
         Args:
             cycle: Current healing cycle number (1-indexed)
             signals: Set of active signals requiring attention
             modified_sections: Set of resume sections that were modified
-        
+
         Returns:
             Appropriate healing strategy for the current context
         """
@@ -162,10 +162,10 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
     def create_all_agents(ctx: ResumeEngineContext) -> List[ResumeAgent]:
         """
         Create all available agents.
-        
+
         Args:
             ctx: Resume engine context
-        
+
         Returns:
             List of all resume agents
         """
@@ -183,11 +183,11 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
     def create_agents_by_name(ctx: ResumeEngineContext, names: List[str]) -> List[ResumeAgent]:
         """
         Create specific agents by name.
-        
+
         Args:
             ctx: Resume engine context
             names: List of agent class names to create
-        
+
         Returns:
             List of requested agents
         """
@@ -213,10 +213,10 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
     def create_quality_agents(ctx: ResumeEngineContext) -> List[ResumeAgent]:
         """
         Create quality-focused agents.
-        
+
         Args:
             ctx: Resume engine context
-        
+
         Returns:
             List of quality-focused agents
         """
@@ -230,10 +230,10 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
     def create_compliance_agents(ctx: ResumeEngineContext) -> List[ResumeAgent]:
         """
         Create compliance-focused agents.
-        
+
         Args:
             ctx: Resume engine context
-        
+
         Returns:
             List of compliance-focused agents
         """
@@ -255,7 +255,7 @@ class HealingCycle:
     def __init__(self, ctx: ResumeEngineContext, cycle_number: int) -> None:
         """
         Initialize healing cycle.
-        
+
         Args:
             ctx: Resume engine context
             cycle_number: Current cycle number (1-indexed)
@@ -268,10 +268,10 @@ class HealingCycle:
     async def execute(self, strategy: HealingStrategy) -> CycleResult:
         """
         Execute the healing cycle with the given strategy.
-        
+
         Args:
             strategy: Healing strategy to apply
-        
+
         Returns:
             CycleResult with cycle execution details
         """
@@ -332,10 +332,10 @@ class HealingCycle:
     def _build_agenda(self, strategy: HealingStrategy) -> List[ResumeAgent]:
         """
         Build the agent agenda based on strategy.
-        
+
         Args:
             strategy: Healing strategy to apply
-        
+
         Returns:
             List of agents to execute
         """
@@ -367,7 +367,7 @@ class HealingCycle:
     def _check_rollback_conditions(self) -> bool:
         """
         Check if rollback should be triggered.
-        
+
         Returns:
             True if rollback conditions are met, False otherwise
         """
@@ -386,7 +386,7 @@ class HealingCycle:
     def _execute_rollback(self) -> None:
         """
         Execute rollback of all changes.
-        
+
         Reverts resume to last backup and clears critical signals.
         """
         print(f"   🚨 Cycle {self.cycle_number}: Triggering rollback...")
@@ -443,7 +443,7 @@ class AutomaticRollback:
     def __init__(self, ctx: ResumeEngineContext) -> None:
         """
         Initialize automatic rollback handler.
-        
+
         Args:
             ctx: Resume engine context
         """
@@ -454,7 +454,7 @@ class AutomaticRollback:
     def should_rollback(self) -> bool:
         """
         Determine if rollback should be triggered.
-        
+
         Returns:
             True if rollback should be triggered, False otherwise
         """
@@ -466,7 +466,7 @@ class AutomaticRollback:
     def execute_rollback(self) -> bool:
         """
         Execute rollback and return success status.
-        
+
         Returns:
             True if rollback was executed, False otherwise
         """

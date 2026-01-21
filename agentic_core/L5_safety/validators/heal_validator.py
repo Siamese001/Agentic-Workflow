@@ -108,19 +108,19 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
     """
     Multi-stage validator for LLM-healed code.
-    
+
     Validation Pipeline:
     1. Syntax check (AST parsing)
     2. Dangerous pattern detection (regex)
     3. Static analysis (Bandit-style checks)
     4. Diff sanity (excessive changes, file deletion)
     """
-    
+
     def __init__(self, project_root: Path):
         self.project_root = project_root.resolve()
         self.max_diff_lines = 500  # Reject excessively large changes
         self.min_code_retention = 0.5  # Reject if <50% of original code remains
-        
+
         # Try to import Bandit for advanced static analysis
         self.bandit_available = False
         try:
@@ -132,21 +132,21 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
             Logger.info("[HealValidatorAgent] Bandit static analysis available")
         except ImportError:
             Logger.warning("[HealValidatorAgent] Bandit not available - using regex fallback")
-    
+
     def validate_healed_code(
-        self, 
-        original_code: str, 
-        healed_code: str, 
+        self,
+        original_code: str,
+        healed_code: str,
         file_path: Path
     ) -> Dict[str, any]:
         """
         Validate healed code through multi-stage pipeline.
-        
+
         Args:
             original_code: Original file content
             healed_code: LLM-generated healed content
             file_path: Path to the file being healed
-            
+
         Returns:
             Dict with validation results:
             {
@@ -162,21 +162,21 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
             "reason": "",
             "details": {}
         }
-        
+
         # Stage 1: Syntax validation
         syntax_result = self._validate_syntax(healed_code, file_path)
         if not syntax_result["valid"]:
             result.update(syntax_result)
             result["stage"] = "syntax"
             return result
-        
+
         # Stage 2: Dangerous pattern detection
         pattern_result = self._validate_dangerous_patterns(healed_code, file_path)
         if not pattern_result["valid"]:
             result.update(pattern_result)
             result["stage"] = "dangerous_patterns"
             return result
-        
+
         # Stage 3: Static analysis (Bandit if available)
         if self.bandit_available:
             static_result = self._validate_static_analysis(healed_code, file_path)
@@ -184,19 +184,19 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
                 result.update(static_result)
                 result["stage"] = "static_analysis"
                 return result
-        
+
         # Stage 4: Diff sanity checks
         diff_result = self._validate_diff_sanity(original_code, healed_code, file_path)
         if not diff_result["valid"]:
             result.update(diff_result)
             result["stage"] = "diff_sanity"
             return result
-        
+
         result["stage"] = "complete"
         result["details"]["passed_all_stages"] = True
         Logger.info(f"[HealValidatorAgent] ✓ {file_path.name} passed all validation stages")
         return result
-    
+
     def _validate_syntax(self, code: str, file_path: Path) -> Dict[str, any]:
         """Stage 1: Validate Python syntax via AST parsing."""
         try:
@@ -220,11 +220,11 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
                 "reason": f"AST parsing error: {str(e)}",
                 "details": {}
             }
-    
+
     def _validate_dangerous_patterns(self, code: str, file_path: Path) -> Dict[str, any]:
         """Stage 2: Detect dangerous code patterns via regex."""
         detected_patterns = []
-        
+
         for pattern, description in DANGEROUS_PATTERNS:
             matches = re.finditer(pattern, code, re.MULTILINE | re.IGNORECASE)
             for match in matches:
@@ -234,7 +234,7 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
                     "line": line_num,
                     "match": match.group(0)
                 })
-        
+
         if detected_patterns:
             Logger.warning(f"[HealValidatorAgent] Dangerous patterns in {file_path.name}: {len(detected_patterns)} found")
             return {
@@ -242,37 +242,37 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
                 "reason": f"Dangerous patterns detected: {', '.join([p['pattern'] for p in detected_patterns[:3]])}",
                 "details": {"patterns": detected_patterns}
             }
-        
+
         return {"valid": True, "reason": ""}
-    
+
     def _validate_static_analysis(self, code: str, file_path: Path) -> Dict[str, any]:
         """Stage 3: Run Bandit static analysis (high-Severity checks only)."""
         if not self.bandit_available:
             return {"valid": True, "reason": "Bandit not available"}
-        
+
         try:
             # Write code to temporary file for Bandit analysis
             with tempfile.NamedTemporaryFile(suffix='.py', mode='w', delete=False, encoding='utf-8') as f:
                 f.write(code)
                 temp_path = Path(f.name)
-            
+
             try:
                 # Initialize Bandit manager with high-Severity tests only
                 b_mgr = self.bandit_manager.BanditManager(
                     self.bandit_config.BanditConfig(),
                     'file'
                 )
-                
+
                 # Configure to run only high-Severity tests
                 b_mgr.discover_files([str(temp_path)])
                 b_mgr.run_tests()
-                
+
                 # Check for high-Severity issues
                 high_severity_issues = [
-                    issue for issue in b_mgr.results 
+                    issue for issue in b_mgr.results
                     if issue.Severity == 'HIGH'
                 ]
-                
+
                 if high_severity_issues:
                     Logger.warning(f"[HealValidatorAgent] Bandit found {len(high_severity_issues)} high-Severity issues in {file_path.name}")
                     return {
@@ -291,26 +291,26 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
                             ]
                         }
                     }
-                
+
                 return {"valid": True, "reason": ""}
-                
+
             finally:
                 temp_path.unlink(missing_ok=True)
-                
+
         except Exception as e:
             Logger.error(f"[HealValidatorAgent] Bandit analysis failed: {e}")
             # Don't fail validation if Bandit crashes - fall back to pattern matching
             return {"valid": True, "reason": f"Bandit analysis skipped: {e}"}
-    
+
     def _validate_diff_sanity(self, original_code: str, healed_code: str, file_path: Path) -> Dict[str, any]:
         """Stage 4: Validate diff sanity (no excessive changes or file deletion)."""
         original_lines = original_code.splitlines()
         healed_lines = healed_code.splitlines()
-        
+
         # Check 1: Excessive diff size
         diff = list(unified_diff(original_lines, healed_lines, lineterm=''))
         diff_size = len(diff)
-        
+
         if diff_size > self.max_diff_lines:
             Logger.warning(f"[HealValidatorAgent] Excessive diff in {file_path.name}: {diff_size} lines")
             return {
@@ -318,11 +318,11 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
                 "reason": f"Diff too large: {diff_size} lines (max: {self.max_diff_lines})",
                 "details": {"diff_lines": diff_size}
             }
-        
+
         # Check 2: Excessive code deletion (file gutting)
         original_loc = len([l for l in original_lines if l.strip() and not l.strip().startswith('#')])
         healed_loc = len([l for l in healed_lines if l.strip() and not l.strip().startswith('#')])
-        
+
         if original_loc > 0:
             retention_ratio = healed_loc / original_loc
             if retention_ratio < self.min_code_retention:
@@ -336,7 +336,7 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
                         "retention_ratio": retention_ratio
                     }
                 }
-        
+
         # Check 3: Detect ellipsis truncation (common LLM failure mode)
         if '...' in healed_code and healed_loc < original_loc * 0.8:
             Logger.warning(f"[HealValidatorAgent] Truncation detected in {file_path.name}")
@@ -345,9 +345,9 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
                 "reason": "LLM truncation detected (ellipsis with significant code loss)",
                 "details": {"truncation_marker": "..."}
             }
-        
+
         return {"valid": True, "reason": ""}
-    
+
     def compute_code_hash(self, code: str) -> str:
         """Compute SHA256 hash of code for cycle detection."""
         return hashlib.sha256(code.encode('utf-8')).hexdigest()

@@ -5,26 +5,26 @@ prompt_manifest:
   version: "1.0"
   schema_version: "1.0"
   generated_at: "2024-01-01T00:00:00Z"
-  
+
   # Global configuration
   global_config:
     default_language: "en"
     supported_languages: ["en", "es", "fr", "de", "zh", "ja"]
     default_model: "gpt-4"
     fallback_models: ["gpt-3.5-turbo", "claude-3"]
-    
+
     # Quality standards
     quality_standards:
       min_tokens: 50
       max_tokens: 4000
       required_sections: ["description", "purpose", "usage"]
-      
+
     # Security settings
     security:
       pii_detection: true
       content_filtering: true
       audit_logging: true
-      
+
   # Prompt definitions
   prompts:
     # Resume Engine Prompts
@@ -36,39 +36,39 @@ prompt_manifest:
       file: "engines/resume_engine/system_prompts.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         created_by: "system"
         created_at: "2024-01-01T00:00:00Z"
         updated_by: "system"
         updated_at: "2024-01-01T00:00:00Z"
-        
+
         description: "Core system prompts for resume processing workflow"
         purpose: "Provide foundational instructions for resume analysis and generation"
-        
+
         dependencies:
           - "safety.yaml"
           - "constraints.yaml"
-          
+
         parameters:
           - name: "resume_format"
             type: "string"
             default: "modern"
             options: ["modern", "classic", "technical"]
-            
+
           - name: "target_role"
             type: "string"
             required: true
-            
+
         usage:
           integration_points:
             - "L1_planning"
             - "L2_execution"
-            
+
           api_endpoints:
             - "/api/resume/analyze"
             - "/api/resume/generate"
-            
+
     resume_rewriting:
       id: "resume_rewriting"
       name: "Resume Rewriting Prompts"
@@ -77,15 +77,15 @@ prompt_manifest:
       file: "engines/resume_engine/rewriting.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Prompts for rewriting and optimizing resume content"
         purpose: "Transform raw resume data into polished, professional content"
-        
+
         dependencies:
           - "system_prompts.yaml"
           - "scoring.yaml"
-          
+
     resume_scoring:
       id: "resume_scoring"
       name: "Resume Scoring Prompts"
@@ -94,11 +94,11 @@ prompt_manifest:
       file: "engines/resume_engine/scoring.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Evaluation and scoring prompts for resume quality"
         purpose: "Assess resume effectiveness and provide improvement recommendations"
-        
+
     resume_summarization:
       id: "resume_summarization"
       name: "Resume Summarization Prompts"
@@ -107,11 +107,11 @@ prompt_manifest:
       file: "engines/resume_engine/summarization.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Prompts for creating concise resume summaries"
         purpose: "Generate executive summaries and highlights from resume content"
-        
+
     # Outreach Engine Prompts
     outreach_archetype:
       id: "outreach_archetype"
@@ -121,11 +121,11 @@ prompt_manifest:
       file: "engines/outreach_engine/archetype.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Core persona and archetype definitions for outreach"
         purpose: "Define communication styles and professional personas"
-        
+
     outreach_personalization:
       id: "outreach_personalization"
       name: "Outreach Personalization Prompts"
@@ -134,11 +134,11 @@ prompt_manifest:
       file: "engines/outreach_engine/personalization.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Personalization logic for tailored outreach messages"
         purpose: "Customize outreach based on recipient profile and context"
-        
+
     outreach_messaging:
       id: "outreach_messaging"
       name: "Outreach Messaging Prompts"
@@ -147,11 +147,11 @@ prompt_manifest:
       file: "engines/outreach_engine/messaging.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Message composition and formatting prompts"
         purpose: "Generate professional outreach messages and communications"
-        
+
     outreach_reflective_checks:
       id: "outreach_reflective_checks"
       name: "Outreach Reflective Checks"
@@ -160,11 +160,11 @@ prompt_manifest:
       file: "engines/outreach_engine/reflective_checks.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Quality and safety checks for outreach content"
         purpose: "Ensure outreach meets professional and ethical standards"
-        
+
   # Injection Prompts
   injections:
     constraints:
@@ -174,11 +174,11 @@ prompt_manifest:
       file: "injections/constraints.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "System constraints and boundary enforcement"
         purpose: "Ensure all outputs stay within defined parameters"
-        
+
     context_engineering:
       id: "context_engineering"
       name: "Context Engineering"
@@ -186,11 +186,11 @@ prompt_manifest:
       file: "injections/context_engineering.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Context building and information structuring"
         purpose: "Organize and structure context for optimal processing"
-        
+
     framing:
       id: "framing"
       name: "Problem Framing"
@@ -198,11 +198,11 @@ prompt_manifest:
       file: "injections/framing.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Problem definition and perspective framing"
         purpose: "Frame problems and tasks for optimal solution approaches"
-        
+
     output_governance:
       id: "output_governance"
       name: "Output Governance"
@@ -210,11 +210,11 @@ prompt_manifest:
       file: "injections/output_governance.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Output format and content governance"
         purpose: "Ensure outputs meet formatting and quality standards"
-        
+
     reasoning:
       id: "reasoning"
       name: "Reasoning Logic"
@@ -222,11 +222,11 @@ prompt_manifest:
       file: "injections/reasoning.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Logical reasoning and decision-making frameworks"
         purpose: "Guide systematic reasoning and analysis processes"
-        
+
     safety:
       id: "safety"
       name: "Safety Protocols"
@@ -234,11 +234,11 @@ prompt_manifest:
       file: "injections/safety.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Safety checks and ethical guidelines"
         purpose: "Ensure all outputs are safe and ethically sound"
-        
+
     tool_use:
       id: "tool_use"
       name: "Tool Usage"
@@ -246,11 +246,11 @@ prompt_manifest:
       file: "injections/tool_use.yaml"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Tool selection and usage guidance"
         purpose: "Guide appropriate tool usage and integration"
-        
+
   # Template Prompts
   templates:
     resume_summary:
@@ -260,11 +260,11 @@ prompt_manifest:
       file: "templates/resume/summary_template.md"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Template for resume executive summaries"
         purpose: "Standardized format for resume summary sections"
-        
+
     resume_experience:
       id: "resume_experience_template"
       name: "Resume Experience Template"
@@ -272,11 +272,11 @@ prompt_manifest:
       file: "templates/resume/experience_template.md"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Template for work experience descriptions"
         purpose: "Standardized format for experience sections"
-        
+
     resume_skills:
       id: "resume_skills_template"
       name: "Resume Skills Template"
@@ -284,11 +284,11 @@ prompt_manifest:
       file: "templates/resume/skills_template.md"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Template for skills and competencies"
         purpose: "Standardized format for skills presentation"
-        
+
     outreach_cold:
       id: "outreach_cold_template"
       name: "Cold Outreach Template"
@@ -296,11 +296,11 @@ prompt_manifest:
       file: "templates/outreach/cold_outreach_template.md"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Template for cold outreach messages"
         purpose: "Standardized format for initial contact messages"
-        
+
     outreach_connection:
       id: "outreach_connection_template"
       name: "Connection Request Template"
@@ -308,11 +308,11 @@ prompt_manifest:
       file: "templates/outreach/connection_request.md"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Template for professional connection requests"
         purpose: "Standardized format for networking requests"
-        
+
     outreach_followup:
       id: "outreach_followup_template"
       name: "Follow-up Template"
@@ -320,11 +320,11 @@ prompt_manifest:
       file: "templates/outreach/followup_template.md"
       version: "1.0.0"
       status: "active"
-      
+
       metadata:
         description: "Template for follow-up communications"
         purpose: "Standardized format for follow-up messages"
-        
+
   # Version tracking
   version_tracking:
     current_version: "1.0.0"
@@ -332,21 +332,21 @@ prompt_manifest:
       - version: "1.0.0"
         released_at: "2024-01-01T00:00:00Z"
         changes: ["Initial release", "Complete prompt manifest"]
-        
+
   # Compliance and governance
   compliance:
     frameworks:
       - name: "SOC 2"
         status: "compliant"
         last_audit: "2024-01-01T00:00:00Z"
-        
+
       - name: "GDPR"
         status: "compliant"
         last_audit: "2024-01-01T00:00:00Z"
-        
+
       - name: "HIPAA"
         status: "not_applicable"
-        
+
     data_retention:
       prompt_versions: "2_years"
       usage_logs: "90_days"

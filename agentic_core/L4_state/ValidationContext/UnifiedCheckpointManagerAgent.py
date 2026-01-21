@@ -54,7 +54,7 @@ class Checkpoint:
     metadata: Dict[str, Any] = field(default_factory=dict)
     is_valid: bool = True
     recovery_count: int = 0
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert Checkpoint to dictionary for serialization."""
         return {
@@ -66,7 +66,7 @@ class Checkpoint:
             'is_valid': self.is_valid,
             'recovery_count': self.recovery_count,
         }
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Checkpoint':
         """Create Checkpoint from dictionary."""
@@ -106,37 +106,37 @@ def timeout(seconds: int) -> Callable:
 class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
     """
     Unified L4 Checkpoint Guardian.
-    
+
     Handles synchronous legacy checkpoints and autonomous asynchronous mirroring.
     Consolidates CheckpointManagerAgent and AutonomousCheckpointManagerAgent.
-    
+
     Modes:
         - SYNC: Traditional blocking saves (Legacy support)
-        - ASYNC: Non-blocking background saves  
+        - ASYNC: Non-blocking background saves
         - AUTONOMOUS: Mirroring, drift detection, and auto-recovery
-    
+
     Inherits from L4StateBaseAgent which provides:
         - HealerMixin: heal_repository() for self-repair
         - MCPHardenedMixin: Hardened MCP with retry/timeout
         - RedisCacheMixin: Short-term caching
         - PineconeVectorMixin: Long-term semantic memory
     """
-    
+
     name: str = "UnifiedCheckpointManagerAgent"
     layer: str = "L4"
-    
+
     # Configuration
     mode: str = "ASYNC"  # SYNC, ASYNC, or AUTONOMOUS
     storage_path: Path = field(default_factory=lambda: Path(".canon_memory/checkpoints"))
     max_checkpoints: int = 50
     auto_checkpoint_interval: timedelta = field(default_factory=lambda: timedelta(minutes=5))
-    
+
     # Internal state
     checkpoints: Dict[str, Checkpoint] = field(default_factory=dict)
     current_checkpoint_id: Optional[str] = None
     last_auto_checkpoint: Optional[datetime] = None
     _mirror_tasks: List[asyncio.Task] = field(default_factory=list)
-    
+
     def __post_init__(self) -> None:
         """Initialize the unified checkpoint manager."""
         # Normalize mode
@@ -144,34 +144,34 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         if self.mode not in ("SYNC", "ASYNC", "AUTONOMOUS"):
             Logger.warning(f"Invalid mode '{self.mode}', defaulting to ASYNC")
             self.mode = "ASYNC"
-        
+
         # Ensure storage_path is a Path
         if isinstance(self.storage_path, str):
             self.storage_path = Path(self.storage_path)
-        
+
         # Create directories
         self.storage_path.mkdir(parents=True, exist_ok=True)
-        
+
         # Mirror path for AUTONOMOUS mode
         self.mirror_path = self.storage_path / "mirrors"
         if self.mode == "AUTONOMOUS":
             self.mirror_path.mkdir(parents=True, exist_ok=True)
-        
+
         # Initialize collections
         if not isinstance(self.checkpoints, dict):
             self.checkpoints = {}
         if not isinstance(self._mirror_tasks, list):
             self._mirror_tasks = []
-        
+
         # Load existing checkpoints
         self._load_checkpoints()
-        
+
         Logger.info(f"UnifiedCheckpointManager initialized in {self.mode} mode at {self.storage_path}")
-    
+
     # =========================================================================
     # CHECKPOINT CREATION (Hybrid Sync/Async)
     # =========================================================================
-    
+
     def create_checkpoint(
         self,
         state_data: Dict[str, Any],
@@ -181,18 +181,18 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
     ) -> str:
         """
         Create a checkpoint (synchronous entry point for backward compatibility).
-        
+
         Args:
             state_data: State snapshot to persist
             label: Label for the checkpoint
             file_hashes: Optional file hashes for integrity verification
             metadata: Optional additional metadata
-            
+
         Returns:
             Checkpoint ID
         """
         checkpoint_id = self._generate_checkpoint_id(label)
-        
+
         if self.mode == "SYNC":
             return self._save_sync(checkpoint_id, state_data, file_hashes, metadata)
         else:
@@ -210,7 +210,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
                 return asyncio.run(
                     self._save_async(checkpoint_id, state_data, file_hashes, metadata)
                 )
-    
+
     async def create_checkpoint_async(
         self,
         state_data: Dict[str, Any],
@@ -220,18 +220,18 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
     ) -> str:
         """
         Create a checkpoint (async entry point).
-        
+
         Args:
             state_data: State snapshot to persist
             label: Label for the checkpoint
             file_hashes: Optional file hashes for integrity verification
             metadata: Optional additional metadata
-            
+
         Returns:
             Checkpoint ID
         """
         checkpoint_id = self._generate_checkpoint_id(label)
-        
+
         if self.mode == "SYNC":
             # Run sync in executor to not block
             loop = asyncio.get_event_loop()
@@ -242,12 +242,12 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             return checkpoint_id
         else:
             return await self._save_async(checkpoint_id, state_data, file_hashes, metadata)
-    
+
     def _generate_checkpoint_id(self, label: str) -> str:
         """Generate a unique checkpoint ID."""
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
         return f"chk_{timestamp}_{label}"
-    
+
     def _save_sync(
         self,
         checkpoint_id: str,
@@ -257,13 +257,13 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
     ) -> str:
         """
         Synchronous save logic (migrated from legacy CheckpointManagerAgent).
-        
+
         Args:
             checkpoint_id: Unique checkpoint identifier
             state_data: State snapshot to persist
             file_hashes: Optional file hashes
             metadata: Optional metadata
-            
+
         Returns:
             Path to saved checkpoint file
         """
@@ -274,29 +274,29 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             file_hashes=file_hashes or {},
             metadata=metadata or {},
         )
-        
+
         file_path = self.storage_path / f"{checkpoint_id}.json"
-        
+
         try:
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(checkpoint.to_dict(), f, indent=2, default=str)
-            
+
             self.checkpoints[checkpoint_id] = checkpoint
             self.current_checkpoint_id = checkpoint_id
             self._save_index()
             self._cleanup_old_checkpoints()
-            
+
             # In AUTONOMOUS mode, also create mirror synchronously
             if self.mode == "AUTONOMOUS":
                 self._mirror_checkpoint_sync(file_path)
-            
+
             Logger.info(f"[SYNC] Checkpoint saved: {checkpoint_id}")
             return checkpoint_id
-        
+
         except Exception as e:
             Logger.error(f"Failed to save checkpoint {checkpoint_id}: {e}")
             raise
-    
+
     async def _save_async(
         self,
         checkpoint_id: str,
@@ -306,13 +306,13 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
     ) -> str:
         """
         Asynchronous save logic (migrated from AutonomousCheckpointManager).
-        
+
         Args:
             checkpoint_id: Unique checkpoint identifier
             state_data: State snapshot to persist
             file_hashes: Optional file hashes
             metadata: Optional metadata
-            
+
         Returns:
             Path to saved checkpoint file
         """
@@ -322,34 +322,34 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             None,
             lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata)
         )
-        
+
         # Trigger background mirroring in AUTONOMOUS mode
         if self.mode == "AUTONOMOUS":
             task = asyncio.create_task(self._mirror_checkpoint(Path(file_path)))
             self._mirror_tasks.append(task)
-        
+
         Logger.info(f"[ASYNC] Checkpoint saved: {checkpoint_id}")
         return checkpoint_id
-    
+
     # =========================================================================
     # MIRRORING (AUTONOMOUS mode)
     # =========================================================================
-    
+
     def _mirror_checkpoint_sync(self, primary_path: Path) -> bool:
         """
         Synchronously mirror primary checkpoint to secondary storage.
-        
+
         Args:
             primary_path: Path to primary checkpoint file
-            
+
         Returns:
             True if mirroring succeeded
         """
         if not self.mirror_path.exists():
             self.mirror_path.mkdir(parents=True, exist_ok=True)
-        
+
         mirror_path = self.mirror_path / primary_path.name
-        
+
         try:
             shutil.copy2(primary_path, mirror_path)
             Logger.debug(f"[MIRROR] Redundant copy created: {mirror_path.name}")
@@ -357,14 +357,14 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         except Exception as e:
             Logger.error(f"[MIRROR] Failed for {primary_path.name}: {e}")
             return False
-    
+
     async def _mirror_checkpoint(self, primary_path: Path) -> bool:
         """
         Asynchronously mirror primary checkpoint to secondary storage.
-        
+
         Args:
             primary_path: Path to primary checkpoint file
-            
+
         Returns:
             True if mirroring succeeded
         """
@@ -374,96 +374,96 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             self._mirror_checkpoint_sync,
             primary_path
         )
-    
+
     # =========================================================================
     # INTEGRITY VERIFICATION
     # =========================================================================
-    
+
     def verify_integrity(self, checkpoint_id: str) -> bool:
         """
         Verify checkpoint integrity by comparing primary and mirror hashes.
-        
+
         Args:
             checkpoint_id: Checkpoint ID to verify
-            
+
         Returns:
             True if checkpoint is valid
         """
         primary = self.storage_path / f"{checkpoint_id}.json"
         mirror = self.mirror_path / f"{checkpoint_id}.json"
-        
+
         # Primary missing - attempt recovery
         if not primary.exists():
             Logger.warning(f"Primary checkpoint missing: {checkpoint_id}")
             return self._attempt_recovery(checkpoint_id)
-        
+
         # In AUTONOMOUS mode, verify against mirror
         if self.mode == "AUTONOMOUS" and mirror.exists():
             try:
                 p_hash = hashlib.md5(primary.read_bytes()).hexdigest()
                 m_hash = hashlib.md5(mirror.read_bytes()).hexdigest()
-                
+
                 if p_hash != m_hash:
                     Logger.warning(f"Hash mismatch for {checkpoint_id}: primary={p_hash}, mirror={m_hash}")
                     return False
-                
+
                 return True
             except Exception as e:
                 Logger.error(f"Integrity check failed for {checkpoint_id}: {e}")
                 return False
-        
+
         # Non-AUTONOMOUS mode or no mirror - just check primary exists
         return primary.exists()
-    
+
     def _attempt_recovery(self, checkpoint_id: str) -> bool:
         """
         Auto-recovery: Restore primary from mirror if primary is missing/corrupt.
-        
+
         Args:
             checkpoint_id: Checkpoint ID to recover
-            
+
         Returns:
             True if recovery succeeded
         """
         mirror = self.mirror_path / f"{checkpoint_id}.json"
         primary = self.storage_path / f"{checkpoint_id}.json"
-        
+
         if mirror.exists():
             try:
                 shutil.copy2(mirror, primary)
                 Logger.warning(f"[RECOVERY] Restored checkpoint {checkpoint_id} from mirror")
-                
+
                 # Update checkpoint metadata
                 if checkpoint_id in self.checkpoints:
                     self.checkpoints[checkpoint_id].recovery_count += 1
                     self._save_index()
-                
+
                 return True
             except Exception as e:
                 Logger.error(f"[RECOVERY] Failed to restore {checkpoint_id}: {e}")
                 return False
-        
+
         Logger.error(f"[RECOVERY] No mirror available for {checkpoint_id}")
         return False
-    
+
     # =========================================================================
     # CHECKPOINT RETRIEVAL
     # =========================================================================
-    
+
     def get_checkpoint(self, checkpoint_id: str) -> Optional[Checkpoint]:
         """
         Retrieve a checkpoint by ID.
-        
+
         Args:
             checkpoint_id: Checkpoint ID to retrieve
-            
+
         Returns:
             Checkpoint object or None if not found
         """
         # Check memory cache first
         if checkpoint_id in self.checkpoints:
             return self.checkpoints[checkpoint_id]
-        
+
         # Try loading from disk
         file_path = self.storage_path / f"{checkpoint_id}.json"
         if file_path.exists():
@@ -475,21 +475,21 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
                 return checkpoint
             except Exception as e:
                 Logger.error(f"Failed to load checkpoint {checkpoint_id}: {e}")
-        
+
         return None
-    
+
     def get_latest_checkpoint(self) -> Optional[Checkpoint]:
         """Get the most recent checkpoint."""
         if self.current_checkpoint_id:
             return self.get_checkpoint(self.current_checkpoint_id)
-        
+
         # Find most recent by timestamp
         if self.checkpoints:
             latest = max(self.checkpoints.values(), key=lambda c: c.timestamp)
             return latest
-        
+
         return None
-    
+
     def list_checkpoints(self) -> List[Dict[str, Any]]:
         """List all available checkpoints."""
         return [
@@ -501,18 +501,18 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             }
             for cp in sorted(self.checkpoints.values(), key=lambda c: c.timestamp, reverse=True)
         ]
-    
+
     # =========================================================================
     # ROLLBACK
     # =========================================================================
-    
+
     def rollback_to_checkpoint(self, checkpoint_id: str) -> RecoveryResult:
         """
         Rollback state to a specific checkpoint.
-        
+
         Args:
             checkpoint_id: Checkpoint ID to rollback to
-            
+
         Returns:
             RecoveryResult with operation details
         """
@@ -521,115 +521,115 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             success=False,
             checkpoint_id=checkpoint_id,
         )
-        
+
         checkpoint = self.get_checkpoint(checkpoint_id)
         if not checkpoint:
             result.errors.append(f"Checkpoint {checkpoint_id} not found")
             return result
-        
+
         if not self.verify_integrity(checkpoint_id):
             result.errors.append(f"Checkpoint {checkpoint_id} failed integrity check")
             return result
-        
+
         try:
             # Mark as current checkpoint
             self.current_checkpoint_id = checkpoint_id
             self._save_index()
-            
+
             result.success = True
             result.state_restored = True
             result.recovery_time = time.time() - start_time
-            
+
             Logger.info(f"[ROLLBACK] Successfully rolled back to {checkpoint_id}")
             return result
-        
+
         except Exception as e:
             result.errors.append(str(e))
             Logger.error(f"[ROLLBACK] Failed to rollback to {checkpoint_id}: {e}")
             return result
-    
+
     # =========================================================================
     # INDEX MANAGEMENT
     # =========================================================================
-    
+
     def _load_checkpoints(self) -> None:
         """Load existing checkpoints from disk."""
         index_path = self.storage_path / "index.json"
-        
+
         if index_path.exists():
             try:
                 with open(index_path, 'r', encoding='utf-8') as f:
                     index_data = json.load(f)
-                
+
                 self.current_checkpoint_id = index_data.get('current_checkpoint_id')
-                
+
                 for cp_id in index_data.get('checkpoints', []):
                     checkpoint = self.get_checkpoint(cp_id)
                     if checkpoint:
                         self.checkpoints[cp_id] = checkpoint
-                
+
                 Logger.debug(f"Loaded {len(self.checkpoints)} checkpoints from index")
             except Exception as e:
                 Logger.warning(f"Failed to load checkpoint index: {e}")
-    
+
     def _save_index(self) -> None:
         """Save checkpoint index to disk."""
         index_path = self.storage_path / "index.json"
-        
+
         index_data = {
             'current_checkpoint_id': self.current_checkpoint_id,
             'checkpoints': list(self.checkpoints.keys()),
             'updated_at': datetime.now().isoformat(),
         }
-        
+
         try:
             with open(index_path, 'w', encoding='utf-8') as f:
                 json.dump(index_data, f, indent=2)
         except Exception as e:
             Logger.error(f"Failed to save checkpoint index: {e}")
-    
+
     def _cleanup_old_checkpoints(self) -> None:
         """Remove old checkpoints beyond max_checkpoints limit."""
         if len(self.checkpoints) <= self.max_checkpoints:
             return
-        
+
         # Sort by timestamp, oldest first
         sorted_checkpoints = sorted(
             self.checkpoints.values(),
             key=lambda c: c.timestamp
         )
-        
+
         # Remove oldest checkpoints
         to_remove = len(self.checkpoints) - self.max_checkpoints
         for checkpoint in sorted_checkpoints[:to_remove]:
             self._delete_checkpoint(checkpoint.checkpoint_id)
-    
+
     def _delete_checkpoint(self, checkpoint_id: str) -> bool:
         """Delete a checkpoint from disk and memory."""
         try:
             # Remove from disk
             primary = self.storage_path / f"{checkpoint_id}.json"
             mirror = self.mirror_path / f"{checkpoint_id}.json"
-            
+
             if primary.exists():
                 primary.unlink()
             if mirror.exists():
                 mirror.unlink()
-            
+
             # Remove from memory
             if checkpoint_id in self.checkpoints:
                 del self.checkpoints[checkpoint_id]
-            
+
             Logger.debug(f"Deleted checkpoint: {checkpoint_id}")
             return True
         except Exception as e:
             Logger.error(f"Failed to delete checkpoint {checkpoint_id}: {e}")
             return False
-    
+
     # =========================================================================
     # HEALING
     # =========================================================================
-    
+
     @timeout(300)
     @standard_heal
     def heal_repository(
@@ -642,14 +642,14 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
     ) -> Dict[str, Any]:
         """
         Repository-wide checkpoint healing.
-        
+
         Args:
             dry_run: If True, only report issues without fixing
             execute: If True, execute healing actions
             depth: Current recursion depth
             max_depth: Maximum recursion depth
             _call_path: Set of already-visited agents (cycle detection)
-            
+
         Returns:
             Dictionary with healing results
         """
@@ -661,35 +661,35 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
             max_depth=max_depth,
             _call_path=_call_path
         )
-        
+
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
-        
+
         # Cycle detection
         if agent_name in _call_path:
             return {"skipped": 1, "cycle_detected": True}
-        
+
         # Depth limiting
         if depth > max_depth:
             return {"skipped": 1, "depth_limited": True}
-        
+
         _call_path.add(agent_name)
-        
+
         try:
             violations_found = 0
             violations_fixed = 0
-            
+
             # Check all checkpoints for integrity
             for checkpoint_id in list(self.checkpoints.keys()):
                 if not self.verify_integrity(checkpoint_id):
                     violations_found += 1
-                    
+
                     if execute and not dry_run:
                         if self._attempt_recovery(checkpoint_id):
                             violations_fixed += 1
-            
+
             return {
                 "agent": agent_name,
                 "violations_found": violations_found,
@@ -698,18 +698,18 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
                 "mode": self.mode,
                 "dry_run": dry_run,
             }
-        
+
         finally:
             _call_path.discard(agent_name)
-    
+
     # =========================================================================
     # SELF-TESTS
     # =========================================================================
-    
+
     def _run_self_tests(self) -> Dict[str, Any]:
         """Run internal self-tests for the unified checkpoint manager."""
         results = {"passed": 0, "failed": 0, "tests": []}
-        
+
         # Test 1: Instantiation
         try:
             assert self.mode in ("SYNC", "ASYNC", "AUTONOMOUS")
@@ -719,7 +719,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         except AssertionError as e:
             results["failed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
-        
+
         # Test 2: Checkpoint ID generation
         try:
             cp_id = self._generate_checkpoint_id("test")
@@ -730,7 +730,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         except AssertionError as e:
             results["failed"] += 1
             results["tests"].append({"name": "test_checkpoint_id_generation", "status": "failed", "error": str(e)})
-        
+
         # Test 3: Checkpoint serialization
         try:
             cp = Checkpoint(
@@ -747,7 +747,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         except AssertionError as e:
             results["failed"] += 1
             results["tests"].append({"name": "test_checkpoint_serialization", "status": "failed", "error": str(e)})
-        
+
         return results
 
 
@@ -761,17 +761,17 @@ def get_checkpoint_manager(
 ) -> UnifiedCheckpointManagerAgent:
     """
     Factory function to get UnifiedCheckpointManagerAgent instance.
-    
+
     Args:
         mode: Operating mode (SYNC, ASYNC, AUTONOMOUS)
         storage_path: Optional custom storage path
-        
+
     Returns:
         UnifiedCheckpointManagerAgent instance
     """
     if storage_path is None:
         storage_path = Path(".canon_memory/checkpoints")
-    
+
     return UnifiedCheckpointManagerAgent(
         mode=mode,
         storage_path=storage_path,
@@ -791,7 +791,7 @@ def get_autonomous_checkpoint_manager(storage_path: Optional[Path] = None) -> Un
 
 if __name__ == "__main__":
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Unified Checkpoint Manager")
     parser.add_argument("--mode", choices=["SYNC", "ASYNC", "AUTONOMOUS"], default="ASYNC")
     parser.add_argument("--storage", type=str, default=".canon_memory/checkpoints")
@@ -799,26 +799,26 @@ if __name__ == "__main__":
     parser.add_argument("--verify", type=str, help="Verify checkpoint integrity")
     parser.add_argument("--self-test", action="store_true", help="Run self-tests")
     args = parser.parse_args()
-    
+
     manager = get_checkpoint_manager(mode=args.mode, storage_path=Path(args.storage))
-    
+
     if args.self_test:
         results = manager._run_self_tests()
         print(f"Self-tests: {results['passed']} passed, {results['failed']} failed")
         for test in results['tests']:
             status = "✓" if test['status'] == 'passed' else "✗"
             print(f"  {status} {test['name']}")
-    
+
     elif args.list:
         checkpoints = manager.list_checkpoints()
         print(f"Found {len(checkpoints)} checkpoints:")
         for cp in checkpoints[:10]:
             print(f"  - {cp['checkpoint_id']} ({cp['timestamp']})")
-    
+
     elif args.verify:
         is_valid = manager.verify_integrity(args.verify)
         print(f"Checkpoint {args.verify}: {'VALID' if is_valid else 'INVALID'}")
-    
+
     else:
         # Demo: Create a test checkpoint
         cp_id = manager.create_checkpoint(

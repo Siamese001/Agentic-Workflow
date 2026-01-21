@@ -183,7 +183,7 @@ conn.execute("""
 
 # Find slow MCP tool calls
 conn.execute("""
-    SELECT 
+    SELECT
         trace_id,
         json_extract_string(payload, '$.tool') as tool,
         CAST(json_extract(payload, '$.duration_ms') AS DOUBLE) as duration
@@ -195,7 +195,7 @@ conn.execute("""
 
 # Analyze agent decision patterns
 conn.execute("""
-    SELECT 
+    SELECT
         json_extract(payload, '$.tool_choice') as tool,
         COUNT(*) as usage_count,
         AVG(json_extract(payload, '$.confidence_score')) as avg_confidence
@@ -298,7 +298,7 @@ def my_hop_function(context):
         "records_processed": 1000,
         "validation_errors": 5
     })
-    
+
     # Continue processing
     pass
 ```

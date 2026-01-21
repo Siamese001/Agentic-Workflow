@@ -163,10 +163,10 @@ def test_l1_planning_is_pure() -> None:
 #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.rag_planning import RAGReasoningPlan, HydePlan  # DEPRECATED: Archive import removed to protect archives from validation edits
 #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.qa_planning import SemanticQAPlan, CouncilPlan  # DEPRECATED: Archive import removed to protect archives from validation edits
 #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.safety_planning import SafetyPlan  # DEPRECATED: Archive import removed to protect archives from validation edits
-        
+
         # All L1 plan dataclasses should be frozen
         import dataclasses
-        
+
         for plan_class in [StrategyPlan, DraftPlan, RAGReasoningPlan, HydePlan, SemanticQAPlan, CouncilPlan, SafetyPlan]:
             if dataclasses.is_dataclass(plan_class):
                 # Check if frozen
@@ -193,7 +193,7 @@ def run_all_tests() -> None:
         ("No Circular Dependencies", test_no_circular_dependencies),
         ("L1 Planning Purity", test_l1_planning_is_pure),
     ]
-    
+
     results = []
     for name, test_func in tests:
 
@@ -202,7 +202,7 @@ def run_all_tests() -> None:
 
     passed = sum(1 for _, r in results if r)
     total = len(results)
-    
+
     for name, result in results:
         status = "PASS" if result else "FAIL"
         symbol = "✓" if result else "✗"
@@ -217,4 +217,3 @@ def run_all_tests() -> None:
 if __name__ == "__main__":
     success = run_all_tests()
     sys.exit(0 if success else 1)
-

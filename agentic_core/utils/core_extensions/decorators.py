@@ -12,7 +12,7 @@ DECORATORS:
 
 USAGE:
     from agentic_core.utils.core_extensions.decorators import standard_heal
-    
+
     class MyAgent:
         @standard_heal
         def heal_repository(self, dry_run=True, execute=False, **kwargs):
@@ -52,7 +52,7 @@ LEGACY_KEY_MAPPINGS = {
     "problems": "violations_found",
     "findings": "violations_found",
     "count": "violations_found",
-    
+
     # violations_fixed mappings
     "fixed": "violations_fixed",
     "repaired": "violations_fixed",
@@ -62,11 +62,11 @@ LEGACY_KEY_MAPPINGS = {
     "moved": "violations_fixed",
     "deleted": "violations_fixed",
     "created": "violations_fixed",
-    
+
     # errors mappings
     "error_count": "errors",
     "failures": "errors",
-    
+
     # skipped mappings
     "skip_count": "skipped",
     "ignored": "skipped",
@@ -76,7 +76,7 @@ LEGACY_KEY_MAPPINGS = {
 def _normalize_heal_result(result: Any, execution_time_ms: float) -> Dict[str, Any]:
     """
     Normalize a heal result to the canonical HealResult schema.
-    
+
     Handles various legacy formats and converts them to the standard schema:
         {
             "violations_found": int,
@@ -87,11 +87,11 @@ def _normalize_heal_result(result: Any, execution_time_ms: float) -> Dict[str, A
             "execution_time_ms": float,
             "error_message": Optional[str],
         }
-    
+
     Args:
         result: Raw result from heal_repository (may be dict, int, bool, etc.)
         execution_time_ms: Execution time in milliseconds
-        
+
     Returns:
         Normalized HealResult dictionary
     """
@@ -100,24 +100,24 @@ def _normalize_heal_result(result: Any, execution_time_ms: float) -> Dict[str, A
         **HEAL_RESULT_SCHEMA,
         "execution_time_ms": execution_time_ms,
     }
-    
+
     # Handle None result
     if result is None:
         normalized["status"] = "SKIPPED"
         normalized["skipped"] = 1
         return normalized
-    
+
     # Handle boolean result
     if isinstance(result, bool):
         normalized["status"] = "PASS" if result else "FAIL"
         return normalized
-    
+
     # Handle integer result (assume it's violation count)
     if isinstance(result, int):
         normalized["violations_found"] = result
         normalized["status"] = "PASS" if result == 0 else "FAIL"
         return normalized
-    
+
     # Handle dict result
     if isinstance(result, dict):
         # First, map legacy keys to canonical keys
@@ -126,12 +126,12 @@ def _normalize_heal_result(result: Any, execution_time_ms: float) -> Dict[str, A
                 value = result[legacy_key]
                 if isinstance(value, (int, float)):
                     normalized[canonical_key] = int(value)
-        
+
         # Then, copy canonical keys directly
         for key in HEAL_RESULT_SCHEMA.keys():
             if key in result:
                 normalized[key] = result[key]
-        
+
         # Preserve error_message if present
         if "error_message" in result:
             normalized["error_message"] = result["error_message"]
@@ -139,7 +139,7 @@ def _normalize_heal_result(result: Any, execution_time_ms: float) -> Dict[str, A
             normalized["error_message"] = str(result["error"])
         elif "message" in result:
             normalized["error_message"] = result["message"]
-        
+
         # Determine status if not explicitly set
         if normalized["status"] == "UNKNOWN":
             if normalized.get("error_message") or normalized.get("errors", 0) > 0:
@@ -152,12 +152,12 @@ def _normalize_heal_result(result: Any, execution_time_ms: float) -> Dict[str, A
                 normalized["status"] = "PASS"
             else:
                 normalized["status"] = "FAIL"
-        
+
         # Preserve original result for debugging
         normalized["_raw_result"] = result
-        
+
         return normalized
-    
+
     # Handle unexpected types
     Logger.warning(f"[standard_heal] Unexpected result type: {type(result)}")
     normalized["status"] = "ERROR"
@@ -170,49 +170,49 @@ def _normalize_heal_inputs(
 ) -> tuple[bool, bool, Dict[str, Any]]:
     """
     Normalize heal_repository inputs.
-    
+
     Ensures dry_run and execute parameters exist with safe defaults.
-    
+
     Args:
         kwargs: Keyword arguments passed to heal_repository
-        
+
     Returns:
         Tuple of (dry_run, execute, remaining_kwargs)
     """
     # Extract dry_run with safe default (True = safe, no changes)
     dry_run = kwargs.pop("dry_run", True)
-    
+
     # Extract execute with safe default (False = no changes)
     execute = kwargs.pop("execute", False)
-    
+
     # Ensure boolean types
     if not isinstance(dry_run, bool):
         dry_run = bool(dry_run)
     if not isinstance(execute, bool):
         execute = bool(execute)
-    
+
     return dry_run, execute, kwargs
 
 
 def standard_heal(func: F) -> F:
     """
     Decorator that standardizes heal_repository() methods.
-    
+
     This decorator provides:
     1. Input Normalization: Ensures dry_run and execute args exist with safe defaults
     2. Output Normalization: Converts legacy dicts to canonical HealResult schema
     3. Error Containment: Catches crashes and returns valid HealResult with status='ERROR'
-    
+
     Usage:
         class MyAgent:
             @standard_heal
             def heal_repository(self, dry_run=True, execute=False, **kwargs):
                 # Your healing logic
                 return {"renamed": 5}  # Will be normalized to {"violations_fixed": 5, ...}
-    
+
     Args:
         func: The heal_repository method to decorate
-        
+
     Returns:
         Decorated function with standardized behavior
     """
@@ -220,41 +220,41 @@ def standard_heal(func: F) -> F:
     def wrapper(self: Any, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         start_time = time.time()
         agent_name = self.__class__.__name__
-        
+
         try:
             # Input normalization
             dry_run, execute, remaining_kwargs = _normalize_heal_inputs(kwargs)
-            
+
             Logger.debug(
                 f"[standard_heal] {agent_name}.{func.__name__} "
                 f"(dry_run={dry_run}, execute={execute})"
             )
-            
+
             # Call the actual method
             result = func(self, *args, dry_run=dry_run, execute=execute, **remaining_kwargs)
-            
+
             # Output normalization
             execution_time_ms = (time.time() - start_time) * 1000
             normalized = _normalize_heal_result(result, execution_time_ms)
-            
+
             Logger.debug(
                 f"[standard_heal] {agent_name}.{func.__name__} completed: "
                 f"status={normalized['status']}, "
                 f"violations={normalized['violations_found']}, "
                 f"fixed={normalized['violations_fixed']}"
             )
-            
+
             return normalized
-            
+
         except Exception as e:
             # Error containment - never let the method crash
             execution_time_ms = (time.time() - start_time) * 1000
-            
+
             Logger.error(
                 f"[standard_heal] {agent_name}.{func.__name__} crashed: {e}\n"
                 f"{traceback.format_exc()}"
             )
-            
+
             return {
                 **HEAL_RESULT_SCHEMA,
                 "status": "ERROR",
@@ -264,16 +264,16 @@ def standard_heal(func: F) -> F:
                 "_exception_type": type(e).__name__,
                 "_traceback": traceback.format_exc(),
             }
-    
+
     return cast(F, wrapper)
 
 
 def standard_heal_async(func: F) -> F:
     """
     Async version of @standard_heal decorator.
-    
+
     Provides the same standardization for async heal_repository methods.
-    
+
     Usage:
         class MyAgent:
             @standard_heal_async
@@ -285,33 +285,33 @@ def standard_heal_async(func: F) -> F:
     async def wrapper(self: Any, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         start_time = time.time()
         agent_name = self.__class__.__name__
-        
+
         try:
             # Input normalization
             dry_run, execute, remaining_kwargs = _normalize_heal_inputs(kwargs)
-            
+
             Logger.debug(
                 f"[standard_heal_async] {agent_name}.{func.__name__} "
                 f"(dry_run={dry_run}, execute={execute})"
             )
-            
+
             # Call the actual async method
             result = await func(self, *args, dry_run=dry_run, execute=execute, **remaining_kwargs)
-            
+
             # Output normalization
             execution_time_ms = (time.time() - start_time) * 1000
             normalized = _normalize_heal_result(result, execution_time_ms)
-            
+
             return normalized
-            
+
         except Exception as e:
             execution_time_ms = (time.time() - start_time) * 1000
-            
+
             Logger.error(
                 f"[standard_heal_async] {agent_name}.{func.__name__} crashed: {e}\n"
                 f"{traceback.format_exc()}"
             )
-            
+
             return {
                 **HEAL_RESULT_SCHEMA,
                 "status": "ERROR",
@@ -319,7 +319,7 @@ def standard_heal_async(func: F) -> F:
                 "execution_time_ms": execution_time_ms,
                 "error_message": str(e),
             }
-    
+
     return cast(F, wrapper)
 
 

@@ -44,7 +44,7 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
     """
     ROLE: Root Cause Analysis. Triggered when TestPilot fails.
     Analyzes cross-file dependencies and fixes interaction bugs.
-    
+
     L4 Checkpoint Integration:
     - Analysis state checkpointed for persistent debugging
     - Trace snapshots stored in L4 ledger
@@ -59,14 +59,14 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
     def _perform_healing(self, anomaly: AnomalyReport) -> bool:
         """Perform healing for diagnostic anomalies."""
         self._mcp_audit("healing_start", payload=anomaly.to_dict())
-        
+
         if anomaly.type == "diagnostic_corruption":
             # Reset diagnostic state
             self.triggered = False
             self.last_failure = None
             self._mcp_audit("healing_success")
             return True
-        
+
         return False
 
     def can_run(self) -> bool:

@@ -148,7 +148,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     - Confidence: Vulture-inspired heuristics (dynamic access, side-effects)
     - Transitive: Lightweight call graph (findimports-style) for project-wide
     - Whitelist: __init__.py re-exports, TYPE_CHECKING, known side-effect modules
-    
+
     GOLD STANDARD FEATURES (2026-01-02):
     - Structured Violation dataclass with severity levels
     - LocationAgent integration for gravity root-cause moves
@@ -157,7 +157,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     - Safe import rewrite operations with backup
     - cleanup_violations with multi-stage healing
     - run_with_cleanup returning comprehensive summaries
-    
+
     DOMAIN-SPECIFIC INTEGRATIONS:
     - LocationAgent: Suggest file moves for gravity violations (root-cause fix)
     - NamingAgent: Validate module naming after import rewrites
@@ -187,15 +187,15 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         # Known dynamic access patterns (reduce false positives)
         self.dynamic_patterns = ["getattr", "hasattr", "__import__"]
-        
+
         # Lazy agent references to avoid circular instantiation
         # These are created on-demand via properties, not in __init__
         self._location_agent = None
         self._naming_agent = None
-        
+
         # Backup directory for safe operations
         self._backup_dir: Optional[Path] = None
-    
+
     @property
     def location_agent(self):
         """Lazy LocationAgent - created on first access to avoid circular init."""
@@ -206,7 +206,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             except (ImportError, RecursionError):
                 pass
         return self._location_agent
-    
+
     @property
     def naming_agent(self):
         """Lazy NamingAgent - created on first access to avoid circular init."""
@@ -253,7 +253,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         # Capture outer class dynamic_patterns for nested class
         dynamic_patterns = self.dynamic_patterns
-        
+
         class UsageVisitor(ast.NodeVisitor):
             """UsageVisitor agent for autonomous operations."""
             def visit_Name(self, node: ast.Name) -> Any:
@@ -287,7 +287,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         for name in local_unused:
             if name.split(".")[0] in self.side_effect_modules:
                 continue  # Skip known side-effect modules
-            
+
             # Heuristic: If dynamic access like getattr() exists, drop confidence
             confidence = 60 if dynamic_access else 100
             violations.append(f"UNUSED IMPORT [Confidence {confidence}%]: {name}")
@@ -439,7 +439,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
     def _init_backup_dir(self) -> Path:
         """Initialize and return the backup directory for safe operations.
-        
+
         Uses SSOT-approved backup location: .sovereign_healing_backup/import_fixes/
         """
         if self._backup_dir is None:
@@ -511,7 +511,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         try:
             # Analyze file content to determine best territory
             content = file_path.read_text(encoding="utf-8", errors="ignore")
-            
+
             # If file imports downstream, it might belong in apps_shared
             if "apps_rg" in str(downstream_roots) or "apps_lic" in str(downstream_roots):
                 result["move_suggested"] = True
@@ -586,7 +586,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         try:
             violations = self.location_agent.run(py_files)
             report["location_violations"] = len(violations)
-            
+
             if not violations:
                 report["location_status"] = "FULL_SUCCESS"
                 report["message"] = f"All {len(py_files)} files location-compliant"
@@ -602,7 +602,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     def cleanup_violations(self, violations: List[Tuple[Path, List[str]]], dry_run: bool = True, max_actions: int = 50) -> List[Dict[str, Any]]:
         """
         GOLD STANDARD CLEANUP ENGINE — Multi-stage autonomous healing.
-        
+
         Healing stages:
         1. Remove high-confidence unused imports
         2. Suggest file moves for gravity violations (LocationAgent integration)
@@ -616,11 +616,11 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         for file_path, msgs in violations:
             if action_count >= max_actions:
                 break
-                
+
             for msg in msgs:
                 if action_count >= max_actions:
                     break
-                    
+
                 action = {
                     "violation": msg,
                     "path": str(file_path),
@@ -659,13 +659,13 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
         # === BATCH POST-HEAL VALIDATION ===
         batch_report = {"batch_post_heal_status": "PENDING", "batch_message": ""}
-        
+
         if dry_run:
             batch_report["batch_message"] = "PREVIEW: Batch validation skipped"
             batch_report["batch_post_heal_status"] = "PREVIEW"
         else:
             unique_paths = list(set(affected_paths))
-            
+
             # Import compliance validation
             heal_report = self.post_heal_validation(unique_paths, dry_run=False)
             batch_report.update({
@@ -733,7 +733,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             valid_files = [f for f in valid_files if not any(
                 excl in str(f) for excl in ["archives"]
             )]
-            
+
             violations = self.run(valid_files)
             total_violations = sum(len(msgs) for _, msgs in violations)
             print(f"[{agent_name} HEAL @ depth {depth}] Found {total_violations} import violations in {len(violations)} files")

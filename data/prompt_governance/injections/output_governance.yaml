@@ -5,27 +5,27 @@
 output_governance:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # V5 Instructional Injection Framework - Output Layer
   v5_output_injections:
     enabled: true
     injection_count: 5
-    
+
     # 26. Strict JSON-Only Output Mode
     strict_json_output:
       description: "Require deterministic, schema-compliant JSON without extra text"
       prompt_template: |
         STRICT JSON OUTPUT MODE ACTIVATED
-        
+
         Output Requirements:
         - Format: Valid JSON only
         - Schema Compliance: {schema_requirements}
         - No Additional Text: true
         - Deterministic Structure: true
-        
+
         JSON Schema:
         {json_schema}
-        
+
         Output must be valid JSON that strictly adheres to the provided schema.
         Do not include any explanatory text, comments, or non-JSON content.
       usage_context:
@@ -36,25 +36,25 @@ output_governance:
         - "Valid JSON format"
         - "Schema compliance"
         - "No extra text content"
-        
+
     # 27. Schema Enforcement & Examples
     schema_enforcement:
       description: "Supply minimal schema and one valid illustrative example"
       prompt_template: |
         SCHEMA ENFORCEMENT PROTOCOL
-        
+
         Required Schema:
         {required_schema}
-        
+
         Valid Example:
         {example_output}
-        
+
         Enforcement Rules:
         - Follow exact schema structure
         - Use specified field types
         - Maintain required field order
         - Reference example for format guidance
-        
+
         Generate output that conforms to schema while using example as format reference.
       usage_context:
         - "Complex data structures"
@@ -64,25 +64,25 @@ output_governance:
         - "Schema structure followed"
         - "Field types correct"
         - "Example format referenced"
-        
+
     # 28. Stability Contracts
     stability_contracts:
       description: "Preserve field order and naming across repeated outputs"
       prompt_template: |
         OUTPUT STABILITY CONTRACT
-        
+
         Contract Requirements:
         - Field Order: {field_order}
         - Field Naming: {field_naming}
         - Consistent Structure: true
         - Stable Identifiers: true
-        
+
         Stability Guarantees:
         - Same fields in same order
         - Consistent naming conventions
         - Stable data types
         - Predictable structure
-        
+
         Maintain output stability across all generations for this task type.
       usage_context:
         - "Repeated operations"
@@ -92,13 +92,13 @@ output_governance:
         - "Field order maintained"
         - "Naming consistent"
         - "Structure stable"
-        
+
     # 29. Error Envelope Normalization
     error_envelope:
       description: "Standardize failures into simple, structured error objects"
       prompt_template: |
         ERROR ENVELOPE NORMALIZATION
-        
+
         Error Response Schema:
         {{
           "success": false,
@@ -109,13 +109,13 @@ output_governance:
             "timestamp": "{timestamp}"
           }}
         }}
-        
+
         Error Handling Rules:
         - Always use standardized error format
         - Include specific error codes
         - Provide clear error messages
         - Add relevant context details
-        
+
         Normalize all failures into the structured error envelope format.
       usage_context:
         - "Error handling"
@@ -125,25 +125,25 @@ output_governance:
         - "Standardized error format"
         - "Clear error codes"
         - "Comprehensive error details"
-        
+
     # 30. Minimality Constraints
     minimality_constraints:
       description: "Limit output size to enforce clarity and conciseness"
       prompt_template: |
         OUTPUT MINIMALITY CONSTRAINTS
-        
+
         Size Limits:
         - Maximum Characters: {max_characters}
         - Maximum Fields: {max_fields}
         - Maximum Depth: {max_depth}
         - Conciseness Required: {conciseness_level}
-        
+
         Minimality Rules:
         - Include only essential information
         - Avoid redundant content
         - Use efficient data structures
         - Prioritize clarity over verbosity
-        
+
         Generate minimal output that meets all requirements while respecting size constraints.
       usage_context:
         - "Token optimization"
@@ -153,19 +153,19 @@ output_governance:
         - "Size constraints respected"
         - "Essential information retained"
         - "Output is concise"
-        
+
   # Global governance principles
   global_principles:
     enabled: true
     governance_level: "strict"
-    
+
     # Core governance areas
     governance_areas:
       format_standardization: true
       content_quality: true
       compliance_enforcement: true
       brand_consistency: true
-      
+
   # Format governance
   format_governance:
     # Resume format standards
@@ -175,33 +175,33 @@ output_governance:
           header:
             sections: ["contact_info", "professional_title"]
             max_length: 100
-            
+
           summary:
             sections: ["professional_summary"]
             max_length: 300
             style: "paragraph"
-            
+
           experience:
             sections: ["work_experience"]
             max_bullets: 8
             style: "achievement_oriented"
-            
+
           education:
             sections: ["education"]
             max_entries: 5
             style: "reverse_chronological"
-            
+
           skills:
             sections: ["skills"]
             categories: ["technical", "soft", "certifications"]
             max_per_category: 10
-            
+
         formatting_rules:
           font_family: ["Arial", "Calibri", "Helvetica"]
           font_size: [10, 11, 12]
           margins: "1 inch"
           line_spacing: 1.15
-          
+
       classic_format:
         structure:
           header: ["name", "contact_info"]
@@ -209,13 +209,13 @@ output_governance:
           experience: ["professional_experience"]
           education: ["educational_background"]
           skills: ["technical_skills"]
-          
+
         formatting_rules:
           font_family: ["Times New Roman", "Georgia"]
           font_size: [11, 12]
           margins: "1 inch"
           line_spacing: 2.0
-          
+
       technical_format:
         structure:
           header: ["contact_info", "technical_summary"]
@@ -224,12 +224,12 @@ output_governance:
           experience: ["work_experience"]
           education: ["education"]
           certifications: ["certifications"]
-          
+
         formatting_rules:
           sections_order: ["skills", "projects", "experience"]
           include_github: true
           include_portfolio: true
-          
+
     # Outreach format standards
     outreach_formats:
       email_format:
@@ -237,36 +237,36 @@ output_governance:
           subject_line:
             max_length: 50
             style: "action_oriented"
-            
+
           greeting:
             style: "professional"
             personalization: true
-            
+
           body:
             max_paragraphs: 4
             max_length: 500
             style: "conversational_professional"
-            
+
           closing:
             style: "professional"
             include_signature: true
-            
+
         formatting_rules:
           no_html_tags: true
           proper_spacing: true
           professional_tone: true
-          
+
       linkedin_format:
         structure:
           opening: "personalized_connection"
           value_proposition: "mutual_benefit"
           call_to_action: "specific_next_step"
-          
+
         formatting_rules:
           max_length: 300
           emoji_usage: "minimal"
           hashtag_usage: "relevant_only"
-          
+
   # Content governance
   content_governance:
     # Resume content standards
@@ -276,20 +276,20 @@ output_governance:
           required: true
           min_count: 15
           preferred_list: [
-            "achieved", "implemented", "developed", "led", 
+            "achieved", "implemented", "developed", "led",
             "managed", "created", "improved", "increased"
           ]
-          
+
         quantification:
           required: true
           min_metrics: 5
           metric_types: ["percentages", "dollars", "time", "quantity"]
-          
+
         achievements:
           required: true
           min_per_role: 2
           structure: "STAR_method"
-          
+
       content_restrictions:
         forbidden_content:
           - "personal_identifiers"
@@ -297,13 +297,13 @@ output_governance:
           - "marital_status"
           - "religious_information"
           - "political_affiliations"
-          
+
         required_content:
           - "professional_contact_info"
           - "relevant_experience"
           - "key_skills"
           - "education_background"
-          
+
     # Outreach content standards
     outreach_content:
       quality_standards:
@@ -311,30 +311,30 @@ output_governance:
           required: true
           min_elements: 3
           types: ["research_based", "connection_based", "interest_based"]
-          
+
         value_proposition:
           required: true
           structure: "benefit_focused"
           clarity_score: 0.8
-          
+
         call_to_action:
           required: true
           specificity: "high"
           actionability: "immediate"
-          
+
       content_restrictions:
         forbidden_content:
           - "spam_indicators"
           - "misleading_claims"
           - "excessive_urgency"
           - "generic_templates"
-          
+
         required_content:
           - "personalized_greeting"
           - "context_reference"
           - "value_proposition"
           - "clear_next_step"
-          
+
   # Compliance governance
   compliance_governance:
     # Legal compliance
@@ -343,41 +343,41 @@ output_governance:
         anti_discrimination: true
         equal_opportunity: true
         privacy_protection: true
-        
+
         prohibited_questions:
           - "age"
           - "marital_status"
           - "religion"
           - "national_origin"
           - "disability"
-          
+
       data_protection:
         gdpr_compliant: true
         ccpa_compliant: true
         data_encryption: true
-        
+
         pii_handling:
           detection: true
           redaction: true
           consent_required: true
-          
+
     # Industry compliance
     industry_compliance:
       healthcare:
         hipaa_compliant: true
         patient_privacy: true
         medical_ethics: true
-        
+
       finance:
         sec_compliant: true
         financial_ethics: true
         regulatory_disclosure: true
-        
+
       education:
         ferpa_compliant: true
         student_privacy: true
         academic_ethics: true
-        
+
   # Brand governance
   brand_governance:
     # Voice and tone
@@ -385,24 +385,24 @@ output_governance:
       professional_tone:
         characteristics: ["authoritative", "helpful", "respectful"]
         avoid: ["casual", "overly_familiar", "aggressive"]
-        
+
       communication_style:
         clarity: "high"
         conciseness: "medium"
         formality: "professional"
-        
+
     # Visual identity
     visual_standards:
       color_palette:
         primary: "#2C3E50"
         secondary: "#3498DB"
         accent: "#E74C3C"
-        
+
       typography:
         headings: "Arial Bold"
         body: "Arial Regular"
         emphasis: "Arial Italic"
-        
+
   # Quality governance
   quality_governance:
     # Quality metrics
@@ -411,40 +411,40 @@ output_governance:
         completeness_score:
           threshold: 0.9
           weight: 0.3
-          
+
         relevance_score:
           threshold: 0.8
           weight: 0.4
-          
+
         professional_score:
           threshold: 0.85
           weight: 0.3
-          
+
       outreach_quality:
         personalization_score:
           threshold: 0.8
           weight: 0.4
-          
+
         engagement_score:
           threshold: 0.7
           weight: 0.3
-          
+
         professional_score:
           threshold: 0.85
           weight: 0.3
-          
+
     # Quality assurance
     quality_assurance:
       automated_checks:
         spelling_grammar: true
         format_validation: true
         content_completeness: true
-        
+
       manual_review:
         expert_review: true
         peer_review: true
         stakeholder_approval: true
-        
+
   # Output validation
   validation_rules:
     # Pre-output validation
@@ -453,24 +453,24 @@ output_governance:
         required_fields: true
         data_format: true
         content_safety: true
-        
+
       context_validation:
         relevance_check: true
         completeness_check: true
         accuracy_check: true
-        
+
     # Post-output validation
     post_validation:
       format_validation:
         structure_compliance: true
         style_consistency: true
         readability_score: 0.8
-        
+
       content_validation:
         quality_threshold: 0.8
         compliance_check: true
         brand_alignment: true
-        
+
   # Governance enforcement
   enforcement:
     # Automated enforcement
@@ -478,19 +478,19 @@ output_governance:
       format_enforcement: true
       content_filtering: true
       compliance_checking: true
-      
+
     # Manual enforcement
     manual_review:
       review_triggers:
         - "quality_score_below_threshold"
         - "compliance_violation"
         - "brand_misalignment"
-        
+
       escalation_procedures:
         level_1: "automated_correction"
         level_2: "human_review"
         level_3: "management_approval"
-        
+
   # Governance monitoring
   monitoring:
     # Compliance monitoring
@@ -498,13 +498,13 @@ output_governance:
       violation_tracking: true
       trend_analysis: true
       reporting_frequency: "weekly"
-      
+
     # Quality monitoring
     quality_monitoring:
       score_tracking: true
       improvement_identification: true
       benchmark_comparison: true
-      
+
     # Performance monitoring
     performance_monitoring:
       processing_time: true

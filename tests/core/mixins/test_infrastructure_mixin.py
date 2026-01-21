@@ -1,7 +1,7 @@
 """
 Test Suite for InfrastructureMixin
 
-Verifies the Method Resolution Order (MRO) and state aggregation 
+Verifies the Method Resolution Order (MRO) and state aggregation
 of the consolidated InfrastructureMixin (Opportunity #4).
 """
 import pytest
@@ -24,7 +24,7 @@ class ConcreteInfrastructureAgent(InfrastructureMixin):
 
 class TestInfrastructureMixin:
     """
-    Verifies the Method Resolution Order (MRO) and state aggregation 
+    Verifies the Method Resolution Order (MRO) and state aggregation
     of the consolidated InfrastructureMixin.
     """
 
@@ -34,13 +34,13 @@ class TestInfrastructureMixin:
         HealerMixin, MCPHardenedMixin, and SubatomicTestingMixin in the correct order.
         """
         mro = ConcreteInfrastructureAgent.__mro__
-        
+
         # Verify presence
         assert InfrastructureMixin in mro
         assert HealerMixin in mro
         assert MCPHardenedMixin in mro
         assert SubatomicTestingMixin in mro
-        
+
         # Verify order (InfrastructureMixin should be before its parents)
         infra_idx = mro.index(InfrastructureMixin)
         assert mro.index(HealerMixin) > infra_idx
@@ -52,19 +52,19 @@ class TestInfrastructureMixin:
         Verifies that verify_state() returns a value (dict or bool).
         """
         agent = ConcreteInfrastructureAgent()
-        
+
         state = agent.verify_state()
-        
+
         # verify_state may return dict or bool depending on implementation
         assert state is not None
-        
+
     def test_initialization_chain(self):
         """
         Ensure initializing the class doesn't crash and sets up basic attributes.
         """
         agent = ConcreteInfrastructureAgent()
         assert agent.name == "TestInfrastructureAgent"
-        
+
     def test_healer_mixin_methods_available(self):
         """
         Verify methods from HealerMixin are exposed.
@@ -72,7 +72,7 @@ class TestInfrastructureMixin:
         agent = ConcreteInfrastructureAgent()
         # HealerMixin provides heal_repository
         assert hasattr(agent, "heal_repository")
-        
+
     def test_mcp_hardened_methods_available(self):
         """
         Verify MCPHardenedMixin is in the MRO.
@@ -80,7 +80,7 @@ class TestInfrastructureMixin:
         agent = ConcreteInfrastructureAgent()
         # MCPHardenedMixin should be in MRO
         assert MCPHardenedMixin in type(agent).__mro__
-        
+
     def test_subatomic_testing_methods_available(self):
         """
         Verify SubatomicTestingMixin is in the MRO.

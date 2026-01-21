@@ -58,7 +58,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
     def __init__(self, config: Optional[RouterConfig] = None) -> None:
         """
         Initialize multi-provider router.
-        
+
         Args:
             config: Optional router configuration (uses defaults if not provided)
         """
@@ -257,7 +257,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
             self._parse_anthropic_structured(response, result)
         elif provider == Provider.GOOGLE_VERTEX:
             self._parse_vertex_structured(response, result)
-    
+
     def _parse_anthropic_structured(self, response: Any, result: Dict[str, object]) -> None:
         """Parse JSON from Anthropic response."""
         try:
@@ -268,7 +268,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
         except Exception as e:
             result["success"] = False
             result["error"] = f"Failed to parse structured output: {e}"
-    
+
     def _parse_vertex_structured(self, response: Any, result: Dict[str, object]) -> None:
         """Parse JSON from Vertex response."""
         try:

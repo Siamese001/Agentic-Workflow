@@ -2,7 +2,7 @@ from __future__ import annotations
 """
 Metacognition & Self-Analysis Schemas
 ====================================
-Defines schemas for agentic self-reflection, hypothesis tracking, 
+Defines schemas for agentic self-reflection, hypothesis tracking,
 and uncertainty quantification.
 """
 

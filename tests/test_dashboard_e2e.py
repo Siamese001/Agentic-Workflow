@@ -108,14 +108,14 @@ def kill_existing_servers():
 def start_server() -> bool:
     """Start the dashboard server. Returns True if successful."""
     global _server_process
-    
+
     print("\n" + "=" * 70)
     print("🚀 STARTING DASHBOARD SERVER")
     print("=" * 70)
-    
+
     # Kill any existing servers
     kill_existing_servers()
-    
+
     # Wait for port to be free
     max_wait = 10
     for i in range(max_wait):
@@ -123,11 +123,11 @@ def start_server() -> bool:
             break
         print(f"   Waiting for port {SERVER_PORT} to be free... ({i+1}/{max_wait})")
         time.sleep(1)
-    
+
     if is_port_in_use(SERVER_PORT):
         print(f"   ❌ Port {SERVER_PORT} still in use after {max_wait}s")
         return False
-    
+
     # Start server
     try:
         _server_process = subprocess.Popen(
@@ -137,7 +137,7 @@ def start_server() -> bool:
             stderr=subprocess.PIPE,
             creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == "win32" else 0
         )
-        
+
         # Wait for server to start
         for i in range(10):
             time.sleep(0.5)
@@ -145,10 +145,10 @@ def start_server() -> bool:
                 print(f"   ✅ Server started on port {SERVER_PORT} (PID: {_server_process.pid})")
                 print(f"   🌐 URL: {DASHBOARD_URL}")
                 return True
-        
+
         print("   ❌ Server failed to start within timeout")
         return False
-        
+
     except Exception as e:
         print(f"   ❌ Failed to start server: {e}")
         return False
@@ -168,11 +168,11 @@ def run_data_tests() -> Tuple[int, int, List[str]]:
     passed = 0
     failed = 0
     errors = []
-    
+
     print("\n" + "=" * 70)
     print("📊 DATA VALIDATION TESTS")
     print("=" * 70)
-    
+
     # Test 1: Agent discovery exists
     discovery_path = PROJECT_ROOT / "agent_discovery_full.json"
     if discovery_path.exists():
@@ -194,7 +194,7 @@ def run_data_tests() -> Tuple[int, int, List[str]]:
         print("   ❌ Test 1: agent_discovery_full.json not found")
         failed += 1
         errors.append("Agent discovery file not found")
-    
+
     # Test 2: Dashboard HTML exists
     html_path = DASHBOARD_DIR / "autonomy_dashboard.html"
     if html_path.exists():
@@ -210,7 +210,7 @@ def run_data_tests() -> Tuple[int, int, List[str]]:
         print("   ❌ Test 2: Dashboard HTML not found")
         failed += 1
         errors.append("Dashboard HTML not found")
-    
+
     # Test 3: Dashboard data exists
     data_path = DASHBOARD_DIR / "data" / "dashboard_data.js"
     if data_path.exists():
@@ -231,7 +231,7 @@ def run_data_tests() -> Tuple[int, int, List[str]]:
         print("   ❌ Test 3: dashboard_data.js not found")
         failed += 1
         errors.append("Dashboard data file not found")
-    
+
     # Test 4: JavaScript files exist
     js_files = [
         "js/main.js",
@@ -244,7 +244,7 @@ def run_data_tests() -> Tuple[int, int, List[str]]:
     for js_file in js_files:
         if not (DASHBOARD_DIR / js_file).exists():
             js_missing.append(js_file)
-    
+
     if not js_missing:
         print(f"   ✅ Test 4: All {len(js_files)} JavaScript files exist")
         passed += 1
@@ -252,7 +252,7 @@ def run_data_tests() -> Tuple[int, int, List[str]]:
         print(f"   ❌ Test 4: Missing JS files: {', '.join(js_missing)}")
         failed += 1
         errors.append(f"Missing JS files: {js_missing}")
-    
+
     # Test 5: JS files contain required functions (NOT HTML - this is critical)
     # Historical bug: tests checked HTML for functions instead of JS files
     # Note: main.js uses DashboardApp object pattern, not standalone functions
@@ -260,7 +260,7 @@ def run_data_tests() -> Tuple[int, int, List[str]]:
         "js/renderers/table-renderer.js": ["renderTerritorySummaryTable", "renderCodeQualityTable"],
         "js/main.js": ["DashboardApp", "init:", "renderContent"],  # Object pattern
     }
-    
+
     js_func_errors = []
     for js_path, patterns in js_functions_to_check.items():
         full_path = DASHBOARD_DIR / js_path
@@ -272,7 +272,7 @@ def run_data_tests() -> Tuple[int, int, List[str]]:
                     js_func_errors.append(f"{js_path}: missing '{pattern}'")
         else:
             js_func_errors.append(f"{js_path}: file not found")
-    
+
     if not js_func_errors:
         print(f"   ✅ Test 5: All required JS functions found in JS files (NOT HTML)")
         passed += 1
@@ -282,7 +282,7 @@ def run_data_tests() -> Tuple[int, int, List[str]]:
             print(f"      - {err}")
         failed += 1
         errors.append(f"Missing JS functions: {js_func_errors}")
-    
+
     return passed, failed, errors
 
 
@@ -290,7 +290,7 @@ def verify_playwright_functional() -> Tuple[bool, str]:
     """
     Verify Playwright is installed AND functional.
     This is MANDATORY - if Playwright doesn't work, the test FAILS.
-    
+
     Returns (is_functional, error_message)
     """
     # Check 1: Module installed
@@ -298,7 +298,7 @@ def verify_playwright_functional() -> Tuple[bool, str]:
         from playwright.sync_api import sync_playwright
     except ImportError:
         return False, "Playwright module not installed. Run: pip install playwright"
-    
+
     # Check 2: Browser installed and launchable
     try:
         with sync_playwright() as p:
@@ -315,18 +315,18 @@ def verify_playwright_functional() -> Tuple[bool, str]:
 def run_playwright_tests(headless: bool = True) -> Tuple[int, int, List[str]]:
     """
     Run Playwright visual tests. Returns (passed, failed, errors).
-    
+
     MANDATORY: If Playwright is not functional, this returns immediate failure.
     Visual inspection is NOT optional - it's required for dashboard validation.
     """
     passed = 0
     failed = 0
     errors = []
-    
+
     print("\n" + "=" * 70)
     print("🎭 PLAYWRIGHT VISUAL INSPECTION (MANDATORY)")
     print("=" * 70)
-    
+
     # MANDATORY CHECK: Playwright must be functional
     is_functional, error_msg = verify_playwright_functional()
     if not is_functional:
@@ -334,11 +334,11 @@ def run_playwright_tests(headless: bool = True) -> Tuple[int, int, List[str]]:
         print("\n   ⛔ MANDATORY FAILURE: Visual inspection cannot be skipped")
         print("   Install Playwright: pip install playwright && playwright install chromium")
         return 0, 1, [f"MANDATORY: Playwright not functional - {error_msg}"]
-    
+
     print("   ✅ Playwright is functional")
-    
+
     from playwright.sync_api import sync_playwright
-    
+
     try:
         with sync_playwright() as p:
             print(f"   Launching browser (headless={headless})...")
@@ -346,22 +346,22 @@ def run_playwright_tests(headless: bool = True) -> Tuple[int, int, List[str]]:
                 headless=headless,
                 args=['--disable-cache', '--disable-application-cache']
             )
-            
+
             context = browser.new_context(
                 viewport={'width': 1920, 'height': 1080}
             )
             page = context.new_page()
-            
+
             # Track JavaScript errors
             js_errors = []
             page.on("pageerror", lambda exc: js_errors.append(str(exc)))
-            
+
             # Navigate to dashboard
             print(f"   Navigating to {DASHBOARD_URL}...")
             page.goto(DASHBOARD_URL, timeout=30000)
             page.wait_for_load_state("networkidle", timeout=30000)
             time.sleep(2)  # Allow JS to render
-            
+
             # Test 6: No JavaScript errors in browser
             if not js_errors:
                 print("   ✅ Test 6: No JavaScript errors in browser")
@@ -372,7 +372,7 @@ def run_playwright_tests(headless: bool = True) -> Tuple[int, int, List[str]]:
                     print(f"      - {err[:100]}")
                 failed += 1
                 errors.append(f"Browser JavaScript errors: {len(js_errors)}")
-            
+
             # Test 7: Tables rendered visually
             try:
                 # First check if tables exist in DOM (even if not fully visible due to JS errors)
@@ -401,7 +401,7 @@ def run_playwright_tests(headless: bool = True) -> Tuple[int, int, List[str]]:
                     print(f"   ❌ Test 7: Table visual check failed: {e}")
                     failed += 1
                     errors.append(f"Table visual check failed: {e}")
-            
+
             # Test 8: TOTAL row visible in browser
             try:
                 total_visible = page.locator('text=TOTAL').first.is_visible()
@@ -416,7 +416,7 @@ def run_playwright_tests(headless: bool = True) -> Tuple[int, int, List[str]]:
                 print(f"   ❌ Test 8: TOTAL row visual check failed: {e}")
                 failed += 1
                 errors.append(f"TOTAL row visual check failed: {e}")
-            
+
             # Test 9: Territory rows visible (not just TOTAL)
             try:
                 # Look for L6 or L5 territory names which should be visible
@@ -441,7 +441,7 @@ def run_playwright_tests(headless: bool = True) -> Tuple[int, int, List[str]]:
             except Exception as e:
                 print(f"   ⚠️  Test 9: Territory check: {e}")
                 passed += 1  # Don't fail on this optional check
-            
+
             # Test 10: Take screenshot (MANDATORY for visual record)
             screenshot_path = DASHBOARD_DIR / "e2e_test_screenshot.png"
             try:
@@ -452,14 +452,14 @@ def run_playwright_tests(headless: bool = True) -> Tuple[int, int, List[str]]:
                 print(f"   ❌ Test 10: Screenshot failed: {e}")
                 failed += 1
                 errors.append(f"Screenshot failed: {e}")
-            
+
             browser.close()
-            
+
     except Exception as e:
         print(f"   ❌ Playwright test failed: {e}")
         failed += 1
         errors.append(f"Playwright error: {e}")
-    
+
     return passed, failed, errors
 
 
@@ -467,28 +467,28 @@ def regenerate_if_stale() -> bool:
     """Check if dashboard is stale and regenerate if needed."""
     discovery_path = PROJECT_ROOT / "agent_discovery_full.json"
     data_path = DASHBOARD_DIR / "data" / "dashboard_data.js"
-    
+
     # Check if files exist
     if not discovery_path.exists():
         print("   ⚠️  Agent discovery not found - running discovery...")
         return run_regeneration()
-    
+
     if not data_path.exists():
         print("   ⚠️  Dashboard data not found - regenerating...")
         return run_regeneration()
-    
+
     # Check file ages
     discovery_age = time.time() - discovery_path.stat().st_mtime
     data_age = time.time() - data_path.stat().st_mtime
-    
+
     if discovery_age > 3600:  # > 1 hour old
         print(f"   ⚠️  Discovery is {discovery_age/3600:.1f} hours old - regenerating...")
         return run_regeneration()
-    
+
     if data_age > discovery_age + 60:  # Data older than discovery
         print("   ⚠️  Dashboard data is stale - regenerating...")
         return run_regeneration()
-    
+
     print("   ✅ Dashboard data is current")
     return True
 
@@ -498,12 +498,12 @@ def run_regeneration() -> bool:
     print("\n" + "=" * 70)
     print("🔄 REGENERATING DASHBOARD DATA")
     print("=" * 70)
-    
+
     regen_script = PROJECT_ROOT / "scripts" / "regenerate_dashboard.py"
     if not regen_script.exists():
         print("   ❌ Regeneration script not found")
         return False
-    
+
     try:
         result = subprocess.run(
             [sys.executable, str(regen_script), "--full"],
@@ -512,7 +512,7 @@ def run_regeneration() -> bool:
             text=True,
             timeout=120
         )
-        
+
         if result.returncode == 0:
             print("   ✅ Regeneration complete")
             return True
@@ -535,69 +535,69 @@ def main():
                         help="Run Playwright headless (default)")
     parser.add_argument("--headed", action="store_true",
                         help="Run Playwright with visible browser")
-    
+
     args = parser.parse_args()
     headless = not args.headed
-    
+
     print("\n" + "=" * 70)
     print("🧪 HARDENED DASHBOARD E2E TEST SUITE")
     print("=" * 70)
     print(f"   Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"   Project: {PROJECT_ROOT}")
     print(f"   Headless: {headless}")
-    
+
     total_passed = 0
     total_failed = 0
     all_errors = []
-    
+
     # Step 1: Check/regenerate data
     if not args.skip_regenerate:
         print("\n📋 Checking dashboard freshness...")
         if not regenerate_if_stale():
             print("\n❌ REGENERATION FAILED")
             return 1
-    
+
     # Step 2: Start server (MANDATORY)
     if not start_server():
         print("\n❌ SERVER STARTUP FAILED")
         print("   Cannot run E2E tests without server")
         return 2
-    
+
     # Step 3: Run data tests
     passed, failed, errors = run_data_tests()
     total_passed += passed
     total_failed += failed
     all_errors.extend(errors)
-    
+
     # Step 4: Run Playwright tests (MANDATORY)
     if not check_playwright_installed():
         print("\n❌ PLAYWRIGHT NOT INSTALLED")
         print("   Install with: pip install playwright && playwright install chromium")
         cleanup_server()
         return 3
-    
+
     passed, failed, errors = run_playwright_tests(headless=headless)
     total_passed += passed
     total_failed += failed
     all_errors.extend(errors)
-    
+
     # Summary
     print("\n" + "=" * 70)
     print("📊 TEST SUMMARY")
     print("=" * 70)
     print(f"   ✅ Passed: {total_passed}")
     print(f"   ❌ Failed: {total_failed}")
-    
+
     if all_errors:
         print("\n   Errors:")
         for err in all_errors:
             print(f"      - {err}")
-    
+
     print("\n" + "=" * 70)
-    
+
     # Cleanup
     cleanup_server()
-    
+
     if total_failed == 0:
         print("✅ ALL TESTS PASSED")
         return 0

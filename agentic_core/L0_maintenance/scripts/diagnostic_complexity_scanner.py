@@ -25,7 +25,7 @@ class ComplexityScanner:
     def __init__(self, max_lines: int=40, max_nesting: int=3):
         """
         Initialize scanner with thresholds.
-        
+
         Args:
             max_lines: Maximum lines per method
             max_nesting: Maximum nesting depth
@@ -37,11 +37,11 @@ class ComplexityScanner:
     def scan_directory(self, directory: Path, recursive: bool=True) -> List[Dict]:
         """
         Scan directory for complexity violations.
-        
+
         Args:
             directory: Directory to scan
             recursive: Whether to scan recursively
-            
+
         Returns:
             List of Violation dictionaries
         """
@@ -63,10 +63,10 @@ class ComplexityScanner:
     def scan_file(self, file_path: Path) -> List[Dict]:
         """
         Scan a single file for complexity violations.
-        
+
         Args:
             file_path: Path to Python file
-            
+
         Returns:
             List of violations in this file
         """
@@ -92,11 +92,11 @@ class ComplexityScanner:
     def _analyze_function(self, node: ast.FunctionDef, source: str) -> ComplexityMetrics:
         """
         Analyze a function for complexity metrics.
-        
+
         Args:
             node: AST node for function
             source: Full source code
-            
+
         Returns:
             Complexity metrics
         """
@@ -120,10 +120,10 @@ class ComplexityScanner:
     def _calculate_severity(self, metrics: ComplexityMetrics) -> str:
         """
         Calculate Violation Severity.
-        
+
         Args:
             metrics: Complexity metrics
-            
+
         Returns:
             Severity level: "low", "medium", "high", "critical"
         """
@@ -155,7 +155,7 @@ class ComplexityScanner:
     def generate_report(self) -> str:
         """
         Generate a formatted report of violations.
-        
+
         Returns:
             Report string
         """

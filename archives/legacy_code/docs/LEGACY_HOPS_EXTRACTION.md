@@ -365,7 +365,7 @@ class K1_SummaryAgent(Agent):
 class ValidationAgent(Agent):
     def __init__(self):
         self.gates = load_validation_gates()
-    
+
     async def validate(self, content, execution_point):
         gates = get_gates_for_point(execution_point)
         for gate in gates:
@@ -385,27 +385,27 @@ class ValidationAgent(Agent):
 class FeedbackLoopOrchestrator:
     async def execute_with_feedback(self, agent, max_attempts=5):
         checkpoints = []
-        
+
         for attempt in range(1, max_attempts + 1):
             result = await agent.execute()
             validation = await self.validator.validate(result)
-            
+
             checkpoints.append({
                 "attempt": attempt,
                 "result": result,
                 "validation": validation,
             })
-            
+
             if validation.passed:
                 return result
-            
+
             # Reversion capability
             if attempt > 1 and validation.score < checkpoints[-2]["validation"].score:
                 return checkpoints[-2]["result"]  # Revert to previous
-            
+
             # Regenerate with exact failures
             agent.add_feedback(validation.failures)
-        
+
         raise MaxAttemptsExceeded(checkpoints)
 ```
 
@@ -413,17 +413,17 @@ class FeedbackLoopOrchestrator:
 
 ## Summary of Value Extracted
 
-✅ **Production-tested temperature settings** per K-node  
-✅ **RAG configurations** (type, hops, total calls) per K-node  
-✅ **Word/char count constraints** with exact min/max values  
-✅ **Validation gates** with blocking behavior and halt messages  
-✅ **Provenance rules** for authenticity control  
-✅ **Feedback loop patterns** with regeneration logic  
-✅ **Similarity thresholds** for redundancy detection  
-✅ **Industry adjacency validation** with confidence thresholds  
-✅ **Round number detection** with contextual exclusions  
-✅ **Staging buffer immutability** pattern  
-✅ **Competency ranking** rules  
-✅ **Differentiator distribution** requirements  
+✅ **Production-tested temperature settings** per K-node
+✅ **RAG configurations** (type, hops, total calls) per K-node
+✅ **Word/char count constraints** with exact min/max values
+✅ **Validation gates** with blocking behavior and halt messages
+✅ **Provenance rules** for authenticity control
+✅ **Feedback loop patterns** with regeneration logic
+✅ **Similarity thresholds** for redundancy detection
+✅ **Industry adjacency validation** with confidence thresholds
+✅ **Round number detection** with contextual exclusions
+✅ **Staging buffer immutability** pattern
+✅ **Competency ranking** rules
+✅ **Differentiator distribution** requirements
 
 These patterns are now available in `apps_rg/L3_orchestration/resume_orchestration_config.py` and can be used to configure agent behavior, validation gates, and quality controls in the agentic architecture.

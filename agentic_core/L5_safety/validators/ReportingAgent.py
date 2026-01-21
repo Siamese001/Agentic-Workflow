@@ -38,7 +38,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 # Additional reporting-specific exclusions (stubs, backups)
 SCOPE_SUMMARY_EXCLUSIONS = {
-    "stubs", "backups", ".sovereign_healing_backup", 
+    "stubs", "backups", ".sovereign_healing_backup",
     "node_modules", ".pytest_cache", ".ruff_cache"
 }
 

@@ -106,11 +106,11 @@ async def log_interaction_telemetry(telemetry):
 ```python
 class HardenedGeminiExecutor:
     """Military-grade executor for Google GenAI v1beta."""
-    
+
     def __init__(self, config: HardenedGeminiConfig):
         self.config = config
         self._client = get_client(Provider.GOOGLE)
-    
+
     async def execute_k_node(
         self,
         messages: List[AgentMessage],
@@ -125,7 +125,7 @@ class HardenedGeminiExecutor:
         # 5. Extract response
         # 6. Log telemetry
         return content
-    
+
     def execute_sync(self, ...):
         """Synchronous wrapper for async execution."""
 ```

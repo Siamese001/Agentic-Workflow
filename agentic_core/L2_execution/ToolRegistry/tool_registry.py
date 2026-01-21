@@ -235,21 +235,21 @@ predefined_tool_categories: Any = {'filesystem': 'File and directory operations'
 
 def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
     """AST tool — analyze Python code for patterns (e.g., snake_case classes).
-    
+
     Args:
         code: Python source code to analyze
         mode: Analysis mode - "audit_classes", "extract_names", "check_snake_case"
-        
+
     Returns:
         Dict with analysis results based on mode
     """
     import ast
-    
+
     try:
         tree = ast.parse(code)
     except SyntaxError:
         return {"error": "syntax_error", "message": "Invalid Python syntax"}
-    
+
     if mode == "audit_classes":
         # Count snake_case vs PascalCase classes
         snake_classes = sum(
@@ -265,7 +265,7 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
             "pascal_classes": pascal_classes,
             "total_classes": snake_classes + pascal_classes
         }
-    
+
     elif mode == "extract_names":
         # Extract all class names
         class_names = [
@@ -273,7 +273,7 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
             if isinstance(node, ast.ClassDef)
         ]
         return {"class_names": class_names, "count": len(class_names)}
-    
+
     elif mode == "check_snake_case":
         # Check if any snake_case classes exist
         has_violations = any(
@@ -281,7 +281,7 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
             for node in ast.walk(tree)
         )
         return {"has_snake_case": has_violations}
-    
+
     return {"error": "invalid_mode", "message": f"Unknown mode: {mode}"}
 
 # =============================================================================
@@ -299,10 +299,10 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
 def code_transform_tool(args: CodeTransformArgs) -> Dict[str, Any]:
     """
     Deterministic AST-based code transformation tool.
-    
+
     Enables agents to perform safe, syntax-preserving code transformations
     without LLM overhead. Supports rename, extract, decorator operations.
-    
+
     Args:
         args: CodeTransformArgs with operation details
             - operation: "rename_symbol", "extract_function", "add_decorator", etc.
@@ -311,10 +311,10 @@ def code_transform_tool(args: CodeTransformArgs) -> Dict[str, Any]:
             - new_name: New name for rename operations
             - extract_name: Name for extracted function
             - line_start/line_end: Line range for extraction
-            
+
     Returns:
         Dict with success status, transformed code, and change details
-        
+
     Example:
         >>> args = CodeTransformArgs(
         ...     operation=TransformOperation.RENAME_SYMBOL,
@@ -348,21 +348,21 @@ from agentic_core.L2_execution.ToolRegistry.tools.DependencyGraph import (
 def dependency_graph_tool(args: DependencyGraphArgs) -> Dict[str, Any]:
     """
     Dependency graph analysis tool for import/call relationships.
-    
+
     Enables agents to analyze code dependencies for:
     - Cycle detection (circular imports)
     - Impact analysis (what breaks if X changes)
     - Unused import detection
-    
+
     Args:
         args: DependencyGraphArgs with operation details
             - operation: "build_graph", "detect_cycles", "ImpactAnalysis", etc.
             - target_path: File or directory to analyze
             - symbol: Symbol name for impact analysis
-            
+
     Returns:
         Dict with graph data, cycles, or impact analysis results
-        
+
     Example:
         >>> args = DependencyGraphArgs(
         ...     operation=GraphOperation.DETECT_CYCLES,
@@ -394,19 +394,19 @@ predefined_tool_categories['analysis'] = 'Code analysis and dependency tools'
 def diff_generator_tool(args: DiffGeneratorArgs) -> Dict[str, Any]:
     """
     Diff/patch generation tool for reviewable changes.
-    
+
     Enables agents to generate human-reviewable diffs before applying changes,
     supporting human-in-loop validation for high-risk operations.
-    
+
     Args:
         args: DiffGeneratorArgs with diff parameters
             - original: Original code/text
             - modified: Modified code/text
             - format: "unified", "context", "html", "ndiff"
-            
+
     Returns:
         Dict with diff text, stats, and patch applicability
-        
+
     Example:
         >>> args = DiffGeneratorArgs(
         ...     original="def foo(): pass",

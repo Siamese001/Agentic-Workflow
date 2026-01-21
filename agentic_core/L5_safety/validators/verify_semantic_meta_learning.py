@@ -10,7 +10,7 @@ This script verifies that the complete Meta-Learning pipeline is operational:
 
 Usage:
     python scripts/verify_semantic_meta_learning.py
-    
+
 Environment Requirements:
     - GOOGLE_API_KEY: For Gemini embeddings
     - PINECONE_API_KEY: For vector storage (optional, uses local fallback)
@@ -37,14 +37,14 @@ def check_gemini_embedder(guardian):
     print("\n" + "=" * 80)
     print("1. GEMINI EMBEDDER VERIFICATION")
     print("=" * 80)
-    
+
     if guardian.gemini_embedder is None:
         print("❌ Gemini embedder NOT initialized")
         print("   → Set GOOGLE_API_KEY environment variable")
         return False
-    
+
     print("✅ Gemini embedder initialized")
-    
+
     # Test embedding generation
     try:
         test_text = "Test healing signature for verification"
@@ -62,11 +62,11 @@ def check_redis_cache(guardian):
     print("\n" + "=" * 80)
     print("2. REDIS CACHE VERIFICATION")
     print("=" * 80)
-    
+
     if not hasattr(guardian, 'cache_set'):
         print("❌ cache_set method NOT available")
         return False
-    
+
     print("✅ cache_set method available")
     print("✅ cache_get method available")
     print("   Note: Redis server may not be running (will use local fallback)")
@@ -78,11 +78,11 @@ def check_pinecone_vector(guardian):
     print("\n" + "=" * 80)
     print("3. PINECONE VECTOR VERIFICATION")
     print("=" * 80)
-    
+
     if not hasattr(guardian, 'vector_upsert'):
         print("❌ vector_upsert method NOT available")
         return False
-    
+
     print("✅ vector_upsert method available")
     print("✅ vector_search method available")
     print("   Note: Pinecone API may not be configured (will use local fallback)")
@@ -94,14 +94,14 @@ def check_meta_learning_trigger():
     print("\n" + "=" * 80)
     print("4. META-LEARNING TRIGGER LOGIC")
     print("=" * 80)
-    
+
     # Test trigger conditions
     test_cases = [
         (False, 5, True, "dry_run=False, fixed=5"),
         (True, 5, False, "dry_run=True, fixed=5"),
         (False, 0, False, "dry_run=False, fixed=0"),
     ]
-    
+
     all_passed = True
     for dry_run, fixed, expected, description in test_cases:
         should_trigger = not dry_run and fixed > 0
@@ -109,7 +109,7 @@ def check_meta_learning_trigger():
         print(f"{status} {description} → trigger={should_trigger} (expected={expected})")
         if should_trigger != expected:
             all_passed = False
-    
+
     return all_passed
 
 
@@ -118,21 +118,21 @@ def simulate_healing_with_meta_learning(guardian):
     print("\n" + "=" * 80)
     print("5. END-TO-END HEALING SIMULATION")
     print("=" * 80)
-    
+
     if guardian.gemini_embedder is None:
         print("⚠️  Skipping simulation - Gemini embedder not available")
         print("   Set GOOGLE_API_KEY to enable full Meta-Learning pipeline")
         return False
-    
+
     print("Simulating healing event with Meta-Learning recording...")
-    
+
     # This would normally be triggered by actual healing
     # For now, just verify the components are ready
     print("✅ Gemini embedder: Ready")
     print("✅ Redis cache: Ready (with fallback)")
     print("✅ Pinecone vectors: Ready (with fallback)")
     print("✅ Meta-Learning pipeline: Operational")
-    
+
     return True
 
 
@@ -140,10 +140,10 @@ def main():
     print("\n" + "=" * 80)
     print("SEMANTIC META-LEARNING VERIFICATION (PHASE 3.4)")
     print("=" * 80)
-    
+
     project_root = Path(__file__).parent.parent
     guardian = get_autonomy_guardian(project_root)
-    
+
     results = {
         "gemini_embedder": check_gemini_embedder(guardian),
         "redis_cache": check_redis_cache(guardian),
@@ -151,17 +151,17 @@ def main():
         "trigger_logic": check_meta_learning_trigger(),
         "end_to_end": simulate_healing_with_meta_learning(guardian),
     }
-    
+
     print("\n" + "=" * 80)
     print("VERIFICATION SUMMARY")
     print("=" * 80)
-    
+
     for component, passed in results.items():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{component:20} {status}")
-    
+
     all_passed = all(results.values())
-    
+
     print("\n" + "=" * 80)
     if all_passed:
         print("✅ ALL COMPONENTS VERIFIED - Semantic Meta-Learning is operational")
@@ -176,7 +176,7 @@ def main():
         print("- PINECONE_API_KEY: For vector storage (optional)")
         print("- REDIS_HOST: For cache (optional)")
     print("=" * 80)
-    
+
     return 0 if all_passed else 1
 
 
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     print("\n" + "=" * 80)
     print("SOVEREIGN PRODUCTION HANDSHAKE")
     print("=" * 80)
-    
+
     if not os.getenv("GOOGLE_API_KEY"):
         print("❌ CRITICAL: GOOGLE_API_KEY missing. Semantic Meta-Learning will remain in 'Logging Only' mode.")
         print("   → Set GOOGLE_API_KEY environment variable to activate Gemini embedder")
@@ -195,7 +195,7 @@ if __name__ == '__main__':
         print("✅ Meta-Learning ACTIVE: Gemini Embedder Ready.")
         print("✅ L4 STATE: Pinecone/Redis Write-Loop Operational.")
         print("   → Healing events will be embedded and persisted to long-term memory")
-    
+
     print("=" * 80 + "\n")
-    
+
     sys.exit(main())

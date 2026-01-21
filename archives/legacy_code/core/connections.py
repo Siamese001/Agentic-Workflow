@@ -351,4 +351,3 @@ logger.error(f"Failed to record outcome: {e}")
             cls._instance.disconnect()
         cls._instance = None
         cls._initialized = False
-

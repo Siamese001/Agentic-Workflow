@@ -11,7 +11,7 @@ The cognitive layer is the "thinking brain" of the system. At 48.1% health, it's
 
 ### Impact Cascade
 ```
-L1 Cognition (48.1%) 
+L1 Cognition (48.1%)
     ↓ (poor reasoning)
 L2 Execution (affected)
     ↓ (inefficient execution)

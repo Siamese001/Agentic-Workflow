@@ -33,17 +33,17 @@ from agentic_core.utils.sovereign_index import SovereignIndex
 
 class ASTEnforcementMixin:
     """Mixin for sovereign AST enforcement.
-    
+
     Provides precise AST-based code analysis capabilities for validators
     and enforcers. Eliminates regex fragility with proper syntax tree parsing.
     """
 
     def _ast_audit_file(self, content: str) -> Dict:
         """Ultra AST audit mixin — precise class/alias detection.
-        
+
         Args:
             content: Python source code to analyze
-            
+
         Returns:
             Dict with counts: {
                 "snake_classes": int,
@@ -109,7 +109,7 @@ class ASTEnforcementMixin:
                 target = node.targets[0]
                 if isinstance(target, ast.Name) and isinstance(node.value, ast.Name):
                     # PascalCase target = snake_case value
-                    if (target.id[0].isupper() and 
+                    if (target.id[0].isupper() and
                         node.value.id[0].islower()):
                         alias_count += 1
 
@@ -128,11 +128,11 @@ class ASTEnforcementMixin:
         target_prefixes: Optional[List[str]] = None
     ) -> Dict:
         """Audit entire repository for snake_case violations.
-        
+
         Args:
             repo_root: Root directory to scan
             target_prefixes: List of directory prefixes to include (e.g., [AGENTIC_CORE_DIR, "apps_"])
-            
+
         Returns:
             Dict with aggregated results and file list
         """
@@ -147,7 +147,7 @@ class ASTEnforcementMixin:
         # Phase 4: Use ssot_discovery instead of rglob for performance
         from agentic_core.utils.ssot_discovery import get_python_files
         all_files = get_python_files(repo_root)
-        
+
         for path in all_files:
             # Filter by target prefixes
             if not any(prefix in str(path) for prefix in target_prefixes):
@@ -183,10 +183,10 @@ class ASTEnforcementMixin:
 
     def _extract_class_names(self, content: str) -> List[str]:
         """Extract all class names from Python source.
-        
+
         Args:
             content: Python source code
-            
+
         Returns:
             List of class names
         """
@@ -202,10 +202,10 @@ class ASTEnforcementMixin:
 
     def _is_snake_case_class(self, class_name: str) -> bool:
         """Check if class name is snake_case (Violation).
-        
+
         Args:
             class_name: Name to check
-            
+
         Returns:
             True if snake_case, False if PascalCase
         """

@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 
 class LegacyDiagnostic(BaseModel):
     """Diagnostic of legacy technology stack."""
-    
+
     detected_legacy_tech: List[str] = Field(..., description="Legacy technologies detected")
     implied_pain_points: List[str] = Field(..., description="Inferred pain points")
     modernization_score: float = Field(..., ge=0.0, le=1.0, description="Legacy severity score")
-    
+
     @property
     def is_highly_legacy(self) -> bool:
         """Check if stack is highly legacy."""
@@ -28,11 +28,11 @@ class LegacyDiagnostic(BaseModel):
 
 class MigrationThesis(BaseModel):
     """Thesis for stack modernization."""
-    
+
     current_state_diagnosis: str = Field(..., description="Assessment of current state")
     target_state_vision: str = Field(..., description="Vision for modern state")
     bridge_strategy: str = Field(..., description="Migration approach")
-    
+
     @property
     def is_transformative(self) -> bool:
         """Check if thesis represents significant transformation."""
@@ -41,7 +41,7 @@ class MigrationThesis(BaseModel):
 
 class StackModernizationAgent:
     """Diagnoses legacy stacks and prescribes modernization strategies."""
-    
+
     def __init__(self):
         """Initialize the stack modernization agent."""
         # Legacy technology markers
@@ -74,7 +74,7 @@ class StackModernizationAgent:
                 "full-text search": "Traditional full-text search"
             }
         }
-        
+
         # Pain point mappings
         self.pain_point_mappings = {
             "infrastructure": [
@@ -102,7 +102,7 @@ class StackModernizationAgent:
                 "Limited multilingual support"
             ]
         }
-        
+
         # Transformation playbooks
         self.transformation_playbooks = {
             "search_migration": {
@@ -130,15 +130,15 @@ class StackModernizationAgent:
                 "strategy": "Use Lift-and-Shift followed by modernization, with parallel environments to ensure zero downtime"
             }
         }
-        
+
         logger.info("Initialized StackModernizationAgent")
-    
+
     def diagnose_stack(self, job_description: str) -> LegacyDiagnostic:
         """Diagnose legacy technology signals in job description.
-        
+
         Args:
             job_description: Job description text
-            
+
         Returns:
             Legacy diagnostic with detected technologies and pain points
         """
@@ -146,31 +146,31 @@ class StackModernizationAgent:
             jd_lower = job_description.lower()
             detected_tech = []
             all_pain_points = []
-            
+
             # Scan for legacy markers
             for category, markers in self.legacy_markers.items():
                 for marker, respectful_name in markers.items():
                     if marker in jd_lower:
                         detected_tech.append(respectful_name)
                         all_pain_points.extend(self.pain_point_mappings.get(category, []))
-            
+
             # Calculate modernization score
             score = min(1.0, len(detected_tech) * 0.2)
-            
+
             # Remove duplicates while preserving order
             unique_tech = list(dict.fromkeys(detected_tech))
             unique_pain = list(dict.fromkeys(all_pain_points))
-            
+
             diagnostic = LegacyDiagnostic(
                 detected_legacy_tech=unique_tech,
                 implied_pain_points=unique_pain[:5],  # Limit to top 5
                 modernization_score=score
             )
-            
+
             logger.info(f"Diagnosed legacy stack with score {score:.2f}")
-            
+
             return diagnostic
-            
+
         except Exception as e:
             logger.error(f"Error diagnosing stack: {str(e)}")
             return LegacyDiagnostic(
@@ -178,13 +178,13 @@ class StackModernizationAgent:
                 implied_pain_points=[],
                 modernization_score=0.0
             )
-    
+
     def generate_thesis(self, diagnostic: LegacyDiagnostic) -> MigrationThesis:
         """Generate migration thesis based on diagnostic.
-        
+
         Args:
             diagnostic: Legacy diagnostic
-            
+
         Returns:
             Migration thesis with strategy
         """
@@ -196,21 +196,21 @@ class StackModernizationAgent:
                     target_state_vision="Enhanced AI capabilities with advanced architectures",
                     bridge_strategy="Incremental improvements and strategic AI integration"
                 )
-            
+
             # Find matching transformation playbook
             detected_lower = [tech.lower() for tech in diagnostic.detected_legacy_tech]
-            
+
             for playbook_name, playbook in self.transformation_playbooks.items():
                 if any(legacy in detected_lower for legacy in playbook["legacy"]):
                     return self._create_thesis_from_playbook(playbook, diagnostic)
-            
+
             # Default to general modernization
             return MigrationThesis(
                 current_state_diagnosis=f"Mature infrastructure with {', '.join(diagnostic.detected_legacy_tech[:2])}",
                 target_state_vision="Modern, cloud-native AI architecture",
                 bridge_strategy="Gradual migration using Strangler Fig Pattern to ensure business continuity"
             )
-            
+
         except Exception as e:
             logger.error(f"Error generating thesis: {str(e)}")
             return MigrationThesis(
@@ -218,40 +218,40 @@ class StackModernizationAgent:
                 target_state_vision="Modern architecture",
                 bridge_strategy="Safe, incremental migration approach"
             )
-    
+
     def generate_migration_hook(self, thesis: MigrationThesis, legacy_tech: str) -> str:
         """Generate targeted opening hook for applications.
-        
+
         Args:
             thesis: Migration thesis
             legacy_tech: Specific legacy technology to reference
-            
+
         Returns:
             Targeted hook for outreach
         """
         try:
             # Extract modern tech from thesis
             modern_tech = thesis.target_state_vision.split(",")[0] if thesis.target_state_vision else "modern architecture"
-            
+
             hook = (
                 f"I noticed you are transitioning from {legacy_tech}. "
                 f"At [Previous Role], I led the architecture de-risking for this exact migration, "
                 f"ensuring zero downtime while modernizing to {modern_tech} "
                 f"using {thesis.bridge_strategy.split(',')[0] if thesis.bridge_strategy else 'industry best practices'}."
             )
-            
+
             return hook
-            
+
         except Exception as e:
             logger.error(f"Error generating migration hook: {str(e)}")
             return "I have experience leading successful technology modernizations."
-    
+
     def rewrite_resume_summary(self, thesis: MigrationThesis) -> str:
         """Rewrite resume summary to highlight transformation expertise.
-        
+
         Args:
             thesis: Migration thesis to incorporate
-            
+
         Returns:
             Rewritten resume summary
         """
@@ -268,24 +268,24 @@ class StackModernizationAgent:
                     "Senior AI Engineer with experience in system optimization and "
                     "strategic technology improvements."
                 )
-            
+
             return summary
-            
+
         except Exception as e:
             logger.error(f"Error rewriting resume summary: {str(e)}")
             return "Senior AI Engineer with modernization experience"
-    
+
     def _create_thesis_from_playbook(
         self,
         playbook: Dict[str, str],
         diagnostic: LegacyDiagnostic
     ) -> MigrationThesis:
         """Create thesis from transformation playbook.
-        
+
         Args:
             playbook: Transformation playbook
             diagnostic: Legacy diagnostic
-            
+
         Returns:
             Migration thesis
         """
@@ -295,19 +295,19 @@ class StackModernizationAgent:
                 f"Mature infrastructure with established {', '.join(diagnostic.detected_legacy_tech[:2])}. "
                 f"Experiencing {', '.join(diagnostic.implied_pain_points[:2])}."
             )
-            
+
             # Target vision from playbook
             target = f"Modern {playbook['modern']} architecture"
-            
+
             # Strategy with safety-first approach
             strategy = playbook["strategy"]
-            
+
             return MigrationThesis(
                 current_state_diagnosis=current,
                 target_state_vision=target,
                 bridge_strategy=strategy
             )
-            
+
         except Exception as e:
             logger.error(f"Error creating thesis from playbook: {str(e)}")
             raise
@@ -316,7 +316,7 @@ class StackModernizationAgent:
 # Factory function for easy instantiation
 def create_stack_modernization_agent() -> StackModernizationAgent:
     """Create a StackModernizationAgent instance.
-    
+
     Returns:
         Configured StackModernizationAgent
     """
@@ -326,17 +326,17 @@ def create_stack_modernization_agent() -> StackModernizationAgent:
 # Convenience function for quick analysis
 def analyze_modernization_opportunity(job_description: str) -> Dict[str, Any]:
     """Quickly analyze modernization opportunity in JD.
-    
+
     Args:
         job_description: Job description text
-        
+
     Returns:
         Analysis results
     """
     agent = create_stack_modernization_agent()
     diagnostic = agent.diagnose_stack(job_description)
     thesis = agent.generate_thesis(diagnostic)
-    
+
     return {
         "legacy_score": diagnostic.modernization_score,
         "detected_tech": diagnostic.detected_legacy_tech,

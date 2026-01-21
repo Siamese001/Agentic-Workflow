@@ -27,7 +27,7 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
     """
     Client for the Knowledge Graph MCP (Memory MCP).
     Stores and retrieves structured entities and relationships.
-    
+
     Architecture: Dual-Graph Brain
     - Vector Memory (Pinecone): Semantic similarity search
     - Entity Graph (Memory MCP): Structured relationships
@@ -60,11 +60,11 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
     async def create_entities(self, entities: List[Dict[str, Any]]) -> str:
         """
         Create entities in the Knowledge Graph.
-        
+
         Args:
             entities: List of entity definitions
                 Format: [{"name": "Chevy Traverse", "entityType": "Vehicle", "observations": ["2024 model"]}]
-        
+
         Returns:
             Result message from MCP
         """
@@ -83,11 +83,11 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
     async def create_relations(self, relations: List[Dict[str, Any]]) -> str:
         """
         Define relationships between entities.
-        
+
         Args:
             relations: List of relationship definitions
                 Format: [{"from": "User", "to": "Chevy Traverse", "relationType": "OWNS"}]
-        
+
         Returns:
             Result message from MCP
         """
@@ -105,7 +105,7 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
     async def read_graph(self) -> Dict[str, Any]:
         """
         Reads the entire active knowledge graph structure.
-        
+
         Returns:
             Complete graph with entities and relations
         """
@@ -123,10 +123,10 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
     async def search_nodes(self, query: str) -> List[Dict]:
         """
         Search for entities/relations by query.
-        
+
         Args:
             query: Search query string
-        
+
         Returns:
             List of matching entities
         """
@@ -158,11 +158,11 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
     async def add_observations(self, entity_name: str, observations: List[str]) -> str:
         """
         Add new observations to an existing entity.
-        
+
         Args:
             entity_name: Name of the entity to update
             observations: List of new observations to add
-        
+
         Returns:
             Result message from MCP
         """
@@ -180,10 +180,10 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
     async def delete_entities(self, entity_names: List[str]) -> str:
         """
         Delete entities from the graph.
-        
+
         Args:
             entity_names: List of entity names to delete
-        
+
         Returns:
             Result message from MCP
         """
@@ -201,10 +201,10 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
     async def open_nodes(self, names: List[str]) -> List[Dict]:
         """
         Open specific nodes by their names (retrieve full details).
-        
+
         Args:
             names: List of entity names to retrieve
-        
+
         Returns:
             List of entity details
         """
@@ -226,7 +226,7 @@ class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
     async def health_check(self) -> Dict[str, Any]:
         """
         Perform health check on Knowledge Graph connection.
-        
+
         Returns:
             Health status
         """

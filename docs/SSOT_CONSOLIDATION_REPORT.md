@@ -1,7 +1,7 @@
 # SSOT Consolidation & Risk Minimization Report
 
-**Date**: January 20, 2026  
-**Scope**: Agentic-Workflow Repository  
+**Date**: January 20, 2026
+**Scope**: Agentic-Workflow Repository
 **Objective**: Identify deduplication opportunities, SSOT violations, and create utilities to minimize risk
 
 ---
@@ -16,7 +16,7 @@ Analysis of the codebase reveals **7 critical SSOT violations** and **12 high-pr
 - **Consolidate 6 duplicate file discovery functions**
 - **Reduce import complexity** by 60% through unified import paths
 
-**Estimated Impact**: 
+**Estimated Impact**:
 - Risk Reduction: **HIGH** (eliminates configuration drift)
 - Maintenance Burden: **-50%** (fewer places to update)
 - Bug Surface: **-35%** (fewer inconsistencies)
@@ -35,12 +35,12 @@ Analysis of the codebase reveals **7 critical SSOT violations** and **12 high-pr
 | `MCPHardenedMixin` | `L2_execution/mcp/mcp_hardened_mixin.py`, `L2_execution/mcp/mcp_hardened_mixin_1.py` | **HIGH** - 2 versions |
 | `SubatomicTestingMixin` | `utils/core_extensions/`, `L3_orchestration/fission_logic/` | **MEDIUM** - 2 versions |
 
-**Impact**: 
+**Impact**:
 - Agents inherit different versions depending on import path
 - Bug fixes must be applied to 4 locations
 - Behavior inconsistencies across agents
 
-**Recommendation**: 
+**Recommendation**:
 ```python
 # SSOT Location: agentic_core/utils/core_extensions/
 # All other locations should import from here
@@ -63,7 +63,7 @@ __all__ = ["HealerMixin"]
 3. Replace other files with re-export shims
 4. Run full test suite to verify no breakage
 
-**Effort**: 4 hours  
+**Effort**: 4 hours
 **Risk if not fixed**: **CRITICAL** - Inconsistent healing behavior across agents
 
 ---
@@ -108,7 +108,7 @@ from agentic_core.utils.ssot_discovery import (
 3. Delete duplicate implementations
 4. Add deprecation warnings for 1 release cycle
 
-**Effort**: 2 hours  
+**Effort**: 2 hours
 **Risk if not fixed**: **HIGH** - Inconsistent file discovery, performance issues
 
 ---
@@ -140,12 +140,12 @@ from typing import Optional
 class BackupManager:
     """
     Centralized backup directory management.
-    
+
     SSOT: All backups go to archives/healing_backups/<category>/
     """
-    
+
     BACKUP_ROOT = Path("archives/healing_backups")
-    
+
     @classmethod
     def get_backup_dir(
         cls,
@@ -156,14 +156,14 @@ class BackupManager:
         """Get standardized backup directory."""
         root = project_root or Path.cwd()
         backup_path = root / cls.BACKUP_ROOT / category
-        
+
         if timestamped:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             backup_path = backup_path / timestamp
-        
+
         backup_path.mkdir(parents=True, exist_ok=True)
         return backup_path
-    
+
     @classmethod
     def cleanup_old_backups(cls, category: str, keep_last_n: int = 10) -> int:
         """Remove old backups, keeping only the last N."""
@@ -180,7 +180,7 @@ backup_dir = BackupManager.get_backup_dir("filesystem", self.project_root)
 3. Migrate existing backups to standard location
 4. Add cleanup job to remove old `.sovereign_healing_backup/`
 
-**Effort**: 6 hours  
+**Effort**: 6 hours
 **Risk if not fixed**: **HIGH** - Disk space waste, backup fragmentation
 
 ---
@@ -223,7 +223,7 @@ from agentic_core.config.blueprint_sovereign import (
 )
 ```
 
-**Effort**: 3 hours  
+**Effort**: 3 hours
 **Risk if not fixed**: **MEDIUM** - Configuration drift, layer violations
 
 ---
@@ -251,23 +251,23 @@ DEFAULT_EXCLUDE_DIRS = frozenset({
     # Backup/Archive
     ".sovereign_healing_backup",
     "archives",
-    
+
     # Version Control
     ".git", ".svn", ".hg",
-    
+
     # Python
     "__pycache__", ".pytest_cache", ".mypy_cache",
     "*.egg-info", ".eggs", "dist", "build",
-    
+
     # Virtual Environments
     "venv", ".venv", "env", ".env",
-    
+
     # IDE
     ".idea", ".vscode",
-    
+
     # Dependencies
     "node_modules",
-    
+
     # Coverage/Reports
     "htmlcov", ".coverage", "coverage_html",
 })
@@ -276,7 +276,7 @@ DEFAULT_EXCLUDE_DIRS = frozenset({
 from agentic_core.config.blueprint_sovereign.constants import DEFAULT_EXCLUDE_DIRS
 ```
 
-**Effort**: 2 hours  
+**Effort**: 2 hours
 **Risk if not fixed**: **MEDIUM** - Inconsistent scans, performance issues
 
 ---
@@ -321,7 +321,7 @@ def ensure_directory(path: Path) -> bool:
         return False
 ```
 
-**Effort**: 1 hour  
+**Effort**: 1 hour
 **Risk if not fixed**: **LOW** - Code duplication
 
 ---
@@ -357,20 +357,20 @@ from typing import Optional
 def get_project_root(start_path: Optional[Path] = None) -> Path:
     """
     Detect project root by searching for marker files.
-    
+
     Searches upward from start_path for:
     1. pyproject.toml
     2. .git directory
     3. agentic_core directory
-    
+
     Returns:
         Path to project root
-        
+
     Raises:
         RuntimeError: If project root cannot be detected
     """
     current = (start_path or Path.cwd()).resolve()
-    
+
     # Search upward for markers
     for _ in range(10):  # Max 10 levels up
         markers = [
@@ -378,15 +378,15 @@ def get_project_root(start_path: Optional[Path] = None) -> Path:
             current / ".git",
             current / "agentic_core",
         ]
-        
+
         if any(m.exists() for m in markers):
             return current
-        
+
         if current.parent == current:  # Reached filesystem root
             break
-        
+
         current = current.parent
-    
+
     raise RuntimeError("Could not detect project root")
 
 # Usage:
@@ -395,7 +395,7 @@ from agentic_core.utils.project_root import get_project_root
 PROJECT_ROOT = get_project_root()
 ```
 
-**Effort**: 2 hours  
+**Effort**: 2 hours
 **Risk if not fixed**: **LOW** - Inconsistent root detection
 
 ---
@@ -434,7 +434,7 @@ from .L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureVa
 # ... etc
 ```
 
-**Effort**: 3 hours  
+**Effort**: 3 hours
 **Risk if not fixed**: **NEGLIGIBLE** - Convenience only
 
 ---
@@ -463,8 +463,8 @@ from .L5_safety.unified.UnifiedStructureValidatorAgent import UnifiedStructureVa
 ## Proposed New Utilities
 
 ### 1. `BackupManager` (Priority 1)
-**Location**: `agentic_core/utils/backup_manager.py`  
-**Purpose**: Centralized backup directory management  
+**Location**: `agentic_core/utils/backup_manager.py`
+**Purpose**: Centralized backup directory management
 **API**:
 ```python
 BackupManager.get_backup_dir(category, project_root, timestamped)
@@ -474,8 +474,8 @@ BackupManager.restore_backup(backup_path, target_path)
 ```
 
 ### 2. `ProjectRoot` (Priority 2)
-**Location**: `agentic_core/utils/project_root.py`  
-**Purpose**: Reliable project root detection  
+**Location**: `agentic_core/utils/project_root.py`
+**Purpose**: Reliable project root detection
 **API**:
 ```python
 get_project_root(start_path)
@@ -484,8 +484,8 @@ get_relative_to_root(file_path)
 ```
 
 ### 3. `ConfigRegistry` (Priority 2)
-**Location**: `agentic_core/config/registry.py`  
-**Purpose**: Centralized configuration access  
+**Location**: `agentic_core/config/registry.py`
+**Purpose**: Centralized configuration access
 **API**:
 ```python
 ConfigRegistry.get(key, default)
@@ -495,8 +495,8 @@ ConfigRegistry.validate()
 ```
 
 ### 4. `FileDiscovery` (Priority 1)
-**Location**: `agentic_core/utils/ssot_discovery.py` (ENHANCE EXISTING)  
-**Purpose**: Unified file discovery with caching  
+**Location**: `agentic_core/utils/ssot_discovery.py` (ENHANCE EXISTING)
+**Purpose**: Unified file discovery with caching
 **API**: Already exists, just needs adoption
 
 ---
@@ -532,7 +532,7 @@ ConfigRegistry.validate()
 - 1 exclusion list (SSOT)
 - 1 project root detection method
 
-**Reduction**: 
+**Reduction**:
 - Code duplication: **-75%**
 - Configuration sources: **-93%**
 - Maintenance burden: **-80%**
@@ -541,7 +541,7 @@ ConfigRegistry.validate()
 
 ## Conclusion
 
-Implementing these recommendations will transform the codebase from a **fragmented multi-SSOT system** to a **true single source of truth architecture**. 
+Implementing these recommendations will transform the codebase from a **fragmented multi-SSOT system** to a **true single source of truth architecture**.
 
 **Immediate Actions** (This Week):
 1. Create `BackupManager` utility

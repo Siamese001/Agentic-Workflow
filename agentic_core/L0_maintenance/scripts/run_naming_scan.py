@@ -57,13 +57,13 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 discovery_path = project_root / AGENT_DISCOVERY_JSON
 if discovery_path.exists():
     agents = json.loads(discovery_path.read_text(encoding='utf-8'))
-    
+
     by_name = defaultdict(list)
     for a in agents:
         by_name[a['class_name']].append(a['path'])
-    
+
     dup_classes = {k: v for k, v in by_name.items() if len(v) > 1}
-    
+
     if dup_classes:
         print(f"\n❌ Found {len(dup_classes)} duplicate class names:")
         for name, paths in sorted(dup_classes.items()):

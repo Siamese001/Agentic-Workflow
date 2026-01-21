@@ -4,7 +4,7 @@
 ownership:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # Ownership structure
   ownership_structure:
     organizational_levels:
@@ -18,7 +18,7 @@ ownership:
             - "Manage high-risk decisions"
           authority_level: "strategic"
           decision_scope: "organization_wide"
-          
+
       management_level:
         - role: "prompt_governance_manager"
           description: "Day-to-day governance management"
@@ -29,7 +29,7 @@ ownership:
             - "Monitor compliance metrics"
           authority_level: "tactical"
           decision_scope: "department_wide"
-          
+
       operational_level:
         - role: "prompt_engineer"
           description: "Prompt development and maintenance"
@@ -40,7 +40,7 @@ ownership:
             - "Document prompt changes"
           authority_level: "operational"
           decision_scope: "team_wide"
-          
+
     functional_areas:
       technical_ownership:
         - role: "technical_lead"
@@ -51,7 +51,7 @@ ownership:
             - "Performance optimization"
             - "Security implementation"
           authority_level: "technical"
-          
+
       quality_ownership:
         - role: "quality_assurance_lead"
           description: "Quality standards and testing"
@@ -61,7 +61,7 @@ ownership:
             - "Quality metrics definition"
             - "Defect management"
           authority_level: "quality"
-          
+
       compliance_ownership:
         - role: "compliance_officer"
           description: "Regulatory and ethical compliance"
@@ -71,7 +71,7 @@ ownership:
             - "Audit preparation and response"
             - "Risk assessment"
           authority_level: "compliance"
-          
+
   # Role-based ownership matrix
   ownership_matrix:
     prompt_categories:
@@ -81,62 +81,62 @@ ownership:
           secondary_owners: ["technical_lead", "subject_matter_expert"]
           approvers: ["technical_lead", "quality_assurance_lead"]
           stakeholders: ["product_manager", "compliance_officer"]
-          
+
         rewriting_prompts:
           primary_owner: "prompt_engineer"
           secondary_owners: ["technical_lead", "content_specialist"]
           approvers: ["technical_lead", "quality_assurance_lead"]
           stakeholders: ["product_manager", "subject_matter_expert"]
-          
+
         scoring_prompts:
           primary_owner: "prompt_engineer"
           secondary_owners: ["data_scientist", "technical_lead"]
           approvers: ["technical_lead", "quality_assurance_lead"]
           stakeholders: ["product_manager", "analytics_lead"]
-          
+
         feedback_prompts:
           primary_owner: "prompt_engineer"
           secondary_owners: ["ux_designer", "technical_lead"]
           approvers: ["technical_lead", "quality_assurance_lead"]
           stakeholders: ["product_manager", "user_experience_lead"]
-          
+
         summarization_prompts:
           primary_owner: "prompt_engineer"
           secondary_owners: ["data_scientist", "technical_lead"]
           approvers: ["technical_lead", "quality_assurance_lead"]
           stakeholders: ["product_manager", "analytics_lead"]
-          
+
       outreach_engine_prompts:
         system_prompts:
           primary_owner: "prompt_engineer"
           secondary_owners: ["technical_lead", "communication_specialist"]
           approvers: ["technical_lead", "quality_assurance_lead"]
           stakeholders: ["product_manager", "compliance_officer"]
-          
+
         rewriting_prompts:
           primary_owner: "prompt_engineer"
           secondary_owners: ["technical_lead", "content_specialist"]
           approvers: ["technical_lead", "quality_assurance_lead"]
           stakeholders: ["product_manager", "communication_specialist"]
-          
+
         scoring_prompts:
           primary_owner: "prompt_engineer"
           secondary_owners: ["data_scientist", "technical_lead"]
           approvers: ["technical_lead", "quality_assurance_lead"]
           stakeholders: ["product_manager", "analytics_lead"]
-          
+
         feedback_prompts:
           primary_owner: "prompt_engineer"
           secondary_owners: ["ux_designer", "technical_lead"]
           approvers: ["technical_lead", "quality_assurance_lead"]
           stakeholders: ["product_manager", "user_experience_lead"]
-          
+
         summarization_prompts:
           primary_owner: "prompt_engineer"
           secondary_owners: ["data_scientist", "technical_lead"]
           approvers: ["technical_lead", "quality_assurance_lead"]
           stakeholders: ["product_manager", "analytics_lead"]
-          
+
   # Ownership responsibilities
   responsibility_framework:
     primary_owner_responsibilities:
@@ -145,58 +145,58 @@ ownership:
         - "Ensure technical quality and standards"
         - "Coordinate with secondary owners"
         - "Manage development timeline"
-        
+
       maintenance:
         - "Perform regular maintenance and updates"
         - "Monitor prompt performance"
         - "Address bugs and issues"
         - "Implement improvements"
-        
+
       documentation:
         - "Maintain comprehensive documentation"
         - "Update change logs"
         - "Create user guides"
         - "Document technical decisions"
-        
+
     secondary_owner_responsibilities:
       expertise_provision:
         - "Provide domain-specific expertise"
         - "Review technical implementations"
         - "Validate industry standards"
         - "Contribute specialized knowledge"
-        
+
       quality_assurance:
         - "Review and validate prompt quality"
         - "Ensure compliance with standards"
         - "Provide feedback on improvements"
         - "Participate in testing processes"
-        
+
     approver_responsibilities:
       review_process:
         - "Conduct thorough reviews of changes"
         - "Ensure compliance with governance policies"
         - "Validate technical and quality standards"
         - "Provide timely approval decisions"
-        
+
       risk_assessment:
         - "Assess risks associated with changes"
         - "Ensure appropriate mitigation strategies"
         - "Validate rollback procedures"
         - "Monitor post-implementation impact"
-        
+
     stakeholder_responsibilities:
       input_provision:
         - "Provide requirements and feedback"
         - "Participate in design reviews"
         - "Validate business value"
         - "Ensure user needs are met"
-        
+
       support:
         - "Support implementation efforts"
         - "Provide resources and expertise"
         - "Facilitate cross-functional coordination"
         - "Champion prompt initiatives"
-        
+
   # Ownership transitions
   transition_management:
     transition_triggers:
@@ -205,33 +205,33 @@ ownership:
       - organizational_restructure: "Company reorganization"
       - performance_issues: "Performance or capability issues"
       - voluntary_handover: "Planned knowledge transfer"
-      
+
     transition_process:
       planning_phase:
         - "Identify transition requirements"
         - "Select successor or replacement"
         - "Plan knowledge transfer activities"
         - "Set transition timeline"
-        
+
       execution_phase:
         - "Conduct knowledge transfer sessions"
         - "Document critical information"
         - "Transfer access and permissions"
         - "Update ownership records"
-        
+
       validation_phase:
         - "Validate transition completeness"
         - "Confirm new owner readiness"
         - "Monitor post-transition performance"
         - "Provide ongoing support"
-        
+
     transition_documentation:
       required_documents:
         - "Transition plan and timeline"
         - "Knowledge transfer documentation"
         - "Access and permissions matrix"
         - "Contact and escalation information"
-        
+
   # Ownership accountability
   accountability_framework:
     performance_metrics:
@@ -240,45 +240,45 @@ ownership:
         - "Performance benchmarks"
         - "Security compliance rates"
         - "System reliability metrics"
-        
+
       operational_metrics:
         - "Change implementation success rates"
         - "Documentation completeness"
         - "Issue resolution times"
         - "User satisfaction scores"
-        
+
       compliance_metrics:
         - "Policy adherence rates"
         - "Audit compliance scores"
         - "Regulatory compliance metrics"
         - "Ethical standards compliance"
-        
+
     review_processes:
       quarterly_reviews:
         - "Performance assessment against metrics"
         - "Ownership effectiveness evaluation"
         - "Stakeholder feedback collection"
         - "Improvement planning"
-        
+
       annual_reviews:
         - "Comprehensive ownership assessment"
         - "Strategic alignment validation"
         - "Capability and capacity evaluation"
         - "Organizational structure optimization"
-        
+
     escalation_procedures:
       performance_issues:
         - "Identify performance gaps"
         - "Implement improvement plans"
         - "Provide additional training or support"
         - "Consider ownership reassignment if necessary"
-        
+
       compliance_violations:
         - "Immediate investigation and remediation"
         - "Root cause analysis"
         - "Process improvement implementation"
         - "Accountability measures as appropriate"
-        
+
   # Ownership communication
   communication_framework:
     regular_communications:
@@ -287,39 +287,39 @@ ownership:
         - "Issue and risk reporting"
         - "Performance metric updates"
         - "Upcoming change notifications"
-        
+
       monthly_reports:
         - "Comprehensive ownership performance reports"
         - "Stakeholder feedback summaries"
         - "Compliance and audit status"
         - "Strategic initiative progress"
-        
+
       quarterly_reviews:
         - "Ownership effectiveness assessments"
         - "Organizational impact analysis"
         - "Resource allocation reviews"
         - "Strategic planning updates"
-        
+
     escalation_communications:
       urgent_issues:
         - "Immediate notification of critical issues"
         - "Emergency change notifications"
         - "Security incident reporting"
         - "Compliance violation alerts"
-        
+
     stakeholder_communications:
       business_stakeholders:
         - "Business impact reports"
         - "Strategic initiative updates"
         - "Risk and compliance status"
         - "Resource requirement notifications"
-        
+
       technical_stakeholders:
         - "Technical architecture updates"
         - "Performance and quality metrics"
         - "Security and compliance status"
         - "Development roadmap updates"
-        
+
   # Ownership tools and resources
   resource_management:
     tools:
@@ -328,39 +328,39 @@ ownership:
         - "Responsibility assignment software"
         - "Performance monitoring dashboards"
         - "Communication and collaboration platforms"
-        
+
       documentation:
         - "Document management systems"
         - "Knowledge base platforms"
         - "Version control systems"
         - "Template and guideline repositories"
-        
+
     training:
       onboarding:
         - "Ownership framework training"
         - "Role-specific responsibility training"
         - "Tool and system training"
         - "Process and procedure training"
-        
+
       ongoing_development:
         - "Advanced ownership practices"
         - "Leadership and management skills"
         - "Technical skill enhancement"
         - "Compliance and regulatory training"
-        
+
     support:
       administrative_support:
         - "Ownership record management"
         - "Meeting coordination and documentation"
         - "Communication distribution"
         - "Process automation support"
-        
+
       technical_support:
         - "System and tool support"
         - "Technical consultation"
         - "Performance optimization"
         - "Security and compliance assistance"
-        
+
   # Ownership optimization
   continuous_improvement:
     optimization_activities:
@@ -369,32 +369,32 @@ ownership:
         - "Automation opportunity identification"
         - "Efficiency improvement initiatives"
         - "Best practice sharing"
-        
+
       capability_development:
         - "Skills assessment and gap analysis"
         - "Training program development"
         - "Mentoring and coaching programs"
         - "Knowledge sharing initiatives"
-        
+
       organizational_optimization:
         - "Organizational structure review"
         - "Role and responsibility optimization"
         - "Cross-functional collaboration improvement"
         - "Resource allocation optimization"
-        
+
     success_metrics:
       efficiency_metrics:
         - "Decision-making cycle time"
         - "Change implementation speed"
         - "Resource utilization efficiency"
         - "Process automation rate"
-        
+
       effectiveness_metrics:
         - "Ownership satisfaction scores"
         - "Stakeholder engagement levels"
         - "Quality and compliance metrics"
         - "Innovation and improvement rates"
-        
+
       business_impact:
         - "Business value contribution"
         - "Risk reduction effectiveness"

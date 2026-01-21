@@ -2,7 +2,7 @@
 """
 Restoration Verification Suite
 ==============================
-A targeted smoke test to verify that the 10 restored agents can be imported 
+A targeted smoke test to verify that the 10 restored agents can be imported
 and instantiated, catching broken imports or duplicate mixins immediately.
 
 RCA Context:
@@ -57,7 +57,7 @@ def check_file_exists(module_path: str) -> Tuple[bool, str, Path]:
     # Convert module path to file path
     parts = module_path.split(".")
     file_path = PROJECT_ROOT / "/".join(parts[:-1]) / f"{parts[-1]}.py"
-    
+
     if file_path.exists():
         return True, "File exists", file_path
     return False, f"File not found: {file_path}", file_path
@@ -80,11 +80,11 @@ def check_class_defined(file_path: Path, class_name: str) -> Tuple[bool, str]:
     try:
         content = file_path.read_text(encoding='utf-8')
         tree = ast.parse(content)
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef) and node.name == class_name:
                 return True, f"Class {class_name} defined"
-        
+
         return False, f"Class {class_name} not found in file"
     except Exception as e:
         return False, f"Error parsing: {e}"
@@ -94,11 +94,11 @@ def check_imports(file_path: Path) -> Tuple[bool, str, List[str]]:
     """Check for potentially broken imports."""
     import ast
     issues = []
-    
+
     try:
         content = file_path.read_text(encoding='utf-8')
         tree = ast.parse(content)
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
                 if node.module:
@@ -108,15 +108,15 @@ def check_imports(file_path: Path) -> Tuple[bool, str, List[str]]:
                         if 'L5_safety.guardrails.mcp_hardened_mixin' not in node.module and \
                            'L2_execution.mcp.mcp_hardened_mixin' not in node.module:
                             issues.append(f"MCPHardenedMixin import from deprecated location: {node.module}")
-                    
+
                     # Check for imports from archives (bad!)
                     if 'archives' in node.module:
                         issues.append(f"Import from archives: {node.module}")
-        
+
         if issues:
             return False, "Import issues found", issues
         return True, "Imports OK", []
-        
+
     except Exception as e:
         return False, f"Error checking imports: {e}", []
 
@@ -130,13 +130,13 @@ def check_import_safety(module_path: str, class_name: str) -> Tuple[bool, str]:
         module = importlib.import_module(module_path)
         if not hasattr(module, class_name):
             return False, f"Class {class_name} not found in {module_path}"
-        
+
         agent_class = getattr(module, class_name)
-        
+
         # Check for the specific Mixin issue mentioned in logs
         mro = inspect.getmro(agent_class)
         mro_names = [c.__name__ for c in mro]
-        
+
         # Check for duplicates in MRO (indicates diamond problem or bad composition)
         seen = set()
         duplicates = []
@@ -144,12 +144,12 @@ def check_import_safety(module_path: str, class_name: str) -> Tuple[bool, str]:
             if name in seen and name != 'object':
                 duplicates.append(name)
             seen.add(name)
-        
+
         if duplicates:
             return False, f"Duplicate in MRO: {duplicates}"
 
         return True, "Import OK, MRO clean"
-        
+
     except ImportError as e:
         return False, f"ImportError: {e}"
     except SyntaxError as e:
@@ -161,28 +161,28 @@ def check_import_safety(module_path: str, class_name: str) -> Tuple[bool, str]:
 def verify_agent(agent_name: str, module_path: str) -> bool:
     """Run all verification checks for a single agent."""
     print(f"\n--- {agent_name} ---")
-    
+
     # Step 1: Check file exists
     exists, msg, file_path = check_file_exists(module_path)
     if not exists:
         test_fail(agent_name, msg)
         return False
     test_pass(agent_name, msg)
-    
+
     # Step 2: Check syntax
     valid, msg = check_syntax(file_path)
     if not valid:
         test_fail(agent_name, msg)
         return False
     test_pass(agent_name, msg)
-    
+
     # Step 3: Check class defined
     defined, msg = check_class_defined(file_path, agent_name)
     if not defined:
         test_fail(agent_name, msg)
         return False
     test_pass(agent_name, msg)
-    
+
     # Step 4: Check imports (static analysis)
     imports_ok, msg, issues = check_imports(file_path)
     if not imports_ok:
@@ -190,7 +190,7 @@ def verify_agent(agent_name: str, module_path: str) -> bool:
         # Don't return False - continue to runtime check
     else:
         test_pass(agent_name, msg)
-    
+
     # Step 5: Runtime import check (optional - may fail due to missing deps)
     # success, msg = check_import_safety(module_path, agent_name)
     # if success:
@@ -198,7 +198,7 @@ def verify_agent(agent_name: str, module_path: str) -> bool:
     # else:
     #     test_fail(agent_name, msg)
     #     return False
-    
+
     return True
 
 
@@ -208,13 +208,13 @@ def main():
     print("=" * 70)
     print("Verifying 10 restored agents for import safety and MRO integrity")
     print()
-    
+
     all_passed = True
-    
+
     for agent_name, module_path in RESTORED_AGENTS:
         if not verify_agent(agent_name, module_path):
             all_passed = False
-    
+
     # Summary
     print("\n" + "=" * 70)
     print("VERIFICATION SUMMARY")
@@ -224,7 +224,7 @@ def main():
     print(f"  Failed: {FAILED}")
     print(f"  Pass Rate: {PASSED / (PASSED + FAILED) * 100:.1f}%" if (PASSED + FAILED) > 0 else "  No tests run")
     print()
-    
+
     if FAILED == 0:
         print("  ✅ ALL VERIFICATION CHECKS PASSED")
         return 0

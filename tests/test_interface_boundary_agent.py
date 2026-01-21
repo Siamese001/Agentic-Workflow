@@ -30,14 +30,14 @@ def test_complexity_trigger():
     print("=" * 60)
     print("TEST 1: COMPLEXITY TRIGGER TEST")
     print("=" * 60)
-    
+
     agent = InterfaceBoundaryAgent(root_dir='.', complexity_threshold=15)
     violations = agent.audit_boundaries()
-    
+
     mock_detected = any('mock_heavy_utility' in v['file'] for v in violations)
     print(f"Mock heavy utility detected: {mock_detected}")
     print(f"Total violations found: {len(violations)}")
-    
+
     if mock_detected:
         mock_violation = [v for v in violations if 'mock_heavy_utility' in v['file']][0]
         method_count = mock_violation['complexity']['method_count']
@@ -58,24 +58,24 @@ def test_interface_integrity():
     print("\n" + "=" * 60)
     print("TEST 2: INTERFACE INTEGRITY TEST")
     print("=" * 60)
-    
+
     # Get violation from complexity trigger test
     agent = InterfaceBoundaryAgent(root_dir='.', complexity_threshold=15)
     violations = agent.audit_boundaries()
     violation = next((v for v in violations if 'mock_heavy_utility' in v.get('file', '')), None)
-    
+
     if not violation:
         print("❌ TEST 2 SKIPPED: No violation to test")
         return
-    
+
     agent = InterfaceBoundaryAgent(root_dir='.')
     stub = agent.generate_interface_stub(violation)
-    
+
     print("Generated interface stub:")
     print("-" * 40)
     print(stub[:500] + "..." if len(stub) > 500 else stub)
     print("-" * 40)
-    
+
     # Verify syntactically correct
     try:
         ast.parse(stub)
@@ -83,23 +83,23 @@ def test_interface_integrity():
     except SyntaxError as e:
         print(f"❌ Syntax check: FAILED - {e}")
         return
-    
+
     # Verify ABC import
     assert 'from abc import ABC, abstractmethod' in stub
     print("✅ ABC import: PRESENT")
-    
+
     # Verify interface name
     assert 'class IMock' in stub or 'class Imock' in stub
     print("✅ Interface class: PRESENT")
-    
+
     # Verify public methods are included
     assert 'method_01' in stub
     print("✅ Public methods: INCLUDED")
-    
+
     # Verify private methods are excluded
     assert '_private_method' not in stub
     print("✅ Private methods: EXCLUDED")
-    
+
     print("✅ TEST 2 PASSED: Interface integrity verified")
 
 
@@ -108,15 +108,15 @@ def test_boundary_report():
     print("\n" + "=" * 60)
     print("TEST 3: BOUNDARY REPORT TEST")
     print("=" * 60)
-    
+
     agent = InterfaceBoundaryAgent(root_dir='.', complexity_threshold=15)
     agent.audit_boundaries()
-    
+
     print("Agent report output:")
     print("-" * 40)
     agent.report()
     print("-" * 40)
-    
+
     print("✅ TEST 3 PASSED: Report generated successfully")
 
 
@@ -124,12 +124,12 @@ if __name__ == "__main__":
     print("\n" + "=" * 60)
     print("INTERFACE BOUNDARY AGENT - ROBUST TESTING")
     print("=" * 60 + "\n")
-    
+
     # Run tests
     violation = test_complexity_trigger()
     test_interface_integrity(violation)
     test_boundary_report()
-    
+
     print("\n" + "=" * 60)
     print("ALL TESTS COMPLETED")
     print("=" * 60)

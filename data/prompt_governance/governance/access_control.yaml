@@ -4,7 +4,7 @@
 access_control:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # RBAC framework
   rbac_framework:
     roles:
@@ -18,8 +18,8 @@ access_control:
           - "emergency_authorization"
           - "audit_access"
         access_level: "executive"
-        
-      # Management roles  
+
+      # Management roles
       prompt_governance_manager:
         description: "Day-to-day governance management"
         permissions:
@@ -29,7 +29,7 @@ access_control:
           - "escalate_issues"
           - "team_management"
         access_level: "management"
-        
+
       # Technical roles
       technical_lead:
         description: "Technical implementation and architecture oversight"
@@ -40,7 +40,7 @@ access_control:
           - "access_technical_metrics"
           - "security_configuration"
         access_level: "technical"
-        
+
       prompt_engineer:
         description: "Prompt development and maintenance"
         permissions:
@@ -50,7 +50,7 @@ access_control:
           - "access_development_tools"
           - "view_documentation"
         access_level: "operational"
-        
+
       # Quality and compliance roles
       quality_assurance_lead:
         description: "Quality standards and testing oversight"
@@ -61,7 +61,7 @@ access_control:
           - "define_quality_criteria"
           - "audit_quality_processes"
         access_level: "quality"
-        
+
       compliance_officer:
         description: "Regulatory and ethical compliance"
         permissions:
@@ -71,7 +71,7 @@ access_control:
           - "define_compliance_standards"
           - "emergency_compliance_actions"
         access_level: "compliance"
-        
+
       # Support roles
       subject_matter_expert:
         description: "Domain expertise and validation"
@@ -81,7 +81,7 @@ access_control:
           - "access_domain_tools"
           - "validate_industry_standards"
         access_level: "consultation"
-        
+
       product_manager:
         description: "Product strategy and stakeholder management"
         permissions:
@@ -90,7 +90,7 @@ access_control:
           - "access_business_metrics"
           - "manage_stakeholder_communication"
         access_level: "business"
-        
+
       # Read-only roles
       auditor:
         description: "Audit and inspection access"
@@ -100,7 +100,7 @@ access_control:
           - "view_governance_records"
           - "generate_audit_reports"
         access_level: "read_only"
-        
+
       viewer:
         description: "Read-only access for stakeholders"
         permissions:
@@ -108,7 +108,7 @@ access_control:
           - "access_public_documentation"
           - "read_status_reports"
         access_level: "read_only"
-        
+
   # Permission matrix
   permission_matrix:
     resource_access:
@@ -117,28 +117,28 @@ access_control:
         read: ["prompt_engineer", "technical_lead", "quality_assurance_lead", "subject_matter_expert"]
         update: ["prompt_engineer", "technical_lead"]
         delete: ["technical_lead", "governance_committee"]
-        
+
       approval_workflows:
         initiate: ["prompt_engineer", "technical_lead", "prompt_governance_manager"]
         review: ["technical_lead", "quality_assurance_lead", "compliance_officer", "subject_matter_expert"]
         approve: ["technical_lead", "quality_assurance_lead", "compliance_officer", "governance_committee"]
         reject: ["technical_lead", "quality_assurance_lead", "compliance_officer", "governance_committee"]
-        
+
       deployment_operations:
         deploy: ["technical_lead", "release_manager"]
         rollback: ["technical_lead", "release_manager", "governance_committee"]
         monitor: ["technical_lead", "quality_assurance_lead", "prompt_governance_manager"]
-        
+
       compliance_management:
         audit: ["compliance_officer", "auditor", "governance_committee"]
         report: ["compliance_officer", "prompt_governance_manager", "governance_committee"]
         enforce: ["compliance_officer", "governance_committee"]
-        
+
       system_configuration:
         configure: ["technical_lead", "system_administrator"]
         monitor: ["technical_lead", "quality_assurance_lead", "prompt_governance_manager"]
         maintain: ["technical_lead", "system_administrator"]
-        
+
   # Access control policies
   access_policies:
     authentication:
@@ -147,32 +147,32 @@ access_control:
         - "single_sign_on"
         - "api_key_authentication"
         - "certificate_based_authentication"
-        
+
       requirements:
         minimum_password_length: 12
         password_complexity: true
         session_timeout: "8 hours"
         mfa_required: true
-        
+
     authorization:
       principle_of_least_privilege: true
       need_to_know_basis: true
       time_bound_access: true
       contextual_access: true
-      
+
       access_levels:
         read_only: "View approved content and documentation"
         operational: "Create and modify content in development"
         management: "Manage workflows and teams"
         executive: "Strategic oversight and emergency actions"
-        
+
     session_management:
       session_timeout: "8 hours"
       idle_timeout: "30 minutes"
       concurrent_sessions: 3
       ip_restrictions: true
       device_restrictions: true
-      
+
   # Data access controls
   data_access:
     sensitive_data:
@@ -181,40 +181,40 @@ access_control:
         encryption_required: true
         audit_access: true
         retention_policy: "7 years"
-        
+
       business_confidential:
         access_roles: ["governance_committee", "prompt_governance_manager", "product_manager"]
         encryption_required: true
         audit_access: true
         retention_policy: "5 years"
-        
+
       technical_specifications:
         access_roles: ["technical_lead", "prompt_engineer", "quality_assurance_lead"]
         encryption_required: false
         audit_access: true
         retention_policy: "3 years"
-        
+
     data_classification:
       public:
         description: "Public documentation and approved content"
         access_level: "all_users"
         restrictions: "none"
-        
+
       internal:
         description: "Internal processes and documentation"
         access_level: "employees_only"
         restrictions: "company_network"
-        
+
       confidential:
         description: "Sensitive business information"
         access_level: "authorized_personnel"
         restrictions: "need_to_know + encryption"
-        
+
       restricted:
         description: "Highly sensitive or regulated data"
         access_level: "executive_approval"
         restrictions: "strict_access_control + audit"
-        
+
   # API access controls
   api_access:
     authentication:
@@ -223,45 +223,45 @@ access_control:
         rotation_period: "90 days"
         scope_limitation: true
         ip_whitelisting: true
-        
+
       oauth_tokens:
         description: "OAuth 2.0 tokens for user authentication"
         expiration: "1 hour"
         refresh_tokens: true
         scope_based_access: true
-        
+
     rate_limiting:
       per_user:
         requests_per_minute: 100
         requests_per_hour: 1000
         requests_per_day: 10000
-        
+
       per_api_key:
         requests_per_minute: 500
         requests_per_hour: 5000
         requests_per_day: 50000
-        
+
     endpoint_security:
       public_endpoints:
         endpoints:
           - "GET /api/v1/public/*"
         authentication: "none"
         rate_limit: "per_ip"
-        
+
       authenticated_endpoints:
         endpoints:
           - "GET /api/v1/user/*"
           - "POST /api/v1/submissions"
         authentication: "required"
         rate_limit: "per_user"
-        
+
       admin_endpoints:
         endpoints:
           - "POST /api/v1/admin/*"
           - "DELETE /api/v1/admin/*"
         authentication: "admin_required"
         rate_limit: "per_admin"
-        
+
   # Audit and monitoring
   access_monitoring:
     audit_events:
@@ -271,21 +271,21 @@ access_control:
         - "password_change"
         - "mfa_challenge"
         - "session_expiration"
-        
+
       authorization_events:
         - "permission_granted"
         - "permission_denied"
         - "role_assignment"
         - "privilege_escalation"
         - "access_revocation"
-        
+
       data_access_events:
         - "data_read"
         - "data_write"
         - "data_delete"
         - "data_export"
         - "sensitive_data_access"
-        
+
     monitoring_rules:
       suspicious_activity:
         - "multiple_failed_logins"
@@ -293,14 +293,14 @@ access_control:
         - "privilege_escalation_attempts"
         - "data_access_anomalies"
         - "off_hours_access"
-        
+
       security_alerts:
         - "brute_force_attempts"
         - "unauthorized_api_access"
         - "data_exfiltration_attempts"
         - "privilege_abuse"
         - "policy_violations"
-        
+
   # Access control lifecycle
   lifecycle_management:
     user_onboarding:
@@ -310,10 +310,10 @@ access_control:
         - "permission_granting"
         - "training_completion"
         - "access_activation"
-        
+
       timeline: "1-3 business days"
       approval_required: "manager + it_security"
-      
+
     user_offboarding:
       steps:
         - "access_revocation"
@@ -321,10 +321,10 @@ access_control:
         - "account_suspension"
         - "audit_completion"
         - "account_deletion"
-        
+
       timeline: "immediate to 24 hours"
       approval_required: "manager + hr + it_security"
-      
+
     role_changes:
       promotion_process:
         - "manager_approval"
@@ -332,14 +332,14 @@ access_control:
         - "training_completion"
         - "permission_update"
         - "access_granting"
-        
+
       demotion_process:
         - "manager_approval"
         - "access_review"
         - "permission_reduction"
         - "access_revocation"
         - "notification_update"
-        
+
   # Compliance and regulatory
   compliance_requirements:
     regulatory_standards:
@@ -348,33 +348,33 @@ access_control:
         consent_management: "required"
         data_portability: "supported"
         right_to_erasure: "implemented"
-        
+
       soc2:
         access_controls: "certified"
         audit_logging: "comprehensive"
         encryption_standards: "industry_standard"
         security_monitoring: "24/7"
-        
+
       hipaa:
         phi_protection: "enhanced"
         audit_trails: "detailed"
         encryption_requirements: "aes_256"
         access_logging: "complete"
-        
+
     industry_standards:
       iso27001:
         information_security: "certified"
         risk_management: "systematic"
         access_control: "formal"
         compliance_monitoring: "continuous"
-        
+
       nist_csf:
         identify: "implemented"
         protect: "implemented"
         detect: "implemented"
         respond: "implemented"
         recover: "implemented"
-        
+
   # Emergency access procedures
   emergency_access:
     emergency_scenarios:
@@ -383,26 +383,26 @@ access_control:
         authorized_roles: ["technical_lead", "system_administrator", "governance_committee"]
         approval_process: "two_person_rule"
         documentation_required: "incident_report"
-        
+
       security_incident:
         description: "Security breach requiring immediate investigation"
         authorized_roles: ["security_team", "compliance_officer", "governance_committee"]
         approval_process: "emergency_protocol"
         documentation_required: "security_incident_report"
-        
+
       compliance_violation:
         description: "Regulatory compliance violation requiring immediate action"
         authorized_roles: ["compliance_officer", "legal_counsel", "governance_committee"]
         approval_process: "regulatory_protocol"
         documentation_required: "compliance_incident_report"
-        
+
     emergency_procedures:
       access_granting:
         - "temporary_elevated_privileges"
         - "time_bound_access"
         - "enhanced_monitoring"
         - "automatic_expiration"
-        
+
       post_emergency:
         - "access_review"
         - "privilege_revocation"

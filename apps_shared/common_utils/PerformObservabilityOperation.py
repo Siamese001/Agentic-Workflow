@@ -93,7 +93,7 @@ class ObservabilityOperationAdapter:
 
     def register_handler(self, operation_type: str, handler: Callable) -> None:
         """Register a handler for operation type.
-        
+
         Args:
             operation_type: Type of operation
             handler: Handler function
@@ -101,21 +101,21 @@ class ObservabilityOperationAdapter:
         self._operation_handlers[operation_type] = handler
         self.logger.info(f"Registered handler for operation: {operation_type}")
 
-    def perform_operation(self, context: OperationContext, 
+    def perform_operation(self, context: OperationContext,
                          parameters: OperationParameters) -> OperationOutcome:
         """Perform observability operation.
-        
+
         Args:
             context: Operation context
             parameters: Operation parameters
-            
+
         Returns:
             OperationOutcome: Result of operation
         """
         self.logger.info(f"Performing operation: {context.operation_id}")
-        
+
         start_time = time.time()
-        
+
         try:
             # Check cache if enabled
             if self.config.enable_caching:
@@ -124,7 +124,7 @@ class ObservabilityOperationAdapter:
                     self.logger.info(f"Returning cached result for: {context.operation_id}")
                     cached_result.execution_time = time.time() - start_time
                     return cached_result
-            
+
             # Get handler for operation type
             handler = self._operation_handlers.get(parameters.operation_type)
             if not handler:
@@ -133,84 +133,84 @@ class ObservabilityOperationAdapter:
                     f"No handler for operation type: {parameters.operation_type}",
                     start_time
                 )
-            
+
             # Execute operation with retry logic
             result = self._execute_with_retry(handler, context, parameters)
-            
+
             # Cache result if enabled and successful
             if self.config.enable_caching and result.success:
                 self._store_in_cache(context, parameters, result)
-            
+
             # Calculate execution time
             result.execution_time = time.time() - start_time
-            
+
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Operation failed: {str(e)}")
             return self._create_error_outcome(context.operation_id, str(e), start_time)
 
-    def perform_batch_operations(self, 
+    def perform_batch_operations(self,
                                 contexts: List[OperationContext],
                                 parameters_list: List[OperationParameters]) -> List[OperationOutcome]:
         """Perform multiple operations.
-        
+
         Args:
             contexts: List of operation contexts
             parameters_list: List of operation parameters
-            
+
         Returns:
             List[OperationOutcome]: Results for all operations
         """
         if len(contexts) != len(parameters_list):
             raise ValueError("Contexts and parameters lists must have same length")
-        
+
         results = []
-        
+
         for context, parameters in zip(contexts, parameters_list):
             result = self.perform_operation(context, parameters)
             results.append(result)
-        
+
         return results
 
-    def perform_aggregated_operation(self, 
+    def perform_aggregated_operation(self,
                                    contexts: List[OperationContext],
                                    parameters: OperationParameters) -> OperationOutcome:
         """Perform operation with aggregation across multiple contexts.
-        
+
         Args:
             contexts: List of operation contexts
             parameters: Operation parameters
-            
+
         Returns:
             OperationOutcome: Aggregated result
         """
         self.logger.info(f"Performing aggregated operation across {len(contexts)} contexts")
-        
+
         start_time = time.time()
         all_data = []
         all_errors = []
         all_warnings = []
-        
+
         # Execute operation for each context
         for context in contexts:
             result = self.perform_operation(context, parameters)
-            
+
             if result.success and result.data:
                 if isinstance(result.data, list):
                     all_data.extend(result.data)
                 else:
                     all_data.append(result.data)
-            
+
             if result.error:
                 all_errors.append(result.error)
-            
+
             all_warnings.extend(result.warnings)
-        
+
         # Aggregate results
         aggregated_data = self._aggregate_data(all_data, parameters.aggregation)
         aggregated_values = self._calculate_aggregated_values(all_data)
-        
+
         # Create outcome
         outcome = OperationOutcome(
             operation_id=f"aggregated_{int(time.time())}",
@@ -222,17 +222,17 @@ class ObservabilityOperationAdapter:
             warnings=all_warnings,
             execution_time=time.time() - start_time
         )
-        
+
         return outcome
 
     def get_operation_history(self, operation_id: Optional[str] = None,
                             time_range: Optional[Tuple[datetime, datetime]] = None) -> List[Dict[str, Any]]:
         """Get history of operations.
-        
+
         Args:
             operation_id: Optional specific operation ID
             time_range: Optional time range filter
-            
+
         Returns:
             List[Dict]: Operation history
         """
@@ -241,10 +241,10 @@ class ObservabilityOperationAdapter:
 
     def clear_cache(self, pattern: Optional[str] = None) -> int:
         """Clear operation cache.
-        
+
         Args:
             pattern: Optional pattern to match cache keys
-            
+
         Returns:
             int: Number of cache entries cleared
         """
@@ -252,24 +252,24 @@ class ObservabilityOperationAdapter:
             count = len(self._cache)
             self._cache.clear()
             return count
-        
+
         # Clear matching entries
         to_remove = []
         for key in self._cache:
             if pattern in key:
                 to_remove.append(key)
-        
+
         for key in to_remove:
             del self._cache[key]
-        
+
         return len(to_remove)
 
-    def _execute_with_retry(self, handler: Callable, 
+    def _execute_with_retry(self, handler: Callable,
                            context: OperationContext,
                            parameters: OperationParameters) -> OperationOutcome:
         """Execute operation with retry logic."""
         last_error = None
-        
+
         for attempt in range(self.config.retry_attempts + 1):
             try:
                 # Prepare execution data
@@ -278,16 +278,16 @@ class ObservabilityOperationAdapter:
                     "parameters": parameters,
                     "attempt": attempt + 1
                 }
-                
+
                 # Execute handler
                 result_data = handler(exec_data)
-                
+
                 # Extract data and metadata
                 data = result_data.get("data")
                 count = result_data.get("count", 0)
                 aggregated_values = result_data.get("aggregated_values", {})
                 warnings = result_data.get("warnings", [])
-                
+
                 return OperationOutcome(
                     operation_id=context.operation_id,
                     success=True,
@@ -296,7 +296,7 @@ class ObservabilityOperationAdapter:
                     aggregated_values=aggregated_values,
                     warnings=warnings
                 )
-                
+
             except Exception as e:
                 last_error = str(e)
                 if attempt < self.config.retry_attempts:
@@ -304,23 +304,23 @@ class ObservabilityOperationAdapter:
                     time.sleep(2 ** attempt)  # Exponential backoff
                 else:
                     self.logger.error(f"Operation failed after {attempt + 1} attempts: {last_error}")
-        
+
         return self._create_error_outcome(context.operation_id, last_error, time.time())
 
-    def _get_from_cache(self, context: OperationContext, 
+    def _get_from_cache(self, context: OperationContext,
                        parameters: OperationParameters) -> Optional[OperationOutcome]:
         """Get result from cache."""
         cache_key = self._generate_cache_key(context, parameters)
-        
+
         if cache_key in self._cache:
             cached_data, timestamp = self._cache[cache_key]
-            
+
             # Check if cache entry is still valid
             if time.time() - timestamp < self.config.cache_ttl:
                 return cached_data
             else:
                 del self._cache[cache_key]
-        
+
         return None
 
     def _store_in_cache(self, context: OperationContext,
@@ -351,51 +351,51 @@ class ObservabilityOperationAdapter:
                 groups[item_type] = []
             groups[item_type].append(item)
         return groups
-    
+
     def _aggregate_numeric(self, data: List[Any], method: str) -> Optional[Dict[str, float]]:
         """Aggregate numeric data."""
         if not data or not all(isinstance(d, (int, float)) for d in data):
             return None
-        
+
         if method == "sum":
             return {"sum": sum(data)}
         elif method == "average":
             return {"average": sum(data) / len(data)}
         return None
-    
+
     def _aggregate_by_method(self, data: List[Any], aggregation: str) -> Union[Dict[str, Any], List[Any]]:
         """Perform specific aggregation method on data."""
         if aggregation == "count":
             return {"total": len(data)}
-        
+
         if aggregation in ("sum", "average"):
             result = self._aggregate_numeric(data, aggregation)
             if result:
                 return result
-        
+
         if aggregation == "unique":
             return {"unique_items": list(set(data))}
-        
+
         if aggregation == "group_by":
             return self._group_by_type(data)
-        
+
         return data
 
     def _aggregate_data(self, data: List[Any], aggregation: Optional[str]) -> Union[Dict[str, Any], List[Any]]:
         """Aggregate data based on aggregation method."""
         if not aggregation:
             return data
-        
+
         return self._aggregate_by_method(data, aggregation)
 
     def _calculate_aggregated_values(self, data: List[Any]) -> Dict[str, float]:
         """Calculate aggregated values from data."""
         values = {}
-        
+
         if data:
             # Count
             values["count"] = len(data)
-            
+
             # Numeric aggregations
             numeric_data = [d for d in data if isinstance(d, (int, float))]
             if numeric_data:
@@ -403,10 +403,10 @@ class ObservabilityOperationAdapter:
                 values["average"] = values["sum"] / len(numeric_data)
                 values["min"] = min(numeric_data)
                 values["max"] = max(numeric_data)
-        
+
         return values
 
-    def _create_error_outcome(self, operation_id: str, 
+    def _create_error_outcome(self, operation_id: str,
                              error: str, start_time: float) -> OperationOutcome:
         """Create error outcome."""
         return OperationOutcome(
@@ -429,12 +429,12 @@ class ObservabilityOperationAdapter:
                 },
                 "count": 1
             }
-        
+
         # Metrics collection handler
         def _metrics_handler(exec_data: Dict[str, Any]) -> Dict[str, Any]:
             parameters = exec_data["parameters"]
             metric_names = parameters.config.get("metrics", [])
-            
+
             return {
                 "data": [
                     {"name": name, "value": 42.0, "timestamp": datetime.utcnow().isoformat()}
@@ -443,13 +443,13 @@ class ObservabilityOperationAdapter:
                 "count": len(metric_names),
                 "aggregated_values": {"total_metrics": len(metric_names)}
             }
-        
+
         # Log query handler
         def _log_query_handler(exec_data: Dict[str, Any]) -> Dict[str, Any]:
             parameters = exec_data["parameters"]
             level = parameters.config.get("level", "info")
             limit = parameters.limit or 100
-            
+
             return {
                 "data": [
                     {"message": f"Sample log message {i}", "level": level, "timestamp": datetime.utcnow().isoformat()}
@@ -457,12 +457,12 @@ class ObservabilityOperationAdapter:
                 ],
                 "count": min(limit, 10)
             }
-        
+
         # Trace query handler
         def _trace_query_handler(exec_data: Dict[str, Any]) -> Dict[str, Any]:
             context = exec_data["context"]
             trace_id = context.correlation_id
-            
+
             return {
                 "data": {
                     "trace_id": trace_id,
@@ -473,7 +473,7 @@ class ObservabilityOperationAdapter:
                 },
                 "count": 1
             }
-        
+
         # Register default handlers
         self.register_handler("health_check", _health_check_handler)
         self.register_handler("collect_metrics", _metrics_handler)
@@ -508,7 +508,7 @@ def perform_observability_operation(
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Perform observability operation.
-    
+
     Args:
         operation_id: Unique operation identifier
         category: Operation category
@@ -516,26 +516,26 @@ def perform_observability_operation(
         target: Target system or component
         operation_type: Type of operation to perform
         config: Optional configuration
-        
+
     Returns:
         Dict: Operation outcome
     """
     adapter = create_observability_operation_adapter()
-    
+
     context = OperationContext(
         operation_id=operation_id,
         category=OperationCategory(category),
         scope=OperationScope(scope),
         target=target
     )
-    
+
     parameters = OperationParameters(
         operation_type=operation_type,
         config=config or {}
     )
-    
+
     outcome = adapter.perform_operation(context, parameters)
-    
+
     return {
         "operation_id": outcome.operation_id,
         "success": outcome.success,

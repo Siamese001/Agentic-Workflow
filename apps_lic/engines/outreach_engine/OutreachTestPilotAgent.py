@@ -17,7 +17,7 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 class OutreachTestPilotAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
     """
     Runs validation tests on the campaign.
-    
+
     Tests:
     - Campaign exists
     - Has leads or contacts

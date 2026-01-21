@@ -83,13 +83,13 @@ class FilesystemAgent(HealerMixin):
         Excludes Python files (delegated to NamingAgent) and protected directories.
         """
         violations: List[Tuple[Path, str]] = []
-        
+
         from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
         all_files = list(get_python_files(self.project_root)) + list(get_data_files(self.project_root))
         for file_path in all_files:
             if not file_path.is_file():
                 continue
-                
+
             # Performance & Safety: Skip excluded territories and Python source
             if any(ex in file_path.parts for ex in SOVEREIGN_EXCLUDED_FOLDERS):
                 continue
@@ -126,13 +126,13 @@ class FilesystemAgent(HealerMixin):
         - Priority 3: Keyword density (via NamingAgent)
         - Maps to CANON_KEY_TO_FOLDER_MAP paths
         - Fallback: archives/uncategorized/
-        
+
         Returns:
             Path to archive subpath, or None if file should NOT be archived.
         """
         # [FIX] Priority 0: Check sovereign territory before archiving
         from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
-        
+
         try:
             rel_path = file_path.relative_to(self.project_root)
             # Check if file is in a valid sovereign territory
@@ -142,7 +142,7 @@ class FilesystemAgent(HealerMixin):
                 return None
         except ValueError:
             pass  # File outside project root, continue with archiving logic
-        
+
         dir_path = file_path.parent
         from agentic_core.utils.ssot_discovery import get_python_files
         py_files = list(get_python_files(dir_path))
@@ -285,7 +285,7 @@ class FilesystemAgent(HealerMixin):
 
             # 2. Determine Relocation Path
             archive_subpath = self._determine_archive_subpath(file_path)
-            
+
             # [FIX] If archive_subpath is None, file is in valid sovereign territory - skip
             if archive_subpath is None:
                 action["applied"] = False
@@ -293,7 +293,7 @@ class FilesystemAgent(HealerMixin):
                 action["reason"] = "is_path_allowed() returned True"
                 actions.append(action)
                 continue
-            
+
             target_path = archive_subpath / cleaned_name
 
             if target_path.exists():
@@ -307,10 +307,10 @@ class FilesystemAgent(HealerMixin):
                     # Ensure subdirectory exists in archives/
                     target_path.parent.mkdir(parents=True, exist_ok=True)
                     self._backup_file(file_path)
-                    
+
                     # Physical relocation
                     file_path.rename(target_path)
-                    
+
                     action["applied"] = True
                     action["action_taken"] = f"PURGED: Relocated to archives/{target_path.relative_to(self.archives_root)}"
                     action["target"] = str(target_path)
@@ -326,10 +326,10 @@ class FilesystemAgent(HealerMixin):
     def run_with_cleanup(self, dry_run: bool = False) -> Dict[str, Any]:
         """
         [DEPRECATED - P5 CONSOLIDATION] Use run() + HealerAgent instead.
-        
+
         Standard entry point for Orchestrator integration.
         Performs full scan followed by immediate autonomous healing.
-        
+
         Prefer:
             violations = FilesystemAgent(project_root).run()
             healer = HealerAgent(project_root)
@@ -372,28 +372,28 @@ class FilesystemAgent(HealerMixin):
         """
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
-        
+
         if agent_name in _call_path:
             print(f"  [!] HEALING CYCLE DETECTED: {agent_name}")
             return {"healed": 0, "errors": 0, "skipped": 0, "cycle_detected": True}
-        
+
         if depth > max_depth:
             print(f"  [!] RECURSION DEPTH LIMIT ({depth}/{max_depth})")
             return {"healed": 0, "errors": 0, "skipped": 0, "depth_limited": True}
-        
+
         _call_path.add(agent_name)
-        
+
         try:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
             super().heal_repository()
-            
+
             violations = self.run()
             print(f"[FILESYSTEM HEAL @ depth {depth}] Found {len(violations)} violations")
-            
+
             counts = {"healed": 0, "errors": 0, "skipped": 0}
-            
+
             for file_path, reason in violations:
                 try:
                     cleanup_results = self.cleanup_violations([(file_path, reason)])
@@ -405,7 +405,7 @@ class FilesystemAgent(HealerMixin):
                 except Exception as e:
                     counts["errors"] += 1
                     print(f"  [!] ERROR on {file_path.name}: {e}")
-            
+
             print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n[FILESYSTEM HEAL SUMMARY] Healed: {counts['healed']} | Skipped: {counts['skipped']} | Errors: {counts['errors']}")
             return counts
         finally:

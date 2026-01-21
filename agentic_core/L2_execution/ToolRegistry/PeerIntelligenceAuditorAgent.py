@@ -202,7 +202,7 @@ class PeerIntelligenceAuditorAgent(HealerMixin):
     ) -> Dict[str, int]:
         """
         Peer Intelligence Healing - Validates RAG analysis integrity gates.
-        
+
         WIRED CAPABILITIES:
         - _validate_search_count(): Self-diagnostic on RAG intensity validation logic.
         """
@@ -211,7 +211,7 @@ class PeerIntelligenceAuditorAgent(HealerMixin):
         )
         if not isinstance(metrics, dict):
             metrics = {"violations": 0, "fixed": 0, "errors": 0}
-        
+
         if metrics.get("cycle_detected"):
             return metrics
 
@@ -219,24 +219,24 @@ class PeerIntelligenceAuditorAgent(HealerMixin):
             # Wired Orphan: _validate_search_count (Self-Diagnostic)
             # We simulate a partial hop to ensure the validator correctly flags it (or passes it)
             # This proves the logic "ValidationResult" generation is active.
-            
+
             # Diagnostic: Create a dummy hop structure that fails the check (simple test)
             dummy_hops = [
                 RagHop(hop_number=1, search_queries=["test_query"], RESULTS=[], keywords_found=set())
             ]
-            
+
             # Run validation logic
             if hasattr(self, '_validate_search_count'):
                 validation_res = self._validate_search_count(dummy_hops)
-                
+
                 # If we get a valid result object back, the logic is healthy
                 if validation_res and hasattr(validation_res, 'gate_id'):
                     metrics["fixed"] = metrics.get("fixed", 0) + 1
-            
+
         except Exception as e:
             Logger.error(f"Peer Intelligence healing failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1
-            
+
         return metrics
 
 def create_peer_intelligence_auditor(config: Optional[PeerIntelligenceConfig]=None) -> PeerIntelligenceAuditorAgent:

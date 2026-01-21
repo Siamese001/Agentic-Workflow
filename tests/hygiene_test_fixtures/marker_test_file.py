@@ -43,11 +43,11 @@ def function_with_bug() -> float:
 
 class MarkerTestClass:
     """A class with multiple markers."""
-    
+
     def __init__(self):
         # TODO: Initialize properly
         self.value = 0
-    
+
     def method_with_markers(self) -> None:
         # FIXME: This method is broken
         # HACK: Using workaround

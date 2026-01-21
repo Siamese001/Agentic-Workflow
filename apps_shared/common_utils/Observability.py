@@ -32,7 +32,3 @@ def clear_events() -> None:  # type: ignore[override]
     """Backward-compatible alias for collectors.clear_events()."""
 
     _clear_events_impl()
-
-
-
-

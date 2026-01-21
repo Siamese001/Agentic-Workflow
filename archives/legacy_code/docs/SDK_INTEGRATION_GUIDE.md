@@ -360,10 +360,10 @@ setup_tracing()
 with create_span("workflow.execute") as span:
     set_span_attribute("workflow.id", "wf-001")
     set_span_attribute("workflow.type", "resume_generation")
-    
+
     with create_span("hop.analyze"):
         add_span_event("analysis_started", {"input_size": 1024})
-        
+
         try:
             # Your code here
             result = analyze_data()
@@ -479,31 +479,31 @@ orchestrator = WorkflowOrchestrator(
 def extract_hop(context):
     """Extract key information."""
     input_text = context.get_input("text")
-    
+
     messages = [
         AgentMessage(role="user", content=f"Extract key points from: {input_text}")
     ]
-    
+
     response = context.execute_agent(
         messages=messages,
         system_prompt="You are an extraction expert.",
     )
-    
+
     context.set_output("extracted_points", response.content)
 
 def analyze_hop(context):
     """Analyze extracted points."""
     points = context.get_input("extracted_points")
-    
+
     messages = [
         AgentMessage(role="user", content=f"Analyze these points: {points}")
     ]
-    
+
     response = context.execute_agent(
         messages=messages,
         system_prompt="You are an analysis expert.",
     )
-    
+
     context.set_output("analysis", response.content)
 
 # Register hops
@@ -604,46 +604,46 @@ orchestrator = WorkflowOrchestrator("multi-agent-001", Provider.OPENAI)
 def researcher_hop(context):
     """Research agent gathers information."""
     topic = context.get_input("topic")
-    
+
     messages = [
         AgentMessage(role="user", content=f"Research: {topic}")
     ]
-    
+
     response = context.execute_agent(
         messages=messages,
         system_prompt="You are a research expert. Provide detailed findings.",
     )
-    
+
     context.set_output("research", response.content)
 
 def writer_hop(context):
     """Writer agent creates content."""
     research = context.get_input("research")
-    
+
     messages = [
         AgentMessage(role="user", content=f"Write article based on: {research}")
     ]
-    
+
     response = context.execute_agent(
         messages=messages,
         system_prompt="You are a professional writer. Create engaging content.",
     )
-    
+
     context.set_output("article", response.content)
 
 def editor_hop(context):
     """Editor agent reviews and refines."""
     article = context.get_input("article")
-    
+
     messages = [
         AgentMessage(role="user", content=f"Edit and improve: {article}")
     ]
-    
+
     response = context.execute_agent(
         messages=messages,
         system_prompt="You are an editor. Refine the content for clarity.",
     )
-    
+
     context.set_output("final_article", response.content)
 
 # Register pipeline

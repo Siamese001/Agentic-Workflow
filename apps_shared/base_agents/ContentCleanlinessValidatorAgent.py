@@ -12,7 +12,7 @@ class ContentCleanlinessValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, 
     Forbidden verbs and weak language detection
     FEATURE 3.1 and 3.2 from SUPREME_SPELL
     """
-    
+
     FORBIDDEN_VERBS = [
         "spearheaded", "leveraged", "utilized", "facilitated",
         "orchestrated", "championed", "pioneered", "revolutionized",
@@ -20,7 +20,7 @@ class ContentCleanlinessValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, 
         "synergized", "enabled", "empowered", "drove", "drive"
     ]
     MAX_VIOLATIONS = 1
-    
+
     FILLER_PATTERNS = [
         r"(?i)\bi hope\b",
         r"(?i)\bhope (this|you) (finds|are|don't)",
@@ -30,44 +30,44 @@ class ContentCleanlinessValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, 
         r"(?i)\bif you('re| are) interested",
         r"(?i)\bjust (wanted|reaching|following)",
     ]
-    
+
     def detect_forbidden_verbs(self, text: str) -> List[str]:
         """Find forbidden verbs in message text"""
         text_lower = text.lower()
         found = []
-        
+
         for verb in self.FORBIDDEN_VERBS:
             if verb in text_lower:
                 found.append(verb)
-        
+
         return found
-    
+
     def detect_fillers(self, text: str) -> List[Tuple[str, str]]:
         """Find filler phrases in message"""
         found = []
-        
+
         for pattern in self.FILLER_PATTERNS:
             matches = re.findall(pattern, text)
             if matches:
                 for match in matches:
                     match_text = match if isinstance(match, str) else " ".join(match) if isinstance(match, tuple) else str(match)
                     found.append((pattern, match_text))
-        
+
         return found
-    
+
     def validate_verbs(self, message: str) -> Tuple[bool, str]:
         """Validate no excessive forbidden verbs"""
         forbidden = self.detect_forbidden_verbs(message)
-        
+
         if len(forbidden) > self.MAX_VIOLATIONS:
             return False, f"Found {len(forbidden)} forbidden verbs: {', '.join(forbidden[:3])}"
-        
+
         return True, ""
-    
+
     def validate_fillers(self, message: str) -> Tuple[bool, str]:
         """Validate message is direct and confident"""
         fillers = self.detect_fillers(message)
-        
+
         if fillers:
             filler_texts = [f[1] for f in fillers]
             return False, f"Found filler phrases: {', '.join(filler_texts[:3])}"
@@ -86,7 +86,7 @@ __version__ = "11.10"
 # import scripts.validation.check_canonical_structure  # TODO: Replace with sovereign equivalent
 from typing import Dict, List, Any, Tuple
 from apps_lic.core.data_models import (
-    OutreachMission, GeneratedMessage, ValidationResult, 
+    OutreachMission, GeneratedMessage, ValidationResult,
     ValidationSeverity, Route, Archetype, ResearchContext
 )
 import numpy as np
@@ -100,7 +100,7 @@ from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import Subatom
 
 class ErrorCodeRegistry:
     """Centralized error codes with remediation guidance"""
-    
+
     CODES = {
         "LIC-E001": {
             "Severity": "CRITICAL",
@@ -168,7 +168,7 @@ class ErrorCodeRegistry:
             "remediation": "Adjust constraints or change Route"
         }
     }
-    
+
     @classmethod
     def get_error(cls, code: str) -> Dict[str, str]:
         return cls.CODES.get(code, {"Severity": "UNKNOWN", "description": "Unknown error", "remediation": "Contact support"})
@@ -182,7 +182,7 @@ class ConstraintFeasibilityChecker:
     Pre-flight check for constraint satisfaction
     FEATURE 2.1 from SUPREME_SPELL
     """
-    
+
     def check_feasibility(
         self,
         Route: 'models.Route',
@@ -200,17 +200,17 @@ class ConstraintFeasibilityChecker:
             constraints = CONFIG_REGISTRY.get_route_constraints(Route, Archetype)
         except ImportError:
             constraints = {"word_target": 200, "word_range": (150, 250), "Route": Route}
-        
+
         # Simple heuristic: check if number of required elements fits in word budget
         word_budget = constraints.get("word_target", constraints["word_range"][1])
         words_per_element = word_budget // (len(required_elements) + 2)  # +2 for greeting/signature
-        
+
         # CONNECTION_REQ requires stricter checking (more constrained format)
         min_words_per_element = 8 if Route.value == "CONNECTION_REQ" else 5
-        
+
         if words_per_element < min_words_per_element:
             return False, f"Too many required elements ({len(required_elements)}) for {Route.value} word budget ({word_budget})"
-        
+
         return True, "Constraints are feasible"
 
 # ============================================================================
@@ -222,7 +222,7 @@ class ContentCleanlinessValidatorAgent:
     Forbidden verbs and weak language detection
     FEATURE 3.1 and 3.2 from SUPREME_SPELL
     """
-    
+
     FORBIDDEN_VERBS = [
         "spearheaded", "leveraged", "utilized", "facilitated",
         "orchestrated", "championed", "pioneered", "revolutionized",
@@ -230,7 +230,7 @@ class ContentCleanlinessValidatorAgent:
         "synergized", "enabled", "empowered", "drove", "drive"
     ]
     MAX_VIOLATIONS = 1
-    
+
     FILLER_PATTERNS = [
         r"(?i)\bi hope\b",
         r"(?i)\bhope (this|you) (finds|are|don't)",
@@ -240,48 +240,48 @@ class ContentCleanlinessValidatorAgent:
         r"(?i)\bif you('re| are) interested",
         r"(?i)\bjust (wanted|reaching|following)",
     ]
-    
+
     def detect_forbidden_verbs(self, text: str) -> List[str]:
         """Find forbidden verbs in message text"""
         text_lower = text.lower()
         found = []
-        
+
         for verb in self.FORBIDDEN_VERBS:
             if verb in text_lower:
                 found.append(verb)
-        
+
         return found
-    
+
     def detect_fillers(self, text: str) -> List[Tuple[str, str]]:
         """Find filler phrases in message"""
         found = []
-        
+
         for pattern in self.FILLER_PATTERNS:
             matches = re.findall(pattern, text)
             if matches:
                 for match in matches:
                     match_text = match if isinstance(match, str) else " ".join(match) if isinstance(match, tuple) else str(match)
                     found.append((pattern, match_text))
-        
+
         return found
-    
+
     def validate_verbs(self, message: str) -> Tuple[bool, str]:
         """Validate no excessive forbidden verbs"""
         forbidden = self.detect_forbidden_verbs(message)
-        
+
         if len(forbidden) > self.MAX_VIOLATIONS:
             return False, f"Found {len(forbidden)} forbidden verbs: {', '.join(forbidden[:3])}"
-        
+
         return True, ""
-    
+
     def validate_fillers(self, message: str) -> Tuple[bool, str]:
         """Validate message is direct and confident"""
         fillers = self.detect_fillers(message)
-        
+
         if fillers:
             filler_texts = [f[1] for f in fillers]
             return False, f"Found {len(fillers)} filler phrases: {', '.join(filler_texts[:3])}"
-        
+
         return True, ""
 
     def heal_repository(self) -> dict:

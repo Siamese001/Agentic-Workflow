@@ -38,7 +38,7 @@ class SDKEntry:
     env_var: Optional[str] = None
     fallback: Optional[str] = None
     description: str = ""
-    
+
     def is_available(self) -> bool:
         """Check if SDK is available for import."""
         try:
@@ -46,7 +46,7 @@ class SDKEntry:
             return True
         except ImportError:
             return False
-    
+
     def has_api_key(self) -> bool:
         """Check if required API key is set."""
         if not self.env_var:
@@ -97,7 +97,7 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
         fallback="openai",
         description="Command R+, RAG, reranking, embeddings",
     ),
-    
+
     # High-Performance Inference
     "groq": SDKEntry(
         name="groq",
@@ -123,7 +123,7 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
         fallback="groq",
         description="Strong tool-calling alternative",
     ),
-    
+
     # Routing & Structured Outputs
     "litellm": SDKEntry(
         name="litellm",
@@ -139,7 +139,7 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
         required=True,
         description="Structured outputs, Pydantic validation",
     ),
-    
+
     # Vector Stores
     "chromadb": SDKEntry(
         name="chromadb",
@@ -163,7 +163,7 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
         fallback="chromadb",
         description="Managed vector DB, serverless scaling",
     ),
-    
+
     # Caching & State
     "redis": SDKEntry(
         name="redis",
@@ -178,7 +178,7 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
         module="hiredis",
         description="C parser for Redis (10x faster parsing)",
     ),
-    
+
     # Orchestration
     "langgraph": SDKEntry(
         name="langgraph",
@@ -192,7 +192,7 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
         module="langchain_core",
         description="Minimal abstractions (LCEL, runnables only)",
     ),
-    
+
     # Observability
     "opentelemetry-api": SDKEntry(
         name="opentelemetry-api",
@@ -208,7 +208,7 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
         required=True,
         description="Tracing implementation",
     ),
-    
+
     # Document Processing
     "unstructured": SDKEntry(
         name="unstructured",
@@ -222,7 +222,7 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
         module="pypdf",
         description="Lightweight PDF text extraction",
     ),
-    
+
     # MCP
     "mcp": SDKEntry(
         name="mcp",
@@ -241,36 +241,36 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
 
 def validate_sdk(sdk_name: str) -> Tuple[bool, Optional[str]]:
     """Validate SDK availability and configuration.
-    
+
     Args:
         sdk_name: Name of SDK to validate
-        
+
     Returns:
         Tuple of (success, error_message)
     """
     if sdk_name not in SDK_REGISTRY:
         return False, f"Unknown SDK: {sdk_name}"
-    
+
     entry = SDK_REGISTRY[sdk_name]
-    
+
     # Check if module is available
     if not entry.is_available():
         if entry.required:
             return False, f"Required SDK '{sdk_name}' not installed"
         return False, f"Optional SDK '{sdk_name}' not installed"
-    
+
     # Check API key if required
     if entry.env_var and not entry.has_api_key():
         if entry.required:
             return False, f"Required API key {entry.env_var} not set"
         return False, f"Optional API key {entry.env_var} not set"
-    
+
     return True, None
 
 
 def validate_all_sdks() -> Dict[str, Any]:
     """Validate all SDKs in registry.
-    
+
     Returns:
         Validation report with status for each SDK
     """
@@ -281,40 +281,40 @@ def validate_all_sdks() -> Dict[str, Any]:
         "missing_keys": 0,
         "details": {},
     }
-    
+
     for sdk_name, entry in SDK_REGISTRY.items():
         success, error = validate_sdk(sdk_name)
-        
+
         status = {
             "available": success,
             "required": entry.required,
             "category": entry.category.value,
             "error": error,
         }
-        
+
         if success:
             report["available"] += 1
         elif "not installed" in (error or ""):
             report["missing"] += 1
         elif "not set" in (error or ""):
             report["missing_keys"] += 1
-        
+
         report["details"][sdk_name] = status
-    
+
     logger.info(
         f"SDK validation: {report['available']}/{report['total']} available, "
         f"{report['missing']} missing, {report['missing_keys']} missing keys"
     )
-    
+
     return report
 
 
 def get_sdk_by_category(category: SDKCategory) -> list[SDKEntry]:
     """Get all SDKs in a category.
-    
+
     Args:
         category: SDK category
-        
+
     Returns:
         List of SDK entries
     """
@@ -326,7 +326,7 @@ def get_sdk_by_category(category: SDKCategory) -> list[SDKEntry]:
 
 def get_available_sdks() -> list[str]:
     """Get list of available SDK names.
-    
+
     Returns:
         List of available SDK names
     """
@@ -349,10 +349,10 @@ def reset_all_clients() -> None:
 
 def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
     """Get a vector store client.
-    
+
     Args:
         config: Optional configuration for vector store
-        
+
     Returns:
         Vector store client instance
     """
@@ -360,46 +360,46 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
     class MockCollection:
         def __init__(self, documents: list = None):
             self.documents = documents or []
-        
+
         def add(self, documents: list, ids: list = None):
             self.documents.extend(documents)
             return ids or list(range(len(documents)))
-        
+
         def query(self, query_texts: list, n_results: int = 10):
             return {"ids": [[0]], "documents": [["Mock result"]], "metadatas": [[{}]]}
-    
+
     # Always return mock vector store for testing
     class MockVectorStore:
         def __init__(self, config: Optional[Dict[str, Any]] = None):
             self.config = config or {}
             self.collections = {}
-        
+
         def add_documents(self, collection_name: str, documents: list, ids: list = None):
             if collection_name not in self.collections:
                 self.collections[collection_name] = []
             self.collections[collection_name].extend(documents)
             return ids or list(range(len(documents)))
-        
+
         def search(self, collection_name: str, query: str, n_results: int = 10):
             # Simple mock search
             collection = self.collections.get(collection_name, [])
             return {"ids": [[0]], "documents": [["Mock result"]], "metadatas": [[{}]]}
-        
+
         def get_collection(self, name: str):
             return self.collections.get(name, [])
-        
+
         def add_texts(self, texts: list, metadatas: list = None, ids: list = None):
             """Add texts to vector store."""
             return self.add_documents("default", texts, ids)
-        
+
         def similarity_search(self, query: str, k: int = 4):
             """Search for similar documents."""
             return [{"page_content": "Mock content", "metadata": {}} for _ in range(k)]
-        
+
         def get_or_create_collection(self, name: str):
             """Get or create a collection."""
             if name not in self.collections:
                 self.collections[name] = []
             return MockCollection(self.collections[name])
-    
+
     return MockVectorStore(config)

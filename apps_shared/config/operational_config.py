@@ -15,7 +15,7 @@ from typing import FrozenSet, List
 OPERATIONAL_EXCLUDED_DIRS: FrozenSet[str] = frozenset({
     # Version control
     '.git',
-    
+
     # Python environments and caches
     '__pycache__',
     '.pytest_cache',
@@ -26,34 +26,34 @@ OPERATIONAL_EXCLUDED_DIRS: FrozenSet[str] = frozenset({
     '.venv',
     'venv_stable',
     'env',
-    
+
     # Build artifacts
     'dist',
     'build',
     '_build',
     '*.egg-info',
-    
+
     # IDE and editor
     '.idea',
     '.vscode',
     '.DS_Store',
     'Thumbs.db',
-    
+
     # Node/JavaScript
     'node_modules',
-    
+
     # Archives and legacy (NEVER TOUCH)
     'archives',
     'legacy_code',
     'legacy_engines',
     'legacy_resume_gen',
-    
+
     # Data and logs
     'data',
     'logs',
     'output',
     'chroma_db',
-    
+
     # Temporary and backup
     '.workflow_state',
     '.sovereign_healing_backup',
@@ -83,14 +83,14 @@ OPERATIONAL_ALLOWED_DUPLICATES: FrozenSet[str] = frozenset({
     # Python package infrastructure (required in every package)
     '__init__.py',
     '__main__.py',
-    
+
     # Testing infrastructure (pytest requires these)
     'conftest.py',
-    
+
     # Configuration files (can exist per-module)
     'config.py',
     'settings.py',
-    
+
     # Common base classes (legitimately duplicated)
     'base.py',
     'types.py',
@@ -124,29 +124,29 @@ OPERATIONAL_ALL_EXTENSIONS: FrozenSet[str] = (
 def is_excluded_path(path_str: str) -> bool:
     """
     Check if a path should be excluded from operational scanning.
-    
+
     Args:
         path_str: String representation of path
-        
+
     Returns:
         True if path should be excluded
     """
     path_lower = path_str.lower().replace('\\', '/')
-    
+
     for excluded in OPERATIONAL_EXCLUDED_DIRS:
         if f'/{excluded}/' in path_lower or path_lower.startswith(f'{excluded}/'):
             return True
-    
+
     return False
 
 
 def is_allowed_duplicate(filename: str) -> bool:
     """
     Check if a filename is allowed to exist in multiple directories.
-    
+
     Args:
         filename: Name of the file
-        
+
     Returns:
         True if file is allowed to be duplicated
     """
@@ -156,10 +156,10 @@ def is_allowed_duplicate(filename: str) -> bool:
 def should_scan_directory(dir_name: str) -> bool:
     """
     Check if a directory should be scanned by operational agents.
-    
+
     Args:
         dir_name: Name of the directory
-        
+
     Returns:
         True if directory should be scanned
     """

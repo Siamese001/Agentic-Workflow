@@ -53,7 +53,7 @@ class AgentInfo:
 class ASTNormalizer(ast.NodeTransformer):
     """
     Enhanced AST Normalizer for structural fingerprinting.
-    
+
     Performs:
     - Method alphabetical sorting
     - Parameter/local variable canonicalization (param1, var1)
@@ -62,17 +62,17 @@ class ASTNormalizer(ast.NodeTransformer):
     - Import removal
     - Decorator normalization
     """
-    
+
     def __init__(self):
         self.param_counter = 0
         self.var_counter = 0
         self.var_map: Dict[str, str] = {}
-        
+
     def reset(self):
         self.param_counter = 0
         self.var_counter = 0
         self.var_map = {}
-    
+
     def visit_ClassDef(self, node: ast.ClassDef) -> ast.ClassDef:
         """Normalize class: sort methods, strip docstrings."""
         # Remove docstring
@@ -82,23 +82,23 @@ class ASTNormalizer(ast.NodeTransformer):
                 if isinstance(item.value.value, str):
                     continue  # Skip docstrings
             new_body.append(item)
-        
+
         # Sort methods alphabetically
         methods = [n for n in new_body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
         non_methods = [n for n in new_body if not isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
-        
+
         methods.sort(key=lambda m: m.name)
-        
+
         node.body = non_methods + methods
         node.decorator_list = []  # Remove decorators
         node.name = "NormalizedAgent"  # Canonicalize class name
-        
+
         return self.generic_visit(node)
-    
+
     def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
         """Normalize function: canonicalize params, strip docstrings."""
         self.reset()
-        
+
         # Canonicalize parameters
         new_args = []
         for i, arg in enumerate(node.args.args):
@@ -113,7 +113,7 @@ class ASTNormalizer(ast.NodeTransformer):
         node.args.defaults = []
         node.args.kw_defaults = []
         node.args.kwonlyargs = []
-        
+
         # Remove docstring
         new_body = []
         for item in node.body:
@@ -122,16 +122,16 @@ class ASTNormalizer(ast.NodeTransformer):
                     continue
             new_body.append(item)
         node.body = new_body if new_body else [ast.Pass()]
-        
+
         node.decorator_list = []
         node.returns = None
-        
+
         return self.generic_visit(node)
-    
+
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> ast.AsyncFunctionDef:
         """Same normalization for async functions."""
         self.reset()
-        
+
         new_args = []
         for i, arg in enumerate(node.args.args):
             if arg.arg == 'self':
@@ -145,7 +145,7 @@ class ASTNormalizer(ast.NodeTransformer):
         node.args.defaults = []
         node.args.kw_defaults = []
         node.args.kwonlyargs = []
-        
+
         new_body = []
         for item in node.body:
             if isinstance(item, ast.Expr) and isinstance(item.value, ast.Constant):
@@ -153,18 +153,18 @@ class ASTNormalizer(ast.NodeTransformer):
                     continue
             new_body.append(item)
         node.body = new_body if new_body else [ast.Pass()]
-        
+
         node.decorator_list = []
         node.returns = None
-        
+
         return self.generic_visit(node)
-    
+
     def visit_Name(self, node: ast.Name) -> ast.Name:
         """Canonicalize variable names."""
         if node.id in self.var_map:
             node.id = self.var_map[node.id]
         return node
-    
+
     def visit_Constant(self, node: ast.Constant) -> ast.Constant:
         """Replace long constants."""
         if isinstance(node.value, str) and len(node.value) > 50:
@@ -172,11 +172,11 @@ class ASTNormalizer(ast.NodeTransformer):
         elif isinstance(node.value, (int, float)) and abs(node.value) > 1000000:
             node.value = 999999
         return node
-    
+
     def visit_Import(self, node: ast.Import) -> Optional[ast.Import]:
         """Remove imports."""
         return None
-    
+
     def visit_ImportFrom(self, node: ast.ImportFrom) -> Optional[ast.ImportFrom]:
         """Remove imports."""
         return None
@@ -208,11 +208,11 @@ def find_agent_classes(base_path: str) -> List[AgentInfo]:
     """Find all PascalCase *Agent classes in the codebase."""
     agents = []
     base = Path(base_path)
-    
+
     # Pattern for PascalCase Agent classes - must be XxxAgent format
     agent_pattern = re.compile(r'^class\s+([A-Z][a-zA-Z0-9]*Agent)\s*[\(:]', re.MULTILINE)
     not_agent_pattern = re.compile(r'#\s*NOT_AN_AGENT')
-    
+
     # Also search apps directories
     search_paths = [base]
     apps_rg = base.parent / APPS_RG_DIR
@@ -224,26 +224,26 @@ def find_agent_classes(base_path: str) -> List[AgentInfo]:
         search_paths.append(apps_lic)
     if apps_shared.exists():
         search_paths.append(apps_shared)
-    
+
     for search_base in search_paths:
         # Operation Zero: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
         for py_file in get_python_files(search_base):
             if '.venv' in str(py_file):
                 continue
-                
+
             try:
                 content = py_file.read_text(encoding='utf-8', errors='ignore')
-                
+
                 # Check for NOT_AN_AGENT marker
                 if not_agent_pattern.search(content):
                     continue
-                
+
                 matches = agent_pattern.finditer(content)
                 for match in matches:
                     class_name = match.group(1)
                     line_number = content[:match.start()].count('\n') + 1
-                    
+
                     # Parse to get method count
                     try:
                         tree = ast.parse(content)
@@ -255,7 +255,7 @@ def find_agent_classes(base_path: str) -> List[AgentInfo]:
                                     if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
                                         method_count += 1
                                         method_names.append(item.name)
-                        
+
                         agents.append(AgentInfo(
                             name=class_name,
                             file_path=str(py_file),
@@ -276,7 +276,7 @@ def find_agent_classes(base_path: str) -> List[AgentInfo]:
                         ))
             except Exception as e:
                 print(f"Error reading {py_file}: {e}")
-    
+
     return agents
 
 
@@ -285,37 +285,37 @@ def generate_fingerprint(file_path: str, class_name: str) -> Tuple[str, str]:
     try:
         content = Path(file_path).read_text(encoding='utf-8', errors='ignore')
         tree = ast.parse(content)
-        
+
         # Find the target class
         target_class = None
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef) and node.name == class_name:
                 target_class = node
                 break
-        
+
         if not target_class:
             return ("NO_CLASS_FOUND", "")
-        
+
         # Create a module with just this class
         module = ast.Module(body=[target_class], type_ignores=[])
-        
+
         # Normalize the AST
         normalizer = ASTNormalizer()
         normalized = normalizer.visit(module)
         ast.fix_missing_locations(normalized)
-        
+
         # Convert to string representation
         try:
             normalized_code = ast.unparse(normalized)
         except Exception:
             # Fallback: use dump
             normalized_code = ast.dump(normalized)
-        
+
         # Generate fingerprint
         fingerprint = hashlib.sha256(normalized_code.encode()).hexdigest()[:16]
-        
+
         return (fingerprint, normalized_code)
-    
+
     except SyntaxError as e:
         return (f"SYNTAX_ERROR", str(e))
     except Exception as e:
@@ -326,17 +326,17 @@ def calculate_similarity(code1: str, code2: str) -> float:
     """Calculate structural similarity between two normalized ASTs."""
     if not code1 or not code2:
         return 0.0
-    
+
     # Simple token-based similarity
     tokens1 = set(code1.split())
     tokens2 = set(code2.split())
-    
+
     if not tokens1 or not tokens2:
         return 0.0
-    
+
     intersection = tokens1 & tokens2
     union = tokens1 | tokens2
-    
+
     return len(intersection) / len(union) if union else 0.0
 
 
@@ -347,13 +347,13 @@ def analyze_redundancy(base_path: str) -> Dict:
     print("December 30, 2025")
     print("=" * 80)
     print()
-    
+
     # Phase 1: Find all agents
     print("PHASE 1: Discovering Agent Classes...")
     agents = find_agent_classes(base_path)
     print(f"  Found {len(agents)} PascalCase Agent classes")
     print()
-    
+
     # Phase 2: Generate fingerprints
     print("PHASE 2: Generating AST Fingerprints...")
     for agent in agents:
@@ -362,33 +362,33 @@ def analyze_redundancy(base_path: str) -> Dict:
         agent.normalized_ast = normalized
     print(f"  Generated fingerprints for {len(agents)} agents")
     print()
-    
+
     # Phase 3: Group by fingerprint
     print("PHASE 3: Detecting Exact Duplicates...")
     fingerprint_groups: Dict[str, List[AgentInfo]] = defaultdict(list)
     for agent in agents:
         if not agent.fingerprint.startswith("ERROR") and not agent.fingerprint.startswith("SYNTAX"):
             fingerprint_groups[agent.fingerprint].append(agent)
-    
+
     exact_duplicates = {k: v for k, v in fingerprint_groups.items() if len(v) > 1}
     print(f"  Found {len(exact_duplicates)} groups of exact duplicates")
     print()
-    
+
     # Phase 4: Near-duplicate analysis
     print("PHASE 4: Analyzing Near-Duplicates (>90% similarity)...")
     near_duplicates = []
     agents_with_ast = [a for a in agents if a.normalized_ast and not a.fingerprint.startswith("ERROR")]
-    
+
     for i, agent1 in enumerate(agents_with_ast):
         for agent2 in agents_with_ast[i+1:]:
             if agent1.fingerprint != agent2.fingerprint:
                 similarity = calculate_similarity(agent1.normalized_ast, agent2.normalized_ast)
                 if similarity >= 0.90:
                     near_duplicates.append((agent1, agent2, similarity))
-    
+
     print(f"  Found {len(near_duplicates)} near-duplicate pairs")
     print()
-    
+
     # Generate report
     return {
         "total_agents": len(agents),
@@ -404,28 +404,28 @@ def print_report(results: Dict):
     print("COMPREHENSIVE AST REDUNDANCY REPORT")
     print("=" * 80)
     print()
-    
+
     # Agent table
     print("┌" + "─" * 78 + "┐")
     print("│ {:^76} │".format("AGENT FINGERPRINT REGISTRY"))
     print("├" + "─" * 40 + "┬" + "─" * 6 + "┬" + "─" * 8 + "┬" + "─" * 20 + "┤")
     print("│ {:^38} │ {:^4} │ {:^6} │ {:^18} │".format("Agent Name", "Layer", "Methods", "Fingerprint"))
     print("├" + "─" * 40 + "┼" + "─" * 6 + "┼" + "─" * 8 + "┼" + "─" * 20 + "┤")
-    
+
     for agent in sorted(results["agents"], key=lambda a: (a.layer, a.name)):
         fp_display = agent.fingerprint[:16] if len(agent.fingerprint) >= 16 else agent.fingerprint
         print("│ {:38} │ {:^4} │ {:^6} │ {:18} │".format(
             agent.name[:38], agent.layer, agent.method_count, fp_display
         ))
-    
+
     print("└" + "─" * 40 + "┴" + "─" * 6 + "┴" + "─" * 8 + "┴" + "─" * 20 + "┘")
     print()
-    
+
     # Exact duplicates
     print("=" * 80)
     print("EXACT STRUCTURAL DUPLICATES")
     print("=" * 80)
-    
+
     if results["exact_duplicates"]:
         for fingerprint, agents in results["exact_duplicates"].items():
             print(f"\n[DUPLICATE GROUP] Fingerprint: {fingerprint}")
@@ -435,7 +435,7 @@ def print_report(results: Dict):
                 print(f"  - {agent.name}")
                 print(f"    File: {rel_path}")
                 print(f"    Layer: {agent.layer}, Methods: {agent.method_count}")
-            
+
             # Recommendation
             l5_agents = [a for a in agents if a.layer == 'L5']
             if l5_agents:
@@ -443,21 +443,21 @@ def print_report(results: Dict):
             else:
                 keep = sorted(agents, key=lambda a: a.layer)[0]
             delete = [a for a in agents if a != keep]
-            
+
             print(f"\n  RECOMMENDATION:")
             print(f"    KEEP:   {keep.name} ({keep.layer})")
             for d in delete:
                 print(f"    DELETE: {d.name} ({d.layer})")
     else:
         print("\n[OK] No exact structural duplicates found!")
-    
+
     print()
-    
+
     # Near duplicates
     print("=" * 80)
     print("NEAR-DUPLICATE PAIRS (>90% Structural Similarity)")
     print("=" * 80)
-    
+
     if results["near_duplicates"]:
         for agent1, agent2, similarity in sorted(results["near_duplicates"], key=lambda x: -x[2]):
             print(f"\n[NEAR-DUP] Similarity: {similarity:.1%}")
@@ -466,9 +466,9 @@ def print_report(results: Dict):
             print(f"  → Consider merging or refactoring")
     else:
         print("\n[OK] No near-duplicates found!")
-    
+
     print()
-    
+
     # Summary
     print("=" * 80)
     print("SUMMARY")
@@ -476,7 +476,7 @@ def print_report(results: Dict):
     print(f"Total Agent Classes:     {results['total_agents']}")
     print(f"Exact Duplicate Groups:  {len(results['exact_duplicates'])}")
     print(f"Near-Duplicate Pairs:    {len(results['near_duplicates'])}")
-    
+
     if not results["exact_duplicates"] and not results["near_duplicates"]:
         print()
         print("=" * 80)
@@ -484,13 +484,13 @@ def print_report(results: Dict):
         print("STRUCTURAL DUPLICATES: NONE FOUND")
         print("CODEBASE ETERNALLY PURE AND MAXIMALLY SOVEREIGN")
         print("=" * 80)
-    
+
 
 if __name__ == "__main__":
     base_path = r"C:\Git\Agentic-Workflow\agentic_core"
     results = analyze_redundancy(base_path)
     print_report(results)
-    
+
     # Save JSON report
     report_path = Path(r"C:\Git\Agentic-Workflow\ast_redundancy_report.json")
     json_data = {

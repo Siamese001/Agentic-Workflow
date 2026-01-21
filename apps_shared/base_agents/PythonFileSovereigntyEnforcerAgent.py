@@ -49,7 +49,7 @@ from archives.location_violations.sovereign_index import SovereignIndex
 class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     L5 Safety agent - enforces dedicated ClassNameAgent.py file naming standard.
-    
+
     Technical rationale:
     - Uses AST to reliably extract primary agent class (first ClassDef ending in "Agent")
     - git mv preserves history and updates imports automatically in most cases

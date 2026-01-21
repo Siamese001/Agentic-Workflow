@@ -28,11 +28,11 @@ class SafetyResult:
 class SafetyGuardrail:
     """
     L5 Safety Layer: Decides if code change is constructive or destructive.
-    
+
     Modes:
     - HEAL: Standard healing with 110-line deletion limit
     - ATOMIC_FISSION: Allows facade pattern (monolith → small file)
-    
+
     Strategy:
     - Protects against accidental mass deletions
     - Whitelists intentional fission transformations
@@ -42,7 +42,7 @@ class SafetyGuardrail:
     def __init__(self, deletion_limit: int=110, facade_size_threshold: int=50):
         """
         Initialize Safety Guardrail.
-        
+
         Args:
             deletion_limit: Max lines that can be deleted in HEAL mode
             facade_size_threshold: Typical facade file size
@@ -53,12 +53,12 @@ class SafetyGuardrail:
     def verify_change(self, original_lines: List[str], new_lines: List[str], mode: str='HEAL') -> Tuple[bool, str]:
         """
         L5 Safety: Decides if a code change is constructive or destructive.
-        
+
         Args:
             original_lines: Original file lines
             new_lines: New file lines after modification
             mode: "HEAL" or "ATOMIC_FISSION"
-            
+
         Returns:
             Tuple of (is_safe, message)
         """
@@ -78,12 +78,12 @@ class SafetyGuardrail:
     def verify_change_detailed(self, original_lines: List[str], new_lines: List[str], mode: str='HEAL') -> SafetyResult:
         """
         Detailed safety verification with full result object.
-        
+
         Args:
             original_lines: Original file lines
             new_lines: New file lines after modification
             mode: "HEAL" or "ATOMIC_FISSION"
-            
+
         Returns:
             SafetyResult with detailed information
         """
@@ -99,11 +99,11 @@ class SafetyGuardrail:
     def verify_fission_output(self, original_file: str, new_files: dict) -> Tuple[bool, str]:
         """
         Verify fission output maintains total line count.
-        
+
         Args:
             original_file: Path to original monolithic file
             new_files: Dictionary of new file paths to content
-            
+
         Returns:
             Tuple of (is_safe, message)
         """
@@ -124,7 +124,7 @@ class SafetyGuardrail:
 def get_safety_guardrail() -> SafetyGuardrail:
     """
     Factory function to create SafetyGuardrail instance.
-    
+
     Returns:
         SafetyGuardrail instance
     """

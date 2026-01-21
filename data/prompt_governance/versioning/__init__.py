@@ -17,4 +17,3 @@ __all__ = [
     "VersionTag",
     "create_version_manager",
 ]
-

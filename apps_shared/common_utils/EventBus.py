@@ -28,26 +28,26 @@ class EventType(str, Enum):
     WORKFLOW_FAILED = "WORKFLOW_FAILED"
     WORKFLOW_PAUSED = "WORKFLOW_PAUSED"
     WORKFLOW_RESUMED = "WORKFLOW_RESUMED"
-    
+
     # Agent Events
     AGENT_THINKING = "AGENT_THINKING"
     AGENT_ACTING = "AGENT_ACTING"
     AGENT_CRITIQUING = "AGENT_CRITIQUING"
     AGENT_FAILED = "AGENT_FAILED"
     AGENT_COMPLETED = "AGENT_COMPLETED"
-    
+
     # Data Events
     INSIGHT_DISCOVERED = "INSIGHT_DISCOVERED"
     ARTIFACT_GENERATED = "ARTIFACT_GENERATED"
     DATA_PROCESSED = "DATA_PROCESSED"
     VALIDATION_COMPLETED = "VALIDATION_COMPLETED"
-    
+
     # System Events
     ERROR_OCCURRED = "ERROR_OCCURRED"
     RESOURCE_EXHAUSTED = "RESOURCE_EXHAUSTED"
     CIRCUIT_BREAKER_OPENED = "CIRCUIT_BREAKER_OPENED"
     CIRCUIT_BREAKER_CLOSED = "CIRCUIT_BREAKER_CLOSED"
-    
+
     # Business Events
     JOB_POSTING_RECEIVED = "JOB_POSTING_RECEIVED"
     RESUME_TAILORING_STARTED = "RESUME_TAILORING_STARTED"
@@ -65,13 +65,13 @@ class SystemEvent(BaseModel):
     timestamp: float = Field(default_factory=time.time)
     correlation_id: Optional[str] = None  # Links related events
     causation_id: Optional[str] = None   # The event that caused this one
-    
+
     class Config:
         frozen = True  # Events are immutable
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization.
-        
+
         Returns:
             Dictionary representation
         """
@@ -85,14 +85,14 @@ class SystemEvent(BaseModel):
             "correlation_id": self.correlation_id,
             "causation_id": self.causation_id
         }
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "SystemEvent":
         """Create from dictionary.
-        
+
         Args:
             data: Dictionary data
-            
+
         Returns:
             SystemEvent instance
         """
@@ -110,22 +110,22 @@ class SystemEvent(BaseModel):
 
 class EventBus(ABC):
     """Abstract base class for event bus implementations."""
-    
+
     @abstractmethod
     async def connect(self) -> None:
         """Connect to the event bus backend."""
         pass
-    
+
     @abstractmethod
     async def publish(self, channel: str, event: SystemEvent) -> None:
         """Publish an event to a channel.
-        
+
         Args:
             channel: Channel name
             event: Event to publish
         """
         pass
-    
+
     @abstractmethod
     async def subscribe(
         self,
@@ -133,31 +133,31 @@ class EventBus(ABC):
         callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> None:
         """Subscribe to events on a channel.
-        
+
         Args:
             channel: Channel name
             callback: Async callback for events
         """
         pass
-    
+
     @abstractmethod
     async def unsubscribe(self, channel: str) -> None:
         """Unsubscribe from a channel.
-        
+
         Args:
             channel: Channel name
         """
         pass
-    
+
     @abstractmethod
     async def close(self) -> None:
         """Close the event bus connection."""
         pass
-    
+
     @abstractmethod
     async def health_check(self) -> Dict[str, Any]:
         """Check health of event bus.
-        
+
         Returns:
             Health status
         """
@@ -166,7 +166,7 @@ class EventBus(ABC):
 
 class MemoryEventBus(EventBus):
     """In-memory event bus using asyncio.Queue."""
-    
+
     def __init__(self):
         """Initialize memory event bus."""
         self._queues: Dict[str, asyncio.Queue] = {}
@@ -179,95 +179,95 @@ class MemoryEventBus(EventBus):
             "subscriber_errors": 0,
             "channels": 0
         }
-        
+
         logger.info("Initialized MemoryEventBus")
-    
+
     async def connect(self) -> None:
         """Connect to the event bus."""
         self._running = True
         logger.info("MemoryEventBus connected")
-    
+
     async def publish(self, channel: str, event: SystemEvent) -> None:
         """Publish an event to a channel.
-        
+
         Args:
             channel: Channel name
             event: Event to publish
         """
         if not self._running:
             raise RuntimeError("Event bus not connected")
-        
+
         # Validate payload is JSON serializable
         try:
             json.dumps(event.payload)
         except (TypeError, ValueError) as e:
             raise ValueError(f"Event payload is not JSON serializable: {e}")
-        
+
         # Get or create queue for channel
         if channel not in self._queues:
             self._queues[channel] = asyncio.Queue()
             self._stats["channels"] += 1
-        
+
         # Add event to queue
         await self._queues[channel].put(event)
         self._stats["events_published"] += 1
-        
+
         # Start worker if needed
         if channel not in self._workers:
             self._workers[channel] = asyncio.create_task(
                 self._worker_loop(channel)
             )
-        
+
         logger.debug(f"Published event {event.id} to channel {channel}")
-    
+
     async def subscribe(
         self,
         channel: str,
         callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> None:
         """Subscribe to events on a channel.
-        
+
         Args:
             channel: Channel name
             callback: Async callback for events
         """
         if channel not in self._subscribers:
             self._subscribers[channel] = []
-        
+
         self._subscribers[channel].append(callback)
         logger.debug(f"Subscribed to channel {channel}")
-    
+
     async def unsubscribe(self, channel: str) -> None:
         """Unsubscribe from a channel.
-        
+
         Args:
             channel: Channel name
         """
         if channel in self._subscribers:
             del self._subscribers[channel]
             logger.debug(f"Unsubscribed from channel {channel}")
-    
+
     async def close(self) -> None:
         """Close the event bus."""
         self._running = False
-        
+
         # Cancel all workers
         for task in self._workers.values():
             task.cancel()
-        
+
         # Wait for workers to finish
         if self._workers:
             await asyncio.gather(*self._workers.values(), return_exceptions=True)
-        
+
         self._workers.clear()
         self._queues.clear()
         self._subscribers.clear()
-        
+
         logger.info("MemoryEventBus closed")
-    
+
     async def health_check(self) -> Dict[str, Any]:
         """Check health of event bus.
-        
+
         Returns:
             Health status
         """
@@ -279,61 +279,61 @@ class MemoryEventBus(EventBus):
             "queue_sizes": {ch: q.qsize() for ch, q in self._queues.items()},
             "stats": self._stats.copy()
         }
-    
+
     async def _worker_loop(self, channel: str) -> None:
         """Worker loop for processing events.
-        
+
         Args:
             channel: Channel to process
         """
         queue = self._queues[channel]
         subscribers = self._subscribers.get(channel, [])
-        
+
         while self._running:
             try:
                 # Wait for event
                 event = await queue.get()
-                
+
                 # Notify all subscribers
                 if subscribers:
                     await self._notify_subscribers(event, subscribers)
-                
+
                 self._stats["events_processed"] += 1
                 queue.task_done()
-                
+
             except asyncio.CancelledError:
                 break
             except Exception as e:
                 logger.error(f"Worker error for channel {channel}: {e}")
-    
+
     async def _notify_subscribers(
         self,
         event: SystemEvent,
         subscribers: List[Callable]
     ) -> None:
         """Notify all subscribers of an event.
-        
+
         Args:
             event: Event to publish
             subscribers: List of subscriber callbacks
         """
         tasks = []
-        
+
         for callback in subscribers:
             task = asyncio.create_task(self._safe_notify(callback, event))
             tasks.append(task)
-        
+
         # Wait for all notifications (with error isolation)
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
-    
+
     async def _safe_notify(
         self,
         callback: Callable[[SystemEvent], Awaitable[None]],
         event: SystemEvent
     ) -> None:
         """Safely notify a subscriber.
-        
+
         Args:
             callback: Subscriber callback
             event: Event to publish
@@ -347,7 +347,7 @@ class MemoryEventBus(EventBus):
 
 class RedisEventBus(EventBus):
     """Redis-based event bus using Redis Streams."""
-    
+
     def __init__(
         self,
         connection_string: str,
@@ -355,7 +355,7 @@ class RedisEventBus(EventBus):
         consumer_name: Optional[str] = None
     ):
         """Initialize Redis event bus.
-        
+
         Args:
             connection_string: Redis connection string
             consumer_group: Consumer group name
@@ -364,7 +364,7 @@ class RedisEventBus(EventBus):
         self.connection_string = connection_string
         self.consumer_group = consumer_group
         self.consumer_name = consumer_name or f"consumer_{uuid.uuid4().hex[:8]}"
-        
+
         self.redis: Optional[Any] = None
         self._running = False
         self._subscribers: Dict[str, List[Callable]] = {}
@@ -376,14 +376,14 @@ class RedisEventBus(EventBus):
             "reconnections": 0,
             "channels": 0
         }
-        
+
         logger.info(f"Initialized RedisEventBus for {connection_string}")
-    
+
     async def connect(self) -> None:
         """Connect to Redis."""
         try:
             import redis.asyncio as redis
-            
+
             # Create Redis client with connection pooling
             self.redis = redis.from_url(
                 self.connection_string,
@@ -392,35 +392,35 @@ class RedisEventBus(EventBus):
                 socket_keepalive=True,
                 socket_keepalive_options={}
             )
-            
+
             # Test connection
             await self.redis.ping()
-            
+
             self._running = True
             logger.info("RedisEventBus connected")
-            
+
         except ImportError:
             raise ImportError("redis package required for RedisEventBus")
         except Exception as e:
             logger.error(f"Failed to connect to Redis: {e}")
             raise
-    
+
     async def publish(self, channel: str, event: SystemEvent) -> None:
         """Publish an event to a Redis stream.
-        
+
         Args:
             channel: Channel name (stream key)
             event: Event to publish
         """
         if not self._running or not self.redis:
             raise RuntimeError("Event bus not connected")
-        
+
         # Validate payload is JSON serializable
         try:
             json.dumps(event.payload)
         except (TypeError, ValueError) as e:
             raise ValueError(f"Event payload is not JSON serializable: {e}")
-        
+
         try:
             # Add to stream
             await self.redis.xadd(
@@ -428,29 +428,29 @@ class RedisEventBus(EventBus):
                 event.to_dict(),
                 maxlen=10000  # Trim stream to 10k entries
             )
-            
+
             self._stats["events_published"] += 1
             logger.debug(f"Published event {event.id} to Redis stream {channel}")
-            
+
         except Exception as e:
             logger.error(f"Failed to publish to Redis: {e}")
             await self._handle_connection_error(e)
             raise
-    
+
     async def subscribe(
         self,
         channel: str,
         callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> None:
         """Subscribe to a Redis stream.
-        
+
         Args:
             channel: Channel name (stream key)
             callback: Async callback for events
         """
         if not self._running:
             raise RuntimeError("Event bus not connected")
-        
+
         # Create consumer group if it doesn't exist
         try:
             await self.redis.xgroup_create(
@@ -463,66 +463,66 @@ class RedisEventBus(EventBus):
             # Group might already exist
             if "BUSYGROUP" not in str(e):
                 logger.warning(f"Failed to create consumer group: {e}")
-        
+
         # Register subscriber
         if channel not in self._subscribers:
             self._subscribers[channel] = []
             self._stats["channels"] += 1
-            
+
             # Start reader task
             self._readers[channel] = asyncio.create_task(
                 self._reader_loop(channel)
             )
-        
+
         self._subscribers[channel].append(callback)
         logger.debug(f"Subscribed to Redis stream {channel}")
-    
+
     async def unsubscribe(self, channel: str) -> None:
         """Unsubscribe from a Redis stream.
-        
+
         Args:
             channel: Channel name
         """
         if channel in self._subscribers:
             del self._subscribers[channel]
-            
+
             # Cancel reader task
             if channel in self._readers:
                 self._readers[channel].cancel()
                 del self._readers[channel]
-            
+
             logger.debug(f"Unsubscribed from Redis stream {channel}")
-    
+
     async def close(self) -> None:
         """Close Redis connection."""
         self._running = False
-        
+
         # Cancel all readers
         for task in self._readers.values():
             task.cancel()
-        
+
         if self._readers:
             await asyncio.gather(*self._readers.values(), return_exceptions=True)
-        
+
         # Close Redis connection
         if self.redis:
             await self.redis.close()
-        
+
         logger.info("RedisEventBus closed")
-    
+
     async def health_check(self) -> Dict[str, Any]:
         """Check health of Redis event bus.
-        
+
         Returns:
             Health status
         """
         if not self._running or not self.redis:
             return {"status": "disconnected", "type": "redis"}
-        
+
         try:
             # Test Redis connection
             await self.redis.ping()
-            
+
             return {
                 "status": "healthy",
                 "type": "redis",
@@ -531,7 +531,7 @@ class RedisEventBus(EventBus):
                 "channels": len(self._subscribers),
                 "stats": self._stats.copy()
             }
-            
+
         except Exception as e:
             return {
                 "status": "unhealthy",
@@ -539,15 +539,15 @@ class RedisEventBus(EventBus):
                 "error": str(e),
                 "stats": self._stats.copy()
             }
-    
+
     async def _reader_loop(self, channel: str) -> None:
         """Reader loop for processing Redis stream events.
-        
+
         Args:
             channel: Stream to read from
         """
         subscribers = self._subscribers.get(channel, [])
-        
+
         while self._running:
             try:
                 # Read from stream
@@ -558,61 +558,61 @@ class RedisEventBus(EventBus):
                     count=10,
                     block=1000  # 1 second timeout
                 )
-                
+
                 for stream, msgs in messages:
                     for msg_id, fields in msgs:
                         try:
                             # Parse event
                             event = SystemEvent.from_dict(fields)
-                            
+
                             # Notify subscribers
                             if subscribers:
                                 await self._notify_subscribers(event, subscribers)
-                            
+
                             # Acknowledge message
                             await self.redis.xack(channel, self.consumer_group, msg_id)
-                            
+
                             self._stats["events_processed"] += 1
-                            
+
                         except Exception as e:
                             logger.error(f"Failed to process message {msg_id}: {e}")
                             # Still acknowledge to avoid reprocessing
                             await self.redis.xack(channel, self.consumer_group, msg_id)
-                
+
             except asyncio.CancelledError:
                 break
             except Exception as e:
                 logger.error(f"Reader error for stream {channel}: {e}")
                 await asyncio.sleep(1)  # Brief pause before retry
-    
+
     async def _notify_subscribers(
         self,
         event: SystemEvent,
         subscribers: List[Callable]
     ) -> None:
         """Notify all subscribers of an event.
-        
+
         Args:
             event: Event to publish
             subscribers: List of subscriber callbacks
         """
         tasks = []
-        
+
         for callback in subscribers:
             task = asyncio.create_task(self._safe_notify(callback, event))
             tasks.append(task)
-        
+
         # Wait for all notifications (with error isolation)
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
-    
+
     async def _safe_notify(
         self,
         callback: Callable[[SystemEvent], Awaitable[None]],
         event: SystemEvent
     ) -> None:
         """Safely notify a subscriber.
-        
+
         Args:
             callback: Subscriber callback
             event: Event to publish
@@ -622,15 +622,15 @@ class RedisEventBus(EventBus):
         except Exception as e:
             self._stats["subscriber_errors"] += 1
             logger.error(f"Subscriber callback error: {e}", exc_info=True)
-    
+
     async def _handle_connection_error(self, error: Exception) -> None:
         """Handle Redis connection errors.
-        
+
         Args:
             error: Connection error
         """
         logger.warning(f"Redis connection error: {error}")
-        
+
         # Try to reconnect
         for attempt in range(3):
             try:
@@ -645,10 +645,10 @@ class RedisEventBus(EventBus):
 
 def create_event_bus(connection_string: Optional[str] = None) -> EventBus:
     """Create an event bus instance.
-    
+
     Args:
         connection_string: Redis connection string or None for memory bus
-        
+
     Returns:
         EventBus instance
     """
@@ -665,7 +665,7 @@ _bus_lock = asyncio.Lock()
 
 async def get_event_bus() -> EventBus:
     """Get global event bus instance.
-    
+
     Returns:
         EventBus instance
     """
@@ -687,7 +687,7 @@ async def publish_event(
     causation_id: Optional[str] = None
 ) -> None:
     """Publish a system event.
-    
+
     Args:
         event_type: Type of event
         source_component: Component publishing the event
@@ -704,7 +704,7 @@ async def publish_event(
         correlation_id=correlation_id,
         causation_id=causation_id
     )
-    
+
     bus = await get_event_bus()
     channel = f"events.{event_type.value.lower()}"
     await bus.publish(channel, event)
@@ -716,11 +716,11 @@ def event_publisher(
     channel: Optional[str] = None
 ):
     """Decorator to automatically publish events.
-    
+
     Args:
         event_type: Type of event to publish
         channel: Optional channel override
-        
+
     Returns:
         Decorated function
     """
@@ -730,7 +730,7 @@ def event_publisher(
             trace_id = None
             if args and hasattr(args[0], 'trace_id'):
                 trace_id = args[0].trace_id
-            
+
             # Publish start event
             await publish_event(
                 event_type,
@@ -738,11 +738,11 @@ def event_publisher(
                 {"status": "started", "args_count": len(args)},
                 trace_id=trace_id
             )
-            
+
             try:
                 # Execute function
                 result = await func(*args, **kwargs)
-                
+
                 # Publish success event
                 await publish_event(
                     event_type,
@@ -751,9 +751,9 @@ def event_publisher(
                     trace_id=trace_id,
                     causation_id=trace_id
                 )
-                
+
                 return result
-                
+
             except Exception as e:
                 # Publish error event
                 await publish_event(
@@ -764,6 +764,6 @@ def event_publisher(
                     causation_id=trace_id
                 )
                 raise
-        
+
         return async_wrapper
     return decorator

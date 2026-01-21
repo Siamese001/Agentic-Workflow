@@ -80,15 +80,15 @@ class CostReport:
 class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
     """
     The Efficiency Guard - Predictive Cost Auditor
-    
+
     Monitors economic ROI of swarm healing efforts.
     Provides thermal map of repository identifying technical debt hotspots.
-    
+
     Thresholds:
     - Healing Sink: >3 attempts without success
     - Critical Sink: >$5 in tokens without success
     - Fission Candidate: >$10 total tokens spent
-    
+
     Provides:
     - Daily Mission Report
     - Go/No-Go signals for pipeline
@@ -99,7 +99,7 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
     def __init__(self, ctx: Any) -> None:
         """
         Initialize Predictive Cost Auditor.
-        
+
         Args:
             ctx: ValidationContext
         """
@@ -114,7 +114,7 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
     async def execute(self) -> Any:
         """
         Execute cost auditing.
-        
+
         Analyzes healing history and generates cost report.
         """
         Logger.info('💰 Predictive Cost Auditor: Analyzing healing economics...')
@@ -249,7 +249,7 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
     def get_thermal_map(self) -> Dict[str, str]:
         """
         Generate thermal map of repository.
-        
+
         Returns:
             Dictionary mapping file paths to thermal status
             (cold, warm, hot, critical)
@@ -299,11 +299,11 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
     @timeout(300)
     @standard_heal
     def heal_repository(
-        self, 
-        dry_run: bool = True, 
-        execute: bool = False, 
-        depth: int = 0, 
-        max_depth: int = 3, 
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
         _call_path: Optional[set] = None
     ) -> Dict[str, int]:
         """
@@ -320,19 +320,19 @@ class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAto
         try:
             # 1. Perform Audit
             self._audit_files()
-            
+
             # 2. Generate Report
             report = self._generate_cost_report()
-            
+
             # 3. Log findings
             self._display_report(report)
-            
+
             metrics["violations"] = metrics.get("violations", 0) + len(report.healing_sinks)
 
         except Exception as e:
             Logger.error(f"Cost audit failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1
-            
+
         return metrics
 
 _cost_auditor = None

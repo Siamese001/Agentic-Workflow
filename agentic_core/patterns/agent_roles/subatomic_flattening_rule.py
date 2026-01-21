@@ -21,7 +21,7 @@ class ComplexityMetrics:
     nesting_depth: int
     conditional_branches: int
     duplicate_patterns: int
-    
+
     def exceeds_threshold(self) -> bool:
         """Check if method exceeds complexity thresholds."""
         return self.line_count > 40 or self.nesting_depth > 3
@@ -46,18 +46,18 @@ class ExtractionCandidate:
 class FlatteningPattern:
     """
     Golden State Reference: Subatomic Flattening Pattern
-    
+
     This pattern was successfully applied to agent_logic.py check_and_learn() method:
     - Original: 85 lines, 4 nesting levels
     - After: 50 lines, 2 nesting levels
     - Preservation: 103%
     """
-    
+
     # Thresholds
     MAX_METHOD_LINES = 40
     MAX_NESTING_DEPTH = 3
     MIN_EXTRACTION_LINES = 8
-    
+
     # Pattern Recognition
     EXTRACTION_TRIGGERS = [
         "if_elif_chain_with_duplicate_logic",
@@ -66,7 +66,7 @@ class FlatteningPattern:
         "initialization_blocks",
         "error_handling_blocks"
     ]
-    
+
     # Naming Conventions
     HELPER_PREFIXES = {
         "initialization": "_initialize_",
@@ -75,16 +75,16 @@ class FlatteningPattern:
         "transformation": "_transform_",
         "error_handling": "_handle_"
     }
-    
+
     @classmethod
     def analyze_method(cls, method_code: str, method_name: str) -> Tuple[ComplexityMetrics, List[ExtractionCandidate]]:
         """
         Analyze a method and identify extraction candidates.
-        
+
         Args:
             method_code: Source code of the method
             method_name: Name of the method
-            
+
         Returns:
             Tuple of (complexity metrics, extraction candidates)
         """
@@ -92,47 +92,47 @@ class FlatteningPattern:
             tree = ast.parse(method_code)
         except SyntaxError:
             return ComplexityMetrics(0, 0, 0, 0), []
-        
+
         # Calculate metrics
         lines = method_code.split('\n')
         line_count = len([l for l in lines if l.strip() and not l.strip().startswith('#')])
         nesting_depth = cls._calculate_max_nesting(tree)
         conditional_branches = cls._count_conditionals(tree)
-        
+
         metrics = ComplexityMetrics(
             line_count=line_count,
             nesting_depth=nesting_depth,
             conditional_branches=conditional_branches,
             duplicate_patterns=0  # Would need semantic analysis
         )
-        
+
         # Identify extraction candidates
         candidates = []
         if metrics.exceeds_threshold():
             candidates = cls._identify_extraction_candidates(tree, method_name)
-        
+
         return metrics, candidates
-    
+
     @classmethod
     def _calculate_max_nesting(cls, tree: ast.AST) -> int:
         """Calculate maximum nesting depth in AST."""
         max_depth = 0
-        
+
         def visit_node(node, depth=0):
-                                    
+
             nonlocal max_depth
             max_depth = max(max_depth, depth)
-            
+
             # Increase depth for control flow structures
             if isinstance(node, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
                 depth += 1
-            
+
             for child in ast.iter_child_nodes(node):
                 visit_node(child, depth)
-        
+
         visit_node(tree)
         return max_depth
-    
+
     @classmethod
     def _count_conditionals(cls, tree: ast.AST) -> int:
         """Count conditional branches in AST."""
@@ -145,19 +145,19 @@ class FlatteningPattern:
                     count += 1
                     node = node.orelse[0]
         return count
-    
+
     @classmethod
     def _identify_extraction_candidates(cls, tree: ast.AST, method_name: str) -> List[ExtractionCandidate]:
         """
         Identify code blocks that should be extracted into helper methods.
-        
+
         Based on the agent_logic.py pattern:
         1. Dictionary initialization blocks → _initialize_[result_name]
         2. If/elif branches with validation → _process_[branch_name]
         3. Nested conditionals with side effects → _handle_[action_name]
         """
         candidates = []
-        
+
         for node in ast.walk(tree):
             # Pattern 1: Dictionary initialization
             if isinstance(node, ast.Assign) and isinstance(node.value, ast.Dict):
@@ -172,7 +172,7 @@ class FlatteningPattern:
                         dependencies=[],
                         returns="Dict[str, Any]"
                     ))
-            
+
             # Pattern 2: If/elif chains with similar structure
             if isinstance(node, ast.If):
                 # Check for if/elif pattern with similar bodies
@@ -188,14 +188,14 @@ class FlatteningPattern:
                         dependencies=[],
                         returns="Dict[str, Any]"
                     ))
-        
+
         return candidates
-    
+
     @classmethod
     def generate_extraction_plan(cls, metrics: ComplexityMetrics, candidates: List[ExtractionCandidate]) -> Dict:
         """
         Generate a step-by-step extraction plan.
-        
+
         Returns:
             Dictionary with extraction strategy and steps
         """
@@ -204,14 +204,14 @@ class FlatteningPattern:
                 "needs_extraction": False,
                 "reason": "Method within acceptable complexity thresholds"
             }
-        
+
         # Sort candidates by potential impact (line count * nesting level)
         sorted_candidates = sorted(
             candidates,
             key=lambda c: c.line_count * c.nesting_level,
             reverse=True
         )
-        
+
         return {
             "needs_extraction": True,
             "current_metrics": {
@@ -243,7 +243,7 @@ agent_logic_pattern = {
     "source_file": "agentic_core/agent_logic.py",
     "method_name": "check_and_learn",
     "date": "2025-12-19",
-    
+
     "before": {
         "lines": 85,
         "nesting_depth": 4,
@@ -255,7 +255,7 @@ agent_logic_pattern = {
             "Multiple Clean Slate Protocol retries"
         ]
     },
-    
+
     "extraction_strategy": {
         "identified_blocks": [
             {
@@ -282,7 +282,7 @@ agent_logic_pattern = {
         ],
         "total_extracted": "42 lines (49% of original method)"
     },
-    
+
     "after": {
         "lines": 50,
         "nesting_depth": 2,
@@ -294,7 +294,7 @@ agent_logic_pattern = {
             "Ready for single-pass healing (~11.5K tokens)"
         ]
     },
-    
+
     "helper_methods": [
         {
             "name": "_initialize_validation_result",
@@ -318,7 +318,7 @@ agent_logic_pattern = {
             "pattern": "Validation + result formatting + conditional promotion + logging"
         }
     ],
-    
+
     "success_metrics": {
         "preservation_rate": 103.0,
         "complexity_reduction": 41.0,
@@ -326,7 +326,7 @@ agent_logic_pattern = {
         "healing_readiness": "single_pass",
         "token_budget": "11.5K / 24.5K (47% usage)"
     },
-    
+
     "reusable_pattern": {
         "trigger": "method > 40 lines AND nesting > 3",
         "recognition": [
@@ -355,7 +355,7 @@ agent_logic_pattern = {
 def get_flattening_pattern() -> Dict:
     """
     Get the golden state flattening pattern for Pinecone storage.
-    
+
     Returns:
         Complete pattern dictionary ready for vector embedding
     """

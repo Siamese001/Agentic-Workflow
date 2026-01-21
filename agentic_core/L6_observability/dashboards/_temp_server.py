@@ -13,27 +13,27 @@ class StaticFileApp:
     """Simple WSGI app to serve static files"""
     def __init__(self, directory):
         self.directory = directory
-        
+
     def __call__(self, environ, start_response):
         path = environ.get('PATH_INFO', '/')
         if path == '/':
             path = '/autonomy_dashboard.html'
-        
+
         # Remove leading slash and resolve path
         filepath = os.path.join(self.directory, path.lstrip('/'))
-        
+
         # Security: prevent directory traversal
         filepath = os.path.abspath(filepath)
         if not filepath.startswith(os.path.abspath(self.directory)):
             start_response('403 Forbidden', [('Content-Type', 'text/plain')])
             return [b'Forbidden']
-        
+
         # Serve file if it exists
         if os.path.isfile(filepath):
             mimetype, _ = mimetypes.guess_type(filepath)
             if mimetype is None:
                 mimetype = 'application/octet-stream'
-            
+
             # Override MIME types for common dashboard files
             if filepath.endswith('.js'):
                 mimetype = 'application/javascript'
@@ -41,7 +41,7 @@ class StaticFileApp:
                 mimetype = 'text/css'
             elif filepath.endswith('.html'):
                 mimetype = 'text/html'
-            
+
             try:
                 with open(filepath, 'rb') as f:
                     data = f.read()

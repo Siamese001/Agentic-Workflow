@@ -55,24 +55,24 @@ def calculate_health_score(
 ) -> float:
     """
     Sovereign SSOT for health score calculation.
-    
+
     This is the ONLY place where health scores should be calculated.
     All consumers (dashboard, tests, validators) MUST use this function.
-    
+
     Args:
         heal_cap: Heal capability percentage (0.0 to 100.0)
         invoc: Invocation percentage (0.0 to 100.0)
         test_cov: Test coverage percentage (0.0 to 100.0)
         obs: Observability percentage (0.0 to 100.0)
         comp_health: Complexity health percentage (0.0 to 100.0)
-    
+
     Returns:
         Weighted health score rounded to 4 decimal places for precision
-    
+
     Formula:
         health = (heal_cap * 0.30) + (invoc * 0.10) + (test_cov * 0.25) +
                  (obs * 0.20) + (comp_health * 0.15)
-    
+
     Example:
         >>> calculate_health_score(100.0, 100.0, 100.0, 100.0, 100.0)
         100.0
@@ -89,7 +89,7 @@ def calculate_health_score(
     ]:
         if not (0.0 <= value <= 100.0):
             raise ValueError(f"{name} must be between 0.0 and 100.0, got {value}")
-    
+
     # Calculate weighted sum
     raw_score = (
         heal_cap * HEALTH_WEIGHTS["heal_capability"] +
@@ -98,7 +98,7 @@ def calculate_health_score(
         obs * HEALTH_WEIGHTS["observability"] +
         comp_health * HEALTH_WEIGHTS["complexity"]
     )
-    
+
     # Round to 4 decimal places to prevent floating point mismatches
     return round(raw_score, 4)
 
@@ -127,22 +127,22 @@ LAYER_MARKERS: Dict[str, str] = {
 def get_canonical_layer(file_path: Union[str, Path]) -> str:
     """
     Sovereign SSOT for layer inference from file paths.
-    
+
     This is the ONLY place where layer inference should be performed.
     All consumers (discovery, validators, categorizers) MUST use this function.
-    
+
     Args:
         file_path: Absolute or relative file path (str or Path object)
-    
+
     Returns:
         Layer identifier: 'L0', 'L1', ..., 'L6', 'Apps', 'utils', 'tests', or 'Unknown'
-    
+
     Algorithm:
         1. Normalize path separators (Windows/Linux compatibility)
         2. Check for direct layer markers in path (L0_maintenance, L1_cognition, etc.)
         3. Fallback: Pattern-based detection (e.g., /L5/ in path)
         4. Return 'Unknown' if no match found
-    
+
     Example:
         >>> get_canonical_layer("agentic_core/L5_safety/validators/LocationAgent.py")
         'L5'
@@ -154,12 +154,12 @@ def get_canonical_layer(file_path: Union[str, Path]) -> str:
     # Normalize path to forward slashes for cross-platform consistency
     path_str = str(file_path).replace("\\", "/")
     path_lower = path_str.lower()
-    
+
     # Priority 1: Direct layer markers
     for marker, layer in LAYER_MARKERS.items():
         if marker.lower() in path_lower:
             return layer
-    
+
     # Priority 2: Pattern-based detection (e.g., /L5/ or /L5_)
     # Split path and look for L[0-6] patterns
     parts = path_str.split('/')
@@ -169,7 +169,7 @@ def get_canonical_layer(file_path: Union[str, Path]) -> str:
             digit = part[1]
             if digit in '0123456':
                 return f"L{digit}"
-    
+
     # No match found
     return "Unknown"
 
@@ -187,14 +187,14 @@ def validate_health_components(
 ) -> bool:
     """
     Validate that all health components are in valid range [0.0, 100.0].
-    
+
     Args:
         heal_cap: Heal capability percentage
         invoc: Invocation percentage
         test_cov: Test coverage percentage
         obs: Observability percentage
         comp_health: Complexity health percentage
-    
+
     Returns:
         True if all components are valid, False otherwise
     """
@@ -205,7 +205,7 @@ def validate_health_components(
 def get_health_weights() -> Dict[str, float]:
     """
     Get the canonical health weights dictionary.
-    
+
     Returns:
         Dictionary mapping component names to their weights
     """
@@ -239,24 +239,24 @@ def categorize_agent(
 ) -> str:
     """
     Sovereign SSOT for agent categorization.
-    
+
     This is the ONLY place where agent categorization should be performed.
     All consumers (discovery, dashboard, validators) MUST use this function.
-    
+
     Args:
         class_name: Name of the agent class (e.g., "BaseClassEnforcerAgent")
         base_classes: List of base class names (e.g., ["L5Agent", "MCPHardenedMixin"])
         docstring: Optional docstring for additional context
-    
+
     Returns:
         Category name: 'Validator', 'Healer', 'Guardian', 'Orchestrator', etc.
         Returns 'GenericAgent' if no pattern matches.
-    
+
     Algorithm:
         1. Combine class_name + base_classes + docstring into search string
         2. Check patterns in priority order (first match wins)
         3. Return category or 'GenericAgent' as fallback
-    
+
     Example:
         >>> categorize_agent("BaseClassEnforcerAgent")
         'Validator'
@@ -268,15 +268,15 @@ def categorize_agent(
     # Build comprehensive search string
     base_classes = base_classes or []
     docstring = docstring or ""
-    
+
     search_string = class_name + " " + " ".join(base_classes) + " " + docstring
-    
+
     # Check patterns in priority order
     for category, patterns in AGENT_CATEGORY_PATTERNS.items():
         for pattern in patterns:
             if re.search(pattern, search_string, re.IGNORECASE):
                 return category
-    
+
     # Fallback for uncategorized agents
     return "GenericAgent"
 
@@ -284,7 +284,7 @@ def categorize_agent(
 def get_agent_categories() -> list:
     """
     Get list of all canonical agent categories.
-    
+
     Returns:
         List of category names in priority order
     """

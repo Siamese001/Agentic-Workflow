@@ -19,7 +19,7 @@ def validate_ssot_compliance():
     print("\n" + "="*70)
     print("TEST 1: SSOT Compliance Validation")
     print("="*70)
-    
+
     # Import SSOT column names
     sys.path.insert(0, str(project_root / "scripts"))
     from dashboard_ssot_definitions import (
@@ -28,7 +28,7 @@ def validate_ssot_compliance():
         COL_SCHEMA, COL_CANONICAL_INHERITANCE,
         COL_COMPLEXITY_HEALTH, COL_CODE_QUALITY, COL_HEALTH
     )
-    
+
     required_columns = [
         'Territory', 'Total', 'Compliant',
         COL_HEAL_CAP, COL_INVOCATION, COL_TEST,
@@ -37,26 +37,26 @@ def validate_ssot_compliance():
         COL_CANONICAL_INHERITANCE, COL_CODE_QUALITY,
         COL_HEALTH  # CRITICAL: Overall health score
     ]
-    
+
     # Load dashboard data
     data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
     raw_content = data_file.read_text(encoding='utf-8')
-    
+
     # Hardening: Use regex to safely extract JSON payload
     match = re.search(r'window\.dashboardData\s*=\s*(\[.*?\]);', raw_content, re.DOTALL)
     if not match:
         print("❌ FAILED: Could not extract JSON from dashboard_data.js")
         return False
-        
+
     data = json.loads(match.group(1))
-    
+
     # Check all rows for required columns
     failures = []
     for row in data:
         for col in required_columns:
             if col not in row:
                 failures.append(f"{row.get('Territory', 'UNKNOWN')}: missing '{col}'")
-    
+
     if failures:
         print(f"\n❌ SSOT COMPLIANCE FAILED: {len(failures)} missing fields")
         for f in failures[:10]:
@@ -74,7 +74,7 @@ def validate_field_name_consistency():
     print("\n" + "="*70)
     print("TEST 2: Field Name Consistency Validation")
     print("="*70)
-    
+
     # Import SSOT field names
     sys.path.insert(0, str(project_root / "scripts"))
     from dashboard_ssot_definitions import (
@@ -82,27 +82,27 @@ def validate_field_name_consistency():
         FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS,
         FIELD_CYCLOMATIC_COMPLEXITY
     )
-    
+
     ssot_fields = [
         FIELD_HAS_HEALING, FIELD_INVOCATION, FIELD_HAS_TESTS,
         FIELD_TYPED_PCT, FIELD_DOCUMENTED_PCT, FIELD_SCHEMA_STRICTNESS,
         FIELD_CYCLOMATIC_COMPLEXITY
     ]
-    
+
     # Load source data
     source_file = project_root / "agent_discovery_full.json"
     with open(source_file) as f:
         agents = json.load(f)
-    
+
     if not agents:
         print("❌ FAILED: No agents in source data")
         return False
-    
+
     sample = agents[0]
-    
+
     # Check SSOT fields exist in source
     missing = [f for f in ssot_fields if f not in sample]
-    
+
     if missing:
         print(f"\n❌ FIELD NAME MISMATCH: {len(missing)} SSOT fields missing from source")
         print(f"   Missing: {missing}")
@@ -118,7 +118,7 @@ def validate_calculation_integrity():
     print("\n" + "="*70)
     print("TEST 3: Calculation Integrity Validation")
     print("="*70)
-    
+
     # Import SSOT calculation functions and column names
     sys.path.insert(0, str(project_root / "scripts"))
     from dashboard_ssot_definitions import (
@@ -128,41 +128,41 @@ def validate_calculation_integrity():
         COL_HEAL_CAP, COL_INVOCATION, COL_TEST, COL_HARDENED,
         COL_COMPLEXITY_HEALTH, COL_TYPED, COL_DOCUMENTED, COL_CANONICAL_INHERITANCE
     )
-    
+
     # Load source data
     source_file = project_root / "agent_discovery_full.json"
     with open(source_file) as f:
         agents = json.load(f)
-    
+
     # Group by territory
     territories = defaultdict(list)
     for agent in agents:
         territory = agent.get('territory', 'Unknown')
         territories[territory].append(agent)
-    
+
     # Load dashboard data
     data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
     content = data_file.read_text(encoding='utf-8')
     lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
     content = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
     dashboard_data = json.loads(content)
-    
+
     # Hardening: Absolute Validation (Full dataset check instead of random sampling)
     full_territories = [r for r in dashboard_data if r['Territory'] != 'TOTAL']
-    
+
     tolerance = 0.1  # Allow 0.1% difference for floating point
     failures = []
-    
+
     print(f"\n   Running exhaustive check on all {len(full_territories)} territories...")
-    
+
     for row in full_territories:
         territory_name = row['Territory']
         territory_agents = territories.get(territory_name, [])
-        
+
         if not territory_agents:
             failures.append(f"{territory_name}: No agents found in source")
             continue
-        
+
         # Calculate expected values
         expected_heal_cap = calc_heal_cap_pct(territory_agents)
         expected_invocation = calc_invocation_pct(territory_agents)
@@ -173,7 +173,7 @@ def validate_calculation_integrity():
         expected_typed = calc_typed_pct(territory_agents)
         expected_documented = calc_documented_pct(territory_agents)
         expected_inheritance = calc_canonical_inheritance_pct(territory_agents)
-        
+
         # SSOT: Compare with dashboard values using canonical column names
         checks = [
             (COL_HEAL_CAP, expected_heal_cap, row.get(COL_HEAL_CAP)),
@@ -185,13 +185,13 @@ def validate_calculation_integrity():
             (COL_DOCUMENTED, expected_documented, row.get(COL_DOCUMENTED)),
             (COL_CANONICAL_INHERITANCE, expected_inheritance, row.get(COL_CANONICAL_INHERITANCE))
         ]
-        
+
         for field_name, expected, actual in checks:
             if actual is None:
                 failures.append(f"{territory_name}: {field_name} is None")
             elif abs(expected - actual) > tolerance:
                 failures.append(f"{territory_name}: {field_name} mismatch (expected {expected:.1f}, got {actual:.1f})")
-    
+
     if failures:
         print(f"\n❌ CALCULATION INTEGRITY FAILED: {len(failures)} mismatches")
         for f in failures:
@@ -206,32 +206,32 @@ def validate_territory_count():
     print("\n" + "="*70)
     print("TEST 4: Territory Count Validation")
     print("="*70)
-    
+
     # Load source data
     source_file = project_root / "agent_discovery_full.json"
     with open(source_file) as f:
         agents = json.load(f)
-    
+
     source_territories = set(a.get('territory') for a in agents if a.get('territory'))
-    
+
     # Load dashboard data
     data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
     content = data_file.read_text(encoding='utf-8')
     lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
     content = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
     dashboard_data = json.loads(content)
-    
+
     dashboard_territories = set(r['Territory'] for r in dashboard_data if r['Territory'] != 'TOTAL')
-    
+
     missing = source_territories - dashboard_territories
     extra = dashboard_territories - source_territories
-    
+
     failures = []
     if missing:
         failures.append(f"Missing from dashboard: {missing}")
     if extra:
         failures.append(f"Extra in dashboard: {extra}")
-    
+
     if failures:
         print(f"\n❌ TERRITORY COUNT MISMATCH:")
         for f in failures:
@@ -248,37 +248,37 @@ def validate_data_types():
     print("\n" + "="*70)
     print("TEST 5: Data Type Validation")
     print("="*70)
-    
+
     # Load dashboard data
     data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
     content = data_file.read_text(encoding='utf-8')
     lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
     content = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
     data = json.loads(content)
-    
+
     failures = []
-    
+
     percentage_fields = [
         'Heal Cap %', 'Invocation %', 'Test %', 'MCP Hardened %',
         'Complexity Health %', 'Typed %', 'Documented %',
         'Schema Strictness %', 'Canonical Inheritance %', 'Code Quality Score'
     ]
-    
+
     for row in data:
         # Territory should be string
         if not isinstance(row.get('Territory'), str):
             failures.append(f"Territory is not string: {row.get('Territory')}")
-        
+
         # Total should be int
         if not isinstance(row.get('Total'), int):
             failures.append(f"{row['Territory']}: Total is not int: {row.get('Total')}")
-        
+
         # Percentages should be numeric
         for field in percentage_fields:
             value = row.get(field)
             if value is not None and not isinstance(value, (int, float)):
                 failures.append(f"{row['Territory']}: {field} is not numeric: {value} (type: {type(value).__name__})")
-    
+
     if failures:
         print(f"\n❌ DATA TYPE VALIDATION FAILED: {len(failures)} type errors")
         for f in failures[:10]:
@@ -296,14 +296,14 @@ def validate_expected_ranges():
     print("\n" + "="*70)
     print("TEST 6: Expected Range Validation (Phase 2)")
     print("="*70)
-    
+
     # Load dashboard data
     data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
     content = data_file.read_text(encoding='utf-8')
     lines = [l for l in content.split('\n') if not l.strip().startswith('//')]
     content = '\n'.join(lines).replace('window.dashboardData = ', '').strip().rstrip(';')
     data = json.loads(content)
-    
+
     # Define expected ranges (min, max) for each metric
     EXPECTED_RANGES = {
         'Complexity Health %': (0, 60),      # Typically 0-60%, higher is unusual
@@ -315,13 +315,13 @@ def validate_expected_ranges():
         'Canonical Inheritance %': (90, 100), # Should be >90%
         'Code Quality Score': (85, 100)      # Should be >85%
     }
-    
+
     warnings = []
-    
+
     for row in data:
         if row['Territory'] == 'TOTAL':
             continue  # Skip TOTAL row for range checks
-        
+
         for field, (min_expected, max_expected) in EXPECTED_RANGES.items():
             value = row.get(field)
             if value is not None:
@@ -329,7 +329,7 @@ def validate_expected_ranges():
                     warnings.append(f"⚠️  {row['Territory']}: {field}={value:.1f}% (below expected minimum {min_expected}%)")
                 elif value > max_expected:
                     warnings.append(f"⚠️  {row['Territory']}: {field}={value:.1f}% (above expected maximum {max_expected}%)")
-    
+
     if warnings:
         print(f"\n⚠️  RANGE WARNINGS: {len(warnings)} values outside expected ranges")
         print("   (Not errors, but may indicate issues requiring attention)")
@@ -339,7 +339,7 @@ def validate_expected_ranges():
             print(f"   ... and {len(warnings) - 10} more")
     else:
         print(f"\n✅ PASSED: All values within expected ranges")
-    
+
     # Always return True - these are warnings, not failures
     return True
 
@@ -348,34 +348,34 @@ def validate_snapshot():
     print("\n" + "="*70)
     print("TEST 7: Snapshot Regression Testing (Phase 3)")
     print("="*70)
-    
+
     import hashlib
-    
+
     # Load current data
     data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
     current_content = data_file.read_text(encoding='utf-8')
-    
+
     # Calculate hash
     current_hash = hashlib.sha256(current_content.encode()).hexdigest()
-    
+
     # Baseline file location
     baseline_file = project_root / "tests" / "dashboard_baseline_hash.txt"
     baseline_file.parent.mkdir(exist_ok=True)
-    
+
     if baseline_file.exists():
         with open(baseline_file) as f:
             baseline_hash = f.read().strip()
-        
+
         if current_hash != baseline_hash:
             print(f"\n⚠️  SNAPSHOT MISMATCH: Integrity Deviation Detected")
             print(f"   Current SHA-256:  {current_hash[:32]}...")
             print(f"   Baseline SHA-256: {baseline_hash[:32]}...")
-            
+
             # Hardening: Check if the deviation is structural (agent counts)
             # (Implementation of metadata comparison)
             print(f"\n   This is expected if you intentionally regenerated data.")
             print(f"   Review changes and update baseline if correct.")
-            
+
             # Show what changed
             lines_current = current_content.split('\n')
             print(f"\n   Current data: {len(lines_current)} lines")
@@ -385,11 +385,11 @@ def validate_snapshot():
     else:
         print(f"\n📝 BASELINE CREATED: First run, creating baseline")
         print(f"   Hash: {current_hash[:16]}...")
-    
+
     # Update baseline
     with open(baseline_file, 'w') as f:
         f.write(current_hash)
-    
+
     # Always return True - this is informational
     return True
 
@@ -398,14 +398,14 @@ def validate_performance():
     print("\n" + "="*70)
     print("TEST 8: Performance Benchmarking (Phase 3)")
     print("="*70)
-    
+
     import time
     import subprocess
-    
+
     print("\n   Benchmarking data generation script...")
-    
+
     start_time = time.time()
-    
+
     try:
         # Use UTF-8 encoding for subprocess to handle Unicode characters
         result = safe_execute(
@@ -416,13 +416,13 @@ def validate_performance():
             timeout=30,
             check=False
         )
-        
+
         elapsed = time.time() - start_time
-        
+
         # Performance thresholds
         THRESHOLD_WARNING = 5.0   # Warn if >5 seconds
         THRESHOLD_ERROR = 15.0    # Error if >15 seconds (more lenient)
-        
+
         if result.returncode == 0:
             if elapsed < THRESHOLD_WARNING:
                 print(f"\n✅ PASSED: Data generation completed in {elapsed:.2f}s")
@@ -447,9 +447,9 @@ def validate_performance():
                 if result.stderr:
                     print(f"   Error: {result.stderr[:200]}")
                 return False
-        
+
         return True
-        
+
     except subprocess.TimeoutExpired:
         print(f"\n❌ TIMEOUT: Data generation exceeded 30s")
         return False
@@ -466,9 +466,9 @@ if __name__ == "__main__":
     print("Phase 3: Regression & performance testing")
     print("\nRun BEFORE test_mcp_hardening_all_territories.py")
     print("\n⚠️  NOTE: Health score validation is now MANDATORY (hard blocker)")
-    
+
     all_passed = True
-    
+
     # Phase 1: Critical Validations (deployment blockers)
     print("\n" + "="*70)
     print("PHASE 1: CRITICAL VALIDATIONS")
@@ -478,24 +478,24 @@ if __name__ == "__main__":
     all_passed &= validate_calculation_integrity()
     all_passed &= validate_territory_count()
     all_passed &= validate_data_types()
-    
+
     # Phase 2: Enhanced Validations (warnings, not blockers)
     print("\n" + "="*70)
     print("PHASE 2: ENHANCED VALIDATIONS")
     print("="*70)
     validate_expected_ranges()  # Always returns True (warnings only)
-    
+
     # Phase 3: Regression & Performance Testing
     print("\n" + "="*70)
     print("PHASE 3: REGRESSION & PERFORMANCE")
     print("="*70)
     validate_snapshot()  # Always returns True (informational)
     all_passed &= validate_performance()  # Can fail if too slow
-    
+
     print("\n" + "="*70)
     print("FINAL RESULT")
     print("="*70)
-    
+
     if all_passed:
         print("\n✅ ALL VALIDATION TESTS PASSED")
         print("\n   Phase 1 (Critical):")

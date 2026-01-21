@@ -16,7 +16,7 @@ This guide covers the secure deployment of the Canon Validator Engine using Dock
    ```bash
    # Copy the production environment template
    cp .env.production.template .env.production
-   
+
    # Edit with your actual API keys and secrets
    nano .env.production
    ```
@@ -25,7 +25,7 @@ This guide covers the secure deployment of the Canon Validator Engine using Dock
    ```bash
    # Build the image (runs all 88 tests during build)
    docker-compose build
-   
+
    # Start all services
    docker-compose up -d
    ```
@@ -34,10 +34,10 @@ This guide covers the secure deployment of the Canon Validator Engine using Dock
    ```bash
    # Check service status
    docker-compose ps
-   
+
    # View logs
    docker-compose logs -f validator
-   
+
    # Test health check
    curl http://localhost:8080/health
    ```

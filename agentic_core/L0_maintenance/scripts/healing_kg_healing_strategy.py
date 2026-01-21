@@ -21,7 +21,7 @@ Logger: Any = logging.getLogger(__name__)
 class KnowledgeGraphHealingStrategy:
     """
     Autonomous healing for knowledge graph drift.
-    
+
     Detects and corrects KG inconsistencies by:
     - Re-extracting entities and relations from source content
     - Applying confidence thresholds for quality control
@@ -40,10 +40,10 @@ class KnowledgeGraphHealingStrategy:
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
         """
         Diagnose KG drift from auditor issues or proactive scan.
-        
+
         Args:
             issues: List of issues from sovereignty auditor
-            
+
         Returns:
             List of fix dictionaries with action details
         """
@@ -62,11 +62,11 @@ class KnowledgeGraphHealingStrategy:
     async def apply(self, fix: Dict, ctx: Any=None) -> bool:
         """
         Apply KG healing via Sovereign Clients.
-        
+
         Args:
             fix: Fix dictionary with action details
             ctx: Execution context (unused)
-            
+
         Returns:
             True if fix applied successfully, False otherwise
         """
@@ -114,11 +114,11 @@ class KnowledgeGraphHealingStrategy:
     async def _extract_entities_relations(self, text: str, source_id: str) -> Dict[str, Any]:
         """
         Extract entities and relations from text using Memory MCP.
-        
+
         Args:
             text: Text content to extract from
             source_id: Source identifier for tracking
-            
+
         Returns:
             Dictionary with entities and relations or None if failed
         """
@@ -134,12 +134,12 @@ class KnowledgeGraphHealingStrategy:
     async def _persist_kg_data(self, entities: List[Dict], relations: List[Dict], source_id: str) -> bool:
         """
         Persist entities and relations to L4 state via Memory MCP.
-        
+
         Args:
             entities: List of entity dictionaries
             relations: List of relation dictionaries
             source_id: Source identifier for tracking
-            
+
         Returns:
             True if persistence succeeded, False otherwise
         """
@@ -159,7 +159,7 @@ class KnowledgeGraphHealingStrategy:
 async def create_kg_healing_strategy() -> KnowledgeGraphHealingStrategy:
     """
     Factory function to create a knowledge graph healing strategy.
-    
+
     Returns:
         Initialized KnowledgeGraphHealingStrategy instance
     """

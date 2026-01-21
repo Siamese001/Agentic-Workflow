@@ -2,8 +2,8 @@ from __future__ import annotations
 """
 Reasoning & Cognitive Schemas
 =============================
-Defines the structured reasoning frameworks for Sovereign agents. 
-These models enforce "Chain of Thought" transparency and provide 
+Defines the structured reasoning frameworks for Sovereign agents.
+These models enforce "Chain of Thought" transparency and provide
 output schemas for specialized tasks like coding and research.
 """
 
@@ -106,6 +106,6 @@ class AgentPlan(BaseModel):
     """Agent execution plan with reasoning and tool calls."""
     reasoning: str = Field(..., description="High-level strategy for the overall Task")
     tool_calls: List[Dict[str, Any]] = Field(
-        ..., 
+        ...,
         description="Ordered list of tool calls to execute the plan"
     )

@@ -45,7 +45,7 @@ class QualityResult:
 class CodeQualityGuardrail:
     """
     Consolidated Code Quality Guardrail.
-    
+
     Provides unified code quality checks with:
     - Code formatting validation
     - Duplicate code detection
@@ -53,7 +53,7 @@ class CodeQualityGuardrail:
     - Dependency analysis
     - Git hygiene checks
     """
-    
+
     def __init__(self):
         """Initialize code quality guardrail."""
         self.enabled_rules: List[str] = [
@@ -63,23 +63,23 @@ class CodeQualityGuardrail:
             "dependencies",
             "git_hygiene",
         ]
-        
+
         # Formatting rules
         self.max_line_length = 120
         self.max_function_length = 50
         self.max_file_length = 500
-        
+
         # Duplicate detection
         self.min_duplicate_lines = 5
         self.code_hashes: Dict[str, List[str]] = {}
-        
+
         # Unused code patterns
         self.unused_patterns = [
             r"^\s*#\s*TODO",
             r"^\s*#\s*FIXME",
             r"^\s*pass\s*$",
         ]
-        
+
         # Git hygiene patterns
         self.bad_commit_patterns = [
             r"^fix$",
@@ -87,37 +87,37 @@ class CodeQualityGuardrail:
             r"^test$",
             r"^asdf",
         ]
-        
+
         # Statistics
         self.checks_performed = 0
         self.issues_found = 0
-    
+
     async def validate(self, code: str, file_path: Optional[str] = None) -> QualityResult:
         """
         Validate code quality.
-        
+
         Args:
             code: Code to validate
             file_path: Optional file path for context
-            
+
         Returns:
             QualityResult with issues
         """
         self.checks_performed += 1
         issues = []
-        
+
         # Apply enabled rules
         if "formatting" in self.enabled_rules:
             issues.extend(self._check_formatting(code, file_path))
-        
+
         if "duplication" in self.enabled_rules:
             issues.extend(self._check_duplication(code, file_path))
-        
+
         if "unused_code" in self.enabled_rules:
             issues.extend(self._check_unused(code, file_path))
-        
+
         self.issues_found += len(issues)
-        
+
         return QualityResult(
             valid=not any(i.severity == "error" for i in issues),
             issues=issues,
@@ -126,12 +126,12 @@ class CodeQualityGuardrail:
                 "issue_count": len(issues)
             }
         )
-    
+
     def _check_formatting(self, code: str, file_path: Optional[str]) -> List[CodeIssue]:
         """Check code formatting."""
         issues = []
         lines = code.splitlines()
-        
+
         # Check line length
         for i, line in enumerate(lines, 1):
             if len(line) > self.max_line_length:
@@ -143,7 +143,7 @@ class CodeQualityGuardrail:
                     line_number=i,
                     suggestion=f"Consider breaking this line"
                 ))
-        
+
         # Check file length
         if len(lines) > self.max_file_length:
             issues.append(CodeIssue(
@@ -153,7 +153,7 @@ class CodeQualityGuardrail:
                 file_path=file_path,
                 suggestion="Consider splitting into multiple files"
             ))
-        
+
         # Check trailing whitespace
         for i, line in enumerate(lines, 1):
             if line != line.rstrip():
@@ -164,19 +164,19 @@ class CodeQualityGuardrail:
                     file_path=file_path,
                     line_number=i
                 ))
-        
+
         return issues
-    
+
     def _check_duplication(self, code: str, file_path: Optional[str]) -> List[CodeIssue]:
         """Check for duplicate code."""
         issues = []
         lines = code.splitlines()
-        
+
         # Check for duplicate blocks
         for i in range(len(lines) - self.min_duplicate_lines):
             block = "\n".join(lines[i:i + self.min_duplicate_lines])
             block_hash = hashlib.md5(block.encode()).hexdigest()
-            
+
             if block_hash in self.code_hashes:
                 if file_path not in self.code_hashes[block_hash]:
                     issues.append(CodeIssue(
@@ -189,17 +189,17 @@ class CodeQualityGuardrail:
                     ))
             else:
                 self.code_hashes[block_hash] = []
-            
+
             if file_path:
                 self.code_hashes[block_hash].append(file_path)
-        
+
         return issues
-    
+
     def _check_unused(self, code: str, file_path: Optional[str]) -> List[CodeIssue]:
         """Check for unused code patterns."""
         issues = []
         lines = code.splitlines()
-        
+
         for i, line in enumerate(lines, 1):
             for pattern in self.unused_patterns:
                 if re.search(pattern, line, re.IGNORECASE):
@@ -211,21 +211,21 @@ class CodeQualityGuardrail:
                         line_number=i,
                         suggestion="Review and remove if no longer needed"
                     ))
-        
+
         return issues
-    
+
     def validate_commit_message(self, message: str) -> QualityResult:
         """
         Validate git commit message.
-        
+
         Args:
             message: Commit message to validate
-            
+
         Returns:
             QualityResult with issues
         """
         issues = []
-        
+
         # Check for bad patterns
         for pattern in self.bad_commit_patterns:
             if re.match(pattern, message.lower().strip()):
@@ -235,7 +235,7 @@ class CodeQualityGuardrail:
                     message=f"Commit message too short or unclear",
                     suggestion="Use descriptive commit messages"
                 ))
-        
+
         # Check minimum length
         if len(message.strip()) < 10:
             issues.append(CodeIssue(
@@ -244,26 +244,26 @@ class CodeQualityGuardrail:
                 message="Commit message is too short",
                 suggestion="Add more context to the commit message"
             ))
-        
+
         return QualityResult(
             valid=not any(i.severity == "error" for i in issues),
             issues=issues
         )
-    
+
     def validate_dependencies(self, dependencies: List[str], used: Set[str]) -> QualityResult:
         """
         Validate dependencies.
-        
+
         Args:
             dependencies: List of declared dependencies
             used: Set of actually used dependencies
-            
+
         Returns:
             QualityResult with unused dependencies
         """
         issues = []
         unused = set(dependencies) - used
-        
+
         for dep in unused:
             issues.append(CodeIssue(
                 rule="dependencies",
@@ -271,7 +271,7 @@ class CodeQualityGuardrail:
                 message=f"Unused dependency: {dep}",
                 suggestion="Consider removing from dependencies"
             ))
-        
+
         return QualityResult(
             valid=len(issues) == 0,
             issues=issues,
@@ -280,7 +280,7 @@ class CodeQualityGuardrail:
                 "unused_dependencies": len(unused)
             }
         )
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get code quality statistics."""
         return {

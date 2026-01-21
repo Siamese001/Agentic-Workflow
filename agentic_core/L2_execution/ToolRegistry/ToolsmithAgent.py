@@ -274,16 +274,16 @@ class ToolsmithAgent(L2Agent):
     @timeout(180)
     @standard_heal
     def heal_repository(
-        self, 
-        dry_run: bool = True, 
-        execute: bool = False, 
-        depth: int = 0, 
-        max_depth: int = 3, 
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
         _call_path: Optional[set] = None
     ) -> Dict[str, int]:
         """
         Wired Toolsmith Healing - Validates tool specifications and repairs broken tool files.
-        
+
         WIRED CAPABILITIES:
         - validate_tool_specs(): Checks JSON/YAML tool definitions for schema compliance.
         - _reconcile_tool_files(): Ensures tool Python files match their registered specs.
@@ -291,7 +291,7 @@ class ToolsmithAgent(L2Agent):
         """
         # CRITICAL: Chain up to HealerMixin
         super().heal_repository(dry_run=dry_run, execute=execute)
-        
+
         # Cycle/Depth Detection
         if _call_path is None:
             _call_path = set()
@@ -299,16 +299,16 @@ class ToolsmithAgent(L2Agent):
         if agent_name in _call_path or depth > max_depth:
             return {"errors": 1, "skipped": 1}
         _call_path.add(agent_name)
-        
+
         metrics = {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             # 1. Spec Validation (JSON/YAML)
             if hasattr(self, 'validate_tool_specs'):
                 spec_results = self.validate_tool_specs(dry_run=dry_run)
                 metrics["violations"] += spec_results.get("violations", 0)
                 metrics["fixed"] += spec_results.get("fixed", 0)
-                
+
             # 2. Python Tool File Reconciliation
             if hasattr(self, '_reconcile_tool_files'):
                 file_results = self._reconcile_tool_files(dry_run=dry_run)
@@ -327,7 +327,7 @@ class ToolsmithAgent(L2Agent):
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-            
+
         return metrics
 
     # SUPPLEMENTED FROM OrganicTerritorySeederAgent — enhances territory seeding capability — merged 2025-12-30
@@ -349,38 +349,38 @@ class ToolsmithAgent(L2Agent):
         super().heal_repository()
 
         SUPPLEMENTED FROM OrganicTerritorySeederAgent — enhances territory seeding capability — merged 2025-12-30
-        
+
         Seed organic content in empty territories (Ghost Territories).
-        
+
         Targets empty non-code folders and injects sovereign-compliant starter assets.
-        
+
         Args:
             project_root: Root path of the project
             dry_run: If True, only report what would be seeded without writing
-            
+
         Returns:
             Dict with seeding results: {seeded: [], skipped: [], errors: []}
         """
         results = {'seeded': [], 'skipped': [], 'errors': []}
-        
+
         for rel_path, files in self.TERRITORY_SEED_CONTENT.items():
             target_dir = project_root / rel_path
             if not target_dir.exists():
                 results['skipped'].append(f"{rel_path} (dir not found)")
                 continue
-                
+
             # Check if directory already has content (excluding __init__.py and .gitkeep)
             contents = [p.name for p in target_dir.iterdir() if p.name not in {'__init__.py', '.gitkeep'}]
             if contents:
                 results['skipped'].append(f"{rel_path} (already populated)")
                 continue
-                
+
             for filename, content in files.items():
                 file_path = target_dir / filename
                 if file_path.exists():
                     results['skipped'].append(str(file_path.relative_to(project_root)))
                     continue
-                    
+
                 if dry_run:
                     results['seeded'].append(f"[DRY RUN] {file_path.relative_to(project_root)}")
                 else:
@@ -390,7 +390,7 @@ class ToolsmithAgent(L2Agent):
                         Logger.info(f"Seeded: {file_path.relative_to(project_root)}")
                     except IOError as e:
                         results['errors'].append(f"{filename}: {e}")
-                        
+
         return results
 
 _toolsmith_agent: Optional["ToolsmithAgent"] = None

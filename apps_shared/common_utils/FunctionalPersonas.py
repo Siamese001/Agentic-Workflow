@@ -10,7 +10,7 @@ from ..registry.agent_capabilities import AgentRole
 
 class PersonaTemplate:
     """Template for functional persona prompts."""
-    
+
     # Base template structure
     BASE_TEMPLATE = """# IDENTITY
 You are the {FUNCTIONAL_ROLE}.
@@ -28,7 +28,7 @@ Your Downstream Consumer: {CONSUMER_ROLE}.
 # TASK
 {TASK}
 """
-    
+
     # Role-specific templates
     PERSONAS = {
         AgentRole.CONTEXT_GATHERER: {
@@ -51,7 +51,7 @@ Key capabilities:
 
 Remember: Your outputs become the foundation for all subsequent work. Accuracy and thoroughness are paramount."""
         },
-        
+
         AgentRole.STRATEGIC_PLANNER: {
             "functional_role": "Executive Strategist",
             "objective": "Transform research into clear, actionable strategic guidance",
@@ -72,7 +72,7 @@ Key capabilities:
 
 Remember: Your strategies guide the entire content creation process. They must be both ambitious and achievable."""
         },
-        
+
         AgentRole.CONTENT_DRAFTER: {
             "functional_role": "Executive Drafter",
             "objective": "Create compelling, accurate content that meets strategic objectives",
@@ -93,7 +93,7 @@ Key capabilities:
 
 Remember: You are the final creative voice before quality review. Your drafts must be publication-ready."""
         },
-        
+
         AgentRole.QUALITY_CRITIC: {
             "functional_role": "Governance Auditor",
             "objective": "Ensure content meets all quality standards and governance requirements",
@@ -114,7 +114,7 @@ Key capabilities:
 
 Remember: You are the final gatekeeper. Your approval signals content is ready for the world."""
         },
-        
+
         AgentRole.MESSAGE_CRAFTER: {
             "functional_role": "Message Architect",
             "objective": "Create personalized messages that build genuine connections",
@@ -135,7 +135,7 @@ Key capabilities:
 
 Remember: Your messages represent direct human connections. Authenticity is your greatest asset."""
         },
-        
+
         AgentRole.PROTOCOL_ENFORCER: {
             "functional_role": "Protocol Guardian",
             "objective": "Ensure 100% compliance with all established protocols",
@@ -156,7 +156,7 @@ Key capabilities:
 
 Remember: You protect the organization and its users. There is no room for compromise."""
         },
-        
+
         AgentRole.RESUME_BUILDER: {
             "functional_role": "Resume Architect",
             "objective": "Create resumes that get past ATS and impress recruiters",
@@ -178,23 +178,23 @@ Key capabilities:
 Remember: Your resumes open doors to opportunities. Every word must serve the candidate's success."""
         }
     }
-    
+
     @classmethod
     def get_prompt(cls, role: AgentRole, context: Dict[str, Any], task: str) -> str:
         """Get a formatted prompt for a specific role.
-        
+
         Args:
             role: The agent role
             context: Execution context
             task: Specific task to perform
-            
+
         Returns:
             Formatted prompt string
         """
         persona = cls.PERSONAS.get(role)
         if not persona:
             raise ValueError(f"No persona defined for role: {role}")
-        
+
         # Format the base template
         prompt = cls.BASE_TEMPLATE.format(
             FUNCTIONAL_ROLE=persona["functional_role"],
@@ -204,38 +204,38 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
             CONTEXT=cls._format_context(context, role),
             TASK=task
         )
-        
+
         # Add role-specific system prompt
         prompt += f"\n\n# SYSTEM PROMPT\n{persona['system_prompt']}"
-        
+
         return prompt
-    
+
     @classmethod
     def _format_context(cls, context: Dict[str, Any], role: AgentRole) -> str:
         """Format context for the prompt.
-        
+
         Args:
             context: Raw context data
             role: Agent role for context customization
-            
+
         Returns:
             Formatted context string
         """
         formatted = []
-        
+
         # Add role-specific context
         if role == AgentRole.CONTEXT_GATHERER:
             if "query" in context:
                 formatted.append(f"Research Query: {context['query']}")
             if "sources" in context:
                 formatted.append(f"Available Sources: {context['sources']}")
-        
+
         elif role == AgentRole.STRATEGIC_PLANNER:
             if "research_results" in context:
                 formatted.append(f"Research Findings: {context['research_results']}")
             if "objectives" in context:
                 formatted.append(f"Strategic Objectives: {context['objectives']}")
-        
+
         elif role in [AgentRole.CONTENT_DRAFTER, AgentRole.RESUME_BUILDER, AgentRole.MESSAGE_CRAFTER]:
             if "strategic_plan" in context:
                 formatted.append(f"Strategic Guidance: {context['strategic_plan']}")
@@ -243,32 +243,32 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
                 formatted.append(f"Tone Requirements: {context['tone_settings']}")
             if "target_audience" in context:
                 formatted.append(f"Target Audience: {context['target_audience']}")
-        
+
         elif role == AgentRole.QUALITY_CRITIC:
             if "content" in context:
                 formatted.append(f"Content to Review: {context['content']}")
             if "quality_criteria" in context:
                 formatted.append(f"Quality Criteria: {context['quality_criteria']}")
-        
+
         elif role == AgentRole.PROTOCOL_ENFORCER:
             if "content" in context:
                 formatted.append(f"Content to Check: {context['content']}")
             if "protocol_rules" in context:
                 formatted.append(f"Protocol Rules: {context['protocol_rules']}")
-        
+
         # Add any additional context
         for key, value in context.items():
-            if key not in ["query", "sources", "research_results", "objectives", 
+            if key not in ["query", "sources", "research_results", "objectives",
                           "strategic_plan", "tone_settings", "target_audience",
                           "content", "quality_criteria", "protocol_rules"]:
                 formatted.append(f"{key.replace('_', ' ').title()}: {value}")
-        
+
         return "\n".join(formatted) if formatted else "No specific context provided"
 
 
 class PromptSanitizer:
     """Utility to sanitize prompts and remove legacy references."""
-    
+
     # Legacy reference patterns
     LEGACY_PATTERNS = {
         r"\bK\.?[0-9]+\b": "functional role",
@@ -278,63 +278,63 @@ class PromptSanitizer:
         r"\byou\s+are\s+[Kk][\.0-9]+\b": "you are the functional agent",
         r"\bAgent\s+[Kk][\.0-9]+\b": "Agent",
     }
-    
+
     @classmethod
     def sanitize_prompt(cls, prompt: str, target_role: Optional[AgentRole] = None) -> str:
         """Remove legacy references from a prompt.
-        
+
         Args:
             prompt: The prompt to sanitize
             target_role: Optional target role for replacement
-            
+
         Returns:
             Sanitized prompt
         """
         import re
-        
+
         sanitized = prompt
-        
+
         # Apply legacy pattern replacements
         for pattern, replacement in cls.LEGACY_PATTERNS.items():
             sanitized = re.sub(pattern, replacement, sanitized, flags=re.IGNORECASE)
-        
+
         # Add functional persona header if target role provided
         if target_role:
             persona = PersonaTemplate.PERSONAS.get(target_role)
             if persona:
                 header = f"# FUNCTIONAL ROLE: {persona['functional_role']}\n"
                 sanitized = header + sanitized
-        
+
         return sanitized
-    
+
     @classmethod
     def validate_sanitized(cls, text: str) -> bool:
         """Validate that text contains no legacy references.
-        
+
         Args:
             text: Text to validate
-            
+
         Returns:
             True if sanitized, False otherwise
         """
         import re
-        
+
         for pattern in cls.LEGACY_PATTERNS:
             if re.search(pattern, text, flags=re.IGNORECASE):
                 return False
-        
+
         return True
 
 
 # Convenience functions
 def get_functional_prompt(role: AgentRole, task: str, **context) -> str:
     """Get a functional persona prompt.
-    
+
     Args:
         role: The agent role
         task: Task to perform
         **context: Additional context
-        
+
     Returns:
         Formatted prompt
     """
@@ -343,11 +343,11 @@ def get_functional_prompt(role: AgentRole, task: str, **context) -> str:
 
 def sanitize_legacy_prompt(prompt: str, role: Optional[AgentRole] = None) -> str:
     """Sanitize a legacy prompt.
-    
+
     Args:
         prompt: Legacy prompt with K-node references
         role: Optional target role
-        
+
     Returns:
         Sanitized prompt
     """

@@ -89,4 +89,3 @@ class ConstitutionalReviewResult:
     def critical_violations(self) -> List[ViolationReport]:
         """Get only critical violations."""
         return [v for v in self.violations if v.severity == RuleSeverity.CRITICAL]
-

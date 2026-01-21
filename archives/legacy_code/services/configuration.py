@@ -1709,4 +1709,3 @@ _TRACER_PROVIDER = None
 
 # Legacy constant
 _VECTOR_STORES = None
-

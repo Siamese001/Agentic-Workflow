@@ -1,6 +1,6 @@
 # Archive Approval Logic - Root Cause Analysis Report
 
-**Date:** January 20, 2026  
+**Date:** January 20, 2026
 **Issue:** Files being archived without proper approval; false positives on valid paths
 
 ---
@@ -128,9 +128,9 @@ For `agentic_core/unified/__init__.py`:
 
 **Current List:**
 ```python
-['L0_maintenance', 'L1_cognition', 'L2_execution', 'L3_orchestration', 
- 'L4_state', 'L5_safety', 'L6_observability', 'config', 'schemas', 
- 'prompt_governance', 'runtime', 'utils', 'patterns', 'semantic_memory', 
+['L0_maintenance', 'L1_cognition', 'L2_execution', 'L3_orchestration',
+ 'L4_state', 'L5_safety', 'L6_observability', 'config', 'schemas',
+ 'prompt_governance', 'runtime', 'utils', 'patterns', 'semantic_memory',
  'knowledge', 'observability', 'common']
 ```
 
@@ -140,7 +140,7 @@ For `agentic_core/unified/__init__.py`:
 - Any other legitimate folders that exist but aren't listed
 
 **Recommendation:**
-1. Audit all existing folders under `agentic_core/` 
+1. Audit all existing folders under `agentic_core/`
 2. Add legitimate folders to `SOVEREIGN_REGISTRY['agentic_core']['subfolders']`
 3. OR: Change `is_path_allowed()` to be more permissive for existing folders
 
@@ -174,7 +174,7 @@ For `agentic_core/unified/__init__.py`:
 
 **Recommendation:** Before prompting for archive:
 1. Check if the folder actually exists in the filesystem
-2. If it exists and has content, consider it "grandfathered" 
+2. If it exists and has content, consider it "grandfathered"
 3. Only flag truly orphaned/empty/invalid paths
 
 ---
@@ -217,7 +217,7 @@ Option A: Grandfather existing folders
 ```python
 def is_path_allowed(rel_path: Union[str, Path]) -> bool:
     # ... existing checks ...
-    
+
     # NEW: If folder exists on disk, consider it valid
     full_path = get_validated_project_root() / rel_path
     if full_path.parent.exists():
@@ -268,7 +268,7 @@ Create tests to verify:
 
 ---
 
-**Report Generated:** 2026-01-20  
+**Report Generated:** 2026-01-20
 **Status:** ✅ IMPLEMENTED
 
 ---

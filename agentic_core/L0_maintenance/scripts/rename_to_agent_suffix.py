@@ -22,7 +22,7 @@ RENAMES = {
     "ScriptsPlanningOrchestratorAgent": "ScriptsPlanningOrchestratorAgent",
     "SystemCommandExecutorAgent": "SystemCommandExecutorAgent",
     "WorkflowOrchestratorAgent": "WorkflowOrchestratorAgent",
-    
+
     # L1 Cognition
     "AssertionInspector": "AssertionInspectorAgent",
     "BranchTracker": "BranchTrackerAgent",
@@ -39,7 +39,7 @@ RENAMES = {
     "SafetyInspectorAgent": "SafetyInspectorAgent",
     "SemanticMapperAgent": "SemanticMapperAgent",
     "SovereignCognitivePlaneAgent": "SovereignCognitivePlaneAgent",
-    
+
     # L2 Execution
     "AuditTrailManager": "AuditTrailManagerAgent",
     "CircuitBreaker": "CircuitBreakerAgent",
@@ -55,7 +55,7 @@ RENAMES = {
     "SovereignRedisOrchestratorAgent": "SovereignRedisOrchestratorAgent",
     "SovereigntyAuditorAgent": "SovereigntyAuditorAgent",
     "SprawlInspectorAgent": "SprawlInspectorAgent",
-    
+
     # L3 Orchestration
     "DeadlockDetectorAgent": "DeadlockDetectorAgent",
     "McpRouterAgent": "McpRouterAgent",
@@ -69,11 +69,11 @@ RENAMES = {
     "TaskMonitorAgent": "TaskMonitorAgent",
     "TerritoryChangeHandlerAgent": "TerritoryChangeHandlerAgent",
     "TokenBudgetInspectorAgent": "TokenBudgetInspectorAgent",
-    
+
     # L4 State
     "MemoryManagerAgent": "MemoryManagerAgent",
     "ValidationContextManagerAgent": "ValidationContextManagerAgent",
-    
+
     # L5 Safety
     "InputValidatorAgent": "InputValidatorAgent",
     "MethodChangeDetectorAgent": "MethodChangeDetectorAgent",
@@ -82,7 +82,7 @@ RENAMES = {
     "SecureCheckpointManagerAgent": "SecureCheckpointManagerAgent",
     "SecureConfigManagerAgent": "SecureConfigManagerAgent",
     "TypeHintFixerAgent": "TypeHintFixerAgent",
-    
+
     # Apps
     "CapabilityMonitorAgent": "CapabilityMonitorAgent",
     "ConversationalRepairOrchestrator": "ConversationalRepairOrchestratorAgent",
@@ -103,7 +103,7 @@ RENAMES = {
     "StrictDocEnforcerAgent": "StrictDocEnforcerAgent",
     "TemplateOptimizerAgent": "TemplateOptimizerAgent",
     "UnifiedOrchestratorAgent": "UnifiedOrchestratorAgent",
-    
+
     # Utils
     "Phase5Validator": "Phase5ValidatorAgent",
     "SystemValidator": "SystemValidatorAgent",
@@ -114,7 +114,7 @@ RENAMES = {
 def rename_in_file(file_path: Path, renames: Dict[str, str], dry_run: bool = True) -> List[Tuple[str, str]]:
     """
     Rename class definitions and references in a file.
-    
+
     Returns list of (old_name, new_name) tuples for classes renamed.
     """
     try:
@@ -122,10 +122,10 @@ def rename_in_file(file_path: Path, renames: Dict[str, str], dry_run: bool = Tru
     except Exception as e:
         print(f"  Error reading {file_path}: {e}")
         return []
-    
+
     changes = []
     new_content = content
-    
+
     for old_name, new_name in renames.items():
         if old_name in content:
             # Replace class definition
@@ -133,21 +133,21 @@ def rename_in_file(file_path: Path, renames: Dict[str, str], dry_run: bool = Tru
             if re.search(pattern_class, content):
                 new_content = re.sub(pattern_class, f'class {new_name}', new_content)
                 changes.append((old_name, new_name))
-            
+
             # Replace references (imports, inheritance, instantiation)
             # Be careful not to replace partial matches
             pattern_ref = rf'\b{old_name}\b'
             new_content = re.sub(pattern_ref, new_name, new_content)
-    
+
     if changes and not dry_run:
         file_path.write_text(new_content, encoding="utf-8")
-    
+
     return changes
 
 
 def main():
     dry_run = "--dry-run" in sys.argv or len(sys.argv) == 1
-    
+
     if dry_run:
         print("=" * 60)
         print("DRY RUN - No changes will be made")
@@ -157,17 +157,17 @@ def main():
         print("=" * 60)
         print("EXECUTING RENAMES")
         print("=" * 60)
-    
+
     root = Path("C:/Git/Agentic-Workflow")
-    
+
     # Find all Python files
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
     py_files = list(get_python_files(root))
-    
+
     total_changes = 0
     files_changed = 0
-    
+
     for py_file in py_files:
         changes = rename_in_file(py_file, RENAMES, dry_run)
         if changes:
@@ -177,7 +177,7 @@ def main():
             print(f"\n{rel_path}:")
             for old, new in changes:
                 print(f"  {old} -> {new}")
-    
+
     print("\n" + "=" * 60)
     print(f"SUMMARY: {total_changes} renames across {files_changed} files")
     if dry_run:

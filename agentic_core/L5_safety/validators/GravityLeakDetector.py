@@ -62,15 +62,15 @@ class GravityLeakDetector:
 
     Gravity leaks require manual review and architectural decisions.
     """
-    
+
     def __init__(self, project_root: Path):
         """Initialize gravity detector."""
         self.project_root = Path(project_root).resolve()
-    
+
     # ========================================================================
     # AST SCORE COMPUTATION (Phase 4)
     # ========================================================================
-    
+
     def _recompute_ast_scores(self, tree: ast.AST) -> Tuple[float, float, Dict[str, float]]:
         """AST score recomputation orchestrator — linear walk + aggregation."""
         initial_scores = {
@@ -90,7 +90,7 @@ class GravityLeakDetector:
     def _collect_ast_increments(self, tree: ast.AST) -> dict:
         """Phase 1: Pure AST walk — collect raw risk increments."""
         increments = {"app_rg": 0.0, "app_lic": 0.0, "territories": {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}}
-        
+
         for node in ast.walk(tree):
             if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
                 self._score_identifier(node.name.lower(), 1.0, increments)
@@ -150,62 +150,62 @@ class GravityLeakDetector:
         for terr in final_scores["territories"]:
             final_scores["territories"][terr] += increments["territories"].get(terr, 0.0)
         return final_scores
-    
+
     # ========================================================================
     # GRAVITY VIOLATION HEALING (Phase 4)
     # ========================================================================
-    
+
     def _heal_gravity_violations(self, gravity_issues: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Helper method to heal gravity violations by removing offending imports."""
         gravity_heal_actions = []
         for grav in gravity_issues:
             path = Path(grav["path"]) if isinstance(grav["path"], str) else grav["path"]
             msg = grav["issue"]
-            
+
             try:
                 downstream_roots = self._extract_downstream_roots(msg)
                 if not downstream_roots:
                     continue
-                
+
                 content = path.read_text(encoding="utf-8")
                 lines = content.splitlines()
-                
+
                 # Import from LocationHealerAgent
                 from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
                 healer = LocationHealerAgent(project_root=self.project_root)
                 new_lines, removed_modules = healer._remove_offending_imports(lines, downstream_roots)
-                
+
                 if removed_modules:
                     new_content = self._insert_gravity_heal_todo(new_lines, msg, removed_modules)
                     self._backup_and_write_file(path, new_content)
-                    
+
                     gravity_heal_actions.append({
                         "type": "GRAVITY_AUTO_HEAL",
                         "file": grav["file"],
                         "removed_imports": removed_modules,
                     })
-            
+
             except Exception as e:
                 gravity_heal_actions.append({
                     "type": "GRAVITY_HEAL_ERROR",
                     "file": grav["file"],
                     "error": str(e),
                 })
-        
+
         return gravity_heal_actions
-    
+
     def _extract_downstream_roots(self, msg: str) -> List[str]:
         """Extract downstream roots from gravity violation message."""
         downstream_match = re.search(r"downstream roots: \[(.*?)\]", msg)
         if downstream_match:
             return [r.strip().strip("'\"") for r in downstream_match.group(1).split(",")]
-        
+
         downstream_match = re.search(r"apps_[a-z_]+", msg)
         if downstream_match:
             return [downstream_match.group(0)]
-        
+
         return []
-    
+
     def _insert_gravity_heal_todo(self, lines: List[str], msg: str, removed_modules: List[str]) -> str:
         """Insert TODO block after shebang/docstring."""
         todo_block = [
@@ -216,26 +216,26 @@ class GravityLeakDetector:
             "# Removed: " + ", ".join(removed_modules),
             "",
         ]
-        
+
         insert_idx = self._find_todo_insert_position(lines)
         new_lines = lines[:insert_idx] + todo_block + lines[insert_idx:]
         return "\n".join(new_lines)
-    
+
     def _find_todo_insert_position(self, lines: List[str]) -> int:
         """Find position to insert TODO block after shebang/docstring."""
         insert_idx = 0
-        
+
         if lines and lines[0].startswith("#!"):
             insert_idx = 1
-        
+
         if len(lines) > insert_idx and lines[insert_idx].strip().startswith('"""'):
             for i, l in enumerate(lines[insert_idx:], insert_idx):
                 if i > insert_idx and '"""' in l:
                     insert_idx = i + 1
                     break
-        
+
         return insert_idx
-    
+
     def _backup_and_write_file(self, path: Path, content: str) -> None:
         """Backup file and write new content."""
         # Import from LocationHealerAgent for backup directory initialization

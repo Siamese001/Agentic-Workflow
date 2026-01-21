@@ -12,11 +12,11 @@ Logger = logging.getLogger(__name__)
 
 class GeminiSpy:
     """Monitors Gemini API calls for observability."""
-    
+
     def __init__(self):
         self.calls: List[Dict[str, Any]] = []
         self.enabled = True
-    
+
     def record_call(self, endpoint: str, request: Any, response: Any) -> None:
         """Record a Gemini API call."""
         if self.enabled:
@@ -25,11 +25,11 @@ class GeminiSpy:
                 "request": request,
                 "response": response
             })
-    
+
     def get_call_count(self) -> int:
         """Get total number of recorded calls."""
         return len(self.calls)
-    
+
     def clear(self) -> None:
         """Clear recorded calls."""
         self.calls = []

@@ -79,11 +79,11 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
@@ -95,7 +95,7 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
         self._content_cache: Dict[str, str] = {}  # Cache for content hashing
         self.similarity_threshold = SIMILARITY_THRESHOLD
         self.embedding_model = EMBEDDING_MODEL
-        
+
         # [L6 SOVEREIGNTY] Validate our own placement at initialization
         is_valid, reason = validate_file_location(Path(__file__), Path.cwd())
         if not is_valid:
@@ -122,7 +122,7 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
         """Saves the registry to disk using atomic-style write logic."""
         import tempfile
         from datetime import datetime
-        
+
         data = {
             "sovereign_version": "1.0",
             "generated_date": datetime.now().strftime("%Y-%m-%d"),
@@ -130,7 +130,7 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
         }
         try:
             self.REGISTRY_FILE.parent.mkdir(parents=True, exist_ok=True)
-            
+
             # Atomic write: temp file + rename for crash safety
             with tempfile.NamedTemporaryFile(
                 mode='w',
@@ -141,10 +141,10 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
             ) as tmp:
                 json.dump(data, tmp, indent=2)
                 tmp_path = tmp.name
-            
+
             # Atomic rename (POSIX-safe, Windows best-effort)
             Path(tmp_path).replace(self.REGISTRY_FILE)
-            
+
         except IOError as e:
             Logger.error(f"PromptRegistry: Critical persistence failure: {e}")
             print(f"[!] PromptRegistry: Critical persistence failure: {e}")
@@ -199,11 +199,11 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
     ) -> None:
         """
         Register or update a prompt version. Enforces single-active-version law.
-        
+
         DEDUPLICATION: Prevents identical entries from accumulating.
         If an entry with same (template_name, version, purpose, author, content_hash, territory) exists,
         skip registration to prevent the 9-duplicate bug.
-        
+
         SEMANTIC DEDUPLICATION: Checks for semantically similar prompts across registry
         using embedding-based similarity (threshold: 0.9). Raises DuplicatePromptError
         if a similar prompt is found to prevent sprawl.
@@ -227,10 +227,10 @@ class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
 
         # Compute content hash for deduplication
         content_hash = self._hash_content(content)
-        
+
         # Define key fields for duplicate detection (ignores harmless differences like registered_date)
         DUPLICATE_KEY_FIELDS = {"version", "purpose", "author", "content_hash", "territory"}
-        
+
         # DEDUPLICATION CHECK: Skip if identical entry already exists
         for existing_entry in self.registry[template_name]:
             # Compare only the key fields that matter for uniqueness
@@ -309,7 +309,7 @@ def get_prompt_registry() -> PromptRegistryAgent:
     global _global_registry
     if _global_registry is None:
         _global_registry = PromptRegistryAgent()
-        
+
         # ===================================================================
         # Canonical Template Registry - FULLY MIGRATED TO AGENT-DRIVEN SSOT
         # ===================================================================
@@ -319,7 +319,7 @@ def get_prompt_registry() -> PromptRegistryAgent:
         #
         # Migration complete (agents with decorator):
         # ✅ gravity_repair.jinja          → ImportAgent
-        # ✅ file_placement.jinja           → LocationAgent  
+        # ✅ file_placement.jinja           → LocationAgent
         # ✅ red_team_governance.jinja      → RedTeamAgent
         # ✅ jailbreak_classic.jinja        → RedTeamAgent
         #
@@ -339,7 +339,7 @@ def get_prompt_registry() -> PromptRegistryAgent:
         #
         # Hardcoded registrations REMOVED - registry is now 100% agent-driven.
         # ===================================================================
-        
+
         # No hardcoded registrations - all templates registered via @registers_prompt decorator
         pass
     return _global_registry
@@ -359,14 +359,14 @@ def registers_prompt(
 ) -> Any:
     """
     Decorator for agents to declare their prompt template dependencies.
-    
+
     Usage::
-    
+
         @registers_prompt("gravity_repair.jinja", purpose="Fixes import violations")
         class ImportAgent:
             '''ImportAgent class.'''
             pass
-    
+
     This enables:
     - Automatic registry updates when agents are imported
     - Runtime introspection via cls._registered_prompt
@@ -386,12 +386,12 @@ def registers_prompt(
             active=active,
             content=content,  # Passthrough for content-based hashing
         )
-        
+
         # Store on class for runtime introspection
         cls._registered_prompt = template_name
         cls._prompt_version = version
-        
+
         Logger.debug(f"Decorator registered prompt {template_name} for {cls.__name__}")
         return cls
-    
+
     return decorator

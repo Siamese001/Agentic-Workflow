@@ -15,11 +15,11 @@ from mission_controller_convergence import ConvergenceEngine
 
 class MockValidator:
     """Mock validator that returns violations for testing."""
-    
+
     def __init__(self, violations):
         self.violations = violations
         self.call_count = 0
-    
+
     async def validate(self):
         self.call_count += 1
         # After first round, reduce violations to simulate healing
@@ -30,10 +30,10 @@ class MockValidator:
 
 class MockHealer:
     """Mock healer that tracks healing order."""
-    
+
     def __init__(self):
         self.heal_order = []
-    
+
     async def heal(self, violation):
         path = violation.get('path', 'unknown')
         impact = violation.get('impact_score', 0)
@@ -49,7 +49,7 @@ async def test_toxicity_weighted_triage():
     print("\n" + "="*80)
     print("TEST 1: Toxicity-Weighted Triage")
     print("="*80)
-    
+
     # Create violations with different impact scores
     # L5 Base Class has higher fan-in (259) → higher impact
     # L1 Agent has lower fan-in (5) → lower impact
@@ -63,7 +63,7 @@ async def test_toxicity_weighted_triage():
         },
         {
             'path': 'agentic_core/L5_safety/guardrails/L5SafetyBaseAgent.py',
-            'type': 'upward_leak', 
+            'type': 'upward_leak',
             'impact_score': 650,  # High impact (core hub, fan-in=259)
             'fan_in': 259,
             'audit_fail_count': 1
@@ -76,34 +76,34 @@ async def test_toxicity_weighted_triage():
             'audit_fail_count': 1
         }
     ]
-    
+
     validator = MockValidator(violations)
     healer = MockHealer()
     engine = ConvergenceEngine(max_rounds=3)
-    
+
     print("\nViolations (unsorted):")
     for v in violations:
         print(f"  - {v['path']} (impact={v['impact_score']})")
-    
+
     print("\nExpected order (by impact_score DESC):")
     print("  1. L5 L5SafetyBaseAgent (impact=650)")
     print("  2. L3 mid_tier_agent (impact=200)")
     print("  3. L1 peripheral_agent (impact=50)")
-    
+
     print("\nRunning ConvergenceEngine...")
     await engine.run_convergence(validator, healer, violations)
-    
+
     print("\nActual healing order:")
     for i, path in enumerate(healer.heal_order, 1):
         print(f"  {i}. {path}")
-    
+
     # Validate order - check first 3 items (first round)
     expected_order = [
         'agentic_core/L5_safety/guardrails/L5SafetyBaseAgent.py',
         'agentic_core/L3_orchestration/mid_tier_agent.py',
         'agentic_core/L1_cognition/peripheral_agent.py'
     ]
-    
+
     # Check first round order (first 3 heals)
     first_round_order = healer.heal_order[:3]
     if first_round_order == expected_order:
@@ -111,7 +111,7 @@ async def test_toxicity_weighted_triage():
     else:
         print("\n❌ TEST 1 FAILED: Healing order incorrect")
         return False
-    
+
     return True
 
 
@@ -122,7 +122,7 @@ async def test_zombie_detection():
     print("\n" + "="*80)
     print("TEST 2: Zombie Detection")
     print("="*80)
-    
+
     # Create a zombie violation (audit_fail_count > 3)
     violations = [
         {
@@ -138,19 +138,19 @@ async def test_zombie_detection():
             'audit_fail_count': 1  # Normal: only 1 failure
         }
     ]
-    
+
     validator = MockValidator(violations)
     healer = MockHealer()
     engine = ConvergenceEngine(max_rounds=2)
-    
+
     print("\nViolations:")
     for v in violations:
         status = "🧟 ZOMBIE" if v['audit_fail_count'] > 3 else "Normal"
         print(f"  - {v['path']} (audit_fail_count={v['audit_fail_count']}) [{status}]")
-    
+
     print("\nRunning ConvergenceEngine (watch for ZOMBIE DETECTED message)...")
     await engine.run_convergence(validator, healer, violations)
-    
+
     print("\n✅ TEST 2 PASSED: Zombie detection triggered (check console output above)")
     return True
 
@@ -162,16 +162,16 @@ async def test_fission_detection():
     print("\n" + "="*80)
     print("TEST 3: Fission Detection")
     print("="*80)
-    
+
     # Create a temporary large file (>10KB)
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         # Write >10KB of content
         f.write("# Large test file\n" * 1000)  # ~20KB
         temp_file = f.name
-    
+
     print(f"\nCreated temp file: {temp_file}")
     print(f"File size: {os.path.getsize(temp_file)} bytes")
-    
+
     # Create violation pointing to this file
     violations = [
         {
@@ -181,24 +181,24 @@ async def test_fission_detection():
             'audit_fail_count': 1
         }
     ]
-    
+
     class NonModifyingHealer:
         """Healer that doesn't actually modify the file (simulates failed healing)."""
         async def heal(self, violation):
             print(f"  🔧 Attempting to heal: {violation.get('path')}")
             # Don't modify the file - this should trigger fission detection
-    
+
     validator = MockValidator(violations)
     healer = NonModifyingHealer()
     engine = ConvergenceEngine(max_rounds=2)
-    
+
     print("\nRunning ConvergenceEngine with non-modifying healer...")
     print("(Should trigger FISSION DETECTED for unchanged large file)")
     await engine.run_convergence(validator, healer, violations)
-    
+
     # Cleanup
     os.unlink(temp_file)
-    
+
     print("\n✅ TEST 3 PASSED: Fission detection triggered (check console output above)")
     return True
 
@@ -208,18 +208,18 @@ async def main():
     print("\n" + "="*80)
     print("🧪 TOXIC HUB MISSION TEST SUITE")
     print("="*80)
-    
+
     results = []
-    
+
     # Test 1: Toxicity-Weighted Triage
     results.append(await test_toxicity_weighted_triage())
-    
+
     # Test 2: Zombie Detection
     results.append(await test_zombie_detection())
-    
+
     # Test 3: Fission Detection
     results.append(await test_fission_detection())
-    
+
     # Summary
     print("\n" + "="*80)
     print("📋 TEST SUMMARY")
@@ -227,12 +227,12 @@ async def main():
     passed = sum(results)
     total = len(results)
     print(f"\nPassed: {passed}/{total}")
-    
+
     if passed == total:
         print("\n🎉 ALL TESTS PASSED!")
     else:
         print("\n⚠️ SOME TESTS FAILED")
-    
+
     return passed == total
 
 

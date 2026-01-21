@@ -45,7 +45,7 @@ class RgStrategicPlannerAgent(SovereignBaseAgent):
         self.name = "StrategicPlannerAgent"
 
     async def execute(self) -> None:
-                    
+
         print(f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan...")
         if not self.ctx.intelligence_enabled:
             return

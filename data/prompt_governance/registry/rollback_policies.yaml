@@ -4,24 +4,24 @@
 rollback_policies:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # Global rollback configuration
   global_config:
     enabled: true
     automatic_rollback: true
     manual_approval_required: false
     max_rollback_attempts: 3
-    
+
     # Time windows
     rollback_window: "24h"
     monitoring_period: "72h"
-    
+
     # Health thresholds
     health_thresholds:
       error_rate: 0.05  # 5% error rate triggers rollback
       latency_increase: 2.0  # 2x latency increase triggers rollback
       quality_score_drop: 0.15  # 15% quality drop triggers rollback
-      
+
   # Rollback triggers
   triggers:
     # Automatic triggers
@@ -31,33 +31,33 @@ rollback_policies:
         threshold: 0.05
         evaluation_window: "15m"
         consecutive_violations: 3
-        
+
       latency_threshold:
         enabled: true
         threshold_multiplier: 2.0
         evaluation_window: "10m"
-        
+
       quality_threshold:
         enabled: true
         threshold_drop: 0.15
         evaluation_window: "30m"
-        
+
       safety_violations:
         enabled: true
         threshold: 1  # Any safety violation triggers rollback
         evaluation_window: "5m"
-        
+
     # Manual triggers
     manual:
       operator_intervention:
         enabled: true
         required_roles: ["admin", "prompt_engineer"]
-        
+
       user_feedback:
         enabled: true
         negative_feedback_threshold: 10
         evaluation_window: "1h"
-        
+
   # Rollback strategies
   strategies:
     # Immediate rollback
@@ -66,45 +66,45 @@ rollback_policies:
       triggers:
         - "safety_violations"
         - "critical_errors"
-        
+
       execution:
         switch_traffic: true
         drain_connections: true
         cleanup_resources: true
-        
+
     # Gradual rollback
     gradual:
       description: "Phased rollback with traffic shifting"
       triggers:
         - "performance_degradation"
         - "quality_issues"
-        
+
       execution:
         phases:
           - percentage: 10
             duration: "5m"
             health_check: true
-            
+
           - percentage: 50
             duration: "15m"
             health_check: true
-            
+
           - percentage: 100
             duration: "30m"
             health_check: true
-            
+
     # Canary rollback
     canary:
       description: "Test rollback on small traffic subset"
       triggers:
         - "minor_issues"
         - "a_b_testing"
-        
+
       execution:
         canary_percentage: 5
         evaluation_duration: "10m"
         auto_promote: false
-        
+
   # Version management
   version_management:
     # Version retention
@@ -112,19 +112,19 @@ rollback_policies:
       active_versions: 3
       rollback_versions: 5
       archive_versions: 10
-      
+
     # Version cleanup
     cleanup:
       enabled: true
       schedule: "0 2 * * *"  # Daily at 2 AM
       retention_period: "90d"
-      
+
     # Version tagging
     tagging:
       auto_tag_stable: true
       auto_tag_rollback: true
       tag_format: "v{major}.{minor}.{patch}-{type}"
-      
+
   # Engine-specific policies
   engines:
     resume_engine:
@@ -132,50 +132,50 @@ rollback_policies:
       health_checks:
         - name: "processing_success_rate"
           threshold: 0.95
-          
+
         - name: "output_quality_score"
           threshold: 0.8
-          
+
         - name: "processing_latency"
           threshold: 5000  # ms
-          
+
       custom_triggers:
         - name: "format_compliance"
           threshold: 0.98
-          
+
     outreach_engine:
       rollback_strategy: "immediate"
       health_checks:
         - name: "response_success_rate"
           threshold: 0.90
-          
+
         - name: "personalization_score"
           threshold: 0.75
-          
+
         - name: "safety_compliance"
           threshold: 1.0
-          
+
       custom_triggers:
         - name: "spam_score"
           threshold: 0.1
-          
+
   # Notification and alerting
   notifications:
     # Rollback initiation
     rollback_started:
       channels: ["slack", "email", "pagerduty"]
       recipients: ["ops_team", "prompt_engineers"]
-      
+
     # Rollback completion
     rollback_completed:
       channels: ["slack", "email"]
       recipients: ["ops_team", "prompt_engineers", "stakeholders"]
-      
+
     # Rollback failure
     rollback_failed:
       channels: ["pagerduty", "slack", "phone"]
       recipients: ["oncall_engineer", "ops_manager"]
-      
+
   # Monitoring and metrics
   monitoring:
     # Rollback metrics
@@ -183,49 +183,49 @@ rollback_policies:
       - name: "rollback_events_total"
         type: "counter"
         labels: ["engine", "trigger", "strategy"]
-        
+
       - name: "rollback_duration_seconds"
         type: "histogram"
         labels: ["engine", "strategy"]
-        
+
       - name: "rollback_success_rate"
         type: "gauge"
         labels: ["engine", "strategy"]
-        
+
     # Health checks
     health_checks:
       - name: "rollback_system_health"
         interval: "30s"
         timeout: "10s"
-        
+
       - name: "version_availability"
         interval: "1m"
         timeout: "15s"
-        
+
   # Safety and compliance
   safety:
     # Pre-rollback safety checks
     pre_rollback_checks:
       - name: "data_integrity_check"
         required: true
-        
+
       - name: "dependency_validation"
         required: true
-        
+
       - name: "security_scan"
         required: true
-        
+
     # Post-rollback validation
     post_rollback_validation:
       - name: "functionality_test"
         required: true
-        
+
       - name: "performance_test"
         required: true
-        
+
       - name: "safety_test"
         required: true
-        
+
   # Emergency procedures
   emergency:
     # Emergency rollback
@@ -235,53 +235,53 @@ rollback_policies:
         - "security_breach"
         - "data_corruption"
         - "service_outage"
-        
+
       execution:
         bypass_approval: true
         immediate_switch: true
         alert_management: true
-        
+
     # Manual override
     manual_override:
       enabled: true
       required_roles: ["emergency_responder", "system_admin"]
-      
+
       override_types:
         - "force_rollback"
         - "skip_health_checks"
         - "extend_rollback_window"
-        
+
   # Testing and validation
   testing:
     # Rollback testing
     rollback_tests:
       enabled: true
       schedule: "0 3 * * 0"  # Weekly on Sunday at 3 AM
-      
+
       test_scenarios:
         - name: "performance_degradation"
           simulation: "latency_injection"
-          
+
         - name: "quality_degradation"
           simulation: "quality_score_reduction"
-          
+
         - name: "error_spike"
           simulation: "error_rate_increase"
-          
+
     # Validation procedures
     validation:
       functional_tests:
         - "resume_processing_workflow"
         - "outreach_generation_workflow"
-        
+
       performance_tests:
         - "load_test_100_rps"
         - "stress_test_500_rps"
-        
+
       safety_tests:
         - "content_safety_validation"
         - "pii_detection_validation"
-        
+
   # Documentation and reporting
   documentation:
     # Rollback reports
@@ -289,7 +289,7 @@ rollback_policies:
       auto_generate: true
       format: "pdf"
       distribution: ["management", "compliance"]
-      
+
     # Incident documentation
     incident_docs:
       template: "rollback_incident_template.md"
@@ -299,24 +299,24 @@ rollback_policies:
         - "root_cause"
         - "impact_assessment"
         - "prevention_measures"
-        
+
   # Configuration management
   configuration:
     # Policy versioning
     policy_versioning:
       enabled: true
       auto_increment: true
-      
+
     # Change management
     change_management:
       approval_required: true
       approvers: ["prompt_lead", "ops_manager"]
-      
+
     # Audit trail
     audit_trail:
       enabled: true
       retention: "7_years"
-      
+
       events:
         - "policy_created"
         - "policy_updated"

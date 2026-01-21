@@ -25,22 +25,22 @@ Logger = logging.getLogger(__name__)
 class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Reflection agent for learning from successful execution traces.
-    
+
     Processes successful traces and internalizes patterns to long-term
     memory (Pinecone) for future reference and improved execution.
-    
+
     Features:
         - Trace analysis and pattern identification.
         - Memory internalization to Pinecone vector store.
         - Recommendation generation for future executions.
         - Self-critique of learning cycle quality.
         - Multi-hop structured research capabilities.
-    
+
     Inherits:
         SubatomicTestingMixin: Testing infrastructure.
         HealerMixin: Healing capabilities.
         MCPHardenedMixin: MCP protocol hardening.
-    
+
     Attributes:
         ctx: ValidationContext for orchestrator compatibility.
         pinecone_client: Pinecone client for vector storage.
@@ -76,7 +76,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     def _initialize_pinecone(self) -> None:
         """
         Initialize Pinecone index for storing traces.
-        
+
         Creates index if it doesn't exist, otherwise connects to existing.
         Sets pinecone_client to None on failure.
         """
@@ -97,7 +97,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     def _get_successful_traces(self) -> List[Dict[str, Any]]:
         """Get successful traces from context.
-        
+
         Returns:
             List of trace dictionaries, or empty list if unavailable.
         """
@@ -109,10 +109,10 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     def _is_valid_trace(self, trace: Any) -> bool:
         """Check if a trace has required fields.
-        
+
         Args:
             trace: Trace to validate.
-            
+
         Returns:
             True if trace is valid with required fields.
         """
@@ -127,7 +127,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     async def _process_single_trace(self, trace: Dict[str, Any], results: Dict[str, Any]) -> None:
         """Process a single trace and update results.
-        
+
         Args:
             trace: Trace dictionary to process.
             results: Results dictionary to update.
@@ -142,7 +142,7 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     async def execute(self, file_path: Optional[str] = None) -> Dict[str, Any]:
         """Process successful traces and internalize them to memory.
-        
+
         Called by orchestrator. Pulls traces from context and processes them.
 
         Args:
@@ -152,14 +152,14 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             Dict with processed count, internalized count, errors, and recommendations.
         """
         successful_traces = self._get_successful_traces()
-        
+
         if not successful_traces:
             Logger.debug('No successful traces to process')
             return {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
-        
+
         Logger.info(f'RgReflectionAgent processing {len(successful_traces)} successful traces')
         results: Dict[str, Any] = {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
-        
+
         for trace in successful_traces:
             if not self._is_valid_trace(trace):
                 continue
@@ -169,22 +169,22 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 error_msg = f'Error processing trace: {str(e)}'
                 Logger.error(error_msg)
                 results['errors'].append(error_msg)
-        
+
         try:
             results['critique'] = await self._self_critique(results)
         except Exception as e:
             Logger.error(f'Self-critique failed: {e}')
             results['critique'] = 'Internal critique unavailable'
-        
+
         return results
 
     async def _analyze_success_pattern(self, trace: Dict[str, Any]) -> Dict[str, Any]:
         """
         Analyze a trace to identify reusable patterns.
-        
+
         Args:
             trace: Successful execution trace to analyze.
-            
+
         Returns:
             Dict with pattern analysis results.
         """
@@ -193,11 +193,11 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     async def _internalize_trace(self, trace: Dict[str, Any], analysis: Dict[str, Any]) -> bool:
         """
         Store analyzed patterns in Pinecone or local fallback.
-        
+
         Args:
             trace: Original trace data.
             analysis: Pattern analysis results.
-            
+
         Returns:
             True if internalization succeeded.
         """
@@ -206,11 +206,11 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     async def _generate_recommendations(self, trace: Dict[str, Any], analysis: Dict[str, Any]) -> List[str]:
         """
         Generate recommendations for future executions.
-        
+
         Args:
             trace: Original trace data.
             analysis: Pattern analysis results.
-            
+
         Returns:
             List of recommendation strings.
         """
@@ -219,10 +219,10 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     async def _self_critique(self, results: Dict[str, Any]) -> str:
         """
         Evaluate the quality of the learning cycle.
-        
+
         Args:
             results: Processing results from execute().
-            
+
         Returns:
             Critique string describing learning cycle quality.
         """
@@ -235,33 +235,33 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     ) -> Dict[str, Any]:
         """
         Execute multi-hop structured research.
-        
+
         Performs research across three dimensions:
             1. Financial/Strategic analysis.
             2. Technical/Product deep dive.
             3. Organizational/Leadership evaluation.
-        
+
         Args:
             topic: Research topic (company name, technology, etc.).
             llm_client: Optional LLM client for research queries.
-            
+
         Returns:
             Dict with multi-hop analysis, synthesis, and completion count.
         """
         hops = [
-            ("Financial/Strategic", 
+            ("Financial/Strategic",
              f"Research {topic}: Analyze market positioning, financial metrics, risks, and strategic alignment. "
              "Include: revenue trends, EBITDA, strategic thesis, cost drivers."),
-            ("Technical/Product", 
+            ("Technical/Product",
              f"Research {topic}: Deep dive into architecture, tools, frameworks, and implementation. "
              "Include: specific technologies, infrastructure stack, performance gains."),
-            ("Organizational/Leadership", 
+            ("Organizational/Leadership",
              f"Research {topic}: Evaluate team structure, key executives, and vision. "
              "Include: C-suite roles, domain ownership, organizational changes."),
         ]
-        
+
         research_output = {}
-        
+
         for hop_name, prompt_focus in hops:
             try:
                 if llm_client:
@@ -286,17 +286,17 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                         "query": prompt_focus,
                         "note": "LLM client required for actual research"
                     }
-                    
+
                 research_output[hop_name] = result
                 Logger.info(f"Research hop '{hop_name}' completed for {topic}")
-                
+
             except Exception as e:
                 Logger.error(f"Research hop '{hop_name}' failed: {e}")
                 research_output[hop_name] = {"error": str(e)}
-        
+
         # Synthesize results
         synthesis = await self._synthesize_research(research_output, topic)
-        
+
         return {
             "topic": topic,
             "multi_hop_analysis": research_output,
@@ -307,11 +307,11 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     async def _synthesize_research(self, research_output: Dict[str, Any], topic: str = "") -> str:
         """
         Synthesize multi-hop research into unified insights.
-        
+
         Args:
             research_output: Results from all research hops.
             topic: Research topic for context.
-            
+
         Returns:
             Synthesis string summarizing research findings.
         """
@@ -319,10 +319,10 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         for hop_name, result in research_output.items():
             if isinstance(result, dict) and "error" not in result:
                 findings.append(f"- {hop_name}: {len(result)} data points collected")
-                
+
         if not findings:
             return f"Research synthesis for {topic}: Insufficient data collected across hops."
-            
+
         return f"Research synthesis for {topic}: {len(findings)} hops completed successfully. " + " ".join(findings)
 
     @timeout(300)
@@ -336,14 +336,14 @@ class RgReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     ) -> Dict[str, int]:
         """
         Execute L1 cognition healing operations.
-        
+
         Args:
             dry_run: If True, only report violations without fixing.
             execute: If True, apply fixes.
             depth: Current recursion depth for cycle detection.
             max_depth: Maximum allowed recursion depth.
             _call_path: Set of agent names already in call chain.
-            
+
         Returns:
             Dict with keys: violations, fixed, errors, skipped.
         """

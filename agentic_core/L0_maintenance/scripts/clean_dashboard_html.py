@@ -19,9 +19,9 @@ if len(matches) > 1:
     # Remove all matches
     for match in reversed(matches):  # Reverse to maintain indices
         html = html[:match.start()] + html[match.end():]
-    
+
     print(f"After cleanup: {len(html)} chars, {html.count(chr(10))} lines")
-    
+
     # Write back
     dashboard_path.write_text(html, encoding='utf-8')
     print("✅ HTML cleaned and saved")

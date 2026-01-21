@@ -2,8 +2,8 @@
 """
 PRE-COMMIT SOVEREIGN AGENT
 --------------------------
-L0 Infrastructure Agent designed to intercept git commits and enforce 
-Sovereign SSOT Gravity Laws. It ensures no new 'Upward Leaks' are 
+L0 Infrastructure Agent designed to intercept git commits and enforce
+Sovereign SSOT Gravity Laws. It ensures no new 'Upward Leaks' are
 introduced into the codebase.
 
 Domain: Infrastructure & Enforcement
@@ -56,38 +56,38 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     """
     The 'Seal-Guard' of the Sovereign Architecture.
     Ensures compliance stays at 99.7%+ by blocking architectural rot at the source.
-    
+
     Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
-    
+
     This agent runs as a git pre-commit hook to prevent new violations from
     entering the codebase. It validates staged files against SSOT gravity laws.
-    
+
     Usage:
         # As git hook
         agent = PreCommitSovereignAgent()
         sys.exit(agent.validate_sovereignty())
-        
+
         # Standalone validation
         agent = PreCommitSovereignAgent()
         result = agent.validate_staged_files()
         if result["violations"]:
             print(f"Found {len(result['violations'])} violations")
     """
-    
+
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
         super().heal_repository()
-        
+
         # === ZOMBIE VACCINATION: Wired orphaned methods ===
         if hasattr(self, 'validate_staged_files'):
             try:
@@ -106,7 +106,7 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
                 Logger.error(f'Error in validate_sovereignty: {e}')
                 metrics['errors'] += 1
         # === END VACCINATION ===
-        
+
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 
@@ -120,7 +120,7 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     def get_staged_files(self) -> List[str]:
         """
         Retrieves files currently staged in the git index.
-        
+
         Returns:
             List of relative paths to staged Python files
         """
@@ -191,28 +191,28 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
 
     def validate_staged_files(self) -> Dict[str, Any]:
         """Validate staged files for architectural compliance.
-        
+
         Returns:
             Dictionary with validation results.
         """
         staged_files = self.get_staged_files()
-        
+
         if not staged_files:
             return self._create_empty_result()
-        
+
         print(f"🛡️  Sovereign Sentinel: Auditing {len(staged_files)} staged files...")
-        
+
         try:
             report = self.validator.validate_all()
         except Exception as e:
             return self._create_error_result(f"Validation error: {str(e)}")
-        
+
         staged_violations = self._filter_staged_violations(report, staged_files)
         self.violations_found = staged_violations
-        
+
         if staged_violations:
             self._print_violations(staged_violations)
-        
+
         return {
             "compliant": len(staged_violations) == 0,
             "files_scanned": len(staged_files),
@@ -223,24 +223,24 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     def validate_sovereignty(self) -> int:
         """
         Main execution loop for git hook integration.
-        
+
         Returns:
             0 if compliant (commit allowed)
             1 if violations found (commit blocked)
         """
         result = self.validate_staged_files()
-        
+
         if result["error"]:
             print(f"❌ Error during validation: {result['error']}")
             return 1
-        
+
         if not result["compliant"]:
             self._report_failure()
             return 1
-        
+
         if result["files_scanned"] > 0:
             print(f"✅ Sovereignty Validated. {result['files_scanned']} files compliant. Commit permitted.")
-        
+
         return 0
 
     def _report_failure(self) -> Any:
@@ -271,7 +271,7 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     def install_hook(self) -> bool:
         """
         Install this agent as a git pre-commit hook.
-        
+
         Returns:
             True if installation successful, False otherwise
         """
@@ -279,12 +279,12 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         if not git_dir.exists():
             print("❌ Not a git repository")
             return False
-        
+
         hooks_dir = git_dir / "hooks"
         hooks_dir.mkdir(exist_ok=True)
-        
+
         hook_path = hooks_dir / "pre-commit"
-        
+
         # Create hook script
         hook_content = f"""#!/usr/bin/env python3
 \"\"\"
@@ -306,20 +306,20 @@ if __name__ == "__main__":
     agent = PreCommitSovereignAgent(root_dir=str(repo_root))
     sys.exit(agent.validate_sovereignty())
 """
-        
+
         try:
             hook_path.write_text(hook_content, encoding='utf-8')
             # Make executable (Unix-like systems)
             if sys.platform != 'win32':
                 import os
                 os.chmod(hook_path, 0o755)
-            
+
             print(f"✅ Pre-commit hook installed: {hook_path}")
             print()
             print("The hook will now validate all commits for architectural compliance.")
             print("To bypass the hook (not recommended), use: git commit --no-verify")
             return True
-            
+
         except Exception as e:
             print(f"❌ Failed to install hook: {e}")
             return False
@@ -327,16 +327,16 @@ if __name__ == "__main__":
     def uninstall_hook(self) -> bool:
         """
         Remove the pre-commit hook.
-        
+
         Returns:
             True if uninstallation successful, False otherwise
         """
         hook_path = self.root / ".git" / "hooks" / "pre-commit"
-        
+
         if not hook_path.exists():
             print("ℹ️  No pre-commit hook found")
             return True
-        
+
         try:
             hook_path.unlink()
             print("✅ Pre-commit hook removed")
@@ -349,7 +349,7 @@ if __name__ == "__main__":
 def main() -> Any:
     """CLI entry point for the Pre-Commit Sovereign Agent."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(
         description="Pre-Commit Sovereign Agent - Git hook for architectural compliance"
     )
@@ -373,23 +373,23 @@ def main() -> Any:
         default=".",
         help="Repository root directory"
     )
-    
+
     args = parser.parse_args()
-    
+
     agent = PreCommitSovereignAgent(root_dir=args.root)
-    
+
     if args.install:
         success = agent.install_hook()
         sys.exit(0 if success else 1)
-    
+
     elif args.uninstall:
         success = agent.uninstall_hook()
         sys.exit(0 if success else 1)
-    
+
     elif args.validate or len(sys.argv) == 1:
         # Default behavior: validate sovereignty (hook mode)
         sys.exit(agent.validate_sovereignty())
-    
+
     else:
         parser.print_help()
         sys.exit(1)

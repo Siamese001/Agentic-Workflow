@@ -38,11 +38,11 @@ Logger = logging.getLogger(__name__)
 
 class SovereignGitClient(MCPHardenedMixin, HealerMixin):
     """Sovereign Git client - audit + safe exec for all Git operations."""
-    
+
     def __init__(self, repo_root: Optional[Path] = None):
         """
         Initialize Git client.
-        
+
         Args:
             repo_root: Repository root directory (defaults to cwd)
         """
@@ -50,7 +50,7 @@ class SovereignGitClient(MCPHardenedMixin, HealerMixin):
         self.repo_root = repo_root or Path.cwd()
         self.audit_log: List[Dict[str, Any]] = []
         self._mcp_audit('init')
-    
+
     def _audit(self, operation: str, payload: Dict[str, Any], result: Any) -> None:
         """Record operation to audit log."""
         self.audit_log.append({
@@ -58,7 +58,7 @@ class SovereignGitClient(MCPHardenedMixin, HealerMixin):
             'payload': {k: str(v)[:100] for k, v in payload.items()},
             'success': result.get('success', False) if isinstance(result, dict) else True
         })
-    
+
     def _run_git(self, args: List[str]) -> Dict[str, Any]:
         """Execute git command safely using safe_git_execute wrapper."""
         try:
@@ -84,15 +84,15 @@ class SovereignGitClient(MCPHardenedMixin, HealerMixin):
                 'success': False,
                 'error': 'Git command timed out'
             }
-    
+
     def execute(self, operation: str, **payload) -> Dict[str, Any]:
         """
         Route Git operations safely via dispatch pattern.
-        
+
         Args:
             operation: Git operation (commit, push, pull, status, etc.)
             **payload: Operation-specific parameters
-        
+
         Returns:
             Result dictionary with success status and output
         """
@@ -106,55 +106,55 @@ class SovereignGitClient(MCPHardenedMixin, HealerMixin):
             'checkout': self._handle_checkout,
             'branch': self._handle_branch,
         }
-        
+
         handler = handlers.get(operation)
         if not handler:
             return {'success': False, 'error': f'Unsupported Git operation: {operation}'}
-        
+
         Logger.debug(f"[SOVEREIGN GIT] {operation}: {payload}")
         result = handler(**payload)
         self._audit(operation, payload, result)
         return result
-    
+
     def _handle_commit(self, message: str = 'Sovereign commit', files: List[str] = None, **kwargs) -> Dict[str, Any]:
         """Sub-atomic commit handler."""
         if files:
             for f in files:
                 self._run_git(['add', str(f)])
         return self._run_git(['commit', '-m', message])
-    
+
     def _handle_push(self, branch: str = 'HEAD', remote: str = 'origin', **kwargs) -> Dict[str, Any]:
         """Sub-atomic push handler."""
         return self._run_git(['push', remote, branch])
-    
+
     def _handle_pull(self, remote: str = 'origin', branch: str = '', **kwargs) -> Dict[str, Any]:
         """Sub-atomic pull handler."""
         args = ['pull', remote]
         if branch:
             args.append(branch)
         return self._run_git(args)
-    
+
     def _handle_status(self, **kwargs) -> Dict[str, Any]:
         """Sub-atomic status handler."""
         return self._run_git(['status', '--porcelain'])
-    
+
     def _handle_diff(self, file: str = '', **kwargs) -> Dict[str, Any]:
         """Sub-atomic diff handler."""
         args = ['diff']
         if file:
             args.append(str(file))
         return self._run_git(args)
-    
+
     def _handle_log(self, count: int = 10, **kwargs) -> Dict[str, Any]:
         """Sub-atomic log handler."""
         return self._run_git(['log', f'-{count}', '--oneline'])
-    
+
     def _handle_checkout(self, branch: str = '', **kwargs) -> Dict[str, Any]:
         """Sub-atomic checkout handler."""
         if not branch:
             return {'success': False, 'error': 'Branch required for checkout'}
         return self._run_git(['checkout', branch])
-    
+
     def _handle_branch(self, action: str = 'list', name: str = '', **kwargs) -> Dict[str, Any]:
         """Sub-atomic branch handler with action dispatch."""
         if action == 'list':

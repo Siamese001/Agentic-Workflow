@@ -1,7 +1,7 @@
 # Bloat Elimination Report
 ## Findings and Recommendations for Approved Folders
 
-**Generated:** 2026-01-20  
+**Generated:** 2026-01-20
 **Analysis Scope:** agentic_core, apps_rg, apps_lic, apps_shared, scripts, tests, docs, schemas
 
 ---
@@ -13,7 +13,7 @@ The codebase contains **significant bloat** in approved folders, primarily conce
 - `agentic_core/L5_safety/validators/` - **154 files** (1.93 MB) - includes misplaced test files
 - `scripts/` - **51 files** - many one-time migration/archive utilities
 
-**Total Python files in agentic_core:** 1,317 files (7.30 MB)  
+**Total Python files in agentic_core:** 1,317 files (7.30 MB)
 **Total agents discovered:** 201 agents
 
 ### Key Findings
@@ -32,7 +32,7 @@ The codebase contains **significant bloat** in approved folders, primarily conce
 
 ### 1. L0_maintenance/scripts Bloat (CRITICAL)
 
-**Current State:** 403 Python files in a single folder  
+**Current State:** 403 Python files in a single folder
 **Expected:** <50 active maintenance scripts
 
 #### Breakdown by Prefix:
@@ -216,7 +216,7 @@ Files that may need splitting or review:
    ```bash
    # Create archive folder
    mkdir -p archives/deprecated_l0_scripts_2026_01
-   
+
    # Move files with DEPRECATED/OBSOLETE markers
    # See list above
    ```

@@ -133,7 +133,7 @@
                 "cache_control": {"type": "ephemeral"}
               },
               {
-                "type": "text", 
+                "type": "text",
                 "text": "John Doe - Software Engineer Resume"
               }
             ]

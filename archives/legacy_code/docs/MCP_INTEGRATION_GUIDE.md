@@ -177,7 +177,7 @@ profile = await enhancer.research_interviewer("https://linkedin.com/in/interview
 
 ### Executive Agents (K.11, K.12, K.13)
 - **Primary MCPs**: Sequential Thinking, Reddit, Playwright
-- **Autonomy Gains**: 
+- **Autonomy Gains**:
   - 80% reduction in manual research time
   - Structured reasoning for complex decisions
   - Real-time market intelligence

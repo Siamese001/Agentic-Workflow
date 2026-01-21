@@ -40,17 +40,17 @@ class CodeJanitor:
     """
     KEYS: 10 (Long Lines), 11 (Whitespace), 12 (Newlines), 13 (Tabs), 15 (Magic Numbers), 16 (Deep Nesting)
     ROLE: The Cleaner. Can SELF-FIX violations. Emits AST_VALID signal.
-    
+
     DDD Compliance Phase 9A:
     - Uses composition with CanonBaseAgentInterface
     - Implementation injected via dependency injection
     - No direct dependency on L2_Execution layer
     """
-    
+
     def __init__(self, agent_impl: CanonBaseAgentInterface) -> None:
         """Initialize with injected agent implementation."""
         self.agent = agent_impl
-    
+
     def __getattr__(self, name):
         """Delegate all agent methods to injected implementation - backward compatible."""
         return getattr(self.agent, name)
@@ -254,7 +254,7 @@ class CodeJanitor:
         violations = []
 
         class NestingVisitor(ast.NodeVisitor):
-                                    
+
             def __init__(self, filepath: str, max_depth: int) -> None:
                 self.filepath = filepath
                 self.max_depth = max_depth
@@ -262,7 +262,7 @@ class CodeJanitor:
                 self.violations = []
 
             def visit(self, node):
-                                                    
+
                 # Nodes that increase nesting depth
                 is_nesting_node = isinstance(node, (ast.If, ast.For, ast.While, ast.Try, ast.With,
                                                     ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
@@ -319,17 +319,17 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (Circular Imports)
     ROLE: The Cleaner. Automatically fixes import ordering and unused imports.
-    
+
     DDD Compliance Phase 9A:
     - Uses composition with CanonBaseAgentInterface
     - Implementation injected via dependency injection
     - No direct dependency on L2_Execution layer
     """
-    
+
     def __init__(self, agent_impl: CanonBaseAgentInterface) -> None:
         """Initialize with injected agent implementation."""
         self.agent = agent_impl
-    
+
     def __getattr__(self, name):
         """Delegate all agent methods to injected implementation - backward compatible."""
         return getattr(self.agent, name)
@@ -411,11 +411,11 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
 
     def _parse_file_for_check(self, fp: str, key: int) -> Optional[ast.AST]:
         """Parse file and return AST, handling errors gracefully.
-        
+
         Args:
             fp: File path to parse.
             key: Canon key number for error messages.
-            
+
         Returns:
             Parsed AST tree or None on error.
         """
@@ -433,11 +433,11 @@ class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
         self, key: int, predicate: callable
     ) -> Tuple[bool, List[str]]:
         """Generic import pattern checker.
-        
+
         Args:
             key: Canon key number for error messages.
             predicate: Function(node) -> bool, returns True if violation.
-            
+
         Returns:
             Tuple of (passed, violations).
         """

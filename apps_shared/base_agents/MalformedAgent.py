@@ -72,7 +72,7 @@ def normalize_source(source: str) -> str:
         if '#' in line:
             line = line[:line.index('#')]
         lines.append(line.strip())
-    
+
     # Join and normalize whitespace
     normalized = ' '.join(lines)
     normalized = re.sub(r'\s+', ' ', normalized)
@@ -94,16 +94,16 @@ def analyze_file(file_path: Path) -> Optional[MalformedAgent]:
         tree = ast.parse(content)
     except (SyntaxError, UnicodeDecodeError) as e:
         return None
-    
+
     # Find all class definitions
     classes = []
     class_methods: Dict[str, List[ClassMethod]] = {}
-    
+
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
             classes.append(node.name)
             class_methods[node.name] = []
-            
+
             # Find methods in this class
             for item in node.body:
                 if isinstance(item, ast.FunctionDef):
@@ -115,7 +115,7 @@ def analyze_file(file_path: Path) -> Optional[MalformedAgent]:
                         class_name=node.name,
                         end_lineno=item.end_lineno if hasattr(item, 'end_lineno') else item.lineno
                     ))
-    
+
     # Find top-level functions (orphans)
     orphans: List[OrphanedFunction] = []
     for node in tree.body:
@@ -129,16 +129,16 @@ def analyze_file(file_path: Path) -> Optional[MalformedAgent]:
                     source=orphan_source,
                     end_lineno=node.end_lineno if hasattr(node, 'end_lineno') else node.lineno
                 ))
-    
+
     # If no classes or no orphans, not malformed
     if not classes or not orphans:
         return None
-    
+
     # Classify each orphan
     status_list = []
     action_list = []
     details_list = []
-    
+
     for orphan in orphans:
         # Check if any class has a method with the same name
         matching_method = None
@@ -149,12 +149,12 @@ def analyze_file(file_path: Path) -> Optional[MalformedAgent]:
                     break
             if matching_method:
                 break
-        
+
         if matching_method:
             # Compare the two
             orphan_normalized = normalize_source(orphan.source)
             method_normalized = normalize_source(matching_method.source)
-            
+
             if orphan_normalized == method_normalized:
                 status_list.append("EXACT_DUPLICATE")
                 action_list.append("DELETE Orphan")
@@ -164,7 +164,7 @@ def analyze_file(file_path: Path) -> Optional[MalformedAgent]:
                 orphan_lines = len(orphan.source.split('\n'))
                 method_lines = len(matching_method.source.split('\n'))
                 diff = abs(orphan_lines - method_lines)
-                
+
                 status_list.append("DIVERGENT")
                 action_list.append("MANUAL MERGE required")
                 details_list.append(f"Orphan `{orphan.name}` at line {orphan.lineno} differs from class method at line {matching_method.lineno} (diff: {diff} lines)")
@@ -172,7 +172,7 @@ def analyze_file(file_path: Path) -> Optional[MalformedAgent]:
             status_list.append("ORPHAN_ONLY")
             action_list.append("MOVE Orphan into Class")
             details_list.append(f"Orphan `{orphan.name}` at line {orphan.lineno} has no matching class method")
-    
+
     # Aggregate status (worst case wins)
     if "DIVERGENT" in status_list:
         final_status = "DIVERGENT"
@@ -183,7 +183,7 @@ def analyze_file(file_path: Path) -> Optional[MalformedAgent]:
     else:
         final_status = "EXACT_DUPLICATE"
         final_action = "DELETE Orphan"
-    
+
     return MalformedAgent(
         file_path=file_path,
         class_names=classes,
@@ -198,16 +198,16 @@ def analyze_file(file_path: Path) -> Optional[MalformedAgent]:
 def scan_agentic_core() -> List[MalformedAgent]:
     """Scan agentic_core for malformed agent files."""
     malformed = []
-    
+
     for agent_file in AGENTIC_CORE.rglob("*Agent.py"):
         # Skip __pycache__ and archives
         if "__pycache__" in str(agent_file) or "archives" in str(agent_file):
             continue
-        
+
         result = analyze_file(agent_file)
         if result:
             malformed.append(result)
-    
+
     return malformed
 
 
@@ -222,12 +222,12 @@ def generate_report(malformed: List[MalformedAgent]) -> str:
         "---",
         "",
     ]
-    
+
     # Summary by status
     exact_dup = sum(1 for m in malformed if m.status == "EXACT_DUPLICATE")
     divergent = sum(1 for m in malformed if m.status == "DIVERGENT")
     orphan_only = sum(1 for m in malformed if m.status == "ORPHAN_ONLY")
-    
+
     lines.extend([
         "## Summary",
         "",
@@ -242,21 +242,21 @@ def generate_report(malformed: List[MalformedAgent]) -> str:
         "## Detailed Findings",
         "",
     ])
-    
+
     for agent in sorted(malformed, key=lambda x: str(x.file_path)):
         rel_path = agent.file_path.relative_to(PROJECT_ROOT)
-        
+
         lines.append(f"### `{rel_path}`")
         lines.append("")
         lines.append(f"* **Classes**: {', '.join(agent.class_names)}")
         lines.append(f"* **Status**: `{agent.status}`")
         lines.append(f"* **Action**: {agent.action}")
         lines.append("")
-        
+
         for orphan in agent.orphaned_functions:
             lines.append(f"#### Orphan: `{orphan.name}` (line {orphan.lineno})")
             lines.append("")
-            
+
             # Find matching class method
             matching = None
             for class_name, methods in agent.class_methods.items():
@@ -264,11 +264,11 @@ def generate_report(malformed: List[MalformedAgent]) -> str:
                     if method.name == orphan.name:
                         matching = method
                         break
-            
+
             if matching:
                 orphan_norm = normalize_source(orphan.source)
                 method_norm = normalize_source(matching.source)
-                
+
                 if orphan_norm == method_norm:
                     lines.append(f"* **Comparison**: IDENTICAL to `{matching.class_name}.{matching.name}` at line {matching.lineno}")
                     lines.append(f"* **Recommendation**: DELETE the orphan function")
@@ -282,12 +282,12 @@ def generate_report(malformed: List[MalformedAgent]) -> str:
             else:
                 lines.append(f"* **Comparison**: NO matching class method found")
                 lines.append(f"* **Recommendation**: MOVE into appropriate class")
-            
+
             lines.append("")
-        
+
         lines.append("---")
         lines.append("")
-    
+
     return '\n'.join(lines)
 
 
@@ -297,24 +297,24 @@ def main():
     print("=" * 70)
     print(f"\nScanning: {AGENTIC_CORE}")
     print("Looking for: Agent files with orphaned top-level functions\n")
-    
+
     malformed = scan_agentic_core()
-    
+
     print(f"Found {len(malformed)} malformed agent files\n")
-    
+
     if malformed:
         report = generate_report(malformed)
-        
+
         # Print to console
         print(report)
-        
+
         # Save to file
         report_path = PROJECT_ROOT / "MALFORMED_AGENTS_REPORT.md"
         report_path.write_text(report, encoding='utf-8')
         print(f"\n[SAVED] Report written to: {report_path}")
     else:
         print("No malformed agents found!")
-    
+
     return 0
 
 

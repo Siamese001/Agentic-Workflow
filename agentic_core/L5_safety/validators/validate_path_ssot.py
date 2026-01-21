@@ -27,11 +27,11 @@ EXCLUDED_FILES = {
 # Patterns that indicate hardcoded paths (violations)
 HARDCODED_PATH_PATTERNS = [
     # Agent discovery files
-    (r'(?<!AGENT_DISCOVERY_JSON\s*=\s*)["\']agent_discovery_full\.json["\']', 
+    (r'(?<!AGENT_DISCOVERY_JSON\s*=\s*)["\']agent_discovery_full\.json["\']',
      'Use AGENT_DISCOVERY_JSON constant'),
     (r'(?<!AGENT_DISCOVERY_MANIFEST_JSON\s*=\s*)["\']agent_discovery_full\.manifest\.json["\']',
      'Use AGENT_DISCOVERY_MANIFEST_JSON constant'),
-    
+
     # Layer directories - exact matches only
     (r'["\']agentic_core/L0_maintenance["\'](?!\s*[:\]])',
      'Use L0_MAINTENANCE_DIR constant'),
@@ -47,11 +47,11 @@ HARDCODED_PATH_PATTERNS = [
      'Use L5_SAFETY_DIR constant'),
     (r'["\']agentic_core/L6_observability["\'](?!\s*[:\]])',
      'Use L6_OBSERVABILITY_DIR constant'),
-    
+
     # Dashboard directory
     (r'["\']agentic_core/L6_observability/dashboards["\']',
      'Use DASHBOARD_DIR constant'),
-    
+
     # Core directories - only flag bare references
     (r'(?<![/\w])["\']agentic_core["\'](?!\s*[:\]./])',
      'Use AGENTIC_CORE_DIR constant'),
@@ -74,43 +74,43 @@ def should_exclude_path(path: Path) -> bool:
 
 def validate_file(file_path: Path) -> List[Tuple[int, str, str]]:
     """Validate a single file for hardcoded paths.
-    
+
     Returns:
         List of (line_number, violation_description, line_content)
     """
     violations = []
-    
+
     try:
         content = file_path.read_text(encoding='utf-8', errors='ignore')
         lines = content.split('\n')
-        
+
         # Skip if file imports from structure_blueprint (likely compliant)
         if 'from agentic_core.L5_safety.validators.structure_blueprint import' in content:
             # File uses SSOT, but still check for violations
             pass
-        
+
         for line_num, line in enumerate(lines, 1):
             # Skip import lines
             if 'import' in line and 'structure_blueprint' in line:
                 continue
-            
+
             # Skip lines defining SSOT constants
             if re.match(r'^\s*[A-Z_]+\s*[:=]\s*["\']', line):
                 continue
-            
+
             # Check each pattern
             for pattern, description in HARDCODED_PATH_PATTERNS:
                 if re.search(pattern, line):
                     violations.append((line_num, description, line.strip()))
-    
+
     except Exception as e:
         pass
-    
+
     return violations
 
 def validate_repository() -> Tuple[bool, Dict]:
     """Validate entire repository.
-    
+
     Returns:
         (is_compliant, violations_dict)
     """
@@ -119,29 +119,29 @@ def validate_repository() -> Tuple[bool, Dict]:
     print("=" * 80)
     print(f"\n📂 Project: {PROJECT_ROOT}")
     print(f"🔍 Scanning for hardcoded paths...\n")
-    
+
     violations_by_file = {}
     files_scanned = 0
-    
+
     # Scan all Python files
     # Final True 20: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files
     for py_file in get_python_files(PROJECT_ROOT):
         if should_exclude_path(py_file):
             continue
-        
+
         files_scanned += 1
         violations = validate_file(py_file)
-        
+
         if violations:
             rel_path = py_file.relative_to(PROJECT_ROOT)
             violations_by_file[str(rel_path)] = violations
-    
+
     # Print results
     total_violations = sum(len(v) for v in violations_by_file.values())
-    
+
     print(f"✅ Scanned {files_scanned} files\n")
-    
+
     if total_violations == 0:
         print("=" * 80)
         print("✅ ALL FILES COMPLIANT")
@@ -154,7 +154,7 @@ def validate_repository() -> Tuple[bool, Dict]:
         print(f"❌ FOUND {total_violations} VIOLATIONS IN {len(violations_by_file)} FILES")
         print("=" * 80)
         print()
-        
+
         # Show top violators
         sorted_files = sorted(violations_by_file.items(), key=lambda x: -len(x[1]))
         for file_path, violations in sorted_files[:20]:
@@ -165,10 +165,10 @@ def validate_repository() -> Tuple[bool, Dict]:
                 print(f"         {line_content}")
             if len(violations) > 5:
                 print(f"      ... and {len(violations) - 5} more")
-        
+
         if len(violations_by_file) > 20:
             print(f"\n   ... and {len(violations_by_file) - 20} more files with violations")
-        
+
         print("\n" + "=" * 80)
         print("REMEDIATION REQUIRED")
         print("=" * 80)
@@ -182,13 +182,13 @@ def validate_repository() -> Tuple[bool, Dict]:
         print("  discovery_path = get_validated_project_root() / AGENT_DISCOVERY_JSON")
         print("  dashboard_dir = get_validated_project_root() / DASHBOARD_DIR")
         print("=" * 80)
-        
+
         return False, violations_by_file
 
 def main():
     import sys
     is_compliant, violations = validate_repository()
-    
+
     if is_compliant:
         print("\n✅ Validation passed")
         return 0

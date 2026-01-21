@@ -1,4 +1,62 @@
 repos:
+  # ============================================================================
+  # TIER 0: Standard Hygiene (Prevent bloat, secrets, and basic issues)
+  # ============================================================================
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim Trailing Whitespace
+
+      - id: end-of-file-fixer
+        name: Fix End of Files (POSIX compliance)
+
+      - id: check-yaml
+        name: Check YAML Syntax
+
+      - id: check-added-large-files
+        name: Block Large Files (>500KB prevents .archive bloat)
+        args: ['--maxkb=500']
+
+      - id: check-merge-conflict
+        name: Check for Merge Conflict Markers
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        name: Detect Secrets (Prevent API keys in audit logs)
+        args: ['--baseline', '.secrets.baseline']
+        exclude: ^(\.secrets\.baseline|tests/.*|stubs/.*|data/output/.*\.json|data/freeze_reports/.*\.json|archives/.*)$
+
+  # ============================================================================
+  # TIER 1: Linting & Type Safety (Catch UnboundLocalError, unused imports)
+  # ============================================================================
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
+    hooks:
+      - id: ruff
+        name: Ruff Linter (F821 UnboundLocalError, F401 unused imports)
+        args: [--fix, --select, "F,E,W"]
+        types: [python]
+
+      - id: ruff-format
+        name: Ruff Formatter
+        types: [python]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        name: Mypy Type Checker (@standard_heal return types)
+        args: [--ignore-missing-imports, --no-strict-optional]
+        additional_dependencies: [types-all]
+        types: [python]
+        exclude: ^(tests/|scripts/|stubs/)
+
+  # ============================================================================
+  # TIER 2: Project-Specific Safety Checks
+  # ============================================================================
   - repo: local
     hooks:
       - id: check-agent-duplicates
@@ -8,10 +66,42 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [commit]
-        
+
       - id: check-deprecated-imports
         name: Check for Deprecated Agent Imports
         entry: pytest tests/infrastructure/test_agent_consolidation_hardening.py::TestConsolidationStaticAnalysis -v --tb=short
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+
+      - id: check-heal-schema-compliance
+        name: Check @standard_heal Schema Compliance
+        entry: python scripts/maintenance/check_heal_schema_compliance.py --strict
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+
+      - id: check-protected-files
+        name: Gatekeeper Protection (Block ArchivalGatekeeper.py changes)
+        entry: python scripts/maintenance/check_protected_files.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+
+      - id: gatekeeper-security-lock
+        name: Gatekeeper Security Lock (Requires [SECURITY-OVERRIDE])
+        entry: python scripts/security/gatekeeper_lock.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+
+      - id: test-hygiene-consolidation
+        name: Test Hygiene Consolidation (Survivor Agent Protection)
+        entry: pytest tests/L5_safety/test_hygiene_consolidation.py -v --tb=short
         language: system
         pass_filenames: false
         always_run: true

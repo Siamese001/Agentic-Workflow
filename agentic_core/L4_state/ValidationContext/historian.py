@@ -13,7 +13,7 @@ from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 # NAMING FIXED: IValidationContext → IValidationContext
 class IValidationContext(Protocol):
     '''Brief description of functionality and purpose.'''
-    
+
     cycle_id: Optional[int]
     status: str
     start_time: datetime
@@ -24,26 +24,26 @@ class IValidationContext(Protocol):
     flapping_files: Dict[str, int]
 
     def update_file_hash(self, file_path: str, file_hash: str): ...
-                    
+
     def mark_flapping(self, file_path: str): ...
-                    
+
 
 # NAMING FIXED: IValidationContextManager → IValidationContextManager
 class IValidationContextManager(Protocol):
     '''Brief description of functionality and purpose.'''
-    
+
     current_context: Optional[IValidationContext]
 
     def get_last_file_hashes(self) -> Dict[str, str]: ...
-                    
+
     def get_flapping_files(self) -> Dict[str, int]: ...
-                    
+
     def start_new_cycle(self, cycle_id: int = None) -> IValidationContext: ...
-                    
+
     def complete_cycle(self, status: str = "COMPLETED"): ...
-                    
+
     def load_memory(self) -> bool: ...
-                    
+
 
 # NAMING FIXED: LOGGER → Logger
 Logger = logging.getLogger(__name__)

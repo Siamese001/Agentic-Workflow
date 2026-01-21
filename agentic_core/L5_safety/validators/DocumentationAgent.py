@@ -22,16 +22,16 @@ from agentic_core.utils.core_extensions.subatomic_testing_mixin import Subatomic
 class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
     """
     Documentation enforcement agent for docstring validation.
-    
+
     Validates:
         - No missing docstrings in classes and functions.
-    
+
     Role:
         Pure focus on docstring presence and quality.
-    
+
     Note:
         Legacy L1 class - true agent is DocEnforcerAgent in L2.
-    
+
     Attributes:
         agent: Injected CanonBaseAgentInterface implementation.
     """
@@ -39,7 +39,7 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
     def execute(self) -> None:
         """
         Execute documentation validation checks.
-        
+
         Runs missing docstrings check and reports results
         to the validation context.
         """
@@ -50,10 +50,10 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
     def _has_missing_docstring(self, node: ast.AST) -> bool:
         """
         Check if an AST node is missing a docstring.
-        
+
         Args:
             node: AST node (FunctionDef or ClassDef) to check.
-            
+
         Returns:
             True if docstring is missing, False otherwise.
         """
@@ -62,11 +62,11 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
     def _find_missing_docstring_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
         """
         Find all missing docstring violations in an AST tree.
-        
+
         Args:
             tree: Parsed AST tree to analyze.
             fp: File path for violation reporting.
-            
+
         Returns:
             List of violation strings in 'filepath:line name' format.
         """
@@ -79,10 +79,10 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
     def check_no_missing_docstrings(self) -> Tuple[bool, List[str]]:
         """
         Check for missing docstrings in classes and functions.
-        
+
         Uses AST parsing to identify FunctionDef and ClassDef nodes
         without docstrings.
-        
+
         Returns:
             Tuple of (passed: bool, violations: List[str]).
             - passed: True if no violations found.
@@ -101,7 +101,7 @@ class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
     def heal_repository(self) -> dict:
         """
         Execute healing chain via parent class.
-        
+
         Returns:
             Dict with healing results from parent implementation.
         """

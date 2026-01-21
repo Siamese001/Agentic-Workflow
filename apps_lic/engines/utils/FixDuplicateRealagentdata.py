@@ -19,27 +19,27 @@ from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR,
 def fix_duplicates():
     """Remove duplicate realAgentData declarations."""
     dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
-    
+
     print("Reading dashboard HTML...")
     html = dashboard_path.read_text(encoding='utf-8')
-    
+
     # Find all occurrences of realAgentData declarations
     pattern = r'// Real per-agent data \(replaces generateMockAgentData\)\s*const realAgentData = \{[^}]*\};'
     matches = list(re.finditer(pattern, html, re.DOTALL))
-    
+
     print(f"Found {len(matches)} realAgentData declarations")
-    
+
     if len(matches) <= 1:
         print("✅ No duplicates found")
         return
-    
+
     # Keep only the first occurrence, remove all others
     print(f"Removing {len(matches) - 1} duplicate declarations...")
-    
+
     # Work backwards to preserve indices
     for match in reversed(matches[1:]):
         html = html[:match.start()] + html[match.end():]
-    
+
     # Write back
     dashboard_path.write_text(html, encoding='utf-8')
     print(f"✅ Fixed! Removed {len(matches) - 1} duplicates")

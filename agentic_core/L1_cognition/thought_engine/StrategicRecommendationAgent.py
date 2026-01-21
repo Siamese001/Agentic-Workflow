@@ -39,17 +39,17 @@ log = logging.getLogger(__name__)
 class StrategicRecommendationAgent(SubatomicTestingMixin, HealerMixin):
     """
     L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.
-    
+
     Purpose:
     - Analyzes dashboardData (territories, metrics, gaps) for cross-layer patterns.
     - Outputs structured JSON with strategic review paragraph and prioritized recommendations.
     - Integrated into report generator → injects into autonomy_dashboard.html
     """
-    
+
     def __init__(self, project_root: Optional[Path] = None, llm_client: Any = None) -> None:
         """
         Initialize Strategic Recommendation Agent.
-        
+
         Args:
             project_root: Root directory of the project
             llm_client: Optional LLM client for generating recommendations
@@ -58,14 +58,14 @@ class StrategicRecommendationAgent(SubatomicTestingMixin, HealerMixin):
         self.project_root = Path(project_root) if project_root else Path.cwd()
         self.llm_client = llm_client
         log.info("[L3 STRATEGIC] StrategicRecommendationAgent initialized")
-    
+
     def plan(self, dashboard_data: List[Dict[str, Any]]) -> str:
         """
         Generate strategic prompt from data patterns.
-        
+
         Args:
             dashboard_data: List of territory metrics from dashboard
-            
+
         Returns:
             Structured prompt for LLM to generate recommendations
         """
@@ -78,19 +78,19 @@ class StrategicRecommendationAgent(SubatomicTestingMixin, HealerMixin):
                 return float(val)
             except (ValueError, TypeError):
                 return default
-        
-        low_invocation = [r['Territory'] for r in dashboard_data 
+
+        low_invocation = [r['Territory'] for r in dashboard_data
                         if safe_get(r, 'Invocation %', 0) < 50 and r.get('Territory') != 'TOTAL']
-        low_mcp = [r['Territory'] for r in dashboard_data 
+        low_mcp = [r['Territory'] for r in dashboard_data
                  if safe_get(r, 'Hardened %', 0) < 50 and r.get('Territory') != 'TOTAL']
-        low_tests = [r['Territory'] for r in dashboard_data 
+        low_tests = [r['Territory'] for r in dashboard_data
                    if safe_get(r, 'Test %', 0) < 80 and r.get('Territory') != 'TOTAL']
-        high_complexity = [r['Territory'] for r in dashboard_data 
+        high_complexity = [r['Territory'] for r in dashboard_data
                          if safe_get(r, 'Avg CC', 0) > 15 and r.get('Territory') != 'TOTAL']
-        
+
         # Get total row
         total_row = next((r for r in dashboard_data if r.get('Territory') == 'TOTAL'), {})
-        
+
         # Extract values with None handling
         health = safe_get(total_row, 'Health', 0)
         total_agents = total_row.get('Total', 0) or 0
@@ -98,7 +98,7 @@ class StrategicRecommendationAgent(SubatomicTestingMixin, HealerMixin):
         invocation = safe_get(total_row, 'Invocation %', 0)
         hardened = safe_get(total_row, 'Hardened %', 0)
         test_cov = safe_get(total_row, 'Test %', 0)
-        
+
         prompt = f"""
 You are a senior agentic systems architect reviewing autonomy metrics.
 Generate:
@@ -121,15 +121,15 @@ Output strict JSON:
 {{"review": "paragraph text", "recommendations": ["1. Title<br>Details...", "2. Title<br>Details...", ...]}}
 """
         return prompt
-    
+
     def act(self, plan: str, dashboard_data: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Call LLM with structured prompt or generate fallback recommendations.
-        
+
         Args:
             plan: Strategic prompt
             dashboard_data: Dashboard metrics
-            
+
         Returns:
             Dict with 'review' and 'recommendations' keys
         """
@@ -139,17 +139,17 @@ Output strict JSON:
                 return self._parse_llm_response(response)
             except Exception as e:
                 log.warning(f"[STRATEGIC] LLM call failed: {e}, using fallback")
-        
+
         # Fallback: Generate rule-based recommendations
         return self._generate_fallback_recommendations(dashboard_data)
-    
+
     def _parse_llm_response(self, response: str) -> Dict[str, Any]:
         """
         Parse LLM response to extract JSON.
-        
+
         Args:
             response: Raw LLM response
-            
+
         Returns:
             Parsed dict with review and recommendations
         """
@@ -161,19 +161,19 @@ Output strict JSON:
             if json_match:
                 return json.loads(json_match.group(0))
             return {"review": "Parsing failed", "recommendations": []}
-    
+
     def _generate_fallback_recommendations(self, dashboard_data: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Generate rule-based recommendations when LLM is unavailable.
-        
+
         SSOT for strategic observations - generates both:
         1. macro_observations: Architectural insights (L0 warnings, layer balance, portfolio structure)
         2. metric_observations: Real-time metric status (complexity, test coverage, invocation)
         3. recommendations: Actionable improvement recommendations
-        
+
         Args:
             dashboard_data: Dashboard metrics
-            
+
         Returns:
             Dict with review, macro_observations, metric_observations, and recommendations
         """
@@ -186,10 +186,10 @@ Output strict JSON:
                 return float(val)
             except (ValueError, TypeError):
                 return default
-        
+
         total_row = next((r for r in dashboard_data if r.get('Territory') == 'TOTAL'), {})
         non_total_rows = [r for r in dashboard_data if r.get('Territory') != 'TOTAL']
-        
+
         # Extract key metrics
         health = safe_val(total_row, 'Health', 0)
         invocation = safe_val(total_row, 'Invocation %', 0)
@@ -200,12 +200,12 @@ Output strict JSON:
         documented_pct = safe_val(total_row, 'Documented %', 0)
         total_agents = total_row.get('Total', 0) or 0
         total_territories = len(non_total_rows)
-        
+
         # ========================================
         # MACRO OBSERVATIONS (Architectural)
         # ========================================
         macro_observations = []
-        
+
         # L0 Maintenance - should NOT have healing (infrastructure layer)
         l0_rows = [r for r in non_total_rows if 'L0' in r.get('Territory', '')]
         for l0_row in l0_rows:
@@ -217,7 +217,7 @@ Output strict JSON:
                     "text": f"L0 is infrastructure/scripts layer. Healing capability is N/A here (currently showing {heal_cap}%). Focus on stability, not self-healing.",
                     "color": "#6b7280"
                 })
-        
+
         # Apps territories observation
         apps_rows = [r for r in non_total_rows if 'Apps' in r.get('Territory', '')]
         if apps_rows:
@@ -229,7 +229,7 @@ Output strict JSON:
                     "text": f"Apps territories average {avg_apps_test:.0f}% test coverage. Target 80% for production safety.",
                     "color": "#ea580c"
                 })
-        
+
         # Observability observation
         if safe_val(total_row, 'Observable %', 0) > 95:
             macro_observations.append({
@@ -238,12 +238,12 @@ Output strict JSON:
                 "text": f"{safe_val(total_row, 'Observable %', 0):.1f}% observability coverage. Production debugging is well-supported.",
                 "color": "#16a34a"
             })
-        
+
         # ========================================
         # METRIC OBSERVATIONS (Real-time Status)
         # ========================================
         metric_observations = []
-        
+
         # Complexity observation
         avg_cc = safe_val(total_row, 'Avg CC', 0)
         if avg_cc > 30:
@@ -253,7 +253,7 @@ Output strict JSON:
                 "text": f"Average CC of {avg_cc:.1f} exceeds target (≤15). Refactor high-CC methods in L5 validators and L3 orchestrators.",
                 "color": "#ea580c"
             })
-        
+
         # Test coverage observation
         if test_coverage < 80:
             metric_observations.append({
@@ -262,7 +262,7 @@ Output strict JSON:
                 "text": f"Test coverage at {test_coverage:.1f}% (target: 80%). Focus on L1 Cognition and Apps territories first.",
                 "color": "#dc2626"
             })
-        
+
         # Healing invocation observation
         if invocation > 85:
             metric_observations.append({
@@ -271,15 +271,15 @@ Output strict JSON:
                 "text": f"{invocation:.1f}% healing invocation is excellent. Maintain this level.",
                 "color": "#16a34a"
             })
-        
+
         # ========================================
         # RECOMMENDATIONS (Actionable)
         # ========================================
         recommendations = []
-        
+
         # Generate strategic review from actual data
         review_parts = [f"Portfolio health at {health:.1f}% with {total_agents} agents across {total_territories} territories."]
-        
+
         # Test Coverage (most impactful)
         if test_coverage < 95:
             gap = 95 - test_coverage
@@ -293,7 +293,7 @@ Output strict JSON:
                 "action": "Add unit tests for core behaviors. Focus on zero-coverage territories first.",
                 "impact": "High - Prevents regressions during healing and refactoring cycles."
             })
-        
+
         # Healing Invocation
         if invocation < 100:
             gap = 100 - invocation
@@ -307,7 +307,7 @@ Output strict JSON:
                 "action": "Add super().heal_repository() calls to agents that override heal_repository().",
                 "impact": "High - Ensures healing propagates through MRO chain."
             })
-        
+
         # MCP Hardening
         if mcp_hardened < 100:
             gap = 100 - mcp_hardened
@@ -321,7 +321,7 @@ Output strict JSON:
                 "action": "Apply MCPHardenedMixin to all agents touching external APIs or tools.",
                 "impact": "Critical - Prevents injection and boundary violations."
             })
-        
+
         # Complexity
         high_cc_territories = [r for r in non_total_rows if safe_val(r, 'Avg CC', 0) > 15]
         if high_cc_territories:
@@ -334,7 +334,7 @@ Output strict JSON:
                 "action": "Refactor complex methods into smaller primitives. Target CC ≤10.",
                 "impact": "Medium - Reduces bug density and improves testability."
             })
-        
+
         # Typing
         if typed_pct < 100:
             gap = 100 - typed_pct
@@ -346,7 +346,7 @@ Output strict JSON:
                 "action": "Add type hints to function parameters and return types.",
                 "impact": "Medium - Enables static analysis and IDE support."
             })
-        
+
         # Documentation
         if documented_pct < 100:
             gap = 100 - documented_pct
@@ -358,7 +358,7 @@ Output strict JSON:
                 "action": "Add docstrings to all public methods and classes.",
                 "impact": "Medium - Reduces hallucinated tool usage by constraining search space."
             })
-        
+
         # Format recommendations for display
         formatted_recs = []
         for i, rec in enumerate(sorted(recommendations, key=lambda x: x['priority']), 1):
@@ -368,21 +368,21 @@ Output strict JSON:
                 f"<b>Action:</b> {rec['action']}<br>"
                 f"<span style='color:#059669'><b>Impact:</b> {rec['impact']}</span>"
             )
-        
+
         return {
             "review": " ".join(review_parts),
             "macro_observations": macro_observations,
             "metric_observations": metric_observations,
             "recommendations": formatted_recs[:10]
         }
-    
+
     def run(self, dashboard_data: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Full execution: Generate strategic recommendations from dashboard data.
-        
+
         Args:
             dashboard_data: List of territory metrics
-            
+
         Returns:
             Dict with 'review' and 'recommendations' keys
         """

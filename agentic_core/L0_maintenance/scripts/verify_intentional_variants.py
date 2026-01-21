@@ -45,7 +45,7 @@ def extract_key_identifiers(content: str, file_ext: str) -> dict:
         'constants': set(),
         'has_main': False
     }
-    
+
     if file_ext == '.py':
         # Extract Python-specific identifiers
         identifiers['classes'] = set(re.findall(r'class\s+(\w+)', content))
@@ -53,35 +53,35 @@ def extract_key_identifiers(content: str, file_ext: str) -> dict:
         identifiers['imports'] = set(re.findall(r'(?:from|import)\s+([\w.]+)', content))
         identifiers['constants'] = set(re.findall(r'^([A-Z_]{2,})\s*=', content, re.MULTILINE))
         identifiers['has_main'] = 'if __name__' in content
-    
+
     return identifiers
 
 
 def analyze_variant_likelihood(file1: Path, file2: Path) -> dict:
     """
     Analyze if two files with same name are intentional variants or true duplicates.
-    
+
     Returns:
         dict with 'is_variant', 'confidence', 'reasons'
     """
     content1 = read_file_content(file1)
     content2 = read_file_content(file2)
-    
+
     if not content1 or not content2:
         return {'is_variant': False, 'confidence': 'unknown', 'reasons': ['Cannot read files']}
-    
+
     # Check if identical
     if content1 == content2:
         return {'is_variant': False, 'confidence': 'certain', 'reasons': ['Files are identical']}
-    
+
     # Extract identifiers
     ext = file1.suffix
     ids1 = extract_key_identifiers(content1, ext)
     ids2 = extract_key_identifiers(content2, ext)
-    
+
     reasons = []
     variant_score = 0
-    
+
     # Check for different class names (strong indicator of variant)
     if ids1['classes'] and ids2['classes']:
         if ids1['classes'] != ids2['classes']:
@@ -90,7 +90,7 @@ def analyze_variant_likelihood(file1: Path, file2: Path) -> dict:
         else:
             reasons.append("Same class names (likely duplicate)")
             variant_score -= 2
-    
+
     # Check for different function sets (moderate indicator)
     if ids1['functions'] and ids2['functions']:
         func_diff = ids1['functions'].symmetric_difference(ids2['functions'])
@@ -100,27 +100,27 @@ def analyze_variant_likelihood(file1: Path, file2: Path) -> dict:
         elif len(func_diff) > 0:
             reasons.append(f"Minor function differences: {len(func_diff)} differences")
             variant_score += 1
-    
+
     # Check for different imports (weak indicator)
     if ids1['imports'] and ids2['imports']:
         import_diff = ids1['imports'].symmetric_difference(ids2['imports'])
         if len(import_diff) > 5:
             reasons.append(f"Different imports: {len(import_diff)} differences")
             variant_score += 1
-    
+
     # Check location patterns (strong indicator)
     path1_str = str(file1)
     path2_str = str(file2)
-    
+
     if 'config/blueprint_sovereign' in path1_str or 'config/blueprint_sovereign' in path2_str:
         reasons.append("One file in deprecated blueprint folder (likely stale copy)")
         variant_score -= 2
-    
+
     if ('L5_safety' in path1_str and 'L2_execution' in path2_str) or \
        ('L2_execution' in path1_str and 'L5_safety' in path2_str):
         reasons.append("Files in different layers (L2 vs L5) - likely intentional variants")
         variant_score += 2
-    
+
     # Calculate line difference percentage
     lines1 = len(content1.splitlines())
     lines2 = len(content2.splitlines())
@@ -129,7 +129,7 @@ def analyze_variant_likelihood(file1: Path, file2: Path) -> dict:
         if line_diff_pct > 30:
             reasons.append(f"Significant size difference: {line_diff_pct:.1f}% line count difference")
             variant_score += 1
-    
+
     # Determine verdict
     if variant_score >= 3:
         return {'is_variant': True, 'confidence': 'high', 'reasons': reasons, 'score': variant_score}
@@ -146,7 +146,7 @@ def scan_for_duplicates():
     file_hashes = defaultdict(list)
     extensions = {'.py', '.html', '.json', '.yaml', '.md', '.txt'}
     exclude_dirs = {'__pycache__', '.git', 'node_modules', 'venv', '.venv', 'archive'}
-    
+
     # Absolute Zero: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery import get_python_files, get_data_files
     all_files = list(get_python_files(project_root)) + list(get_data_files(project_root))
@@ -157,11 +157,11 @@ def scan_for_duplicates():
             continue
         if file_path.suffix not in extensions:
             continue
-        
+
         file_hash = compute_file_hash(file_path)
         if file_hash != "ERROR":
             file_hashes[file_hash].append(file_path)
-    
+
     return {h: paths for h, paths in file_hashes.items() if len(paths) > 1}
 
 
@@ -171,47 +171,47 @@ def main():
     print("Distinguishing between true duplicates and intentional variants needing rename")
     print("=" * 120)
     print()
-    
+
     # Scan for duplicates
     print("[1/3] Scanning for duplicate files...")
     duplicates = scan_for_duplicates()
     print(f"   Found {len(duplicates)} duplicate sets")
     print()
-    
+
     # Group by filename
     print("[2/3] Grouping by filename...")
     by_filename = defaultdict(list)
     for file_hash, paths in duplicates.items():
         for path in paths:
             by_filename[path.name].append({'path': path, 'hash': file_hash})
-    
+
     filename_groups = {name: files for name, files in by_filename.items() if len(files) > 1}
     print(f"   Found {len(filename_groups)} filename groups with duplicates")
     print()
-    
+
     # Analyze each group
     print("[3/3] Analyzing for intentional variants...")
     print()
-    
+
     true_duplicates = []
     intentional_variants = []
     needs_review = []
-    
+
     for filename, file_info in sorted(filename_groups.items()):
         # Check if all hashes are the same (identical content)
         hashes = set(f['hash'] for f in file_info)
-        
+
         if len(hashes) == 1:
             # All identical - true duplicates
             true_duplicates.append((filename, file_info))
         else:
             # Different content - analyze if intentional variant
             paths = [f['path'] for f in file_info]
-            
+
             # Analyze pairwise
             max_variant_score = 0
             max_analysis = None
-            
+
             for i in range(len(paths)):
                 for j in range(i + 1, len(paths)):
                     analysis = analyze_variant_likelihood(paths[i], paths[j])
@@ -219,32 +219,32 @@ def main():
                     if score > max_variant_score:
                         max_variant_score = score
                         max_analysis = analysis
-            
+
             if max_analysis and max_analysis.get('is_variant') and max_analysis.get('confidence') in ['high', 'medium']:
                 intentional_variants.append((filename, file_info, max_analysis))
             else:
                 needs_review.append((filename, file_info, max_analysis))
-    
+
     print()
     print("=" * 120)
     print("ANALYSIS RESULTS")
     print("=" * 120)
     print()
-    
+
     # Summary
     print(f"SUMMARY:")
     print(f"  ✓ True Duplicates (safe to delete): {len(true_duplicates)}")
     print(f"  ⚠ Intentional Variants (need rename): {len(intentional_variants)}")
     print(f"  ? Needs Manual Review: {len(needs_review)}")
     print()
-    
+
     # Show intentional variants
     if intentional_variants:
         print("=" * 120)
         print("INTENTIONAL VARIANTS - REQUIRE RENAMING VIA NamingAgent")
         print("=" * 120)
         print()
-        
+
         for idx, (filename, file_info, analysis) in enumerate(intentional_variants, 1):
             print(f"[{idx}] {filename}")
             print(f"    Copies: {len(file_info)}")
@@ -267,14 +267,14 @@ def main():
             print()
             print("-" * 120)
             print()
-    
+
     # Show needs review
     if needs_review:
         print("=" * 120)
         print("NEEDS MANUAL REVIEW - Unclear if variant or duplicate")
         print("=" * 120)
         print()
-        
+
         for idx, (filename, file_info, analysis) in enumerate(needs_review, 1):
             print(f"[{idx}] {filename}")
             print(f"    Copies: {len(file_info)}")
@@ -283,7 +283,7 @@ def main():
                 print(f"    Reasons: {', '.join(analysis['reasons'][:2])}")
             print(f"    Locations: {len(file_info)} files")
             print()
-    
+
     # Show true duplicates summary
     print("=" * 120)
     print("TRUE DUPLICATES - SAFE TO DELETE")
@@ -295,7 +295,7 @@ def main():
     print("These files have identical content and can be safely deleted via:")
     print("  python scripts/delete_duplicates.py --execute")
     print()
-    
+
     # Final recommendations
     print()
     print("=" * 120)
@@ -315,7 +315,7 @@ def main():
     print(f"   - {len(needs_review)} filename groups need manual inspection")
     print("   - Review diff and decide: rename or delete")
     print()
-    
+
     # Save results
     output_file = project_root / "variant_analysis_results.txt"
     with open(output_file, 'w', encoding='utf-8') as f:
@@ -326,7 +326,7 @@ def main():
             for fi in file_info:
                 f.write(f"  {fi['path'].relative_to(project_root)}\n")
             f.write("\n")
-    
+
     print(f"Detailed results saved to: {output_file}")
     print()
 

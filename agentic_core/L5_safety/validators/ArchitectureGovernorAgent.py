@@ -33,7 +33,7 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
     def __init__(self, project_root: Path=None) -> None:
         """
         Initialize the ArchitectureGovernorAgent.
-        
+
         Args:
             project_root: Root directory of the project
         """
@@ -65,10 +65,10 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
         super().heal_repository()
 
         Validate that file respects layer boundaries (L0-L5).
-        
+
         Args:
             file_path: Path to file to validate
-            
+
         Returns:
             Tuple of (is_valid, reason)
         """
@@ -85,10 +85,10 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
     def validate_architectural_patterns(self, file_path: Path) -> Dict[str, Any]:
         """
         Validate architectural patterns in a file.
-        
+
         Args:
             file_path: Path to file to validate
-        
+
         Returns:
             Dictionary with validation results
         """
@@ -98,10 +98,10 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
     def run_validation(self, files: List[Path]) -> Dict[str, Any]:
         """
         Run architecture validation on multiple files.
-        
+
         Args:
             files: List of file paths to validate
-            
+
         Returns:
             Summary of validation results
         """

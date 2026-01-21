@@ -15,10 +15,10 @@ def debug_dashboard():
     print("=" * 70)
     print("DASHBOARD RENDERING DEBUG")
     print("=" * 70)
-    
+
     dashboard_path = get_validated_project_root() / DASHBOARD_DIR / "autonomy_dashboard.html"
     html = dashboard_path.read_text(encoding='utf-8')
-    
+
     # 1. Check dashboardData exists and is valid
     print("\n1. Checking dashboardData...")
     dashboard_match = re.search(r'const dashboardData = (\[.*?\]);', html, re.DOTALL)
@@ -33,7 +33,7 @@ def debug_dashboard():
             print(f"   ❌ Parse error: {e}")
     else:
         print("   ❌ dashboardData not found")
-    
+
     # 2. Check realAgentData exists
     print("\n2. Checking realAgentData...")
     real_match = re.search(r'const realAgentData = (\{.*?\});', html, re.DOTALL)
@@ -45,7 +45,7 @@ def debug_dashboard():
             print(f"   ❌ Parse error: {e}")
     else:
         print("   ❌ realAgentData not found")
-    
+
     # 3. Check HTML containers exist
     print("\n3. Checking HTML containers...")
     containers = ['id="kpiGrid"', 'id="codeQualityGrid"']
@@ -54,7 +54,7 @@ def debug_dashboard():
             print(f"   ✅ {container} exists")
         else:
             print(f"   ❌ {container} missing")
-    
+
     # 4. Check loadData() is called
     print("\n4. Checking loadData() call...")
     if 'loadData();' in html:
@@ -66,10 +66,10 @@ def debug_dashboard():
                 print(f"   ✅ Called at line {i}")
     else:
         print("   ❌ loadData() not called")
-    
+
     # 5. Check for JavaScript syntax errors
     print("\n5. Checking for common JavaScript errors...")
-    
+
     # Check for unclosed braces in realAgentData
     if real_match:
         real_json = real_match.group(1)
@@ -79,7 +79,7 @@ def debug_dashboard():
             print(f"   ✅ Braces balanced in realAgentData ({open_braces} pairs)")
         else:
             print(f"   ❌ Brace mismatch: {open_braces} open, {close_braces} close")
-    
+
     # Check for unclosed brackets in dashboardData
     if dashboard_match:
         dash_json = dashboard_match.group(1)
@@ -89,7 +89,7 @@ def debug_dashboard():
             print(f"   ✅ Brackets balanced in dashboardData ({open_brackets} pairs)")
         else:
             print(f"   ❌ Bracket mismatch: {open_brackets} open, {close_brackets} close")
-    
+
     # 6. Check renderTerritorySummaryTable function
     print("\n6. Checking rendering functions...")
     funcs = [
@@ -102,14 +102,14 @@ def debug_dashboard():
             print(f"   ✅ {func} exists")
         else:
             print(f"   ❌ {func} missing")
-    
+
     # 7. Check if globalAgentData is assigned
     print("\n7. Checking globalAgentData assignment...")
     if 'globalAgentData = realAgentData' in html:
         print("   ✅ globalAgentData = realAgentData")
     else:
         print("   ❌ globalAgentData not assigned")
-    
+
     # 8. Extract and show a sample of the data
     print("\n8. Sample data from dashboardData...")
     if dashboard_match:
@@ -122,7 +122,7 @@ def debug_dashboard():
                 print(f"   Heal Cap: {sample.get('Heal Cap %')}%")
         except:
             pass
-    
+
     print("\n" + "=" * 70)
     print("RECOMMENDATIONS")
     print("=" * 70)

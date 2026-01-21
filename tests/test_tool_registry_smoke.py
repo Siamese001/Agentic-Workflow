@@ -26,11 +26,11 @@ def test_sovereign_territory_acceptance():
     print("=" * 60)
     print("TEST 1: Sovereign Territory Acceptance")
     print("=" * 60)
-    
+
     registry = ToolRegistry.get_instance()
     ToolRegistry.reset_instance()
     registry = ToolRegistry.get_instance()
-    
+
     # Valid paths that should be accepted
     valid_paths = [
         "agentic_core/L2_execution/ToolRegistry/tools.py",
@@ -38,7 +38,7 @@ def test_sovereign_territory_acceptance():
         "agentic_core/utils/sovereign_index.py",
         "apps_shared/utils/tool_registry.py",
     ]
-    
+
     accepted = 0
     for i, path in enumerate(valid_paths):
         result = registry.register_tool(
@@ -52,7 +52,7 @@ def test_sovereign_territory_acceptance():
             accepted += 1
         else:
             print(f"  ❌ REJECTED (unexpected): {path}")
-    
+
     print(f"\nResult: {accepted}/{len(valid_paths)} valid tools accepted")
     return accepted == len(valid_paths)
 
@@ -62,10 +62,10 @@ def test_archives_rejection():
     print("\n" + "=" * 60)
     print("TEST 2: Archives Rejection")
     print("=" * 60)
-    
+
     ToolRegistry.reset_instance()
     registry = ToolRegistry.get_instance()
-    
+
     # Invalid paths that should be rejected
     invalid_paths = [
         "archives/void_violations/rogue_tool.py",
@@ -73,7 +73,7 @@ def test_archives_rejection():
         "/tmp/temp_tool.py",
         ".sovereign_healing_backup/tool.py",
     ]
-    
+
     rejected = 0
     for i, path in enumerate(invalid_paths):
         result = registry.register_tool(
@@ -86,7 +86,7 @@ def test_archives_rejection():
             rejected += 1
         else:
             print(f"  ❌ ACCEPTED (unexpected): {path}")
-    
+
     print(f"\nResult: {rejected}/{len(invalid_paths)} invalid tools correctly rejected")
     return rejected == len(invalid_paths)
 
@@ -96,18 +96,18 @@ def test_bulk_registration():
     print("\n" + "=" * 60)
     print("TEST 3: Bulk Registration from L2_execution")
     print("=" * 60)
-    
+
     ToolRegistry.reset_instance()
     registry = ToolRegistry.get_instance()
-    
+
     # Discover tool files
     discovered = registry.discover_tools("*_tools.py", PROJECT_ROOT)
     print(f"  Discovered {len(discovered)} *_tools.py files")
-    
+
     # Filter to only L2_execution tools
     l2_tools = [p for p in discovered if "L2_execution" in str(p)]
     print(f"  Found {len(l2_tools)} tools in L2_execution/")
-    
+
     # Register each
     registered = 0
     for tool_path in l2_tools:
@@ -122,7 +122,7 @@ def test_bulk_registration():
         if result:
             registered += 1
             print(f"    ✅ {tool_name}")
-    
+
     print(f"\nResult: {registered}/{len(l2_tools)} L2 tools registered")
     return registered > 0
 
@@ -132,10 +132,10 @@ def test_tool_retrieval():
     print("\n" + "=" * 60)
     print("TEST 4: Tool Retrieval")
     print("=" * 60)
-    
+
     ToolRegistry.reset_instance()
     registry = ToolRegistry.get_instance()
-    
+
     # Register a tool
     registry.register_tool(
         tool_name="retrieval_test",
@@ -143,7 +143,7 @@ def test_tool_retrieval():
         tool_func=dummy_tool,
         description="Test retrieval"
     )
-    
+
     # Retrieve it
     func = registry.get_tool_func("retrieval_test")
     if func and callable(func):
@@ -151,7 +151,7 @@ def test_tool_retrieval():
         if result == "executed":
             print("  ✅ Tool retrieved and executed successfully")
             return True
-    
+
     print("  ❌ Tool retrieval failed")
     return False
 
@@ -161,27 +161,27 @@ def main():
     print("\n" + "=" * 60)
     print("TOOL REGISTRY SMOKE TEST")
     print("=" * 60)
-    
+
     results = []
-    
+
     results.append(("Sovereign Territory Acceptance", test_sovereign_territory_acceptance()))
     results.append(("Archives Rejection", test_archives_rejection()))
     results.append(("Bulk Registration", test_bulk_registration()))
     results.append(("Tool Retrieval", test_tool_retrieval()))
-    
+
     print("\n" + "=" * 60)
     print("SUMMARY")
     print("=" * 60)
-    
+
     passed = sum(1 for _, r in results if r)
     total = len(results)
-    
+
     for name, result in results:
         status = "✅ PASS" if result else "❌ FAIL"
         print(f"  {status}: {name}")
-    
+
     print(f"\nTotal: {passed}/{total} tests passed")
-    
+
     if passed == total:
         print("\n🎉 ALL SMOKE TESTS PASSED!")
         return 0

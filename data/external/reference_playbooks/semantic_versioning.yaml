@@ -4,12 +4,12 @@
 semantic_versioning:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # Versioning scheme
   version_scheme:
     format: "MAJOR.MINOR.PATCH"
     description: "Semantic versioning for prompt governance components"
-    
+
     version_components:
       major:
         description: "Incompatible API changes or major architectural changes"
@@ -20,7 +20,7 @@ semantic_versioning:
           - "Significant governance policy changes"
         impact_level: "high"
         approval_required: "governance_committee"
-        
+
       minor:
         description: "New features in backward-compatible manner"
         increment_triggers:
@@ -30,7 +30,7 @@ semantic_versioning:
           - "New evaluation criteria"
         impact_level: "medium"
         approval_required: "technical_lead"
-        
+
       patch:
         description: "Backward-compatible bug fixes and improvements"
         increment_triggers:
@@ -40,7 +40,7 @@ semantic_versioning:
           - "Minor text improvements"
         impact_level: "low"
         approval_required: "prompt_engineer"
-        
+
   # Pre-release and build metadata
   pre_release:
     format: "MAJOR.MINOR.PATCH-PRERELEASE"
@@ -48,23 +48,23 @@ semantic_versioning:
       - "alpha": "Internal testing, not feature-complete"
       - "beta": "External testing, feature-complete"
       - "rc": "Release candidate, final testing phase"
-      
+
     pre_release_rules:
       - "Pre-release versions have lower precedence than final versions"
       - "Multiple pre-release identifiers separated by dots"
       - "Numeric identifiers have higher precedence than alphanumeric"
-      
+
   build_metadata:
     format: "MAJOR.MINOR.PATCH+BUILD"
     examples:
       - "1.0.0+20130313144700"
       - "1.0.0-beta+exp.sha.5114f85"
-      
+
     build_rules:
       - "Build metadata ignored for version precedence"
       - "Used for build identification and debugging"
       - "Can contain dot-separated identifiers"
-      
+
   # Component-specific versioning
   component_versioning:
     prompt_engines:
@@ -77,7 +77,7 @@ semantic_versioning:
           scoring: "1.0.0"
           feedback: "1.0.0"
           summarization: "1.0.0"
-          
+
       outreach_engine:
         current_version: "1.0.0"
         versioning_strategy: "semantic"
@@ -87,23 +87,23 @@ semantic_versioning:
           scoring: "1.0.0"
           feedback: "1.0.0"
           summarization: "1.0.0"
-          
+
     governance_components:
       approval_workflow: "1.0.0"
       change_history: "1.0.0"
       ownership: "1.0.0"
       semantic_versioning: "1.0.0"
-      
+
     evaluation_components:
       rubric: "1.0.0"
       eval_sets: "1.0.0"
       regression_tests: "1.0.0"
       style_checks: "1.0.0"
-      
+
     template_components:
       resume_templates: "1.0.0"
       outreach_templates: "1.0.0"
-      
+
   # Version increment rules
   increment_rules:
     major_increment:
@@ -117,7 +117,7 @@ semantic_versioning:
         - "Comprehensive impact assessment"
         - "Migration planning required"
         - "Extended testing period"
-        
+
     minor_increment:
       conditions:
         - "New prompt categories added"
@@ -129,7 +129,7 @@ semantic_versioning:
         - "Standard testing procedures"
         - "Documentation updates"
         - "Stakeholder notification"
-        
+
     patch_increment:
       conditions:
         - "Bug fixes and corrections"
@@ -141,7 +141,7 @@ semantic_versioning:
         - "Focused testing on changes"
         - "Change log updates"
         - "Standard deployment"
-        
+
   # Version compatibility
   compatibility_matrix:
     backward_compatibility:
@@ -151,32 +151,32 @@ semantic_versioning:
           - "1.0.0 compatible with 1.0.1"
           - "1.0.1 compatible with 1.0.2"
         migration_required: false
-        
+
       minor_compatibility:
         description: "Generally backward compatible"
         examples:
           - "1.0.x compatible with 1.1.x"
           - "1.1.x compatible with 1.2.x"
         migration_required: "optional"
-        
+
       major_compatibility:
         description: "Breaking changes, migration required"
         examples:
           - "1.x.x not compatible with 2.x.x"
           - "2.x.x not compatible with 3.x.x"
         migration_required: "mandatory"
-        
+
     dependency_compatibility:
       engine_dependencies:
         - "Template versions must match engine versions"
         - "Evaluation components compatible within major version"
         - "Governance components require exact version match"
-        
+
       integration_dependencies:
         - "Cross-engine compatibility within same major version"
         - "API compatibility maintained within minor version"
         - "Data format compatibility within patch version"
-        
+
   # Version control integration
   git_integration:
     branching_strategy:
@@ -185,7 +185,7 @@ semantic_versioning:
       feature_branches: "feature/DESCRIPTION"
       release_branches: "release/VERSION"
       hotfix_branches: "hotfix/VERSION"
-      
+
     version_tags:
       format: "vMAJOR.MINOR.PATCH"
       examples:
@@ -196,7 +196,7 @@ semantic_versioning:
         - "Tag only final releases, not pre-releases"
         - "Annotated tags with release notes"
         - "Sign tags for security"
-        
+
     commit_conventions:
       conventional_commits:
         format: "type(scope): description"
@@ -209,7 +209,7 @@ semantic_versioning:
           - "refactor: Code refactoring (patch increment)"
           - "test: Test additions (patch increment)"
           - "chore: Maintenance tasks (patch increment)"
-          
+
   # Release management
   release_process:
     release_types:
@@ -218,19 +218,19 @@ semantic_versioning:
         preparation_time: "4-6 weeks"
         testing_period: "2-3 weeks"
         approval_required: "governance_committee"
-        
+
       minor_release:
         frequency: "Monthly"
         preparation_time: "2-3 weeks"
         testing_period: "1 week"
         approval_required: "technical_lead"
-        
+
       patch_release:
         frequency: "As needed (weekly if required)"
         preparation_time: "1 week"
         testing_period: "2-3 days"
         approval_required: "prompt_engineer"
-        
+
     release_checklist:
       pre_release:
         - "Version compatibility assessment"
@@ -239,21 +239,21 @@ semantic_versioning:
         - "Security review completed"
         - "Performance benchmarks met"
         - "Stakeholder approval obtained"
-        
+
       release:
         - "Version tags created"
         - "Release notes published"
         - "Deployment procedures executed"
         - "Monitoring activated"
         - "Rollback procedures prepared"
-        
+
       post_release:
         - "Release validation completed"
         - "Performance monitoring initiated"
         - "User feedback collection started"
         - "Issue tracking activated"
         - "Success metrics measured"
-        
+
   # Version monitoring and metrics
   version_monitoring:
     tracking_metrics:
@@ -262,19 +262,19 @@ semantic_versioning:
         - "Time between releases"
         - "Release success rate"
         - "Rollback frequency"
-        
+
       quality_metrics:
         - "Bug discovery rate by version"
         - "Performance degradation by version"
         - "User satisfaction by version"
         - "Compliance issues by version"
-        
+
       adoption_metrics:
         - "Version adoption rate"
         - "Migration success rate"
         - "Feature usage by version"
         - "Support tickets by version"
-        
+
   # Version policies
   version_policies:
     support_policy:
@@ -283,32 +283,32 @@ semantic_versioning:
         duration: "24 months"
         selection_criteria: "Major releases with high adoption"
         support_level: "Security patches and critical bug fixes"
-        
+
       standard_support:
         description: "Standard support versions"
         duration: "12 months"
         coverage: "All minor and patch releases"
         support_level: "All bug fixes and security patches"
-        
+
       extended_support:
         description: "Extended support for enterprise customers"
         duration: "36 months"
         availability: "Enterprise agreements only"
         support_level: "Full maintenance support"
-        
+
     deprecation_policy:
       deprecation_timeline:
         - "Announcement: 6 months before deprecation"
         - "Warning period: 3 months before end-of-life"
         - "End-of-life: No further support or updates"
         - "Archive: Documentation and code preserved"
-        
+
       migration_support:
         - "Migration guides provided"
         - "Support during transition period"
         - "Tools for version migration"
         - "Training for new versions"
-        
+
   # Version documentation
   documentation_requirements:
     change_logs:
@@ -320,7 +320,7 @@ semantic_versioning:
         - "Removed: Removed features"
         - "Fixed: Bug fixes"
         - "Security: Security improvements"
-        
+
     release_notes:
       content:
         - "Version summary and highlights"
@@ -328,14 +328,14 @@ semantic_versioning:
         - "Bug fixes and security updates"
         - "Known issues and limitations"
         - "Upgrade and migration instructions"
-        
+
     api_documentation:
       requirements:
         - "Version-specific API documentation"
         - "Compatibility matrices"
         - "Migration guides between versions"
         - "Deprecation notices and timelines"
-        
+
   # Version automation
   automation_tools:
     version_management:
@@ -343,13 +343,13 @@ semantic_versioning:
       - "Semantic version calculators"
       - "Dependency version checking"
       - "Compatibility validation tools"
-      
+
     release_automation:
       - "Automated release pipelines"
       - "Version tag creation"
       - "Release note generation"
       - "Deployment automation"
-      
+
     monitoring_automation:
       - "Version performance monitoring"
       - "Automated compatibility checking"

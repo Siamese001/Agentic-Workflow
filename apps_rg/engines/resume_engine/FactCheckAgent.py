@@ -25,12 +25,12 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     async def execute(self) -> None:
         """
         Execute fact-checking of resume claims against user profile.
-        
+
         Validates:
         - Skills against profile skills
         - Experience companies against work history
         - Dates consistency
-        
+
         Raises:
             HALLUCINATION_DETECTED signal if unverified claims found
         """
@@ -85,10 +85,10 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     def _extract_skills(self, resume: Dict) -> set:
         """
         Extract skills from resume.
-        
+
         Args:
             resume: Resume dictionary
-        
+
         Returns:
             Set of normalized skill names
         """

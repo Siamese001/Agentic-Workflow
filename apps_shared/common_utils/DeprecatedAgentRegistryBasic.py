@@ -30,10 +30,3 @@ def test_agent_registry_find_by_capability() -> None:
 
     writers = registry.find_agents_by_capability("write")
     assert a1 in writers
-
-
-
-
-
-
-

@@ -28,7 +28,7 @@ ARCHIVE_DIR = PROJECT_ROOT / "archives" / "hierarchy_violations" / "apps_depth"
 def extract_original_path(file_path: Path) -> str:
     """
     Extract original path from the violation comment in the file.
-    
+
     Files have a header like:
     # APPS DEPTH VIOLATION — 2026-01-18 05:20:53
     # apps_lic\domain\validators\ASCIIEnforcerAgent.py was depth 4, MUST be 3.
@@ -36,14 +36,14 @@ def extract_original_path(file_path: Path) -> str:
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read(500)  # Read first 500 chars
-        
+
         # Look for the path pattern
         match = re.search(r'# (apps_(?:lic|rg)[^\s]+\.py) was depth', content)
         if match:
             return match.group(1).replace('\\', '/')
     except Exception:
         pass
-    
+
     # Fallback: reconstruct from archive path
     rel_path = file_path.relative_to(ARCHIVE_DIR)
     return str(rel_path).replace('\\', '/')
@@ -52,22 +52,22 @@ def extract_original_path(file_path: Path) -> str:
 def get_agents_to_restore() -> List[Tuple[Path, Path]]:
     """
     Get list of (source, destination) pairs for restoration.
-    
+
     Returns:
         List of (archived_path, original_path) tuples
     """
     agents = []
-    
+
     for archived_file in ARCHIVE_DIR.rglob("*Agent.py"):
         # Skip test files
         if archived_file.name.startswith("Test"):
             continue
-        
+
         original_rel = extract_original_path(archived_file)
         original_path = PROJECT_ROOT / original_rel
-        
+
         agents.append((archived_file, original_path))
-    
+
     return agents
 
 
@@ -75,12 +75,12 @@ def remove_violation_header(file_path: Path) -> None:
     """Remove the APPS DEPTH VIOLATION header from the file."""
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
-    
+
     # Remove the violation header (first 2-3 lines if they contain APPS DEPTH VIOLATION)
     lines = content.split('\n')
     clean_lines = []
     skip_header = True
-    
+
     for line in lines:
         if skip_header and ('APPS DEPTH VIOLATION' in line or 'was depth' in line):
             continue
@@ -88,7 +88,7 @@ def remove_violation_header(file_path: Path) -> None:
             continue
         skip_header = False
         clean_lines.append(line)
-    
+
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(clean_lines))
 
@@ -97,66 +97,66 @@ def main():
     parser = argparse.ArgumentParser(description='Restore incorrectly archived app agents')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be done without moving files')
     args = parser.parse_args()
-    
+
     print("=" * 70)
     print("App Agent Restoration Script")
     print("=" * 70)
-    
+
     if args.dry_run:
         print("\n[DRY RUN MODE - No files will be moved]\n")
-    
+
     agents = get_agents_to_restore()
     print(f"Found {len(agents)} agents to restore\n")
-    
+
     restored = 0
     skipped = 0
     errors = 0
-    
+
     for archived_path, original_path in sorted(agents, key=lambda x: str(x[1])):
         rel_original = original_path.relative_to(PROJECT_ROOT)
-        
+
         # Check if destination already exists
         if original_path.exists():
             print(f"  ⊘ SKIP (exists): {rel_original}")
             skipped += 1
             continue
-        
+
         if args.dry_run:
             print(f"  ○ Would restore: {rel_original}")
             restored += 1
             continue
-        
+
         try:
             # Create parent directories
             original_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             # Move the file
             shutil.move(str(archived_path), str(original_path))
-            
+
             # Remove violation header
             remove_violation_header(original_path)
-            
+
             print(f"  ✓ Restored: {rel_original}")
             restored += 1
-            
+
         except Exception as e:
             print(f"  ✗ ERROR: {rel_original} - {e}")
             errors += 1
-    
+
     # Summary
     print(f"\n{'=' * 70}")
     print("Summary:")
     print(f"  Restored: {restored}")
     print(f"  Skipped:  {skipped}")
     print(f"  Errors:   {errors}")
-    
+
     if args.dry_run:
         print("\n[DRY RUN COMPLETE - Run without --dry-run to execute]")
     else:
         print("\n✓ RESTORATION COMPLETE")
         print("\nNext step: Regenerate agent_discovery_full.json")
         print("  python scripts/full_agent_discovery.py")
-    
+
     return 0 if errors == 0 else 1
 
 

@@ -49,7 +49,7 @@ roles:
       env:
         BRAVE_API_KEY: "${BRAVE_API_KEY}"
       description: "Web search via Brave Search API"
-    
+
     - server: "fetch"
       command: "npx"
       args: ["-y", "@modelcontextprotocol/server-fetch"]

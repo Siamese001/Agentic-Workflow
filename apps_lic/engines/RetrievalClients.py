@@ -11,7 +11,7 @@ class GoogleSearchClient:
     """
     Centralized client for all Google Custom Search API calls with circuit breaker protection
     """
-    
+
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.api_key = os.environ.get("GOOGLE_API_KEY")
         self.cse_id = os.environ.get("GOOGLE_CSE_ID")
@@ -28,14 +28,14 @@ class GoogleSearchClient:
     def search(self, query: str, num_results: int = 5) -> list:
         """
         Execute search with circuit breaker protection
-        
+
         Args:
             query: Search query string
             num_results: Number of results to return (default 5)
-            
+
         Returns:
             List of search result items
-            
+
         Raises:
             Exception: If API call fails
             CircuitBreakerOpenError: If circuit breaker is OPEN

@@ -41,7 +41,7 @@ DEPRECATED_PATHS = {
 
 class TestConsolidationRuntimeIntegrity:
     """
-    Verifies that the agents actually exist and are importable 
+    Verifies that the agents actually exist and are importable
     from their new canonical locations.
     """
 
@@ -69,7 +69,7 @@ class TestConsolidationRuntimeIntegrity:
 
 class TestConsolidationStaticAnalysis:
     """
-    AST-based static analysis to ensure no files in the codebase 
+    AST-based static analysis to ensure no files in the codebase
     are importing from deprecated locations.
     """
 
@@ -78,7 +78,7 @@ class TestConsolidationStaticAnalysis:
         # Exclude this test file and archives
         exclude_dirs = ["archives", ".git", "__pycache__", "venv", "env"]
         files = []
-        
+
         for root_dir in [PROJECT_ROOT / "agentic_core", PROJECT_ROOT / "apps_shared"]:
             if not root_dir.exists():
                 continue
@@ -106,7 +106,7 @@ class TestConsolidationStaticAnalysis:
                 module = node.module
                 if not module:
                     continue
-                
+
                 # Check against all deprecated paths
                 for bad_path, bad_agents in DEPRECATED_PATHS.items():
                     if module == bad_path or module.startswith(bad_path + "."):
@@ -117,7 +117,7 @@ class TestConsolidationStaticAnalysis:
                                 violations.append(
                                     f"Line {node.lineno}: Imports '{imported_name}' from deprecated '{module}'"
                                 )
-            
+
             # Check: import X (less common for deep nesting, but good to check)
             elif isinstance(node, ast.Import):
                 for name in node.names:
@@ -132,7 +132,7 @@ class TestConsolidationStaticAnalysis:
     def test_identify_deprecated_imports(self):
         """
         Scans the codebase for imports from deprecated locations.
-        
+
         During Phase 1 (Pre-Consolidation): This test acts as a finder.
         During Phase 4 (Verification): This test acts as a regression guardrail.
         """
@@ -152,9 +152,9 @@ class TestConsolidationStaticAnalysis:
                 report.append(f"\nFile: {fpath}")
                 for err in errors:
                     report.append(f"  - {err}")
-            
+
             report.append("\nACTION REQUIRED: Update imports in these files to use canonical paths.")
-            
+
             # Fail the test if violations exist
             pytest.fail("\n".join(report))
 
@@ -169,7 +169,7 @@ class TestDirectoryIntegrity:
         guardrails_dir = PROJECT_ROOT / "agentic_core" / "L5_safety" / "guardrails"
         if not guardrails_dir.exists():
             pytest.skip("guardrails directory does not exist")
-        
+
         unified_files = list(guardrails_dir.glob("Unified*.py"))
         assert len(unified_files) == 0, (
             f"Found {len(unified_files)} Unified* files in guardrails/ that should be in unified/: "
@@ -181,7 +181,7 @@ class TestDirectoryIntegrity:
         toolregistry_dir = PROJECT_ROOT / "agentic_core" / "L2_execution" / "ToolRegistry"
         if not toolregistry_dir.exists():
             pytest.skip("ToolRegistry directory does not exist")
-        
+
         router_file = toolregistry_dir / "UnifiedModelRouterAgent.py"
         assert not router_file.exists(), (
             "UnifiedModelRouterAgent.py should not exist in ToolRegistry/ - "
@@ -193,7 +193,7 @@ class TestDirectoryIntegrity:
         apps_shared_dir = PROJECT_ROOT / "apps_shared" / "base_agents"
         if not apps_shared_dir.exists():
             pytest.skip("apps_shared/base_agents directory does not exist")
-        
+
         hygiene_file = apps_shared_dir / "HygieneGuardianAgent.py"
         assert not hygiene_file.exists(), (
             "HygieneGuardianAgent.py should not exist in apps_shared/base_agents/ - "
@@ -211,17 +211,17 @@ class TestNamingConventionCompliance:
         validators_dir = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators"
         if not validators_dir.exists():
             pytest.skip("validators directory does not exist")
-        
+
         # Get all Python files (excluding __init__.py and non-agent files)
         py_files = [f for f in validators_dir.glob("*.py") if f.name != "__init__.py"]
-        
+
         # Known non-agent files that are allowed
         allowed_non_agent_files = {
-            "decorators.py", "filesystem.py", "healing_strategies.py", 
+            "decorators.py", "filesystem.py", "healing_strategies.py",
             "healing_healing_strategies.py", "location_constants.py",
             "ssot_relocator.py", "structure_blueprint.py", "intervention_server.py"
         }
-        
+
         violations = []
         for f in py_files:
             if f.name in allowed_non_agent_files:
@@ -229,7 +229,7 @@ class TestNamingConventionCompliance:
             # Agent files should end with Agent.py
             if not f.name.endswith("Agent.py"):
                 violations.append(f.name)
-        
+
         assert len(violations) == 0, (
             f"Files in validators/ should end with 'Agent.py': {violations}"
         )
@@ -244,18 +244,18 @@ class TestPotentialOverlapsVerification:
         """Verify Location* agents have different implementations (not duplicates)."""
         import hashlib
         validators_dir = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators"
-        
+
         location_files = {
             "LocationAgent.py": validators_dir / "LocationAgent.py",
             "LocationValidatorAgent.py": validators_dir / "LocationValidatorAgent.py",
             "LocationHealerAgent.py": validators_dir / "LocationHealerAgent.py",
         }
-        
+
         hashes = {}
         for name, path in location_files.items():
             if path.exists():
                 hashes[name] = hashlib.md5(path.read_bytes()).hexdigest()
-        
+
         # All hashes should be unique (different implementations)
         unique_hashes = set(hashes.values())
         assert len(unique_hashes) == len(hashes), (
@@ -266,17 +266,17 @@ class TestPotentialOverlapsVerification:
         """Verify Import* agents have different implementations."""
         import hashlib
         gravity_dir = PROJECT_ROOT / "agentic_core" / "L5_safety" / "gravity"
-        
+
         import_files = {
             "ImportAgent.py": gravity_dir / "ImportAgent.py",
             "ImportLockAgent.py": gravity_dir / "ImportLockAgent.py",
         }
-        
+
         hashes = {}
         for name, path in import_files.items():
             if path.exists():
                 hashes[name] = hashlib.md5(path.read_bytes()).hexdigest()
-        
+
         unique_hashes = set(hashes.values())
         assert len(unique_hashes) == len(hashes), (
             f"Import agents should have different implementations. Found duplicates: {hashes}"
@@ -285,17 +285,17 @@ class TestPotentialOverlapsVerification:
     def test_strategic_agents_are_distinct(self):
         """Verify Strategic* agents have different implementations."""
         import hashlib
-        
+
         strategic_files = {
             "StrategicRecommendationAgent.py": PROJECT_ROOT / "agentic_core" / "L1_cognition" / "thought_engine" / "StrategicRecommendationAgent.py",
             "StrategicPlannerAgent.py": PROJECT_ROOT / "agentic_core" / "L2_execution" / "ToolRegistry" / "StrategicPlannerAgent.py",
         }
-        
+
         hashes = {}
         for name, path in strategic_files.items():
             if path.exists():
                 hashes[name] = hashlib.md5(path.read_bytes()).hexdigest()
-        
+
         unique_hashes = set(hashes.values())
         assert len(unique_hashes) == len(hashes), (
             f"Strategic agents should have different implementations. Found duplicates: {hashes}"

@@ -46,7 +46,7 @@ class ReaderPersona(BaseModel):
 
 class PersonaRouter:
     """Analyzes JD to generate dynamic reader personas."""
-    
+
     def __init__(self):
         """Initialize persona router with keyword dictionaries."""
         # Risk tolerance keywords
@@ -56,14 +56,14 @@ class PersonaRouter:
             "breakthrough", "game-changer", "revolutionary", "bold",
             "fail fast", "iterate", "pivot", "unleash", "daring"
         ]
-        
+
         self.risk_low_keywords = [
             "proven", "stable", "audit", "compliance", "iso27001", "sox",
             "enterprise", "fortune", "regulated", "secure", "risk management",
             "governance", "established", "mature", "reliable", "consistent",
             "conservative", "methodical", "careful", "thorough", "process"
         ]
-        
+
         # Technical depth keywords
         self.tech_deep_keywords = [
             "kernel", "cuda", "latency", "distributed systems", "microservices",
@@ -72,14 +72,14 @@ class PersonaRouter:
             "concurrency", "parallel computing", "infrastructure", "devops",
             "kubernetes", "aws", "gcp", "azure", "cloud native"
         ]
-        
+
         self.tech_general_keywords = [
             "business", "strategy", "leadership", "management", "communication",
             "collaboration", "teamwork", "project management", "stakeholder",
             "cross-functional", "partnership", "relationship", "client facing",
             "presentation", "negotiation", "influence", "persuade"
         ]
-        
+
         # Bureaucracy level keywords
         self.bureaucracy_high_keywords = [
             "approval process", "hierarchy", "reporting structure", "chain of command",
@@ -87,13 +87,13 @@ class PersonaRouter:
             "stakeholder management", "executive", "board", "committee", "review board",
             "policy", "procedure", "standard operating procedure", "sop", "compliance"
         ]
-        
+
         self.bureaucracy_low_keywords = [
             "flat organization", "no bureaucracy", "direct access", "autonomy",
             "ownership", "startup culture", "fast decision making", "lean",
             "agile", "scrum", "sprints", "daily standup", "open door", "meritocracy"
         ]
-        
+
         # Archetype-specific keywords
         self.archetype_keywords = {
             ArchetypeBase.VISIONARY: [
@@ -117,37 +117,37 @@ class PersonaRouter:
                 "recruitment", "onboarding", "training", "leadership pipeline"
             ]
         }
-        
+
         logger.info("Initialized PersonaRouter with keyword dictionaries")
-    
+
     def analyze_jd(self, jd_text: str) -> ReaderPersona:
         """Analyze job description text to generate reader persona.
-        
+
         Args:
             jd_text: Raw job description text
-            
+
         Returns:
             Generated reader persona
         """
         # Normalize text
         text = jd_text.lower()
-        
+
         # Calculate psychometric scores
         risk_score = self._calculate_dimension_score(
             text, self.risk_high_keywords, self.risk_low_keywords
         )
-        
+
         tech_score = self._calculate_dimension_score(
             text, self.tech_deep_keywords, self.tech_general_keywords
         )
-        
+
         bureaucracy_score = self._calculate_dimension_score(
             text, self.bureaucracy_high_keywords, self.bureaucracy_low_keywords
         )
-        
+
         # Determine dominant archetype
         archetype, archetype_keywords = self._determine_archetype(text)
-        
+
         # Build psychometric profile
         profile = PsychometricProfile(
             risk_tolerance=risk_score,
@@ -157,13 +157,13 @@ class PersonaRouter:
             keywords_detected=archetype_keywords,
             confidence_score=self._calculate_confidence(risk_score, tech_score, bureaucracy_score)
         )
-        
+
         # Generate reader persona
         persona = self._generate_persona(profile)
-        
+
         logger.info(f"Generated persona: {persona.title} (Archetype: {archetype.value})")
         return persona
-    
+
     def _calculate_dimension_score(
         self,
         text: str,
@@ -171,47 +171,47 @@ class PersonaRouter:
         low_keywords: List[str]
     ) -> float:
         """Calculate a 0.0-1.0 score for a dimension.
-        
+
         Args:
             text: Normalized JD text
             high_keywords: Keywords indicating high score
             low_keywords: Keywords indicating low score
-            
+
         Returns:
             Score between 0.0 and 1.0
         """
         high_count = sum(1 for keyword in high_keywords if keyword in text)
         low_count = sum(1 for keyword in low_keywords if keyword in text)
-        
+
         # Normalize to 0-1 range
         total = high_count + low_count
         if total == 0:
             return 0.5  # Neutral when no keywords found
-        
+
         return high_count / total
-    
+
     def _determine_archetype(self, text: str) -> Tuple[ArchetypeBase, List[str]]:
         """Determine dominant archetype from text.
-        
+
         Args:
             text: Normalized JD text
-            
+
         Returns:
             Tuple of (archetype, matching keywords)
         """
         scores = {}
         matched_keywords = {}
-        
+
         for archetype, keywords in self.archetype_keywords.items():
             matches = [kw for kw in keywords if kw in text]
             scores[archetype] = len(matches)
             matched_keywords[archetype] = matches
-        
+
         # Find archetype with most matches
         dominant_archetype = max(scores, key=scores.get)
-        
+
         return dominant_archetype, matched_keywords[dominant_archetype]
-    
+
     def _calculate_confidence(
         self,
         risk_score: float,
@@ -219,12 +219,12 @@ class PersonaRouter:
         bureaucracy_score: float
     ) -> float:
         """Calculate confidence score for the profile.
-        
+
         Args:
             risk_score: Risk tolerance score
             tech_score: Technical depth score
             bureaucracy_score: Bureaucracy level score
-            
+
         Returns:
             Confidence score between 0.0 and 1.0
         """
@@ -234,20 +234,20 @@ class PersonaRouter:
             abs(tech_score - 0.5) +
             abs(bureaucracy_score - 0.5)
         ) / 3
-        
+
         return min(deviation_from_neutral * 2, 1.0)
-    
+
     def _generate_persona(self, profile: PsychometricProfile) -> ReaderPersona:
         """Generate reader persona from psychometric profile.
-        
+
         Args:
             profile: Psychometric profile
-            
+
         Returns:
             Reader persona
         """
         archetype = profile.dominant_archetype
-        
+
         # Generate persona based on archetype and scores
         if archetype == ArchetypeBase.VISIONARY:
             return self._generate_visionary_persona(profile)
@@ -260,13 +260,13 @@ class PersonaRouter:
         else:
             # Default fallback
             return self._generate_default_persona(profile)
-    
+
     def _generate_visionary_persona(self, profile: PsychometricProfile) -> ReaderPersona:
         """Generate visionary persona.
-        
+
         Args:
             profile: Psychometric profile
-            
+
         Returns:
             Visionary reader persona
         """
@@ -280,7 +280,7 @@ class PersonaRouter:
             tone = "Balance vision with practicality. Show big-picture thinking."
             highlights = ["Strategy", "Vision", "Growth", "Leadership"]
             avoids = ["Technical details", "Process overhead"]
-        
+
         return ReaderPersona(
             title=title,
             tone_instruction=tone,
@@ -290,13 +290,13 @@ class PersonaRouter:
             archetype=ArchetypeBase.VISIONARY,
             profile=profile
         )
-    
+
     def _generate_operator_persona(self, profile: PsychometricProfile) -> ReaderPersona:
         """Generate operator persona.
-        
+
         Args:
             profile: Psychometric profile
-            
+
         Returns:
             Operator reader persona
         """
@@ -310,7 +310,7 @@ class PersonaRouter:
             tone = "Focus on operational excellence and team leadership."
             highlights = ["Operations", "Process", "Team", "Delivery"]
             avoids = ["Technical deep dives", "Theoretical concepts"]
-        
+
         return ReaderPersona(
             title=title,
             tone_instruction=tone,
@@ -320,13 +320,13 @@ class PersonaRouter:
             archetype=ArchetypeBase.OPERATOR,
             profile=profile
         )
-    
+
     def _generate_guardian_persona(self, profile: PsychometricProfile) -> ReaderPersona:
         """Generate guardian persona.
-        
+
         Args:
             profile: Psychometric profile
-            
+
         Returns:
             Guardian reader persona
         """
@@ -340,7 +340,7 @@ class PersonaRouter:
             tone = "Balance innovation with responsibility. Show careful decision-making."
             highlights = ["Reliability", "Best Practices", "Quality", "Due Diligence"]
             avoids = ["Risky experiments", "Unstructured approaches"]
-        
+
         return ReaderPersona(
             title=title,
             tone_instruction=tone,
@@ -350,13 +350,13 @@ class PersonaRouter:
             archetype=ArchetypeBase.GUARDIAN,
             profile=profile
         )
-    
+
     def _generate_scaler_persona(self, profile: PsychometricProfile) -> ReaderPersona:
         """Generate scaler persona.
-        
+
         Args:
             profile: Psychometric profile
-            
+
         Returns:
             Scaler reader persona
         """
@@ -370,7 +370,7 @@ class PersonaRouter:
             tone = "Emphasize sustainable growth and team building."
             highlights = ["Sustainable Growth", "Team Building", "Process", "Leadership"]
             avoids = ["Burnout culture", "Growth at all costs"]
-        
+
         return ReaderPersona(
             title=title,
             tone_instruction=tone,
@@ -380,13 +380,13 @@ class PersonaRouter:
             archetype=ArchetypeBase.SCALER,
             profile=profile
         )
-    
+
     def _generate_default_persona(self, profile: PsychometricProfile) -> ReaderPersona:
         """Generate default persona fallback.
-        
+
         Args:
             profile: Psychometric profile
-            
+
         Returns:
             Default reader persona
         """
@@ -399,24 +399,24 @@ class PersonaRouter:
             archetype=profile.dominant_archetype,
             profile=profile
         )
-    
+
     def route_resume(self, jd_text: str) -> ReaderPersona:
         """Route resume based on JD analysis.
-        
+
         Args:
             jd_text: Job description text
-            
+
         Returns:
             Reader persona for resume customization
         """
         return self.analyze_jd(jd_text)
-    
+
     def get_prompt_template(self, persona: ReaderPersona) -> str:
         """Get prompt template for a persona.
-        
+
         Args:
             persona: Reader persona
-            
+
         Returns:
             Prompt template string
         """
@@ -443,7 +443,7 @@ Remember: This reader has the following psychometric profile:
 
 Tailor the resume accordingly.
         """.strip()
-        
+
         return template
 
 
@@ -453,7 +453,7 @@ _persona_router: Optional[PersonaRouter] = None
 
 def get_persona_router() -> PersonaRouter:
     """Get global persona router instance.
-    
+
     Returns:
         PersonaRouter instance
     """
@@ -466,10 +466,10 @@ def get_persona_router() -> PersonaRouter:
 # Convenience function
 def analyze_job_description(jd_text: str) -> ReaderPersona:
     """Analyze job description and return reader persona.
-    
+
     Args:
         jd_text: Job description text
-        
+
     Returns:
         Generated reader persona
     """

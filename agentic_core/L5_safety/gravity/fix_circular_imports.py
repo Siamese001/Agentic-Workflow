@@ -23,12 +23,12 @@ from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 def calculate_relative_import(file_path: Path, import_path: str, project_root: Path) -> str:
     """
     Calculate the correct relative import path.
-    
+
     Args:
         file_path: Path to the file being modified
         import_path: The import path after 'agentic_core.' (e.g., 'L1_cognition.planning.types')
         project_root: Root of the agentic_core package
-        
+
     Returns:
         Relative import path (e.g., '.planning.types' or '..L1_cognition.planning.types')
     """
@@ -73,7 +73,7 @@ def calculate_relative_import(file_path: Path, import_path: str, project_root: P
 def fix_imports_in_file(file_path: Path, agentic_core_root: Path, dry_run: bool=False) -> Tuple[int, List[str]]:
     """
     Fix imports in a single file.
-    
+
     Returns:
         Tuple of (number of changes, list of changes made)
     """

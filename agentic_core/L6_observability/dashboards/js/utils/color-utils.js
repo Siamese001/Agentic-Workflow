@@ -33,7 +33,7 @@ function getWorstCaseColor(value) {
 // Dynamic gradient background generator
 function getGradientBg(value) {
     if (value === 'N/A' || value === undefined || typeof value !== 'number') return 'transparent';
-    
+
     // Normalize 0-100 to 0-1
     const normalized = Math.max(0, Math.min(100, value)) / 100;
     let r, g, b;
@@ -50,7 +50,7 @@ function getGradientBg(value) {
         g = 255;
         b = 200;
     }
-    
+
     // Return as semi-transparent RGBA for table cells
     return `rgba(${r}, ${g}, ${b}, 0.3)`;
 }

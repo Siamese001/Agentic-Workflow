@@ -4,13 +4,13 @@
 version_map:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  
+
   # Semantic versioning configuration
   semantic_versioning:
     enabled: true
     format: "semantic"
     pattern: "{major}.{minor}.{patch}"
-    
+
     version_components:
       major:
         description: "Breaking changes"
@@ -18,29 +18,29 @@ version_map:
           - "api_breaking_change"
           - "schema_change"
           - "dependency_breaking_change"
-          
+
       minor:
         description: "New features, backward compatible"
         increment_triggers:
           - "new_prompt_added"
           - "new_injection_added"
           - "feature_enhancement"
-          
+
       patch:
         description: "Bug fixes, improvements"
         increment_triggers:
           - "bug_fix"
           - "performance_improvement"
           - "documentation_update"
-          
+
   # Current versions
   current_versions:
     global: "1.0.0"
-    
+
     engines:
       resume_engine: "1.0.0"
       outreach_engine: "1.0.0"
-      
+
     injections:
       constraints: "1.0.0"
       context_engineering: "1.0.0"
@@ -49,7 +49,7 @@ version_map:
       reasoning: "1.0.0"
       safety: "1.0.0"
       tool_use: "1.0.0"
-      
+
     templates:
       resume_summary: "1.0.0"
       resume_experience: "1.0.0"
@@ -57,7 +57,7 @@ version_map:
       outreach_cold: "1.0.0"
       outreach_connection: "1.0.0"
       outreach_followup: "1.0.0"
-      
+
   # Version history
   version_history:
     "1.0.0":
@@ -68,17 +68,17 @@ version_map:
         - "Complete registry structure"
         - "All engine prompts defined"
         - "Safety and governance frameworks"
-        
+
       compatibility:
         min_version: "1.0.0"
         max_version: "1.0.0"
-        
+
       components:
         resume_engine: "1.0.0"
         outreach_engine: "1.0.0"
         all_injections: "1.0.0"
         all_templates: "1.0.0"
-        
+
   # Compatibility matrix
   compatibility_matrix:
     # Engine compatibility
@@ -88,102 +88,102 @@ version_map:
           compatible_injections: ["1.0.0"]
           compatible_templates: ["1.0.0"]
           compatible_models: ["gpt-4", "gpt-3.5-turbo", "claude-3"]
-          
+
       outreach_engine:
         "1.0.0":
           compatible_injections: ["1.0.0"]
           compatible_templates: ["1.0.0"]
           compatible_models: ["gpt-4", "gpt-3.5-turbo", "claude-3"]
-          
+
     # Injection compatibility
     injections:
       constraints:
         "1.0.0":
           compatible_engines: ["1.0.0"]
           compatible_injections: ["1.0.0"]
-          
+
       safety:
         "1.0.0":
           compatible_engines: ["1.0.0"]
           required_for_all: true
-          
+
   # Deployment versions
   deployments:
     production:
       current_version: "1.0.0"
       deployed_at: "2024-01-01T00:00:00Z"
       status: "active"
-      
+
       rollback_versions:
         - "0.9.0"  # Previous stable version
-        
+
       deployment_history:
         - version: "1.0.0"
           deployed_at: "2024-01-01T00:00:00Z"
           deployed_by: "system"
           status: "success"
-          
+
     staging:
       current_version: "1.0.0"
       deployed_at: "2024-01-01T00:00:00Z"
       status: "active"
-      
+
       next_version: "1.1.0"
       scheduled_deployment: "2024-01-15T00:00:00Z"
-      
+
     development:
       current_version: "1.1.0-beta"
       deployed_at: "2024-01-01T00:00:00Z"
       status: "testing"
-      
+
   # Version dependencies
   dependencies:
     "1.0.0":
       required:
         - "safety:1.0.0"
         - "constraints:1.0.0"
-        
+
       optional:
         - "context_engineering:1.0.0"
         - "reasoning:1.0.0"
-        
+
       external:
         - "openai:gpt-4"
         - "anthropic:claude-3"
-        
+
   # Migration paths
   migration_paths:
     # Upgrade paths
     upgrades:
       from: "0.9.0"
       to: "1.0.0"
-      
+
       steps:
         - name: "backup_current_config"
           description: "Backup existing configuration"
-          
+
         - name: "update_registry_structure"
           description: "Update registry to new format"
-          
+
         - name: "migrate_prompts"
           description: "Migrate existing prompts to new structure"
-          
+
         - name: "validate_migration"
           description: "Validate migration results"
-          
+
         - name: "deploy_new_version"
           description: "Deploy new version"
-          
+
       rollback_procedure:
         - name: "stop_new_version"
           description: "Stop version 1.0.0"
-          
+
         - name: "restore_backup"
           description: "Restore 0.9.0 configuration"
-          
+
         - name: "validate_rollback"
           description: "Validate rollback success"
-          
+
   # Version policies
   policies:
     # Version lifecycle
@@ -191,55 +191,55 @@ version_map:
       development:
         duration: "2_weeks"
         testing_required: true
-        
+
       staging:
         duration: "1_week"
         approval_required: true
-        
+
       production:
         min_stability_period: "2_weeks"
         monitoring_required: true
-        
+
       deprecation:
         notice_period: "30_days"
         support_period: "90_days"
-        
+
     # Version promotion
     promotion_criteria:
       dev_to_staging:
         - "all_tests_passing"
         - "code_review_complete"
         - "security_scan_clear"
-        
+
       staging_to_prod:
         - "performance_benchmarks_met"
         - "safety_validations_pass"
         - "stakeholder_approval"
-        
+
   # Version metrics
   metrics:
     # Version performance
     performance_metrics:
       - name: "version_deployment_time"
         type: "histogram"
-        
+
       - name: "version_rollback_rate"
         type: "counter"
-        
+
       - name: "version_stability_score"
         type: "gauge"
-        
+
     # Usage metrics
     usage_metrics:
       - name: "version_adoption_rate"
         type: "gauge"
-        
+
       - name: "version_error_rate"
         type: "counter"
-        
+
       - name: "version_performance_score"
         type: "histogram"
-        
+
   # Version validation
   validation:
     # Pre-deployment validation
@@ -247,33 +247,33 @@ version_map:
       schema_validation:
         enabled: true
         strict_mode: true
-        
+
       compatibility_check:
         enabled: true
         check_dependencies: true
-        
+
       performance_test:
         enabled: true
         baseline_comparison: true
-        
+
       safety_validation:
         enabled: true
         content_filtering: true
-        
+
     # Post-deployment validation
     post_deployment:
       health_check:
         enabled: true
         duration: "24h"
-        
+
       performance_monitoring:
         enabled: true
         metrics: ["latency", "error_rate", "throughput"]
-        
+
       safety_monitoring:
         enabled: true
         real_time_analysis: true
-        
+
   # Version communication
   communication:
     # Release notes
@@ -286,17 +286,17 @@ version_map:
         - "bug_fixes"
         - "breaking_changes"
         - "migration_guide"
-        
+
     # Stakeholder notifications
     notifications:
       release_announcement:
         channels: ["email", "slack"]
         recipients: ["all_stakeholders"]
-        
+
       critical_updates:
         channels: ["email", "slack", "pagerduty"]
         recipients: ["ops_team", "developers"]
-        
+
   # Version security
   security:
     # Security scanning
@@ -306,35 +306,35 @@ version_map:
         - "vulnerability_scan"
         - "dependency_check"
         - "content_safety_scan"
-        
+
     # Access control
     access_control:
       version_promotion:
         required_roles: ["developer", "ops_team"]
-        
+
       production_deployment:
         required_roles: ["ops_manager", "security_team"]
-        
+
   # Version backup and recovery
   backup:
     # Backup strategy
     backup_strategy:
       frequency: "daily"
       retention: "90_days"
-      
+
       backup_types:
         - name: "full_backup"
           frequency: "weekly"
-          
+
         - name: "incremental_backup"
           frequency: "daily"
-          
+
     # Recovery procedures
     recovery:
       disaster_recovery:
         rto: "4_hours"  # Recovery Time Objective
         rpo: "1_hour"   # Recovery Point Objective
-        
+
       point_in_time_recovery:
         enabled: true
         granularity: "1_hour"

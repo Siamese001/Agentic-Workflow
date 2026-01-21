@@ -38,19 +38,19 @@ FIRST_PERSON_PATTERNS = [
 
 class Strategist_BioWriter(Agent):
     """Strategist BioWriter agent for executive summary generation.
-    
+
     This agent generates executive summaries with strict constraints:
     - Word count: 120-140 words (ZERO TOLERANCE)
     - Sentence count: 3-5 sentences (ZERO TOLERANCE)
     - Voice: 3rd-person implied (BLOCK on any 1st-person)
     - Structure: Career arc, expertise, value proposition
-    
+
     Validation Gates:
     - VG_SUMMARY_WORD_COUNT_COMPLIANCE (120-140 words)
     - VG_SUMMARY_VOICE_TENSE (3rd-person only)
     - VG_SUMMARY_GROUNDING_CHECK (no hallucinations)
     """
-    
+
     def __init__(
         self,
         config: ReasoningConfig,
@@ -60,7 +60,7 @@ class Strategist_BioWriter(Agent):
         sentence_count_max: int = 5,
     ):
         """Initialize Strategist BioWriter.
-        
+
         Args:
             config: Reasoning configuration
             word_count_min: Minimum word count (default 120)
@@ -73,21 +73,21 @@ class Strategist_BioWriter(Agent):
             k_node_id="K.1",
             element="Executive Summary (3rd-Person)"
         )
-        
+
         self.word_count_min = word_count_min
         self.word_count_max = word_count_max
         self.sentence_count_min = sentence_count_min
         self.sentence_count_max = sentence_count_max
-        
+
         logger.info(
             f"Strategist_BioWriter initialized: "
             f"words={word_count_min}-{word_count_max}, "
             f"sentences={sentence_count_min}-{sentence_count_max}"
         )
-    
+
     async def execute(self, context: Dict[str, Any]) -> ExecutiveSummaryOutput:
         """Execute executive summary generation with 3rd-person voice.
-        
+
         Args:
             context: Execution context with:
                 - career_highlights: List[str] - Key career achievements
@@ -95,19 +95,19 @@ class Strategist_BioWriter(Agent):
                 - value_propositions: List[str] - Value props
                 - target_role: str - Target role
                 - regeneration_feedback: Optional[str]
-                
+
         Returns:
             ExecutiveSummaryOutput with 3rd-person summary
         """
         logger.info("Executing Strategist_BioWriter (3rd-Person Implied Voice)")
-        
+
         # Extract context
         career_highlights = context.get("career_highlights", [])
         expertise_areas = context.get("expertise_areas", [])
         value_propositions = context.get("value_propositions", [])
         target_role = context.get("target_role", "Engineering Leader")
         regeneration_feedback = context.get("regeneration_feedback")
-        
+
         # Build prompt
         if regeneration_feedback:
             prompt = self._build_regeneration_prompt(context, regeneration_feedback)
@@ -115,19 +115,19 @@ class Strategist_BioWriter(Agent):
             prompt = self._build_initial_prompt(
                 career_highlights, expertise_areas, value_propositions, target_role
             )
-        
+
         # Generate summary
         response = await self._call_llm(prompt)
         summary = response.strip()
-        
+
         # Validate 3rd-person voice
         first_person_violations = self._check_first_person(summary)
         third_person_compliant = len(first_person_violations) == 0
-        
+
         # Calculate metrics
         word_count = len(summary.split())
         sentence_count = self._count_sentences(summary)
-        
+
         # Build output
         output = ExecutiveSummaryOutput(
             summary=summary,
@@ -142,19 +142,19 @@ class Strategist_BioWriter(Agent):
                 "sentence_count_range": f"{self.sentence_count_min}-{self.sentence_count_max}",
             },
         )
-        
+
         logger.info(
             f"Strategist_BioWriter complete: {word_count} words, {sentence_count} sentences, "
             f"3rd-person={third_person_compliant}"
         )
-        
+
         if not third_person_compliant:
             logger.error(
                 f"1ST-PERSON VOICE VIOLATION: Found {len(first_person_violations)} violations"
             )
-        
+
         return output
-    
+
     def _build_initial_prompt(
         self,
         career_highlights: List[str],
@@ -163,13 +163,13 @@ class Strategist_BioWriter(Agent):
         target_role: str,
     ) -> str:
         """Build initial generation prompt with 3rd-person enforcement.
-        
+
         Args:
             career_highlights: Key career achievements
             expertise_areas: Core expertise
             value_propositions: Value props
             target_role: Target role
-            
+
         Returns:
             Formatted prompt
         """
@@ -212,25 +212,25 @@ EXAMPLES (1st-Person VIOLATIONS - DO NOT USE):
 
 Generate the executive summary now ({self.word_count_min}-{self.word_count_max} words, {self.sentence_count_min}-{self.sentence_count_max} sentences, 3rd-person ONLY):
 """
-        
+
         return prompt
-    
+
     def _build_regeneration_prompt(
         self,
         context: Dict[str, Any],
         feedback: str,
     ) -> str:
         """Build regeneration prompt with validation feedback.
-        
+
         Args:
             context: Original context
             feedback: Validation feedback
-            
+
         Returns:
             Regeneration prompt
         """
         previous_summary = context.get("previous_summary", "")
-        
+
         prompt = f"""REGENERATION REQUIRED
 
 {feedback}
@@ -249,33 +249,33 @@ Maintain 3rd-person implied voice throughout.
 
 Generate the corrected executive summary:
 """
-        
+
         return prompt
-    
+
     def _check_first_person(self, text: str) -> List[str]:
         """Check for first-person voice violations.
-        
+
         Args:
             text: Text to check
-            
+
         Returns:
             List of found first-person patterns
         """
         violations = []
-        
+
         for pattern in FIRST_PERSON_PATTERNS:
             matches = re.findall(pattern, text, re.IGNORECASE)
             if matches:
                 violations.extend(matches)
-        
+
         return violations
-    
+
     def _count_sentences(self, text: str) -> int:
         """Count sentences in text.
-        
+
         Args:
             text: Text to count
-            
+
         Returns:
             Number of sentences
         """

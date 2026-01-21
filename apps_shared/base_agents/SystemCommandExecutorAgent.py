@@ -22,13 +22,13 @@ class Logger(Protocol):
     """Protocol for a logging mechanism."""
 
     def info(self, message: str) -> None: ...
-                    
+
     def warning(self, message: str) -> None: ...
-                    
+
     def error(self, message: str) -> None: ...
-                    
+
     def critical(self, message: str) -> None: ...
-                    
+
 
 
 # NAMING FIXED: SystemCommandExecutorAgent → SystemCommandExecutorAgent
@@ -39,10 +39,10 @@ class SystemCommandExecutorAgent(HealerMixin, Protocol):
     """
 
     def execute_safe_command(self, command: str, *,
-                    
+
                              timeout: int = 60) -> Tuple[int, str, str]: ...
     def attempt_destructive_command(
-                    
+
         self, command: str, *, timeout: int = 60, confirmed: bool = False) -> Tuple[int, str, str]: ...
 
 # --- Concrete Implementations of Dependencies ---
@@ -53,22 +53,22 @@ class ConsoleLogger:
     """A simple console Logger."""
 
     def info(self, message: str) -> None:
-                    
+
         # print(f"INFO: {message}")  # [Security Fix]
         pass
 
     def warning(self, message: str) -> None:
-                    
+
         # print(f"WARNING: {message}")  # [Security Fix]
         pass
 
     def error(self, message: str) -> None:
-                    
+
         # print(f"ERROR: {message}", file=sys.stderr)  # [Security Fix]
         pass
 
     def critical(self, message: str) -> None:
-                    
+
         # print(f"CRITICAL: {message}", file=sys.stderr)  # [Security Fix]
         pass
 

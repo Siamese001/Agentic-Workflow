@@ -25,10 +25,10 @@ class Phase6OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
     def __init__(self, ctx: ResumeEngineContext) -> None:
         """
         Initialize Phase 6 orchestrator.
-        
+
         Args:
             ctx: Resume engine context for coordination
-        
+
         Initializes all Phase 6 intelligence components including security,
         semantic analysis, strategic advising, and unified orchestration.
         """

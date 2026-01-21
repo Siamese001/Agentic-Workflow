@@ -33,17 +33,17 @@ class PerformanceAnalystAgentSimple:
     Simplified Performance Analyst for Phase 5 integration.
     Tracks execution time and resource utilization.
     """
-    
+
     def __init__(self, project_root: Path = None) -> None:
         """Initialize Performance Analyst."""
         self.project_root = project_root or Path.cwd()
         self.metrics = {}
         self.start_times = {}
-        
+
     def start_tracking(self, agent_name: str) -> None:
         """Start tracking performance for an agent."""
         self.start_times[agent_name] = time.time()
-        
+
     def stop_tracking(self, agent_name: str) -> Dict[str, Any]:
         """Stop tracking and return metrics for an agent."""
         if agent_name in self.start_times:
@@ -55,11 +55,11 @@ class PerformanceAnalystAgentSimple:
             del self.start_times[agent_name]
             return self.metrics[agent_name]
         return {}
-        
+
     def get_metrics(self) -> Dict[str, Any]:
         """Get all collected metrics."""
         return self.metrics
-        
+
     @standard_heal
     def heal_repository(
         self,
@@ -76,6 +76,6 @@ class PerformanceAnalystAgentSimple:
         return {
             "status": "ready",
             "metrics_collected": len(self.metrics),
-            "fixed": 0,
-            "violations": 0
+            "violations_fixed": 0,
+            "violations_found": 0
         }

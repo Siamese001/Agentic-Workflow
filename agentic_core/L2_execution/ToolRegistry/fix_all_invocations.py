@@ -27,7 +27,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 # Directories to scan for agent files
 SCAN_DIRS = [
     AGENTIC_CORE_DIR,
-    APPS_LIC_DIR, 
+    APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
     TESTS_DIR
@@ -47,7 +47,7 @@ def has_super_heal_call(func_node: ast.FunctionDef) -> bool:
 
 def find_heal_methods_in_file(filepath: Path) -> List[Tuple[ast.FunctionDef, bool, int]]:
     """Find all heal_repository methods in a file.
-    
+
     Returns: List of (func_node, is_class_method, line_number)
     """
     try:
@@ -55,9 +55,9 @@ def find_heal_methods_in_file(filepath: Path) -> List[Tuple[ast.FunctionDef, boo
         tree = ast.parse(content)
     except (SyntaxError, UnicodeDecodeError):
         return []
-    
+
     results = []
-    
+
     # Walk through all nodes
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef) and node.name == "heal_repository":
@@ -65,7 +65,7 @@ def find_heal_methods_in_file(filepath: Path) -> List[Tuple[ast.FunctionDef, boo
             is_method = bool(node.args.args and node.args.args[0].arg == 'self')
             has_super = has_super_heal_call(node)
             results.append((node, is_method, node.lineno, has_super))
-    
+
     return results
 
 
@@ -73,18 +73,18 @@ def add_super_call_to_method(filepath: Path, func_node: ast.FunctionDef) -> bool
     """Add super().heal_repository() call to a method."""
     content = filepath.read_text(encoding='utf-8')
     lines = content.split('\n')
-    
+
     if not func_node.body:
         return False
-    
+
     first_stmt = func_node.body[0]
-    
+
     # Check if first statement is a docstring
     is_docstring = (
-        isinstance(first_stmt, ast.Expr) and 
+        isinstance(first_stmt, ast.Expr) and
         isinstance(first_stmt.value, (ast.Constant, ast.Str))
     )
-    
+
     if is_docstring and len(func_node.body) > 1:
         # Insert after docstring
         next_stmt = func_node.body[1]
@@ -94,35 +94,35 @@ def add_super_call_to_method(filepath: Path, func_node: ast.FunctionDef) -> bool
         # Insert before first statement
         insert_line = first_stmt.lineno - 1
         ref_line = lines[insert_line]
-    
+
     # Calculate indentation
     indent = len(ref_line) - len(ref_line.lstrip())
     indent_str = ' ' * indent
-    
+
     # Build args from function signature (excluding self)
     args = [arg.arg for arg in func_node.args.args if arg.arg != 'self']
     args_str = ', '.join(args)
-    
+
     # Create super call
     super_call = f"{indent_str}super().heal_repository({args_str})"
-    
+
     # Insert
     lines.insert(insert_line, super_call)
     new_content = '\n'.join(lines)
-    
+
     # Verify syntax
     try:
         ast.parse(new_content)
     except SyntaxError:
         return False
-    
+
     filepath.write_text(new_content, encoding='utf-8')
     return True
 
 
 def main():
     print("=== Comprehensive heal_repository invocation fix ===\n")
-    
+
     # Find all Python files
     all_files = []
     # Phase 6.8: Use ssot_discovery instead of rglob
@@ -131,16 +131,16 @@ def main():
         dir_path = PROJECT_ROOT / scan_dir
         if dir_path.exists():
             all_files.extend(get_python_files(dir_path))
-    
+
     print(f"Scanning {len(all_files)} Python files...\n")
-    
+
     # Analyze all files
     files_with_heal = []
     total_methods = 0
     methods_with_super = 0
     methods_without_super = 0
     standalone_functions = 0
-    
+
     for filepath in all_files:
         methods = find_heal_methods_in_file(filepath)
         if methods:
@@ -154,22 +154,22 @@ def main():
                         methods_without_super += 1
                 else:
                     standalone_functions += 1
-    
+
     print(f"Found {len(files_with_heal)} files with heal_repository")
     print(f"  Total functions/methods: {total_methods}")
     print(f"  Class methods with super(): {methods_with_super}")
     print(f"  Class methods WITHOUT super(): {methods_without_super}")
     print(f"  Standalone functions: {standalone_functions}")
-    
+
     if methods_with_super + standalone_functions > 0:
         current_pct = methods_with_super / (methods_with_super + methods_without_super) * 100 if (methods_with_super + methods_without_super) > 0 else 0
         print(f"\nCurrent class method invocation: {current_pct:.1f}%")
-    
+
     # Fix methods without super()
     if methods_without_super > 0:
         print(f"\n=== Fixing {methods_without_super} class methods ===\n")
         fixed = 0
-        
+
         for filepath, methods in files_with_heal:
             for func, is_method, line, has_super in methods:
                 if is_method and not has_super:
@@ -179,9 +179,9 @@ def main():
                         fixed += 1
                     else:
                         print(f"  ✗ Failed: {rel_path}:{line}")
-        
+
         print(f"\nFixed {fixed}/{methods_without_super} methods")
-        
+
         # Recalculate
         new_pct = (methods_with_super + fixed) / (methods_with_super + methods_without_super) * 100 if (methods_with_super + methods_without_super) > 0 else 0
         print(f"New class method invocation: {new_pct:.1f}%")

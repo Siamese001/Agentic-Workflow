@@ -88,7 +88,7 @@ class GenerativeGuardAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInt
     """
     KEYS: 45 (Dead Code/Runaway Generation)
     ROLE: The Watchdog. Identifies and deletes recursively-generated files.
-    
+
     Detects files matching runaway generation patterns:
     - *_copy*.py
     - *_backup*.py
@@ -128,7 +128,7 @@ class GenerativeGuardAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInt
         violations = []
 
         project_root = getattr(self.ctx, 'project_root', '.')
-        
+
         for root, dirs, files in os.walk(project_root):
             dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
             violations.extend(self._find_runaway_violations_in_dir(root, files))
@@ -175,8 +175,8 @@ class GenerativeGuardAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInt
         violations_in_dir = []
         for file in files:
             file_path = os.path.join(root, file)
-            normalized_file_path = Path(file_path).as_posix() 
-            
+            normalized_file_path = Path(file_path).as_posix()
+
             if self._is_runaway_file(normalized_file_path):
                 violations_in_dir.append(file_path)
         return violations_in_dir

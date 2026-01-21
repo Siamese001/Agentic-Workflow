@@ -19,12 +19,12 @@ def test_unified_api_exports():
     """Verify cleaner import paths for Agents."""
     # New clean import
     from agentic_core.unified import UnifiedCodeValidatorAgent
-    
+
     # Old deep import
     from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
         UnifiedCodeValidatorAgent as Original
     )
-    
+
     assert UnifiedCodeValidatorAgent is Original
     assert inspect.isclass(UnifiedCodeValidatorAgent)
 
@@ -35,7 +35,7 @@ def test_unified_structure_validator_export():
     from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
         UnifiedStructureValidatorAgent as Original
     )
-    
+
     assert UnifiedStructureValidatorAgent is Original
     assert inspect.isclass(UnifiedStructureValidatorAgent)
 
@@ -46,7 +46,7 @@ def test_unified_code_enforcer_export():
     from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import (
         UnifiedCodeEnforcerAgent as Original
     )
-    
+
     assert UnifiedCodeEnforcerAgent is Original
 
 
@@ -56,14 +56,14 @@ def test_unified_resource_manager_export():
     from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import (
         UnifiedResourceManagerAgent as Original
     )
-    
+
     assert UnifiedResourceManagerAgent is Original
 
 
 def test_config_api_exports():
     """Verify cleaner import paths for Config."""
     from agentic_core.config import SOVEREIGN_REGISTRY, DEFAULT_EXCLUDE_DIRS
-    
+
     assert isinstance(SOVEREIGN_REGISTRY, dict)
     assert isinstance(DEFAULT_EXCLUDE_DIRS, frozenset)
     assert ".git" in DEFAULT_EXCLUDE_DIRS
@@ -72,7 +72,7 @@ def test_config_api_exports():
 def test_config_sovereign_registry_keys():
     """Verify SOVEREIGN_REGISTRY contains expected keys."""
     from agentic_core.config import SOVEREIGN_REGISTRY
-    
+
     expected_keys = ['agentic_core', 'apps_rg', 'apps_lic', 'apps_shared', 'tests']
     for key in expected_keys:
         assert key in SOVEREIGN_REGISTRY, f"Missing key: {key}"
@@ -81,7 +81,7 @@ def test_config_sovereign_registry_keys():
 def test_config_healing_config():
     """Verify HEALING_CONFIG is accessible."""
     from agentic_core.config import HEALING_CONFIG
-    
+
     assert isinstance(HEALING_CONFIG, dict)
     assert 'max_rounds' in HEALING_CONFIG
     assert 'global_budget' in HEALING_CONFIG
@@ -90,7 +90,7 @@ def test_config_healing_config():
 def test_config_active_canon_keys():
     """Verify ACTIVE_CANON_KEYS is accessible."""
     from agentic_core.config import ACTIVE_CANON_KEYS
-    
+
     assert isinstance(ACTIVE_CANON_KEYS, list)
     assert len(ACTIVE_CANON_KEYS) == 20
 
@@ -105,7 +105,7 @@ def test_unified_validation_types():
         StructureViolation,
         StructureViolationType,
     )
-    
+
     # All should be importable
     assert RuleSet is not None
     assert ValidationReport is not None

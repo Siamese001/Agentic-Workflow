@@ -40,16 +40,16 @@ Logger: logging.Logger = logging.getLogger(__name__)
 @dataclass
 class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
     """L5 Safety agent that generates hostile inputs for security testing.
-    
+
     This active defense system creates edge cases and malformed inputs to test
     function robustness including type errors, boundary conditions, buffer
     overflow attempts, malformed JSON, and special characters.
-    
+
     Attributes:
         llm_client: LLM client for generating hostile inputs (deprecated).
         enabled: Whether fuzzing is enabled (via ENABLE_FUZZ env var).
         audit_path: Path to audit log file for fuzz results.
-        
+
     Inherits:
         SubatomicTestingMixin: Provides testing utilities.
         HealerMixin: Provides healing chain support.
@@ -57,7 +57,7 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
 
     def __init__(self, llm_client: Optional[Any] = None) -> None:
         """Initialize the RedSentinelAgent.
-        
+
         Args:
             llm_client: LLM client for generating hostile inputs (deprecated, uses MCP).
         """
@@ -220,7 +220,7 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
         _call_path: Optional[Set[str]] = None
     ) -> Dict[str, int]:
         """Execute L5 safety healing operations.
-        
+
         This is an operational agent - no repository healing required.
         """
         # CRITICAL: Chain up to HealerMixin
@@ -247,7 +247,7 @@ _red_sentinel: Optional[RedSentinelAgent] = None
 
 def get_red_sentinel() -> RedSentinelAgent:
     """Get or create the global RedSentinelAgent instance.
-    
+
     Returns:
         Global RedSentinelAgent singleton instance.
     """

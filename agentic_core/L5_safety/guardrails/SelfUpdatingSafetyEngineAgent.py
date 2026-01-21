@@ -107,7 +107,7 @@ from agentic_core.utils.file_utils import safe_read_file, safe_write_file
 class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Safety engine that learns and adapts to new threats.
-    
+
     Features:
     - Automatic threat pattern detection
     - Dynamic rule generation
@@ -163,11 +163,11 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
     async def detect_threats(self, text: str, context: Optional[Dict[str, Any]]=None) -> ThreatDetection:
         """
         Detect threats in text.
-        
+
         Args:
             text: Text to analyze
             context: Optional context information
-            
+
         Returns:
             Threat detection result
         """
@@ -235,7 +235,7 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
     def report_false_positive(self, rule_id: str, text: str) -> Any:
         """
         Report a false positive detection.
-        
+
         Args:
             rule_id: Rule that triggered false positive
             text: Text that was incorrectly flagged
@@ -276,7 +276,7 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHarde
     def escalate_threat_level(self, rule_id: str) -> Any:
         """
         Escalate threat level for a rule.
-        
+
         Args:
             rule_id: Rule to escalate
         """

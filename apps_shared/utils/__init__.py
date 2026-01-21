@@ -10,6 +10,6 @@ Migrated from archives/Reachout Engine Archive/Agentic LIC/:
 # Lazy imports to avoid circular dependencies
 __all__ = [
     "StateManager",
-    "VectorMemoryStore", 
+    "VectorMemoryStore",
     "CircuitBreaker",
 ]

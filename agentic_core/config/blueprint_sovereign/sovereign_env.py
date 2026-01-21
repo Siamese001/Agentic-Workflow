@@ -63,13 +63,13 @@ _config: Optional[SovereignEnv] = None
 def get_env(project_root: Optional[Path]=None) -> SovereignEnv:
     """
     Get the singleton SovereignEnv instance.
-    
+
     Args:
         project_root: Path to project root (required on first call)
-        
+
     Returns:
         SovereignEnv singleton instance
-        
+
     Raises:
         ValueError: If project_root not provided on first call
         FileNotFoundError: If .env file Missing

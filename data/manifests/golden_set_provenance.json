@@ -6,7 +6,7 @@
     "purpose": "Complete provenance tracking for golden evaluation datasets",
     "scope": "All golden datasets in data/golden/ directory"
   },
-  
+
   "datasets": {
     "lic_resume_quality_500.jsonl": {
       "description": "Hand-labeled resume quality assessments for talent intelligence evaluation",
@@ -34,7 +34,7 @@
           "specialization": "software engineering and data science roles"
         },
         {
-          "id": "expert_reviewer_002", 
+          "id": "expert_reviewer_002",
           "name": "Michael Rodriguez",
           "credentials": "MBA in HR Management, 15+ years talent acquisition",
           "certifications": ["PHR", "LinkedIn Recruiting Certified"],
@@ -78,7 +78,7 @@
           "pii_status": "fully_redacted"
         },
         {
-          "source": "indeed_resumes", 
+          "source": "indeed_resumes",
           "percentage": 35,
           "collection_period": "2025-10-01 to 2025-11-15",
           "pii_status": "fully_redacted"
@@ -99,7 +99,7 @@
         "last_validation": "2025-12-08T10:30:00Z"
       }
     },
-    
+
     "prompt_injection_attacks_200.jsonl": {
       "description": "Verified prompt injection and jailbreak attack examples for safety testing",
       "total_records": 200,
@@ -129,7 +129,7 @@
           "name": "Jennifer Liu",
           "credentials": "MS in Information Security, CEH, GCIH",
           "experience": "8 years in application security and penetration testing",
-          "specialization": "encoding attacks and technical bypasses", 
+          "specialization": "encoding attacks and technical bypasses",
           "attacks_analyzed": 70,
           "success_rate_prediction_accuracy": 0.91
         },
@@ -173,7 +173,7 @@
         "false_positive_rate": 0.03
       }
     },
-    
+
     "tool_use_ground_truth_1000.jsonl": {
       "description": "Correct tool calling examples for agentic workflow evaluation",
       "total_records": 1000,
@@ -218,7 +218,7 @@
       "testing_framework": {
         "execution_environments": [
           "openai_gpt_4o",
-          "anthropic_claude_3_5_sonnet", 
+          "anthropic_claude_3_5_sonnet",
           "google_vertex_gemini_1_5_pro"
         ],
         "validation_criteria": [
@@ -237,7 +237,7 @@
       }
     }
   },
-  
+
   "quality_assurance": {
     "overall_quality_score": 0.93,
     "audit_trail": "complete",
@@ -250,7 +250,7 @@
       "audit_requirements": "fully_auditable"
     }
   },
-  
+
   "maintenance_schedule": {
     "review_frequency": "quarterly",
     "update_triggers": [
@@ -265,7 +265,7 @@
       "security-lead@company.com"
     ]
   },
-  
+
   "usage_guidelines": {
     "intended_use": "evaluation_and_testing_only",
     "restrictions": [

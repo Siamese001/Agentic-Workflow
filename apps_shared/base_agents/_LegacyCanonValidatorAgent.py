@@ -74,7 +74,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         """
         Builds a quick lookup dictionary from file path to its manifest entry.
         Refactored to reduce nesting depth.
-        
+
         Violation Fix: The previous dictionary comprehension with an 'if' clause
         resulted in a nesting depth of 5. This refactoring uses an explicit for loop
         to achieve the same filtering and assignment, reducing the effective nesting depth to 4.
@@ -322,23 +322,23 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
     @timeout(180)
     @standard_heal
     def heal_repository(
-        self, 
-        dry_run: bool = True, 
-        execute: bool = False, 
-        depth: int = 0, 
-        max_depth: int = 3, 
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
         _call_path: Optional[set] = None
     ) -> Dict[str, int]:
         """
         Wired Legacy Validation - Checks for structural drift in legacy canon files.
-        
+
         WIRED CAPABILITIES:
         - _validate_legacy_structure(): Detects drift from the original project blueprint.
         - _reconcile_import_paths(): Fixes broken legacy imports using the new mapping.
         """
         # CRITICAL: Chain up to HealerMixin
         super().heal_repository(dry_run=dry_run, execute=execute)
-        
+
         # Cycle/Depth Detection
         if _call_path is None:
             _call_path = set()
@@ -346,16 +346,16 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         if agent_name in _call_path or depth > max_depth:
             return {"errors": 1, "skipped": 1}
         _call_path.add(agent_name)
-        
+
         metrics = {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             # 1. Legacy Structural Validation
             if hasattr(self, '_validate_legacy_structure'):
                 struct_results = self._validate_legacy_structure(dry_run=dry_run)
                 metrics["violations"] += struct_results.get("violations", 0)
                 metrics["fixed"] += struct_results.get("fixed", 0)
-                
+
             # 2. Path Reconciliation
             if hasattr(self, '_reconcile_import_paths'):
                 import_results = self._reconcile_import_paths(dry_run=dry_run)
@@ -367,5 +367,5 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-            
+
         return metrics

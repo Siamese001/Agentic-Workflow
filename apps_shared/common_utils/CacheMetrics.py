@@ -18,7 +18,7 @@ from typing import Dict, Any
 class CacheMetrics:
     """
     Thread-safe singleton for cache metrics collection.
-    
+
     Usage:
         metrics = CacheMetrics()
         metrics.record("redis_get", hit=True, latency_ms=1.5)
@@ -26,7 +26,7 @@ class CacheMetrics:
     """
     _instance = None
     _lock = threading.Lock()
-    
+
     def __new__(cls):
         if cls._instance is None:
             with cls._lock:
@@ -34,7 +34,7 @@ class CacheMetrics:
                     cls._instance = super().__new__(cls)
                     cls._instance._initialized = False
         return cls._instance
-    
+
     def __init__(self):
         if self._initialized:
             return
@@ -44,7 +44,7 @@ class CacheMetrics:
             lambda: {"hits": 0, "misses": 0, "latency_sum": 0.0, "ops": 0, "errors": 0}
         )
         self._start_time = time.time()
-    
+
     def record(self, operation: str, hit: bool, latency_ms: float) -> None:
         """Record a cache operation."""
         with self._stats_lock:
@@ -54,12 +54,12 @@ class CacheMetrics:
                 self.stats[operation]["misses"] += 1
             self.stats[operation]["latency_sum"] += latency_ms
             self.stats[operation]["ops"] += 1
-    
+
     def record_error(self, operation: str) -> None:
         """Record a cache error."""
         with self._stats_lock:
             self.stats[operation]["errors"] += 1
-    
+
     def get_stats(self) -> Dict[str, Dict[str, Any]]:
         """Get aggregated statistics for all operations."""
         with self._stats_lock:
@@ -76,7 +76,7 @@ class CacheMetrics:
                     "misses": data["misses"],
                 }
             return result
-    
+
     def get_summary(self) -> Dict[str, Any]:
         """Get high-level summary for dashboard."""
         stats = self.get_stats()
@@ -84,7 +84,7 @@ class CacheMetrics:
         total_misses = sum(s["misses"] for s in stats.values())
         total_ops = total_hits + total_misses
         total_errors = sum(s["total_errors"] for s in stats.values())
-        
+
         return {
             "overall_hit_rate": round(total_hits / total_ops, 4) if total_ops else 0.0,
             "total_operations": total_ops,
@@ -92,7 +92,7 @@ class CacheMetrics:
             "uptime_seconds": round(time.time() - self._start_time, 1),
             "operations_by_type": stats,
         }
-    
+
     def reset(self) -> None:
         """Reset all statistics (for testing)."""
         with self._stats_lock:

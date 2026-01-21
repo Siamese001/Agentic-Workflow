@@ -91,7 +91,7 @@ print("\nSample registry paths:")
 for i, p in enumerate(list(registry_by_path.keys())[:5]):
     print(f"  {p}")
 
-# Show sample agent paths  
+# Show sample agent paths
 print("\nSample agent rel_paths:")
 for i, a in enumerate(all_agents[:5]):
     print(f"  {str(a.relative_to(PROJECT_ROOT)).replace(chr(92), '/')}")

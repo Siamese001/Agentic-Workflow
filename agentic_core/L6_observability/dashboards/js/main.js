@@ -12,7 +12,7 @@ const DashboardApp = {
     init: function() {
         console.log('[Dashboard] Initializing...');
         this.setupGlobalErrors();
-        
+
         // Hardened: Retry mechanism for slow-loading local data files
         let retryCount = 0;
         const tryLoad = () => {
@@ -21,7 +21,7 @@ const DashboardApp = {
                 this.renderContent();
                 this.initRenderers();
                 this.initControllers();
-                
+
                 // Add modal close handlers
                 document.addEventListener('keydown', function(e) {
                     if (e.key === 'Escape') {
@@ -61,7 +61,7 @@ const DashboardApp = {
         if (typeof window.agentData !== 'undefined' && typeof window.realAgentData === 'undefined') {
             window.realAgentData = window.agentData;
         }
-        
+
         // 2. Map observations and recommendations variable names
         if (typeof window.strategicObservationsData !== 'undefined' && typeof window.observations === 'undefined') {
             window.observations = window.strategicObservationsData;
@@ -73,7 +73,7 @@ const DashboardApp = {
         // 3. Lenient Dependency Check: Ensure data exists even if empty initially
         const hasData = typeof window.dashboardData !== 'undefined' && Array.isArray(window.dashboardData);
         const hasAgentData = typeof window.realAgentData !== 'undefined';
-        
+
         // 4. Debug logging to identify which specific variable is missing
         if (!hasData) console.warn('[Dashboard] Missing: dashboardData');
         if (!hasAgentData) console.warn('[Dashboard] Missing: realAgentData');
@@ -82,7 +82,7 @@ const DashboardApp = {
             console.log(`[Dashboard] Data loaded: ${window.dashboardData.length} territories`);
             return true;
         }
-        
+
         return false;
     },
 
@@ -94,30 +94,30 @@ const DashboardApp = {
 
     renderContent: function() {
         console.log('[Dashboard] Rendering content...');
-        
+
         try {
             // Get territory data
             const territoryData = window.dashboardData.filter(row => row.Territory !== 'TOTAL');
             const totalRow = window.dashboardData.find(row => row.Territory === 'TOTAL');
-            
+
             // Strategic observations
             if (typeof renderStrategicObservations === 'function') {
                 renderStrategicObservations();
                 console.log('[Dashboard] Strategic observations rendered');
             }
-            
+
             // Alert banner
             if (typeof updateGlobalAlertBanner === 'function') {
                 updateGlobalAlertBanner(territoryData);
                 console.log('[Dashboard] Alert banner updated');
             }
-            
+
             // Recommendations
             if (typeof renderRecommendations === 'function') {
                 renderRecommendations();
                 console.log('[Dashboard] Recommendations rendered');
             }
-            
+
             // Interview questions
             if (typeof renderInterviewQuestions === 'function' && totalRow) {
                 renderInterviewQuestions(totalRow);
@@ -130,14 +130,14 @@ const DashboardApp = {
 
     initRenderers: function() {
         console.log('[Dashboard] Initializing renderers...');
-        
+
         try {
             // Table 1: Territory Summary
             if (typeof renderTerritorySummaryTable === 'function') {
                 renderTerritorySummaryTable(window.dashboardData);
                 console.log('[Dashboard] Territory summary table rendered');
             }
-            
+
             // Table 2: Code Quality
             if (typeof renderCodeQualityTable === 'function') {
                 renderCodeQualityTable(window.dashboardData);
@@ -152,23 +152,23 @@ const DashboardApp = {
             if (typeof initializeRuntimeMonitoring === 'function') {
                 initializeRuntimeMonitoring();
             }
-            
+
             // Phase 5: Initialize Meta-Learning Dashboard
             if (typeof initializeMetaLearningDashboard === 'function') {
                 initializeMetaLearningDashboard();
                 console.log('[Dashboard] Meta-Learning dashboard initialized');
             }
-            
+
             // Initialize SSE Connection for Live Runtime
             this.setupSSE();
-            
+
             console.log('[Dashboard] KPIs initialized');
 
         } catch (e) {
             console.error('[Dashboard] Renderer error:', e);
         }
     },
-    
+
     setupSSE: function() {
         try {
             const eventSource = new EventSource('/api/runtime/stream');
@@ -188,7 +188,7 @@ const DashboardApp = {
 
     initControllers: function() {
         console.log('[Dashboard] Initializing controllers...');
-        
+
         try {
             // Tab Controller
             if (typeof TabController !== 'undefined') {
@@ -205,16 +205,16 @@ const DashboardApp = {
             if (typeof FilterController !== 'undefined') {
                 window.exportCSV = FilterController.exportCSV;
             }
-            
+
             console.log('[Dashboard] Controllers initialized');
-            
+
             // Setup Plotly chart interactivity
             this.setupPlotlyInteractivity();
         } catch (e) {
             console.error('[Dashboard] Controller error:', e);
         }
     },
-    
+
     setupPlotlyInteractivity: function() {
         // Add click handlers to Plotly charts for drill-down modals
         ['healthChart', 'riskMatrix'].forEach(chartId => {

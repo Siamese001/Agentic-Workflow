@@ -24,7 +24,7 @@ from typing import Any, Optional, List, Dict, Tuple
 
 # [SOVEREIGN IMPORTS]
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY, MISSION_CONFIG, HEALING_CONFIG, 
+    SOVEREIGN_REGISTRY, MISSION_CONFIG, HEALING_CONFIG,
     AGENT_RESILIENCE_CONFIG,
     SCOPE_SUMMARY_EXCLUSIONS, protected_folders, GRAVITY_SURGERY_ENABLED,
     FORBIDDEN_ROOT_FOLDERS
@@ -79,29 +79,29 @@ async def run_sovereign_mission(
 ):
     """
     Sovereign Mission Orchestrator with Ultra-Hardened RAG Integration.
-    
+
     Features:
     - Hybrid retrieval (Vector + BM25 + Static)
     - RRF fusion for multi-source ranking
     - LLM reranking for precision
     - Context enrichment for each file validation
     """
-    
+
     print("\n" + "="*70)
     print("[L3 MISSION ORCHESTRATOR] Initializing Sovereign Validation Mission")
     print("="*70)
-    
+
     # === PRE-FLIGHT CHECKS ===
     print("\n[PHASE 0] Pre-flight Structural Validation")
     preflight_results = run_l6_preflight(project_root)
-    
+
     if preflight_results["Span"] > 0 or preflight_results["hierarchy"] > 0:
         print(f"\n[!] Structural violations detected:")
         print(f"    - Span violations: {preflight_results['Span']}")
         print(f"    - Hierarchy violations: {preflight_results['hierarchy']}")
         if not RUN_HIERARCHY_HEALING:
             print("\n[!] Enable RUN_HIERARCHY_HEALING to auto-fix these issues")
-    
+
     # === INITIALIZE CONTEXT ===
     # Dynamic load of ValidationContext to avoid circular deps
     ValidationContext = dynamic_import('agentic_core.L4_state.validation_context.ValidationContext', 'ValidationContext')
@@ -116,13 +116,13 @@ async def run_sovereign_mission(
     else:
         # Fallback context
         class FallbackContext:
-            def __init__(self): 
+            def __init__(self):
                 self.results = {}
                 self.report = []
                 self.python_files = []
                 self.rag = None
         ctx = FallbackContext()
-    
+
     # Smart Report Hardening
     class CallableReport(list):
         """Hybrid report: Acts as list for append() AND callable for ctx.report()"""
@@ -136,44 +136,44 @@ async def run_sovereign_mission(
                 "timestamp": time.time()
             }
             self.append(entry)
-    
+
     ctx.report = CallableReport(getattr(ctx, 'report', []))
-    
+
     # === DISCOVER FILES ===
     print(f"\n[PHASE 1] Discovering Python files in {target_scope}")
     target_path = Path(target_scope).resolve()
-    
+
     discovered_files = []
     for root, dirs, files in os.walk(target_path):
         dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS and d != ".git"]
         for file in files:
             if file.endswith('.py'):
                 discovered_files.append(Path(root) / file)
-    
+
     # Void compliance enforcement
     valid_files, violations = enforce_void_compliance(discovered_files, project_root)
     ctx.python_files = [str(p) for p in valid_files]
-    
+
     print(f"   [OK] Discovered {len(ctx.python_files)} Python files")
-    
+
     # === INITIALIZE AGENTS ===
     print("\n[PHASE 2] Arming Cleaning Crew")
     ctx.cleaning_crew = []
-    
+
     # Dynamic agent loading would go here
     # For now, placeholder
     print("   [OK] Cleaning crew armed")
-    
+
     # === MAIN VALIDATION LOOP ===
     print(f"\n[PHASE 3] Executing Validation Mission")
     print(f"   Target: {len(ctx.python_files)} files")
     print(f"   Max Rounds: {MAX_HEALING_ROUNDS}")
-    
+
     for idx, file_path in enumerate(ctx.python_files, 1):
         file_name = Path(file_path).name
         print(f"[{idx}/{len(ctx.python_files)}] Processing: {file_name}")
-        
-        # [CONTEXT ENRICHMENT] 
+
+        # [CONTEXT ENRICHMENT]
         # Retrieve relevant domain knowledge to augment agent prompts
         # This uses the new async Hybrid Search with BM25 and Vector tracks.
         knowledge_context = ""
@@ -187,25 +187,25 @@ async def run_sovereign_mission(
                     print(f"      [RAG] Retrieved {len(retrievals)} knowledge chunks")
             except Exception as e:
                 print(f"      [!] RAG Retrieval failed for {file_name}: {e}")
-        
+
         # Validation Loop
         for round_idx in range(1, MAX_HEALING_ROUNDS + 1):
             changes = 0
             for agent in ctx.cleaning_crew:
                 # Agent execution would go here
                 pass
-            
+
             if changes == 0:
                 break
-    
+
     # === FINAL REPORT ===
     print("\n" + "="*70)
     print("[MISSION COMPLETE]")
     print("="*70)
-    
+
     total_violations = len([r for r in ctx.report if r.get('status') == 'FAIL'])
     print(f"\nTotal Violations: {total_violations}")
-    
+
     if total_violations == 0:
         print("\n[SOVEREIGN VERDICT] ZERO violations detected")
         print("    Canon structure: EXACT SSOT match")
@@ -214,7 +214,7 @@ async def run_sovereign_mission(
     else:
         print(f"\n[PROGRESS] {total_violations} violations remain")
         print("   Re-run the validator to apply further healing rounds.")
-    
+
     return ctx
 
 

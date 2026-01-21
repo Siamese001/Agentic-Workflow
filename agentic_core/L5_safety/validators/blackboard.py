@@ -64,7 +64,7 @@ from agentic_core.utils.core_extensions.subatomic_testing_mixin import Subatomic
 class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     """
     Thread-safe blackboard for managing validation state.
-    
+
     Features:
     - Lease-based file locking (30-second default)
     - Health score tracking per file
@@ -76,7 +76,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def __init__(self, redis_client=None, pinecone_index=None):
         """
         Initialize blackboard.
-        
+
         Args:
             redis_client: Redis client for hot caching
             pinecone_index: Pinecone index for pattern learning
@@ -95,57 +95,57 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def _run_self_tests(self) -> bool:
         """Run self-tests for AtomicBlackboard."""
         super()._run_self_tests()
-        
+
         # Test lease acquisition/release cycle
         test_path = "__self_test_file.py"
         test_agent = "SelfTestAgent"
-        
+
         # Should be able to acquire lease on clean state
         lease = self.acquire_lease(test_path, test_agent)
         assert lease is not None or True, "Lease acquisition test"
-        
+
         # Release if acquired
         if lease:
             self.release_lease(test_path, lease.lease_id)
-        
+
         # Test health score operations
         assert isinstance(self.redis_fallback, dict), "Fallback cache must be dict"
-        
+
         return True
 
     def _perform_healing(self, anomaly: AnomalyReport) -> bool:
         """Perform healing for detected anomalies with idempotency guards."""
         self._mcp_audit("healing_start", payload=anomaly.to_dict())
-        
+
         if anomaly.type == "lease_expired_corruption":
             # Idempotency guard (quick check, zero-work if already healed)
             if self._all_leases_valid():
                 return True
-            
+
             # Expire all stale leases
             current_time = time.time()
             stale = [k for k, v in self._leases.items() if v.is_expired()]
             for key in stale:
                 del self._leases[key]
-            
+
             # Proactive validate after repair
             if self._run_self_tests():
                 self._mcp_audit("healing_success", payload={"cleared_leases": len(stale)})
                 return True
             return False
-        
+
         if anomaly.type == "health_drift":
             # Lightweight for MEDIUM/LOW severity
             self._health_scores.clear()
             self.redis_fallback.clear()
             self._mcp_audit("healing_success")
             return True
-        
+
         if anomaly.type == "lease_acquire_failure":
             # Connection recovery
             self._reinitialize_redis_connection()
             return True
-        
+
         return False
 
     def _all_leases_valid(self) -> bool:
@@ -183,11 +183,11 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def acquire_lease(self, file_path: str, agent_name: str) -> Optional[HealingLease]:
         """
         Acquire a healing lease on a file.
-        
+
         Args:
             file_path: Path to file to lock
             agent_name: Name of agent requesting lease
-            
+
         Returns:
             HealingLease if acquired, None if file is locked
         """
@@ -220,10 +220,10 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def release_lease(self, lease: HealingLease) -> bool:
         """
         Release a healing lease.
-        
+
         Args:
             lease: Lease to release
-            
+
         Returns:
             True if released successfully
         """
@@ -246,11 +246,11 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def extend_lease(self, lease: HealingLease, additional_seconds: int=None) -> bool:
         """
         Extend an existing lease.
-        
+
         Args:
             lease: Lease to extend
             additional_seconds: Additional seconds to add (default: lease_duration)
-            
+
         Returns:
             True if extended successfully
         """
@@ -277,12 +277,12 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def wait_for_lease(self, file_path: str, agent_name: str, max_wait: int=None) -> Optional[HealingLease]:
         """
         Wait for a lease with exponential backoff.
-        
+
         Args:
             file_path: Path to file to lock
             agent_name: Name of agent requesting lease
             max_wait: Maximum seconds to wait (default: max_backoff)
-            
+
         Returns:
             HealingLease if acquired, None if timeout
         """
@@ -305,10 +305,10 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def get_health_score(self, file_path: str) -> Optional[FileHealthScore]:
         """
         Get health score for a file.
-        
+
         Args:
             file_path: Path to file
-            
+
         Returns:
             FileHealthScore if exists, None otherwise
         """
@@ -327,12 +327,12 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def update_health_score(self, file_path: str, current_violations: int, file_hash: str='') -> FileHealthScore:
         """
         Update health score for a file.
-        
+
         Args:
             file_path: Path to file
             current_violations: Current number of violations
             file_hash: Hash of file content
-            
+
         Returns:
             Updated FileHealthScore
         """
@@ -355,12 +355,12 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def check_regression(self, file_path: str, new_violations: int, new_hash: str) -> Tuple[bool, str]:
         """
         Check if a mutation would cause regression (increase errors).
-        
+
         Args:
             file_path: Path to file
             new_violations: Number of violations after fix
             new_hash: Hash of new file content
-            
+
         Returns:
             Tuple of (is_valid, reason)
         """
@@ -377,11 +377,11 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def revert_file(self, file_path: str, backup_content: str) -> bool:
         """
         Revert file to previous content after regression detected.
-        
+
         Args:
             file_path: Path to file
             backup_content: Previous file content to restore
-            
+
         Returns:
             True if reverted successfully
         """
@@ -397,7 +397,7 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def store_healing_pattern(self, violation_key: int, violation_desc: str, fix_code: str, success_rate: float=1.0) -> Any:
         """
         Store successful healing pattern in Pinecone.
-        
+
         Args:
             violation_key: Canon key that was fixed
             violation_desc: Description of Violation
@@ -420,11 +420,11 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     def find_similar_patterns(self, violation_desc: str, top_k: int=3) -> List[Dict[str, Any]]:
         """
         Find similar healing patterns from Pinecone.
-        
+
         Args:
             violation_desc: Description of current Violation
             top_k: Number of similar patterns to return
-            
+
         Returns:
             List of similar patterns with metadata
         """

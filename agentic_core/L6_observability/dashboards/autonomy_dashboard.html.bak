@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Autonomy Compliance Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js" 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"
             onerror="handlePlotlyLoadError()"></script>
     <script>
         // Fallback for offline use - detect if Plotly failed to load
@@ -15,7 +15,7 @@
             console.warn('Plotly.js failed to load from CDN. Dashboard will work in limited mode.');
             window.PLOTLY_OFFLINE = true;
         }
-        
+
         // Check if Plotly loaded after page load
         window.addEventListener('DOMContentLoaded', function() {
             if (typeof Plotly === 'undefined') {
@@ -61,7 +61,7 @@
 
             <!-- Executive Dashboard Tab -->
             <div id="executive-content" class="tab-content" style="display:none;">
-                
+
                 <!-- Semantic Retrieval Metrics -->
                 <div class="kpi-grid" id="cognitiveGrid" style="margin-bottom: 25px;">
                     <div class="kpi-box success">
@@ -75,7 +75,7 @@
                         <div class="kpi-subtext">Avg Cosine Similarity Score (Pinecone)</div>
                     </div>
                 </div>
-                
+
                 <!-- Global Alert Banner for Critical Outliers -->
                 <div id="outlierAlertBanner" style="display:none; margin-bottom:25px;">
                     <div class="chart-card" style="border: 2px solid var(--danger); background: #fef2f2;">
@@ -125,7 +125,7 @@
                 </div>
 
                 <div class="kpi-grid" id="kpiGrid"></div>
-                
+
                 <!-- Code Quality Table -->
                 <div class="kpi-grid" id="codeQualityGrid"></div>
             </div>
@@ -141,7 +141,7 @@
                         <div class="chart-body">
                             <div id="recommendationsList" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));"></div>
                             <p style="margin-top: 30px; font-style: italic; color: var(--light-text);">
-                                These recommendations teach autonomy interdependencies: missing super().heal_repository() calls create invocation gaps; 
+                                These recommendations teach autonomy interdependencies: missing super().heal_repository() calls create invocation gaps;
                                 insufficient tests block safe hardening; high complexity raises risk. Apply diffs → re-run report → watch health rise.
                             </p>
                         </div>
@@ -256,7 +256,7 @@
                     <p style="font-size:0.9em; color:#6b7280; margin-bottom:16px; font-style:italic;">
                         Purpose: Tracks how the system learns from experience and adapts its reasoning strategies. Monitor experience accumulation, pattern extraction, and strategy weight evolution to ensure continuous improvement.
                     </p>
-                    
+
                     <div class="charts-grid">
                         <!-- Meta-Learning Stats -->
                         <div class="chart-card">
@@ -268,7 +268,7 @@
                                 <div id="meta-stats"></div>
                             </div>
                         </div>
-                        
+
                         <!-- Strategy Weights -->
                         <div class="chart-card">
                             <div class="chart-header">
@@ -280,7 +280,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="charts-grid" style="margin-top: 16px;">
                         <!-- Experience Stream -->
                         <div class="chart-card">
@@ -292,7 +292,7 @@
                                 <div id="experience-stream" class="scrollable-list"></div>
                             </div>
                         </div>
-                        
+
                         <!-- Pattern Timeline -->
                         <div class="chart-card">
                             <div class="chart-header">
@@ -312,7 +312,7 @@
                     <p style="font-size:0.9em; color:#6b7280; margin-bottom:16px; font-style:italic;">
                         Purpose: Monitors Redis cache performance and operation patterns. High hit rates indicate efficient caching; frequent misses suggest opportunities for optimization or cache warming.
                     </p>
-                    
+
                     <div class="charts-grid">
                         <!-- Redis Stats -->
                         <div class="chart-card">
@@ -324,7 +324,7 @@
                                 <div id="redis-stats"></div>
                             </div>
                         </div>
-                        
+
                         <!-- Redis Operation Log -->
                         <div class="chart-card">
                             <div class="chart-header">
@@ -344,7 +344,7 @@
                     <p style="font-size:0.9em; color:#6b7280; margin-bottom:16px; font-style:italic;">
                         Purpose: Tracks vector storage and similarity search operations. Monitor query performance and similarity scores to ensure effective semantic search and knowledge retrieval.
                     </p>
-                    
+
                     <div class="charts-grid">
                         <!-- Pinecone Stats -->
                         <div class="chart-card">
@@ -356,7 +356,7 @@
                                 <div id="pinecone-stats"></div>
                             </div>
                         </div>
-                        
+
                         <!-- Pinecone Query Results -->
                         <div class="chart-card">
                             <div class="chart-header">
@@ -376,7 +376,7 @@
                     <p style="font-size:0.9em; color:#6b7280; margin-bottom:16px; font-style:italic;">
                         Purpose: Visualizes agent execution across architectural layers (L6→L0). Analyze execution timing, success rates, and layer progression to identify bottlenecks and optimize workflow efficiency.
                     </p>
-                    
+
                     <!-- Layer Flow Diagram -->
                     <div class="chart-card">
                         <div class="chart-header">
@@ -387,7 +387,7 @@
                             <div id="layer-flow"></div>
                         </div>
                     </div>
-                    
+
                     <div class="charts-grid" style="margin-top: 16px;">
                         <!-- Execution Summary -->
                         <div class="chart-card">
@@ -399,7 +399,7 @@
                                 <div id="execution-summary"></div>
                             </div>
                         </div>
-                        
+
                         <!-- Execution Timeline -->
                         <div class="chart-card">
                             <div class="chart-header">

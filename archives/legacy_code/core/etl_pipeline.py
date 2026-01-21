@@ -646,4 +646,3 @@ self.logger.error(f"Failed to cleanup expired failures: {e}")
     def get_stats(self) -> Dict[str, Any]:
         """Get ingestion statistics."""
         return self.stats.copy()
-
