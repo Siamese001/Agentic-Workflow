@@ -104,9 +104,10 @@ class TestInstinctiveBypass:
             SemanticCacheManager,
         )
         
-        # Reset singleton
+        # Reset singleton and mixin state
         SemanticCacheManager.reset_instance()
         MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
         
         # Create a test agent class
         class TestAgent(MetaLearningMixin):
@@ -121,6 +122,7 @@ class TestInstinctiveBypass:
             
             agent = TestAgent()
             MetaLearningMixin._memory = mock_memory
+            MetaLearningMixin._lobotomized = False  # Ensure not lobotomized
             
             # This should NOT be called
             def should_not_run():
@@ -134,6 +136,7 @@ class TestInstinctiveBypass:
         # Clean up
         SemanticCacheManager.reset_instance()
         MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
 
     def test_instinctive_bypass_miss_executes(self):
         """[Phase 20] Verify recall_or_execute executes on cache miss."""
@@ -144,9 +147,10 @@ class TestInstinctiveBypass:
             SemanticCacheManager,
         )
         
-        # Reset singleton
+        # Reset singleton and mixin state
         SemanticCacheManager.reset_instance()
         MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
         
         class TestAgent(MetaLearningMixin):
             pass
@@ -160,6 +164,7 @@ class TestInstinctiveBypass:
             
             agent = TestAgent()
             MetaLearningMixin._memory = mock_memory
+            MetaLearningMixin._lobotomized = False  # Ensure not lobotomized
             
             execution_count = {"count": 0}
             
@@ -176,6 +181,7 @@ class TestInstinctiveBypass:
         # Clean up
         SemanticCacheManager.reset_instance()
         MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
 
 
 class TestDNASegregation:
@@ -190,9 +196,10 @@ class TestDNASegregation:
             SemanticCacheManager,
         )
         
-        # Reset singleton
+        # Reset singleton and mixin state
         SemanticCacheManager.reset_instance()
         MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
         
         class GovernorAgent(MetaLearningMixin):
             pass
@@ -219,6 +226,7 @@ class TestDNASegregation:
             governor = GovernorAgent()
             router = RouterAgent()
             MetaLearningMixin._memory = mock_memory
+            MetaLearningMixin._lobotomized = False
             
             # Governor learns "Prompt X"
             governor.learn_experience("Prompt X", {"result": "Governor Result"})
@@ -238,6 +246,7 @@ class TestDNASegregation:
         # Clean up
         SemanticCacheManager.reset_instance()
         MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
 
     def test_namespace_derived_from_class_name(self):
         """[Phase 20] Verify namespace is derived from class name."""
@@ -252,11 +261,13 @@ class TestDNASegregation:
             mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
             
             MetaLearningMixin._memory = None
+            MetaLearningMixin._lobotomized = False
             agent = CustomAgentName()
             
             assert agent._namespace == "CustomAgentName"
         
         MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
 
 
 class TestLobotomyResilience:
@@ -296,9 +307,10 @@ class TestLobotomyResilience:
             SemanticCacheManager,
         )
         
-        # Reset singleton
+        # Reset singleton and mixin state
         SemanticCacheManager.reset_instance()
         MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
         
         class TestAgent(MetaLearningMixin):
             pass
@@ -308,7 +320,8 @@ class TestLobotomyResilience:
             
             agent = TestAgent()
             
-            # Set memory to None to simulate complete failure
+            # Set lobotomized state to simulate complete failure
+            MetaLearningMixin._lobotomized = True
             MetaLearningMixin._memory = None
             
             execution_count = {"count": 0}
@@ -326,6 +339,7 @@ class TestLobotomyResilience:
         # Clean up
         SemanticCacheManager.reset_instance()
         MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
 
     def test_lobotomy_warning_logged(self, caplog):
         """[Phase 20] Verify LOBOTOMY WARNING is logged when Redis unavailable."""
@@ -363,6 +377,7 @@ class TestContextHashing:
             pass
         
         MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
         
         with patch("redis.from_url") as mock_redis:
             mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
@@ -373,6 +388,8 @@ class TestContextHashing:
             hash2 = agent._generate_context_hash("test context")
             
             assert hash1 == hash2
+        
+        MetaLearningMixin._lobotomized = False
 
     def test_context_hash_includes_namespace(self):
         """[Phase 20] Verify context hash includes namespace for segregation."""
@@ -387,6 +404,7 @@ class TestContextHashing:
             pass
         
         MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
         
         with patch("redis.from_url") as mock_redis:
             mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
@@ -401,3 +419,151 @@ class TestContextHashing:
             assert hash_a != hash_b
         
         MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
+
+
+class TestCircuitBreaker:
+    """Phase 20 Tests: Circuit breaker behavior."""
+    
+    def test_circuit_breaker_activates_on_failure(self):
+        """[Phase 20] Verify circuit breaker activates when Hive Mind unavailable."""
+        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+            MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
+        )
+        
+        # Reset state
+        SemanticCacheManager.reset_instance()
+        MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
+        
+        class TestAgent(MetaLearningMixin):
+            pass
+        
+        with patch("redis.from_url") as mock_redis:
+            mock_redis.return_value.ping.side_effect = Exception("Connection refused")
+            
+            with patch.object(SemanticCacheManager, 'get_instance', side_effect=Exception("Hive Mind down")):
+                agent = TestAgent()
+        
+        # Circuit breaker should be active
+        assert MetaLearningMixin._lobotomized is True
+        
+        # Clean up
+        MetaLearningMixin._lobotomized = False
+        MetaLearningMixin._memory = None
+
+    def test_circuit_breaker_bypasses_memory_calls(self):
+        """[Phase 20] Verify lobotomized state bypasses all memory operations."""
+        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+            MetaLearningMixin,
+        )
+        
+        class TestAgent(MetaLearningMixin):
+            pass
+        
+        # Force lobotomized state
+        MetaLearningMixin._lobotomized = True
+        MetaLearningMixin._memory = MagicMock()  # Should NOT be called
+        
+        with patch("redis.from_url") as mock_redis:
+            mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+            
+            agent = TestAgent()
+            
+            # All memory operations should be bypassed
+            assert agent.recall_experience("test") is None
+            agent.learn_experience("test", {"result": "data"})
+            assert agent.get_memory_stats() is None
+            
+            # Memory should NOT have been called
+            MetaLearningMixin._memory.recall.assert_not_called()
+            MetaLearningMixin._memory.learn.assert_not_called()
+        
+        # Clean up
+        MetaLearningMixin._lobotomized = False
+        MetaLearningMixin._memory = None
+
+    def test_reset_lobotomy(self):
+        """[Phase 20] Verify reset_lobotomy clears circuit breaker state."""
+        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+            MetaLearningMixin,
+        )
+        
+        # Set lobotomized state
+        MetaLearningMixin._lobotomized = True
+        MetaLearningMixin._memory = MagicMock()
+        
+        # Reset
+        MetaLearningMixin.reset_lobotomy()
+        
+        assert MetaLearningMixin._lobotomized is False
+        assert MetaLearningMixin._memory is None
+
+
+class TestSerializationGuard:
+    """Phase 20 Tests: Serialization guard behavior."""
+    
+    def test_non_dict_result_wrapped(self):
+        """[Phase 20] Verify non-dict results are wrapped for storage."""
+        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+            MetaLearningMixin,
+        )
+        
+        class TestAgent(MetaLearningMixin):
+            pass
+        
+        mock_memory = MagicMock()
+        mock_memory.recall.return_value = None
+        
+        MetaLearningMixin._memory = mock_memory
+        MetaLearningMixin._lobotomized = False
+        
+        with patch("redis.from_url") as mock_redis:
+            mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+            
+            agent = TestAgent()
+            
+            # Execute with string result (non-dict)
+            result = agent.recall_or_execute("test", lambda: "string_result")
+            
+            assert result == "string_result"
+            
+            # Verify learn was called with wrapped payload
+            call_args = mock_memory.learn.call_args
+            payload = call_args[0][2]  # Third argument is the result
+            assert payload == {"result": "string_result", "_wrapped": True}
+        
+        MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
+
+    def test_learning_failure_does_not_crash(self):
+        """[Phase 20] Verify learning failure doesn't crash the agent."""
+        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+            MetaLearningMixin,
+        )
+        
+        class TestAgent(MetaLearningMixin):
+            pass
+        
+        mock_memory = MagicMock()
+        mock_memory.recall.return_value = None
+        mock_memory.learn.side_effect = Exception("Serialization failed")
+        
+        MetaLearningMixin._memory = mock_memory
+        MetaLearningMixin._lobotomized = False
+        
+        with patch("redis.from_url") as mock_redis:
+            mock_redis.return_value.ping.side_effect = Exception("Redis unavailable")
+            
+            agent = TestAgent()
+            
+            # Should NOT raise despite learning failure
+            result = agent.recall_or_execute("test", lambda: {"data": "value"})
+            
+            assert result == {"data": "value"}
+        
+        MetaLearningMixin._memory = None
+        MetaLearningMixin._lobotomized = False
