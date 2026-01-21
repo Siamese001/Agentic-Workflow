@@ -126,3 +126,11 @@ repos:
         types: [python]
         pass_filenames: false
         additional_dependencies: []
+
+      - id: sovereign-lockdown-verification
+        name: Sovereign Lockdown Verification (Phase 7)
+        entry: python
+        args: [scripts/ci/sovereign_lockdown_check.py]
+        language: python
+        pass_filenames: false
+        always_run: true

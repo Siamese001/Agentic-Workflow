@@ -1,48 +1,117 @@
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
-# This boosts alignment detection — review and integrate appropriately
+"""ArchitectureGovernorAgent - Universal Architecture Governance
+
+Phase 1 Upgrade (2026-01-21): Activated from stub to functioning enforcer.
+Phase 2 Upgrade (2026-01-21): Transition from Observer to Active Healer.
+Phase 3 Upgrade (2026-01-21): Environmental Maintenance & Root-Level Lockdown.
+Phase 4 Upgrade (2026-01-21): Deduplication & Logic Consolidation.
+Phase 6 Upgrade (2026-01-21): Universal Logic Consolidation & Healing.
+Phase 7 Upgrade (2026-01-21): Final Sovereign Lockdown & CI/CD Integration.
+
+Responsibilities:
+- Validate layer boundaries (L0-L6) across ALL sovereign territories
+- Detect gravity violations (upward imports: L3 importing L5)
+- Enforce naming conventions (*Agent.py suffix)
+- Detect orphaned and duplicate agents
+- Trigger cross-root deduplication audits
+- Enforce Universal Sovereignty via CI/CD sync verification
+- Support headless CI mode with auto_approve
+- [Phase 2] Autonomous healing via GravityLeakRepairAgent orchestration
+- [Phase 2] Naming convention auto-fix via ArchivalGatekeeper
+- [Phase 3] Post-healing environmental cleanup
+- [Phase 4] Cross-agent deduplication audit
+- [Phase 6] Zero-loss collision resolution via ArchivalGatekeeper
+- [Phase 7] Final CI-ready lockdown verification
+
+[SSOT] All territorial scope derived from SOVEREIGN_REGISTRY in structure_blueprint.py
+"""
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
-"""
-ArchitectureGovernor - L3 Orchestration Framework Agent
-Validates and enforces architectural patterns across the codebase.
-[SSOT] Layer directories derived from SOVEREIGN_REGISTRY in structure_blueprint.py
-"""
 import logging
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-Logger: Any = logging.getLogger(__name__)
-layer_dirs: Any = set(SOVEREIGN_REGISTRY["agentic_core"]["subfolders"])
+Logger = logging.getLogger(__name__)
+
+# Layer directories from SSOT
+LAYER_DIRS: set[str] = set(SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfolders", []))
 
 
 @dataclass
 class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
-    L3 Orchestration: Architecture Pattern Enforcement
-    Ensures code follows canonical architectural patterns and layer boundaries.
+    [L5 GOVERNOR] Universal Architecture Pattern Enforcement
+
+    Phase 1 Upgrade: Activated from stub to functioning enforcer.
+    Ensures code follows canonical architectural patterns and layer boundaries
+    across ALL sovereign territories (not just agentic_core).
+
+    Features:
+    - Universal Scope: Scans all SOVEREIGN_REGISTRY roots
+    - Auto-Approve Mode: Headless CI operation without stdin prompts
+    - Gravity Detection: L3 importing L5 = violation
+    - Naming Enforcement: *Agent.py suffix validation
     """
 
-    def __init__(self, project_root: Path = None) -> None:
-        """
-        Initialize the ArchitectureGovernorAgent.
+    project_root: Path = field(default_factory=Path.cwd)
+    healing_enabled: bool = True
+    auto_approve: bool = False
 
-        Args:
-            project_root: Root directory of the project
-        """
-        self.project_root = project_root or Path.cwd()
-        self.violations = []
+    def __post_init__(self) -> None:
+        """Initialize the ArchitectureGovernorAgent."""
+        if isinstance(self.project_root, str):
+            self.project_root = Path(self.project_root)
+        self.violations: list[dict[str, Any]] = []
+        self._structure_validator = None  # Lazy-loaded
+        self._gravity_repair_agent = None  # Lazy-loaded
+        self._archival_gatekeeper = None  # Lazy-loaded
+        Logger.info(f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve})")
+
+    def _get_structure_validator(self):
+        """Lazy-load StructuralValidatorAgent to avoid circular imports."""
+        if self._structure_validator is None:
+            from agentic_core.L5_safety.unified.StructuralValidatorAgent import (
+                StructuralValidatorAgent,
+                StructureConfig,
+            )
+
+            config = StructureConfig(
+                check_gravity=True,
+                check_duplicates=True,
+                check_orphans=True,
+                check_registry=False,
+                check_contracts=False,
+                check_hierarchy=True,
+                project_root=self.project_root,
+            )
+            self._structure_validator = StructuralValidatorAgent(config=config)
+        return self._structure_validator
+
+    def _get_gravity_repair_agent(self):
+        """Lazy-load GravityLeakRepairAgent for orchestrated healing."""
+        if self._gravity_repair_agent is None:
+            from agentic_core.L5_safety.gravity.GravityLeakRepairAgent import (
+                GravityLeakRepairAgent,
+            )
+
+            self._gravity_repair_agent = GravityLeakRepairAgent(project_root=self.project_root)
+        return self._gravity_repair_agent
+
+    def _get_archival_gatekeeper(self):
+        """Lazy-load ArchivalGatekeeper for safe file operations."""
+        if self._archival_gatekeeper is None:
+            from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+
+            self._archival_gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
+        return self._archival_gatekeeper
 
     @timeout(300)
     @standard_heal
@@ -53,9 +122,27 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
-    ) -> dict[str, int]:
-        """L3 orchestration agent - operational only."""
-        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
+        auto_approve: bool | None = None,
+    ) -> dict[str, Any]:
+        """
+        Universal architecture governance across ALL sovereign territories.
+
+        Phase 1 Upgrade: Now performs actual validation instead of returning stub.
+
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, attempt to fix violations
+            depth: Current recursion depth for cycle detection
+            max_depth: Maximum recursion depth
+            _call_path: Internal call path tracking
+            auto_approve: Override instance auto_approve setting
+
+        Returns:
+            Dictionary with canonical keys: violations_found, violations_fixed, status
+        """
+        # Call parent heal_repository with only supported args
+        super().heal_repository()
+
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -64,18 +151,116 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
         if depth > max_depth:
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
+
+        # Resolve auto_approve
+        effective_auto_approve = auto_approve if auto_approve is not None else self.auto_approve
+
         try:
-            print(f"[{agent_name}] L3 orchestration - operational only")
-            return {"skipped": 1}
+            Logger.info(f"[{agent_name}] Starting Universal Architecture Governance...")
+
+            violations_found = 0
+            violations_fixed = 0
+            roots_scanned = []
+            all_violations = []
+
+            # UNIVERSAL SCOPE: Scan all SOVEREIGN_REGISTRY roots
+            for root_name in SOVEREIGN_REGISTRY.keys():
+                root_path = self.project_root / root_name
+                if not root_path.exists():
+                    continue
+
+                roots_scanned.append(root_name)
+                Logger.info(f"  Scanning territory: {root_name}")
+
+                # Use UnifiedStructureValidatorAgent for detection
+                validator = self._get_structure_validator()
+                report = validator.validate_structure(root_path)
+
+                for violation in report.violations:
+                    violations_found += 1
+                    violation_dict = {
+                        "type": violation.violation_type.name,
+                        "file": str(violation.file_path) if violation.file_path else None,
+                        "message": violation.message,
+                        "severity": violation.severity,
+                        "suggestion": violation.suggestion,
+                        "source_layer": getattr(violation, "source_layer", None),
+                        "target_layer": getattr(violation, "target_layer", None),
+                    }
+                    all_violations.append(violation_dict)
+
+                    # Phase 2: Active Healing
+                    if execute and not dry_run and self.healing_enabled:
+                        fixed = self._heal_violation(
+                            violation_dict,
+                            effective_auto_approve,
+                        )
+                        if fixed:
+                            violations_fixed += 1
+                    elif not dry_run:
+                        Logger.warning(f"    [{violation.violation_type.name}] {violation.message}")
+
+            # Store violations for inspection
+            self.violations = all_violations
+
+            # Summary
+            if dry_run:
+                Logger.info(
+                    f"[DRY-RUN] Found {violations_found} violations across {len(roots_scanned)} territories"
+                )
+            else:
+                Logger.info(f"Found {violations_found} violations, fixed {violations_fixed}")
+
+            # Phase 4/6: Logic Consolidation & Deduplication Audit with Resolution
+            dedup_results = self._trigger_deduplication_audit(
+                roots_scanned, execute=execute and not dry_run
+            )
+
+            # Phase 3: Post-Healing Environmental Maintenance
+            if self.healing_enabled and execute and not dry_run and violations_fixed > 0:
+                Logger.info("[Phase 3] Running post-healing cleanup...")
+                for root_name in roots_scanned:
+                    self._cleanup_empty_dirs(self.project_root / root_name)
+
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "roots_scanned": roots_scanned,
+                "status": "PASS" if violations_found == 0 else "FAIL",
+                "deduplication_audit": dedup_results,
+            }
         finally:
             _call_path.discard(agent_name)
 
+    def run_ci_verification_sync(self) -> tuple[bool, dict[str, Any]]:
+        """
+        Synchronous CI verification for pre-commit hooks and CLI tools.
+
+        Returns (is_compliant, results_dict) for easy CI integration.
+        No stdin prompts - fully headless operation.
+        """
+        Logger.info("Starting Architecture CI Verification (headless mode)...")
+
+        results = self.heal_repository(
+            dry_run=True,
+            execute=False,
+            auto_approve=True,
+        )
+
+        is_compliant = results.get("violations_found", 0) == 0
+
+        if is_compliant:
+            Logger.info("✅ Architecture Integrity Verified. No violations.")
+        else:
+            Logger.error(
+                f"❌ Architecture violations detected: {results.get('violations_found', 0)}"
+            )
+
+        return is_compliant, results
+
     def validate_layer_boundaries(self, file_path: Path) -> tuple[bool, str]:
         """
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
-
-        Validate that file respects layer boundaries (L0-L5).
+        Validate that file respects layer boundaries (L0-L6).
 
         Args:
             file_path: Path to file to validate
@@ -84,12 +269,20 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
             Tuple of (is_valid, reason)
         """
         try:
-            rel_path: Any = file_path.relative_to(self.project_root)
-            parts: Any = rel_path.parts
+            rel_path = file_path.relative_to(self.project_root)
+            parts = rel_path.parts
+
+            # Check agentic_core layer structure
             if len(parts) > 1 and parts[0] == "agentic_core":
                 if len(parts) > 2 and parts[1] in LAYER_DIRS:
                     return (True, f"Valid layer structure: {parts[1]}")
-            return (False, "File outside layer structure")
+                return (False, f"Invalid layer: {parts[1] if len(parts) > 1 else 'unknown'}")
+
+            # Check other sovereign territories
+            if parts[0] in SOVEREIGN_REGISTRY:
+                return (True, f"Valid sovereign territory: {parts[0]}")
+
+            return (False, f"File outside sovereign territories: {parts[0]}")
         except ValueError:
             return (False, "File outside project root")
 
@@ -129,3 +322,427 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
             if not result["valid"]:
                 total_violations += 1
         return {"total_files": len(files), "total_violations": total_violations, "results": results}
+
+    # =========================================================================
+    # PHASE 2: ACTIVE HEALING METHODS
+    # =========================================================================
+
+    def _heal_violation(
+        self,
+        violation: dict[str, Any],
+        auto_approve: bool,
+    ) -> bool:
+        """
+        Attempt to heal a single violation.
+
+        Phase 2: Dispatches to appropriate healer based on violation type.
+
+        Args:
+            violation: Violation dict with type, file, message, etc.
+            auto_approve: If True, skip interactive prompts
+
+        Returns:
+            True if violation was fixed, False otherwise
+        """
+        violation_type = violation.get("type", "")
+        file_path = violation.get("file")
+
+        if not file_path:
+            Logger.warning(f"Cannot heal violation without file path: {violation}")
+            return False
+
+        file_path = Path(file_path)
+
+        # Dispatch to appropriate healer
+        if violation_type == "GRAVITY":
+            return self._heal_gravity_violation(violation, auto_approve)
+        elif violation_type == "NAMING":
+            return self._heal_naming_violation(violation, auto_approve)
+        elif violation_type == "DUPLICATE":
+            Logger.info(f"  [SKIP] Duplicate violations require manual review: {file_path.name}")
+            return False
+        elif violation_type == "ORPHAN":
+            Logger.info(f"  [SKIP] Orphan violations require manual review: {file_path.name}")
+            return False
+        else:
+            Logger.debug(f"  [SKIP] No healer for violation type: {violation_type}")
+            return False
+
+    def _heal_gravity_violation(
+        self,
+        violation: dict[str, Any],
+        auto_approve: bool,
+    ) -> bool:
+        """
+        Heal a gravity violation by orchestrating GravityLeakRepairAgent.
+
+        Phase 2: Governor acts as executive that decides WHEN to trigger repair.
+
+        Args:
+            violation: Gravity violation dict
+            auto_approve: If True, skip interactive prompts
+
+        Returns:
+            True if fixed, False otherwise
+        """
+        file_path = violation.get("file")
+        source_layer = violation.get("source_layer")
+        target_layer = violation.get("target_layer")
+
+        if not file_path:
+            return False
+
+        Logger.info(f"  [GRAVITY] Attempting repair: {Path(file_path).name}")
+        Logger.info(f"    Source layer: {source_layer} -> Target layer: {target_layer}")
+
+        try:
+            # Orchestrate GravityLeakRepairAgent
+            repair_agent = self._get_gravity_repair_agent()
+
+            # Analyze the specific violation
+            fix = repair_agent.analyze_violation(
+                file_path=Path(file_path),
+                import_statement=violation.get("message", ""),
+                file_layer=source_layer or "",
+                import_layer=target_layer or "",
+            )
+
+            Logger.info(f"    Fix type: {fix.fix_type}")
+            Logger.info(f"    Rationale: {fix.rationale}")
+
+            # Apply fix if auto_approve or get approval
+            if auto_approve:
+                result = repair_agent.apply_fix(fix, dry_run=False)
+                if result.get("status") == "fixed":
+                    Logger.info(f"    ✅ Fixed via {fix.fix_type}")
+                    return True
+                else:
+                    Logger.warning(f"    ⚠️ Fix not applied: {result.get('status')}")
+                    return False
+            else:
+                # Log recommendation but don't apply without approval
+                Logger.info(f"    [RECOMMENDATION] {fix.fix_type}: {fix.new_import}")
+                return False
+
+        except Exception as e:
+            Logger.error(f"    ❌ Gravity repair failed: {e}")
+            return False
+
+    def _heal_naming_violation(
+        self,
+        violation: dict[str, Any],
+        auto_approve: bool,
+    ) -> bool:
+        """
+        Heal a naming convention violation via ArchivalGatekeeper safe rename.
+
+        Phase 2: Fixes files missing *Agent.py suffix.
+
+        Args:
+            violation: Naming violation dict
+            auto_approve: If True, skip interactive prompts
+
+        Returns:
+            True if fixed, False otherwise
+        """
+        file_path = violation.get("file")
+        if not file_path:
+            return False
+
+        file_path = Path(file_path)
+
+        # Check if this is a missing Agent suffix violation
+        if not file_path.name.endswith("Agent.py") and "Agent" in violation.get("message", ""):
+            # Determine new name
+            stem = file_path.stem
+            if stem.endswith("Agent"):
+                # Already has Agent suffix, just wrong extension?
+                return False
+
+            # Add Agent suffix
+            new_name = f"{stem}Agent.py"
+            new_path = file_path.parent / new_name
+
+            Logger.info(f"  [NAMING] Attempting rename: {file_path.name} -> {new_name}")
+
+            if new_path.exists():
+                Logger.warning(f"    ⚠️ Target already exists: {new_path}")
+                return False
+
+            if auto_approve:
+                try:
+                    gatekeeper = self._get_archival_gatekeeper()
+                    # Use batch mode for auto_approve
+                    gatekeeper.set_require_approval(False)
+
+                    result = gatekeeper.safe_move(
+                        source=file_path,
+                        destination=new_path,
+                        requester_agent="ArchitectureGovernorAgent",
+                        reason="Naming convention fix: add Agent suffix",
+                    )
+
+                    if result.success:
+                        Logger.info(f"    ✅ Renamed to {new_name}")
+                        return True
+                    else:
+                        Logger.warning(f"    ⚠️ Rename failed: {result.error}")
+                        return False
+
+                except Exception as e:
+                    Logger.error(f"    ❌ Rename failed: {e}")
+                    return False
+            else:
+                Logger.info(f"    [RECOMMENDATION] Rename to: {new_name}")
+                return False
+
+        return False
+
+    # =========================================================================
+    # PHASE 4/6: DEDUPLICATION & LOGIC CONSOLIDATION WITH HEALING
+    # =========================================================================
+
+    def _trigger_deduplication_audit(
+        self, roots: list[str], execute: bool = False
+    ) -> dict[str, Any]:
+        """
+        [PHASE 4/6] Identify and resolve redundant logic across roots.
+
+        Scans all sovereign roots for duplicate agent definitions and
+        redundant code patterns. When execute=True and auto_approve=True,
+        resolves collisions via zero-loss merge using ArchivalGatekeeper.
+
+        Args:
+            roots: List of root names that were scanned
+            execute: If True, attempt to resolve collisions
+
+        Returns:
+            Dictionary with audit results including collisions found/fixed
+        """
+        agent_name = self.__class__.__name__
+        Logger.info(f"[{agent_name}] Triggering Deduplication Audit...")
+
+        collisions: list[dict[str, Any]] = []
+
+        # Use the structure validator to check for duplicates
+        validator = self._get_structure_validator()
+
+        for root_name in roots:
+            root_path = self.project_root / root_name
+            if not root_path.exists():
+                continue
+
+            # Check for duplicate agents in this root
+            duplicates = validator.check_duplicates(root_path)
+            for dup in duplicates:
+                collisions.append(
+                    {
+                        "root": root_name,
+                        "type": "DUPLICATE_AGENT",
+                        "message": dup.message,
+                        "file": str(dup.file_path) if dup.file_path else None,
+                        "violation": dup,  # Keep original for resolution
+                    }
+                )
+
+        # Phase 6: Collision Resolution
+        collisions_fixed = 0
+        if execute and self.auto_approve and self.healing_enabled and collisions:
+            Logger.info(f"  [DEDUP] Attempting to resolve {len(collisions)} collisions...")
+            for collision in collisions:
+                violation = collision.get("violation")
+                if violation:
+                    fixed = self._resolve_collision(violation)
+                    collisions_fixed += fixed
+
+        if collisions:
+            Logger.warning(
+                f"  [DEDUP] Found {len(collisions)} potential collisions, fixed {collisions_fixed}"
+            )
+        else:
+            Logger.info(f"  [DEDUP] No collisions found across {len(roots)} roots")
+
+        return {
+            "roots_audited": roots,
+            "collisions_found": len(collisions),
+            "collisions_fixed": collisions_fixed,
+            "collisions": collisions[:10] if collisions else [],  # Limit to first 10
+        }
+
+    def _resolve_collision(self, violation: Any) -> int:
+        """
+        [PHASE 6] Zero-loss merge: Archives lower-priority duplicates.
+
+        Priority order (highest to lowest):
+        - agentic_core (0) - Master source
+        - apps_shared (1) - Shared utilities
+        - apps_rg (2) - Resume Generator app
+        - apps_lic (3) - LinkedIn app
+        - tests (4) - Test files
+        - scripts (5) - Scripts
+
+        Args:
+            violation: StructureViolation with duplicate locations
+
+        Returns:
+            Number of files archived (0 if no action taken)
+        """
+        # Priority mapping for resolution
+        priority = {
+            "agentic_core": 0,
+            "apps_shared": 1,
+            "apps_rg": 2,
+            "apps_lic": 3,
+            "tests": 4,
+            "scripts": 5,
+        }
+
+        # Extract paths from violation
+        files = getattr(violation, "locations", [])
+        if not files:
+            # Try alternate attribute names
+            files = getattr(violation, "file_paths", [])
+        if not files:
+            # Single file path
+            single_path = getattr(violation, "file_path", None)
+            if single_path:
+                files = [single_path]
+
+        if len(files) < 2:
+            return 0
+
+        # Convert to Path objects if needed
+        files = [Path(f) if not isinstance(f, Path) else f for f in files]
+
+        # Sort by priority (keep highest priority = lowest number)
+        def get_priority(p: Path) -> int:
+            try:
+                rel_path = p.relative_to(self.project_root)
+                root = rel_path.parts[0] if rel_path.parts else ""
+                return priority.get(root, 99)
+            except ValueError:
+                return 99
+
+        sorted_files = sorted(files, key=get_priority)
+
+        master = sorted_files[0]
+        to_archive = sorted_files[1:]
+
+        archived_count = 0
+        gatekeeper = self._get_archival_gatekeeper()
+
+        for file_path in to_archive:
+            try:
+                result = gatekeeper.safe_move(
+                    file_path,
+                    destination_category="deduplication_cleanup",
+                    reason=f"Duplicate of {master.name}",
+                )
+                if result.success:
+                    Logger.info(f"  [DEDUP] Archived {file_path.name} in favor of {master.name}")
+                    archived_count += 1
+                else:
+                    Logger.warning(f"  [DEDUP] Failed to archive {file_path.name}: {result.error}")
+            except Exception as e:
+                Logger.error(f"  [DEDUP] Error archiving {file_path.name}: {e}")
+
+        return archived_count
+
+    # =========================================================================
+    # PHASE 3: ENVIRONMENTAL MAINTENANCE
+    # =========================================================================
+
+    def _cleanup_empty_dirs(self, path: Path) -> None:
+        """
+        Recursively remove empty directories after healing operations.
+
+        Phase 3: Post-healing environmental maintenance to purge ghost directories
+        left behind after renames or refactors.
+
+        Args:
+            path: Root path to start cleanup from
+        """
+        if not path.is_dir():
+            return
+
+        # Recurse into subdirectories first (depth-first)
+        for child in list(path.iterdir()):
+            if child.is_dir():
+                self._cleanup_empty_dirs(child)
+
+        # Check if directory is now empty (ignoring sentinels and hidden files)
+        remaining = [
+            p
+            for p in path.iterdir()
+            if p.name not in {"__pycache__", "__init__.py", ".gitkeep"}
+            and not p.name.startswith(".")
+        ]
+
+        if not remaining:
+            try:
+                # Purge sentinels before removing directory
+                for sentinel in [path / "__init__.py", path / ".gitkeep"]:
+                    if sentinel.exists():
+                        sentinel.unlink()
+
+                # Remove __pycache__ if present
+                pycache = path / "__pycache__"
+                if pycache.exists():
+                    import shutil
+
+                    shutil.rmtree(pycache, ignore_errors=True)
+
+                path.rmdir()
+                try:
+                    rel_path = path.relative_to(self.project_root)
+                    Logger.info(f"  [CLEANUP] Removed empty directory: {rel_path}")
+                except ValueError:
+                    Logger.info(f"  [CLEANUP] Removed empty directory: {path}")
+            except OSError:
+                pass  # Directory not empty or permission denied
+
+    # =========================================================================
+    # PHASE 7: FINAL SOVEREIGN LOCKDOWN & CI/CD INTEGRATION
+    # =========================================================================
+
+    def finalize_sovereign_lockdown(self) -> tuple[bool, dict]:
+        """
+        [PHASE 7] Final CI-ready lockdown verification.
+
+        Performs a non-blocking sync check to ensure the repository state
+        perfectly matches the Sovereign SSOT. Designed for CI/CD pipelines
+        and pre-commit hooks.
+
+        Returns:
+            Tuple of (is_pure: bool, results: dict)
+            - is_pure: True if repository has 0 violations
+            - results: Full heal_repository results for inspection
+
+        Usage in CI:
+            agent = ArchitectureGovernorAgent(project_root=Path.cwd(), auto_approve=True)
+            is_pure, results = agent.finalize_sovereign_lockdown()
+            sys.exit(0 if is_pure else 1)
+        """
+        agent_name = self.__class__.__name__
+        Logger.info(f"[{agent_name}] Initiating Final Sovereign Lockdown...")
+
+        # Run dry-run audit to check current state
+        results = self.heal_repository(
+            dry_run=True,
+            execute=False,
+        )
+
+        # Extract violations from normalized result
+        raw_result = results.get("_raw_result", results)
+        violations_found = raw_result.get("violations_found", 0)
+
+        is_pure = violations_found == 0
+
+        if is_pure:
+            Logger.info(f"[{agent_name}] ✅ LOCKDOWN VERIFIED: Repository is sovereign-compliant")
+        else:
+            Logger.warning(
+                f"[{agent_name}] ❌ LOCKDOWN FAILED: {violations_found} violations detected"
+            )
+
+        return is_pure, results

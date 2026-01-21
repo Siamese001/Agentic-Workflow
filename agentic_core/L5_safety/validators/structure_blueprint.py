@@ -973,6 +973,7 @@ _STATIC_ROOT_PROTECTED_FILES: frozenset[str] = frozenset(
         ".pre-commit-config.yaml",
         ".coverage",
         "pytest.ini",
+        "tox.ini",
         ".python-version",
         ".schema_violations_tracking.yaml",
         ".secrets.baseline",

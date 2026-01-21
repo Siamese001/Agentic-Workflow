@@ -185,36 +185,75 @@ class FilesystemSSOTReconcilerAgent(
         Logger.info(f"FilesystemSSOTReconcilerAgent initialized for {self.project_root}")
 
     # ===================================================================
-    # CI/Automated Verification Methods
+    # CI/Automated Verification Methods (Phase 5.1 Upgrade)
     # ===================================================================
+
+    def run_ci_verification_sync(self) -> tuple[bool, dict]:
+        """
+        Synchronous CI verification for pre-commit hooks and CLI tools.
+
+        Phase 5.1 Upgrade: Non-interactive, headless verification mode.
+        Returns (is_compliant, results_dict) for easy CI integration.
+
+        Usage:
+            is_compliant, results = agent.run_ci_verification_sync()
+            sys.exit(0 if is_compliant else 1)
+        """
+        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
+
+        Logger.info("Starting CI SSOT Verification (headless mode)...")
+
+        results = {
+            "hierarchy_violations": 0,
+            "location_violations": 0,
+            "total_violations": 0,
+            "roots_checked": [],
+            "is_compliant": False,
+        }
+
+        # 1. Run HierarchyAgent in dry-run mode
+        hierarchy_agent = HierarchyAgent(
+            self.project_root, healing_enabled=False, auto_approve=True
+        )
+        hierarchy_results = hierarchy_agent.heal_hierarchy(
+            execute=True,
+            dry_run=True,
+            auto_approve=True,  # No prompts in CI
+        )
+
+        hierarchy_violations = hierarchy_results.get("summary", {}).get("violations_found", 0)
+        results["hierarchy_violations"] = hierarchy_violations
+
+        # 2. Run LocationValidatorAgent for territorial validation
+        location_agent = LocationValidatorAgent(project_root=self.project_root)
+        location_results = location_agent.run()
+
+        location_violations = len(location_results.get("violations", []))
+        results["location_violations"] = location_violations
+        results["roots_checked"] = location_results.get("roots_scanned", [])
+
+        # 3. Aggregate results
+        results["total_violations"] = hierarchy_violations + location_violations
+        results["is_compliant"] = results["total_violations"] == 0
+
+        if results["is_compliant"]:
+            Logger.info("✅ SSOT Integrity Verified. No violations.")
+        else:
+            Logger.error(f"❌ SSOT DRIFT DETECTED: {results['total_violations']} violations found.")
+            Logger.error(f"   - Hierarchy: {hierarchy_violations}")
+            Logger.error(f"   - Location: {location_violations}")
+
+        return results["is_compliant"], results
 
     async def run_ci_verification(self) -> bool:
         """
-        Strict, non-interactive check for CI pipelines.
+        Async CI verification (legacy interface).
         Returns True if SSOT compliant, False if drift detected.
         Does NOT modify files.
         """
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
-
-        Logger.info("Starting CI SSOT Verification...")
-
-        # Initialize HierarchyAgent in dry-run mode
-        hierarchy_agent = HierarchyAgent(self.project_root, healing_enabled=False)
-
-        # Run hierarchy check in dry_run mode
-        results = hierarchy_agent.heal_hierarchy(
-            execute=True,
-            dry_run=True,
-            auto_approve=False,
-        )
-
-        violation_count = results.get("summary", {}).get("violations_found", 0)
-        if violation_count > 0:
-            Logger.error(f"SSOT DRIFT DETECTED: {violation_count} violations found.")
-            return False
-
-        Logger.info("SSOT Integrity Verified. No violations.")
-        return True
+        is_compliant, _ = self.run_ci_verification_sync()
+        return is_compliant
 
     # ===================================================================
     # Core Reconciliation Methods
