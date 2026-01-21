@@ -81,6 +81,7 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
         self._structure_validator = None  # Lazy-loaded
         self._gravity_repair_agent = None  # Lazy-loaded
         self._archival_gatekeeper = None  # Lazy-loaded
+        self._cognitive_agent = None  # Lazy-loaded (Phase 11)
         Logger.info(f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve})")
 
     def _get_structure_validator(self):
@@ -120,6 +121,19 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
 
             self._archival_gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
         return self._archival_gatekeeper
+
+    def _get_cognitive_agent(self):
+        """Lazy-load CognitiveDispositionAgent for AI-powered triage (Phase 11)."""
+        if self._cognitive_agent is None:
+            from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
+                CognitiveDispositionAgent,
+            )
+
+            self._cognitive_agent = CognitiveDispositionAgent(
+                project_root=self.project_root,
+                confidence_threshold=0.7,  # Auto-execute at 70% confidence
+            )
+        return self._cognitive_agent
 
     @timeout(300)
     @standard_heal
@@ -373,15 +387,19 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
 
         # Dispatch to appropriate healer
         if violation_type == "GRAVITY":
-            return self._heal_gravity_violation(violation, auto_approve)
+            result = self._heal_gravity_violation(violation, auto_approve)
+            if not result:
+                # Phase 11: Fallback to cognitive disposition if deterministic repair fails
+                return self._process_cognitive_disposition(file_path, "GRAVITY_FAIL")
+            return result
         elif violation_type == "NAMING":
             return self._heal_naming_violation(violation, auto_approve)
         elif violation_type == "DUPLICATE":
-            Logger.info(f"  [SKIP] Duplicate violations require manual review: {file_path.name}")
-            return False
+            # Phase 11: Use collision resolution instead of skipping
+            return self._resolve_collision(violation)
         elif violation_type == "ORPHAN":
-            Logger.info(f"  [SKIP] Orphan violations require manual review: {file_path.name}")
-            return False
+            # Phase 11: Intelligent Triage via CognitiveDispositionAgent
+            return self._process_cognitive_disposition(file_path, "ORPHAN")
         else:
             Logger.debug(f"  [SKIP] No healer for violation type: {violation_type}")
             return False
@@ -895,3 +913,91 @@ class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
             "lockdown_status": lockdown_result,
             "final_purity": is_pure,
         }
+
+    # =========================================================================
+    # PHASE 11: COGNITIVE DISPOSITION - AI-POWERED TRIAGE
+    # =========================================================================
+
+    def _process_cognitive_disposition(
+        self,
+        file_path: Path,
+        violation_type: str,
+    ) -> bool:
+        """
+        [PHASE 11] Delegates violation decision to CognitiveDispositionAgent.
+
+        Uses AI-powered heuristics to determine the appropriate action for
+        violations that cannot be resolved deterministically.
+
+        Args:
+            file_path: Path to the file with the violation
+            violation_type: Type of violation (ORPHAN, GRAVITY_FAIL, etc.)
+
+        Returns:
+            True if the violation was resolved, False otherwise
+        """
+        agent_name = self.__class__.__name__
+        cognitive = self._get_cognitive_agent()
+
+        Logger.info(f"  [COGNITIVE] Analyzing: {file_path.name} ({violation_type})")
+
+        try:
+            decision = cognitive.analyze_violation(file_path, violation_type)
+
+            Logger.info(f"    Decision: {decision.action} (confidence: {decision.confidence:.2f})")
+            Logger.info(f"    Reason: {decision.reason}")
+
+            # Execute based on decision action
+            if decision.action == "MOVE" and decision.target_path:
+                target = self.project_root / decision.target_path / file_path.name
+                Logger.info(f"    [COGNITIVE] Moving {file_path.name} to {decision.target_path}")
+
+                # Ensure target directory exists
+                target.parent.mkdir(parents=True, exist_ok=True)
+
+                # Use ArchivalGatekeeper for safe move
+                gatekeeper = self._get_archival_gatekeeper()
+                result = gatekeeper.safe_move(
+                    file_path,
+                    destination_category=decision.target_path,
+                    reason=f"Cognitive disposition: {decision.reason}",
+                )
+                if hasattr(result, "success") and result.success:
+                    Logger.info(f"    [OK] Moved successfully")
+                    return True
+                else:
+                    Logger.warning(f"    [FAIL] Move failed")
+                    return False
+
+            elif decision.action == "ARCHIVE":
+                archive_path = decision.target_path or "archives/cognitive_disposition"
+                Logger.info(f"    [COGNITIVE] Archiving {file_path.name} to {archive_path}")
+
+                gatekeeper = self._get_archival_gatekeeper()
+                result = gatekeeper.safe_move(
+                    file_path,
+                    destination_category=archive_path,
+                    reason=f"Cognitive archive: {decision.reason}",
+                )
+                if hasattr(result, "success") and result.success:
+                    Logger.info(f"    [OK] Archived successfully")
+                    return True
+                else:
+                    Logger.warning(f"    [FAIL] Archive failed")
+                    return False
+
+            elif decision.action == "IGNORE":
+                Logger.info(f"    [COGNITIVE] Ignoring: {decision.reason}")
+                return True  # Considered "resolved" by ignoring
+
+            elif decision.action == "MANUAL_REVIEW":
+                Logger.warning(f"    [COGNITIVE] Requires manual review: {decision.reason}")
+                return False
+
+            else:
+                Logger.warning(f"    [COGNITIVE] Unknown action: {decision.action}")
+                return False
+
+        except Exception as e:
+            Logger.error(f"    [COGNITIVE] Error processing disposition: {e}")
+            return False
