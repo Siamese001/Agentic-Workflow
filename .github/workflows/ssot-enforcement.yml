@@ -1,0 +1,46 @@
+name: SSOT Structure Enforcement
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  ssot-validation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install pytest pytest-asyncio
+
+      - name: SSOT Structure Validation
+        run: |
+          echo "Running Agentic SSOT Enforcement..."
+          export PYTHONPATH=$PYTHONPATH:.
+          python -m agentic_core.L5_safety.validators.ssot_folder_check
+        continue-on-error: false
+
+      - name: SSOT Enforcement Status
+        if: success()
+        run: |
+          echo "✅ SSOT STRUCTURE VERIFIED"
+          echo "All files comply with sovereign folder structure:"
+          echo "  - Root scripts/ contains only standalone utilities"
+          echo "  - L0_maintenance/scripts/ contains system-integrated tools"
+          echo "  - Hierarchy depth rules enforced"
+          echo "  - No orphaned files detected"

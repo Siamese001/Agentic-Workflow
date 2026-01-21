@@ -118,3 +118,11 @@ repos:
         additional_dependencies: [pytest]
         pass_filenames: false
         always_run: true
+
+      - id: ssot-folder-structure
+        name: SSOT Folder Structure
+        entry: python -m agentic_core.L5_safety.validators.ssot_folder_check
+        language: python
+        types: [python]
+        pass_filenames: false
+        additional_dependencies: []

@@ -12,6 +12,7 @@ Extracted from LocationAgent.py as part of SRP fission.
 
 from __future__ import annotations
 
+import ast
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -154,11 +155,74 @@ class LocationValidatorAgent(SovereignBaseAgent):
         if rel_path is not None:
             if not is_path_allowed(str(rel_path)):
                 return False, f"VOID VIOLATION: Path '{rel_path}' not in sovereign territory"
+
+        # Special Semantic Check for scripts/ vs L0_maintenance
+        if root_folder == "scripts" and rel_path is not None:
+            file_path = self.project_root / rel_path
+            is_compliant, reason = self._validate_scripts_isolation(file_path)
+            if not is_compliant:
+                return False, reason
+
+        # Root whitelist check
+        if rel_path is not None:
             return True, "OK"
 
         # Fallback to root-only check
         if root_folder not in ROOT_WHITELIST:
             return False, f"VOID VIOLATION: Unapproved root folder '{root_folder}'"
+        return True, "OK"
+
+    def _validate_scripts_isolation(self, file_path: Path) -> tuple[bool, str]:
+        """
+        Enforces strict isolation for root scripts.
+
+        Root scripts (`scripts/`) are for standalone utilities/setup only.
+        They MUST NOT import from `agentic_core`.
+
+        If a script imports `agentic_core`, it is part of the system
+        and belongs in `agentic_core/L0_maintenance/scripts/`.
+        """
+        from agentic_core.L5_safety.validators.structure_blueprint import (
+            SCRIPTS_PLACEMENT_RULES,
+        )
+
+        if not file_path.exists() or file_path.suffix != ".py":
+            return True, "OK"
+
+        try:
+            content = file_path.read_text(encoding="utf-8")
+            tree = ast.parse(content)
+
+            forbidden_prefixes = SCRIPTS_PLACEMENT_RULES.get("root_scripts", {}).get(
+                "forbidden_imports", []
+            )
+
+            for node in ast.walk(tree):
+                # Check 'import x'
+                if isinstance(node, ast.Import):
+                    for alias in node.names:
+                        for prefix in forbidden_prefixes:
+                            if alias.name.startswith(prefix):
+                                return False, (
+                                    f"SEMANTIC VIOLATION: Root script imports '{alias.name}'. "
+                                    f"Files importing '{prefix}' belong in agentic_core/L0_maintenance/scripts/"
+                                )
+
+                # Check 'from x import y'
+                elif isinstance(node, ast.ImportFrom):
+                    if node.module:
+                        for prefix in forbidden_prefixes:
+                            if node.module.startswith(prefix):
+                                return False, (
+                                    f"SEMANTIC VIOLATION: Root script imports from '{node.module}'. "
+                                    f"Files importing '{prefix}' belong in agentic_core/L0_maintenance/scripts/"
+                                )
+
+        except SyntaxError:
+            pass  # Unparseable Python is a different issue
+        except Exception:
+            pass  # Non-blocking for other errors
+
         return True, "OK"
 
     def _validate_depth_requirements(

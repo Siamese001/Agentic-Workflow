@@ -185,6 +185,38 @@ class FilesystemSSOTReconcilerAgent(
         Logger.info(f"FilesystemSSOTReconcilerAgent initialized for {self.project_root}")
 
     # ===================================================================
+    # CI/Automated Verification Methods
+    # ===================================================================
+
+    async def run_ci_verification(self) -> bool:
+        """
+        Strict, non-interactive check for CI pipelines.
+        Returns True if SSOT compliant, False if drift detected.
+        Does NOT modify files.
+        """
+        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+
+        Logger.info("Starting CI SSOT Verification...")
+
+        # Initialize HierarchyAgent in dry-run mode
+        hierarchy_agent = HierarchyAgent(self.project_root, healing_enabled=False)
+
+        # Run hierarchy check in dry_run mode
+        results = hierarchy_agent.heal_hierarchy(
+            execute=True,
+            dry_run=True,
+            auto_approve=False,
+        )
+
+        violation_count = results.get("summary", {}).get("violations_found", 0)
+        if violation_count > 0:
+            Logger.error(f"SSOT DRIFT DETECTED: {violation_count} violations found.")
+            return False
+
+        Logger.info("SSOT Integrity Verified. No violations.")
+        return True
+
+    # ===================================================================
     # Core Reconciliation Methods
     # ===================================================================
 

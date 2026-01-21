@@ -1,23 +1,25 @@
 """
-L3 Workflow Engines Registry
+Mission Strategies for UnifiedOrchestratorAgent
 
-Canonical exports for L3 orchestration layer.
+This package contains strategy implementations for the unified orchestration engine.
+Each strategy encapsulates the specific logic of what agents to run and in what order.
 
-Note: IOrchestratorAgent relocated to ../interfaces/ (2026-01-07)
-      for proper ABC architectural placement.
+Available Strategies:
+    - HealingStrategy: Tiered healing execution (Pre-Flight, Structural, etc.)
+    - SafetyStrategy: Consolidated safety orchestration (Compliance, Guardian, Healing)
+    - RLStrategy: Consolidated RL orchestration (ActorCritic, PPO, QLearning, etc.)
 """
 
 try:
-    from ..interfaces.IOrchestratorAgent import IOrchestratorAgent
+    from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
 except ImportError:
-    IOrchestratorAgent = None
+    HealingStrategy = None
 
-try:
-    from .McpConnectionManagerAgent import McpConnectionManagerAgent
-except ImportError:
-    McpConnectionManagerAgent = None
+from .RLStrategy import RLStrategy
+from .SafetyStrategy import SafetyStrategy
 
 __all__ = [
-    "IOrchestratorAgent",
-    "McpConnectionManagerAgent",
+    "HealingStrategy",
+    "SafetyStrategy",
+    "RLStrategy",
 ]
