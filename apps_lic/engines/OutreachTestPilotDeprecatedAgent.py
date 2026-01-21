@@ -6,8 +6,9 @@ Deprecated agent preserved for backward compatibility.
 """
 from __future__ import annotations
 
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 from OutreachAgent import OutreachAgent
+
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 # Legacy class - use OutreachTestPilotAgent instead

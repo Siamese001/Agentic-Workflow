@@ -27,16 +27,15 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
+from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-
-from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)

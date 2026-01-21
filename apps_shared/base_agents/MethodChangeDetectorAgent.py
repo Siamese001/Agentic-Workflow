@@ -100,11 +100,10 @@ class GeneratedTest:
     error_message: str | None
 
 
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
-
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
 

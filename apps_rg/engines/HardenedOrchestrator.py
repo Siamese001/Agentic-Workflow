@@ -15,6 +15,16 @@ import logging
 from datetime import datetime
 from typing import Any
 
+from runtime.shared.routing import (
+    RoutingTier,
+    get_resilient_router,
+)
+from runtime.shared.state import (
+    StatePersistenceError,
+    WorkflowState,
+    get_state_manager,
+)
+
 from apps_rg.L3_orchestration.orchestrate_workflow import (
     HopCheckpoint,
     HopExecutionError,
@@ -30,15 +40,6 @@ from apps_rg.L3_orchestration.titanium_integration import (
     enhance_system_prompt,
     inject_titanium_tools,
     prepare_titanium_context,
-)
-from runtime.shared.routing import (
-    RoutingTier,
-    get_resilient_router,
-)
-from runtime.shared.state import (
-    StatePersistenceError,
-    WorkflowState,
-    get_state_manager,
 )
 
 Logger = logging.getLogger(__name__)

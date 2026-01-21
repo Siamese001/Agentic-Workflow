@@ -8,14 +8,13 @@ from pathlib import Path
 
 # Internal imports referencing the mandated structure
 try:
+    from agentic_core.knowledge.document_loaders.csv_loader import CSVDocumentLoader
     from agentic_core.knowledge.document_loaders.html_loader import HTMLDocumentLoader
+    from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
+    from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
     from agentic_core.knowledge.ResearchCache.cache_store import ResearchCache
     from agentic_core.knowledge.static_index.action_verbs import ACTION_VERBS, STRONG_VERBS
     from agentic_core.knowledge.static_index.skill_taxonomy import ALL_SKILLS, SKILL_TAXONOMY
-
-    from agentic_core.knowledge.document_loaders.csv_loader import CSVDocumentLoader
-    from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
-    from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
     from agentic_core.semantic_memory.embeddings.core_embedder import (
         _embedding_cache,
         clear_embedding_cache,
@@ -59,7 +58,6 @@ class SovereignRAGManager:
         try:
             from agentic_core.semantic_memory.embeddings.GeminiEmbedder import GeminiEmbedder
             from agentic_core.semantic_memory.store.Bm25Store import get_bm25_store
-
             from agentic_core.semantic_memory.store.pinecone_store import PineconeVectorStore
 
             self.embedder = GeminiEmbedder()
@@ -109,7 +107,7 @@ class SovereignRAGManager:
                 embeddings = self.embedder.embed_texts(text_chunks)
                 vectors = [
                     (f"{doc_id}_{i}", emb, {"text": chunk, **(metadata or {})})
-                    for i, (emb, chunk) in enumerate(zip(embeddings, text_chunks))
+                    for i, (emb, chunk) in enumerate(zip(embeddings, text_chunks, strict=False))
                 ]
                 self.vector_store.upsert(vectors)
 

@@ -366,7 +366,7 @@ class ChromaDBSearchTool(BaseTool):
             documents = results.get("documents", [[]])[0]
             metadatas = results.get("metadatas", [[]])[0]
 
-            for doc, meta in zip(documents, metadatas):
+            for doc, meta in zip(documents, metadatas, strict=False):
                 experience_obj_str = meta.get("experience_object")
                 if experience_obj_str:
                     search_results.append(json.loads(experience_obj_str))

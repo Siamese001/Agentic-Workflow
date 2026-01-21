@@ -9,8 +9,9 @@ Tests verify:
 5. Phase 6: HygieneGuardianAgent focuses only on content hygiene
 """
 
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 
 class TestPhase4PerimeterDetection:
@@ -186,8 +187,9 @@ class TestPhase5CLITool:
     def test_ssot_folder_check_returns_int(self, tmp_path):
         """Test 5.2b: Verify ssot_folder_check.main() returns int exit code."""
         # Verify the main function signature returns int
-        from agentic_core.L5_safety.validators import ssot_folder_check
         import inspect
+
+        from agentic_core.L5_safety.validators import ssot_folder_check
 
         sig = inspect.signature(ssot_folder_check.main)
         # The return annotation should be int

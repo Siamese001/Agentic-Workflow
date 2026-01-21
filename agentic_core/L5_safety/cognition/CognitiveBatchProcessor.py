@@ -24,7 +24,7 @@ import json
 import logging
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class CognitiveBatchProcessor:
         checkpoint_interval: Save checkpoint every N items
         max_retries: Maximum retry attempts for failed items
     """
-    
+
     def __init__(
         self,
         agent: Any,  # CognitiveDispositionAgent
@@ -67,15 +67,15 @@ class CognitiveBatchProcessor:
         self.rate_limit_delay = rate_limit_delay
         self.checkpoint_interval = checkpoint_interval
         self.max_retries = max_retries
-        
+
         # Load existing checkpoint or start fresh
         self.results: dict[str, Any] = self._load_checkpoint()
         self.retry_counts: dict[str, int] = {}
-        
+
         Logger.info(f"[BATCH] Initialized with checkpoint: {self.checkpoint_file}")
         if self.results:
             Logger.info(f"[BATCH] Loaded {len(self.results)} existing results from checkpoint")
-    
+
     def _load_checkpoint(self) -> dict[str, Any]:
         """
         Load checkpoint from file if it exists.
@@ -92,7 +92,7 @@ class CognitiveBatchProcessor:
                 Logger.warning(f"[BATCH] Failed to load checkpoint: {e}")
                 return {}
         return {}
-    
+
     def _save_checkpoint(self) -> None:
         """Save current progress to checkpoint file."""
         try:
@@ -104,7 +104,7 @@ class CognitiveBatchProcessor:
             Logger.debug(f"[BATCH] Checkpoint saved: {len(self.results)} items")
         except Exception as e:
             Logger.error(f"[BATCH] Failed to save checkpoint: {e}")
-    
+
     def process_batch(
         self,
         violations: list[Any],
@@ -126,14 +126,14 @@ class CognitiveBatchProcessor:
             "ERRORS": 0,
             "TOTAL": len(violations),
         }
-        
+
         Logger.info("=" * 60)
-        Logger.info(f"[BATCH] Starting Cognitive Batch Processing")
+        Logger.info("[BATCH] Starting Cognitive Batch Processing")
         Logger.info(f"[BATCH] Queue Size: {len(violations)} violations")
         Logger.info(f"[BATCH] Rate Limit: {self.rate_limit_delay}s between calls")
         Logger.info(f"[BATCH] Checkpoint Interval: Every {self.checkpoint_interval} items")
         Logger.info("=" * 60)
-        
+
         for i, violation in enumerate(violations, 1):
             # Extract file path from violation
             file_path = self._get_file_path(violation)
@@ -141,47 +141,47 @@ class CognitiveBatchProcessor:
                 Logger.warning(f"[BATCH] [{i}/{len(violations)}] No file path in violation")
                 stats["ERRORS"] += 1
                 continue
-            
+
             file_path_str = str(file_path)
-            
+
             # Skip if already processed in checkpoint
             if file_path_str in self.results:
                 Logger.debug(f"[BATCH] [{i}/{len(violations)}] Skipping (cached): {Path(file_path).name}")
                 stats["SKIPPED"] += 1
                 continue
-            
+
             # Process the violation
             Logger.info(f"[BATCH] [{i}/{len(violations)}] Processing: {Path(file_path).name}")
-            
+
             success = self._process_single_violation(violation, file_path_str)
-            
+
             if success:
                 stats["PROCESSED"] += 1
             else:
                 stats["ERRORS"] += 1
-            
+
             # Save checkpoint periodically
             if i % self.checkpoint_interval == 0:
                 self._save_checkpoint()
                 Logger.info(f"[BATCH] Checkpoint saved at item {i}/{len(violations)}")
-            
+
             # Rate limiting
             if i < len(violations):  # Don't sleep after last item
                 time.sleep(self.rate_limit_delay)
-        
+
         # Final checkpoint save
         self._save_checkpoint()
-        
+
         Logger.info("=" * 60)
-        Logger.info(f"[BATCH] Batch Processing Complete")
+        Logger.info("[BATCH] Batch Processing Complete")
         Logger.info(f"[BATCH] Processed: {stats['PROCESSED']}")
         Logger.info(f"[BATCH] Skipped (cached): {stats['SKIPPED']}")
         Logger.info(f"[BATCH] Errors: {stats['ERRORS']}")
         Logger.info("=" * 60)
-        
+
         return stats
-    
-    def _get_file_path(self, violation: Any) -> Optional[Path]:
+
+    def _get_file_path(self, violation: Any) -> Path | None:
         """
         Extract file path from violation object.
         
@@ -198,7 +198,7 @@ class CognitiveBatchProcessor:
             if file:
                 return Path(file)
         return None
-    
+
     def _process_single_violation(
         self,
         violation: Any,
@@ -216,13 +216,13 @@ class CognitiveBatchProcessor:
         """
         # Get violation type
         v_type = self._get_violation_type(violation)
-        
+
         # Retry loop with exponential backoff
         for attempt in range(1, self.max_retries + 1):
             try:
                 # Analyze violation
                 decision = self.agent.analyze_violation(file_path_str, v_type)
-                
+
                 # Store result
                 self.results[file_path_str] = {
                     "action": decision.action,
@@ -231,13 +231,13 @@ class CognitiveBatchProcessor:
                     "confidence": decision.confidence,
                     "violation_type": v_type,
                 }
-                
+
                 Logger.info(f"    Decision: {decision.action} -> {decision.target_path or 'N/A'} ({decision.confidence:.2f})")
                 return True
-                
+
             except Exception as e:
                 Logger.warning(f"    Attempt {attempt}/{self.max_retries} failed: {e}")
-                
+
                 if attempt < self.max_retries:
                     # Exponential backoff
                     backoff_delay = self.rate_limit_delay * (2 ** (attempt - 1))
@@ -254,9 +254,9 @@ class CognitiveBatchProcessor:
                         "violation_type": v_type,
                     }
                     return False
-        
+
         return False
-    
+
     def _get_violation_type(self, violation: Any) -> str:
         """
         Extract violation type from violation object.
@@ -275,7 +275,7 @@ class CognitiveBatchProcessor:
         elif isinstance(violation, dict):
             return violation.get("type", "UNKNOWN")
         return "UNKNOWN"
-    
+
     def get_results(self) -> dict[str, Any]:
         """
         Get all processed results.
@@ -284,7 +284,7 @@ class CognitiveBatchProcessor:
             Dictionary of file_path -> disposition results
         """
         return self.results
-    
+
     def get_statistics(self) -> dict[str, Any]:
         """
         Get processing statistics.
@@ -298,26 +298,26 @@ class CognitiveBatchProcessor:
                 "by_action": {},
                 "avg_confidence": 0.0,
             }
-        
+
         by_action: dict[str, int] = {}
         confidences = []
-        
+
         for result in self.results.values():
             action = result.get("action", "UNKNOWN")
             by_action[action] = by_action.get(action, 0) + 1
-            
+
             confidence = result.get("confidence", 0.0)
             if isinstance(confidence, (int, float)):
                 confidences.append(confidence)
-        
+
         avg_confidence = sum(confidences) / len(confidences) if confidences else 0.0
-        
+
         return {
             "total": len(self.results),
             "by_action": by_action,
             "avg_confidence": avg_confidence,
         }
-    
+
     def clear_checkpoint(self) -> None:
         """Clear the checkpoint file and reset results."""
         if self.checkpoint_file.exists():

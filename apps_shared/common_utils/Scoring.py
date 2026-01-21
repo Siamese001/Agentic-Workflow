@@ -115,7 +115,7 @@ class RAGScorer:
             return self._calculate_relevance(doc["content"], query)
 
         # Calculate cosine similarity
-        dot_product = sum(q * d for q, d in zip(query_embedding, doc_embedding))
+        dot_product = sum(q * d for q, d in zip(query_embedding, doc_embedding, strict=False))
         query_norm = math.sqrt(sum(q * q for q in query_embedding))
         doc_norm = math.sqrt(sum(d * d for d in doc_embedding))
 

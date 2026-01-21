@@ -139,7 +139,7 @@ class LateInteractionReranker:
             scores = self._model.predict(pairs, batch_size=batch_size, show_progress_bar=False)
 
             # Sort documents by score (descending)
-            scored_docs = list(zip(documents, scores))
+            scored_docs = list(zip(documents, scores, strict=False))
             scored_docs.sort(key=lambda x: x[1], reverse=True)
 
             # Extract reranked documents
@@ -206,7 +206,7 @@ class LateInteractionReranker:
             scores = self._model.predict(pairs, batch_size=batch_size, show_progress_bar=False)
 
             # Sort and return with scores
-            scored_docs = list(zip(documents, scores))
+            scored_docs = list(zip(documents, scores, strict=False))
             scored_docs.sort(key=lambda x: x[1], reverse=True)
 
             return scored_docs[:top_k]

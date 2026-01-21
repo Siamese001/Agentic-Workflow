@@ -24,9 +24,8 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
@@ -41,13 +40,12 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         self.root = project_root
         self.ctx = ctx
 
-        from agentic_core.runtime.shared_runtime.void_compliance import get_placement_guidance
-
         from agentic_core.L5_safety.validators.structure_blueprint import (
             CANON_KEY_TO_FOLDER_MAP,
             CANON_SIGNALS_MK2,
             ROOT_PROTECTED_FILES,
         )
+        from agentic_core.runtime.shared_runtime.void_compliance import get_placement_guidance
 
         self.key_folders = CANON_KEY_TO_FOLDER_MAP
         self.key_positive_signals = (

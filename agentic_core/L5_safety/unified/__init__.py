@@ -13,6 +13,17 @@ Agents:
   (Renamed from UnifiedStructureValidatorAgent - alias maintained for backward compat)
 """
 
+from agentic_core.L5_safety.unified.StructuralValidatorAgent import (
+    StructuralValidatorAgent,
+    StructureConfig,
+    StructureReport,
+    StructureViolation,
+    StructureViolationType,
+    UnifiedStructureValidatorAgent,  # Backward compat alias
+    create_legacy_gravity_validator,
+    create_legacy_hygiene_validator,
+    create_legacy_registry_validator,
+)
 from agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent import UnifiedCodeDetectorAgent
 from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
 from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import UnifiedCodeHealerAgent
@@ -35,17 +46,6 @@ from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
     UnifiedStructureEnforcerAgent,
 )
 from agentic_core.L5_safety.unified.UnifiedStructureHealerAgent import UnifiedStructureHealerAgent
-from agentic_core.L5_safety.unified.StructuralValidatorAgent import (
-    StructureConfig,
-    StructureReport,
-    StructureViolation,
-    StructureViolationType,
-    StructuralValidatorAgent,
-    UnifiedStructureValidatorAgent,  # Backward compat alias
-    create_legacy_gravity_validator,
-    create_legacy_hygiene_validator,
-    create_legacy_registry_validator,
-)
 
 __all__ = [
     # New canonical names

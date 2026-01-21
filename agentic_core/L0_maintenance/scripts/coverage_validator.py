@@ -10,10 +10,11 @@ Triggers the ConvergenceEngine to heal low-coverage modules.
 # This boosts alignment detection — review and integrate appropriately
 
 from __future__ import annotations
+
 import asyncio
+import sys
 from pathlib import Path
 from typing import Any
-import sys
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     L0_MAINTENANCE_DIR,

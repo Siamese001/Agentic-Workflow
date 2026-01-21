@@ -24,7 +24,6 @@ from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
 from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
 from agentic_core.L1_cognition.thought_engine.PatternEnforcerAgent import PatternEnforcerAgent
 from agentic_core.L1_cognition.thought_engine.TypeMechanicAgent import TypeMechanicAgent
-
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from archives.void_violations.BudgetAgent import BudgetAgent
 from archives.void_violations.DocumentationAgent import DocumentationAgent
@@ -35,7 +34,6 @@ _struct_mod = importlib.import_module(
 StructuralEngineerAgent = _struct_mod.StructuralEngineerAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.runtime.shared.canon_validation_context import ValidationContext
-
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 

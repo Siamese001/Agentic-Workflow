@@ -175,7 +175,7 @@ class ObservabilityOperationAdapter:
 
         results = []
 
-        for context, parameters in zip(contexts, parameters_list):
+        for context, parameters in zip(contexts, parameters_list, strict=False):
             result = self.perform_operation(context, parameters)
             results.append(result)
 

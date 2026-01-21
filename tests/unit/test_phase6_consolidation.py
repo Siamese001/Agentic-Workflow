@@ -5,8 +5,9 @@ Tests for zero-loss collision resolution and I/O efficiency.
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 
 class TestDeduplicationHealingPriority:
@@ -176,14 +177,14 @@ class TestSovereignScannerIOReduction:
 
     def test_cross_agent_scanner_sharing(self, mock_project):
         """[Phase 6] Verify multiple agents share same scanner instance."""
-        from agentic_core.utils.sovereign_scanner import SovereignScanner
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
-            ArchitectureGovernorAgent,
-        )
         from agentic_core.L5_safety.unified.StructuralValidatorAgent import (
             StructuralValidatorAgent,
             StructureConfig,
         )
+        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+            ArchitectureGovernorAgent,
+        )
+        from agentic_core.utils.sovereign_scanner import SovereignScanner
 
         # Create agents
         gov_agent = ArchitectureGovernorAgent(project_root=mock_project)

@@ -37,7 +37,6 @@ import google.generativeai as genai
 
 # Models (updated imports for new locations)
 from apps_shared.utils.circuit_breaker import CircuitBreaker
-
 from apps_shared.utils.vector_memory import VectorMemoryStore
 
 

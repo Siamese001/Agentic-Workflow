@@ -5,8 +5,9 @@ Tests for CI-ready lockdown verification and non-interactive mode.
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 
 class TestFinalLockdownPurity:

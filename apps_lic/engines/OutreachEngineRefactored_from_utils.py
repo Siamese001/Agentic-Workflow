@@ -20,15 +20,6 @@ import json
 import os
 from typing import Any
 
-# === NEW: Import decomposed agents ===
-from apps_lic.agents import (
-    BrowserSessionAgent,
-    JobApplicationAgent,
-    LeadVettingAgent,
-    OptimalTimeSchedulerAgent,
-    ResilientPipelineAgent,
-)
-
 # Import core utilities (kept for helper functions)
 from core_utils import (
     add_observations,
@@ -43,6 +34,15 @@ from mcp_hardening import (
 
 # Import egress filter for Protocol 8
 from network_utils import strict_egress_filter
+
+# === NEW: Import decomposed agents ===
+from apps_lic.agents import (
+    BrowserSessionAgent,
+    JobApplicationAgent,
+    LeadVettingAgent,
+    OptimalTimeSchedulerAgent,
+    ResilientPipelineAgent,
+)
 
 # Global configuration (shared with agents)
 SHADOW_MODE_ACTIVE = os.environ.get("AGENT_MODE", "PRODUCTION") == "SHADOW"

@@ -5,8 +5,9 @@ Tests for convergence flow, categorical audit precision, and sentinel deployment
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestSovereignConvergenceFlow:
@@ -266,6 +267,7 @@ class TestSentinelDeploymentIntegrity:
             MockAgent.return_value = mock_instance
 
             import importlib
+
             import scripts.ci.sovereign_lockdown_check as ci_script
 
             importlib.reload(ci_script)
@@ -294,6 +296,7 @@ class TestSentinelDeploymentIntegrity:
             MockAgent.return_value = mock_instance
 
             import importlib
+
             import scripts.ci.sovereign_lockdown_check as ci_script
 
             importlib.reload(ci_script)

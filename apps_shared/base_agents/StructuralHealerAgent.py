@@ -62,14 +62,13 @@ except ImportError:
     Language = None
     Parser = None
 
-from agentic_core.utils.core_extensions.NamingAgent import NamingAgent
-from agentic_core.utils.general_helpers.change_tracker import ChangeTracker
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
     ALLOWED_DUPLICATE_FILENAMES,
     HEALING_CONFIG,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.utils.core_extensions.NamingAgent import NamingAgent
+from agentic_core.utils.general_helpers.change_tracker import ChangeTracker
 
 # [HARDENING 9] Import audit Logger for comprehensive action tracking
 try:

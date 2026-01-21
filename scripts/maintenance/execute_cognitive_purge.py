@@ -62,30 +62,30 @@ def run_cognitive_purge(
     """
     # Load .env file first
     try:
-        from dotenv import load_dotenv, find_dotenv
+        from dotenv import find_dotenv, load_dotenv
         env_file = find_dotenv(usecwd=True)
         if env_file:
             load_dotenv(env_file)
             Logger.info(f"Loaded environment from: {env_file}")
     except ImportError:
         pass
-    
+
     # Check for API key
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         Logger.error("[FAIL] GEMINI_API_KEY not found in environment.")
         Logger.info("Set it with: export GEMINI_API_KEY='your-api-key'")
         return 1
-    
+
     try:
         # Add project root to path
         project_root = Path(__file__).resolve().parent.parent.parent
         sys.path.insert(0, str(project_root))
-        
+
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
-        
+
         Logger.info("=" * 60)
         Logger.info("PHASE 13: AI-PURGE SENTINEL")
         Logger.info("=" * 60)
@@ -93,45 +93,45 @@ def run_cognitive_purge(
         Logger.info(f"Rate Limit: {rate_limit}s between API calls")
         Logger.info(f"Checkpoint: {checkpoint_file}")
         Logger.info("")
-        
+
         # Clear checkpoint if requested
         if clear_checkpoint:
             checkpoint_path = project_root / checkpoint_file
             if checkpoint_path.exists():
                 checkpoint_path.unlink()
                 Logger.info("[OK] Checkpoint cleared")
-        
+
         # Initialize Governor
         Logger.info("Initializing ArchitectureGovernorAgent...")
         agent = ArchitectureGovernorAgent(
             project_root=project_root,
             healing_enabled=False,  # Analysis only for now
         )
-        
+
         # Enable LLM in cognitive agent
         cognitive = agent._get_cognitive_agent()
         cognitive.llm_enabled = True
         cognitive.api_key = api_key
-        
+
         Logger.info("Cognitive agent configured with LLM enabled")
         Logger.info("")
-        
+
         # Execute cognitive purge
         result = agent.execute_cognitive_purge(
             checkpoint_file=checkpoint_file,
             rate_limit_delay=rate_limit,
         )
-        
+
         # Display results
         Logger.info("")
         Logger.info("=" * 60)
         Logger.info("COGNITIVE PURGE RESULTS")
         Logger.info("=" * 60)
-        
+
         violations_found = result.get("violations_found", 0)
         batch_stats = result.get("batch_stats", {})
         results_stats = result.get("results_stats", {})
-        
+
         Logger.info(f"Violations Found: {violations_found}")
         Logger.info("")
         Logger.info("Batch Statistics:")
@@ -150,7 +150,7 @@ def run_cognitive_purge(
         Logger.info("")
         Logger.info(f"Checkpoint saved to: {result.get('checkpoint_file', checkpoint_file)}")
         Logger.info("=" * 60)
-        
+
         Logger.info("")
         Logger.info("[OK] Cognitive purge completed successfully.")
         Logger.info("")
@@ -158,9 +158,9 @@ def run_cognitive_purge(
         Logger.info("1. Review the checkpoint file for disposition decisions")
         Logger.info("2. Run with --execute flag to apply the decisions (future)")
         Logger.info("3. Or manually review and apply selected decisions")
-        
+
         return 0
-        
+
     except ImportError as e:
         Logger.error(f"[ERROR] Import Error: {e}")
         Logger.error("Ensure agentic_core is properly installed.")
@@ -206,9 +206,9 @@ Examples:
         action="store_true",
         help="Clear existing checkpoint and start fresh",
     )
-    
+
     args = parser.parse_args()
-    
+
     return run_cognitive_purge(
         rate_limit=args.rate_limit,
         checkpoint_file=args.checkpoint,

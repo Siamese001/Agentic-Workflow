@@ -32,7 +32,7 @@ import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -40,20 +40,20 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class DispositionDecision:
     """Structured decision from cognitive analysis."""
-    
+
     action: str  # MOVE, REFACTOR, ARCHIVE, IGNORE, MANUAL_REVIEW
-    target_path: Optional[str] = None
+    target_path: str | None = None
     reason: str = ""
     confidence: float = 0.0
-    suggested_code: Optional[str] = None
+    suggested_code: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
-    
+
     def __post_init__(self):
         """Validate action is one of the allowed values."""
         valid_actions = {"MOVE", "REFACTOR", "ARCHIVE", "IGNORE", "MANUAL_REVIEW"}
         if self.action not in valid_actions:
             raise ValueError(f"Invalid action: {self.action}. Must be one of {valid_actions}")
-        
+
         # Clamp confidence to [0.0, 1.0]
         self.confidence = max(0.0, min(1.0, self.confidence))
 
@@ -70,13 +70,13 @@ class CognitiveDispositionAgent:
         confidence_threshold: Minimum confidence to auto-execute decisions
         llm_enabled: Whether to use actual LLM calls (vs mock responses)
     """
-    
+
     def __init__(
         self,
-        project_root: Optional[Path] = None,
+        project_root: Path | None = None,
         confidence_threshold: float = 0.8,
         llm_enabled: bool = False,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
     ):
         """
         Initialize the Cognitive Disposition Agent.
@@ -90,11 +90,11 @@ class CognitiveDispositionAgent:
         self.project_root = project_root or Path.cwd()
         self.confidence_threshold = confidence_threshold
         self.llm_enabled = llm_enabled
-        
+
         # Phase 14: Force load .env from project root if variable is missing
         if not os.getenv("GEMINI_API_KEY") and not api_key:
             try:
-                from dotenv import load_dotenv, find_dotenv
+                from dotenv import find_dotenv, load_dotenv
                 # usecwd=True ensures we look in project root regardless of execution dir
                 try:
                     env_file = find_dotenv(usecwd=True)
@@ -103,24 +103,24 @@ class CognitiveDispositionAgent:
                         Logger.info(f"[COGNITIVE] Loaded environment from: {env_file}")
                     else:
                         Logger.debug("[COGNITIVE] No .env file found")
-                except (IOError, OSError):
+                except OSError:
                     # Handle cases where starting path is invalid (e.g., in tests)
                     Logger.debug("[COGNITIVE] Could not search for .env file")
             except ImportError:
                 Logger.debug("[COGNITIVE] python-dotenv not installed, skipping .env loading")
-        
+
         # Get API key from argument or environment
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
-        
+
         # Phase 14: API key validation with graceful degradation
         if not self.api_key:
             Logger.warning("[COGNITIVE] GEMINI_API_KEY not found. Agent will use heuristic mode only.")
             Logger.info("[COGNITIVE] To enable LLM: Set GEMINI_API_KEY in .env or pass api_key parameter")
         else:
             Logger.info("[COGNITIVE] API key configured successfully")
-        
+
         self._client = None  # Lazy-loaded google.genai Client (Phase 16)
-        
+
         # Layer mapping for SSOT compliance
         self.layer_map = {
             "L0_maintenance": "Maintenance and tooling",
@@ -131,12 +131,12 @@ class CognitiveDispositionAgent:
             "L5_safety": "Safety, validation, and governance",
             "L6_observability": "Observability and telemetry",
         }
-    
+
     def analyze_violation(
         self,
         file_path: str | Path,
         violation_type: str,
-        context: Optional[dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> DispositionDecision:
         """
         Analyze a violation and return a disposition decision.
@@ -151,27 +151,27 @@ class CognitiveDispositionAgent:
         """
         file_path = Path(file_path)
         context = context or {}
-        
+
         Logger.info(f"[COGNITIVE] Analyzing disposition for {file_path.name} ({violation_type})...")
-        
+
         # Phase 12: Hybrid approach - heuristics first, then LLM if needed
         # 1. Try fast heuristics first
         heuristic_decision = self._analyze_heuristic(file_path, violation_type, context)
-        
+
         # If heuristic confidence is high enough, use it (saves LLM tokens)
         if heuristic_decision.confidence >= 0.8:
             Logger.info(f"[COGNITIVE] High-confidence heuristic: {heuristic_decision.action} ({heuristic_decision.confidence:.2f})")
             return heuristic_decision
-        
+
         # 2. Try LLM if enabled and API key is available
         if self.llm_enabled and self.api_key:
             llm_decision = self._generate_llm_decision(file_path, violation_type, context)
             if llm_decision.action != "MANUAL_REVIEW":
                 return llm_decision
-        
+
         # 3. Fall back to heuristic decision
         return heuristic_decision
-    
+
     def _analyze_heuristic(
         self,
         file_path: Path,
@@ -185,11 +185,11 @@ class CognitiveDispositionAgent:
         """
         file_name = file_path.name
         file_stem = file_path.stem
-        
+
         # ORPHAN violations - suggest based on naming patterns
         if violation_type == "ORPHAN":
             return self._analyze_orphan_heuristic(file_path, file_name, file_stem)
-        
+
         # GRAVITY violations - suggest archive for failed repairs
         elif violation_type in ("GRAVITY", "GRAVITY_FAIL"):
             return DispositionDecision(
@@ -199,7 +199,7 @@ class CognitiveDispositionAgent:
                 confidence=0.6,
                 metadata={"original_path": str(file_path)},
             )
-        
+
         # DUPLICATE violations - suggest archive
         elif violation_type == "DUPLICATE":
             return DispositionDecision(
@@ -209,14 +209,14 @@ class CognitiveDispositionAgent:
                 confidence=0.7,
                 metadata={"original_path": str(file_path)},
             )
-        
+
         # Default: manual review
         return DispositionDecision(
             action="MANUAL_REVIEW",
             reason=f"Unknown violation type requires human review: {violation_type}",
             confidence=0.0,
         )
-    
+
     def _analyze_orphan_heuristic(
         self,
         file_path: Path,
@@ -296,7 +296,7 @@ class CognitiveDispositionAgent:
                     confidence=0.5,
                     metadata={"original_path": str(file_path)},
                 )
-        
+
         # Test files -> tests directory
         if file_name.startswith("test_") or file_name.endswith("_test.py"):
             return DispositionDecision(
@@ -306,7 +306,7 @@ class CognitiveDispositionAgent:
                 confidence=0.85,
                 metadata={"original_path": str(file_path)},
             )
-        
+
         # Script files -> scripts directory
         if "script" in str(file_path).lower() or file_name.startswith("run_"):
             return DispositionDecision(
@@ -316,7 +316,7 @@ class CognitiveDispositionAgent:
                 confidence=0.7,
                 metadata={"original_path": str(file_path)},
             )
-        
+
         # Default: archive for review
         return DispositionDecision(
             action="ARCHIVE",
@@ -325,7 +325,7 @@ class CognitiveDispositionAgent:
             confidence=0.4,
             metadata={"original_path": str(file_path)},
         )
-    
+
     def _get_client(self):
         """
         [PHASE 16] Lazy-load the google.genai Client.
@@ -373,21 +373,21 @@ class CognitiveDispositionAgent:
                     reason="google.genai client not available",
                     confidence=0.0,
                 )
-            
+
             # Get model from environment
             model_name = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
-            
+
             # Read file content safely
             content = self._read_file_safe(file_path)
-            
+
             # Build strict JSON-enforcing prompt
             prompt = self._build_strict_json_prompt(file_path, violation_type, content, context)
-            
+
             Logger.info(f"[COGNITIVE] Calling Gemini ({model_name}) for {file_path.name}...")
-            
+
             # Phase 16: Use new SDK with JSON response mode
             from google.genai import types
-            
+
             response = client.models.generate_content(
                 model=model_name,
                 contents=prompt,
@@ -395,10 +395,10 @@ class CognitiveDispositionAgent:
                     response_mime_type="application/json",
                 ),
             )
-            
+
             # Parse JSON response
             return self._parse_llm_json_response(response.text)
-            
+
         except Exception as e:
             Logger.error(f"[COGNITIVE] LLM analysis failed: {e}")
             return DispositionDecision(
@@ -440,7 +440,7 @@ class CognitiveDispositionAgent:
         Uses explicit instructions to ensure valid JSON output.
         """
         layer_desc = "\n".join(f"- {k}: {v}" for k, v in self.layer_map.items())
-        
+
         return f"""You are a Senior Software Architect analyzing an architectural violation.
 
 TASK: Determine the correct disposition for this file in a standard Agentic L0-L6 architecture.
@@ -491,26 +491,26 @@ RESPOND WITH ONLY THE JSON OBJECT:"""
             cleaned = re.sub(r"```json\s*", "", cleaned)
             cleaned = re.sub(r"```\s*", "", cleaned)
             cleaned = cleaned.strip()
-            
+
             # Try to find JSON object in response
             json_match = re.search(r"\{[^{}]*\}", cleaned, re.DOTALL)
             if json_match:
                 cleaned = json_match.group(0)
-            
+
             # Parse JSON
             data = json.loads(cleaned)
-            
+
             # Extract and validate fields
             action = data.get("action", "MANUAL_REVIEW").upper()
             if action not in {"MOVE", "REFACTOR", "ARCHIVE", "IGNORE", "MANUAL_REVIEW"}:
                 action = "MANUAL_REVIEW"
-            
+
             target_path = data.get("target_path")
             reason = data.get("reason", "LLM Generated")
             confidence = float(data.get("confidence", 0.5))
-            
+
             Logger.info(f"[COGNITIVE] LLM decision: {action} -> {target_path} ({confidence:.2f})")
-            
+
             return DispositionDecision(
                 action=action,
                 target_path=target_path,
@@ -518,7 +518,7 @@ RESPOND WITH ONLY THE JSON OBJECT:"""
                 confidence=confidence,
                 metadata={"source": "gemini"},
             )
-            
+
         except json.JSONDecodeError as e:
             Logger.warning(f"[COGNITIVE] Failed to parse LLM JSON: {e}")
             Logger.debug(f"[COGNITIVE] Raw response: {response_text[:500]}")
@@ -534,7 +534,7 @@ RESPOND WITH ONLY THE JSON OBJECT:"""
                 reason=f"Parse error: {e}",
                 confidence=0.0,
             )
-    
+
     def _build_analysis_prompt(
         self,
         file_path: Path,
@@ -565,7 +565,7 @@ Respond with JSON:
     "confidence": 0.0-1.0
 }}
 """
-    
+
     def should_auto_execute(self, decision: DispositionDecision) -> bool:
         """
         Determine if a decision should be auto-executed.

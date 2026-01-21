@@ -5,8 +5,9 @@ Tests for baseline capture, pre-commit sentinel blocking, and archival audit int
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestBaselineNormalizationPurity:
@@ -150,6 +151,7 @@ class TestPreCommitSentinelBlocking:
             MockAgent.return_value = mock_instance
 
             import importlib
+
             import scripts.ci.sovereign_lockdown_check as ci_script
 
             importlib.reload(ci_script)
@@ -177,6 +179,7 @@ class TestPreCommitSentinelBlocking:
             MockAgent.return_value = mock_instance
 
             import importlib
+
             import scripts.ci.sovereign_lockdown_check as ci_script
 
             importlib.reload(ci_script)

@@ -107,7 +107,7 @@ class FakeCollection:
         metadatas: list[dict[str, Any]],
         ids: list[str],
     ) -> None:
-        for doc, metadata, record_id in zip(documents, metadatas, ids):
+        for doc, metadata, record_id in zip(documents, metadatas, ids, strict=False):
             self.records[record_id] = {"document": doc, "metadata": metadata}
 
     def query(

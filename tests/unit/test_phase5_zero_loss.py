@@ -38,12 +38,11 @@ def test_tc21_signature_compliance():
     print("TC-21: Signature Compliance")
     print("=" * 60)
 
+    from agentic_core.L5_safety.validators.BiasAuditorAgent import BiasAuditorAgent
+    from agentic_core.L5_safety.validators.L5Agent import L5Agent
     from agentic_core.L5_safety.validators.MethodChangeDetectorAgent import (
         MethodChangeDetectorAgent,
     )
-
-    from agentic_core.L5_safety.validators.BiasAuditorAgent import BiasAuditorAgent
-    from agentic_core.L5_safety.validators.L5Agent import L5Agent
 
     agents_to_check = [
         ("BiasAuditorAgent", BiasAuditorAgent),

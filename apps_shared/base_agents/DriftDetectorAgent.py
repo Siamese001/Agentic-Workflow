@@ -16,7 +16,6 @@ Exempts root protected files and __init__.py glue files.
 from pathlib import Path
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
     CANON_KEY_TO_FOLDER_MAP,
     ROOT_PROTECTED_FILES,

@@ -25,8 +25,6 @@ from datetime import datetime
 from typing import Any
 
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
-from agentic_core.tools.filesystem import WriteFileArgs, write_file
-
 from agentic_core.L2_execution.tool_registry import (
     CanonStructuralEngineer,
     CodeJanitor,
@@ -38,6 +36,7 @@ from agentic_core.L2_execution.tool_registry import (
     SystemArchitect,
     get_dependency_diplomat,
 )
+from agentic_core.tools.filesystem import WriteFileArgs, write_file
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 # GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin

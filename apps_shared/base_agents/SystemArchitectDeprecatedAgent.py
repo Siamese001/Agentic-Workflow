@@ -21,9 +21,8 @@ from typing import Any
 
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
-
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
 
 # Legacy class removed - use SystemArchitectAgent instead

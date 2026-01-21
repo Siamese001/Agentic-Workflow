@@ -391,7 +391,7 @@ class MultiProviderRouterAgent(MCPHardenedMixin):
                 cumulative = 0
                 rand = random.random() * total_weight
 
-                for provider, weight in zip(available_providers, weights):
+                for provider, weight in zip(available_providers, weights, strict=False):
                     cumulative += weight
                     if rand <= cumulative:
                         distribution[provider].append(request)

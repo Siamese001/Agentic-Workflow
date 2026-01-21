@@ -428,8 +428,9 @@ def test_api_doc_accuracy():
     print("\n--- Test 5.1: API Endpoint Accuracy ---")
 
     try:
-        from agentic_core.L6_observability.api.runtime_api import app
         from fastapi.testclient import TestClient
+
+        from agentic_core.L6_observability.api.runtime_api import app
 
         client = TestClient(app)
 
@@ -474,8 +475,9 @@ def test_response_schema_accuracy():
     print("\n--- Test 5.2: Response Schema Accuracy ---")
 
     try:
-        from agentic_core.L6_observability.api.runtime_api import app
         from fastapi.testclient import TestClient
+
+        from agentic_core.L6_observability.api.runtime_api import app
 
         client = TestClient(app)
 

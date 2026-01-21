@@ -14,8 +14,8 @@ work before passing it downstream, preventing hallucination cascades.
 import json
 import logging
 import time
-from typing import Any
 from collections.abc import Callable
+from typing import Any
 
 # ARCHIVED: circuit_breaker import removed
 CircuitBreaker = None
@@ -23,8 +23,9 @@ CircuitBreakerState = None
 CircuitBreakerOpenError = None
 get_breaker = None
 
-from pydantic import BaseModel, Field, validator
 import asyncio
+
+from pydantic import BaseModel, Field, validator
 
 Logger = logging.getLogger(__name__)
 

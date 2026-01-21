@@ -1,8 +1,9 @@
 """Debug script for Phase 2 test categorization"""
 
-from pathlib import Path
-import tempfile
 import shutil
+import tempfile
+from pathlib import Path
+
 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
 # Create test structure

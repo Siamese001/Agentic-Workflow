@@ -14,10 +14,9 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -35,7 +34,7 @@ class TieredBatchProcessor:
         checkpoint_file: Path to checkpoint file
         use_semantic_cache: Enable Redis/Pinecone caching
     """
-    
+
     def __init__(
         self,
         agent: Any,  # CognitiveDispositionAgent
@@ -59,10 +58,10 @@ class TieredBatchProcessor:
         self.checkpoint_file = Path(checkpoint_file)
         self.use_semantic_cache = use_semantic_cache
         self.rate_limit_delay = rate_limit_delay
-        
+
         # Results storage
         self.results: dict[str, Any] = self._load_checkpoint()
-        
+
         # Statistics
         self.stats = {
             "tier1_auto": 0,      # High-confidence heuristics
@@ -71,12 +70,12 @@ class TieredBatchProcessor:
             "skipped": 0,         # Already processed
             "errors": 0,
         }
-        
+
         # Phase 17: Semantic Cache Manager (lazy-loaded)
         self._semantic_cache = None
-        
+
         Logger.info(f"[TIERED] Initialized with threshold: {heuristic_threshold:.0%}")
-    
+
     def _load_checkpoint(self) -> dict[str, Any]:
         """Load checkpoint from file."""
         if self.checkpoint_file.exists():
@@ -85,7 +84,7 @@ class TieredBatchProcessor:
             except Exception:
                 return {}
         return {}
-    
+
     def _save_checkpoint(self) -> None:
         """Save checkpoint to file."""
         try:
@@ -96,7 +95,7 @@ class TieredBatchProcessor:
             )
         except Exception as e:
             Logger.error(f"[TIERED] Checkpoint save failed: {e}")
-    
+
     def _get_semantic_cache(self):
         """
         [PHASE 17] Lazy-load SemanticCacheManager.
@@ -117,8 +116,8 @@ class TieredBatchProcessor:
                 Logger.warning(f"[TIERED] SemanticCacheManager unavailable: {e}")
                 self._semantic_cache = None
         return self._semantic_cache
-    
-    def _check_semantic_cache(self, file_path: str, violation_type: str) -> Optional[dict]:
+
+    def _check_semantic_cache(self, file_path: str, violation_type: str) -> dict | None:
         """
         [PHASE 17] Check semantic cache for cached disposition decision.
         
@@ -136,16 +135,16 @@ class TieredBatchProcessor:
         cache = self._get_semantic_cache()
         if not cache:
             return None
-        
+
         try:
             # Read file content for cache lookup
             content = self.agent._read_file_safe(Path(file_path))
             return cache.get_cached_decision(content, violation_type)
         except Exception as e:
             Logger.debug(f"[TIERED] Cache check failed: {e}")
-        
+
         return None
-    
+
     def _store_semantic_cache(self, file_path: str, violation_type: str, decision: dict) -> None:
         """
         [PHASE 17] Store disposition decision in semantic cache.
@@ -160,7 +159,7 @@ class TieredBatchProcessor:
         cache = self._get_semantic_cache()
         if not cache:
             return
-        
+
         try:
             # Only cache high-confidence decisions for meta-learning
             if decision.get("confidence", 0) >= 0.8:
@@ -168,7 +167,7 @@ class TieredBatchProcessor:
                 cache.cache_decision(content, violation_type, decision)
         except Exception as e:
             Logger.debug(f"[TIERED] Cache store failed: {e}")
-    
+
     def process_batch(self, violations: list[Any]) -> dict[str, Any]:
         """
         Process violations with tiered strategy.
@@ -182,47 +181,47 @@ class TieredBatchProcessor:
         total = len(violations)
         tier1_queue = []  # High-confidence heuristics
         tier2_queue = []  # Low-confidence -> LLM
-        
+
         Logger.info("=" * 60)
         Logger.info("[TIERED] PHASE 15: SMART TIERED BATCH PROCESSING")
         Logger.info("=" * 60)
         Logger.info(f"[TIERED] Total Violations: {total}")
         Logger.info(f"[TIERED] Heuristic Threshold: {self.heuristic_threshold:.0%}")
         Logger.info("")
-        
+
         # Phase 1: Triage - separate into tiers
         Logger.info("[TIERED] Phase 1: Triaging violations...")
         for violation in violations:
             file_path = self._get_file_path(violation)
             if not file_path:
                 continue
-            
+
             file_path_str = str(file_path)
-            
+
             # Skip if already processed
             if file_path_str in self.results:
                 self.stats["skipped"] += 1
                 continue
-            
+
             # Get heuristic decision
             v_type = self._get_violation_type(violation)
             heuristic = self.agent._analyze_heuristic(file_path, v_type, {})
-            
+
             if heuristic.confidence >= self.heuristic_threshold:
                 tier1_queue.append((violation, file_path, v_type, heuristic))
             else:
                 tier2_queue.append((violation, file_path, v_type, heuristic))
-        
+
         Logger.info(f"[TIERED] Tier 1 (Auto-Execute): {len(tier1_queue)} files")
         Logger.info(f"[TIERED] Tier 2 (LLM Required): {len(tier2_queue)} files")
         Logger.info(f"[TIERED] Already Processed: {self.stats['skipped']}")
         Logger.info("")
-        
+
         # Phase 2: Execute Tier 1 (high-confidence heuristics)
         Logger.info("[TIERED] Phase 2: Executing Tier 1 (heuristics)...")
         for i, (violation, file_path, v_type, decision) in enumerate(tier1_queue, 1):
             file_path_str = str(file_path)
-            
+
             self.results[file_path_str] = {
                 "action": decision.action,
                 "target_path": decision.target_path,
@@ -232,23 +231,23 @@ class TieredBatchProcessor:
                 "tier": "heuristic",
             }
             self.stats["tier1_auto"] += 1
-            
+
             if i % 100 == 0:
                 Logger.info(f"[TIERED] Tier 1 Progress: {i}/{len(tier1_queue)}")
                 self._save_checkpoint()
-        
+
         self._save_checkpoint()
         Logger.info(f"[TIERED] Tier 1 Complete: {self.stats['tier1_auto']} files")
         Logger.info("")
-        
+
         # Phase 3: Execute Tier 2 (LLM with caching)
         if tier2_queue:
             Logger.info("[TIERED] Phase 3: Executing Tier 2 (LLM)...")
             self._process_tier2(tier2_queue)
-        
+
         # Final checkpoint
         self._save_checkpoint()
-        
+
         # Summary
         Logger.info("")
         Logger.info("=" * 60)
@@ -261,9 +260,9 @@ class TieredBatchProcessor:
         Logger.info(f"[TIERED] Errors: {self.stats['errors']}")
         Logger.info(f"[TIERED] Total Processed: {len(self.results)}")
         Logger.info("=" * 60)
-        
+
         return self.stats
-    
+
     def _process_tier2(self, tier2_queue: list) -> None:
         """
         Process Tier 2 files with LLM and semantic caching.
@@ -274,9 +273,9 @@ class TieredBatchProcessor:
         for i, (violation, file_path, v_type, heuristic) in enumerate(tier2_queue, 1):
             file_path_str = str(file_path)
             file_name = Path(file_path).name
-            
+
             Logger.info(f"[TIERED] Tier 2 [{i}/{len(tier2_queue)}]: {file_name}")
-            
+
             # Check semantic cache first
             cached = self._check_semantic_cache(file_path_str, v_type)
             if cached:
@@ -284,11 +283,11 @@ class TieredBatchProcessor:
                 self.results[file_path_str]["tier"] = "cached"
                 self.stats["tier2_cached"] += 1
                 continue
-            
+
             # Call LLM
             try:
                 decision = self.agent._generate_llm_decision(file_path, v_type, {})
-                
+
                 result = {
                     "action": decision.action,
                     "target_path": decision.target_path,
@@ -297,18 +296,18 @@ class TieredBatchProcessor:
                     "violation_type": v_type,
                     "tier": "llm",
                 }
-                
+
                 self.results[file_path_str] = result
                 self.stats["tier2_llm"] += 1
-                
+
                 # Cache the result
                 self._store_semantic_cache(file_path_str, v_type, result)
-                
+
                 Logger.info(f"    -> {decision.action} ({decision.confidence:.0%})")
-                
+
                 # Rate limit
                 time.sleep(self.rate_limit_delay)
-                
+
             except Exception as e:
                 Logger.error(f"    -> Error: {e}")
                 # Fall back to heuristic
@@ -321,12 +320,12 @@ class TieredBatchProcessor:
                     "tier": "fallback",
                 }
                 self.stats["errors"] += 1
-            
+
             # Checkpoint every 10 LLM calls
             if i % 10 == 0:
                 self._save_checkpoint()
-    
-    def _get_file_path(self, violation: Any) -> Optional[Path]:
+
+    def _get_file_path(self, violation: Any) -> Path | None:
         """Extract file path from violation."""
         if hasattr(violation, "file_path"):
             return Path(violation.file_path)
@@ -335,7 +334,7 @@ class TieredBatchProcessor:
             if file:
                 return Path(file)
         return None
-    
+
     def _get_violation_type(self, violation: Any) -> str:
         """Extract violation type from violation."""
         if hasattr(violation, "violation_type"):
@@ -346,28 +345,28 @@ class TieredBatchProcessor:
         elif isinstance(violation, dict):
             return violation.get("type", "UNKNOWN")
         return "UNKNOWN"
-    
+
     def get_statistics(self) -> dict[str, Any]:
         """Get processing statistics."""
         if not self.results:
             return {"total": 0, "by_tier": {}, "by_action": {}}
-        
+
         by_tier: dict[str, int] = {}
         by_action: dict[str, int] = {}
-        
+
         for result in self.results.values():
             tier = result.get("tier", "unknown")
             by_tier[tier] = by_tier.get(tier, 0) + 1
-            
+
             action = result.get("action", "UNKNOWN")
             by_action[action] = by_action.get(action, 0) + 1
-        
+
         return {
             "total": len(self.results),
             "by_tier": by_tier,
             "by_action": by_action,
         }
-    
+
     def clear_checkpoint(self) -> None:
         """Clear checkpoint and reset."""
         if self.checkpoint_file.exists():

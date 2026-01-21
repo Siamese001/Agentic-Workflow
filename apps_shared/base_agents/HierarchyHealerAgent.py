@@ -15,11 +15,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.general_helpers.mission_utils import (
-    get_best_target_l1,
-    get_best_target_l2,
-)
-
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     ALLOWED_DUPLICATE_FILENAMES,
@@ -30,6 +25,10 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.general_helpers.mission_utils import (
+    get_best_target_l1,
+    get_best_target_l2,
+)
 
 
 @dataclass
