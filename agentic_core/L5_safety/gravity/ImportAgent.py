@@ -438,10 +438,14 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     # ==================== GOLD STANDARD METHODS (2026-01-02) ====================
 
     def _init_backup_dir(self) -> Path:
-        """Initialize and return the backup directory for safe operations."""
+        """Initialize and return the backup directory for safe operations.
+        
+        Uses SSOT-approved backup location: .sovereign_healing_backup/import_fixes/
+        """
         if self._backup_dir is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            self._backup_dir = self.project_root / ".import_healer_backups" / timestamp
+            # SSOT: Use approved backup location from SOVEREIGN_REGISTRY
+            self._backup_dir = self.project_root / ".sovereign_healing_backup" / "import_fixes" / timestamp
             self._backup_dir.mkdir(parents=True, exist_ok=True)
         return self._backup_dir
 

@@ -27,6 +27,7 @@ from agentic_core.L5_safety.validators.location_constants import (
     HEALING_STRATEGY_MAP,
     DEFAULT_APP_HEALING_TARGET,
 )
+from agentic_core.config.blueprint_sovereign.registry import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.validators.location_utils import (
     compute_module_path,
 )
@@ -416,18 +417,74 @@ class LocationHealerAgent(SovereignBaseAgent):
         self, file_path: Path, msg: str, archives_root: Path, 
         dry_run: bool, affected_paths: List[Path]
     ) -> Dict[str, Any]:
-        """Heal violations by archiving to appropriate subfolder."""
+        """Heal violations by archiving to appropriate subfolder.
+        
+        CRITICAL: Archiving requires explicit user approval via terminal prompt.
+        This prevents accidental data loss from aggressive archiving.
+        """
         subfolder = next(
             (sf for pattern, sf in ARCHIVE_SUBFOLDERS.items() if pattern in msg),
             DEFAULT_ARCHIVE_SUBFOLDER
         )
         target_path = archives_root / subfolder / file_path.name
+        
+        # SSOT COMPLIANCE: Archiving requires user approval
+        if not dry_run:
+            approval = self._prompt_user_for_archive_approval(file_path, target_path, msg)
+            if not approval:
+                return {
+                    "applied": False,
+                    "action_taken": "SKIPPED: User declined archive operation",
+                    "requires_approval": True
+                }
+        
         move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
         if "MOVED" in move_result.get("action_taken", ""):
             move_result["action_taken"] = move_result["action_taken"].replace("MOVED", "ARCHIVED")
         if move_result.get("applied") and not dry_run:
             affected_paths.extend([file_path, target_path])
         return move_result
+    
+    def _prompt_user_for_archive_approval(self, file_path: Path, target_path: Path, reason: str) -> bool:
+        """Prompt user for approval before archiving a file.
+        
+        Returns:
+            True if user approves, False otherwise
+        """
+        # Check if we're in a non-interactive environment
+        import sys
+        if not sys.stdin.isatty():
+            Logger.warning(f"[LocationHealerAgent] Non-interactive mode - skipping archive: {file_path.name}")
+            return False
+        
+        try:
+            rel_source = file_path.relative_to(self.project_root)
+            rel_target = target_path.relative_to(self.project_root)
+        except ValueError:
+            rel_source = file_path
+            rel_target = target_path
+        
+        print(f"\n{'='*60}")
+        print(f"ARCHIVE APPROVAL REQUIRED")
+        print(f"{'='*60}")
+        print(f"File:   {rel_source}")
+        print(f"Target: {rel_target}")
+        print(f"Reason: {reason}")
+        print(f"{'='*60}")
+        
+        try:
+            response = input("Approve archive? [y/n/s(kip all)]: ").strip().lower()
+            if response == 'y':
+                return True
+            elif response == 's':
+                # Set flag to skip all future archive prompts in this session
+                self._skip_all_archives = True
+                return False
+            else:
+                return False
+        except (EOFError, KeyboardInterrupt):
+            print("\nArchive cancelled by user")
+            return False
     
     # ========================================================================
     # VIOLATION-SPECIFIC HEALING METHODS (Phase 3 Batch 6)

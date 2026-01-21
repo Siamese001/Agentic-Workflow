@@ -30,10 +30,16 @@ import redis
 from dotenv import load_dotenv
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint_1 import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
+try:
+    from agentic_core.L5_safety.validators.structure_blueprint import (
+        SOVEREIGN_REGISTRY,
+        CORE_SUBFOLDER_MAP,
+    )
+except ImportError:
+    from agentic_core.config.blueprint_sovereign.registry import (
+        SOVEREIGN_REGISTRY,
+        CORE_SUBFOLDER_MAP,
+    )
 
 # PHASE 2.1: L0 Structural Standardization - inherit from L0MaintenanceBaseAgent
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent

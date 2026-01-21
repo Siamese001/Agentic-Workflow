@@ -86,7 +86,12 @@ except ImportError:
     class MCPHardenedMixin:
         pass
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
+try:
+    from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+except ImportError:
+    class SubatomicTestingMixin:
+        """Fallback stub for SubatomicTestingMixin."""
+        pass
 
 Logger = logging.getLogger(__name__)
 
@@ -583,6 +588,12 @@ class FilesystemSSOTReconcilerAgent(
                 source = Path(prop["source"])
                 target = Path(prop["target"])
                 if source.exists():
+                    # SSOT COMPLIANCE: Archiving requires user approval
+                    if not self._prompt_user_for_archive_approval(source, target, prop.get("reason", "Unauthorized folder")):
+                        applied_logs.append(f"SKIPPED: {prop['source']} (user declined)")
+                        Logger.info(f"Skipped archive (user declined): {prop['source']}")
+                        continue
+                    
                     target.parent.mkdir(parents=True, exist_ok=True)
                     shutil.move(str(source), str(target))
                     applied_logs.append(f"ARCHIVED: {prop['source']} -> {prop['target']}")
@@ -590,6 +601,52 @@ class FilesystemSSOTReconcilerAgent(
         
         Logger.info(f"Filesystem alignment complete: {len(applied_logs)} actions applied")
         return applied_logs
+    
+    def _prompt_user_for_archive_approval(self, source: Path, target: Path, reason: str) -> bool:
+        """Prompt user for approval before archiving a folder.
+        
+        CRITICAL: Archiving requires explicit user approval.
+        
+        Returns:
+            True if user approves, False otherwise
+        """
+        # Check for skip-all flag
+        if getattr(self, '_skip_all_archives', False):
+            return False
+        
+        # Check if we're in a non-interactive environment
+        import sys
+        if not sys.stdin.isatty():
+            Logger.warning(f"[FilesystemSSOTReconcilerAgent] Non-interactive mode - skipping archive: {source}")
+            return False
+        
+        try:
+            rel_source = source.relative_to(self.project_root)
+            rel_target = target.relative_to(self.project_root)
+        except ValueError:
+            rel_source = source
+            rel_target = target
+        
+        print(f"\n{'='*60}")
+        print(f"ARCHIVE APPROVAL REQUIRED")
+        print(f"{'='*60}")
+        print(f"Folder: {rel_source}")
+        print(f"Target: {rel_target}")
+        print(f"Reason: {reason}")
+        print(f"{'='*60}")
+        
+        try:
+            response = input("Approve archive? [y/n/s(kip all)]: ").strip().lower()
+            if response == 'y':
+                return True
+            elif response == 's':
+                self._skip_all_archives = True
+                return False
+            else:
+                return False
+        except (EOFError, KeyboardInterrupt):
+            print("\nArchive cancelled by user")
+            return False
     
     def _backup_blueprint(self) -> Path:
         """Create timestamped backup before modifications."""

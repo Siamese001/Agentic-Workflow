@@ -292,11 +292,63 @@ class ArchitectureGovernor:
         """
         self.root_dir = Path(root_dir) if root_dir else Path.cwd()
         self.Logger = logging.getLogger(__name__)
+        self._skip_all_moves = False  # Flag to skip all move prompts
+        self._approve_all_moves = False  # Flag to approve all move prompts
 
         # Initialize dependency graph
         self.DependencyGraph = DependencyGraph()
+        
+        # Initialize configuration
+        self._init_config()
+    
+    def _prompt_user_for_move_approval(self, source: Path, target: Path, reason: str) -> bool:
+        """Prompt user for approval before moving a file.
+        
+        CRITICAL: All file moves require explicit user approval.
+        """
+        if self._skip_all_moves:
+            return False
+        if self._approve_all_moves:
+            return True
+        
+        import sys
+        if not sys.stdin.isatty():
+            LOGGER.warning(f"[ArchitectureGovernor] Non-interactive mode - skipping move: {source.name}")
+            return False
+        
+        try:
+            rel_source = source.relative_to(self.root_dir)
+            rel_target = target.relative_to(self.root_dir)
+        except ValueError:
+            rel_source = source
+            rel_target = target
+        
+        print(f"\n{'='*60}")
+        print(f"FILE MOVE APPROVAL REQUIRED")
+        print(f"{'='*60}")
+        print(f"Source: {rel_source}")
+        print(f"Target: {rel_target}")
+        print(f"Reason: {reason}")
+        print(f"{'='*60}")
+        
+        try:
+            response = input("Approve move? [y/n/a(ll)/s(kip all)]: ").strip().lower()
+            if response == 'y':
+                return True
+            elif response == 'a':
+                self._approve_all_moves = True
+                return True
+            elif response == 's':
+                self._skip_all_moves = True
+                return False
+            else:
+                return False
+        except (EOFError, KeyboardInterrupt):
+            print("\nMove cancelled by user")
+            return False
 
-        # L6 Root Hygiene Configuration
+    def _init_config(self):
+        """Initialize configuration - called from __init__."""
         # Consolidated ALLOWED_ROOT_FILES from original and _MONOLITH versions
         self.ALLOWED_ROOT_FILES = {
             'README.md', 'README.txt', 'LICENSE', 'LICENSE.txt', 'LICENSE.md',
@@ -310,18 +362,15 @@ class ArchitectureGovernor:
         }
 
         # [SSOT] Import from structure_blueprint.py instead of hardcoding
-        from agentic_core.L5_safety.validators.structure_blueprint import (
-            MAX_DEPTH,
-            MAX_LINES,
-            MIN_DEPTH,
-            ROOT_WHITELIST,
-            SOVEREIGN_REGISTRY,
-        )
+        try:
+            from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        except ImportError:
+            from agentic_core.config.blueprint_sovereign.registry import SOVEREIGN_REGISTRY
         self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
 
         # Law of Depth: MAX 5 levels from root
-        self.MIN_DEPTH = MIN_DEPTH
-        self.MAX_DEPTH = MAX_DEPTH
+        self.MIN_DEPTH = 3
+        self.MAX_DEPTH = 5
 
         # Complexity thresholds
         self.MAX_COMPLEXITY = 10
@@ -335,14 +384,18 @@ class ArchitectureGovernor:
             "files_sanitized": 0
         }
 
-        # [SSOT] Sovereign directories (exempt from depth limit) - derived from ROOT_WHITELIST
+        # [SSOT] Sovereign directories (exempt from depth limit)
         # Combines active roots with system/environment folders
-        self.sovereign_dirs = ROOT_WHITELIST
+        self.sovereign_dirs = {
+            'agentic_core', 'schemas', 'scripts', 'docs', 'tests', 'config',
+            'data', 'cache', 'observability', '.git', '__pycache__', '.pytest_cache',
+            '.tox', 'venv', '.venv', 'node_modules', '.idea', '.vscode', 'dist',
+            'build', 'coverage', '.github', 'htmlcov', '.mypy_cache', '.coverage',
+            'eggs', '.eggs', '*.egg-info'
+        }
 
         # Governance thresholds
-        self.MAX_FILE_LINES = MAX_LINES  # Law of Atomicity
-        self.MIN_DEPTH = MIN_DEPTH  # Law of Depth minimum
-        self.MAX_DEPTH = MAX_DEPTH  # Law of Depth maximum
+        self.MAX_FILE_LINES = 200  # Law of Atomicity
 
     def build_graph(self, file_patterns: List[str] = ["**/*.py"]):
         """
@@ -441,6 +494,9 @@ class ArchitectureGovernor:
                     target = scripts_dir / f"{stem}_{counter}{suffix}"
                     counter += 1
 
+                # SSOT COMPLIANCE: All moves require user approval
+                if not self._prompt_user_for_move_approval(file_path, target, "Move root script to scripts/"):
+                    return "SKIPPED: User declined move"
                 shutil.move(str(file_path), str(target))
                 return f"MOVED to scripts/{target.name}"
             except Exception as e:

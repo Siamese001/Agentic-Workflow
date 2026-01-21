@@ -37,22 +37,42 @@ except ImportError:
     class CanonBaseAgentInterface:
         pass
 
-from agentic_core.L5_safety.validators.structure_blueprint_1 import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
-)
+try:
+    from agentic_core.L5_safety.validators.structure_blueprint import (
+        AGENT_DISCOVERY_JSON,
+        AGENT_DISCOVERY_MANIFEST_JSON,
+        AGENTIC_CORE_DIR,
+        SCRIPTS_DIR,
+        TESTS_DIR,
+        DASHBOARD_DIR,
+        L0_MAINTENANCE_DIR,
+        L1_COGNITION_DIR,
+        L2_EXECUTION_DIR,
+        L3_ORCHESTRATION_DIR,
+        L4_STATE_DIR,
+        L5_SAFETY_DIR,
+        L6_OBSERVABILITY_DIR,
+        get_validated_project_root,
+    )
+except ImportError:
+    # Fallback defaults
+    from pathlib import Path
+    AGENT_DISCOVERY_JSON = "agent_discovery_full.json"
+    AGENT_DISCOVERY_MANIFEST_JSON = "agent_discovery_manifest.json"
+    _root = Path(__file__).resolve().parent.parent.parent.parent
+    AGENTIC_CORE_DIR = _root / "agentic_core"
+    SCRIPTS_DIR = _root / "scripts"
+    TESTS_DIR = _root / "tests"
+    DASHBOARD_DIR = _root / "agentic_core" / "L6_observability" / "dashboards"
+    L0_MAINTENANCE_DIR = _root / "agentic_core" / "L0_maintenance"
+    L1_COGNITION_DIR = _root / "agentic_core" / "L1_cognition"
+    L2_EXECUTION_DIR = _root / "agentic_core" / "L2_execution"
+    L3_ORCHESTRATION_DIR = _root / "agentic_core" / "L3_orchestration"
+    L4_STATE_DIR = _root / "agentic_core" / "L4_state"
+    L5_SAFETY_DIR = _root / "agentic_core" / "L5_safety"
+    L6_OBSERVABILITY_DIR = _root / "agentic_core" / "L6_observability"
+    def get_validated_project_root() -> Path:
+        return _root
 
 # Excluded directories for file scanning
 EXCLUDED_DIRS = [

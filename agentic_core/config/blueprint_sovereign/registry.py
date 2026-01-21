@@ -15,7 +15,7 @@ import os
 # ============================================================================
 # This defines the allowed folder structure and depth constraints.
 
-SOVEREIGN_REGISTRY: Dict[str, Any] = {
+SOVEREIGN_REGISTRY: dict = {
     'agentic_core': {
         'depth': 3,
         'subfolders': [
@@ -55,7 +55,7 @@ SOVEREIGN_REGISTRY: Dict[str, Any] = {
     },
     '.sovereign_healing_backup': {
         'depth': 2,
-        'subfolders': ['filesystem', 'location', 'naming', 'transactions'],
+        'subfolders': ['filesystem', 'location', 'naming', 'transactions', 'import_fixes'],
         'purpose': 'Backup directory for healing operations',
         'volatile': True
     }
@@ -64,7 +64,7 @@ SOVEREIGN_REGISTRY: Dict[str, Any] = {
 # ============================================================================
 # HEALING CONFIGURATION
 # ============================================================================
-HEALING_CONFIG: Dict[str, Any] = {
+HEALING_CONFIG: dict = {
     "max_rounds": int(os.getenv('MAX_HEALING_ROUNDS', '10')),
     "max_per_file": int(os.getenv('MAX_HEALING_PER_FILE', '8')),
     "global_budget": int(os.getenv('GLOBAL_HEALING_BUDGET', '500')),
@@ -76,7 +76,7 @@ HEALING_CONFIG: Dict[str, Any] = {
 # ============================================================================
 # CORE SUBFOLDER MAPS
 # ============================================================================
-CORE_SUBFOLDER_MAP: Dict[str, List[str]] = {
+CORE_SUBFOLDER_MAP: dict = {
     'L0_maintenance': ['scripts', 'logs', 'benchmarks', 'mixins'],
     'L1_cognition': ['thought_engine', 'intent_analysis', 'planning'],
     'L2_execution': ['ToolRegistry', 'action_handlers', 'mcp', 'tool_registry'],
@@ -98,7 +98,7 @@ CORE_SUBFOLDER_MAP: Dict[str, List[str]] = {
 # VARIABLE DEPTH SUBFOLDERS
 # ============================================================================
 # These subfolders are exempt from strict depth enforcement.
-VARIABLE_DEPTH_SUBFOLDERS: FrozenSet[str] = frozenset({
+VARIABLE_DEPTH_SUBFOLDERS: frozenset = frozenset({
     'utils', 'config', 'common', 'observability', 'L6_observability',
     'L3_orchestration', 'L0_maintenance', 'L1_cognition', 'L2_execution',
     'L4_state', 'L5_safety', 'schemas', 'prompt_governance', 'runtime',
@@ -108,7 +108,7 @@ VARIABLE_DEPTH_SUBFOLDERS: FrozenSet[str] = frozenset({
 # ============================================================================
 # L4 APPROVED FOLDERS (Depth-4 Structure)
 # ============================================================================
-L4_APPROVED_FOLDERS: Set[str] = {
+L4_APPROVED_FOLDERS: set = {
     'agentic_core/L6_observability/dashboards',
     'agentic_core/L0_maintenance/scripts',
     'agentic_core/L3_orchestration/workflow_engines',
@@ -127,7 +127,7 @@ L4_APPROVED_FOLDERS: Set[str] = {
 # ============================================================================
 # GRAVITY CONFIGURATION
 # ============================================================================
-GRAVITY_CONFIG: Dict[str, Any] = {
+GRAVITY_CONFIG: dict = {
     'enabled': True,
     'UPSTREAM_SOVEREIGN_ROOTS': ['agentic_core'],
     'downstream_domains': ['apps_rg', 'apps_lic', 'apps_shared', 'tests'],
@@ -137,7 +137,7 @@ GRAVITY_CONFIG: Dict[str, Any] = {
 # ============================================================================
 # MISSION CONFIGURATION
 # ============================================================================
-MISSION_CONFIG: Dict[str, Any] = {
+MISSION_CONFIG: dict = {
     'GRAVITY_SURGERY_ENABLED': True,
     'hierarchy_healing_enabled': True,
     'span_surgery_enabled': True,
@@ -153,7 +153,7 @@ MISSION_CONFIG: Dict[str, Any] = {
 # ============================================================================
 # AGENT RESILIENCE CONFIGURATION
 # ============================================================================
-AGENT_RESILIENCE_CONFIG: Dict[str, Any] = {
+AGENT_RESILIENCE_CONFIG: dict = {
     'retry_count': int(os.getenv('AGENT_RETRY_COUNT', '3')),
     'backoff_base': float(os.getenv('AGENT_RETRY_BACKOFF_BASE', '0.5'))
 }
@@ -161,7 +161,7 @@ AGENT_RESILIENCE_CONFIG: Dict[str, Any] = {
 # ============================================================================
 # MCP CAPABILITIES
 # ============================================================================
-MCP_CAPABILITIES: Dict[str, Any] = {
+MCP_CAPABILITIES: dict = {
     'router': {'enabled': True, 'path': 'agentic_core.L3_orchestration.mcp'},
     'marketplace_filter': {'enabled': True, 'path': 'agentic_core.L3_orchestration.mcp'},
     'filesystem': {'enabled': True, 'path': 'agentic_core.L4_state.filesystem'},
@@ -173,7 +173,7 @@ MCP_CAPABILITIES: Dict[str, Any] = {
 # ============================================================================
 # LAYER DIRECTORIES MAPPING
 # ============================================================================
-LAYER_DIRS: Dict[str, str] = {
+LAYER_DIRS: dict = {
     "L0": "L0_maintenance",
     "L1": "L1_cognition",
     "L2": "L2_execution",
@@ -186,7 +186,7 @@ LAYER_DIRS: Dict[str, str] = {
 # ============================================================================
 # L2 TO L1 REVERSE MAPPING
 # ============================================================================
-L2_TO_L1_MAP: Dict[str, str] = {
+L2_TO_L1_MAP: dict = {
     "thought_engine": "L1_cognition",
     "intent_analysis": "L1_cognition",
     "planning": "L1_cognition",

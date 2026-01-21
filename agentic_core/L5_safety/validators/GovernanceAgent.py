@@ -283,7 +283,11 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self.root_dir = Path(root_dir) if root_dir else Path.cwd()
         self.Logger = logging.getLogger(__name__)
         self.DependencyGraph = DependencyGraph()
-        from agentic_core.L5_safety.validators.structure_blueprint_1 import ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY
+        try:
+            from agentic_core.L5_safety.validators.structure_blueprint import ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY
+        except ImportError:
+            from agentic_core.config.blueprint_sovereign.registry import SOVEREIGN_REGISTRY
+            ROOT_PROTECTED_FILES = frozenset()
         self.ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
         self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
         self.DEPTH_MAP = {root: cfg['depth'] for root, cfg in SOVEREIGN_REGISTRY.items()}
@@ -410,11 +414,73 @@ class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                     suffix = file_path.suffix
                     target = scripts_dir / f'{stem}_{counter}{suffix}'
                     counter += 1
+                # SSOT COMPLIANCE: All moves require user approval
+                if not self._prompt_user_for_move_approval(file_path, target, "Move root script to scripts/"):
+                    return 'SKIPPED: User declined move'
                 shutil.move(str(file_path), str(target))
                 return f'MOVED to scripts/{target.name}'
             except Exception as e:
                 LOGGER.error(f'Failed to move {file_path}: {e}')
                 return 'FAILED to move'
+
+    def _prompt_user_for_move_approval(self, source: Path, target: Path, reason: str) -> bool:
+        """
+        Prompt user for approval before moving a file.
+        
+        CRITICAL: All file moves require explicit user approval.
+        
+        Args:
+            source: Source file path
+            target: Target file path
+            reason: Reason for the move
+            
+        Returns:
+            True if user approves, False otherwise
+        """
+        # Check for skip-all flag
+        if getattr(self, '_skip_all_moves', False):
+            return False
+        
+        # Check for approve-all flag
+        if getattr(self, '_approve_all_moves', False):
+            return True
+        
+        # Check if we're in a non-interactive environment
+        import sys
+        if not sys.stdin.isatty():
+            LOGGER.warning(f"[GovernanceAgent] Non-interactive mode - skipping move: {source.name}")
+            return False
+        
+        try:
+            rel_source = source.relative_to(self.root_dir)
+            rel_target = target.relative_to(self.root_dir)
+        except ValueError:
+            rel_source = source
+            rel_target = target
+        
+        print(f"\n{'='*60}")
+        print(f"FILE MOVE APPROVAL REQUIRED")
+        print(f"{'='*60}")
+        print(f"Source: {rel_source}")
+        print(f"Target: {rel_target}")
+        print(f"Reason: {reason}")
+        print(f"{'='*60}")
+        
+        try:
+            response = input("Approve move? [y/n/a(ll)/s(kip all)]: ").strip().lower()
+            if response == 'y':
+                return True
+            elif response == 'a':
+                self._approve_all_moves = True
+                return True
+            elif response == 's':
+                self._skip_all_moves = True
+                return False
+            else:
+                return False
+        except (EOFError, KeyboardInterrupt):
+            print("\nMove cancelled by user")
+            return False
 
     def check_depth_law(self, file_path: str) -> Optional[str]:
         """

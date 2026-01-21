@@ -165,9 +165,9 @@ class MemoryArchitectSync:
             Logger.warning('    [!]  Gemini not available for embeddings')
             return None
         try:
-            result = self.genai_client.models.embed_content(model='models/text-embedding-004', content=text)
-            if result and hasattr(result, 'embedding'):
-                return result.embedding
+            result = self.genai_client.models.embed_content(model='models/text-embedding-004', contents=text)
+            if result and hasattr(result, 'embeddings') and len(result.embeddings) > 0:
+                return result.embeddings[0].values
             Logger.warning('    [!]  No embedding returned from Gemini')
             return None
         except Exception as e:

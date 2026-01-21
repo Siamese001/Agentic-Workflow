@@ -16,10 +16,16 @@ from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.L1_cognition.P1_interfaces import ICognitivePlane, PlanningRequest, PlanningResult
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint_1 import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
+try:
+    from agentic_core.L5_safety.validators.structure_blueprint import (
+        SOVEREIGN_REGISTRY,
+        CORE_SUBFOLDER_MAP,
+    )
+except ImportError:
+    from agentic_core.config.blueprint_sovereign.registry import (
+        SOVEREIGN_REGISTRY,
+        CORE_SUBFOLDER_MAP,
+    )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin

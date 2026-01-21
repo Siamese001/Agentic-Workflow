@@ -619,3 +619,20 @@ class MCPHardenedMixin:
             "success_rate": (self._mcp_success_count / self._mcp_call_count * 100) if self._mcp_call_count > 0 else 0,
             "audit_log_size": len(self._audit_log)
         }
+
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+        """MRO chain stub for heal_repository.
+        
+        This stub exists to support the MRO chain when agents inherit from
+        MCPHardenedMixin and call super().heal_repository(). Without this,
+        the super() call would fail with AttributeError.
+        
+        Args:
+            dry_run: If True, only report what would be done
+            execute: If True, apply fixes
+            **kwargs: Additional parameters passed through the chain
+            
+        Returns:
+            Empty dict - actual healing is done by concrete agent classes
+        """
+        return {}
