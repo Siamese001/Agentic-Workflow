@@ -56,10 +56,9 @@ from typing import Any
 
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 
-# GRAVITY FIXED (Upward Leak): from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-_mod = importlib.import_module('agentic_core.L5_safety.guardrails.mcp_hardened_mixin')
+# GRAVITY FIXED (Upward Leak): Use L2 location for MCPHardenedMixin
+_mod = importlib.import_module('agentic_core.L2_execution.mcp.mcp_hardened_mixin')
 MCPHardenedMixin = _mod.MCPHardenedMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout

@@ -407,6 +407,8 @@ class TestHealRepository:
     def test_heal_repository_execute(self, temp_project):
         """Test heal_repository with execute=True."""
         ArchivalGatekeeper.reset_instance()
+        gk = ArchivalGatekeeper.get_instance(temp_project)
+        gk.set_require_approval(False)  # Disable approval prompts for testing
 
         agent = HygieneGuardianAgent(temp_project, ctx=None, dry_run=True)
 
