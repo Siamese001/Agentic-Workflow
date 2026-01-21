@@ -1,11 +1,12 @@
 """
-[PHASE 11/12] Cognitive Disposition Agent - AI-Powered Architectural Triage.
+[PHASE 11/12/14] Cognitive Disposition Agent - AI-Powered Architectural Triage.
 
 Uses LLM API (Gemini) to analyze structural violations and determine intelligent resolutions.
 This agent provides "Intelligent Triage" for files flagged by the ArchitectureGovernorAgent.
 
 Phase 11: Heuristic-based analysis
 Phase 12: Gemini LLM integration with JSON enforcement
+Phase 14: Environment loading with python-dotenv
 
 Responsibilities:
 - Analyze ORPHAN violations and recommend proper SSOT locations
@@ -88,7 +89,35 @@ class CognitiveDispositionAgent:
         self.project_root = project_root or Path.cwd()
         self.confidence_threshold = confidence_threshold
         self.llm_enabled = llm_enabled
+        
+        # Phase 14: Force load .env from project root if variable is missing
+        if not os.getenv("GEMINI_API_KEY") and not api_key:
+            try:
+                from dotenv import load_dotenv, find_dotenv
+                # usecwd=True ensures we look in project root regardless of execution dir
+                try:
+                    env_file = find_dotenv(usecwd=True)
+                    if env_file:
+                        load_dotenv(env_file)
+                        Logger.info(f"[COGNITIVE] Loaded environment from: {env_file}")
+                    else:
+                        Logger.debug("[COGNITIVE] No .env file found")
+                except (IOError, OSError):
+                    # Handle cases where starting path is invalid (e.g., in tests)
+                    Logger.debug("[COGNITIVE] Could not search for .env file")
+            except ImportError:
+                Logger.debug("[COGNITIVE] python-dotenv not installed, skipping .env loading")
+        
+        # Get API key from argument or environment
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
+        
+        # Phase 14: API key validation with graceful degradation
+        if not self.api_key:
+            Logger.warning("[COGNITIVE] GEMINI_API_KEY not found. Agent will use heuristic mode only.")
+            Logger.info("[COGNITIVE] To enable LLM: Set GEMINI_API_KEY in .env or pass api_key parameter")
+        else:
+            Logger.info("[COGNITIVE] API key configured successfully")
+        
         self._llm_model = None  # Lazy-loaded Gemini model
         
         # Layer mapping for SSOT compliance
