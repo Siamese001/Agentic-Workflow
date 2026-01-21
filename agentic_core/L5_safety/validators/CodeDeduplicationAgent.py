@@ -431,12 +431,22 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
     def scan_filename_duplicates(self, python_files: list[Path], project_root: Path) -> None:
         """Detect duplicate basenames with safety check (identical vs divergent content).
         
-        Enhanced to detect suffix-based duplicates (_flat, _1) that indicate incomplete
-        flattening operations.
+        Enhanced with intelligent suffix pattern detection to catch all common duplicate
+        suffixes: _flat, _1, _2, _from_utils, _copy, etc.
         """
-        print("\n[*] CodeDeduplicationAgent: Scanning for duplicate filenames (safety-enhanced)...")
+        print("\n[*] CodeDeduplicationAgent: Scanning for duplicate filenames (intelligent suffix detection)...")
         basename_to_entries: dict[str, list[tuple[Path, str]]] = defaultdict(list)
         suffix_duplicates: dict[str, list[Path]] = defaultdict(list)  # Track suffix-based dupes
+        
+        # Common problematic suffixes that indicate duplicates
+        PROBLEMATIC_SUFFIXES = [
+            "_flat",
+            "_from_utils",
+            "_1", "_2", "_3",  # Numbered variants
+            "_copy", "_backup",
+            "_old", "_new",
+            "_temp", "_tmp",
+        ]
 
         pbar = tqdm(
             total=len(python_files),
@@ -461,26 +471,26 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
                 pbar.update(1)
                 continue
             
-            # Check for suffix-based duplicates (_flat, _1)
+            # Intelligent suffix detection
             basename = path.name
             stem = path.stem
             
-            # Detect problematic suffixes
-            if stem.endswith("_flat") or stem.endswith("_1"):
+            # Check if stem ends with any problematic suffix
+            matched_suffix = None
+            for suffix in PROBLEMATIC_SUFFIXES:
+                if stem.endswith(suffix):
+                    matched_suffix = suffix
+                    break
+            
+            if matched_suffix:
                 # Get canonical name (without suffix)
-                if stem.endswith("_flat"):
-                    canonical_stem = stem[:-5]
-                elif stem.endswith("_1"):
-                    canonical_stem = stem[:-2]
-                else:
-                    canonical_stem = stem
-                
+                canonical_stem = stem[:-len(matched_suffix)]
                 canonical_name = f"{canonical_stem}.py"
                 canonical_path = path.parent / canonical_name
                 
                 # Check if canonical version exists
                 if canonical_path.exists():
-                    suffix_duplicates[canonical_name].append(path)
+                    suffix_duplicates[canonical_name].append((path, matched_suffix))
                     stats["suffix_dupes"] += 1
             
             file_hash = self._hash_entire_file(path) or "ERROR"
@@ -497,14 +507,23 @@ class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
         # Report suffix-based duplicates first (these are always problematic)
         if suffix_duplicates:
             print(f"\n   [!] SUFFIX-BASED DUPLICATES DETECTED: {len(suffix_duplicates)} groups")
-            print("       These indicate incomplete flattening - canonical version exists:")
-            for canonical_name, dup_paths in suffix_duplicates.items():
-                print(f"       • {canonical_name} has {len(dup_paths)} suffix duplicate(s):")
-                for dup_path in dup_paths:
+            print("       These indicate incomplete operations - canonical version exists:")
+            
+            # Group by suffix type for better reporting
+            suffix_counts = defaultdict(int)
+            for canonical_name, dup_list in suffix_duplicates.items():
+                for dup_path, suffix in dup_list:
+                    suffix_counts[suffix] += 1
+            
+            print(f"       Breakdown by suffix: {dict(suffix_counts)}")
+            
+            for canonical_name, dup_list in suffix_duplicates.items():
+                print(f"       • {canonical_name} has {len(dup_list)} suffix duplicate(s):")
+                for dup_path, suffix in dup_list:
                     rel = dup_path.relative_to(project_root)
-                    print(f"         → {rel} (should be removed)")
+                    print(f"         → {rel} (suffix: {suffix})")
                 # Store in filename_duplicates for downstream processing
-                self.filename_duplicates[canonical_name] = [(p, "") for p in dup_paths]
+                self.filename_duplicates[canonical_name] = [(p, "") for p, _ in dup_list]
 
         for basename, entries in basename_to_entries.items():
             if len(entries) > 1:
