@@ -70,7 +70,10 @@ except ImportError:
             Returns:
                 Dict with healing summary (violations_found, violations_fixed, errors)
             """
-            super().heal_repository(dry_run, execute, depth=depth)
+            try:
+                super().heal_repository(dry_run=dry_run)
+            except (AttributeError, TypeError):
+                pass  # Parent chain may not have heal_repository
             
             # Phase 6.2: Use standardized HealResult keys
             metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0}

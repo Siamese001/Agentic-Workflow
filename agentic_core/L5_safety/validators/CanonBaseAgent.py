@@ -22,10 +22,16 @@ from typing import Any, Dict, List, Optional, Set
 from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint_1 import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
+try:
+    from agentic_core.L5_safety.validators.structure_blueprint import (
+        SOVEREIGN_REGISTRY,
+        CORE_SUBFOLDER_MAP,
+    )
+except ImportError:
+    from agentic_core.config.blueprint_sovereign.registry import (
+        SOVEREIGN_REGISTRY,
+        CORE_SUBFOLDER_MAP,
+    )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 

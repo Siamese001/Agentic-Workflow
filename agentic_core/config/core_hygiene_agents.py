@@ -12,7 +12,7 @@ from __future__ import annotations
 from typing import Dict, List
 
 # Core hygiene agents organized by tier
-CORE_HYGIENE_AGENTS: Dict[str, List[str]] = {
+CORE_HYGIENE_AGENTS: dict[str, list[str]] = {
     "tier_0_preflight": [
         "UnifiedCodeValidatorAgent",
     ],
@@ -27,6 +27,7 @@ CORE_HYGIENE_AGENTS: Dict[str, List[str]] = {
     "tier_2_architectural": [
         "UnifiedStructureEnforcerAgent",
         "FilesystemSSOTReconcilerAgent",
+        "DDDAlignmentAgent",
         "GitHygieneAgent",
         "FileCleanupAgent",
     ],
@@ -37,14 +38,14 @@ CORE_HYGIENE_AGENTS: Dict[str, List[str]] = {
 }
 
 # Agents that MUST pass before any healing proceeds
-MANDATORY_PREFLIGHT: List[str] = [
+MANDATORY_PREFLIGHT: list[str] = [
     "UnifiedCodeValidatorAgent",  # Syntax must be valid
     "ImportAgent",                # Imports must be valid
     "LocationAgent",              # Files must be in valid locations
 ]
 
 # Agent descriptions for documentation
-AGENT_DESCRIPTIONS: Dict[str, str] = {
+AGENT_DESCRIPTIONS: dict[str, str] = {
     "UnifiedCodeValidatorAgent": "Syntax validation, AST parsing, canon compliance",
     "ImportAgent": "Import ordering, gravity waterfall, unused import detection",
     "LocationAgent": "Root folder whitelist, depth enforcement, forbidden patterns",
@@ -54,20 +55,21 @@ AGENT_DESCRIPTIONS: Dict[str, str] = {
     "HygieneGuardianAgent": "Empty files, orphaned __init__.py, backup/temp file cleanup",
     "UnifiedStructureEnforcerAgent": "Gravity/layer import enforcement, hierarchy validation",
     "FilesystemSSOTReconcilerAgent": "Blueprint → Filesystem alignment, drift detection",
+    "DDDAlignmentAgent": "DDD bounded context enforcement, cross-context import detection",
     "GitHygieneAgent": "Stale branches, large files, uncommitted changes",
     "FileCleanupAgent": "Repeated filename strings, duplicate file removal",
     "AutonomyGuardianAgent": "Agent autonomy enforcement, heal_repository() requirement",
     "CodeJanitorAgent": "Syntax, style, formatting validation",
 }
 
-def get_all_hygiene_agents() -> List[str]:
+def get_all_hygiene_agents() -> list[str]:
     """Get flat list of all hygiene agents."""
     all_agents = []
     for tier_agents in CORE_HYGIENE_AGENTS.values():
         all_agents.extend(tier_agents)
     return all_agents
 
-def get_tier_agents(tier: int) -> List[str]:
+def get_tier_agents(tier: int) -> list[str]:
     """
     Get agents for a specific tier.
     

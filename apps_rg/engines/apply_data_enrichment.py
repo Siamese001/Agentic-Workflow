@@ -1,0 +1,38 @@
+from __future__ import annotations
+"""
+Data enrichment for resume generation HOP-2.
+
+Enriches bullet pool with canonical verbs and deduplication.
+"""
+import logging
+from typing import Any, Dict, List, Optional, Protocol, Tuple
+
+class DataEnricher:
+    """HOP-2: Enrich bullet pool with canonical verbs, deduplication, etc."""
+
+    def __init__(self) -> None:
+        """Initialize the data enricher."""
+        self.VerbCanonicalizer = VerbCanonicalizer()
+        self.duplicate_detector = DuplicateDetector()
+
+    def enrich(self, extracted_data: Dict, ThematicAnalysis: Optional[Dict]=None, orchestrator: Optional[object]=None) -> Tuple[Dict, List[ValidationResult]]:
+        """Enrich extracted data with additional metadata."""
+        validation_results: List[ValidationResult] = []
+        if orchestrator is not None:
+            orchestrator.dup_detector = self.duplicate_detector
+        experience_sections: Any = extracted_data.get('experience_sections', [])
+        all_bullets: Any = []
+        for section in experience_sections:
+            for bullet in section.get('bullets', []):
+                bullet_text: Any = bullet.get('bullet_text', '')
+                bullet['canonical_verbs'] = self.VerbCanonicalizer.canonicalize(bullet_text)
+                forbidden: Any = self.VerbCanonicalizer.check_for_forbidden_verbs(bullet_text)
+                if forbidden:
+                    validation_results.append(ValidationResult(rule_id='FORBIDDEN_VERB_USAGE', PASSED=False, SEVERITY=ValidationSeverity.MEDIUM, MESSAGE=f"Forbidden verb(s): {', '.join(forbidden)}", DETAILS={'bullet_text': bullet_text[:100]}))
+                all_bullets.append(bullet)
+        duplicates: Any = self.duplicate_detector.find_duplicates(all_bullets)
+        if duplicates:
+            validation_results.append(ValidationResult(rule_id='DUPLICATE_BULLETS', PASSED=False, SEVERITY=ValidationSeverity.MEDIUM, MESSAGE=f'Found {len(duplicates)} potential duplicate bullets', DETAILS={'duplicates': duplicates[:5]}))
+        else:
+            validation_results.append(ValidationResult(rule_id='DUPLICATE_CHECK', PASSED=True, SEVERITY=ValidationSeverity.INFO, MESSAGE='No duplicate bullets detected'))
+        return ({**extracted_data, 'experience_sections': experience_sections}, validation_results)

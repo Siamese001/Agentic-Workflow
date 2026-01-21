@@ -45,9 +45,9 @@ class GeminiEmbedder:
             for text in texts:
                 result = self.client.models.embed_content(
                     model=self.model,
-                    content=text
+                    contents=text  # Fixed: 'contents' not 'content'
                 )
-                embeddings.append(result.embedding.values)
+                embeddings.append(result.embeddings[0].values)
             return embeddings
         except Exception as e:
             raise RuntimeError(f'Gemini embedding failed: {e}')

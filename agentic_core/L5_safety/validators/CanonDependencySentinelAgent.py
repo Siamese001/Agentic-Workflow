@@ -22,10 +22,16 @@ from agentic_core.utils.security import safe_execute
 # GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint_1 import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
+try:
+    from agentic_core.L5_safety.validators.structure_blueprint import (
+        SOVEREIGN_REGISTRY,
+        CORE_SUBFOLDER_MAP,
+    )
+except ImportError:
+    from agentic_core.config.blueprint_sovereign.registry import (
+        SOVEREIGN_REGISTRY,
+        CORE_SUBFOLDER_MAP,
+    )
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 

@@ -142,6 +142,23 @@ class SubatomicTestingMixin:
         """Re-enable self-testing."""
         cls._self_testing_enabled = True
 
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict:
+        """MRO chain stub for heal_repository.
+        
+        This stub exists to support the MRO chain when agents inherit from
+        SubatomicTestingMixin and call super().heal_repository(). Without this,
+        the super() call would fail with AttributeError.
+        
+        Args:
+            dry_run: If True, only report what would be done
+            execute: If True, apply fixes
+            **kwargs: Additional parameters passed through the chain
+            
+        Returns:
+            Empty dict - actual healing is done by concrete agent classes
+        """
+        return {}
+
 
 class L2SelfTestingMixin(SubatomicTestingMixin, MCPHardenedMixin):
     """

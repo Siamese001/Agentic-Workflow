@@ -88,9 +88,64 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         self.protected_folders = SOVEREIGN_EXCLUDED_FOLDERS
         # [SSOT] 'archives' is a protected folder in SOVEREIGN_EXCLUDED_FOLDERS
         self.archive_root = project_root / "archives" / "hierarchy_violations"
+        self._skip_all_moves = False  # Flag to skip all move prompts
+        self._approve_all_moves = False  # Flag to approve all move prompts
         
         if healing_enabled:
             self.archive_root.mkdir(parents=True, exist_ok=True)
+    
+    def _prompt_user_for_move_approval(self, source: Path, target: Path, reason: str) -> bool:
+        """Prompt user for approval before moving a file.
+        
+        CRITICAL: All file moves require explicit user approval.
+        
+        Returns:
+            True if user approves, False otherwise
+        """
+        # Check for skip-all flag
+        if self._skip_all_moves:
+            return False
+        
+        # Check for approve-all flag
+        if self._approve_all_moves:
+            return True
+        
+        # Check if we're in a non-interactive environment
+        import sys
+        if not sys.stdin.isatty():
+            Logger.warning(f"[HierarchyAgent] Non-interactive mode - skipping move: {source.name}")
+            return False
+        
+        try:
+            rel_source = source.relative_to(self.project_root)
+            rel_target = target.relative_to(self.project_root)
+        except ValueError:
+            rel_source = source
+            rel_target = target
+        
+        print(f"\n{'='*60}")
+        print(f"FILE MOVE APPROVAL REQUIRED")
+        print(f"{'='*60}")
+        print(f"Source: {rel_source}")
+        print(f"Target: {rel_target}")
+        print(f"Reason: {reason}")
+        print(f"{'='*60}")
+        
+        try:
+            response = input("Approve move? [y/n/a(ll)/s(kip all)]: ").strip().lower()
+            if response == 'y':
+                return True
+            elif response == 'a':
+                self._approve_all_moves = True
+                return True
+            elif response == 's':
+                self._skip_all_moves = True
+                return False
+            else:
+                return False
+        except (EOFError, KeyboardInterrupt):
+            print("\nMove cancelled by user")
+            return False
 
     # ========================================================================
     # STRUCTURE CREATION
@@ -231,6 +286,10 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             
             dest = final_target / py_file.name
             if not dest.exists():
+                # SSOT COMPLIANCE: All moves require user approval
+                if not self._prompt_user_for_move_approval(py_file, dest, f"Relocate from illegal layer '{bad_layer_l2}'"):
+                    Logger.info(f"      [SKIPPED] User declined: {py_file.name}")
+                    return
                 shutil.move(str(py_file), str(dest))
                 Logger.info(f"      [✓] RELOCATED: {py_file.name} -> {target_layer_l2}/{target_territory_l3}/")
                 results["files_relocated"] += 1
@@ -281,6 +340,10 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             
             dest = target_path / py_file.name
             if not dest.exists():
+                # SSOT COMPLIANCE: All moves require user approval
+                if not self._prompt_user_for_move_approval(py_file, dest, f"Relocate from illegal territory '{bad_territory_l3}'"):
+                    Logger.info(f"      [SKIPPED] User declined: {py_file.name}")
+                    return
                 shutil.move(str(py_file), str(dest))
                 Logger.info(f"      [✓] RELOCATED: {py_file.name} -> {layer_l2_name}/{target_territory_l3}/")
                 results["files_relocated"] += 1
@@ -423,9 +486,18 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return 0
 
     def _legacy_archive_depth_violation(self, file_path: Path, rel: Path, depth: int, expected: int, subdir: str, label: str) -> int:
-        """Legacy archive method - only used as fallback when smart healing has collision."""
+        """Legacy archive method - only used as fallback when smart healing has collision.
+        
+        CRITICAL: Requires user approval before archiving.
+        """
         try:
             archive_path = self.archive_root / subdir / rel
+            
+            # SSOT COMPLIANCE: Archiving requires user approval
+            if not self._prompt_user_for_archive_approval(file_path, archive_path, f"{label} DEPTH VIOLATION: depth {depth}, expected {expected}"):
+                Logger.info(f"  [SKIPPED] User declined archive: {rel}")
+                return 0
+            
             archive_path.parent.mkdir(parents=True, exist_ok=True)
             header = f"# {label} DEPTH VIOLATION — {time.strftime('%Y-%m-%d %H:%M:%S')}\n# {rel} was depth {depth}, MUST be {expected}.\n\n"
             content = file_path.read_text(encoding="utf-8", errors="ignore")
@@ -434,6 +506,50 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             return 1
         except Exception:
             return 0
+    
+    def _prompt_user_for_archive_approval(self, file_path: Path, target_path: Path, reason: str) -> bool:
+        """Prompt user for approval before archiving a file.
+        
+        Returns:
+            True if user approves, False otherwise
+        """
+        # Check for skip-all flag
+        if getattr(self, '_skip_all_archives', False):
+            return False
+        
+        # Check if we're in a non-interactive environment
+        import sys
+        if not sys.stdin.isatty():
+            Logger.warning(f"[HierarchyAgent] Non-interactive mode - skipping archive: {file_path.name}")
+            return False
+        
+        try:
+            rel_source = file_path.relative_to(self.project_root)
+            rel_target = target_path.relative_to(self.project_root)
+        except ValueError:
+            rel_source = file_path
+            rel_target = target_path
+        
+        print(f"\n{'='*60}")
+        print(f"ARCHIVE APPROVAL REQUIRED")
+        print(f"{'='*60}")
+        print(f"File:   {rel_source}")
+        print(f"Target: {rel_target}")
+        print(f"Reason: {reason}")
+        print(f"{'='*60}")
+        
+        try:
+            response = input("Approve archive? [y/n/s(kip all)]: ").strip().lower()
+            if response == 'y':
+                return True
+            elif response == 's':
+                self._skip_all_archives = True
+                return False
+            else:
+                return False
+        except (EOFError, KeyboardInterrupt):
+            print("\nArchive cancelled by user")
+            return False
 
     def _enforce_apps_depth(self) -> int:
         """Enforce apps_* depth rule using generic handler."""
@@ -956,6 +1072,10 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             }
             
             if not dry_run and src.exists():
+                # SSOT COMPLIANCE: All moves require user approval
+                if not self._prompt_user_for_move_approval(src, dst, "Move archived file from root"):
+                    Logger.info(f"   [SKIPPED] User declined: {filename}")
+                    continue
                 try:
                     shutil.move(str(src), str(dst))
                     action["applied"] = True
@@ -1060,6 +1180,10 @@ class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                 continue
             
             if not dry_run:
+                # SSOT COMPLIANCE: All moves require user approval
+                if not self._prompt_user_for_move_approval(src_file, dst_file, f"Merge {folder_name} file to SSOT location"):
+                    Logger.info(f"   [SKIPPED] User declined: {rel_path}")
+                    continue
                 try:
                     dst_file.parent.mkdir(parents=True, exist_ok=True)
                     shutil.move(str(src_file), str(dst_file))

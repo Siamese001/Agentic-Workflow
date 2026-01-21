@@ -231,12 +231,12 @@ class LocationValidatorAgent(SovereignBaseAgent):
     def _validate_final_checks(self, root_folder: str, file_path: Path, parts: tuple) -> Tuple[bool, str]:
         """Final validation checks for root-level files and gravity leaks."""
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            PROTECTED_ROOT_FILES,
+            ROOT_PROTECTED_FILES,
         )
         
         # Root-level file protections (Key 0)
         if len(parts) == 1 and file_path.suffix == ".py":
-            if file_path.name not in PROTECTED_ROOT_FILES:
+            if file_path.name not in ROOT_PROTECTED_FILES:
                 return False, f"VOID VIOLATION: Unapproved root-level Python file '{file_path.name}'"
         
         return True, "OK"
