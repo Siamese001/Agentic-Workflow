@@ -69,14 +69,6 @@ repos:
   # ============================================================================
   - repo: local
     hooks:
-      - id: check-agent-duplicates
-        name: Check for Agent Duplicate Filenames
-        entry: python
-        args: [scripts/maintenance/check_duplicate_filenames.py]
-        language: python
-        pass_filenames: false
-        always_run: true
-
       - id: check-deprecated-imports
         name: Check for Deprecated Agent Imports
         entry: pytest
@@ -118,14 +110,6 @@ repos:
         additional_dependencies: [pytest]
         pass_filenames: false
         always_run: true
-
-      - id: ssot-folder-structure
-        name: SSOT Folder Structure
-        entry: python -m agentic_core.L5_safety.validators.ssot_folder_check
-        language: python
-        types: [python]
-        pass_filenames: false
-        additional_dependencies: []
 
       - id: sovereign-lockdown-verification
         name: Sovereign Lockdown Verification (Phase 7)

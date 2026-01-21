@@ -2315,7 +2315,7 @@ semantic_l2_registry: Any = {
             ],
             "imports": [
                 "agentic_core.L1_cognition.intent_analysis",
-                "google.generativeai",
+                "google.genai",
                 "re",
                 "pydantic",
             ],
@@ -2888,7 +2888,7 @@ semantic_l2_registry: Any = {
             "purpose": "Embedding generation, caching, and dimension management",
             "entity_types": ["Class", "Function"],
             "keywords": ["embedding", "embed", "vectorize", "dimension", "latent"],
-            "imports": ["google.generativeai"],
+            "imports": ["google.genai"],
             "bases": [],
         },
         "retrieval": {
