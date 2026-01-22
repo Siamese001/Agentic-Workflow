@@ -1,0 +1,89 @@
+[
+  {
+    "class_name": "BootstrapAgent",
+    "path": "scripts\\BootstrapAgent.py",
+    "layer": "L0",
+    "territory": "L0 Maintenance/Core",
+    "category": "Validator",
+    "inheritance": [
+      "L0MaintenanceBaseAgent",
+      "SovereignBaseAgent"
+    ],
+    "key_methods": [
+      "__init__",
+      "_verify_env_file",
+      "_verify_redis_connection",
+      "_verify_model_authorization",
+      "verify_neural_link",
+      "run_bootstrap",
+      "seed_initial_territory",
+      "_try_import_agent",
+      "_report_registry_status",
+      "validate_sovereign_registry"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 178,
+    "class_count": 1,
+    "description": "\n    Autonomous boot integrity agent.\n    Runs before any validation mission to anchor the environme",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true,
+    "has_tests": false,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 37,
+    "proper_base_class": true,
+    "schema_strictness": 100.0,
+    "has_metadata": true
+  },
+  {
+    "class_name": "L0MaintenanceBaseAgent",
+    "path": "scripts\\L0MaintenanceBaseAgent.py",
+    "layer": "L0",
+    "territory": "L0 Maintenance/Base Agent",
+    "category": "Validator",
+    "inheritance": [
+      "L0DelegationTestingMixin",
+      "SovereignBaseAgent"
+    ],
+    "key_methods": [
+      "__post_init__",
+      "heal_repository",
+      "_run_self_tests"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "invocation": "Yes",
+    "testing": "Self",
+    "has_subatomic": false,
+    "loc": 54,
+    "class_count": 2,
+    "description": "\n    Consolidated base for L0 Maintenance agents.\n\n    MRO HARDENING:\n    - HealerMixin: First (spec",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true,
+    "has_tests": true,
+    "typed_pct": 100.0,
+    "documented_pct": 100.0,
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": false
+    },
+    "cyclomatic_complexity": 5,
+    "proper_base_class": true,
+    "schema_strictness": 100.0,
+    "has_metadata": true
+  }
+]

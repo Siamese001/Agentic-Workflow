@@ -83,6 +83,7 @@ class L0MaintenanceBaseAgent(L0DelegationTestingMixin, SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set = None,
+        **kwargs
     ) -> dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""
         if _call_path is None:
@@ -93,6 +94,7 @@ class L0MaintenanceBaseAgent(L0DelegationTestingMixin, SovereignBaseAgent):
             depth=depth,
             max_depth=max_depth,
             _call_path=_call_path,
+            **kwargs
         )
         return result
 

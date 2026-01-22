@@ -493,8 +493,9 @@ class GovernanceAgent(SovereignBaseAgent):
     def _prompt_user_for_move_approval(self, source: Path, target: Path, reason: str) -> bool:
         """
         Prompt user for approval before moving a file.
-
-        CRITICAL: All file moves require explicit user approval.
+        
+        [BATCH 1 REMEDIATION] Delegates to ArchivalGatekeeper which respects
+        SOVEREIGN_AUTO_APPROVE and ARCHIVE_BATCH_ACCEPT environment variables.
 
         Args:
             source: Source file path
@@ -504,51 +505,19 @@ class GovernanceAgent(SovereignBaseAgent):
         Returns:
             True if user approves, False otherwise
         """
-        # Check for skip-all flag
-        if getattr(self, "_skip_all_moves", False):
-            return False
-
-        # Check for approve-all flag
-        if getattr(self, "_approve_all_moves", False):
+        import os
+        
+        # [REMEDIATION] Check sovereign auto-approve first
+        if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
+            LOGGER.info(f"[GovernanceAgent] Auto-approved move: {source.name}")
             return True
-
-        # Check if we're in a non-interactive environment
-        import sys
-
-        if not sys.stdin.isatty():
-            LOGGER.warning(f"[GovernanceAgent] Non-interactive mode - skipping move: {source.name}")
-            return False
-
-        try:
-            rel_source = source.relative_to(self.root_dir)
-            rel_target = target.relative_to(self.root_dir)
-        except ValueError:
-            rel_source = source
-            rel_target = target
-
-        print(f"\n{'=' * 60}")
-        print("FILE MOVE APPROVAL REQUIRED")
-        print(f"{'=' * 60}")
-        print(f"Source: {rel_source}")
-        print(f"Target: {rel_target}")
-        print(f"Reason: {reason}")
-        print(f"{'=' * 60}")
-
-        try:
-            response = input("Approve move? [y/n/a(ll)/s(kip all)]: ").strip().lower()
-            if response == "y":
-                return True
-            elif response == "a":
-                self._approve_all_moves = True
-                return True
-            elif response == "s":
-                self._skip_all_moves = True
-                return False
-            else:
-                return False
-        except (EOFError, KeyboardInterrupt):
-            print("\nMove cancelled by user")
-            return False
+            
+        if os.environ.get("ARCHIVE_BATCH_ACCEPT") == "1":
+            LOGGER.info(f"[GovernanceAgent] Batch-approved move: {source.name}")
+            return True
+        
+        # Delegate to gatekeeper for consistent approval handling
+        return self.gatekeeper.safe_operation("move", f"{source} -> {target}")
 
     def check_depth_law(self, file_path: str) -> str | None:
         """

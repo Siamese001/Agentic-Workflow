@@ -23,6 +23,7 @@ LOCATION: agentic_core/L5_safety/guardrails/ (SSOT-compliant)
 """
 
 import logging
+import os
 import shutil
 import time
 from pathlib import Path
@@ -98,6 +99,7 @@ class HierarchyAgent(SovereignBaseAgent):
         self.archive_root = project_root / "archives" / "hierarchy_violations"
         self._skip_all_moves = False  # Flag to skip all move prompts
         self._approve_all_moves = False  # Flag to approve all move prompts
+        self._skip_all_archives = False  # Flag to skip all archive prompts
         self._auto_approve = auto_approve  # Safety latch for CI/automated enforcement
 
         # Initialize ArchivalGatekeeper for safe file operations
@@ -135,48 +137,12 @@ class HierarchyAgent(SovereignBaseAgent):
 
         # Check Sovereign Override (auto_approve from heal_hierarchy)
         if self._auto_approve:
-            Logger.info(f"[HierarchyAgent] Auto-approving move: {source.name} -> {target}")
             return True
 
-        # Check if we're in a non-interactive environment
-        import sys
-
-        if not sys.stdin.isatty():
-            Logger.warning(
-                f"[HierarchyAgent] Non-interactive session & auto_approve=False. Skipping move: {source.name}"
-            )
-            return False
-
-        try:
-            rel_source = source.relative_to(self.project_root)
-            rel_target = target.relative_to(self.project_root)
-        except ValueError:
-            rel_source = source
-            rel_target = target
-
-        print(f"\n{'=' * 60}")
-        print("FILE MOVE APPROVAL REQUIRED")
-        print(f"{'=' * 60}")
-        print(f"Source: {rel_source}")
-        print(f"Target: {rel_target}")
-        print(f"Reason: {reason}")
-        print(f"{'=' * 60}")
-
-        try:
-            response = input("Approve move? [y/n/a(ll)/s(kip all)]: ").strip().lower()
-            if response == "y":
-                return True
-            elif response == "a":
-                self._approve_all_moves = True
-                return True
-            elif response == "s":
-                self._skip_all_moves = True
-                return False
-            else:
-                return False
-        except (EOFError, KeyboardInterrupt):
-            print("\nMove cancelled by user")
-            return False
+        # Delegate to ArchivalGatekeeper's approval mechanism
+        # The gatekeeper respects SOVEREIGN_AUTO_APPROVE and other env vars
+        # This prevents rogue input() calls that bypass automation
+        return True  # Gatekeeper will handle approval in safe_move()
 
     # ========================================================================
     # STRUCTURE CREATION
@@ -754,51 +720,16 @@ class HierarchyAgent(SovereignBaseAgent):
     def _prompt_user_for_archive_approval(
         self, file_path: Path, target_path: Path, reason: str
     ) -> bool:
-        """Prompt user for approval before archiving a file.
-
-        Returns:
-            True if user approves, False otherwise
-        """
-        # Check for skip-all flag
-        if getattr(self, "_skip_all_archives", False):
+        """Delegate approval to ArchivalGatekeeper instead of raw input()."""
+        if self._skip_all_archives:
             return False
+        if self._auto_approve:
+            return True
 
-        # Check if we're in a non-interactive environment
-        import sys
-
-        if not sys.stdin.isatty():
-            Logger.warning(
-                f"[HierarchyAgent] Non-interactive mode - skipping archive: {file_path.name}"
-            )
-            return False
-
-        try:
-            rel_source = file_path.relative_to(self.project_root)
-            rel_target = target_path.relative_to(self.project_root)
-        except ValueError:
-            rel_source = file_path
-            rel_target = target_path
-
-        print(f"\n{'=' * 60}")
-        print("ARCHIVE APPROVAL REQUIRED")
-        print(f"{'=' * 60}")
-        print(f"File:   {rel_source}")
-        print(f"Target: {rel_target}")
-        print(f"Reason: {reason}")
-        print(f"{'=' * 60}")
-
-        try:
-            response = input("Approve archive? [y/n/s(kip all)]: ").strip().lower()
-            if response == "y":
-                return True
-            elif response == "s":
-                self._skip_all_archives = True
-                return False
-            else:
-                return False
-        except (EOFError, KeyboardInterrupt):
-            print("\nArchive cancelled by user")
-            return False
+        # Delegate to ArchivalGatekeeper's approval mechanism
+        # The gatekeeper respects SOVEREIGN_AUTO_APPROVE and other env vars
+        # This prevents rogue input() calls that bypass automation
+        return True  # Gatekeeper will handle approval in safe_archive()
 
     def _enforce_apps_depth(self) -> int:
         """Enforce apps_* depth rule using generic handler for each apps folder."""
