@@ -3,6 +3,11 @@ from __future__ import annotations
 """
 [PHASE 17/20] Semantic Cache Manager - The Collective Hive Mind.
 
+[PHASE 3 MIGRATION] Canonical Implementation:
+- This is the ONLY SemanticCacheManager in the codebase.
+- All other copies (L5/guardrails, L5/cognition) have been deprecated.
+- Use semantic_cache_mixin.py for agent-level access.
+
 Located in L4_state as it manages the persistence and state of agentic memory.
 Provides O(1) exact recall (Redis) and semantic similarity recall (Pinecone).
 

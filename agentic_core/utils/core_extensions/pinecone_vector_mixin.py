@@ -43,9 +43,12 @@ class RetrievalBroadness(Enum):
     EXHAUSTIVE = 50  # Maximum retrieval for meta-learning
 
 
-class PineconeVectorMixin:
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+
+
+class PineconeVectorMixin(RedisCacheMixin):
     """
-    ULTRA-HARDENED Pinecone Vector Mixin
+    ULTRA-HARDENED Pinecone Vector Mixin with Redis Caching
 
     Provides semantic search and vector storage with graceful degradation.
     All operations are safe - failures never crash the agent.
@@ -66,6 +69,10 @@ class PineconeVectorMixin:
     _namespace: str = "agent_patterns"
     _local_vectors: dict = {}
 
+    # RedisCacheMixin configuration
+    _cache_prefix: str = "pinecone_vector"
+    _default_ttl: int = 3600  # 1 hour
+
     EXPECTED_DIMENSION = 1536
     MAX_QUERY_TOP_K = 50
     QUERY_TIMEOUT = 12.0
@@ -79,16 +86,23 @@ class PineconeVectorMixin:
 
     @property
     def pinecone(self):
-        """Lazy-load Pinecone client with graceful failure."""
+        """
+        Lazy-load Hardened MCP Pinecone client.
+
+        [PHASE 1 MIGRATION] Now strictly routes through the Sovereign MCP Client
+        to ensure all operations are audited and cached via Redis.
+        """
         if not self.pinecone_enabled:
             return None
         if self._pinecone_client is None:
             try:
+                # Re-routing to the hardened MCP implementation
                 from agentic_core.L2_execution.mcp.pinecone_mcp_client import (
                     get_pinecone_mcp_client,
                 )
 
                 self._pinecone_client = get_pinecone_mcp_client()
+                log.info(f"[{self.__class__.__name__}] Connected to Hardened Pinecone MCP")
             except Exception as e:
                 if not GRACEFUL_DEGRADATION:
                     raise
@@ -104,9 +118,10 @@ class PineconeVectorMixin:
         metadata_filter: dict[str, Any] | None = None,
         include_metadata: bool = True,
         score_threshold: float | None = None,
+        use_cache: bool = True,  # [PHASE 34] New parameter
     ) -> list[dict[str, Any]]:
         """
-        Perform a hardened vector search using the Pinecone index with broadness support.
+        Perform a hardened vector search with Redis caching.
 
         Args:
             embedding: The query embedding vector.
@@ -115,6 +130,7 @@ class PineconeVectorMixin:
             metadata_filter: Optional dictionary for metadata filtering.
             include_metadata: Whether to include metadata in results.
             score_threshold: (Optional) Minimum similarity score to return.
+            use_cache: Whether to use Redis cache (default: True).
 
         Returns:
             List of vector search results matching the query.
@@ -136,6 +152,35 @@ class PineconeVectorMixin:
                 )
         else:
             effective_top_k = min(broadness.value, self.MAX_QUERY_TOP_K)
+
+        # [PHASE 34] Redis Cache Check
+        cache_key = ""
+        if use_cache:
+            import hashlib
+            import json
+
+            # Create deterministic signature of embedding
+            emb_sig = hashlib.sha256(
+                json.dumps(embedding[:5] + embedding[-5:]).encode()
+            ).hexdigest()[:16]
+
+            cache_params = {
+                "emb": emb_sig,
+                "k": effective_top_k,
+                "ns": self._namespace,
+                "fil": str(metadata_filter) if metadata_filter else "",
+                "th": score_threshold,
+            }
+            # Key format: pinecone_vector:vs:<hash>
+            cache_key = f"vs:{cache_params['emb']}:{cache_params['k']}:{cache_params['ns']}"
+
+            cached = await self.cache_get(cache_key)
+            if cached:
+                latency = (time.time() - start) * 1000
+                log.debug(f"Vector search cache HIT in {latency:.1f}ms")
+                if CACHE_METRICS_ENABLED:
+                    metrics.record("redis_vector_search", hit=True, latency_ms=latency)
+                return cached
 
         local_only = False
 
@@ -168,6 +213,10 @@ class PineconeVectorMixin:
                 # Apply optional score threshold post-retrieval
                 if score_threshold is not None:
                     matches = [m for m in matches if m.get("score", 0) >= score_threshold]
+
+                # [PHASE 34] Cache Write
+                if use_cache and matches:
+                    await self.cache_set(cache_key, matches, ttl=self._default_ttl)
 
                 hit = len(matches) > 0
                 if CACHE_METRICS_ENABLED:

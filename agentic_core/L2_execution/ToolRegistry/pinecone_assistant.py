@@ -1,44 +1,55 @@
 from __future__ import annotations
 
 """
-This script initializes the Pinecone client, ensures a specific index exists,
-and connects to it. It also includes a placeholder for AI assistant creation,
-noting that this functionality is not part of the standard Pinecone client library.
+[DEPRECATED] This script is OBSOLETE as of Phase 1 Migration.
+
+All Pinecone operations now route through PineconeSovereignAgent,
+which provides:
+- Automatic index creation with dimension guarding
+- Redis-cached embeddings
+- Audit logging
+- Graceful degradation
+
+Use PineconeSovereignAgent.bootstrap_territory_vectors() instead.
 """
-import os
 from pathlib import Path
-from typing import Any
 
-from dotenv import load_dotenv
-from pinecone import Pinecone, ServerlessSpec
+print("=" * 80)
+print("[DEPRECATED] pinecone_assistant.py is OBSOLETE")
+print("=" * 80)
+print()
+print("This script has been replaced by the Sovereign Gateway pattern.")
+print("Redirecting to PineconeSovereignAgent...")
+print()
 
-index_name: Any = "canon-memory-l2"
-index_dimension: Any = 768
-index_metric: Any = "cosine"
-cloud_provider: Any = "aws"
-cloud_region: Any = "us-east-1"
-project_root: Any = Path(__file__).parent
-env_path: Any = project_root / ".env"
-load_dotenv(env_path)
-pinecone_api_key: Any = os.getenv("PINECONE_API_KEY")
-if not pinecone_api_key:
-    raise ValueError(
-        "PINECONE_API_KEY not found in environment variables. Please ensure it's set in your .env file or environment."
-    )
-pc: Any = Pinecone(api_key=pinecone_api_key)
-print("Pinecone client initialized.")
-if not pc.has_index(INDEX_NAME):
-    print(f"Creating new index: '{INDEX_NAME}'...")
-    pc.create_index(
-        name=INDEX_NAME,
-        dimension=INDEX_DIMENSION,
-        Metric=INDEX_METRIC,
-        spec=ServerlessSpec(cloud=CLOUD_PROVIDER, region=CLOUD_REGION),
-    )
-    print(f"Index '{INDEX_NAME}' created successfully.")
-else:
-    print(f"Using existing index: '{INDEX_NAME}'.")
-index: Any = pc.Index(INDEX_NAME)
-print(f"Connected to index: '{index.name}'.")
-print(f"Index description: {index.describe_index_stats()}")
-print("\nScript execution complete.")
+try:
+    from agentic_core.L5_safety.validators.PineconeSovereignAgent import PineconeSovereignAgent
+
+    project_root = Path(__file__).resolve().parents[3]
+    gateway = PineconeSovereignAgent(project_root=project_root)
+
+    print(f"Gateway Status: {gateway.status}")
+
+    if gateway.status == "ONLINE":
+        print(f"✅ Connected to Pinecone index: {gateway.index_name}")
+        print(f"   Dimension: {gateway.dimension}")
+        print(f"   Cloud: {gateway.cloud}")
+        print(f"   Region: {gateway.region}")
+        print()
+        print("The gateway handles index creation and dimension guarding automatically.")
+        print("All operations are now audited and cached via Redis.")
+    else:
+        print(f"❌ Gateway initialization failed: {gateway.status}")
+        print()
+        print("Please check:")
+        print("  1. PINECONE_API_KEY is set in environment")
+        print("  2. SovereignEnv configuration is correct")
+
+except Exception as e:
+    print(f"❌ Failed to initialize Sovereign Gateway: {e}")
+    print()
+    print("Fallback: Direct SDK initialization (NOT RECOMMENDED)")
+    print("Please fix the gateway configuration instead.")
+
+print()
+print("=" * 80)

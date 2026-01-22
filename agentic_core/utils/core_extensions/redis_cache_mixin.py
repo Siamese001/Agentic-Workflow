@@ -71,14 +71,26 @@ class RedisCacheMixin:
 
     @property
     def redis(self):
-        """Lazy-load Redis client with graceful failure."""
+        """
+        Lazy-load Hardened Redis Client.
+
+        [PHASE 2 MIGRATION] Now routes through the RedisSovereignAgent singleton
+        to ensure connection pool reuse and centralized auditing.
+        """
         if not self.redis_enabled:
             return None
         if self._redis_client is None:
             try:
-                from agentic_core.L2_execution.mcp.caching_redis_mcp_client import get_redis_client
+                from agentic_core.L5_safety.validators.RedisSovereignAgent import (
+                    RedisSovereignAgent,
+                )
+                from pathlib import Path
 
-                self._redis_client = get_redis_client()
+                # Retrieve the singleton instance
+                root = Path(__file__).resolve().parents[3]  # Adjusted for utils location
+                gateway = RedisSovereignAgent(root)
+                self._redis_client = gateway.get_client()
+                log.info(f"[{self.__class__.__name__}] Connected to Hardened Redis Gateway")
             except Exception as e:
                 if not GRACEFUL_DEGRADATION:
                     raise

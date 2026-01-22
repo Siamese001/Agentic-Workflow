@@ -30,9 +30,14 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 class RedisSovereignAgent(SovereignBaseAgent):
     """
     Sovereign Redis controller — hardened, monitored, eternal.
+
+    [PHASE 2 MIGRATION] Absorbed Auditing and Telemetry:
+    - Centralized operation_stats for dashboard visualization.
+    - Standardized audit logging for L4 compliance.
     """
 
     _instance = None
+    operation_stats = {"get": 0, "set": 0, "delete": 0, "hits": 0, "misses": 0, "total": 0}
 
     def __new__(cls, project_root: Path, ctx: Any | None = None) -> RedisSovereignAgent:
         """
@@ -101,13 +106,20 @@ class RedisSovereignAgent(SovereignBaseAgent):
         return True
 
     def get_client(self) -> redis.Redis:
-        """
-        Get the Redis client instance.
-
-        Returns:
-            Redis client for direct operations
-        """
+        """Get the Redis client instance."""
         return self.client
+
+    def _audit(self, operation: str, key: str, success: bool) -> None:
+        """[PHASE 2] Record operation to internal audit plane."""
+        import time
+
+        if not hasattr(self, "audit_log"):
+            self.audit_log = []
+        self.audit_log.append(
+            {"op": operation, "key": key[:32], "success": success, "ts": time.time()}
+        )
+        self.operation_stats["total"] += 1
+        self.operation_stats[operation] = self.operation_stats.get(operation, 0) + 1
 
     def invalidate_file_cache(self, file_path: Path) -> None:
         """
