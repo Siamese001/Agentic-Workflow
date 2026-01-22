@@ -97,12 +97,10 @@ class HierarchyAgent(SovereignBaseAgent):
         self.protected_folders = SOVEREIGN_EXCLUDED_FOLDERS
         # [SSOT] 'archives' is a protected folder in SOVEREIGN_EXCLUDED_FOLDERS
         self.archive_root = project_root / "archives" / "hierarchy_violations"
-        self._skip_all_moves = False  # Flag to skip all move prompts
-        self._approve_all_moves = False  # Flag to approve all move prompts
-        self._skip_all_archives = False  # Flag to skip all archive prompts
-        self._auto_approve = auto_approve  # Safety latch for CI/automated enforcement
 
         # Initialize ArchivalGatekeeper for safe file operations
+        # [PHASE 33j] Gatekeeper is the SINGLE POINT OF APPROVAL
+        # It checks SOVEREIGN_AUTO_APPROVE and ARCHIVE_BATCH_ACCEPT env vars
         self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
         self.agent_name = "HierarchyAgent"
 
@@ -112,37 +110,6 @@ class HierarchyAgent(SovereignBaseAgent):
 
         if healing_enabled:
             self.archive_root.mkdir(parents=True, exist_ok=True)
-
-    def _prompt_user_for_move_approval(self, source: Path, target: Path, reason: str) -> bool:
-        """Prompt user for approval before moving a file.
-
-        [PHASE 33j] In-repo moves are auto-approved when SOVEREIGN_AUTO_APPROVE is set.
-        Only archive moves require user approval.
-
-        Returns:
-            True if user approves, False otherwise
-        """
-        # Check for skip-all flag
-        if self._skip_all_moves:
-            return False
-
-        # Check for approve-all flag
-        if self._approve_all_moves:
-            return True
-
-        # [PHASE 33j] Check SOVEREIGN_AUTO_APPROVE at runtime (not just init)
-        if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
-            Logger.info(f"[HierarchyAgent] SOVEREIGN_AUTO_APPROVE: {source.name} -> {target}")
-            return True
-
-        # Check Sovereign Override (auto_approve from heal_hierarchy)
-        if self._auto_approve:
-            return True
-
-        # Delegate to ArchivalGatekeeper's approval mechanism
-        # The gatekeeper respects SOVEREIGN_AUTO_APPROVE and other env vars
-        # This prevents rogue input() calls that bypass automation
-        return True  # Gatekeeper will handle approval in safe_move()
 
     # ========================================================================
     # STRUCTURE CREATION
@@ -367,15 +334,13 @@ class HierarchyAgent(SovereignBaseAgent):
                 results["violations_found"] += 1
                 Logger.warning(f"   [!] UNCATEGORIZED TEST: {rel} -> {category}/")
                 if self.healing_enabled:
-                    if self._prompt_user_for_move_approval(
-                        py_file, dest, f"Categorize test as '{category}'"
-                    ):
-                        gk_result = self.gatekeeper.safe_move(
-                            py_file, dest, self.agent_name, f"Test categorization: {category}"
-                        )
-                        if gk_result.success:
-                            results["files_relocated"] += 1
-                            Logger.info(f"      [✓] CATEGORIZED: {py_file.name} -> {category}/")
+                    # [PHASE 33j] Gatekeeper is Single Point of Approval
+                    gk_result = self.gatekeeper.safe_move(
+                        py_file, dest, self.agent_name, f"Test categorization: {category}"
+                    )
+                    if gk_result.success:
+                        results["files_relocated"] += 1
+                        Logger.info(f"      [✓] CATEGORIZED: {py_file.name} -> {category}/")
             else:
                 Logger.warning(f"      [!] SKIP (exists): {py_file.name} in {category}/")
 
@@ -426,12 +391,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
             dest = final_target / py_file.name
             if not dest.exists():
-                # SSOT COMPLIANCE: All moves require user approval
-                if not self._prompt_user_for_move_approval(
-                    py_file, dest, f"Relocate from illegal layer '{bad_layer_l2}'"
-                ):
-                    Logger.info(f"      [SKIPPED] User declined: {py_file.name}")
-                    return
+                # [PHASE 33j] Gatekeeper is Single Point of Approval
                 gk_result = self.gatekeeper.safe_move(
                     py_file, dest, self.agent_name, f"Relocate from illegal layer '{bad_layer_l2}'"
                 )
@@ -439,7 +399,9 @@ class HierarchyAgent(SovereignBaseAgent):
                     Logger.info(
                         f"      [✓] RELOCATED: {py_file.name} -> {target_layer_l2}/{target_territory_l3}/"
                     )
-                results["files_relocated"] += 1
+                    results["files_relocated"] += 1
+                elif gk_result.approval_status == "DENIED":
+                    Logger.info(f"      [SKIPPED] User declined: {py_file.name}")
             else:
                 Logger.info(f"      [!] SKIP (exists): {py_file.name}")
         except Exception as e:
@@ -502,12 +464,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
             dest = target_path / py_file.name
             if not dest.exists():
-                # SSOT COMPLIANCE: All moves require user approval
-                if not self._prompt_user_for_move_approval(
-                    py_file, dest, f"Relocate from illegal territory '{bad_territory_l3}'"
-                ):
-                    Logger.info(f"      [SKIPPED] User declined: {py_file.name}")
-                    return
+                # [PHASE 33j] Gatekeeper is Single Point of Approval
                 gk_result = self.gatekeeper.safe_move(
                     py_file,
                     dest,
@@ -518,7 +475,9 @@ class HierarchyAgent(SovereignBaseAgent):
                     Logger.info(
                         f"      [✓] RELOCATED: {py_file.name} -> {layer_l2_name}/{target_territory_l3}/"
                     )
-                results["files_relocated"] += 1
+                    results["files_relocated"] += 1
+                elif gk_result.approval_status == "DENIED":
+                    Logger.info(f"      [SKIPPED] User declined: {py_file.name}")
             else:
                 Logger.info(f"      [!] SKIP (exists): {py_file.name}")
         except Exception as e:
@@ -691,45 +650,24 @@ class HierarchyAgent(SovereignBaseAgent):
     ) -> int:
         """Legacy archive method - only used as fallback when smart healing has collision.
 
-        CRITICAL: Requires user approval before archiving.
+        [PHASE 33j] Gatekeeper is Single Point of Approval - handles user prompts.
         """
         try:
-            archive_path = self.archive_root / subdir / rel
+            # [PHASE 33j] Use Gatekeeper's safe_archive which handles approval
+            reason = f"{label} DEPTH VIOLATION: depth {depth}, expected {expected}"
+            gk_result = self.gatekeeper.safe_archive(file_path, self.agent_name, reason)
 
-            # SSOT COMPLIANCE: Archiving requires user approval
-            if not self._prompt_user_for_archive_approval(
-                file_path,
-                archive_path,
-                f"{label} DEPTH VIOLATION: depth {depth}, expected {expected}",
-            ):
+            if gk_result.success:
+                Logger.info(f"  [ARCHIVED] {rel} -> {gk_result.destination_path}")
+                return 1
+            elif gk_result.approval_status == "DENIED":
                 Logger.info(f"  [SKIPPED] User declined archive: {rel}")
                 return 0
-
-            archive_path.parent.mkdir(parents=True, exist_ok=True)
-            header = f"# {label} DEPTH VIOLATION — {time.strftime('%Y-%m-%d %H:%M:%S')}\n# {rel} was depth {depth}, MUST be {expected}.\n\n"
-            content = file_path.read_text(encoding="utf-8", errors="ignore")
-            archive_path.write_text(header + content, encoding="utf-8")
-            # Use ArchivalGatekeeper for safe deletion
-            gk_result = self.gatekeeper.safe_delete(
-                file_path, self.agent_name, f"{label} depth violation archived"
-            )
-            return 1 if gk_result.success else 0
+            else:
+                Logger.error(f"  [ERROR] Archive failed: {gk_result.error}")
+                return 0
         except Exception:
             return 0
-
-    def _prompt_user_for_archive_approval(
-        self, file_path: Path, target_path: Path, reason: str
-    ) -> bool:
-        """Delegate approval to ArchivalGatekeeper instead of raw input()."""
-        if self._skip_all_archives:
-            return False
-        if self._auto_approve:
-            return True
-
-        # Delegate to ArchivalGatekeeper's approval mechanism
-        # The gatekeeper respects SOVEREIGN_AUTO_APPROVE and other env vars
-        # This prevents rogue input() calls that bypass automation
-        return True  # Gatekeeper will handle approval in safe_archive()
 
     def _enforce_apps_depth(self) -> int:
         """Enforce apps_* depth rule using generic handler for each apps folder."""
@@ -860,7 +798,6 @@ class HierarchyAgent(SovereignBaseAgent):
         Returns:
             Dict with purge count, violations found, and errors
         """
-        import os
 
         purged_count = 0
         violations_found = 0
@@ -1309,12 +1246,7 @@ class HierarchyAgent(SovereignBaseAgent):
             }
 
             if not dry_run and src.exists():
-                # SSOT COMPLIANCE: All moves require user approval
-                if not self._prompt_user_for_move_approval(
-                    src, dst, "Move archived file from root"
-                ):
-                    Logger.info(f"   [SKIPPED] User declined: {filename}")
-                    continue
+                # [PHASE 33j] Gatekeeper is Single Point of Approval
                 try:
                     gk_result = self.gatekeeper.safe_move(
                         src, dst, self.agent_name, "Move archived file from root"
@@ -1323,6 +1255,8 @@ class HierarchyAgent(SovereignBaseAgent):
                         action["applied"] = True
                         results["archived_files_moved"] += 1
                         Logger.info(f"   [✓] MOVED: {filename} -> archives/root_archived/")
+                    elif gk_result.approval_status == "DENIED":
+                        Logger.info(f"   [SKIPPED] User declined: {filename}")
                     else:
                         action["error"] = gk_result.error
                         results["errors"].append(f"Failed to move {filename}: {gk_result.error}")
@@ -1430,12 +1364,7 @@ class HierarchyAgent(SovereignBaseAgent):
                 continue
 
             if not dry_run:
-                # SSOT COMPLIANCE: All moves require user approval
-                if not self._prompt_user_for_move_approval(
-                    src_file, dst_file, f"Merge {folder_name} file to SSOT location"
-                ):
-                    Logger.info(f"   [SKIPPED] User declined: {rel_path}")
-                    continue
+                # [PHASE 33j] Gatekeeper is Single Point of Approval
                 try:
                     dst_file.parent.mkdir(parents=True, exist_ok=True)
                     gk_result = self.gatekeeper.safe_move(
@@ -1448,6 +1377,8 @@ class HierarchyAgent(SovereignBaseAgent):
                         action["applied"] = True
                         result["files_moved"] += 1
                         Logger.info(f"   [✓] MERGED: {rel_path} -> {ssot_target}/")
+                    elif gk_result.approval_status == "DENIED":
+                        Logger.info(f"   [SKIPPED] User declined: {rel_path}")
                     else:
                         action["error"] = gk_result.error
                         result["errors"].append(f"Failed to move {src_file}: {gk_result.error}")

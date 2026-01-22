@@ -13,10 +13,17 @@ USAGE:
 """
 
 import sys
+from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
+
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    ARCHIVES_DIR,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 
 
 def test_ssot_import():

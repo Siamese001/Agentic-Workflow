@@ -57,8 +57,15 @@ from typing import Any
 
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 
-# GRAVITY FIXED (Upward Leak): Use L2 location for MCPHardenedMixin
-MCPHardenedMixin = _mod.MCPHardenedMixin
+# GRAVITY FIXED: Explicit import for MCPHardenedMixin
+try:
+    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+except ImportError:
+
+    class MCPHardenedMixin:  # Fallback to prevent load failure
+        pass
+
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
@@ -489,35 +496,6 @@ class GovernanceAgent(SovereignBaseAgent):
             except Exception as e:
                 LOGGER.error(f"Failed to move {file_path}: {e}")
                 return "FAILED to move"
-
-    def _prompt_user_for_move_approval(self, source: Path, target: Path, reason: str) -> bool:
-        """
-        Prompt user for approval before moving a file.
-
-        [BATCH 1 REMEDIATION] Delegates to ArchivalGatekeeper which respects
-        SOVEREIGN_AUTO_APPROVE and ARCHIVE_BATCH_ACCEPT environment variables.
-
-        Args:
-            source: Source file path
-            target: Target file path
-            reason: Reason for the move
-
-        Returns:
-            True if user approves, False otherwise
-        """
-        import os
-
-        # [REMEDIATION] Check sovereign auto-approve first
-        if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
-            LOGGER.info(f"[GovernanceAgent] Auto-approved move: {source.name}")
-            return True
-
-        if os.environ.get("ARCHIVE_BATCH_ACCEPT") == "1":
-            LOGGER.info(f"[GovernanceAgent] Batch-approved move: {source.name}")
-            return True
-
-        # Delegate to gatekeeper for consistent approval handling
-        return self.gatekeeper.safe_operation("move", f"{source} -> {target}")
 
     def check_depth_law(self, file_path: str) -> str | None:
         """

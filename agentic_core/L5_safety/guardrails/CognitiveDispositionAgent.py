@@ -9,6 +9,7 @@ Phase 12: Gemini LLM integration with JSON enforcement
 Phase 14: Environment loading with python-dotenv
 Phase 16: Migration to google.genai SDK (deprecated google-generativeai)
 Phase 33e: Cache-First Governance (Redis + Pinecone)
+Phase 33h: Hardened Semantic Broadening (Parallel Execution)
 
 Responsibilities:
 - Analyze ORPHAN violations and recommend proper SSOT locations
@@ -35,6 +36,8 @@ import logging
 import os
 import re
 import time
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # [PHASE 16] Modern SDK Imports
 try:
@@ -936,3 +939,79 @@ Respond with JSON:
             decision.action in executable_actions
             and decision.confidence >= self.confidence_threshold
         )
+
+    # ========================================================================
+    # [PHASE 33h] Hardened Semantic Broadening (Parallel Execution)
+    # ========================================================================
+
+    async def semantic_broadening_search(
+        self, query_embedding: list[float], violation_type: str, context_metadata: dict[str, Any]
+    ) -> list[dict[str, Any]]:
+        """
+        Performs a parallelized multi-tiered semantic search to broaden context retrieval.
+
+        Hardening:
+        - Uses asyncio.gather for parallel execution (Latency Reduction)
+        - Implements ID-based deduplication
+        - Handles partial failures gracefully
+
+        Strategy:
+        1. Primary: Broad search on violation type (30 results)
+        2. Secondary: Standard search on related file patterns (15 results)
+        3. Tertiary: Narrow search on high-success patterns (5 results)
+        """
+        import asyncio
+        from agentic_core.utils.core_extensions.pinecone_vector_mixin import RetrievalBroadness
+
+        # Define search tasks for parallel execution to minimize latency
+        tasks = [
+            # Tier 1: Primary Broad Search (Violation Focus)
+            self.vector_search(
+                embedding=query_embedding,
+                broadness=RetrievalBroadness.BROAD,
+                metadata_filter={"violation_type": violation_type},
+            ),
+            # Tier 2: Secondary Context Search (File Context)
+            self.vector_search(
+                embedding=query_embedding,
+                broadness=RetrievalBroadness.STANDARD,
+                metadata_filter={"file_type": context_metadata.get("file_type", "unknown")},
+            ),
+            # Tier 3: High Precision Search (Success Patterns)
+            self.vector_search(
+                embedding=query_embedding,
+                broadness=RetrievalBroadness.NARROW,
+                metadata_filter={"validation_outcome": "success"},
+            ),
+        ]
+
+        # Execute all searches concurrently
+        # return_exceptions=True ensures one failure doesn't crash the entire broadening operation
+        results_list = await asyncio.gather(*tasks, return_exceptions=True)
+
+        # Aggregate and Deduplicate
+        valid_matches = []
+        seen_ids = set()
+
+        for batch in results_list:
+            if isinstance(batch, Exception):
+                # Log failure but continue with other batches
+                Logger.warning(f"[COGNITIVE] Semantic broadening sub-search failed: {str(batch)}")
+                continue
+
+            if not batch:
+                continue
+
+            for match in batch:
+                match_id = match.get("id")
+                # Critical: Deduplicate by ID to prevent context pollution
+                if match_id and match_id not in seen_ids:
+                    seen_ids.add(match_id)
+                    valid_matches.append(match)
+
+        # Sort by score descending (primary sort) to ensure highest relevance is kept
+        # Note: Pinecone results come sorted, but mixing batches requires re-sorting
+        valid_matches.sort(key=lambda x: x.get("score", 0.0), reverse=True)
+
+        # Return top 50 unique results
+        return valid_matches[:50]

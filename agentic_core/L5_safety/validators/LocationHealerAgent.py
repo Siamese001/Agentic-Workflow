@@ -501,47 +501,16 @@ class LocationHealerAgent(SovereignBaseAgent):
         )
         target_path = archives_root / subfolder / file_path.name
 
-        # SSOT COMPLIANCE: Archiving requires user approval
-        if not dry_run:
-            approval = self._prompt_user_for_archive_approval(file_path, target_path, msg)
-            if not approval:
-                return {
-                    "applied": False,
-                    "action_taken": "SKIPPED: User declined archive operation",
-                    "requires_approval": True,
-                }
-
+        # [PHASE 33j] Gatekeeper is Single Point of Approval
         move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
         if "MOVED" in move_result.get("action_taken", ""):
             move_result["action_taken"] = move_result["action_taken"].replace("MOVED", "ARCHIVED")
+        if move_result.get("applied") is False and "DENIED" in str(move_result.get("error", "")):
+            move_result["action_taken"] = "SKIPPED: User declined archive operation"
+            move_result["requires_approval"] = True
         if move_result.get("applied") and not dry_run:
             affected_paths.extend([file_path, target_path])
         return move_result
-
-    def _prompt_user_for_archive_approval(
-        self, file_path: Path, target_path: Path, reason: str
-    ) -> bool:
-        """Prompt user for approval before archiving a file.
-
-        [BATCH 1 REMEDIATION] Delegates to ArchivalGatekeeper which respects
-        SOVEREIGN_AUTO_APPROVE and ARCHIVE_BATCH_ACCEPT environment variables.
-
-        Returns:
-            True if user approves, False otherwise
-        """
-        import os
-
-        # [REMEDIATION] Check sovereign auto-approve first
-        if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
-            Logger.info(f"[LocationHealerAgent] Auto-approved archive: {file_path.name}")
-            return True
-
-        if os.environ.get("ARCHIVE_BATCH_ACCEPT") == "1":
-            Logger.info(f"[LocationHealerAgent] Batch-approved archive: {file_path.name}")
-            return True
-
-        # Delegate to gatekeeper for consistent approval handling
-        return self.gatekeeper.safe_operation("archive", f"{file_path} -> {target_path}")
 
     # ========================================================================
     # VIOLATION-SPECIFIC HEALING METHODS (Phase 3 Batch 6)
@@ -658,6 +627,19 @@ class LocationHealerAgent(SovereignBaseAgent):
                     f"[LocationHealerAgent] Non-interactive mode - skipping void violation: {file_path.name}"
                 )
                 result["action_taken"] = "SKIPPED: Non-interactive mode"
+                return result
+
+            # [PHASE 3 FIX] Check batch mode environment variables
+            import os
+
+            if (
+                os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1"
+                or os.environ.get("ARCHIVE_BATCH_ACCEPT") == "1"
+            ):
+                Logger.warning(
+                    f"[LocationHealerAgent] Batch mode detected - skipping interactive void violation: {file_path.name}"
+                )
+                result["action_taken"] = "SKIPPED: Batch mode active"
                 return result
 
             # Present options to user

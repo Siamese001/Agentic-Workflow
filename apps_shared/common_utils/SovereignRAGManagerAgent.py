@@ -196,32 +196,33 @@ class SovereignRAGManager:
     def _rrf_fusion(
         self, vector_list: list[dict], bm25_list: list[dict], k: int = 60
     ) -> list[dict]:
-        """Reciprocal Rank Fusion — combines multiple retrieval scores."""
-        scores = {}
+        """
+        Implements Reciprocal Rank Fusion (RRF) to combine results from multiple retrieval strategies.
+        RRF Score = sum(1 / (k + rank))
+        """
+        k = 60.0  # Standard RRF constant
+        fused_scores = {}
+        doc_map = {}
 
-        for rank, item in enumerate(vector_list):
-            item_id = item.get("id", f"vec_{rank}")
-            scores[item_id] = scores.get(item_id, 0) + 1 / (k + rank)
+        # Helper to process a result list
+        def process_list(results_list):
+            for rank, item in enumerate(results_list):
+                doc_id = item.get("id") or hash(item.get("text", ""))
+                if doc_id not in doc_map:
+                    doc_map[doc_id] = item
+                    fused_scores[doc_id] = 0.0
+                fused_scores[doc_id] += 1.0 / (k + rank + 1)
 
-        for rank, item in enumerate(bm25_list):
-            item_id = item.get("id", f"bm25_{rank}")
-            scores[item_id] = scores.get(item_id, 0) + 1 / (k + rank)
+        process_list(vector_list)
+        process_list(bm25_list)
 
-        # Map IDs back to full document objects
-        all_items = {
-            item.get("id", f"item_{i}"): item for i, item in enumerate(vector_list + bm25_list)
-        }
-        sorted_ids = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
+        # Sort by RRF score descending
+        sorted_doc_ids = sorted(fused_scores.keys(), key=lambda x: fused_scores[x], reverse=True)
 
-        # Update scores with RRF scores
-        result = []
-        for doc_id in sorted_ids:
-            if doc_id in all_items:
-                item = all_items[doc_id].copy()
-                item["score"] = scores[doc_id]
-                result.append(item)
+        # Reconstruct list
+        final_results = [doc_map[doc_id] for doc_id in sorted_doc_ids]
 
-        return result
+        return final_results
 
     async def _llm_rerank(self, query: str, candidates: list[dict], top_k: int) -> list[dict]:
         """Final precision reranking via LLM judgment."""

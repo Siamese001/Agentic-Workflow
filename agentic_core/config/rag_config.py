@@ -1,0 +1,105 @@
+from __future__ import annotations
+
+"""
+Centralized RAG Configuration - SSOT for all RAG settings
+Replaces fragmented configs across L1, L3, apps_shared
+"""
+import os
+from dataclasses import dataclass, field
+
+
+@dataclass
+class EmbeddingConfig:
+    """Embedding model configuration."""
+
+    model_name: str = "all-MiniLM-L6-v2"
+    dimension: int = 384  # Default to legacy 384, override via env
+    batch_size: int = 32
+    cache_enabled: bool = True
+    cache_maxsize: int = 10000
+
+
+@dataclass
+class VectorStoreConfig:
+    """Vector store configuration."""
+
+    provider: str = "pinecone"  # pinecone | chroma | faiss
+    index_name: str = "sovereign-rag"
+    namespace: str = "sovereign-core"
+    metric: str = "cosine"
+    dimension: int = 384
+    batch_size: int = 100  # Defensive batching
+    latency_threshold_ms: float = 500.0  # Warn if exceeded
+
+    # Pinecone-specific
+    pinecone_cloud: str = "aws"
+    pinecone_region: str = "us-east-1"
+
+
+@dataclass
+class RetrievalConfig:
+    """Retrieval strategy configuration."""
+
+    strategy: str = "hybrid"  # hybrid | vector | bm25
+    top_k: int = 15
+    enable_reranking: bool = True
+    enable_caching: bool = True
+    enable_hallucination_filter: bool = True
+
+    # Multi-hop settings
+    max_hops: int = 3
+    faithfulness_threshold: float = 0.88
+
+    # RRF fusion
+    rrf_k: float = 60.0
+
+    # Reranking
+    reranker_model: str = "BAAI/bge-reranker-v2-m3"
+    reranker_confidence_threshold: float = 0.75
+    reranker_top_k: int = 10
+
+
+@dataclass
+class CacheConfig:
+    """Semantic cache configuration."""
+
+    enabled: bool = True
+    backend: str = "redis"  # redis | memory
+    ttl_seconds: int = 3600
+    max_entries: int = 10000
+    similarity_threshold: float = 0.95
+
+
+@dataclass
+class SafetyConfig:
+    """RAG safety configuration."""
+
+    enable_pii_filter: bool = True
+    enable_hallucination_detection: bool = True
+    enable_adversarial_defense: bool = True
+    entity_support_threshold: float = 0.5  # 50% of entities must be in docs
+    forbidden_keywords: list[str] = field(
+        default_factory=lambda: ["password", "secret", "api_key", "private_key", "token"]
+    )
+
+
+@dataclass
+class SovereignRagConfig:
+    """
+    Master RAG Configuration - SSOT for entire architecture.
+    Loaded from environment variables with sensible defaults.
+    """
+
+    embedding: EmbeddingConfig = field(default_factory=EmbeddingConfig)
+    vector_store: VectorStoreConfig = field(default_factory=VectorStoreConfig)
+    retrieval: RetrievalConfig = field(default_factory=RetrievalConfig)
+    cache: CacheConfig = field(default_factory=CacheConfig)
+    safety: SafetyConfig = field(default_factory=SafetyConfig)
+
+    @classmethod
+    def from_env(cls) -> SovereignRagConfig:
+        """Load configuration from environment variables."""
+        config = cls()
+        config.vector_store.dimension = int(os.getenv("EMBEDDING_DIMENSION", "384"))
+        config.embedding.dimension = config.vector_store.dimension
+        return config

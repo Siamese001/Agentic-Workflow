@@ -115,64 +115,6 @@ class SSOTRelocator:
         # Initialize ArchivalGatekeeper for safe file operations
         self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
 
-        # Approval flags (deprecated - now handled by ArchivalGatekeeper)
-        self._skip_all_moves = False
-        self._approve_all_moves = False
-
-    def _prompt_user_for_move_approval(self, source: Path, target: Path, reason: str) -> bool:
-        """Prompt user for approval before moving a file/folder.
-
-        CRITICAL: All moves require explicit user approval.
-
-        Returns:
-            True if user approves, False otherwise
-        """
-        # Check for approve-all flag
-        if self._approve_all_moves:
-            return True
-
-        # Check for skip-all flag
-        if self._skip_all_moves:
-            return False
-
-        # Check if we're in a non-interactive environment
-        import sys
-
-        if not sys.stdin.isatty():
-            logger.warning(f"[SSOTRelocator] Non-interactive mode - skipping move: {source.name}")
-            return False
-
-        try:
-            rel_source = source.relative_to(self.project_root)
-            rel_target = target.relative_to(self.project_root)
-        except ValueError:
-            rel_source = source
-            rel_target = target
-
-        print(f"\n{'=' * 60}")
-        print("MOVE APPROVAL REQUIRED")
-        print(f"{'=' * 60}")
-        print(f"Source: {rel_source}")
-        print(f"Target: {rel_target}")
-        print(f"Reason: {reason}")
-        print(f"{'=' * 60}")
-
-        try:
-            response = input("Approve? [y/n/a(ll)/s(kip all)]: ").strip().lower()
-            if response == "y":
-                return True
-            elif response == "a":
-                self._approve_all_moves = True
-                return True
-            elif response == "s":
-                self._skip_all_moves = True
-                return False
-            else:
-                return False
-        except (EOFError, KeyboardInterrupt):
-            print("\nMove cancelled by user")
-            return False
-
     def relocate_orphans(self, drift_violations: list[Any]) -> EnforcementReport:
         """
         Move orphaned folders (drift violations) to archives.

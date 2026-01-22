@@ -36,6 +36,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.validators.structure_blueprint import ARCHIVES_DIR
+
 # Configure module logger
 logging.basicConfig(level=logging.INFO)
 Logger = logging.getLogger(__name__)
@@ -100,7 +102,7 @@ class ArchivalGatekeeper:
 
     # Archive folder structure - MUST use SSOT-approved 'archives' folder
     # Reference: structure_blueprint.py -> ARCHIVES_DIR, SOVEREIGN_EXCLUDED_FOLDERS
-    ARCHIVE_ROOT_NAME = "archives"
+    ARCHIVE_ROOT_NAME = ARCHIVES_DIR
     ARCHIVE_SUBDIR = "gatekeeper"  # Subdirectory within archives for gatekeeper operations
     AUDIT_LOG_NAME = "archival_audit.jsonl"
 

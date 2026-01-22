@@ -15,6 +15,7 @@ Features:
 import asyncio
 import logging
 import time
+from enum import Enum
 from typing import Any
 
 from agentic_core.config.feature_flags import (
@@ -31,6 +32,15 @@ log = logging.getLogger(__name__)
 def get_cache_metrics():
     """Stub for optional cache metrics tracking."""
     return {}
+
+
+class RetrievalBroadness(Enum):
+    """Standardized retrieval scopes for semantic search."""
+
+    NARROW = 5  # Quick, focused retrieval (legacy default)
+    STANDARD = 15  # Balanced retrieval for most use cases
+    BROAD = 30  # Wide neighborhood for complex tasks
+    EXHAUSTIVE = 50  # Maximum retrieval for meta-learning
 
 
 class PineconeVectorMixin:
@@ -89,21 +99,25 @@ class PineconeVectorMixin:
     async def vector_search(
         self,
         embedding: list[float],
-        top_k: int = 10,
+        top_k: int | None = None,
+        broadness: RetrievalBroadness = RetrievalBroadness.STANDARD,
         metadata_filter: dict[str, Any] | None = None,
         include_metadata: bool = True,
+        score_threshold: float | None = None,
     ) -> list[dict[str, Any]]:
         """
-        Search for similar vectors.
+        Perform a hardened vector search using the Pinecone index with broadness support.
 
         Args:
-            embedding: Query vector
-            top_k: Number of results to return
-            metadata_filter: Optional filter on metadata fields
-            include_metadata: Whether to include metadata in results
+            embedding: The query embedding vector.
+            top_k: (Optional) Explicit override for number of results. If provided, ignores broadness.
+            broadness: RetrievalBroadness enum determining semantic scope (default: STANDARD).
+            metadata_filter: Optional dictionary for metadata filtering.
+            include_metadata: Whether to include metadata in results.
+            score_threshold: (Optional) Minimum similarity score to return.
 
         Returns:
-            List of matches with id, score, and optionally metadata
+            List of vector search results matching the query.
         """
         start = time.time()
         metrics = get_cache_metrics()
@@ -113,7 +127,15 @@ class PineconeVectorMixin:
                 f"Invalid embedding dimension: {len(embedding)} != {self.EXPECTED_DIMENSION}"
             )
 
-        top_k = min(top_k, self.MAX_QUERY_TOP_K)
+        # Precedence Logic: Explicit top_k > Broadness Enum
+        if top_k is not None:
+            effective_top_k = min(top_k, self.MAX_QUERY_TOP_K)
+            if top_k != broadness.value:
+                log.debug(
+                    f"Manual top_k ({top_k}) overriding broadness ({broadness.name}: {broadness.value})"
+                )
+        else:
+            effective_top_k = min(broadness.value, self.MAX_QUERY_TOP_K)
 
         local_only = False
 
@@ -133,7 +155,7 @@ class PineconeVectorMixin:
                 results = await asyncio.wait_for(
                     self.pinecone.query(
                         vector=embedding,
-                        top_k=top_k,
+                        top_k=effective_top_k,
                         namespace=self._namespace,
                         filter=metadata_filter,
                         include_metadata=include_metadata,
@@ -141,11 +163,18 @@ class PineconeVectorMixin:
                     timeout=self.QUERY_TIMEOUT,
                 )
                 latency = (time.time() - start) * 1000
-                hit = len(results.get("matches", [])) > 0
+                matches = results.get("matches", [])
+
+                # Apply optional score threshold post-retrieval
+                if score_threshold is not None:
+                    matches = [m for m in matches if m.get("score", 0) >= score_threshold]
+
+                hit = len(matches) > 0
                 if CACHE_METRICS_ENABLED:
                     metrics.record("pinecone_search", hit=hit, latency_ms=latency)
-                log.debug(f"Vector search returned {len(results.get('matches', []))} results")
-                return results.get("matches", [])
+                log.debug(f"Vector search returned {len(matches)} results")
+                return matches
+
             except Exception as e:
                 latency = (time.time() - start) * 1000
                 log.warning(f"Pinecone query failed after {latency:.0f}ms: {e}")
@@ -174,7 +203,7 @@ class PineconeVectorMixin:
                 }
             )
 
-        return results[:top_k]
+        return results[:effective_top_k]
 
     async def vector_upsert(
         self, id: str, embedding: list[float], metadata: dict[str, Any]
