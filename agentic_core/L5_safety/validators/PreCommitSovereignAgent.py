@@ -30,7 +30,7 @@ Logic:
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import subprocess
 import sys
@@ -90,7 +90,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBaseAgent):
         Returns:
             Dict with healing summary
         """
-        super().heal_repository()
+        super().heal_repository(**kwargs)
 
         # === ZOMBIE VACCINATION: Wired orphaned methods ===
         if hasattr(self, "validate_staged_files"):

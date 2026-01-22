@@ -10,7 +10,7 @@ from __future__ import annotations
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import sys
 from pathlib import Path
@@ -597,18 +597,18 @@ class CodeDeduplicationAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVector
 
     def resolve_duplicates_safely(self, project_root: Path, dry_run: bool = True) -> None:
         """Central resolution: identical files → consolidate; divergent filenames → rename.
-        
+
         [BATCH 1 REMEDIATION] Respects SOVEREIGN_AUTO_APPROVE for automated healing.
         """
         import os
-        
+
         print("\n[*] SAFE DUPLICATE RESOLUTION SURGERY...")
-        
+
         # [REMEDIATION] Check sovereign context for auto-approval
         auto_approve = os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1"
         if auto_approve:
             print("   [SOVEREIGN] Auto-approve mode enabled")
-        
+
         # First: identical whole files
         for _file_hash, paths in self.file_duplicate_groups.items():
             if len(paths) > 1:

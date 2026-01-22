@@ -3,7 +3,7 @@ from typing import Any
 from pathlib import Path
 from dataclasses import dataclass
 from dataclasses import field
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
 """

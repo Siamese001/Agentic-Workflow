@@ -35,7 +35,7 @@ def test_tc9_mro_integrity():
     print("=" * 60)
 
     from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
-    from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
 
     # Get MRO
@@ -85,7 +85,7 @@ def test_tc10_inheritance_continuity():
     print("TC-10: Inheritance Continuity")
     print("=" * 60)
 
-    from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     # Create a test agent
     class TestL2Agent(SovereignBaseAgent):

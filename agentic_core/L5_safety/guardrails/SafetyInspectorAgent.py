@@ -25,7 +25,7 @@ Typical usage:
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 import re

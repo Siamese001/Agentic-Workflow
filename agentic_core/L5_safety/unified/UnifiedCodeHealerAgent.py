@@ -27,7 +27,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 

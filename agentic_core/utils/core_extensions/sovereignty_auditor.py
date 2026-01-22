@@ -1,5 +1,5 @@
 from __future__ import annotations
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Sovereign Audit Engine – Phase 16H (Dec 27, 2025)

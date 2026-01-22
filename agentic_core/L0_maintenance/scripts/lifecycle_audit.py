@@ -24,44 +24,42 @@ sys.path.insert(0, str(project_root))
 from agentic_core.L5_safety.validators.CanonDependencySentinelAgent import (
     InitializationIntegrityVisitor,
     ArchitectureDNAVisitor,
-    AgentASTVisitor,
-    CodeViolation,
 )
 
 
 # Test Cases
 COMPLIANT_AGENT = """
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 class CompliantAgent(SovereignBaseAgent):
     def __init__(self, name: str, **kwargs):
         super().__init__(**kwargs)
         self.name = name
-    
+
     def heal_repository(self, dry_run=True, execute=False, **kwargs):
         return {"status": "SUCCESS", "violations_found": 0}
 """
 
 INIT_HIJACKING_AGENT = """
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 class ZombieAgent(SovereignBaseAgent):
     def __init__(self, some_arg):
         self.some_arg = some_arg
         # Missing super().__init__(**kwargs)
-    
+
     def heal_repository(self, dry_run=True, execute=False, **kwargs):
         return {"status": "SUCCESS"}
 """
 
 INIT_NO_KWARGS_AGENT = """
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 class NoKwargsAgent(SovereignBaseAgent):
     def __init__(self, name: str):
         super().__init__()  # Missing **kwargs propagation
         self.name = name
-    
+
     def heal_repository(self, dry_run=True, execute=False, **kwargs):
         return {"status": "SUCCESS"}
 """
@@ -71,7 +69,7 @@ class OrphanAgent:
     '''Agent without SovereignBaseAgent inheritance'''
     def __init__(self):
         pass
-    
+
     def heal_repository(self, dry_run=True, execute=False, **kwargs):
         return {"status": "SUCCESS"}
 """
@@ -82,12 +80,14 @@ def test_init_gate_compliant():
     tree = ast.parse(COMPLIANT_AGENT)
     visitor = InitializationIntegrityVisitor("test_compliant.py")
     visitor.visit(tree)
-    
+
     if len(visitor.violations) == 0:
         print("✅ DNA-01 PASS: Compliant agent correctly identified as valid.")
         return True
     else:
-        print(f"❌ DNA-01 FAIL: Compliant agent incorrectly flagged. Violations: {[v.message for v in visitor.violations]}")
+        print(
+            f"❌ DNA-01 FAIL: Compliant agent incorrectly flagged. Violations: {[v.message for v in visitor.violations]}"
+        )
         return False
 
 
@@ -96,9 +96,9 @@ def test_init_gate_hijacking():
     tree = ast.parse(INIT_HIJACKING_AGENT)
     visitor = InitializationIntegrityVisitor("test_hijacking.py")
     visitor.visit(tree)
-    
+
     init_bypasses = [v for v in visitor.violations if v.violation_type == "INIT_BYPASS"]
-    
+
     if len(init_bypasses) > 0:
         print(f"✅ DNA-02 PASS: Init hijacking detected. Message: {init_bypasses[0].message}")
         return True
@@ -112,9 +112,9 @@ def test_init_gate_no_kwargs():
     tree = ast.parse(INIT_NO_KWARGS_AGENT)
     visitor = InitializationIntegrityVisitor("test_no_kwargs.py")
     visitor.visit(tree)
-    
+
     init_bypasses = [v for v in visitor.violations if v.violation_type == "INIT_BYPASS"]
-    
+
     if len(init_bypasses) > 0:
         print(f"✅ DNA-02b PASS: Missing **kwargs detected. Message: {init_bypasses[0].message}")
         return True
@@ -128,9 +128,9 @@ def test_dna_severed():
     tree = ast.parse(DNA_SEVERED_AGENT)
     visitor = ArchitectureDNAVisitor("test_severed.py")
     visitor.visit(tree)
-    
+
     severed = [v for v in visitor.violations if v.violation_type == "DNA_SEVERED"]
-    
+
     if len(severed) > 0:
         print(f"✅ DNA-SEVERED PASS: Orphan agent detected. Message: {severed[0].message}")
         return True
@@ -145,30 +145,30 @@ def run_all_tests():
     print("SOVEREIGN LIFECYCLE GUARD - AUDIT TESTS")
     print("=" * 60)
     print()
-    
+
     results = []
-    
+
     # Run tests
     results.append(("DNA-01: Compliant Agent", test_init_gate_compliant()))
     results.append(("DNA-02: Init Hijacking", test_init_gate_hijacking()))
     results.append(("DNA-02b: No **kwargs", test_init_gate_no_kwargs()))
     results.append(("DNA-SEVERED: Orphan Agent", test_dna_severed()))
-    
+
     print()
     print("=" * 60)
     print("SUMMARY")
     print("=" * 60)
-    
+
     passed = sum(1 for _, r in results if r)
     total = len(results)
-    
+
     for name, result in results:
         status = "✅ PASS" if result else "❌ FAIL"
         print(f"  {status}: {name}")
-    
+
     print()
     print(f"Results: {passed}/{total} tests passed")
-    
+
     if passed == total:
         print("\n🎉 ALL TESTS PASSED - Sovereign Lifecycle Guard is operational.")
         return 0

@@ -47,7 +47,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
@@ -563,7 +563,7 @@ class L4StateBaseAgent(
 
         except Exception as e:
             self.log_error(f"Persist failed: {e}")
-            super().heal_repository()
+            super().heal_repository(**kwargs)
             return False
 
     def create_checkpoint(self, state: dict[str, Any]) -> str | None:
@@ -624,7 +624,7 @@ class L4StateBaseAgent(
 
         except Exception as e:
             self.log_error(f"Checkpoint recovery failed: {e}")
-            super().heal_repository()
+            super().heal_repository(**kwargs)
             return None
 
     def _semantic_search(self, query: str, k: int = 5) -> list[dict[str, Any]]:
@@ -864,12 +864,12 @@ class L4StateBaseAgent(
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
-        **kwargs
+        **kwargs,
     ) -> dict[str, int]:
         """L4 state agent - operational only."""
         if _call_path is None:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-            super().heal_repository()
+            super().heal_repository(**kwargs)
 
         agent_name = self.__class__.__name__
         if agent_name in _call_path:

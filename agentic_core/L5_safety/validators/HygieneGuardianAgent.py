@@ -14,7 +14,7 @@ Consolidates hygiene checks:
 Territory: agentic_core/L5_safety/validators/
 """
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import re
 from collections import Counter

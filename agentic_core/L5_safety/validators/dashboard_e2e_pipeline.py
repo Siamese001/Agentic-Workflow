@@ -4,7 +4,7 @@ AUTOMATED DASHBOARD E2E PIPELINE
 =================================
 
 Complete end-to-end pipeline that:
-1. Fixes heal invocation gaps (adds super().heal_repository() calls)
+1. Fixes heal invocation gaps (adds super(, **kwargs).heal_repository(, **kwargs) calls, **kwargs)
 2. Regenerates agent discovery data
 3. Regenerates dashboard HTML
 4. Validates all data integrity

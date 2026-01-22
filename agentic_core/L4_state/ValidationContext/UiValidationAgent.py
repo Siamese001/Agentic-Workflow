@@ -2,7 +2,7 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
@@ -37,6 +37,6 @@ class UiValidationAgent(SovereignBaseAgent, SubAtomicAgent):
             return
         print("   ℹ UI validation placeholder - Figma MCP integration pending")
 
-    def heal_repository(self) -> dict:
+    def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
-        return super().heal_repository()
+        return super().heal_repository(**kwargs)

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Implementation for ContextCurator."""
 import logging

@@ -22,7 +22,7 @@ Features:
 - [SOVEREIGN] Active Healing: Replaces stub with execution driver
 """
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import ast
 import json

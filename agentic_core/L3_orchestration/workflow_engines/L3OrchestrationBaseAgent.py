@@ -15,7 +15,7 @@ SSOT PRINCIPLE:
 
 from dataclasses import dataclass
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass
@@ -48,7 +48,7 @@ class L3OrchestrationBaseAgent(SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
-        **kwargs
+        **kwargs,
     ) -> dict[str, int]:
         """
         L3 orchestration healing - coordinates healing across agents.

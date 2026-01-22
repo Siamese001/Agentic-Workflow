@@ -5,7 +5,7 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Planning and reflection agents for strategic decision-making.
@@ -125,7 +125,9 @@ Output ONLY the plan in Markdown.
             print("   [OK] Strategy: Maintain current trajectory.")
 
     @standard_heal
-    def heal_repository(self, dry_run=True, execute=False, depth=0, max_depth=3, _call_path=None, **kwargs) -> dict:
+    def heal_repository(
+        self, dry_run=True, execute=False, depth=0, max_depth=3, _call_path=None, **kwargs
+    ) -> dict:
         """Standardized healing signature with signal propagation."""
         return super().heal_repository(dry_run, execute, depth, max_depth, _call_path, **kwargs)
 

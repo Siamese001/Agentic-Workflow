@@ -11,9 +11,8 @@ import sys
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 try:
@@ -60,14 +59,15 @@ class CodeViolation:
 class ArchitectureDNAVisitor(ast.NodeVisitor):
     """
     Enforces v3.2 Capability Map: MRO, Mixin Affinity, and DNA integrity.
-    
+
     Detects:
     - DNA_SEVERED: Agents missing L0 foundation (MRO risk)
     - LAYER_CROSSING: Mixins used outside their designated layer
     """
+
     def __init__(self, file_path: str):
         self.file_path = file_path
-        self.violations: List[CodeViolation] = []
+        self.violations: list[CodeViolation] = []
 
     def visit_ClassDef(self, node: ast.ClassDef):
         if not node.name.endswith("Agent"):
@@ -76,22 +76,34 @@ class ArchitectureDNAVisitor(ast.NodeVisitor):
         # 1. MRO Violation: SovereignBaseAgent must be in the bases or a layer base
         bases = [b.id if isinstance(b, ast.Name) else getattr(b, "attr", "") for b in node.bases]
         if not any(base in VALID_AGENT_BASES for base in bases):
-            self.violations.append(CodeViolation(
-                self.file_path, node.lineno, "DNA_SEVERED", 
-                f"Agent '{node.name}' has no L0 foundation (MRO risk).", "HIGH"
-            ))
+            self.violations.append(
+                CodeViolation(
+                    self.file_path,
+                    node.lineno,
+                    "DNA_SEVERED",
+                    f"Agent '{node.name}' has no L0 foundation (MRO risk).",
+                    "HIGH",
+                )
+            )
 
         # 2. Layer Affinity: Check if Mixins match the folder path
-        layer_match = next((l for l in ["L1", "L2", "L3", "L4", "L5", "L6"] if l in self.file_path), None)
+        layer_match = next(
+            (l for l in ["L1", "L2", "L3", "L4", "L5", "L6"] if l in self.file_path), None
+        )
         if layer_match:
             for base in bases:
                 if "Mixin" in base and base not in LAYER_AFFINITY_MAP.get(layer_match, []):
                     # Allow InfrastructureMixin as global
                     if base != "InfrastructureMixin":
-                        self.violations.append(CodeViolation(
-                            self.file_path, node.lineno, "LAYER_CROSSING",
-                            f"Mixin '{base}' does not belong to layer {layer_match}.", "MEDIUM"
-                        ))
+                        self.violations.append(
+                            CodeViolation(
+                                self.file_path,
+                                node.lineno,
+                                "LAYER_CROSSING",
+                                f"Mixin '{base}' does not belong to layer {layer_match}.",
+                                "MEDIUM",
+                            )
+                        )
 
         self.generic_visit(node)
 
@@ -99,38 +111,43 @@ class ArchitectureDNAVisitor(ast.NodeVisitor):
 class InitializationIntegrityVisitor(ast.NodeVisitor):
     """
     Ensures __init__ properly propagates to SovereignBaseAgent via **kwargs.
-    
+
     [PHASE 33m] Calibrated to support dataclasses:
     - Dataclasses with @dataclass decorator are auto-initialized
     - __post_init__ is treated as valid initialization context
-    
+
     Detects:
     - INIT_BYPASS: Agent __init__ fails to call super().__init__(**kwargs)
     """
+
     def __init__(self, file_path: str):
         self.file_path = file_path
-        self.violations: List[CodeViolation] = []
-        self.current_class: Optional[str] = None
+        self.violations: list[CodeViolation] = []
+        self.current_class: str | None = None
         self.is_dataclass: bool = False
         self.has_post_init: bool = False
 
     def visit_ClassDef(self, node: ast.ClassDef):
         if node.name.endswith("Agent"):
             self.current_class = node.name
-            
+
             # [PHASE 33m] Check for @dataclass decorator
             self.is_dataclass = any(
-                (isinstance(d, ast.Name) and d.id == 'dataclass') or
-                (isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and d.func.id == 'dataclass')
+                (isinstance(d, ast.Name) and d.id == "dataclass")
+                or (
+                    isinstance(d, ast.Call)
+                    and isinstance(d.func, ast.Name)
+                    and d.func.id == "dataclass"
+                )
                 for d in node.decorator_list
             )
-            
+
             # Check for __post_init__ method (valid for dataclasses)
             self.has_post_init = any(
-                isinstance(item, ast.FunctionDef) and item.name == '__post_init__'
+                isinstance(item, ast.FunctionDef) and item.name == "__post_init__"
                 for item in node.body
             )
-            
+
             self.generic_visit(node)
             self.current_class = None
             self.is_dataclass = False
@@ -142,7 +159,7 @@ class InitializationIntegrityVisitor(ast.NodeVisitor):
         # [PHASE 33m] Skip dataclasses - they auto-generate __init__
         if self.is_dataclass:
             return
-            
+
         if node.name != "__init__" or not self.current_class:
             return
 
@@ -164,28 +181,39 @@ class InitializationIntegrityVisitor(ast.NodeVisitor):
                                     passes_kwargs = True
 
         if not has_super_init:
-            self.violations.append(CodeViolation(
-                self.file_path, node.lineno, "INIT_BYPASS",
-                f"Agent '{self.current_class}' __init__ missing super().__init__() call.", "HIGH"
-            ))
+            self.violations.append(
+                CodeViolation(
+                    self.file_path,
+                    node.lineno,
+                    "INIT_BYPASS",
+                    f"Agent '{self.current_class}' __init__ missing super().__init__() call.",
+                    "HIGH",
+                )
+            )
         elif not passes_kwargs:
-            self.violations.append(CodeViolation(
-                self.file_path, node.lineno, "INIT_BYPASS",
-                f"Agent '{self.current_class}' __init__ fails to propagate **kwargs to L0 Foundation.", "HIGH"
-            ))
+            self.violations.append(
+                CodeViolation(
+                    self.file_path,
+                    node.lineno,
+                    "INIT_BYPASS",
+                    f"Agent '{self.current_class}' __init__ fails to propagate **kwargs to L0 Foundation.",
+                    "HIGH",
+                )
+            )
 
 
 class HealerComplianceVisitor(ast.NodeVisitor):
     """
     Detects 'Zombie' Healers that exist but do nothing.
-    
+
     Detects:
     - ZOMBIE_HEALER: heal_repository method is a no-op stub (only pass/return)
     """
+
     def __init__(self, file_path: str):
         self.file_path = file_path
-        self.violations: List[CodeViolation] = []
-        self.current_class: Optional[str] = None
+        self.violations: list[CodeViolation] = []
+        self.current_class: str | None = None
 
     def visit_ClassDef(self, node: ast.ClassDef):
         if node.name.endswith("Agent"):
@@ -198,7 +226,7 @@ class HealerComplianceVisitor(ast.NodeVisitor):
     def visit_FunctionDef(self, node: ast.FunctionDef):
         if node.name != "heal_repository" or not self.current_class:
             return
-            
+
         # Check if body is trivial (only pass, or only return with simple value)
         is_trivial = True
         if len(node.body) > 1:
@@ -222,12 +250,17 @@ class HealerComplianceVisitor(ast.NodeVisitor):
                 is_trivial = True
             else:
                 is_trivial = False
-                
+
         if is_trivial:
-            self.violations.append(CodeViolation(
-                self.file_path, node.lineno, "ZOMBIE_HEALER",
-                f"Agent '{self.current_class}' heal_repository method appears to be a no-op stub.", "MEDIUM"
-            ))
+            self.violations.append(
+                CodeViolation(
+                    self.file_path,
+                    node.lineno,
+                    "ZOMBIE_HEALER",
+                    f"Agent '{self.current_class}' heal_repository method appears to be a no-op stub.",
+                    "MEDIUM",
+                )
+            )
 
 
 class AgentASTVisitor(ast.NodeVisitor):
@@ -351,43 +384,43 @@ class CanonDependencySentinelAgent(SovereignBaseAgent, MCPHardenedMixin):
     def scan_architecture(self):
         """
         Scan all Agent files for structural validity and DNA integrity.
-        
+
         [PHASE 33m] Scope Containment: Excludes test, archive, and script directories
         to reduce false positives from non-production code.
         """
         # [PHASE 33m] Directories to exclude from scanning
-        EXCLUDED_DIRS = {'tests', 'archives', 'scripts', 'apps_lic', '__pycache__', '.git'}
-        
+        EXCLUDED_DIRS = {"tests", "archives", "scripts", "apps_lic", "__pycache__", ".git"}
+
         violations = []
         for fp in self.project_root.rglob("*Agent.py"):
             # [PHASE 33m] Skip excluded directories
             path_parts = set(fp.parts)
             if path_parts & EXCLUDED_DIRS:
                 continue
-                
+
             try:
                 tree = ast.parse(fp.read_text(encoding="utf-8"), filename=str(fp))
-                
+
                 # Run Syntax Sentinel
                 visitor = AgentASTVisitor(str(fp))
                 visitor.visit(tree)
                 violations.extend(visitor.violations)
-                
+
                 # Run DNA Auditor
                 dna_visitor = ArchitectureDNAVisitor(str(fp))
                 dna_visitor.visit(tree)
                 violations.extend(dna_visitor.violations)
-                
+
                 # Run Init Integrity Auditor
                 init_visitor = InitializationIntegrityVisitor(str(fp))
                 init_visitor.visit(tree)
                 violations.extend(init_visitor.violations)
-                
+
                 # Run Healer Compliance Auditor
                 healer_visitor = HealerComplianceVisitor(str(fp))
                 healer_visitor.visit(tree)
                 violations.extend(healer_visitor.violations)
-                
+
             except SyntaxError as e:
                 violations.append(
                     CodeViolation(str(fp), e.lineno or 0, "SYNTAX_ERROR", e.msg, "CRITICAL")
@@ -398,22 +431,22 @@ class CanonDependencySentinelAgent(SovereignBaseAgent, MCPHardenedMixin):
         """
         [PHASE 33l] Surgical injection of a standardized heal_repository method
         for agents detected as ZOMBIE_HEALER.
-        
+
         Args:
             file_path: Path to the agent file with zombie healer
             agent_name: Name of the agent class
-            
+
         Returns:
             True if resurrection successful, False otherwise
         """
         import re
-        
+
         try:
             content = file_path.read_text(encoding="utf-8")
             if "def heal_repository" not in content:
                 Logger.warning(f"No heal_repository found in {file_path.name}")
                 return False
-            
+
             # Resurrection patch - standardized healer logic
             resurrection_patch = '''    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict:
         """Standardized resurrection healer logic."""
@@ -421,11 +454,11 @@ class CanonDependencySentinelAgent(SovereignBaseAgent, MCPHardenedMixin):
         if execute and not dry_run and violations:
             return self._fix_violations(violations) if hasattr(self, '_fix_violations') else {"status": "SKIPPED", "violations": len(violations)}
         return {"status": "PASS" if not violations else "FAIL", "violations_found": len(violations), "violations_fixed": 0}'''
-            
+
             # Use regex to replace the stub heal_repository method
             # Pattern matches: def heal_repository(...): followed by pass/return/docstring only
             pattern = r'(    def heal_repository\([^)]*\)[^:]*:)\s*(?:"""[^"]*"""\s*)?(?:pass|return[^\n]*)'
-            
+
             if re.search(pattern, content):
                 content = re.sub(pattern, resurrection_patch, content)
                 file_path.write_text(content, encoding="utf-8")
@@ -434,7 +467,7 @@ class CanonDependencySentinelAgent(SovereignBaseAgent, MCPHardenedMixin):
             else:
                 Logger.warning(f"Could not match heal_repository pattern in {file_path.name}")
                 return False
-                
+
         except Exception as e:
             Logger.error(f"Resurrection failed for {file_path.name}: {e}")
             return False

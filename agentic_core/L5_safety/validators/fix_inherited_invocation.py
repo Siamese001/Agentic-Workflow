@@ -4,7 +4,7 @@ Fix Inherited Invocation - Add heal_repository() methods to agents missing expli
 
 This script:
 1. Loads agents with invocation='Inherited' from agent_discovery_full.json
-2. For each agent class, adds a heal_repository() method that calls super().heal_repository()
+2. For each agent class, adds a heal_repository(, **kwargs) method that calls super(, **kwargs).heal_repository(, **kwargs)
 3. This converts "Inherited" → "Yes" status, maximizing invocation %
 """
 
@@ -20,9 +20,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
 
 HEAL_METHOD_TEMPLATE = '''
-    def heal_repository(self) -> dict:
+    def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
-        return super().heal_repository()
+        return super(, **kwargs).heal_repository(, **kwargs)
 '''
 
 

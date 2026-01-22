@@ -10,7 +10,7 @@ from __future__ import annotations
 # Suggested keywords to add in docstring/code: memory, orchestrator
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 ImportAgent: Gravity & Import Convention Enforcer (Key 6/Gravity territory)

@@ -21,7 +21,7 @@ from typing import Any
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 try:
     from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin

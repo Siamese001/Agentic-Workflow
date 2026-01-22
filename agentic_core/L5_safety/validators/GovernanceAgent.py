@@ -4,7 +4,7 @@
 from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 
@@ -493,7 +493,7 @@ class GovernanceAgent(SovereignBaseAgent):
     def _prompt_user_for_move_approval(self, source: Path, target: Path, reason: str) -> bool:
         """
         Prompt user for approval before moving a file.
-        
+
         [BATCH 1 REMEDIATION] Delegates to ArchivalGatekeeper which respects
         SOVEREIGN_AUTO_APPROVE and ARCHIVE_BATCH_ACCEPT environment variables.
 
@@ -506,16 +506,16 @@ class GovernanceAgent(SovereignBaseAgent):
             True if user approves, False otherwise
         """
         import os
-        
+
         # [REMEDIATION] Check sovereign auto-approve first
         if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
             LOGGER.info(f"[GovernanceAgent] Auto-approved move: {source.name}")
             return True
-            
+
         if os.environ.get("ARCHIVE_BATCH_ACCEPT") == "1":
             LOGGER.info(f"[GovernanceAgent] Batch-approved move: {source.name}")
             return True
-        
+
         # Delegate to gatekeeper for consistent approval handling
         return self.gatekeeper.safe_operation("move", f"{source} -> {target}")
 

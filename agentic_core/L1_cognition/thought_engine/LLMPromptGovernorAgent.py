@@ -273,7 +273,7 @@ Return ONLY JSON in this format:
         self, dry_run: bool = True, execute: bool = False, **kwargs
     ) -> dict[str, int]:
         """Autonomous healing implementation as per Canon Key 51."""
-        super().heal_repository()
+        super().heal_repository(**kwargs)
 
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 

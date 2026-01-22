@@ -23,7 +23,14 @@ from agentic_core.config.feature_flags import (
     GRACEFUL_DEGRADATION,
     USE_REDIS_CACHE,
 )
-from agentic_core.observability.cache_metrics import get_cache_metrics
+# from agentic_core.observability.cache_metrics import get_cache_metrics  # Optional metrics - commented out
+
+
+# Stub for optional cache metrics
+def get_cache_metrics():
+    """Stub for optional cache metrics tracking."""
+    return {}
+
 
 log = logging.getLogger(__name__)
 

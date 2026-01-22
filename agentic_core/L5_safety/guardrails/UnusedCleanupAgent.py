@@ -3,7 +3,7 @@ from __future__ import annotations
 """Unused Cleanup Agent - Removes unused imports and variables using autoflake.
 
 This module provides an atomic agent that removes unused imports and variables
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from Python files using the autoflake tool.
 
 Typical usage:

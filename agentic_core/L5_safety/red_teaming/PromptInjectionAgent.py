@@ -17,7 +17,7 @@ malicious prompt crafting, jailbreaks, and instruction override attempts.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 from dataclasses import dataclass

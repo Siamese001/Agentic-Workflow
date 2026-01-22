@@ -11,7 +11,7 @@ allowing nodes to spawn new predecessors when they detect Missing information.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 import uuid

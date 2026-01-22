@@ -12,7 +12,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, state, validator
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
@@ -37,7 +37,7 @@ class LicS2SupervisorAgent(SovereignBaseAgent):
         Returns:
             Dict with healing summary
         """
-        super().heal_repository()
+        super().heal_repository(**kwargs)
 
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 

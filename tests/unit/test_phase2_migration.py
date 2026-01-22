@@ -31,7 +31,7 @@ class TestCaseA_TheBigSwitch:
 
     def test_sovereign_base_agent_has_infra_mixin(self):
         """Verify SovereignBaseAgent inherits from InfrastructureMixin."""
-        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
 
         # Check inheritance
@@ -41,7 +41,7 @@ class TestCaseA_TheBigSwitch:
 
     def test_sovereign_base_agent_infra_initialized(self):
         """Verify _infra_initialized is True after instantiation."""
-        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Create instance
         agent = SovereignBaseAgent(name="TestAgent")
@@ -56,7 +56,7 @@ class TestCaseA_TheBigSwitch:
 
     def test_sovereign_base_agent_has_healer_metrics(self):
         """Verify HealerMixin was properly initialized via InfrastructureMixin."""
-        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         agent = SovereignBaseAgent(name="TestAgent")
 
@@ -67,7 +67,7 @@ class TestCaseA_TheBigSwitch:
 
     def test_sovereign_base_agent_verify_state_passes(self):
         """Verify verify_state() passes for properly initialized agent."""
-        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         agent = SovereignBaseAgent(name="TestAgent")
 
@@ -77,7 +77,7 @@ class TestCaseA_TheBigSwitch:
 
     def test_sovereign_base_agent_mro_order(self):
         """Verify MRO includes InfrastructureMixin before object."""
-        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         mro = SovereignBaseAgent.__mro__
         mro_names = [cls.__name__ for cls in mro]

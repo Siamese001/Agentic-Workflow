@@ -15,7 +15,7 @@ Re-exported from L5_safety for backwards compatibility.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from typing import Any
 
 
@@ -59,7 +59,7 @@ class NamingAgent(SovereignBaseAgent):
     ) -> dict[str, Any]:
         """Autonomous healing method (Canon Key 51 compliance)."""
         try:
-            super().heal_repository(dry_run=dry_run)
+            super().heal_repository(dry_run=dry_run, **kwargs)
         except (AttributeError, TypeError):
             pass
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}

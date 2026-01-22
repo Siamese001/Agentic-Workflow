@@ -2,7 +2,7 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt
 from __future__ import annotations
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
@@ -85,7 +85,7 @@ class ImportLockAgent(SovereignBaseAgent, MetaPathFinder):
         Returns:
             Dict with healing summary
         """
-        super().heal_repository()
+        super().heal_repository(**kwargs)
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 

@@ -4,7 +4,7 @@
 from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -111,9 +111,9 @@ class SprawlInspectorAgent(SovereignBaseAgent):
         print("=" * 70)
 
     @standard_heal
-    def heal_repository(self) -> dict:
+    def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
-        return super().heal_repository()
+        return super().heal_repository(**kwargs)
 
 
 if __name__ == "__main__":

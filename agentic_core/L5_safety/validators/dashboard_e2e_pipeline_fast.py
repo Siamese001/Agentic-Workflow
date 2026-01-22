@@ -7,7 +7,7 @@ Optimized pipeline that skips slow discovery regeneration and uses existing data
 Only regenerates discovery if absolutely necessary (e.g., after code fixes).
 
 Steps:
-1. Fix heal invocation gaps (adds super().heal_repository() calls)
+1. Fix heal invocation gaps (adds super(, **kwargs).heal_repository(, **kwargs) calls, **kwargs)
 2. Update agent_discovery_full.json metadata directly (fast)
 3. Regenerate dashboard HTML
 4. Validate all data integrity
@@ -104,7 +104,11 @@ class FastDashboardE2EPipeline:
                         insert_index = i
                         break
 
-                lines.insert(insert_index, "        super().heal_repository()\n")
+                lines.insert(
+                    insert_index,
+                    "        super(, **kwargs).heal_repository(, **kwargs)\n",
+                    **kwargs,
+                )
                 new_method_body = "\n".join(lines)
                 new_method = method_sig + docstring + new_method_body + next_section
                 new_content = content[: match.start()] + new_method + content[match.end() :]

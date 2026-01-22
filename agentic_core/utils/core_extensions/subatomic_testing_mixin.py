@@ -166,7 +166,7 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
         """MRO chain stub for heal_repository.
 
         This stub exists to support the MRO chain when agents inherit from
-        SubatomicTestingMixin and call super().heal_repository(). Without this,
+        SubatomicTestingMixin and call super().heal_repository(**kwargs). Without this,
         the super() call would fail with AttributeError.
 
         Args:

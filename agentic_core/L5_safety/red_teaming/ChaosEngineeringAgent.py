@@ -17,7 +17,7 @@ to ensure the AI system degrades gracefully under adverse conditions.
 # Suggested keywords to add in docstring/code: orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 import random

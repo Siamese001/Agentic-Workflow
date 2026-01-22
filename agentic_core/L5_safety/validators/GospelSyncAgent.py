@@ -48,7 +48,7 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
         Returns:
             Dict with healing summary
         """
-        super().heal_repository()
+        super().heal_repository(**kwargs)
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 

@@ -202,7 +202,7 @@ class ZombieVaccinator:
             # Build the injection block
             injection_lines = self._build_injection_block(orphans)
 
-            # Find insertion point (after super().heal_repository() call)
+            # Find insertion point (after super(, **kwargs).heal_repository(, **kwargs) call, **kwargs)
             lines = source.split("\n")
             insertion_idx = None
             indent = "        "  # Default 8 spaces
@@ -228,7 +228,10 @@ class ZombieVaccinator:
                         break
 
             if insertion_idx is None:
-                Logger.warning(f"    Could not find super().heal_repository() call in {class_name}")
+                Logger.warning(
+                    f"    Could not find super(, **kwargs).heal_repository(, **kwargs) call in {class_name}",
+                    **kwargs,
+                )
                 return False
 
             # Build indented injection

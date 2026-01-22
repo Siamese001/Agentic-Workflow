@@ -15,7 +15,7 @@ Composable Rules:
 - immune_response: Automated threat response
 """
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import re
 import time

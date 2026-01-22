@@ -5,7 +5,7 @@ Monitors asyncio tasks for potential deadlocks and long-running operations.
 Integrates with SovereignBaseAgent for autonomous health reporting.
 """
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from typing import Any
 from dataclasses import dataclass, field
 import asyncio

@@ -4,7 +4,7 @@
 from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import asyncio
 from dataclasses import dataclass
@@ -147,9 +147,9 @@ Return ONLY the python code for {primary}.
         return None
 
     @standard_heal
-    def heal_repository(self) -> dict:
+    def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
-        return super().heal_repository()
+        return super().heal_repository(**kwargs)
 
 
 # Legacy classes removed 2026-01-06 - use standalone TestPilotAgent.py and ToolsmithAgent.py

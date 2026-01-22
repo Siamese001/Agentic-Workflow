@@ -4,7 +4,7 @@
 from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import asyncio
 from dataclasses import dataclass
@@ -45,7 +45,7 @@ class AgentInfo(SovereignBaseAgent):
         Returns:
             Dict with healing summary
         """
-        super().heal_repository()
+        super().heal_repository(**kwargs)
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 

@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from dataclasses import field
 import logging
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import threading
 from datetime import datetime
 
