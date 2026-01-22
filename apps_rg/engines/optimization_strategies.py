@@ -6,8 +6,6 @@ to reduce reasoning latency and improve quality.
 """
 
 
-
-
 @dataclass
 class ConfidenceMetrics:
     """Confidence metrics for reasoning steps."""

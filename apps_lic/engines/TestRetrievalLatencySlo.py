@@ -1,8 +1,6 @@
 """Regression test enforcing retrieval latency SLO."""
 
-
 import math
-
 
 
 def percentile(values: list[int], pct: float) -> float:

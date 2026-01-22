@@ -7,9 +7,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 Ensures brand voice and professional tone in resume content.
 """
 
-
 import json
-
 
 
 @dataclass

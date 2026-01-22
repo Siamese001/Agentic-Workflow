@@ -8,8 +8,6 @@ DO NOT FIX - Used for testing inheritance validation.
 """
 
 
-
-
 # VIOLATION: This class is in L2_execution but doesn't inherit from L2ExecutionBaseAgent
 class BadL2Agent:
     """A class that should inherit from L2ExecutionBaseAgent but doesn't."""

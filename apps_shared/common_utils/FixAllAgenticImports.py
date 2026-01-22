@@ -7,6 +7,7 @@
 """
 Fix all import issues in agentic_core after bulk hierarchy heal.
 """
+
 import re
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

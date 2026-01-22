@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 CanonASTValidator - Base class for AST-based code validation.
 

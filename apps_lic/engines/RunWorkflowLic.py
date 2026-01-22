@@ -97,7 +97,6 @@ def create_orchestrator():
         WorkflowOrchestrator instance
     """
     try:
-
         return WorkflowOrchestrator()
     except ImportError as e:
         print(f"FATAL: Could not import WorkflowOrchestrator: {e}")

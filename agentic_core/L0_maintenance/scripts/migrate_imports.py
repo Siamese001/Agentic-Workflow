@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Utility to automate the migration from deep imports to clean SSOT paths.
 

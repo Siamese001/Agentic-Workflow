@@ -10,7 +10,6 @@ import os
 
 # --- GEMINI API SETUP ---
 try:
-
     GEMINI_AVAILABLE = True
 
     api_key = os.environ.get("GEMINI_API_KEY")

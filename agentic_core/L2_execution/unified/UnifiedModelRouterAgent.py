@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+
 """
 UnifiedModelRouterAgent - Model Routing with Cost Optimization
 

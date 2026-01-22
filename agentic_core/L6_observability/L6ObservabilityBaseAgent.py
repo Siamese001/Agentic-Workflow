@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 L6ObservabilityBaseAgent - Layer 6 Observability Base Class
 

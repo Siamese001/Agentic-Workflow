@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """AST Engine - Centralized Architectural Parsing Logic.
 
 [Phase 5] Provides shared AST utilities for L5 agents.

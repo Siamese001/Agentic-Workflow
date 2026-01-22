@@ -6,7 +6,6 @@ import json
 import os
 
 
-
 def simple_completion(prompt: str, model: str = "gpt-4o-2024-08-06") -> str:
     """Simple chat completion with OpenAI.
 

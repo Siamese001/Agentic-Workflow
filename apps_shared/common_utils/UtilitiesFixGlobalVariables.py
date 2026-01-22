@@ -1,7 +1,7 @@
-
 """
 Fix global variable violations by replacing with manager pattern
 """
+
 import os
 import re
 

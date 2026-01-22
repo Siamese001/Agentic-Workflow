@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SSOT Relocator - Automated Violation Remediation
 

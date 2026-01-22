@@ -1,9 +1,9 @@
-
 """
 Sovereign Guard: Block Inline Pydantic Models (Final Sovereign Version)
 Constitutional enforcement - all models must live in core_contracts.py
 Signal-based filtering with timestamped, prefixed logging
 """
+
 import ast
 import logging
 import sys

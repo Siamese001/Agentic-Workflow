@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 DEPRECATED (2026-01-07): Use GravityValidatorAgent in L5_safety/validators/ instead.

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Dependency Pruning Agent - Detects and removes unused Python dependencies.
 
 This module provides a batch agent that detects and removes unused Python

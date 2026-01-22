@@ -1,4 +1,3 @@
-
 """
 Test Protocol: Key 42 Fission Trigger
 Responsible for:

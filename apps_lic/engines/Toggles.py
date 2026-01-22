@@ -1,8 +1,6 @@
 """Reasoning toggles for the LIC outreach stack."""
 
 
-
-
 class ReasoningToggles(BaseModel):
     """Bounded reasoning configuration shared across the stack."""
 

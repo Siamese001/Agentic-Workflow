@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """ArchitectureGovernorAgent - Universal Architecture Governance
 
 Phase 1 Upgrade (2026-01-21): Activated from stub to functioning enforcer.

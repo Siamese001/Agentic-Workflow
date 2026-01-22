@@ -27,7 +27,6 @@ from typing import Any
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -268,8 +267,7 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
 
     def _display_report(self, report: CostReport) -> Any:
         """Display cost report."""
-        Logger.info(
-        )
+        Logger.info()
         Logger.info("💰 PREDICTIVE COST AUDIT REPORT")
         Logger.info(f"{'=' * 80}")
         Logger.info(f"Total Files Analyzed: {report.total_files}")

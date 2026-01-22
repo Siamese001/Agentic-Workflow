@@ -121,7 +121,6 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             return {"healed": False}
 
 
-
 # NAMING FIXED: TypeHintFixerAgent → TypeHintFixerAgent
 
 

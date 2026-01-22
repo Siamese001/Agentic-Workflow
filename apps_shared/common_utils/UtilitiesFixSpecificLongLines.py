@@ -1,5 +1,5 @@
-
 """Fix the specific 46 long lines identified by canon validator."""
+
 import logging
 import os
 import re

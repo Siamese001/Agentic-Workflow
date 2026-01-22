@@ -13,7 +13,6 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
 from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
 from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
 

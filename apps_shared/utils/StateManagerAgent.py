@@ -18,7 +18,6 @@ import shutil
 from datetime import datetime
 
 
-
 class StateManager:
     """
     v13.0: Explicit state management for HOP architecture

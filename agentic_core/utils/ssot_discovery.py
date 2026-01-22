@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SSOT Discovery Module - Phase 1 Foundation + Phase 4 Performance Hardening
 

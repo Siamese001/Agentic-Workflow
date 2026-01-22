@@ -4,7 +4,6 @@
 # This boosts alignment detection — review and integrate appropriately
 
 
-
 """HOP-1: Profile Analysis Agent - Classify recipient Archetype."""
 
 __version__ = "13.1"

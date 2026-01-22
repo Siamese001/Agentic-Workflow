@@ -8,7 +8,6 @@ import time
 import uuid
 
 
-
 @dataclass
 class GeneralExerciserAgent(SovereignBaseAgent):
     """

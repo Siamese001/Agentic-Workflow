@@ -22,8 +22,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
@@ -49,8 +47,7 @@ class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
         [L5 HARDENING] Sovereign Architectural Execution.
         Enforces Hierarchy, Nesting, and Header Sovereignty.
         """
-        print(
-        )
+        print()
         print(f"   [{self.name}] 🔍 Checking Architecture: Hierarchy & Headers...")
         passed_arch, arch_viols = self.check_core_architecture()
         header_viols: Any = await self._check_file_headers()

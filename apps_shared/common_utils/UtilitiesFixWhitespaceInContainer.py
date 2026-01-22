@@ -1,5 +1,5 @@
-
 """Simple script to fix trailing whitespace and Missing newlines."""
+
 import os
 
 

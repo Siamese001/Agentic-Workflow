@@ -1,4 +1,3 @@
-
 import argparse
 
 """Brief description of functionality and purpose."""

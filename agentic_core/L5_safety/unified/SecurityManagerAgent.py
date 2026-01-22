@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 from enum import Enum, auto
-from typing import Any, Dict
+from typing import Any
 from pathlib import Path
 from dataclasses import dataclass
 from dataclasses import field
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+
 """
 SecurityManagerAgent - Vaulted Security Management
 
@@ -125,15 +126,16 @@ class SecurityManagerAgent(SovereignBaseAgent):
         checkpoint = manager.create_checkpoint("agent_1", data={"state": "active"})
     """
 
-
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
@@ -398,7 +400,7 @@ class SecurityManagerAgent(SovereignBaseAgent):
 
 # Patterns for detecting security anti-patterns in code
 SQL_PATTERNS = [
-    re.compile(r'\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER)\s+', re.IGNORECASE),
+    re.compile(r"\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER)\s+", re.IGNORECASE),
     re.compile(r'\.execute\s*\(\s*["\']', re.IGNORECASE),
     re.compile(r'\.executemany\s*\(\s*["\']', re.IGNORECASE),
 ]
@@ -409,7 +411,7 @@ URL_PATTERN = re.compile(
 )
 
 # Port patterns in socket/connect calls
-PORT_PATTERN = re.compile(r'\b(port\s*=\s*\d{2,5}|:\s*\d{2,5}|connect\s*\([^)]*\d{2,5})')
+PORT_PATTERN = re.compile(r"\b(port\s*=\s*\d{2,5}|:\s*\d{2,5}|connect\s*\([^)]*\d{2,5})")
 
 
 class SecurityPatternVisitor(ast.NodeVisitor):
@@ -427,22 +429,26 @@ class SecurityPatternVisitor(ast.NodeVisitor):
             # Check for raw SQL patterns
             for pattern in SQL_PATTERNS:
                 if pattern.search(value):
-                    self.violations.append({
-                        "type": "raw_sql",
-                        "line": node.lineno,
-                        "message": f"Potential raw SQL detected: {value[:50]}...",
-                        "severity": "high",
-                    })
+                    self.violations.append(
+                        {
+                            "type": "raw_sql",
+                            "line": node.lineno,
+                            "message": f"Potential raw SQL detected: {value[:50]}...",
+                            "severity": "high",
+                        }
+                    )
                     break
 
             # Check for hardcoded URLs (excluding internal domains)
             if URL_PATTERN.search(f'"{value}"') or URL_PATTERN.search(f"'{value}'"):
-                self.violations.append({
-                    "type": "hardcoded_url",
-                    "line": node.lineno,
-                    "message": f"Hardcoded URL detected: {value[:50]}...",
-                    "severity": "medium",
-                })
+                self.violations.append(
+                    {
+                        "type": "hardcoded_url",
+                        "line": node.lineno,
+                        "message": f"Hardcoded URL detected: {value[:50]}...",
+                        "severity": "medium",
+                    }
+                )
 
         self.generic_visit(node)
 
@@ -457,23 +463,27 @@ class SecurityPatternVisitor(ast.NodeVisitor):
                         for elt in arg.elts:
                             if isinstance(elt, ast.Constant) and isinstance(elt.value, int):
                                 if 1 <= elt.value <= 65535:
-                                    self.violations.append({
-                                        "type": "hardcoded_port",
-                                        "line": node.lineno,
-                                        "message": f"Hardcoded port detected: {elt.value}",
-                                        "severity": "low",
-                                    })
+                                    self.violations.append(
+                                        {
+                                            "type": "hardcoded_port",
+                                            "line": node.lineno,
+                                            "message": f"Hardcoded port detected: {elt.value}",
+                                            "severity": "low",
+                                        }
+                                    )
 
         # Check keyword arguments for port=
         for keyword in node.keywords:
             if keyword.arg == "port" and isinstance(keyword.value, ast.Constant):
                 if isinstance(keyword.value.value, int):
-                    self.violations.append({
-                        "type": "hardcoded_port",
-                        "line": node.lineno,
-                        "message": f"Hardcoded port in keyword argument: {keyword.value.value}",
-                        "severity": "low",
-                    })
+                    self.violations.append(
+                        {
+                            "type": "hardcoded_port",
+                            "line": node.lineno,
+                            "message": f"Hardcoded port in keyword argument: {keyword.value.value}",
+                            "severity": "low",
+                        }
+                    )
 
         self.generic_visit(node)
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Dynamic DAG Mutation Manager - Runtime graph transformation.
 
 This module implements the ability for the DAG to rewrite itself at runtime,
@@ -201,12 +202,6 @@ class DAGConfig(BaseModel):
     max_fan_out: int = Field(default=5, ge=1, le=20)
     enable_mutation_logging: bool = True
     mutation_history_size: int = Field(default=1000, ge=100)
-
-
-from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import (
-    L3SubatomicTestingMixin,
-)
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
 class DAGMutatorAgent(SovereignBaseAgent):
@@ -557,7 +552,6 @@ class DAGMutatorAgent(SovereignBaseAgent):
         return metrics
 
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # Global instance

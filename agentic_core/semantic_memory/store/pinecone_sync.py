@@ -251,4 +251,3 @@ def get_memory_architect_sync() -> MemoryArchitectSync:
         MemoryArchitectSync instance
     """
     return MemoryArchitectSync()
-

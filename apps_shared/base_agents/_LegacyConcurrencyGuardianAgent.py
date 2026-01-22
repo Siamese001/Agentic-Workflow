@@ -1,4 +1,3 @@
-
 import asyncio
 
 """Brief description of functionality and purpose."""
@@ -112,8 +111,6 @@ class LockInfo:
             "acquired_at": self.acquired_at.isoformat(),
             "expires_at": self.expires_at.isoformat(),
         }
-
-
 
 
 # Legacy L1 version - use L2 canonical (concurrency is execution-level)

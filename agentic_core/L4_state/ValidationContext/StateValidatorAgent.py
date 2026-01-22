@@ -13,7 +13,7 @@ Extracted from StateManagerAgent.py for one-file-per-agent pattern (Jan 6, 2026)
 Renamed from StateValidator for consistent Agent suffix.
 """
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
@@ -30,18 +30,18 @@ class StateValidatorAgent(SovereignBaseAgent):
     SCHEMAS = {
         "HOP-1": {
             "required_fields": ["Archetype", "confidence", "reasoning", "key_indicators"],
-            "archetype_values": ["C_LEVEL", "EXECUTIVE", "SENIOR_TA", "RECRUITER"]
+            "archetype_values": ["C_LEVEL", "EXECUTIVE", "SENIOR_TA", "RECRUITER"],
         },
         "HOP-2": {
             "required_fields": ["recipient_insights", "company_context", "rag_results"],
-            "rag_result_fields": ["source", "SourceType", "text"]
+            "rag_result_fields": ["source", "SourceType", "text"],
         },
         "HOP-3": {
             "required_fields": ["team_members", "products", "case_studies"],
         },
         "HOP-4": {
             "required_fields": ["Route", "reasoning"],
-            "route_values": ["INMAIL", "CONNECTION_REQ", "EMAIL", "FOLLOW_UP"]
+            "route_values": ["INMAIL", "CONNECTION_REQ", "EMAIL", "FOLLOW_UP"],
         },
         "HOP-4.5": {
             "required_fields": ["Route", "Archetype", "sections", "constraints"],
@@ -54,12 +54,11 @@ class StateValidatorAgent(SovereignBaseAgent):
         },
         "HOP-7": {
             "required_fields": ["decision", "reasoning"],
-            "decision_values": ["FACTUAL_FAILURE", "CREATIVE_FAILURE", "PASS"]
-        }
+            "decision_values": ["FACTUAL_FAILURE", "CREATIVE_FAILURE", "PASS"],
+        },
     }
 
     @classmethod
-
     def test_self(self) -> dict:
         """
         SubatomicTestingMixin self-test implementation.
@@ -82,14 +81,14 @@ class StateValidatorAgent(SovereignBaseAgent):
                 results["failed"] += 1
 
         # Test 3: MCP hardening check
-        if hasattr(self, '_mcp_tools'):
+        if hasattr(self, "_mcp_tools"):
             results["tests"].append({"name": "mcp_hardened", "passed": True})
             results["passed"] += 1
 
         return results
 
     @classmethod
-    def validate_state(cls, hop_id: str, state_data: Dict[str, Any]) -> Tuple[bool, List[str]]:
+    def validate_state(cls, hop_id: str, state_data: dict[str, Any]) -> tuple[bool, list[str]]:
         """
         Validate state data against expected schema.
 
@@ -122,7 +121,9 @@ class StateValidatorAgent(SovereignBaseAgent):
                     field_name = key.replace(f"_{field_suffix}", "")
                     if field_name in state_data:
                         if state_data[field_name] not in valid_values:
-                            errors.append(f"Invalid value for {field_name}: {state_data[field_name]}")
+                            errors.append(
+                                f"Invalid value for {field_name}: {state_data[field_name]}"
+                            )
 
         is_valid = len(errors) == 0
 

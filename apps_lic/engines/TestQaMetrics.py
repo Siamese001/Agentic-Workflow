@@ -1,5 +1,3 @@
-
-
 def test_metrics_aggregate_pass_rate_and_latency():
     tracker = MetricsTracker()
     tracker.record(

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """RedSentinelAgent - L5 Active Defense & Hostile Input Fuzzing.
 
 This module provides an active defense system that generates hostile inputs

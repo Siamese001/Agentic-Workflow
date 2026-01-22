@@ -8,7 +8,6 @@ DO NOT IMPORT THIS FILE - Used for testing orphan detection.
 """
 
 
-
 def orphan_function_one() -> str:
     """A function that is never called."""
     return "I am orphaned"

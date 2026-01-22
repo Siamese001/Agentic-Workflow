@@ -1,8 +1,6 @@
 """Release SLO checks for the full outreach pipeline."""
 
 
-
-
 def test_release_path_meets_slos_and_is_deterministic():
     stack = OutreachStack(ReasoningToggles())
     inputs = StackInputs(prompt="Checking in", company_id="ACME", contact_id="C1")

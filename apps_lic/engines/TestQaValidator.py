@@ -1,5 +1,3 @@
-
-
 def test_missing_subject_fails():
     validator = QAValidator()
     draft = "Hello\n\nBody without subject"

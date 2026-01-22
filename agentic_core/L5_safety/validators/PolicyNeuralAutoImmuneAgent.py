@@ -19,9 +19,6 @@ Simplified policy-focused variant that extends the base NeuralAutoImmuneAgent.
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
-    SubatomicTestingMixin,
-)
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )

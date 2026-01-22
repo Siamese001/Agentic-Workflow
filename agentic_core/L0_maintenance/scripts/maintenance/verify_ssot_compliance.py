@@ -1,4 +1,5 @@
 from pathlib import Path
+
 #!/usr/bin/env python3
 """
 SSOT Compliance Verification for Archive Paths
@@ -24,7 +25,6 @@ def test_ssot_import():
     """Test 1: Verify ArchivalGatekeeper can import ARCHIVES_DIR."""
     print("\n[TEST 1] SSOT Import Test")
     try:
-
         # Verify ARCHIVES_DIR value
         assert ARCHIVES_DIR == "archives", f"Expected 'archives', got '{ARCHIVES_DIR}'"
 
@@ -48,7 +48,6 @@ def test_path_resolution():
     """Test 2: Verify archive_root resolves to archives/ not .archive."""
     print("\n[TEST 2] Path Resolution Test")
     try:
-
         project_root = Path.cwd()
         ArchivalGatekeeper.reset_instance()
         gatekeeper = ArchivalGatekeeper.get_instance(project_root)
@@ -79,7 +78,6 @@ def test_exclusion_logic():
     """Test 3: Verify archives/ is in SOVEREIGN_EXCLUDED_FOLDERS."""
     print("\n[TEST 3] Exclusion Logic Test")
     try:
-
         assert "archives" in SOVEREIGN_EXCLUDED_FOLDERS, (
             "'archives' not in SOVEREIGN_EXCLUDED_FOLDERS"
         )
@@ -97,7 +95,6 @@ def test_no_hardcoded_paths():
     print("\n[TEST 4] Hardcoded Path Check")
     try:
         import inspect
-
 
         # Get source code
         source = inspect.getsource(ArchivalGatekeeper)

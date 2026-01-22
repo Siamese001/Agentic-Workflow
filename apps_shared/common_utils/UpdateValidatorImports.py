@@ -21,7 +21,6 @@ Usage:
     python scripts/update_validator_imports.py
 """
 
-
 import argparse
 import re
 import sys

@@ -1,5 +1,3 @@
-
-
 """
 ContextAwareValidatorAgent – Sovereign Agent Role Component (Phase 32 – Dec 30, 2025)
 
@@ -18,7 +16,6 @@ Constitutional Alignment:
 """
 
 import logging
-
 
 
 @dataclass

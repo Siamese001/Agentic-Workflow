@@ -8,7 +8,6 @@ Integrated with: apps_lic/L3_orchestration/kx_nodes_outreach.py
 """
 
 
-
 class Route(str, Enum):
     """Message delivery routes."""
 

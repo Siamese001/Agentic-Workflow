@@ -6,7 +6,6 @@ to handle Canon violations and memory synchronization errors.
 """
 
 
-
 class CanonError(Exception):
     """Base class for all Canon-related errors."""
 

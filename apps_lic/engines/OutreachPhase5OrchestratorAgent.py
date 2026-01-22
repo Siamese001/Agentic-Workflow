@@ -1,4 +1,3 @@
-
 """
 Outreach Engine Observability Module
 
@@ -7,9 +6,8 @@ Provides comprehensive observability:
 - Metrics collection
 - Audit reporting
 """
+
 from datetime import datetime
-
-
 
 
 class OutreachTraceLevel(Enum):

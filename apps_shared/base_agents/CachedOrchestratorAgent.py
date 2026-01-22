@@ -4,7 +4,6 @@
 # This boosts alignment detection — review and integrate appropriately
 
 
-
 #!/usr/bin/env python3
 """
 CachedOrchestratorAgent - Eternal L3 Orchestration with Redis Sovereign Cache

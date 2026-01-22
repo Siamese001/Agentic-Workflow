@@ -10,7 +10,6 @@ Legacy K-Node: K.9 (K.8 in some versions)
 Location: apps_rg/engines/ (Application Logic - Resume Generator)
 """
 
-
 import logging
 
 Logger: Any = logging.getLogger(__name__)
@@ -136,13 +135,13 @@ class GapClosureArchitectAgent:
         target_industry: str,
     ) -> CompetenciesOutput:
         """Generate leadership competencies with gap coverage.
-        
+
         Args:
             jd_keyword_gap: Keywords from JD not covered by other K-nodes
             authentic_phrasing: Authentic phrases from candidate
             base_competency_pool: Base competencies to build from
             target_industry: Target industry for Industry-First ranking
-            
+
         Returns:
             CompetenciesOutput with generated competencies
         """
@@ -151,12 +150,12 @@ class GapClosureArchitectAgent:
             jd_keyword_gap, authentic_phrasing, base_competency_pool, target_industry
         )
         Logger.debug(f"Generated prompt: {prompt[:100]}...")
-        
+
         # Parse and validate (placeholder)
         competencies = self._parse_competencies("")
         covered = self._calculate_gap_coverage(competencies, jd_keyword_gap)
         industry_compliant = self._check_industry_first_ranking(competencies, target_industry)
-        
+
         return CompetenciesOutput(
             competencies=competencies,
             _total_count=len(competencies),

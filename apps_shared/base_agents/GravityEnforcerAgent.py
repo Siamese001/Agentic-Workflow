@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 DEPRECATED (2026-01-07): Use GravityHealerAgent in L2_execution/ToolRegistry/ instead.
@@ -14,7 +13,6 @@ This agent doesn't just flag violations; it actively stops the bleeding.
 
 import re
 import warnings
-
 
 
 class GravityEnforcerAgent(

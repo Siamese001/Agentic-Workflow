@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Code Formatter Agent - Enforces consistent formatting using Black + Ruff.
 
 This module provides an atomic agent that enforces consistent code formatting

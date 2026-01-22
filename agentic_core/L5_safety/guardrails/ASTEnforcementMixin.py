@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """ASTEnforcementMixin — Ultra L5 Mixin for AST Enforcement (Jan 01, 2026)
 
 Add to validators/enforcers for precise AST analysis (no regex).

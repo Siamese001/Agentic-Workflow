@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SovereignIndex - Cached File Indexer to Replace rglob Calls
 

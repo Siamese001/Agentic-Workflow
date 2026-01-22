@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Strategic Recommendation Agent
 L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.

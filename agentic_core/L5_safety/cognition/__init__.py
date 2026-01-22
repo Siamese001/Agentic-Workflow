@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """L5 Safety Cognition Module - AI-Powered Architectural Triage.
 
 Phase 11: Cognitive Disposition for intelligent violation resolution.

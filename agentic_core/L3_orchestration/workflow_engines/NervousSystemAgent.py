@@ -15,7 +15,6 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 
-
 from typing import Any
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -23,7 +22,12 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 @dataclass
 class NervousSystemAgent(
-    SovereignBaseAgent, MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin
+    SovereignBaseAgent,
+    MCPHardenedMixin,
+    HealerMixin,
+    L3SubatomicTestingMixin,
+    RedisCacheMixin,
+    PineconeVectorMixin,
 ):
     """Core orchestrator that coordinates cognitive and action planes.
 

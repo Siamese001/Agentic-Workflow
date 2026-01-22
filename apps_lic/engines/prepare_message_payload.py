@@ -1,10 +1,10 @@
-
 """
 PrepareMessagePayload.py - Formatting Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.125303
 """
+
 import logging
 
 Logger: Any = logging.getLogger(__name__)

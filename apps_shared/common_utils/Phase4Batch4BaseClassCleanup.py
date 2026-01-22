@@ -15,7 +15,6 @@ This script:
 4. Self-verifies syntax before writing
 """
 
-
 import argparse
 import ast
 import re

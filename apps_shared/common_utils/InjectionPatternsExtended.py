@@ -6,7 +6,6 @@ in the Subatomic Hop system.
 """
 
 
-
 def get_resume_injection_patterns() -> list[InjectionPattern]:
     """Get resume-specific injection patterns."""
     return [

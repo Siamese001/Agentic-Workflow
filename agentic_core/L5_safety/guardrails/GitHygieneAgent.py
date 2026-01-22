@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Git Hygiene Agent - Enforces Git repository hygiene.
 
 This module provides a batch agent that enforces Git repository hygiene by:

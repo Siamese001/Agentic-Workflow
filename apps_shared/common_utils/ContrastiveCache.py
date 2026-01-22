@@ -89,7 +89,6 @@ class ContrastiveSemanticCache:
             return False
         # Try to check availability without loading
         try:
-
             return True
         except ImportError:
             logger.warning(

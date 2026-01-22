@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Threat Detection Guardrail - Consolidated Threat Analysis
 

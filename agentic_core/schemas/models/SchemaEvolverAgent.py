@@ -33,7 +33,6 @@ from typing import Any
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -291,8 +290,7 @@ class SchemaEvolverAgent(SovereignBaseAgent, SubAtomicAgent):
     def _report_impact(self, impact: ImpactAnalysis) -> Any:
         """Report impact analysis to user."""
         change = impact.change
-        Logger.info(
-        )
+        Logger.info()
         Logger.info("🛡️  SCHEMA CHANGE IMPACT ANALYSIS")
         Logger.info(f"{'=' * 80}")
         Logger.info(f"Schema: {change.schema_name}")

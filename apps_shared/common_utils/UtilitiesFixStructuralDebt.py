@@ -1,8 +1,8 @@
-
 """
 Structural Debt Fixer for Canon Validator.
 Targets: Keys 17, 18, 19, 20, 25 (large functions, global variables, etc.)
 """
+
 import ast
 import os
 import shutil

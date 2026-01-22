@@ -56,7 +56,9 @@ class GravityFix:
     rationale: str
 
 
-class GravityLeakRepairAgent(SovereignBaseAgent, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class GravityLeakRepairAgent(
+    SovereignBaseAgent, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+):
     """
     [L5 HEALER] Automated gravity violation repair agent.
 

@@ -5,7 +5,6 @@ Provides basic hallucination detection for resume generation.
 """
 
 
-
 class HallucinationDetector:
     """Stub implementation of hallucination detector."""
 

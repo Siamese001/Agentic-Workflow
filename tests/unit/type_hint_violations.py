@@ -8,7 +8,6 @@ DO NOT FIX - Used for testing type hint enforcement.
 """
 
 
-
 # VIOLATION: Missing return type hint
 def function_no_return_hint(x: int):
     """Function missing return type hint."""

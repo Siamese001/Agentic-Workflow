@@ -1,13 +1,9 @@
-
 """
 LicS2SupervisorAgent - Extracted for one-class-per-file pattern.
 
 Originally from: campaign_rag.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
-
-
-
 
 
 @dataclass

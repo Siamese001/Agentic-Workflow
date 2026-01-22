@@ -31,8 +31,6 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger: Any = logging.getLogger(__name__)
 
 
-
-
 @dataclass
 class MCPGuardianAgent(SovereignBaseAgent):
     """
@@ -152,9 +150,7 @@ class MCPGuardianAgent(SovereignBaseAgent):
                     file_violations.append(
                         {
                             "file": str(py_file.relative_to(self.project_root)),
-                            "line": content[: match.start()].count(
-                            )
-                            + 1,
+                            "line": content[: match.start()].count() + 1,
                             "type": ViolationType,
                             "Severity": "CRITICAL",
                             "match": match.group(0),

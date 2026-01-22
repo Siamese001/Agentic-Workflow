@@ -1,5 +1,5 @@
-
 """Types and models for kx_nodes_resume."""
+
 import logging
 
 _logger = logging.getLogger(__name__)

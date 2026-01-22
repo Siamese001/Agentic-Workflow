@@ -4,7 +4,6 @@ L4 State Management - Core Types
 Defines the fundamental types for state management with strict immutability.
 """
 
-
 import hashlib
 import json
 from datetime import datetime, timezone

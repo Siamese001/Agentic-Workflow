@@ -1,10 +1,9 @@
-
 """File system utilities for apps_shared."""
+
 import ast
 import hashlib
 import os
 import re
-
 
 
 def calculate_file_hash(file_path: str) -> str:

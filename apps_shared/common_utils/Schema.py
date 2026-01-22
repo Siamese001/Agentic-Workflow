@@ -6,8 +6,6 @@ Phase 2 - Resilient Routing Layer
 """
 
 
-
-
 class RoutingTier(str, Enum):
     """Predefined routing tiers for different use cases."""
 

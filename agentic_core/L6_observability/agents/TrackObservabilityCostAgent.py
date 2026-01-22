@@ -29,7 +29,6 @@ class OperationResult:
     metadata: dict[str, object] = field(default_factory=dict)
 
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 

@@ -21,7 +21,6 @@ Usage:
     python scripts/restore_void_agents.py
 """
 
-
 import argparse
 import shutil
 import sys

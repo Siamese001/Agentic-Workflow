@@ -1,9 +1,6 @@
 """Validator agent for outreach drafts."""
 
 
-
-
-
 @dataclass(frozen=True)
 class ValidationResult:
     """Outcome of validator execution."""

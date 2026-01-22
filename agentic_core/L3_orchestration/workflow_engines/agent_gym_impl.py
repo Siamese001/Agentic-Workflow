@@ -39,7 +39,6 @@ except ImportError:
 Logger: Any = logging.getLogger(__name__)
 
 
-
 class AgentGym(SovereignBaseAgent):
     """Agent Gym for self-evolution and benchmarking.
 

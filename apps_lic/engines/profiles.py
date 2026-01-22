@@ -1,10 +1,8 @@
-
 """
 System Profiles Schemas
 =======================
 Defines safety and budget profiles for system execution.
 """
-
 
 
 class SafetyProfile(BaseModel):

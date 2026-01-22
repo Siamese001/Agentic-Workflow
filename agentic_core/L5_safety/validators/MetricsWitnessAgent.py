@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """MetricsWitnessAgent - L6 Metrics to Sovereign Audit score translator.
 
 Phase 14 (Dec 30, 2025).
@@ -11,7 +12,6 @@ Pure read-only - no side effects beyond Metric queries.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 from dataclasses import dataclass

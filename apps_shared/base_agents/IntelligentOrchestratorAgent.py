@@ -4,12 +4,12 @@
 # This boosts alignment detection — review and integrate appropriately
 
 
-
 """
 Canon Validator Intelligent Orchestrator
 
 Orchestrates all validation agents in dependency order.
 """
+
 import asyncio
 
 # GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency

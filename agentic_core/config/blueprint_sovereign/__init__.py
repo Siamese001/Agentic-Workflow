@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SSOT for Sovereign Blueprint Configuration.
 

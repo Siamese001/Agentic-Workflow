@@ -1,8 +1,6 @@
 """Integration tests for the async conductor."""
 
 
-
-
 def test_conductor_preserves_order_under_concurrency():
     conductor = Conductor(concurrency=2, seed=11)
     factories = [

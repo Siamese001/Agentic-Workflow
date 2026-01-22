@@ -1,6 +1,4 @@
-
 import re
-
 
 
 @dataclass
@@ -214,7 +212,6 @@ class ConstraintFeasibilityChecker:
         # This function needs access to ConfigRegistry, but to avoid circular
         # imports, we'll use hardcoded fallbacks if the import fails.
         try:
-
             constraints = CONFIG_REGISTRY.get_route_constraints(Route, Archetype)
         except ImportError:
             constraints = {"word_target": 200, "word_range": (150, 250), "Route": Route}

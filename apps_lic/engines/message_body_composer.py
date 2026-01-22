@@ -1,4 +1,3 @@
-
 """Message Body Composer Agent - Core Message Generator (K.3)
 
 This agent generates LinkedIn message bodies with strict Metric binding and Archetype-specific structure.
@@ -16,6 +15,7 @@ Non-responsibilities:
 - CTA generation
 - Final assembly
 """
+
 import logging
 import re
 

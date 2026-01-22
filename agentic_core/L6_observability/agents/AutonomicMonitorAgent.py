@@ -25,7 +25,6 @@ from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types impo
 Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 

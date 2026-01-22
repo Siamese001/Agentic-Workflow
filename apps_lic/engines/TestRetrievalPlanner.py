@@ -1,5 +1,3 @@
-
-
 def test_dedupe_and_budget():
     plan = RetrievalPlan([], {"ttl_s": 3600, "company_id": "ACME"})
     plan.add({"tool": "web_search", "query": "ACME revenue"})

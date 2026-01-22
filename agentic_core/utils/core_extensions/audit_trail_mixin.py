@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 [PHASE 23] AuditTrailMixin - Cryptographic Chain-of-Custody for Agent Actions.
 

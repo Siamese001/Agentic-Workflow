@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 [PHASE 21] Graph Memory Bridge - Interface to Memory MCP Knowledge Graph.
 

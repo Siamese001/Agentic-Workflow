@@ -14,6 +14,7 @@ Implements the Canon Validator two-pass validation pattern:
 This optimizes validation by avoiding expensive checks when
 fast checks already detect issues.
 """
+
 import logging
 import re
 from datetime import datetime

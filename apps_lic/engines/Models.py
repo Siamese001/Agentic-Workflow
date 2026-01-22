@@ -1,8 +1,6 @@
 """Shared Pydantic data models for stack coordination."""
 
 
-
-
 class SpecialistDraftPacket(BaseModel):
     """Container for specialist drafting outputs."""
 

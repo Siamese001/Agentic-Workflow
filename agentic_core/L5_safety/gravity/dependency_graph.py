@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Dependency Graph - Code structure analysis and impact tracking.
 Extracted from BudgetManagerAgent.py for single responsibility.

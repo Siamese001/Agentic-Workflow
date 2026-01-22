@@ -1,7 +1,6 @@
 """EvidenceRegistry behavior tests."""
 
 
-
 def test_evidence_registry_list_filters_scope():
     registry = EvidenceRegistry()
     a1 = registry.upsert(

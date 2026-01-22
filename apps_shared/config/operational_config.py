@@ -1,4 +1,3 @@
-
 """
 Operational Configuration for Runtime Agents
 Centralized settings for file scanning, deduplication, and operational tasks.

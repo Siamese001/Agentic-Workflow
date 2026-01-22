@@ -10,6 +10,7 @@ MCP Connection Manager
 Manages connections to multiple MCP servers simultaneously.
 Aggregates tools from all servers into a single 'toolbox' for the agent.
 """
+
 import logging
 import os
 
@@ -18,7 +19,6 @@ import yaml
 LOGGER = logging.getLogger(__name__)
 
 try:
-
     MCP_AVAILABLE = True
 except ImportError:
     MCP_AVAILABLE = False

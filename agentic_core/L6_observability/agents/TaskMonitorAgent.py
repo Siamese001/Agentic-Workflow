@@ -4,8 +4,9 @@
 Monitors asyncio tasks for potential deadlocks and long-running operations.
 Integrates with SovereignBaseAgent for autonomous health reporting.
 """
+
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
-from typing import Any, Dict, Optional, List
+from typing import Any
 from dataclasses import dataclass, field
 import asyncio
 import inspect
@@ -27,6 +28,7 @@ class TaskMonitor:
     Data container for monitoring a single asyncio Task.
     Note: Not an agent itself, but a resource managed by the DeadlockDetectorAgent.
     """
+
     task: asyncio.Task
     name: str
     start_time: float = field(default_factory=time.time)
@@ -63,10 +65,11 @@ class DeadlockDetectorAgent(SovereignBaseAgent):
     """
     L6 Agent responsible for monitoring system-wide asyncio health.
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.monitored_tasks: Dict[str, TaskMonitor] = {}
-        self._monitor_loop_task: Optional[asyncio.Task] = None
+        self.monitored_tasks: dict[str, TaskMonitor] = {}
+        self._monitor_loop_task: asyncio.Task | None = None
 
     def register_task(self, task: asyncio.Task, name: str = None) -> str:
         """Register a new task for monitoring."""
@@ -95,19 +98,22 @@ class DeadlockDetectorAgent(SovereignBaseAgent):
                 if monitor.task.done():
                     del self.monitored_tasks[tid]
                     continue
-                
+
                 if monitor.check_timeout():
                     Logger.warning(f"[HEALTH] Task Timeout Detected: {monitor.name} (TID: {tid})")
                     if monitor.timeout_count >= deadlock_threshold:
-                        Logger.error(f"[DEADLOCK] Potential deadlock in {monitor.name}! Stack: {monitor.get_stack_trace()}")
+                        Logger.error(
+                            f"[DEADLOCK] Potential deadlock in {monitor.name}! Stack: {monitor.get_stack_trace()}"
+                        )
 
-    def heal_repository(self, **kwargs) -> Dict[str, Any]:
+    def heal_repository(self, **kwargs) -> dict[str, Any]:
         """Standard autonomous healing interface."""
         return {"status": "healthy", "tasks_monitored": len(self.monitored_tasks)}
 
 
 # Global Singleton Management
-_deadlock_detector: Optional[DeadlockDetectorAgent] = None
+_deadlock_detector: DeadlockDetectorAgent | None = None
+
 
 def get_deadlock_detector() -> DeadlockDetectorAgent:
     """Get or create the global DeadlockDetectorAgent instance."""
@@ -137,17 +143,20 @@ def send_task_heartbeat(task_id: str):
 
 def monitor_task(name: str = None):
     """Decorator to automatically monitor a coroutine."""
+
     def decorator(coro):
         async def wrapper(*args, **kwargs):
             task = asyncio.current_task()
             if not task:
                 return await coro(*args, **kwargs)
-            
+
             task_id = register_task_for_monitoring(task, name or coro.__name__)
             try:
                 return await coro(*args, **kwargs)
             finally:
                 # Heartbeat before finishing to prove liveness
                 send_task_heartbeat(task_id)
+
         return wrapper
+
     return decorator

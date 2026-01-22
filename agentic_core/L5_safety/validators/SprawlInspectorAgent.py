@@ -19,7 +19,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
@@ -91,9 +90,7 @@ class SprawlInspectorAgent(SovereignBaseAgent):
 
         Displays breadth violations and flattening candidates.
         """
-        print(
-            + "=" * 70
-        )
+        print(+"=" * 70)
         print("🔍 PROJECT SPRAWL REPORT")
         print("=" * 70)
         print(f"Target: {self.report['metadata']['target']}")

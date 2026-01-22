@@ -1,4 +1,3 @@
-
 # from archives.legacy_root_folders.meta.retrieval.hybrid_ranker import fuse_and_rank  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.core.models.models import CouncilVote, Evidence, RetrievalConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
 

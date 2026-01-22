@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Execution Strategy Interface and Implementations
 

@@ -4,7 +4,6 @@
 # This boosts alignment detection — review and integrate appropriately
 
 
-
 """
 MCP Router - L3 Orchestration Switchboard
 
@@ -19,6 +18,7 @@ MCP Assignment by Layer:
 - L2 Execution: Brave Search, DeepWiki
 - L1 Cognition: Gemini/Claude (Core)
 """
+
 import logging
 
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Constitutional Governance Guardrail - Consolidated Constitutional AI
 

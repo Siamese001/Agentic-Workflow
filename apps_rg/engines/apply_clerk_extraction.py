@@ -1,4 +1,3 @@
-
 """Clerk extraction for resume generation HOP-1."""
 
 

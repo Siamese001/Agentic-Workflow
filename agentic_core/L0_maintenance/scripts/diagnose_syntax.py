@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+
 """
 Diagnose Syntax Errors - Quick syntax validation for all Python files.
 

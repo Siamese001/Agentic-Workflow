@@ -15,13 +15,13 @@ enabling mass-movement of files based on Gemini's JSON decisions.
 Usage:
     # Set API key first
     export GEMINI_API_KEY="your-api-key"
-    
+
     # Run cognitive purge (analysis only)
     python scripts/maintenance/execute_cognitive_purge.py
-    
+
     # Run with custom rate limit (default: 1.0s)
     python scripts/maintenance/execute_cognitive_purge.py --rate-limit 2.0
-    
+
     # Clear checkpoint and start fresh
     python scripts/maintenance/execute_cognitive_purge.py --clear-checkpoint
 
@@ -50,12 +50,12 @@ def run_cognitive_purge(
 ) -> int:
     """
     Execute the AI-driven cognitive purge.
-    
+
     Args:
         rate_limit: Seconds to wait between API calls
         checkpoint_file: Path to checkpoint file
         clear_checkpoint: If True, clear existing checkpoint
-    
+
     Returns:
         Exit code (0=success, 1=no API key, 2=error)
     """
@@ -179,10 +179,10 @@ def main() -> int:
 Examples:
     # Basic usage (requires GEMINI_API_KEY)
     python scripts/maintenance/execute_cognitive_purge.py
-    
+
     # Custom rate limit (slower = safer)
     python scripts/maintenance/execute_cognitive_purge.py --rate-limit 2.0
-    
+
     # Clear checkpoint and start fresh
     python scripts/maintenance/execute_cognitive_purge.py --clear-checkpoint
         """,

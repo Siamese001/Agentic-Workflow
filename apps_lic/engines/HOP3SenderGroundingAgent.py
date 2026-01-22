@@ -4,14 +4,12 @@
 # This boosts alignment detection — review and integrate appropriately
 
 
-
 """HOP-3: Sender Grounding Agent - Extract sender capabilities from knowledge base."""
 
 __version__ = "13.1"
 
 import json
 import os
-
 
 
 @dataclass

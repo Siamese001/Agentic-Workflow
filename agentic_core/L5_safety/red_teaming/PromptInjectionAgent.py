@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 PromptInjectionAgent: Proactively tests for prompt injection vulnerabilities.
 Simulates adversarial inputs designed to manipulate AI system behavior through

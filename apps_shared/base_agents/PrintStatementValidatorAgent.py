@@ -4,13 +4,12 @@
 # This boosts alignment detection — review and integrate appropriately
 
 
-
 """
 Canon Key Validators using AST-based validation.
 Replaces regex/string matching with proper AST analysis to eliminate false positives.
 """
-import ast
 
+import ast
 
 
 @dataclass

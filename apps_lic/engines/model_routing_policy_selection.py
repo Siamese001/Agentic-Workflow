@@ -1,4 +1,3 @@
-
 import logging
 
 """Brief description of functionality and purpose."""

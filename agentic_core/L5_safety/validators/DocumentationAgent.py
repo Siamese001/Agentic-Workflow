@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """DocumentationAgent - Documentation quality enforcement.
 
 Part of the quality enforcement agent family.

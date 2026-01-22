@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 InfrastructureMixin - Unified Gatekeeper for Agent Infrastructure
 
@@ -34,13 +35,17 @@ from typing import Any
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.instructional_injection_mixin import InstructionalInjectionMixin
+from agentic_core.utils.core_extensions.instructional_injection_mixin import (
+    InstructionalInjectionMixin,
+)
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
 
-class InfrastructureMixin(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, InstructionalInjectionMixin):
+class InfrastructureMixin(
+    HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, InstructionalInjectionMixin
+):
     """
     Unified infrastructure mixin combining all standard agent capabilities.
 

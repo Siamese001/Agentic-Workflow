@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 [PHASE 23] CapabilityDiscoveryMixin - Registry Pattern for Agent Capabilities.
 

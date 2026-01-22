@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 HealerMixin - Phase 3 Default-On Healing Infrastructure
 

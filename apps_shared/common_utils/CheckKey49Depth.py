@@ -1,9 +1,7 @@
-
 """
 Standalone Key 49 Depth Violation Checker
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
-
 
 
 def check_key_49_depth() -> Any:

@@ -33,10 +33,10 @@ Logger = logging.getLogger(__name__)
 class CognitiveBatchProcessor:
     """
     Batch processor for high-volume cognitive disposition analysis.
-    
+
     Manages rate limiting, checkpointing, and resumable execution for
     processing large numbers of architectural violations.
-    
+
     Attributes:
         agent: CognitiveDispositionAgent instance
         checkpoint_file: Path to checkpoint file for progress tracking
@@ -55,7 +55,7 @@ class CognitiveBatchProcessor:
     ):
         """
         Initialize the Cognitive Batch Processor.
-        
+
         Args:
             agent: CognitiveDispositionAgent instance
             checkpoint_file: Path to checkpoint file
@@ -80,7 +80,7 @@ class CognitiveBatchProcessor:
     def _load_checkpoint(self) -> dict[str, Any]:
         """
         Load checkpoint from file if it exists.
-        
+
         Returns:
             Dictionary of file_path -> disposition results
         """
@@ -113,11 +113,11 @@ class CognitiveBatchProcessor:
     ) -> dict[str, int]:
         """
         Process a batch of violations with rate limiting and checkpointing.
-        
+
         Args:
             violations: List of violation objects to process
             auto_execute: If True, execute disposition actions (not just analyze)
-        
+
         Returns:
             Statistics dictionary with counts
         """
@@ -147,7 +147,9 @@ class CognitiveBatchProcessor:
 
             # Skip if already processed in checkpoint
             if file_path_str in self.results:
-                Logger.debug(f"[BATCH] [{i}/{len(violations)}] Skipping (cached): {Path(file_path).name}")
+                Logger.debug(
+                    f"[BATCH] [{i}/{len(violations)}] Skipping (cached): {Path(file_path).name}"
+                )
                 stats["SKIPPED"] += 1
                 continue
 
@@ -185,10 +187,10 @@ class CognitiveBatchProcessor:
     def _get_file_path(self, violation: Any) -> Path | None:
         """
         Extract file path from violation object.
-        
+
         Args:
             violation: Violation object (dict or object with attributes)
-        
+
         Returns:
             Path to file or None
         """
@@ -207,11 +209,11 @@ class CognitiveBatchProcessor:
     ) -> bool:
         """
         Process a single violation with retry logic.
-        
+
         Args:
             violation: Violation object
             file_path_str: String path to file
-        
+
         Returns:
             True if successful, False otherwise
         """
@@ -233,7 +235,9 @@ class CognitiveBatchProcessor:
                     "violation_type": v_type,
                 }
 
-                Logger.info(f"    Decision: {decision.action} -> {decision.target_path or 'N/A'} ({decision.confidence:.2f})")
+                Logger.info(
+                    f"    Decision: {decision.action} -> {decision.target_path or 'N/A'} ({decision.confidence:.2f})"
+                )
                 return True
 
             except Exception as e:
@@ -261,10 +265,10 @@ class CognitiveBatchProcessor:
     def _get_violation_type(self, violation: Any) -> str:
         """
         Extract violation type from violation object.
-        
+
         Args:
             violation: Violation object
-        
+
         Returns:
             Violation type string
         """
@@ -280,7 +284,7 @@ class CognitiveBatchProcessor:
     def get_results(self) -> dict[str, Any]:
         """
         Get all processed results.
-        
+
         Returns:
             Dictionary of file_path -> disposition results
         """
@@ -289,7 +293,7 @@ class CognitiveBatchProcessor:
     def get_statistics(self) -> dict[str, Any]:
         """
         Get processing statistics.
-        
+
         Returns:
             Statistics dictionary
         """

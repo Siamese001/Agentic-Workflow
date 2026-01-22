@@ -1,4 +1,3 @@
-
 """
 ⚛️ Deep Brain Harvest - Pinecone Pattern Storage
 
@@ -8,6 +7,7 @@ for global retrieval and application across the codebase.
 Usage:
     python scripts/deep_brain_harvest.py --pattern flattening --namespace structural_patterns
 """
+
 import argparse
 import logging
 import os
@@ -15,7 +15,6 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 try:
-
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False

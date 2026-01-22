@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 UnifiedASTValidatorAgent - Consolidated AST validator replacing 5 micro-agents.
 
@@ -19,7 +20,6 @@ Canon Alignment: AST-based code quality validation
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import ast
-import importlib
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any

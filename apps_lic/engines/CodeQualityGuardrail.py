@@ -16,7 +16,6 @@ Composable Rules:
 - git_hygiene: Git best practices
 """
 
-
 import hashlib
 import re
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """MaintenanceBaseAgent — L0 Base with Subatomic Delegation Framework (Jan 01, 2026)
 
 L0 Maintenance agents handle bootstrapping, filesystem reconciliation, and healing.

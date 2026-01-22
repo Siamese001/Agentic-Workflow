@@ -1,4 +1,3 @@
-
 """Unit Tests for Injection Detection System
 
 Tests all injection detection patterns and validation rules
@@ -11,7 +10,6 @@ Logger = logging.getLogger(__name__)
 """
 
 import pytest
-
 
 
 class TestInjectionDetector(HealerMixin):

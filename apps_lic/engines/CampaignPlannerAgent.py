@@ -6,9 +6,6 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 
-
-
-
 @dataclass
 class CampaignPlannerAgent(HealerMixin, SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
     """

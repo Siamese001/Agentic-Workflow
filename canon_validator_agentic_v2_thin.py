@@ -388,8 +388,8 @@ def main():
     # Set environment variables BEFORE initializing any agents
     if args.yes:
         os.environ["SOVEREIGN_AUTO_APPROVE"] = "1"  # Unified auto-approval signal
-        os.environ["ARCHIVE_BATCH_ACCEPT"] = "1"    # ArchivalGatekeeper batch mode
-        os.environ["CI"] = "true"                   # Disables generic interactive prompts
+        os.environ["ARCHIVE_BATCH_ACCEPT"] = "1"  # ArchivalGatekeeper batch mode
+        os.environ["CI"] = "true"  # Disables generic interactive prompts
         print("   [SYSTEM] SOVEREIGN MODE ACTIVE: Auto-approval enabled.")
 
     # Global mission timeout: 30 minutes
@@ -665,7 +665,9 @@ def main():
         try:
             # [PHASE 3] UNIFIED ORCHESTRATION - Strategy Pattern
             # The 5-tier logic is now encapsulated in HealingStrategy
-            from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
+            from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import (
+                UnifiedOrchestratorAgent,
+            )
             from agentic_core.L4_state.ValidationContext.CheckpointManagerAgent import (
                 get_checkpoint_manager,
             )

@@ -12,7 +12,6 @@ Usage:
     python scripts/archive_legacy_validators.py
 """
 
-
 import argparse
 import shutil
 import sys

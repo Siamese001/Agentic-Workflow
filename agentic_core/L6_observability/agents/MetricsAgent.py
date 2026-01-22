@@ -37,8 +37,6 @@ from pathlib import Path
 from threading import Lock
 from typing import Any, List, Tuple
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import List, Tuple, timeout
 
 Logger = logging.getLogger(__name__)

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 CSV Document Loader - Pandas-based structured data loading for RAG.
 

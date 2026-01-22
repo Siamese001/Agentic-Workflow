@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Cognitive Node - Central L1 Cognition Pipeline
 

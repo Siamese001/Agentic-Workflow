@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Unused Cleanup Agent - Removes unused imports and variables using autoflake.
 
 This module provides an atomic agent that removes unused imports and variables

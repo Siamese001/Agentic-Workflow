@@ -1,6 +1,3 @@
-
-
-
 def test_router_prioritizes_meeting_intent():
     router = RouterAgent()
     inputs = SimpleNamespace(prompt="Can we schedule a meeting next week?")

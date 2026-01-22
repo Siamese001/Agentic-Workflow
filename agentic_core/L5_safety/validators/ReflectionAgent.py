@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """ReflectionAgent - Learning from successful execution traces.
 
 Responsible for processing successful traces and internalizing them
@@ -16,7 +17,6 @@ import logging
 import os
 from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)

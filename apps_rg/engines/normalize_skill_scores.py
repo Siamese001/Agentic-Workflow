@@ -1,10 +1,10 @@
-
 """
 NormalizeSkillScores.py - Scoring Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.225658
 """
+
 import logging
 
 Logger: Any = logging.getLogger(__name__)

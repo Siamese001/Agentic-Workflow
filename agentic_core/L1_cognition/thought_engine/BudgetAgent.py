@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """BudgetAgent - Token budget tracking and complexity management.
 
 Part of the SubAtomic agent family for code quality enforcement.

@@ -1,4 +1,3 @@
-
 """
 Proactive Scheduling and Predictive Handoff for Outreach Engine L4.5 Autonomy
 
@@ -7,6 +6,7 @@ Provides:
 - OutreachPredictiveHandoff: Signals before reaching capability edge
 - OutreachCapabilityMonitorAgent: Tracks agent capabilities and limits
 """
+
 from datetime import datetime
 
 

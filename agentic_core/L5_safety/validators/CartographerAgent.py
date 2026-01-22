@@ -14,10 +14,8 @@ from dataclasses import dataclass
 import datetime
 
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
@@ -36,8 +34,7 @@ class CartographerAgent(SovereignBaseAgent, SubAtomicAgent):
 
     async def execute(self) -> None:
         """Execute execute operation."""
-        print(
-        )
+        print()
         await asyncio.sleep(0)
 
         if not getattr(self.ctx, "pinecone_available", False):

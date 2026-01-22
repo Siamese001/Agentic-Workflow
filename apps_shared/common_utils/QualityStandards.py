@@ -5,8 +5,6 @@ while allowing for domain-specific customizations.
 """
 
 
-
-
 class StandardType(Enum):
     """Types of quality standards."""
 

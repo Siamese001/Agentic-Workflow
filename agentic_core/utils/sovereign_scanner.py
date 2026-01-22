@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """SovereignScanner - Centralized single-pass repository mapper.
 
 [Phase 5] Provides shared intelligence layer for L5 agents.

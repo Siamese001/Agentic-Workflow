@@ -275,7 +275,6 @@ def test_api_module():
     print("\n--- Test 3.2: API Module ---")
 
     try:
-
         record_test("runtime_api.py is importable", True)
         record_test("FastAPI app exists", app is not None)
     except ImportError as e:
@@ -426,8 +425,6 @@ def test_api_doc_accuracy():
     print("\n--- Test 5.1: API Endpoint Accuracy ---")
 
     try:
-
-
         client = TestClient(app)
 
         # Test documented endpoints actually work
@@ -471,8 +468,6 @@ def test_response_schema_accuracy():
     print("\n--- Test 5.2: Response Schema Accuracy ---")
 
     try:
-
-
         client = TestClient(app)
 
         # Test meta-learning statistics response

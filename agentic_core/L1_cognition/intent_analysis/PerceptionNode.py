@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Perception Node - Sub-atomic Input Processing
 

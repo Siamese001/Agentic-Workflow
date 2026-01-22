@@ -12,7 +12,6 @@ EXCLUDED FILES:
 - file_utils.py (the implementation itself)
 """
 
-
 import argparse
 import ast
 import re

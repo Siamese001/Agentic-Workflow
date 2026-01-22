@@ -1,29 +1,31 @@
 from pathlib import Path
+
 """Comprehensive check of ALL agents that might have been archived in entire chat history."""
 import os
-PROJECT_ROOT = Path('C:/Git/Agentic-Workflow')
-l4_active = PROJECT_ROOT / 'agentic_core/L4_state/ValidationContext/L4Agent.py'
-archives_path = PROJECT_ROOT / 'archives'
+
+PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
+l4_active = PROJECT_ROOT / "agentic_core/L4_state/ValidationContext/L4Agent.py"
+archives_path = PROJECT_ROOT / "archives"
 l4_archived = []
 if archives_path.exists():
     for root, dirs, files in os.walk(archives_path):
-        if '.sovereign_healing_backup' in root:
+        if ".sovereign_healing_backup" in root:
             continue
-        if 'L4Agent.py' in files:
-            l4_archived.append(os.path.join(root, 'L4Agent.py'))
+        if "L4Agent.py" in files:
+            l4_archived.append(os.path.join(root, "L4Agent.py"))
 for path in l4_archived:
     pass
 archived_agents = []
 if archives_path.exists():
     for root, dirs, files in os.walk(archives_path):
-        if '.sovereign_healing_backup' in root:
+        if ".sovereign_healing_backup" in root:
             continue
-        if 'healing_backups' in root:
+        if "healing_backups" in root:
             continue
-        if 'identity_duplicates' in root:
+        if "identity_duplicates" in root:
             continue
         for file in files:
-            if file.endswith('Agent.py'):
+            if file.endswith("Agent.py"):
                 rel_path = os.path.relpath(os.path.join(root, file), archives_path)
                 archived_agents.append(rel_path)
 by_subdir = {}

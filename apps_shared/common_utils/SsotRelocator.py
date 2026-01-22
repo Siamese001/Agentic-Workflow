@@ -13,7 +13,6 @@ Provides automated remediation for:
 3. Gravity violations (wrong layer → correct layer)
 """
 
-
 import logging
 import shutil
 from datetime import datetime

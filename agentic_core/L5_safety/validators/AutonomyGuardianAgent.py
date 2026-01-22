@@ -299,7 +299,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVectorM
 
                     has_heal_method = False
                     inherits_sovereign_base = False
-                    
+
                     # Base classes that provide heal_repository via MRO
                     # These all inherit from SovereignBaseAgent or InfrastructureMixin
                     SOVEREIGN_BASE_CLASSES = {
@@ -311,7 +311,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVectorM
                         "L6ObservabilityBaseAgent",
                         "HealerMixin",
                     }
-                    
+
                     for node in ast.walk(tree):
                         # Check for explicit heal_repository definition
                         if isinstance(node, ast.FunctionDef) and node.name == "heal_repository":
@@ -321,9 +321,12 @@ class AutonomyGuardianAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVectorM
                             for base in node.bases:
                                 if isinstance(base, ast.Name) and base.id in SOVEREIGN_BASE_CLASSES:
                                     inherits_sovereign_base = True
-                                elif isinstance(base, ast.Attribute) and base.attr in SOVEREIGN_BASE_CLASSES:
+                                elif (
+                                    isinstance(base, ast.Attribute)
+                                    and base.attr in SOVEREIGN_BASE_CLASSES
+                                ):
                                     inherits_sovereign_base = True
-                    
+
                     # SovereignBaseAgent provides heal_repository via InfrastructureMixin -> HealerMixin
                     if inherits_sovereign_base:
                         has_heal_method = True

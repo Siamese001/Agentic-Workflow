@@ -6,7 +6,6 @@ __version__ = "12.0"
 import os
 
 
-
 class GeminiLLMClient:
     """
     Centralized client for all Gemini API calls with circuit breaker protection
