@@ -6,13 +6,7 @@ resume generation capabilities.
 """
 
 import logging
-from typing import Any
 
-from ..shared.core.event_bus import EventType, SystemEvent
-from ..shared.infrastructure_integration import InfrastructureOrchestrator, TaskType
-from ..strategy.competitor_recon import ReconAgent, ReconSignal, get_recon_agent
-from .evidence_injector import EvidenceInjector, get_evidence_injector
-from .persona_router import PersonaRouter, ReaderPersona, get_persona_router
 
 logger = logging.getLogger(__name__)
 

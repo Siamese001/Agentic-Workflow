@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Strategic Recommendation Agent
 L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.
@@ -19,7 +20,7 @@ Purpose:
 # Suggested keywords to add in docstring/code: engine, memory, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import json
 import logging
@@ -29,14 +30,12 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 log = logging.getLogger(__name__)
 
 
 @dataclass
-class StrategicRecommendationAgent(SubatomicTestingMixin, HealerMixin):
+class StrategicRecommendationAgent(SovereignBaseAgent):
     """
     L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.
 

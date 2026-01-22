@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, orchestrator, prompt, state, validator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -27,7 +28,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class SemanticDebuggerAgent(SubatomicTestingMixin, L5SafetyBaseAgent, CognitiveRecoveryMixin):
+class SemanticDebuggerAgent(SovereignBaseAgent, L5SafetyBaseAgent, CognitiveRecoveryMixin):
     """
     L5 Safety Agent responsible for performing Just-In-Time Root Cause Analysis (RCA).
 

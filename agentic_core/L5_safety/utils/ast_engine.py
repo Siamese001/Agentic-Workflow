@@ -1,16 +1,15 @@
+from __future__ import annotations
 """AST Engine - Centralized Architectural Parsing Logic.
 
 [Phase 5] Provides shared AST utilities for L5 agents.
 Centralizes import extraction and gravity violation detection.
 
 Usage:
-    from agentic_core.L5_safety.utils.ast_engine import get_file_imports
 
     imports = get_file_imports(Path("my_file.py"))
     # Returns: [("module.name", line_number), ...]
 """
 
-from __future__ import annotations
 
 import ast
 import logging

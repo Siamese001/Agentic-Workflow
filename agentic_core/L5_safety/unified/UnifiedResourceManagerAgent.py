@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 """
 UnifiedResourceManagerAgent - Thread-Safe Resource Management
 
@@ -15,7 +17,6 @@ Features:
 - Concurrent agent support (10+ simultaneous requests)
 """
 
-from __future__ import annotations
 
 import logging
 import threading
@@ -95,7 +96,7 @@ class ResourceConfig:
     fallback_strategies: list[str] = field(default_factory=lambda: ["queue", "throttle", "reject"])
 
 
-class UnifiedResourceManagerAgent:
+class UnifiedResourceManagerAgent(SovereignBaseAgent):
     """
     Thread-safe unified resource manager.
 

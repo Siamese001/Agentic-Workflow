@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Perception Node - Sub-atomic Input Processing
 
@@ -5,7 +6,6 @@ Handles input parsing, context preparation, intent classification,
 and memory retrieval. Isolated from reasoning and action logic.
 """
 
-from __future__ import annotations
 
 import asyncio
 from typing import Any

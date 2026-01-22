@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: orchestrator, prompt
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -29,7 +30,7 @@ Logger: Any = logging.getLogger("L6.CanonAudit")
 
 
 @dataclass
-class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
+class SovereignCanonAuditorAgent(SovereignBaseAgent):
     """
     Sovereign Canon Auditor using DeepWiki MCP.
     Performs self-verification of critical system components.
@@ -56,7 +57,6 @@ class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardened
             Audit results with status for each component
         """
         print(
-            "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\n"
             + "=" * 60
         )
         print("🔍 SOVEREIGN CANON AUDIT - Phase 13E")

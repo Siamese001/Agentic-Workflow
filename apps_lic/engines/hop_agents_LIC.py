@@ -6,10 +6,7 @@ __version__ = "13.0"
 
 import json
 import os
-from typing import Any
 
-from models_LIC import FactualGapError, FailureClassifier, OutreachMission
-from state_manager_LIC import StateManager
 
 # ============================================================================
 # HOP-1: PROFILE ANALYSIS AGENT

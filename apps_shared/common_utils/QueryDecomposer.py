@@ -7,9 +7,7 @@ that can be answered by the retrieval system.
 import asyncio
 import logging
 import re
-from typing import Any
 
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +64,6 @@ class QueryDecomposer(SimpleAgentBase):
 
         # Import AdaptiveRetrievalGate for heuristic check
         try:
-            from .adaptive_retrieval_gate import AdaptiveRetrievalGate
 
             self.gate = AdaptiveRetrievalGate()
         except ImportError:
@@ -133,7 +130,6 @@ class QueryDecomposer(SimpleAgentBase):
         """
         try:
             # Import here to avoid circular imports
-            from .multi_provider_clients import Provider, get_client
 
             # Get Anthropic client
             client = get_client(Provider.ANTHROPIC)

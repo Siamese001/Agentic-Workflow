@@ -3,7 +3,6 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 """Scripts Planning Orchestrator - Coordinates script execution planning operations.
 
@@ -12,17 +11,11 @@ including dependency resolution, execution order, and resource allocation.
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 import logging
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any
 
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
-from agentic_core.utils.core_extensions.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 

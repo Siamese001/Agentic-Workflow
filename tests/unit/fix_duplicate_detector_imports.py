@@ -6,7 +6,6 @@ description: Finds and updates all references to DuplicateCodeDetectorAgent
 
 import os
 import re
-from pathlib import Path
 
 # --- Configuration ---
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")

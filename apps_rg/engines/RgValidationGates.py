@@ -4,8 +4,6 @@ RG Validation Gates - Validation gates for resume generation.
 Ported from: archives/legacy_resume_gen/Job Workflow - JSON/Job_Workflow_v61.27.json
 """
 
-from dataclasses import dataclass, field
-from enum import Enum
 
 
 class GateDecision(Enum):

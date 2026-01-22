@@ -19,11 +19,8 @@ import shutil
 import sys
 import uuid
 from datetime import datetime
-from typing import Any
 
 # v10.7: Import from new orchestration/stacks
-from agent_orchestration_v10_7 import get_graph_app
-from core_v10_7 import (
     CircuitBreaker,
     CircuitBreakerOpenError,
     ConfigV10_7,
@@ -37,11 +34,9 @@ from core_v10_7 import (
 )
 
 # v10.7: Import from new main/core
-from main_v10_7 import load_job_input, setup_logging
 
 try:
     # v10.7: Import new meta-learner
-    from run_learning_v10_7 import run_meta_learning
 
     META_LEARNER_AVAILABLE = True
 except ImportError:

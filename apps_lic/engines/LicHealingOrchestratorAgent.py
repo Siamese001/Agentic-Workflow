@@ -7,11 +7,8 @@ Extracted: 2026-01-06 (Surgical Extraction)
 Orchestrates the complete self-healing process for outreach campaigns.
 """
 
-from __future__ import annotations
 
 import time
-from dataclasses import dataclass
-from typing import Any
 
 
 @dataclass

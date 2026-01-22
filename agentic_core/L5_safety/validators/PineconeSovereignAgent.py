@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: orchestrator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -26,17 +27,15 @@ import numpy as np
 from pinecone import Pinecone
 
 from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 @dataclass
-class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
+class PineconeSovereignAgent(SovereignBaseAgent):
     """
     Sovereign Pinecone controller — zero drift, eternal readiness.
     Centralizes all vector operations to prevent configuration drift.

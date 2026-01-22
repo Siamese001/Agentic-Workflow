@@ -3,9 +3,7 @@
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """Reasoning strategy router for selecting appropriate reasoning mode.
 
@@ -14,15 +12,8 @@ Routes tasks to appropriate reasoning strategies (ReAct, CoT, etc.)
 """
 
 import logging
-from enum import Enum
-from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-from .react_engine import ReasoningMode
 
 Logger = logging.getLogger(__name__)
 

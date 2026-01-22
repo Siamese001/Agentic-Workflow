@@ -1,3 +1,4 @@
+from __future__ import annotations
 """PII Sanitizer Agent - Performs local PII detection using regex heuristics.
 
 This module provides an L5 safety agent that detects and redacts Personally
@@ -13,7 +14,6 @@ Typical usage:
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import json
 import re

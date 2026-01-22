@@ -9,7 +9,6 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 """
 SyntaxValidatorAgent - Python Syntax Validation (GAP-1 Resolution)
@@ -29,21 +28,13 @@ Canon Key 51 Compliance: Includes heal_repository() method
 """
 import ast
 import logging
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     ARCHIVES_DIR,
     SCRIPTS_DIR,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -136,7 +127,6 @@ class SyntaxValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin)
         """
         violations = []
 
-        from agentic_core.utils.ssot_discovery import get_python_files
 
         for py_file in get_python_files(directory):
             # Skip excluded directories

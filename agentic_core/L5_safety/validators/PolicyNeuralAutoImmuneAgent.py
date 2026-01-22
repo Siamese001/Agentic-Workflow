@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -18,7 +19,6 @@ Simplified policy-focused variant that extends the base NeuralAutoImmuneAgent.
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
@@ -31,7 +31,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 @dataclass
-class PolicyNeuralAutoImmuneAgent(SubatomicTestingMixin, NeuralAutoImmuneAgent, MCPHardenedMixin):
+class PolicyNeuralAutoImmuneAgent(SovereignBaseAgent, NeuralAutoImmuneAgent):
     """PolicyNeuralAutoImmuneAgent agent for autonomous operations."""
 
     def __init__(self, project_root: Path) -> None:

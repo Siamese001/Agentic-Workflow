@@ -32,7 +32,6 @@ warnings.warn(
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 # TypeHintEnforcementAgent - Atomic Validator (Ungated Healing)
 # Territory: agentic_core/L2_execution/ToolRegistry
@@ -42,12 +41,8 @@ import ast
 
 """Brief description of functionality and purpose."""
 
-from pathlib import Path
-from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 # NAMING CANON COMPLIANCE — renamed to TypeHintEnforcementAgent for discovery and sovereignty — 2025-12-30
@@ -126,8 +121,6 @@ class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             return {"healed": False}
 
 
-from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING FIXED: TypeHintFixerAgent → TypeHintFixerAgent
 

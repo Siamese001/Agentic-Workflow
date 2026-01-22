@@ -18,19 +18,11 @@ Territory: agentic_core/L5_safety/validators/
 Canon Alignment: Code hygiene and repository health validation
 """
 
-from __future__ import annotations
 
 import ast
 import hashlib
 import os
-from collections import defaultdict
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any
 
-from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.L5_safety.validators.L5Agent import L5Agent
-from agentic_core.L5_safety.validators.structure_blueprint import (
     GLOBAL_EXCLUDED_DIRS,
     SCRIPTS_DIR,
     TESTS_DIR,

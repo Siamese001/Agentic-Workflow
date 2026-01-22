@@ -19,9 +19,7 @@ warnings.warn(
     stacklevel=2,
 )
 import ast
-from pathlib import Path
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
 

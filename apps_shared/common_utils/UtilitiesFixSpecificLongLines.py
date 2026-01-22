@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """Fix the specific 46 long lines identified by canon validator."""
 import logging
@@ -6,9 +5,7 @@ import os
 import re
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from typing import Any
 
-from services.configuration import ConfigurationService
 
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 """
 UnifiedSafetyExecutorAgent - Safety Execution Interface
 
@@ -15,7 +17,6 @@ Features:
 - Audit logging
 """
 
-from __future__ import annotations
 
 import logging
 import threading
@@ -83,7 +84,7 @@ class ExecutorConfig:
     audit_all_executions: bool = True
 
 
-class UnifiedSafetyExecutorAgent:
+class UnifiedSafetyExecutorAgent(SovereignBaseAgent):
     """
     Unified safety executor with integrity gates.
 

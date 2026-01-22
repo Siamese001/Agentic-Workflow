@@ -1,13 +1,10 @@
-from __future__ import annotations
 
 """
 Phase 1: Test Sovereignty Syntax Repair
 Target: Bulk-repair indentation and markdown fences.
 """
 import pathlib
-from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
 
@@ -16,7 +13,6 @@ def repair_test_syntax(test_dir: Any = TESTS_DIR) -> Any:
     """Brief description of functionality and purpose."""
     files_fixed: Any = 0
     # Phase 6.8: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
 
     for path in get_python_files(pathlib.Path(test_dir)):
         try:

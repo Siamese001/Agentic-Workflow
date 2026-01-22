@@ -1,3 +1,4 @@
+from __future__ import annotations
 """L4StateBaseAgent — L4 Base with Subatomic Testing Framework (Jan 01, 2026)
 
 L4 State agents manage long-term memory, persistence, and reflection.
@@ -36,7 +37,6 @@ DOMAIN-SPECIFIC INTEGRATIONS (State Management):
 # Suggested keywords to add in docstring/code: engine, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import json
 import subprocess
@@ -45,7 +45,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
@@ -375,8 +375,8 @@ def test_balanced_sentiment():
         )
         return f'''
 import pytest
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 from agentic_core.L5_safety.validators.structure_blueprint import (

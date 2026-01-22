@@ -252,5 +252,3 @@ def get_memory_architect_sync() -> MemoryArchitectSync:
     """
     return MemoryArchitectSync()
 
-
-'\nfrom agentic_core.pinecone_sync import MemoryArchitectSync\n\n# Initialize sync manager\nmemory_sync = MemoryArchitectSync()\n\n# After successful fission:\nif FissionResult.success:\n    # Write decomposed files\n    FissionManagerAgent.write_decomposed_files(FissionResult)\n    \n    # Sync L4 State (Pinecone)\n    new_file_paths = list(FissionResult.new_files.keys())\n    memory_sync.sync_fission_state(\n        monolith_path=FissionResult.original_file,\n        new_files=new_file_paths\n    )\n    \n    # Verify sync\n    verification = memory_sync.verify_sync(new_file_paths)\n    if all(verification.values()):\n        Logger.info("[OK] L4 State fully synchronized")\n    else:\n        Logger.warning("[!]  Some files not indexed in Pinecone")\n'

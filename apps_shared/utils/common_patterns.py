@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Common Patterns - Shared code extracted from duplicate implementations.
@@ -11,15 +10,10 @@ This module consolidates duplicate code blocks found across:
 
 Import from here instead of duplicating code.
 """
-from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 @dataclass

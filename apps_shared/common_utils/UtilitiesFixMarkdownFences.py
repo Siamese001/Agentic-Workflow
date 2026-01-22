@@ -1,12 +1,9 @@
-from __future__ import annotations
 
 """
 Fix markdown code fences in Python files.
 Removes ```python and ``` from files that have them.
 """
 import re
-from pathlib import Path
-from typing import Any
 
 
 def fix_markdown_fences(file_path: str) -> bool:
@@ -32,7 +29,6 @@ def main() -> Any:
     root: Any = Path("c:/Git/Agentic-Workflow/agentic_core")
     fixed_count: Any = 0
     # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
 
     for py_file in get_python_files(root):
         if fix_markdown_fences(str(py_file)):

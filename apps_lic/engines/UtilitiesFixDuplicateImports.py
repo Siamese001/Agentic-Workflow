@@ -1,12 +1,9 @@
-from __future__ import annotations
 
 """Fix duplicate imports in Python files."""
 import logging
 import os
 import re
-from typing import Any
 
-from services.configuration import ConfigurationService
 
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)

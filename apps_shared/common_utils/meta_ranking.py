@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 # from archives.legacy_root_folders.meta.ranking import bm25_score, dense_score, merge_scores, normalize_scores  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.core.models.models import Evidence  # DEPRECATED: Archive import removed to protect archives from validation edits

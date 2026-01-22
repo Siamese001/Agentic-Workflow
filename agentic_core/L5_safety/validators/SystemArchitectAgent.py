@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -22,14 +23,13 @@ from typing import Any
 
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
-class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, CanonBaseAgent):
+class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
     """
     System Architect validates core architecture and import dependencies.
 
@@ -50,7 +50,6 @@ class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin,
         Enforces Hierarchy, Nesting, and Header Sovereignty.
         """
         print(
-            f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture..."
         )
         print(f"   [{self.name}] 🔍 Checking Architecture: Hierarchy & Headers...")
         passed_arch, arch_viols = self.check_core_architecture()

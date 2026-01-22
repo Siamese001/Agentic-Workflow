@@ -1,5 +1,4 @@
 # from archives.legacy_root_folders.core.models.models import ExecutionProfile, RetrievalConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
-from orchestration.model_routing import ModelChoice, enforce_budget
 
 
 def test_budget_enforcement_downgrades_cost_tier() -> None:

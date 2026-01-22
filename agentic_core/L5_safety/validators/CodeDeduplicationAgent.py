@@ -1,6 +1,7 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: validator
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -9,7 +10,7 @@
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import sys
 from pathlib import Path
@@ -84,7 +85,6 @@ except ImportError:
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
@@ -93,7 +93,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 ARCHIVES_DIR = "archives"
 
 
-class CodeDeduplicationAgent(HealerMixin, RedisCacheMixin, PineconeVectorMixin):
+class CodeDeduplicationAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVectorMixin):
     """
     Batch agent for detecting and optionally refactoring duplicated code.
 

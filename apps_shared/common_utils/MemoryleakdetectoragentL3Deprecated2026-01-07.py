@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 import gc
 
@@ -9,8 +8,6 @@ import json
 import logging
 import tracemalloc
 from datetime import datetime
-from pathlib import Path
-from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 memory_threshold_mb: Any = 100
@@ -68,7 +65,6 @@ class MemorySnapshot:
         }
 
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 class MemoryLeakDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):

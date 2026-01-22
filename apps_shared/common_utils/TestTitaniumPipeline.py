@@ -10,7 +10,6 @@ import asyncio
 import time
 
 # Import the complete pipeline
-from runtime.shared import TitaniumRAGPipeline, create_titanium_pipeline
 
 
 class TitaniumPipelineIntegrationTest:

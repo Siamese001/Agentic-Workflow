@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Dynamic DAG Mutation Manager - Runtime graph transformation.
 
 This module implements the ability for the DAG to rewrite itself at runtime,
@@ -9,7 +10,7 @@ allowing nodes to spawn new predecessors when they detect Missing information.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 import uuid
@@ -205,11 +206,10 @@ class DAGConfig(BaseModel):
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import (
     L3SubatomicTestingMixin,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
+class DAGMutatorAgent(SovereignBaseAgent):
     """Handles the actual graph mutations."""
 
     def __init__(self, config: DAGConfig) -> None:
@@ -559,7 +559,6 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # Global instance
 _dag_manager: DAGManagerAgent | None = None

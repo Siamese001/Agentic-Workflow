@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Outreach Engine Observability Module
@@ -8,14 +7,9 @@ Provides comprehensive observability:
 - Metrics collection
 - Audit reporting
 """
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-from .context import OutreachEngineContext
 
 
 class OutreachTraceLevel(Enum):

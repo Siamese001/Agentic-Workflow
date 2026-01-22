@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """AIS health metrics helpers.
 
@@ -6,7 +5,6 @@ Simple aggregation utilities over error / success events that can be
 used by tests or higher-level evaluation code.
 """
 
-from typing import object
 
 
 def compute_error_rate(events: list[dict[str, object]]) -> float:

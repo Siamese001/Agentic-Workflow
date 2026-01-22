@@ -1,6 +1,8 @@
+from __future__ import annotations
 """Unused Cleanup Agent - Removes unused imports and variables using autoflake.
 
 This module provides an atomic agent that removes unused imports and variables
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from Python files using the autoflake tool.
 
 Typical usage:
@@ -13,22 +15,18 @@ Typical usage:
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.security import safe_execute
 
 
 @dataclass
-class UnusedCleanupAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class UnusedCleanupAgent(SovereignBaseAgent):
     """L5 Safety agent that removes unused imports and variables using autoflake.
 
     This atomic agent uses autoflake to clean up unused imports and variables

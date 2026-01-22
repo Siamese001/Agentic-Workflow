@@ -3,12 +3,9 @@
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint_2 import (
     TESTS_DIR,
 )
-from agentic_core.L5_safety.validators.decorators import standard_heal
 
 """Lightweight Bias Detection for Content Quality - Blueprint Reference.
 

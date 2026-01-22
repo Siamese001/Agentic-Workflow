@@ -13,10 +13,8 @@ This script:
 3. Removes duplicate if canonical exists
 4. Reports files that need manual review
 """
-from __future__ import annotations
 
 import sys
-from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent

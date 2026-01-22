@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """L4 State: Sovereign Semantic Cache — Redis + Pinecone Hybrid Eternal
 Redis L4 local cache for lightning recall + Pinecone eternal vector store.
@@ -12,7 +13,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
 from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import (
     L4SubatomicTestingMixin,
@@ -21,7 +21,6 @@ from agentic_core.L4_state.validation_context.PineconeSovereignAgent import Pine
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 redis_cache_ttl: Any = 60 * 60 * 24 * 7
@@ -29,7 +28,7 @@ max_redis_entry_size: Any = 1024 * 1024
 redis_timeout: Any = 5
 
 
-class SovereignSemanticCache(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
+class SovereignSemanticCache(SovereignBaseAgent):
     """Ultra-hardened hybrid semantic cache — Redis local + Pinecone eternal."""
 
     def __init__(

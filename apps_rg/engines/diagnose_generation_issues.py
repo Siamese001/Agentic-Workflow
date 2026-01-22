@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 DiagnoseGenerationIssues.py - Diagnostics Module
@@ -7,9 +6,7 @@ Domain: resume
 Generated: 2025-12-07T13:28:54.214733
 """
 import logging
-from typing import Any
 
-from shared.result_types import DiagnosticReport
 
 Logger: Any = logging.getLogger(__name__)
 

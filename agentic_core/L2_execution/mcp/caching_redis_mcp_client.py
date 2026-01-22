@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Sovereign Redis MCP Client – Phase 16A (Dec 27, 2025)
@@ -14,7 +15,6 @@ from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import (
     L4SubatomicTestingMixin,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -22,7 +22,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 Logger: Any = logging.getLogger(__name__)
 
 
-class SovereignRedisMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
+class SovereignRedisMcpClient(SovereignBaseAgent):
     """Official Redis MCP client for sovereign caching operations.
 
     [HARDENING] Inherits MCPHardenedMixin for:

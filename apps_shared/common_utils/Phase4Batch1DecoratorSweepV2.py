@@ -14,11 +14,9 @@ Usage:
     python scripts/phase4_batch1_decorator_sweep_v2.py --execute
 """
 
-from __future__ import annotations
 
 import argparse
 import re
-from pathlib import Path
 
 # Files to EXCLUDE from refactoring
 EXCLUDED_FILES = {

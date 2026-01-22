@@ -12,31 +12,25 @@ Original monolithic functions have been decomposed into:
 - ResilientPipelineAgent: Full ZERO-LOSS pipeline orchestrator
 
 For new code, prefer importing and using agents directly:
-    from apps_lic.agents import LeadVettingAgent, ResilientPipelineAgent
 """
 
 import asyncio
 import json
 import os
-from typing import Any
 
 # Import core utilities (kept for helper functions)
-from core_utils import (
     add_observations,
 )
 
 # Import hardened MCP functions
-from mcp_hardening import (
     ensure_brand_compliance,
     execute_cost_controlled_search,
     get_brand_style_guide,
 )
 
 # Import egress filter for Protocol 8
-from network_utils import strict_egress_filter
 
 # === NEW: Import decomposed agents ===
-from apps_lic.agents import (
     BrowserSessionAgent,
     JobApplicationAgent,
     LeadVettingAgent,

@@ -1,6 +1,8 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
@@ -13,14 +15,13 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 
-from __future__ import annotations
 
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 @dataclass
-class SemanticMapperAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class SemanticMapperAgent(SovereignBaseAgent):
     """
     ROLE: The Architect. Analyzes 'God Files' and proposes logical splits based on call graphs.
     """

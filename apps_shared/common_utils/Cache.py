@@ -5,7 +5,6 @@ Provides high-performance cache key generation for LLM requests.
 
 import hashlib
 import json
-from typing import Any
 
 # Version for cache key format to ensure compatibility
 CACHE_KEY_VERSION = "v1.0"

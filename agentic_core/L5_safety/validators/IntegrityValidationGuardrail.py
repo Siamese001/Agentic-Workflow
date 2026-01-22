@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Integrity Validation Guardrail - Consolidated Integrity Checks
 
@@ -10,7 +11,6 @@ Composable Rules:
 - gravity_compliance: Gravity enforcement
 """
 
-from __future__ import annotations
 
 import hashlib
 import time

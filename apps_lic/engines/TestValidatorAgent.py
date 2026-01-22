@@ -1,7 +1,5 @@
 """ValidatorAgent behavior tests."""
 
-from src.lic_agentic.agents.k7_validator_agent import ValidationResult, ValidatorAgent
-from src.lic_agentic.qa import QAResult
 
 
 class StubQAValidator:

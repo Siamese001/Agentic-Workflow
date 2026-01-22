@@ -5,7 +5,6 @@ Updates both dashboardData and realAgentData sections.
 """
 
 import re
-from pathlib import Path
 
 dashboard_path = Path("agentic_core/L6_observability/dashboards/autonomy_dashboard.html")
 html = dashboard_path.read_text(encoding="utf-8")

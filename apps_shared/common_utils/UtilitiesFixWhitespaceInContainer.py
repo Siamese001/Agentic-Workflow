@@ -1,8 +1,6 @@
-from __future__ import annotations
 
 """Simple script to fix trailing whitespace and Missing newlines."""
 import os
-from typing import Any
 
 
 def fix_whitespace_in_file(filepath: Any) -> Any:

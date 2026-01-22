@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -20,8 +21,6 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
@@ -36,7 +35,7 @@ def get_sovereign_rag_orchestrator() -> SovereignRagOrchestratorAgent:
 
 
 @dataclass
-class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+class SovereignRagOrchestratorAgent(SovereignBaseAgent):
     """
     Sovereign RAG Orchestrator - L3 Self-Optimizing RAG System.
 
@@ -120,7 +119,6 @@ class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         Returns:
             Dictionary with faithfulness score and improvement suggestions
         """
-        critique_prompt: Any = f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\nYou are a critical evaluator. Assess if this answer is faithful to the source documents.\n\nQuery: {query}\nAnswer: {answer}\nDocuments: {[d.text[:200] for d in documents[:5]]}\n\nOutput JSON: {{"faithfulness_score": 0.0-1.0, "improvement_suggestion": "..."}}\n'
         response: Any = await self.engine.resilient_mutation(critique_prompt, temperature=0.3)
 
         def _parse_critique(raw) -> Any:

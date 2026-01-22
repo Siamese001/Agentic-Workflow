@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 Budget Auditor - Token usage tracking and cost enforcement.
 Extracted from BudgetManagerAgent.py for single responsibility.
 """
 
-from __future__ import annotations
 
 
 class BudgetAuditor:

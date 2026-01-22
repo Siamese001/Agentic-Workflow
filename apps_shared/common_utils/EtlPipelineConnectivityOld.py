@@ -7,10 +7,7 @@ golden patterns from Pinecone to Redis.
 
 import logging
 import os
-from typing import Any
 
-from connection_manager import ConnectionFactory
-from schemas_connectivity import CanonEntry, generate_ast_structure
 
 logger = logging.getLogger(__name__)
 

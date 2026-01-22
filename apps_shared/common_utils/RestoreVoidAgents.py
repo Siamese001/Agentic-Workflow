@@ -21,12 +21,10 @@ Usage:
     python scripts/restore_void_agents.py
 """
 
-from __future__ import annotations
 
 import argparse
 import shutil
 import sys
-from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 VOID_DIR = PROJECT_ROOT / "archives" / "void_violations"

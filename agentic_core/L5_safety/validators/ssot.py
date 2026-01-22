@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 SSOT - Sovereign Single Source of Truth CLI
 
@@ -15,7 +16,6 @@ Similar to git/npm, this tool provides a discoverable interface for
 architectural governance as a first-class citizen of your workflow.
 """
 
-from __future__ import annotations
 
 import argparse
 import json

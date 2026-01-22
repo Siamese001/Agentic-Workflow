@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 LocationHealerAgent: Automated remediation agent for location violations
 
@@ -11,7 +12,6 @@ Responsibility: Heal location violations through file operations
 Extracted from LocationAgent.py as part of SRP fission.
 """
 
-from __future__ import annotations
 
 import logging
 import re

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 L2 Execution Unified Agents
 
 Phase 4 Hard Migration: Consolidated routing agents.
 """
 
-from __future__ import annotations
 
 from agentic_core.L2_execution.unified.UnifiedModelRouterAgent import (
     ModelConfig,

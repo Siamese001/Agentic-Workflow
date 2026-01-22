@@ -5,10 +5,7 @@ Implements early stopping, path pruning, and convergence detection
 to reduce reasoning latency and improve quality.
 """
 
-from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any
 
 
 @dataclass

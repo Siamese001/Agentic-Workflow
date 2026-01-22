@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 L6 Observability: Mission Metrics
 
 Provides metrics collection for mission controller operations.
 """
 
-from __future__ import annotations
 
 import logging
 from typing import Any

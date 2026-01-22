@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 HealerMixin - Phase 3 Default-On Healing Infrastructure
 
@@ -29,7 +30,6 @@ Phase 23 Enhancement (Jan 21, 2026):
 
 """
 
-from __future__ import annotations
 
 import ast
 import asyncio

@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 BuildPersonalizationQuery.py - Retrieval Module
@@ -7,7 +6,6 @@ Domain: outreach
 Generated: 2025-12-07T13:28:54.031794
 """
 import logging
-from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 

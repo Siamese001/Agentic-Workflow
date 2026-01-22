@@ -16,7 +16,6 @@ import json
 import logging
 import sys
 import tempfile
-from pathlib import Path
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -49,7 +48,6 @@ def test_1_backup_loop_prevention():
     logging.getLogger().addHandler(handler)
 
     try:
-        from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent
 
         guardian = AutonomyGuardianAgent(PROJECT_ROOT)
         result = guardian.heal_repository(dry_run=True)
@@ -145,7 +143,6 @@ def test_3_roster_deduplication():
     print("=" * 60)
 
     try:
-        from agentic_core.L0_maintenance.scripts.discovery_roster_builder import (
             SKIP_AGENTS,
             build_healing_roster,
         )
@@ -207,7 +204,6 @@ def test_4_fixture_exclusion():
     print("=" * 60)
 
     try:
-        from apps_rg.engines.full_agent_discovery import should_exclude_file
 
         # Test paths that should be excluded
         excluded_paths = [
@@ -280,7 +276,6 @@ def test_5_stability_gate_status():
                 print("  Confirmed: Temp file has syntax error (as expected)")
 
             # Test that our AST utils handle this gracefully
-            from agentic_core.utils.ast_utils import safe_parse_file
 
             result = safe_parse_file(temp_path)
             if result is not None:

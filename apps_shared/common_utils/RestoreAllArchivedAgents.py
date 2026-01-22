@@ -15,13 +15,11 @@ Usage:
     python scripts/restore_all_archived_agents.py
 """
 
-from __future__ import annotations
 
 import argparse
 import json
 import shutil
 import sys
-from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVES = PROJECT_ROOT / "archives"

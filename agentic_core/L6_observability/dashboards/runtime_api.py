@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 Runtime API: Backend service for real-time system monitoring and dashboard data.
 Created: 2026-01-13 | Version: 2.0.0 (Phase 2 - Enhanced Telemetry)
 """
 
-from __future__ import annotations
 
 import json
 import time

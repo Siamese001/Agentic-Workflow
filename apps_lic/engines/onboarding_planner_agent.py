@@ -7,7 +7,6 @@ description analysis and company maturity.
 
 import logging
 
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 

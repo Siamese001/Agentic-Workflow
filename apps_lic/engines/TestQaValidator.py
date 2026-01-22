@@ -1,4 +1,3 @@
-from src.lic_agentic.qa import QAValidator
 
 
 def test_missing_subject_fails():

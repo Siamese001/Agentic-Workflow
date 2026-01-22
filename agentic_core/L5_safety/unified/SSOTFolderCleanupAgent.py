@@ -1,3 +1,5 @@
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 """
 [PHASE 24] SSOT Folder Cleanup Agent - Automated SSOT Compliance Enforcement.
 
@@ -13,7 +15,6 @@ This agent enforces the SSOT protocol by ensuring all files are in approved loca
 [SSOT] This is the canonical agent for SSOT folder cleanup operations.
 """
 
-from __future__ import annotations
 
 import ast
 import logging
@@ -25,7 +26,7 @@ from typing import Any
 Logger = logging.getLogger(__name__)
 
 
-class SSOTFolderCleanupAgent:
+class SSOTFolderCleanupAgent(SovereignBaseAgent):
     """
     [PHASE 24] Automated SSOT Folder Cleanup Agent.
 

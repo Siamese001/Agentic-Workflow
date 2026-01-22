@@ -1,6 +1,7 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -9,7 +10,7 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 L5 Safety: HealValidatorAgent
@@ -84,14 +85,12 @@ BANDIT_HIGH_SEVERITY_PATTERNS = [
     "B607",  # start_process_with_partial_path
 ]
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
-class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
+class HealValidatorAgent(SovereignBaseAgent):
     """
     Multi-stage validator for LLM-healed code.
 

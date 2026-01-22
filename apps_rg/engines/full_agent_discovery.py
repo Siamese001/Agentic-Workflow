@@ -34,19 +34,14 @@
 import argparse
 import ast
 import hashlib
-import importlib.util
 import json
 import logging
 import os
 import platform
 import sys
-from collections import defaultdict
-from pathlib import Path
-from typing import Any
 
 # SSOT discovery - replaces rglob
 try:
-    from agentic_core.utils.ssot_discovery import get_python_files
 
     SSOT_AVAILABLE = True
 except ImportError:
@@ -55,7 +50,6 @@ except ImportError:
 # SSOT: Import territory name definitions
 sys.path.insert(0, str(Path(__file__).parent))
 # SSOT: Import field name constants for agent_discovery_full.json
-from dashboard_ssot_definitions import (
     FIELD_CATEGORY,
     FIELD_CLASS_NAME,
     FIELD_CYCLOMATIC_COMPLEXITY,
@@ -74,11 +68,8 @@ from dashboard_ssot_definitions import (
     FIELD_TERRITORY,
     FIELD_TYPED_PCT,
 )
-from territory_ssot_definitions import get_territory_from_path, refine_territory_by_ast
 
 # SSOT: Import canonical functions (Phase 3 Migration)
-from agentic_core.L5_safety.validators.canonical_truth import categorize_agent, get_canonical_layer
-from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -107,7 +98,6 @@ log = logging.getLogger("full_agent_discovery")
 
 # Color-coded terminal output
 try:
-    from agentic_core.utils.terminal_colors import (
         Colors,
         discovery_status,
         log_status,

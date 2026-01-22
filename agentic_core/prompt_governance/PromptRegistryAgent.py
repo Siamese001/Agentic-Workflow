@@ -1,6 +1,7 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -9,7 +10,7 @@
 # Suggested keywords to add in docstring/code: engine, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 # PromptRegistryAgent - Sovereign Version Registry
 # Territory: agentic_core/prompt_governance/version_registry
@@ -30,8 +31,6 @@ import numpy as np
 Logger = logging.getLogger(__name__)
 
 # Phase 3.2: Add proper L1 cognition base inheritance
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -61,7 +60,7 @@ def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
 
 # NAMING FIXED: PromptRegistry → PromptRegistryAgent
 @dataclass
-class PromptRegistryAgent(MCPHardenedMixin, HealerMixin):
+class PromptRegistryAgent(SovereignBaseAgent):
     """
     Sovereign registry for all prompt templates and meta-prompts.
 

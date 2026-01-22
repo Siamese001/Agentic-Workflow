@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Threat Detection Guardrail - Consolidated Threat Analysis
 
@@ -13,7 +14,7 @@ Composable Rules:
 - immune_response: Automated threat response
 """
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import re
 import time
@@ -21,8 +22,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 
@@ -71,7 +70,7 @@ class ThreatAnalysisResult:
     analysis_time_ms: float = 0.0
 
 
-class ThreatDetectionGuardrail(HealerMixin, MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin):
+class ThreatDetectionGuardrail(SovereignBaseAgent, RedisCacheMixin, PineconeVectorMixin):
     """
     Consolidated Threat Detection Guardrail.
 

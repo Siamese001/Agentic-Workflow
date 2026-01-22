@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 GitOps & Advanced Mutation Module - Phase 4 Implementation
@@ -16,19 +15,12 @@ import os
 import re
 import subprocess
 import sys
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any
 
-from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import (
     L3SubatomicTestingMixin,
 )
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 from .context import ResumeEngineContext
-from .learning import ConfidenceScorer
 
 
 class MutationMode(Enum):

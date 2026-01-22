@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 [PHASE 23] AuditTrailMixin - Cryptographic Chain-of-Custody for Agent Actions.
 
@@ -23,7 +24,6 @@ Usage:
 [SSOT] Audit trail implementation for L6 observability.
 """
 
-from __future__ import annotations
 
 import hashlib
 import logging

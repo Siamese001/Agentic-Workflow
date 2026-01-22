@@ -7,10 +7,7 @@ from the legacy K-node system to the new functional role architecture.
 import json
 import logging
 import re
-from pathlib import Path
-from typing import Any
 
-from .agent_capabilities import LEGACY_MAPPING
 
 logger = logging.getLogger(__name__)
 

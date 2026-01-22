@@ -1,19 +1,14 @@
-from __future__ import annotations
 
 """PII Vault for protecting sensitive information.
 
 Grafted from monolith with Presidio-based PII detection and redaction.
 """
 import logging
-from typing import Any
 
 LOGGER = logging.getLogger(__name__)
 
 # pip install presidio-analyzer presidio-anonymizer
 try:
-    from presidio_analyzer import AnalyzerEngine
-    from presidio_anonymizer import AnonymizerEngine
-    from presidio_anonymizer.entities import OperatorConfig
 
     PRESIDIO_AVAILABLE = True
 except ImportError:

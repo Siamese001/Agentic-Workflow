@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 CredentialScannerAgent - Detects hardcoded credentials in source code
 
@@ -12,7 +13,6 @@ Scans the codebase for potential security leaks including:
 Uses FileCache for efficient scanning (Opportunity #3 integration).
 """
 
-from __future__ import annotations
 
 import logging
 import re

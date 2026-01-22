@@ -8,12 +8,8 @@ import asyncio
 import json
 import logging
 import time
-from collections.abc import Callable
-from typing import Any, Optional
 
-from pydantic import BaseModel, Field, validator
 
-from .resilience.circuit_breaker import (
     CircuitBreakerConfig,
     CircuitBreakerFactory,
     CircuitOpenError,

@@ -21,7 +21,6 @@ import argparse
 import os
 import subprocess
 import sys
-from pathlib import Path
 
 # Protected files that require security override
 PROTECTED_FILES = [

@@ -4,9 +4,7 @@ Provides semantic similarity-based caching for query results.
 """
 
 import hashlib
-from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any
 
 
 @dataclass

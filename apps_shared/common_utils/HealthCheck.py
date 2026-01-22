@@ -8,11 +8,7 @@ system health for operations teams.
 import asyncio
 import logging
 import time
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -339,7 +335,6 @@ class CheckpointManagerHealthChecker(HealthChecker):
             test_trace_id = f"health_check_{int(time.time())}"
 
             # Test save
-            from .core.envelope import TextEnvelope
 
             test_envelope = TextEnvelope(text="health check test", trace_id=test_trace_id)
 

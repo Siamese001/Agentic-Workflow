@@ -1,3 +1,4 @@
+from __future__ import annotations
 """CanonBaseAgent - Base class for all validation agents.
 
 Provides shared infrastructure for Canon validation agents including:
@@ -11,7 +12,7 @@ Provides shared infrastructure for Canon validation agents including:
 # Suggested keywords to add in docstring/code: guardrail, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import asyncio
 import hashlib
@@ -29,14 +30,13 @@ try:
     )
 except ImportError:
     pass
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO").upper())
 Logger = logging.getLogger(__name__)
 
 
-class CanonBaseAgent(HealerMixin):
+class CanonBaseAgent(SovereignBaseAgent):
     """
     Base class for all Canon validation agents.
 

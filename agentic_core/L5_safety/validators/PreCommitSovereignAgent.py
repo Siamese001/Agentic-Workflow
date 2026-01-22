@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 PRE-COMMIT SOVEREIGN AGENT
 --------------------------
@@ -28,7 +29,7 @@ Logic:
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import subprocess
 import sys
@@ -53,7 +54,7 @@ class ViolationReport:
     target_layer: str
 
 
-class PreCommitSovereignAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
+class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBaseAgent):
     """
     The 'Seal-Guard' of the Sovereign Architecture.
     Ensures compliance stays at 99.7%+ by blocking architectural rot at the source.
@@ -300,7 +301,6 @@ from pathlib import Path
 repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root))
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 
 if __name__ == "__main__":

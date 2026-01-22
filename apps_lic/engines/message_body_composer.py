@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """Message Body Composer Agent - Core Message Generator (K.3)
 
@@ -19,8 +18,6 @@ Non-responsibilities:
 """
 import logging
 import re
-from dataclasses import dataclass
-from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

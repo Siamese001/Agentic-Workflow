@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ChaosEngineeringAgent: Injects faults and chaos to test system resilience.
 Simulates failures, latency, resource exhaustion, and cascading failures
@@ -15,27 +16,25 @@ to ensure the AI system degrades gracefully under adverse conditions.
 # Suggested keywords to add in docstring/code: orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 import random
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L4_state.ValidationContext import ValidationContext
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
 from agentic_core.runtime.shared_runtime import log_event
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ChaosEngineeringAgent(HealerMixin, MCPHardenedMixin):
+class ChaosEngineeringAgent(SovereignBaseAgent):
     """
     Red team agent specializing in chaos engineering and fault injection.
     Tests system resilience under:

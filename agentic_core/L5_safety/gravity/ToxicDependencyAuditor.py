@@ -12,17 +12,17 @@ Logic:
 4. Feeds priorities to the DynamicSealAgent for targeted remediation.
 """
 
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 import ast
 from pathlib import Path
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class ToxicDependencyAuditor(MCPHardenedMixin):
+class ToxicDependencyAuditor(SovereignBaseAgent):
     """
     The Risk-Assessor Agent.
     Identifies the most critical components of the Sovereign Architecture.

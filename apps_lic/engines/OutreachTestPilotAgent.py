@@ -1,6 +1,4 @@
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """
 OutreachTestPilotAgent - Campaign validation testing agent.
@@ -8,10 +6,7 @@ OutreachTestPilotAgent - Campaign validation testing agent.
 Extracted from LeadQualityAgent.py for one-file-per-agent pattern (Jan 6, 2026).
 Renamed from OutreachTestPilot for consistent Agent suffix.
 """
-from typing import Any
 
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 from .OutreachAgent import OutreachAgent
 

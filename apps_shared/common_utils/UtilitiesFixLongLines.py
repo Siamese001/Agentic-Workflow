@@ -4,14 +4,11 @@ Automatically fix lines longer than 100 characters.
 [SSOT] File discovery uses ssot_discovery.py - DO NOT define get_python_files here
 """
 
-from __future__ import annotations
 
 import logging
 import re
-from typing import Any
 
 # SSOT Import: Use centralized file discovery
-from agentic_core.utils.ssot_discovery import get_python_files
 
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)

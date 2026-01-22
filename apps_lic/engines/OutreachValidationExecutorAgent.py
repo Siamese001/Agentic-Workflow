@@ -1,6 +1,4 @@
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """Outreach Validation Executor - LIC-Specific Validation Gates.
 
@@ -9,9 +7,7 @@ rules including Metric source binding, redundancy guards, and forbidden content.
 """
 import logging
 import re
-from typing import Any
 
-from validation_gate_executor import (  # Assuming this import is correct
     RuleFailure,
     ValidationGateExecutor,
 )

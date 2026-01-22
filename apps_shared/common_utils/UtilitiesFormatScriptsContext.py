@@ -1,14 +1,10 @@
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """Brief description of functionality and purpose."""
 
 "Brief description of functionality and purpose."
 "\nformat_scripts_context.py - Formatting Module\n\nDomain: utilities\nGenerated: 2025-12-07T12:07:59.884149\n"
 import logging
-from dataclasses import field
-from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 

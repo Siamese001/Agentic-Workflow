@@ -18,15 +18,12 @@ Usage:
     python scripts/archive_consolidated_agents.py --dry-run
 """
 
-from __future__ import annotations
 
 import argparse
 import json
 import shutil
 import sys
 from datetime import datetime
-from pathlib import Path
-from typing import Any
 
 PROJECT_ROOT = Path(__file__).parent.parent
 

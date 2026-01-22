@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 RLStrategy - Consolidated Reinforcement Learning Orchestration Strategy
 
@@ -13,7 +14,6 @@ SSOT PRINCIPLE:
     which is injected into UnifiedOrchestratorAgent.
 """
 
-from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field

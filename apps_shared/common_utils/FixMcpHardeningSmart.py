@@ -6,7 +6,6 @@ Smart MCP hardening fix - handles edge cases like stub files, multiple classes, 
 import ast
 import json
 import re
-from pathlib import Path
 
 # Load agent discovery data
 data = json.load(open("agent_discovery_full.json"))

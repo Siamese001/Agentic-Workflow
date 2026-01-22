@@ -1,11 +1,9 @@
-from __future__ import annotations
 
 """
 Emergency Fix Script: Remove ALL underscore prefixes from dataclass fields in core_contracts.py
 Session 5 - Critical Issue Resolution
 """
 import re
-from pathlib import Path
 
 
 def fix_dataclass_underscores(file_path: Path) -> tuple[int, list[str]]:

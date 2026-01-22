@@ -18,9 +18,7 @@ Target: Eliminate all remaining import violations
 Expected: +3.7% compliance (96.3% → 100%)
 """
 
-from pathlib import Path
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
 

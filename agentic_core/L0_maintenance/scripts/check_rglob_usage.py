@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 CI Guard: rglob/glob Usage Checker
 
@@ -16,7 +17,6 @@ Date: January 19, 2026
 Phase: 4.1 - Scaled Refactoring & CI Enforcement
 """
 
-from __future__ import annotations
 
 import re
 import sys

@@ -9,7 +9,6 @@ EXTRACTED FROM: apps_rg/L3_orchestration/orchestrate_resume_generation.py
 CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 
-from __future__ import annotations
 
 
 def build_reasoning_prompt_addendum(params: dict) -> str:

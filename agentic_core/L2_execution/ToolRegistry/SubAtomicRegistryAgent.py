@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -32,7 +33,6 @@ from agentic_core.L4_state.validation_context.PineconeSovereignAgent import Pine
 from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
@@ -300,7 +300,7 @@ def is_legacy_agent(agent_id: str) -> bool:
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 @dataclass
-class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
+class SubAtomicRegistryAgent(SovereignBaseAgent):
     """
     Sovereign method registry — live, hybrid-indexed, eternal.
     Now with Redis sovereign caching for instant method discovery.

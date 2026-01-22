@@ -7,7 +7,6 @@ outreach and resume generation.
 
 import logging
 
-from pydantic import BaseModel, Field, confloat
 
 logger = logging.getLogger(__name__)
 

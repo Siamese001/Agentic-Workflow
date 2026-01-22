@@ -26,8 +26,6 @@ Creates: dashboard_data.js, agent_data.js, recommendations.js, observations.js
 
 import json
 import sys
-from collections import defaultdict
-from pathlib import Path
 
 
 def load_discovery():

@@ -6,15 +6,10 @@ Integrates with SovereignIndex for safety validation.
 """
 
 import logging
-from collections.abc import Callable
-from pathlib import Path
-from typing import Any, Optional
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
     GLOBAL_EXCLUDED_DIRS,
     is_path_allowed,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
 
 Logger = logging.getLogger(__name__)
 

@@ -3,7 +3,6 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 # File: state_manager.py
 # Description: State Manager for HOP-based architecture - v13.0
@@ -17,10 +16,7 @@ import json
 import os
 import shutil
 from datetime import datetime
-from pathlib import Path
-from typing import Any
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 class StateManager:
@@ -403,7 +399,6 @@ class StateManager:
 
 # DEPRECATED: Moved to StateValidatorAgent.py (Jan 6, 2026)
 # Import for backward compatibility
-from .StateValidatorAgent import StateValidatorAgent as StateValidator
 
 # StateValidatorDeprecatedAgent extracted to StateValidatorDeprecatedAgent.py (Phase B Task 2)
 

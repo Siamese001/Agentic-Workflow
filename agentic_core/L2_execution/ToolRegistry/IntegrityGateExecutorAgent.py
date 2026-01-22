@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, validator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -13,7 +14,6 @@ import re
 from enum import Enum
 from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
@@ -295,7 +295,7 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
-class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
+class IntegrityGateExecutorAgent(SovereignBaseAgent):
     """Executor for integrity gate validation.
 
     Validates research outputs against quality criteria including

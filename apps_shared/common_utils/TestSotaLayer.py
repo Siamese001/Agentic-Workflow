@@ -12,7 +12,6 @@ import tempfile
 import time
 
 # Import the SOTA layer components
-from runtime.shared import (
     ContrastiveSemanticCache,
     LateInteractionReranker,
     NullCache,

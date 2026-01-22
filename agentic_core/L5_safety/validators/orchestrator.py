@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 IOrchestrator Protocol - Immutable Contract for Orchestration
 
@@ -5,7 +6,6 @@ This module defines the strict protocol that all orchestrators must implement.
 Using runtime_checkable allows isinstance() checks to verify protocol adherence.
 
 USAGE:
-    from agentic_core.L3_orchestration.interfaces.orchestrator import IOrchestrator
 
     class MyOrchestrator:
         def run_mission(self, context: dict) -> dict:
@@ -27,7 +27,6 @@ SSOT PRINCIPLE:
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 from typing import Any, Protocol, runtime_checkable
 

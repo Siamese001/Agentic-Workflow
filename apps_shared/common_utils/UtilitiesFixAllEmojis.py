@@ -1,13 +1,9 @@
-from __future__ import annotations
 
 """
 Fix all Unicode emojis in Python files to ASCII equivalents.
 Prevents Windows encoding issues.
 """
-from pathlib import Path
-from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
 
@@ -62,7 +58,6 @@ def main() -> Any:
         if not target_dir.exists():
             continue
         # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
 
     for py_file in get_python_files(target_dir):
         if fix_emojis_in_file(str(py_file)):

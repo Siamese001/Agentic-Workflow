@@ -1,11 +1,7 @@
 """E2E check that value claims include evidence anchors."""
 
-from __future__ import annotations
 
-from types import SimpleNamespace
 
-from src.lic_agentic.agents.k3_message_architect import MessageArchitect
-from src.lic_agentic.reasoning.toggles import ReasoningToggles
 
 
 def extract_artifact_markers(draft: str) -> list[str]:

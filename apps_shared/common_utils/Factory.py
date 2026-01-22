@@ -8,7 +8,6 @@ Phase 2 - Resilient Routing Layer
 
 import logging
 
-from .router import HardenedRouter
 
 logger = logging.getLogger(__name__)
 

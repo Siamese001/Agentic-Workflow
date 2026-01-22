@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 [PHASE 21] Graph Memory Bridge - Interface to Memory MCP Knowledge Graph.
 
@@ -18,7 +19,6 @@ Resilient Mode: If MCP is unavailable, operations are logged but don't crash.
 [SSOT] This is the canonical interface for Memory MCP operations.
 """
 
-from __future__ import annotations
 
 import hashlib
 import logging

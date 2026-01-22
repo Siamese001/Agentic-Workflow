@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 Capability Extractor - AST-based capability analysis for agent classes.
 Extracted from agent_capability_supplement.py for single responsibility.
 """
 
-from __future__ import annotations
 
 import ast
 

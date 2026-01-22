@@ -3,19 +3,14 @@
 # Suggested keywords to add in docstring/code: memory, prompt, state
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 """Implementation for agent_permissions."""
 import logging
-from dataclasses import dataclass
-from typing import Any
 
 try:
-    from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType
 except ImportError:
     AgentIdentity = IdentityType = type("Stub", (), {})
 try:
-    from agentic_core.L3_orchestration.workflow_engines.agent_permissions_types import (
         Permission,
         PermissionAction,
         PermissionCheck,
@@ -30,11 +25,6 @@ Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 ControlPlane: Any = None
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 @dataclass

@@ -1,6 +1,4 @@
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """
 FileSystemAgent: Sovereign Non-Python File Naming Enforcer
@@ -35,16 +33,11 @@ import logging
 import re
 import shutil
 from datetime import datetime
-from pathlib import Path
-from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
     FORBIDDEN_PATTERNS,
     HEALING_CONFIG,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -91,7 +84,6 @@ class FilesystemAgent(HealerMixin):
         """
         violations: list[tuple[Path, str]] = []
 
-        from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
 
         all_files = list(get_python_files(self.project_root)) + list(
             get_data_files(self.project_root)
@@ -141,7 +133,6 @@ class FilesystemAgent(HealerMixin):
             Path to archive subpath, or None if file should NOT be archived.
         """
         # [FIX] Priority 0: Check sovereign territory before archiving
-        from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
 
         try:
             rel_path = file_path.relative_to(self.project_root)
@@ -154,7 +145,6 @@ class FilesystemAgent(HealerMixin):
             pass  # File outside project root, continue with archiving logic
 
         dir_path = file_path.parent
-        from agentic_core.utils.ssot_discovery import get_python_files
 
         py_files = list(get_python_files(dir_path))
 
@@ -235,7 +225,6 @@ class FilesystemAgent(HealerMixin):
         # PRIORITY 3: Keyword fallback using NamingAgent guidance
         if content_preview:
             try:
-                from agentic_core.utils.naming.NamingAgent import NamingAgent
 
                 naming = NamingAgent(self.project_root)
                 guidance = naming.get_placement_guidance(content_preview)

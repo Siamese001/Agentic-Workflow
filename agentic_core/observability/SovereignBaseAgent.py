@@ -2,18 +2,29 @@
 SovereignBaseAgent - Sovereign Single Source of Truth (SSOT) Root.
 
 Provides foundational capabilities for agents with sovereign authority.
-InfrastructureMixin consolidates HealerMixin, MCPHardenedMixin, and SubatomicTestingMixin.
+
+L0 DNA FLATTENING (Jan 2026):
+InfrastructureMixin consolidates all core agent capabilities:
+- HealerMixin (autonomous repair)
+- MCPHardenedMixin (MCP protocol safety)
+- SubatomicTestingMixin (self-testing)
+- InstructionalInjectionMixin (prompt injection protection - now L0 core trait)
 
 PHASE 2 MIGRATION:
 - Replaced individual mixins with InfrastructureMixin (unified gatekeeper)
-- InfrastructureMixin provides: healing, MCP hardening, subatomic testing
+- InfrastructureMixin provides: healing, MCP hardening, subatomic testing, prompt safety
 - State verification via _infra_initialized flag
 
 MRO HARDENING:
 - This is the ROOT of the agent hierarchy
 - InfrastructureMixin is injected HERE so all agents get full infrastructure
 - Layer bases add specialized mixins BEFORE SovereignBaseAgent
-- MRO Flow: Specialized -> Layer -> SovereignBaseAgent -> InfrastructureMixin -> object
+- MRO Flow: Specialized -> Layer -> SovereignBaseAgent -> InfrastructureMixin -> [HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, InstructionalInjectionMixin] -> object
+
+RESILIENCE:
+- Prompt injection protection is now a core L0 trait, independent of MCP protocol
+- Air-gapped agents (no MCP tools) still retain InstructionalInjectionMixin safety protocols
+- Security auditors can verify injection-protection layer at the root of the hierarchy
 """
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
@@ -35,10 +46,12 @@ class SovereignBaseAgent(InfrastructureMixin):
     """
     Sovereign Single Source of Truth (SSOT) Root.
 
-    InfrastructureMixin consolidates all standard agent capabilities:
+    L0 DNA FLATTENING (Jan 2026):
+    InfrastructureMixin consolidates all core agent capabilities:
     - HealerMixin: Autonomous repair capability
     - MCPHardenedMixin: MCP protocol hardening
     - SubatomicTestingMixin: Self-testing capability
+    - InstructionalInjectionMixin: Prompt injection protection (now L0 core trait)
 
     This ensures EVERY agent in the L0-L6 hierarchy has full infrastructure.
 
@@ -46,7 +59,12 @@ class SovereignBaseAgent(InfrastructureMixin):
     - SovereignBaseAgent inherits from InfrastructureMixin
     - Layer bases inherit from SovereignBaseAgent (+ specialized mixins)
     - Concrete agents inherit from layer bases (+ more specialized mixins)
-    - MRO: Specialized -> Layer -> SovereignBaseAgent -> InfrastructureMixin -> object
+    - MRO: Specialized -> Layer -> SovereignBaseAgent -> InfrastructureMixin -> [HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, InstructionalInjectionMixin] -> object
+
+    RESILIENCE:
+    - Prompt injection protection is independent of MCP protocol
+    - Air-gapped agents retain InstructionalInjectionMixin safety
+    - Security auditors can verify injection-protection at root level
     """
 
     name: str = "SovereignAgent"

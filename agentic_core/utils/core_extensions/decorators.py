@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Decorators for Agent Standardization
 
@@ -11,7 +12,6 @@ DECORATORS:
         - Error containment (catches crashes, returns valid HealResult)
 
 USAGE:
-    from agentic_core.utils.core_extensions.decorators import standard_heal
 
     class MyAgent:
         @standard_heal
@@ -20,7 +20,6 @@ USAGE:
             return {"renamed": 5}  # Legacy format - will be normalized
 """
 
-from __future__ import annotations
 
 import functools
 import logging

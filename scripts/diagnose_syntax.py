@@ -6,10 +6,8 @@ Usage:
     python scripts/diagnose_syntax.py
 """
 
-from __future__ import annotations
 
 import ast
-from pathlib import Path
 
 
 def check_syntax(root: Path) -> int:

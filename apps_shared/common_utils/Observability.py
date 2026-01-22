@@ -15,7 +15,6 @@ Non-responsibilities:
 
 # FILE: observability.py
 
-from __future__ import annotations
 
 # from archives.legacy_root_folders.runtime.observability.spans import *  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.runtime.observability.traces import *  # DEPRECATED: Archive import removed to protect archives from validation edits

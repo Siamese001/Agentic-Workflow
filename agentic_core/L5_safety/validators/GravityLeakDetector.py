@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 GravityLeakDetector: Cross-boundary dependency detection agent
 
@@ -11,7 +12,6 @@ Responsibility: Detect and mark gravity leaks (core → apps dependencies)
 Migrated from LocationAgent.py during Phase 4 of the fission process.
 """
 
-from __future__ import annotations
 
 import ast
 import logging

@@ -1,9 +1,6 @@
-from __future__ import annotations
 
 """Dataclass models for achv_bullet_synthesizer_types."""
 import logging
-from dataclasses import dataclass
-from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 

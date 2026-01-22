@@ -5,8 +5,6 @@ Ensures data/sdks_mcps/ is the immutable single source of truth.
 import json
 import os
 import sys
-from pathlib import Path
-from typing import object
 
 import jsonschema
 

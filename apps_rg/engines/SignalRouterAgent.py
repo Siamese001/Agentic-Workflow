@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Self-Healing Engine - Phase 2 Implementation
@@ -9,13 +8,8 @@ This module provides the core self-healing capabilities:
 - RgHealingOrchestratorAgent: Coordinates multiple healing cycles
 - AutomaticRollback: Handles rollback on critical failures
 """
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 from .agents import (
     ATSCompatibilityAgent,
@@ -28,8 +22,6 @@ from .agents import (
     TemplateOptimizerAgent,
     TestPilot,
 )
-from .context import ResumeEngineContext
-from .resume_base import ResumeAgent
 
 
 class HealingStrategy(Enum):

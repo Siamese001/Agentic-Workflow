@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 SSOT Discovery Module - Phase 1 Foundation + Phase 4 Performance Hardening
 
@@ -13,7 +14,6 @@ Key Features:
 - LRU cache for in-memory caching
 
 Usage:
-    from agentic_core.utils.ssot_discovery import get_python_files, get_files_by_layer, FileCache
 
     # Get all active Python files
     files = get_python_files(project_root)
@@ -31,7 +31,6 @@ Phase: 1 - Foundation & Zero-Loss Protocols
 Phase 4 Enhancement: FileCache for persistent caching
 """
 
-from __future__ import annotations
 
 import json
 import logging

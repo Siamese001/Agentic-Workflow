@@ -1,6 +1,8 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
@@ -21,7 +23,6 @@ This agent provides defense-in-depth by catching violations that may have
 bypassed pre-commit hooks (e.g., via --no-verify or direct file edits).
 """
 
-from __future__ import annotations
 
 import inspect
 import re
@@ -35,7 +36,6 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class SovereigntyError(ImportError):
@@ -50,7 +50,7 @@ class SovereigntyError(ImportError):
 
 
 @dataclass
-class ImportLockAgent(SubatomicTestingMixin, MCPHardenedMixin, MetaPathFinder):
+class ImportLockAgent(SovereignBaseAgent, MetaPathFinder):
     """
     The Runtime Execution Guard.
 

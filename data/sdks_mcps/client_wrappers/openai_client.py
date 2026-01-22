@@ -4,13 +4,9 @@ Implements robust error handling, retry logic, and structured output parsing.
 
 import json
 import os
-from dataclasses import dataclass
-from typing import object
 
 import backoff
-from openai.types.chat import ChatCompletion
 
-from data.sdks_mcps.reference_clients.minimal_openai import (
     APIError,
     APITimeoutError,
     OpenAI,
@@ -206,7 +202,6 @@ class OpenAIClient:
         Returns:
             List of completion results
         """
-        import concurrent.futures
 
         def process_request(request_data):
             try:

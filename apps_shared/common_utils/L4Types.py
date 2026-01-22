@@ -4,15 +4,10 @@ L4 State Management - Core Types
 Defines the fundamental types for state management with strict immutability.
 """
 
-from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Callable
-from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Generic, TypeVar
 
 T = TypeVar("T")
 

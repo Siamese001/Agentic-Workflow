@@ -6,10 +6,7 @@ with graph-based reasoning, context retrieval, and state management.
 
 import json
 import logging
-from typing import Any
 
-from neo4j import GraphDatabase
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

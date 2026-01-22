@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Outreach Engine Self-Healing Loop
@@ -8,22 +7,15 @@ Provides self-healing capabilities for outreach campaigns:
 - Healing cycles with convergence detection
 - Automatic rollback on critical failures
 """
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any
 
-from agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent import (
     AppWorkflowOrchestratorAgent,
 )
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 from .agents import (
     LeadQualityAgent,
     OutreachTestPilot,
 )
-from .context import OutreachEngineContext
 
 
 class OutreachHealingStrategy(Enum):

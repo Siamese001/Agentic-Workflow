@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 AdversarialProbeAgent: Simulates adversarial attacks and probing attempts.
 Attempts to find weaknesses through adversarial examples, model confusion,
@@ -9,23 +10,21 @@ and strategic attack patterns designed to expose vulnerabilities.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L4_state.ValidationContext import ValidationContext
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.runtime.shared_runtime import log_event
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class AdversarialProbeAgent(HealerMixin, MCPHardenedMixin):
+class AdversarialProbeAgent(SovereignBaseAgent):
     """
     Red team agent specializing in adversarial attacks and probing.
     Executes strategic attack patterns:

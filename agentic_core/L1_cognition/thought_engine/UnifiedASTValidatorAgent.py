@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 UnifiedASTValidatorAgent - Consolidated AST validator replacing 5 micro-agents.
 
@@ -15,7 +16,7 @@ Territory: agentic_core/L1_cognition/thought_engine/
 Canon Alignment: AST-based code quality validation
 """
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import ast
 import importlib
@@ -25,16 +26,13 @@ from typing import Any
 
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 # GRAVITY FIXED: Dynamic import for MCPHardenedMixin
-_mod = importlib.import_module("agentic_core.L2_execution.mcp.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 
 
 @dataclass
-class UnifiedASTValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
+class UnifiedASTValidatorAgent(SovereignBaseAgent, CanonASTValidator):
     """
     Unified AST validator replacing 5 micro-agents.
 

@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 from dataclasses import dataclass
@@ -30,7 +31,6 @@ from agentic_core.L2_execution.ToolRegistry.IntegrityGateExecutorAgent import (
     IntegrityGateExecutorAgent,
 )
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
@@ -97,7 +97,7 @@ class ValidationResult:
 
 
 @dataclass
-class PeerIntelligenceAuditorAgent(HealerMixin):
+class PeerIntelligenceAuditorAgent(SovereignBaseAgent):
     """
     K.2.5 - Multi-Hop RAG Analysis Agent
 
@@ -157,7 +157,6 @@ class PeerIntelligenceAuditorAgent(HealerMixin):
             gate_id="VG_KEYWORD_CLASSIFICATION",
             PASSED=True,
             SEVERITY="INFO",
-            MESSAGE=f"Classified {len(jd_keywords)} keywords: {len(table_stakes)} table-stakes,\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n            {len(DIFFERENTIATORS)} differentiators",
             SIGNATURE=f"CLASSIFY:OK:{len(DIFFERENTIATORS)}",
             DETAILS={
                 "total_keywords": len(jd_keywords),

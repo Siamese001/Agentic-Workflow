@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 [PHASE 17/20] Semantic Cache Manager - The Collective Hive Mind.
 
@@ -16,7 +17,6 @@ Configuration (Environment Variables):
 [SSOT] This is the canonical location for the Hive Mind infrastructure.
 """
 
-from __future__ import annotations
 
 import hashlib
 import json

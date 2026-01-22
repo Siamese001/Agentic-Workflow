@@ -15,10 +15,9 @@ Re-exported from L5_safety for backwards compatibility.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 TREE_SITTER_AVAILABLE = False  # Stub - tree-sitter not required for tests
 
@@ -46,104 +45,40 @@ class PlacementResult:
         self.suggestions: list = []
 
 
-try:
-    from apps_rg.engines.NamingAgent import NamingAgent
-except ImportError:
-    # Stub implementation if original not available
-    class NamingAgent(SubatomicTestingMixin, MCPHardenedMixin):
-        """
-        Stub NamingAgent for backwards compatibility.
+# Stub implementation for backwards compatibility
+class NamingAgent(SovereignBaseAgent):
+    """
+    Stub NamingAgent for backwards compatibility.
 
-        Provides minimal implementation when the full L5_safety NamingAgent
-        is not available. Used for testing and development environments.
-        """
+    Provides minimal implementation when the full L5_safety NamingAgent
+    is not available. Used for testing and development environments.
+    """
 
-        def heal_repository(
-            self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any
-        ) -> dict[str, Any]:
-            """
-            Autonomous healing method (Canon Key 51 compliance).
-
-            Args:
-                dry_run: If True, only report violations without fixing
-                execute: If True, apply fixes
-                depth: Recursion depth for cycle detection
-                **kwargs: Additional healing parameters
-
-            Returns:
-                Dict with healing summary (violations_found, violations_fixed, errors)
-            """
-            try:
-                super().heal_repository(dry_run=dry_run)
-            except (AttributeError, TypeError):
-                pass  # Parent chain may not have heal_repository
-
-            # Phase 6.2: Use standardized HealResult keys
-            metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0}
-
-            # === ZOMBIE VACCINATION: Wired orphaned methods ===
-            if hasattr(self, "validate_name"):
-                try:
-                    validation_result = self.validate_name()
-                    if validation_result:
-                        metrics["violations_found"] += (
-                            len(validation_result) if isinstance(validation_result, list) else 1
-                        )
-                except Exception as e:
-                    import logging
-
-                    Logger = logging.getLogger(__name__)
-                    Logger.error(f"Error in validate_name: {e}")
-                    metrics["errors"] += 1
-            # === END VACCINATION ===
-
-            return metrics
-
-        def __init__(self, *args: Any, **kwargs: Any) -> None:
-            """
-            Initialize the stub NamingAgent.
-
-            Args:
-                *args: Positional arguments (ignored in stub)
-                **kwargs: Keyword arguments (ignored in stub)
-            """
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any
+    ) -> dict[str, Any]:
+        """Autonomous healing method (Canon Key 51 compliance)."""
+        try:
+            super().heal_repository(dry_run=dry_run)
+        except (AttributeError, TypeError):
             pass
+        return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
-        def validate_name(self, name: str) -> bool:
-            """
-            Validate a name against naming conventions.
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize the stub NamingAgent."""
+        pass
 
-            Args:
-                name: The name to validate
+    def validate_name(self, name: str) -> bool:
+        """Validate a name against naming conventions."""
+        return True
 
-            Returns:
-                True if valid (stub always returns True)
-            """
-            return True
+    def suggest_name(self, context: str) -> str:
+        """Suggest a name based on context."""
+        return context
 
-        def suggest_name(self, context: str) -> str:
-            """
-            Suggest a name based on context.
-
-            Args:
-                context: Context string for name generation
-
-            Returns:
-                Suggested name (stub returns context unchanged)
-            """
-            return context
-
-        def analyze_placement(self, code: str) -> PlacementResult:
-            """
-            Analyze code and suggest file placement.
-
-            Args:
-                code: Source code to analyze
-
-            Returns:
-                PlacementResult with suggested path and confidence
-            """
-            return PlacementResult()
+    def analyze_placement(self, code: str) -> PlacementResult:
+        """Analyze code and suggest file placement."""
+        return PlacementResult()
 
 
 def get_naming_agent(project_root: str | None = None) -> NamingAgent:

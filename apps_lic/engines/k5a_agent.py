@@ -7,10 +7,7 @@ constraints (28-33 words per bullet).
 
 import logging
 import re
-from dataclasses import dataclass
-from typing import Any
 
-from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -276,8 +273,6 @@ Generate the corrected bullets:
         Returns:
             List of provenance labels ("V", "T", "S")
         """
-        from sklearn.feature_extraction.text import TfidfVectorizer
-        from sklearn.metrics.pairwise import cosine_similarity
 
         if not master_bullets:
             # No master bullets - all synthetic

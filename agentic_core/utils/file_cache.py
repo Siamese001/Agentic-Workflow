@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 FileCache: Singleton-based file discovery cache for reducing I/O overhead.
 
@@ -15,7 +16,6 @@ Opportunity #3: rglob Scan Proliferation
 - Uses os.walk with directory pruning for performance (not rglob)
 
 Usage:
-    from agentic_core.utils.file_cache import FileCache
 
     cache = FileCache.get_instance()
     all_py_files = cache.get_files_by_extension('.py')
@@ -25,7 +25,6 @@ Usage:
     cache.invalidate()
 """
 
-from __future__ import annotations
 
 import logging
 import os

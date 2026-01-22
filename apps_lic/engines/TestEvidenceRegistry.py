@@ -1,6 +1,5 @@
 """EvidenceRegistry behavior tests."""
 
-from src.lic_agentic.rag.evidence_registry import EvidenceRegistry
 
 
 def test_evidence_registry_list_filters_scope():

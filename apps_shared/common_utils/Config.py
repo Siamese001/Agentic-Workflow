@@ -5,15 +5,11 @@
 import json
 import logging
 import os
-from dataclasses import dataclass, field
-from pathlib import Path
 
 # Import from models for CompetitiveAnalysisConfig
-from runtime.compat.models import CompetitiveAnalysisConfig
 
 # --- GEMINI API SETUP ---
 try:
-    import google.generativeai as genai
 
     GEMINI_AVAILABLE = True
 

@@ -6,12 +6,7 @@ covering Framing, Context, Reasoning, Tooling, Safety, and Output layers.
 
 import json
 import logging
-from dataclasses import dataclass
-from enum import Enum
-from pathlib import Path
 
-from .prompt_injection_loader import InjectionPattern, InjectionScope
-from .subatomic_hop import MicroStage
 
 logger = logging.getLogger(__name__)
 

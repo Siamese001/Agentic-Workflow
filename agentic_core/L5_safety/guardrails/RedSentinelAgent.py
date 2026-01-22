@@ -1,3 +1,4 @@
+from __future__ import annotations
 """RedSentinelAgent - L5 Active Defense & Hostile Input Fuzzing.
 
 This module provides an active defense system that generates hostile inputs
@@ -20,7 +21,7 @@ Typical usage:
 # Suggested keywords to add in docstring/code: engine, orchestrator, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import json
 import logging
@@ -30,15 +31,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
+class RedSentinelAgent(SovereignBaseAgent):
     """L5 Safety agent that generates hostile inputs for security testing.
 
     This active defense system creates edge cases and malformed inputs to test
@@ -139,7 +138,6 @@ class RedSentinelAgent(SubatomicTestingMixin, HealerMixin):
             from agentic_core.L2_execution.mcp.llm_router_mcp_client import get_llm_router_client
 
             llm_router = get_llm_router_client()
-            prompt = f'\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nGenerate 5 hostile test inputs for this function to test robustness:\n\nFunction: {func_name}\n\nImplementation:\n{func_code}\n```\n\nGenerate inputs that could cause:\n1. Type errors (wrong types)\n2. Boundary conditions (empty, None, extreme values)\n3. Buffer overflows (very long strings)\n4. Malformed data (invalid JSON, special characters)\n5. Edge cases (negative numbers, zeros)\n\nReturn as JSON array:\n[\n  {{"type": "description", "value": "actual_value"}},\n  {{"type": "description", "value": "actual_value"}},\n  ...\n]\n'
             result_dict = await llm_router.validate_content(prompt, validation_type="red_team")
             if isinstance(result_dict, dict):
                 response_text = result_dict.get("response", result_dict.get("reason", ""))

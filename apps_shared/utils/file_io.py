@@ -1,13 +1,10 @@
-from __future__ import annotations
 
 """File system utilities for apps_shared."""
 import ast
 import hashlib
 import os
 import re
-from typing import Any
 
-from apps_shared.domain.constants import EXCLUDED_DIRS, EXCLUDED_FILES
 
 
 def calculate_file_hash(file_path: str) -> str:

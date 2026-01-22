@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ULTRA-HARDENED Redis Cache Mixin
 
@@ -10,7 +11,6 @@ Features:
 - Manual invalidation support
 """
 
-from __future__ import annotations
 
 import hashlib
 import logging

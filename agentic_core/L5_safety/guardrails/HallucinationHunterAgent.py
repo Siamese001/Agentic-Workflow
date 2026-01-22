@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import datetime
 
@@ -22,9 +23,7 @@ try:
     NUMPY_AVAILABLE: Any = True
 except ImportError:
     NUMPY_AVAILABLE: Any = False
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -97,7 +96,6 @@ class ClaimExtractor:
 
     async def _extract_claims_with_gemini(self, text: str) -> list[AtomicClaim]:
         """Use Gemini to extract atomic claims from text."""
-        prompt = f'Extract atomic claims from this text. Each Claim should be a single, verifiable fact.\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n\nTEXT:\n{text}\n\nREQUIREMENTS:\n1. Break the text into individual atomic claims (propositions)\n2. Each Claim should be independently verifiable\n3. Focus on factual statements (skills, experience, achievements)\n4. Ignore filler words and formatting\n5. Number each Claim\n\nOUTPUT FORMAT:\nReturn a numbered list of atomic claims, one per line:\n1. [First atomic Claim]\n2. [Second atomic Claim]\n...\n\nExample for "John has 5 years of Python experience and led 3 projects":\n1. John has 5 years of Python experience\n2. John led 3 projects\n'
         response = self.genai_client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
@@ -201,7 +199,7 @@ class ClaimVerifier:
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
+class HallucinationHunterAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     The Hallucination Hunter - Ground Truth Verifier
 

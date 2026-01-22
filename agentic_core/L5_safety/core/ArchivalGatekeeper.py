@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ArchivalGatekeeper - Centralized Service for Destructive File Operations
 
@@ -12,7 +13,6 @@ DESIGN PRINCIPLES:
 4. No Hard Deletes - Hard delete is banned; all removals go to archive
 
 USAGE:
-    from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 
     gatekeeper = ArchivalGatekeeper.get_instance(project_root)
     result = gatekeeper.safe_move(src, dst, "MyAgent", "Relocating to correct territory")
@@ -22,7 +22,6 @@ USAGE:
 Territory: agentic_core/L5_safety/core/
 """
 
-from __future__ import annotations
 
 import json
 import logging
@@ -247,13 +246,16 @@ class ArchivalGatekeeper:
         """
         Check if batch mode is enabled via environment variable.
 
-        When ARCHIVE_BATCH_ACCEPT=1, all operations are auto-approved
-        without interactive prompts.
+        [PHASE 33j] Checks both ARCHIVE_BATCH_ACCEPT and SOVEREIGN_AUTO_APPROVE.
+        When either is set to "1", all operations are auto-approved without prompts.
 
         Returns:
             True if batch mode is enabled
         """
-        return os.environ.get(ARCHIVE_BATCH_ACCEPT_ENV, "").strip() == "1"
+        return (
+            os.environ.get(ARCHIVE_BATCH_ACCEPT_ENV, "").strip() == "1"
+            or os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1"
+        )
 
     def _request_approval(self, result: ArchivalResult) -> bool:
         """

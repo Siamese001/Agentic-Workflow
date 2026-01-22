@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Utility to automate the migration from deep imports to clean SSOT paths.
 
@@ -13,7 +14,6 @@ Usage:
     python -m agentic_core.L0_maintenance.scripts.migrate_imports --apply
 """
 
-from __future__ import annotations
 
 import argparse
 import re

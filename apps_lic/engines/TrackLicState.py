@@ -7,9 +7,7 @@ Ported from: archives/legacy_lic/Agentic LIC/state_manager_LIC.py
 import hashlib
 import json
 import shutil
-from dataclasses import dataclass, field
 from datetime import datetime
-from pathlib import Path
 
 
 @dataclass

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 CanonASTValidator - Base class for AST-based code validation.
 
@@ -5,7 +6,6 @@ Provides the foundation for all AST validators in the L1 cognition layer.
 Handles TYPE_CHECKING block detection, violation reporting, and file parsing.
 """
 
-from __future__ import annotations
 
 import ast
 from dataclasses import dataclass, field

@@ -8,7 +8,6 @@ Generated: 2025-12-07T13:28:54.139007
 import logging
 import time
 
-from shared.result_types import ExecutionResult
 
 Logger = logging.getLogger(__name__)
 

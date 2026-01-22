@@ -3,7 +3,6 @@
 # Suggested keywords to add in docstring/code: orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 """
 Proactive Resource Manager - L2 Execution Enhancement
@@ -14,15 +13,8 @@ Automatically adjusts healing budgets and prevents resource exhaustion.
 import asyncio
 import logging
 import os
-from collections import deque
-from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -377,7 +369,6 @@ class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Hea
         """L2: Atomic state persistence for resource policies"""
         import json
         import tempfile
-        from pathlib import Path
 
         try:
             state_path: Any = Path(".canon_memory/resource_state.json")

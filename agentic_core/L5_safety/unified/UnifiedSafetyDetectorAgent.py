@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 """
 UnifiedSafetyDetectorAgent - Safety & Security Detection
 
@@ -15,7 +17,6 @@ Features:
 - Real-time safety scoring
 """
 
-from __future__ import annotations
 
 import logging
 import re
@@ -72,7 +73,7 @@ class SafetyConfig:
     block_high_severity: bool = True
 
 
-class UnifiedSafetyDetectorAgent:
+class UnifiedSafetyDetectorAgent(SovereignBaseAgent):
     """
     Unified safety and security detector.
 

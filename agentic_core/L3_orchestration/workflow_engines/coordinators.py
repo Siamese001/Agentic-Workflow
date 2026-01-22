@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Specialized Coordinators for Unified Workflow Engine
 
@@ -14,7 +15,6 @@ Specialized Coordinators for Unified Workflow Engine
 10. SecurityCoordinator - Hardening
 """
 
-from __future__ import annotations
 
 from typing import Any
 

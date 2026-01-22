@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Resource Management Guardrail - Consolidated Resource Control
 
@@ -12,7 +13,6 @@ Composable Rules:
 - control_plane: Control plane management
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum

@@ -14,11 +14,9 @@ Usage:
     python scripts/phase4_batch2_index_switch.py --execute
 """
 
-from __future__ import annotations
 
 import argparse
 import re
-from pathlib import Path
 
 # Files to EXCLUDE from refactoring (sources of truth)
 EXCLUDED_FILES = {

@@ -13,12 +13,10 @@ Usage:
     python scripts/archive_legacy_orchestrators.py
 """
 
-from __future__ import annotations
 
 import argparse
 import shutil
 import sys
-from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVE_DIR = PROJECT_ROOT / "archives" / "legacy_orchestrators"

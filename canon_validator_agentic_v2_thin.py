@@ -7,7 +7,7 @@
 
 # Canon Validator - Thin Wrapper Entry Point
 # Coordinates L1-L5 components for sovereign canon validation.
-# VERSION 3.2 - FULL REPO SCAN (All folders, all agents)
+# VERSION 3.3 - PHASE 4 REFACTOR (Unified Orchestrator + Sentinel Integration)
 # RATIONALE: All logic extracted to SSOT-compliant modules. This file is entry point only.
 
 import argparse
@@ -271,6 +271,7 @@ AGENT_LAYERS = {
     "GitHygieneAgent": "L5 – Safety & Governance",
     "FileCleanupAgent": "L5 – Safety & Governance",
     "CodeJanitorAgent": "L5 – Safety & Governance",
+    "CanonDependencySentinelAgent": "L5 – Safety & Governance",
     "HygieneGuardianAgent": "L5 – Safety & Governance",
     # L2 Execution (Future Activation)
     "StructuralEngineerAgent": "L2 – Execution & Tools",
@@ -382,6 +383,14 @@ def main():
         help="Run mandatory preflight checks only (syntax, imports, location)",
     )
     args = parser.parse_args()
+
+    # [PHASE 33j] Unified Environment Variable Strategy for Agent Control Signals
+    # Set environment variables BEFORE initializing any agents
+    if args.yes:
+        os.environ["SOVEREIGN_AUTO_APPROVE"] = "1"  # Unified auto-approval signal
+        os.environ["ARCHIVE_BATCH_ACCEPT"] = "1"    # ArchivalGatekeeper batch mode
+        os.environ["CI"] = "true"                   # Disables generic interactive prompts
+        print("   [SYSTEM] SOVEREIGN MODE ACTIVE: Auto-approval enabled.")
 
     # Global mission timeout: 30 minutes
     MISSION_TIMEOUT = int(os.getenv("MISSION_TIMEOUT_SECONDS", "1800"))
@@ -580,7 +589,7 @@ def main():
     # Handle hygiene modes
     if args.preflight_only or args.hygiene or args.full_hygiene:
         from agentic_core.config.core_hygiene_agents import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
-        from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+        from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
         from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
 
         execute_heal = getattr(args, "execute_heal", False) or getattr(args, "execute", False)
@@ -656,7 +665,7 @@ def main():
         try:
             # [PHASE 3] UNIFIED ORCHESTRATION - Strategy Pattern
             # The 5-tier logic is now encapsulated in HealingStrategy
-            from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+            from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
             from agentic_core.L4_state.ValidationContext.CheckpointManagerAgent import (
                 get_checkpoint_manager,
             )

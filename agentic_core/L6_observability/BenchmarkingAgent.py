@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 BenchmarkingAgent - L3 System Health Specialist
@@ -141,11 +142,10 @@ class BenchmarkSuite:
 
 
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 # NAMING FIXED: BenchmarkingAgent → BenchmarkingAgent
-class BenchmarkingAgent(HealerMixin):
+class BenchmarkingAgent(SovereignBaseAgent):
     """
     Measures and tracks performance metrics.
 

@@ -1,6 +1,8 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, state, validator, workflow
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
@@ -13,7 +15,6 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 
-from __future__ import annotations
 
 import asyncio
 
@@ -25,7 +26,7 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
 @dataclass
-class OmniContextAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
+class OmniContextAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     ROLE: Wisdom & Semantic Retrieval. Provides context-aware answers.
     """

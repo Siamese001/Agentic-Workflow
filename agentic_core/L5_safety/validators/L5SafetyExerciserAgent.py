@@ -1,16 +1,16 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, state, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
     has_forbidden_layer_prefix,
@@ -82,7 +82,7 @@ def log_event(event_type: str, payload: dict) -> Any:
 
 
 @dataclass
-class L5SafetyExerciserAgent(MCPHardenedMixin):
+class L5SafetyExerciserAgent(SovereignBaseAgent):
     """
     Sub-atomic responsibility: Safely exercise L5 safety primitives via no-op/dry-run checks.
     Triggered by CoverageAgent synthetic tasks — directly boosts L5 metrics.

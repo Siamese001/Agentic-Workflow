@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Core Hygiene Agents Registry - Mandatory agents for repo health.
 
@@ -7,7 +8,6 @@ run before any other validation work.
 Territory: agentic_core/config/
 """
 
-from __future__ import annotations
 
 # Core hygiene agents organized by tier
 CORE_HYGIENE_AGENTS: dict[str, list[str]] = {

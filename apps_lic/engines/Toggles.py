@@ -1,8 +1,6 @@
 """Reasoning toggles for the LIC outreach stack."""
 
-from __future__ import annotations
 
-from pydantic import BaseModel, ValidationError
 
 
 class ReasoningToggles(BaseModel):

@@ -15,11 +15,9 @@ Usage:
     python scripts/phase4_batch3_safe_io.py --execute
 """
 
-from __future__ import annotations
 
 import argparse
 import re
-from pathlib import Path
 
 # Files to EXCLUDE from refactoring
 EXCLUDED_FILES = {

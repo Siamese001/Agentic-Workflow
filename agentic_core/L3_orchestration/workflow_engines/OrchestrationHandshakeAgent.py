@@ -1,6 +1,7 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -9,7 +10,7 @@
 # Suggested keywords to add in docstring/code: healer, memory, prompt, state
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 OrchestrationHandshakeAgent - Multi-Hop Agent Collaboration
@@ -27,7 +28,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
-class OrchestrationHandshakeAgent(CoreOrchestrationAgent, MCPHardenedMixin):
+class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
     """
     Sovereign handshake protocol — now with deep L3 caching.
     Renamed from OrchestrationHandshake for consistent Agent suffix pattern.

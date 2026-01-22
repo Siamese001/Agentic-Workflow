@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -26,9 +27,7 @@ from agentic_core.utils.security import safe_git_execute
 
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -39,7 +38,7 @@ except ImportError:
 
 
 @dataclass
-class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
+class GitAgent(SovereignBaseAgent):
     """
     Agent for managing git operations and remote synchronization.
 

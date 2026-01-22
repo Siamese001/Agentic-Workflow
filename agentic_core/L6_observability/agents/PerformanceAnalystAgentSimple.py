@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 PerformanceAnalystAgent - Simplified L6 Observability Agent
 ============================================================
@@ -11,7 +12,6 @@ Tracks performance metrics for the mission orchestrator.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import logging
 import time

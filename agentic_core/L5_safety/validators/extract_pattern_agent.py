@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Extract PatternEnforcerAgent from canon_agents_pattern.py.
 Also removes SubAtomicAgent stub and adds proper import.
@@ -47,7 +48,6 @@ def create_pattern_enforcer_file(class_source: str):
 PatternEnforcerAgent - Extracted from canon_agents_pattern.py
 Enforces coding patterns and best practices across Python files.
 """
-from __future__ import annotations
 import ast
 import logging
 import re

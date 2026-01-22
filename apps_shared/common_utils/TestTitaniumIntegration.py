@@ -8,7 +8,6 @@ import asyncio
 import logging
 
 # Test imports
-from titanium_search_tool import (
     clear_cache,
     get_pipeline_stats,
     get_titanium_search_tool,
@@ -64,7 +63,6 @@ async def test_titanium_integration():
     print("\n=== Testing Titanium Integration ===")
 
     # Test tool registry
-    from titanium_search_tool import TOOL_REGISTRY
 
     print(f"Available tools: {list(TOOL_REGISTRY.keys())}")
 
@@ -82,7 +80,6 @@ async def test_executive_brief_agent():
     print("\n=== Testing ExecutiveBriefAgent Integration ===")
 
     try:
-        from executive_brief_agent import ExecutiveBriefAgent
 
         # Initialize agent
         agent = ExecutiveBriefAgent(
@@ -122,7 +119,6 @@ async def test_hardened_orchestrator_integration():
     print("\n=== Testing Hardened Orchestrator Integration ===")
 
     try:
-        from apps_rg.L3_orchestration.titanium_integration import (
             enhance_system_prompt,
             inject_titanium_tools,
             prepare_titanium_context,
@@ -155,7 +151,6 @@ async def test_dispatch_tools():
     print("\n=== Testing Dispatch Resume Tools ===")
 
     try:
-        from apps_rg.L3_orchestration.dispatch_resume_tools import DispatchResumeTools
 
         # Initialize with Titanium enabled
         tools = DispatchResumeTools({"use_titanium_search": True})

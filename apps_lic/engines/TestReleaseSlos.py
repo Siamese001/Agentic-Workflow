@@ -1,9 +1,6 @@
 """Release SLO checks for the full outreach pipeline."""
 
-from __future__ import annotations
 
-from src.lic_agentic.reasoning.toggles import ReasoningToggles
-from src.lic_agentic.stacks.outreach_stack import OutreachStack, StackInputs
 
 
 def test_release_path_meets_slos_and_is_deterministic():

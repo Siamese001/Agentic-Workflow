@@ -1,9 +1,10 @@
+from __future__ import annotations
 """
 ConfigurationSecurityGuardrail: Consolidated configuration and secrets management.
 Merges: SecureConfigManager, SecureCheckpointManager, mcp_sovereign, l5_policy
 """
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 import re
@@ -11,13 +12,12 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ConfigurationSecurityGuardrail(HealerMixin):
+class ConfigurationSecurityGuardrail(SovereignBaseAgent):
     """
     Consolidated configuration security with composable rules.
     Handles: Secret detection, config validation, policy enforcement.

@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state, validator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """Lightweight Bias Detection for Content Quality.
 
@@ -57,13 +58,10 @@ class BiasResult:
         return [m for m in self.matches if m.Severity > 0.7]
 
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin, HealResult
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+class BiasAuditorAgent(SovereignBaseAgent):
     """Lightweight Bias Detection for Content Quality.
 
     Simple pattern-based bias detection for risk mitigation

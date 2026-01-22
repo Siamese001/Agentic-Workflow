@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Sovereign LLM Router MCP Client – Phase 16B (Dec 27, 2025)
@@ -12,12 +13,11 @@ from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
 
-class SovereignLlmRouterMcpClient(MCPHardenedMixin, HealerMixin):
+class SovereignLlmRouterMcpClient(SovereignBaseAgent):
     """Official LLM Router MCP client for sovereign validation operations."""
 
     def __init__(self, role: str = "safety_validation"):

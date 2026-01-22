@@ -11,8 +11,6 @@ Strategies:
 
 import ast
 import re
-from collections import defaultdict
-from pathlib import Path
 
 APPS_DIRS = ["apps_rg", "apps_lic", "apps_shared"]
 

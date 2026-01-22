@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, memory, orchestrator, prompt
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """Implementation for AgentGym."""
 import logging
@@ -37,10 +38,9 @@ except ImportError:
 
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
-class AgentGym(HealerMixin):
+class AgentGym(SovereignBaseAgent):
     """Agent Gym for self-evolution and benchmarking.
 
     Features:

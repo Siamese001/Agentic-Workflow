@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Simple script to clean up shim chains by manually specifying the patterns.
@@ -8,8 +7,6 @@ import logging
 Logger = logging.getLogger(__name__)
 
 """
-from pathlib import Path
-from typing import Any
 
 
 def clean_prompt_governance() -> Any:
@@ -91,7 +88,6 @@ def clean_other_directories() -> Any:
             ".vscode",
         ]:
             # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
-            from agentic_core.utils.ssot_discovery import get_python_files
 
             impl_files: Any = [f for f in get_python_files(item) if "_impl" in f.name]
             if impl_files:

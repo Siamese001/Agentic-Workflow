@@ -1,3 +1,4 @@
+from __future__ import annotations
 """BudgetAgent - Token budget tracking and complexity management.
 
 Part of the SubAtomic agent family for code quality enforcement.
@@ -9,7 +10,7 @@ Enforces function size and cyclomatic complexity limits.
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import ast
 import os
@@ -17,12 +18,11 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # Sovereign Agent for token budget tracking and complexity management
 @dataclass
-class BudgetAgent(SubatomicTestingMixin, SubAtomicAgent):
+class BudgetAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     Budget enforcement agent for code complexity management.
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """DocumentationAgent - Documentation quality enforcement.
 
 Part of the quality enforcement agent family.
@@ -9,17 +10,16 @@ Validates docstring presence in classes and functions.
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import ast
 from dataclasses import dataclass
 
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class DocumentationAgent(SubatomicTestingMixin, SubAtomicAgent):
+class DocumentationAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     Documentation enforcement agent for docstring validation.
 

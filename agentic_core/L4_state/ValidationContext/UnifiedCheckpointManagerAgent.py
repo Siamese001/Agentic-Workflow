@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 UnifiedCheckpointManagerAgent - Consolidated L4 Checkpoint Guardian (Priority 2)
 
@@ -20,7 +21,6 @@ Territory: agentic_core/L4_state/ValidationContext/
 Canon Alignment: L4 state persistence and recovery
 """
 
-from __future__ import annotations
 
 import asyncio
 import hashlib

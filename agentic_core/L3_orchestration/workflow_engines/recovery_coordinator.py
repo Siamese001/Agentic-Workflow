@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 HARDENED Recovery Coordinator - Fallback for failed workflows
 
@@ -7,7 +8,6 @@ Original: archives/unmapped_drift/20260107/agentic_core/L3_orchestration/coordin
 Provides graceful degradation and error recovery.
 """
 
-from __future__ import annotations
 
 import logging
 from typing import Any

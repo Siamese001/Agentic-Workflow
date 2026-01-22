@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 """
 UnifiedCodeEnforcerAgent - Code Sovereignty Enforcement
 
@@ -18,7 +20,6 @@ Features:
 - Signed exception support for cross-layer access
 """
 
-from __future__ import annotations
 
 import ast
 import logging
@@ -93,7 +94,7 @@ class EnforcementConfig:
     protected_layers: set[str] = field(default_factory=lambda: {"L5", "L6"})
 
 
-class UnifiedCodeEnforcerAgent:
+class UnifiedCodeEnforcerAgent(SovereignBaseAgent):
     """
     Unified code enforcement with sovereignty protection.
 

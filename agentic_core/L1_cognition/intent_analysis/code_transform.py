@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Code Transformation Engine (CTE) — Deterministic AST-Based Transforms
 
@@ -9,7 +10,6 @@ CATEGORY: code_manipulation
 PRIORITY: Critical (★★★★★)
 """
 
-from __future__ import annotations
 
 import ast
 import logging

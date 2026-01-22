@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Unified Workflow Engine
 
@@ -12,7 +13,6 @@ Single entry point for all workflow orchestration, replacing 8 core engines:
 - L3OrchestrationBaseAgent
 """
 
-from __future__ import annotations
 
 import time
 import uuid

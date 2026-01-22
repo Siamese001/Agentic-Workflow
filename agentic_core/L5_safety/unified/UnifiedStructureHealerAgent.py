@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 """
 UnifiedStructureHealerAgent - Structure Healing & Repair
 
@@ -17,7 +19,6 @@ Features:
 - Blueprint compliance healing
 """
 
-from __future__ import annotations
 
 import logging
 import re
@@ -68,7 +69,7 @@ class StructureHealerConfig:
     agent_suffix: str = "Agent"
 
 
-class UnifiedStructureHealerAgent:
+class UnifiedStructureHealerAgent(SovereignBaseAgent):
     """
     Unified structure healer for gravity, hierarchy, naming, and territory.
 

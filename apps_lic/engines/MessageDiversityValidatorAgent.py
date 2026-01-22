@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 
 """
 MessageDiversityValidatorAgent - Extracted for one-class-per-file pattern.
@@ -8,11 +7,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 
-from __future__ import annotations
 
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 @dataclass

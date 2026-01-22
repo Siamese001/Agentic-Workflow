@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Cost Governor Agent - L5 Safety financial guardrail for LLM spend tracking.
 
 This module provides a financial guardrail agent that tracks and limits
@@ -14,16 +15,13 @@ Typical usage:
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
@@ -34,7 +32,7 @@ class BudgetExceededError(Exception):
 
 
 @dataclass
-class CostGovernorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class CostGovernorAgent(SovereignBaseAgent):
     """L5 Safety agent that tracks and limits LLM spend across models and tools.
 
     This financial guardrail monitors API costs and enforces budget constraints.

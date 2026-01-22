@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 SovereignIndex - Cached File Indexer to Replace rglob Calls
 
@@ -5,7 +6,6 @@ This module provides a singleton file indexer that caches filesystem scans,
 dramatically reducing the performance impact of repeated rglob calls.
 
 USAGE:
-    from agentic_core.utils.sovereign_index import SovereignIndex
 
     # Get the singleton instance
     index = SovereignIndex.get_instance(project_root)
@@ -27,7 +27,6 @@ SSOT PRINCIPLE:
     This ensures consistent exclusion patterns and optimal performance.
 """
 
-from __future__ import annotations
 
 import fnmatch
 import logging

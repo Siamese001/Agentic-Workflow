@@ -15,12 +15,10 @@ This script:
 4. Self-verifies syntax before writing
 """
 
-from __future__ import annotations
 
 import argparse
 import ast
 import re
-from pathlib import Path
 
 # Files to EXCLUDE from refactoring
 EXCLUDED_FILES = {

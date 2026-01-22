@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Airlock Protocol - Zero Trust Human Authorization
@@ -11,7 +10,6 @@ import json
 import logging
 import uuid
 from datetime import datetime, timedelta
-from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
 

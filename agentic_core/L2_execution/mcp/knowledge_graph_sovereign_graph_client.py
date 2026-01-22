@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Sovereign Knowledge Graph Client – Phase 13D
@@ -14,7 +15,6 @@ from typing import Any
 # ARCHIVED IMPORT REMOVED - dependency no longer available
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
@@ -22,7 +22,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 Logger: Any = logging.getLogger("L4.KnowledgeGraph")
 
 
-class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
+class SovereignGraphClient(SovereignBaseAgent):
     """
     Client for the Knowledge Graph MCP (Memory MCP).
     Stores and retrieves structured entities and relationships.

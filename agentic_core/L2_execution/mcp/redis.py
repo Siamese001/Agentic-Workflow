@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 SovereignRedisClient - Audited Cache Operations
@@ -16,8 +17,6 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # Type alias for telemetry callback
 TelemetryCallback = Callable[[str, dict[str, Any]], None]
@@ -29,7 +28,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 Logger = logging.getLogger(__name__)
 
 
-class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
+class SovereignRedisClient(SovereignBaseAgent):
     """Sovereign Redis client - audit + safe exec for all cache operations."""
 
     def __init__(self, url: str | None = None, telemetry_callback: TelemetryCallback | None = None):

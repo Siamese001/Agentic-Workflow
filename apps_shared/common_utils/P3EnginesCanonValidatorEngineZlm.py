@@ -3,10 +3,8 @@
 # Suggested keywords to add in docstring/code: guardrail, healer, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 """Stub for canon validator engine."""
-from enum import Enum
 
 
 # NAMING FIXED: PhaseStatus → PhaseStatus

@@ -1,11 +1,8 @@
-from __future__ import annotations
 
 """Find all lines longer than 100 characters."""
 import logging
 import os
-from typing import Any
 
-from services.configuration import ConfigurationService
 
 Logger: Any = logging.getLogger(__name__)
 

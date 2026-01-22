@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Structural Debt Fixer for Canon Validator.
@@ -8,7 +7,6 @@ import ast
 import os
 import shutil
 from datetime import datetime
-from typing import Any
 
 excluded_dirs: Any = {
     ".git",

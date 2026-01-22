@@ -8,10 +8,7 @@ signal with verifiable proof.
 import json
 import logging
 import re
-from enum import Enum
-from pathlib import Path
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

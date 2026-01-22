@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Public API for Unified Agents - Facade over L5_safety implementations.
 
@@ -12,7 +13,6 @@ Use:
     from agentic_core.unified import UnifiedCodeValidatorAgent
 """
 
-from __future__ import annotations
 
 from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
 from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import UnifiedCodeHealerAgent

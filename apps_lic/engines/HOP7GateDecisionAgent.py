@@ -3,22 +3,13 @@
 # Suggested keywords to add in docstring/code: engine, memory, prompt, validator
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """HOP-7: Gate Decision Agent - Make the 'Slow Loop' decision."""
 
 __version__ = "13.1"
 
-from typing import Any
 
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from apps_lic.domain.lic_models import FactualGapError, FailureClassifierAgent
-from apps_shared.utils.state_manager import StateManager
 
 
 @dataclass

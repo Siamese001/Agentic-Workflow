@@ -7,13 +7,8 @@ against malformed data, JSON/XML attacks, and boundary violations.
 import json
 import logging
 import re
-import xml.etree.ElementTree as ET
-from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum
-from typing import Any
 
-from pydantic import BaseModel, ValidationError, validator
 
 logger = logging.getLogger(__name__)
 

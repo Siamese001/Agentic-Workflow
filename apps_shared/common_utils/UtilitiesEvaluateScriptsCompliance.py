@@ -1,16 +1,11 @@
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """Brief description of functionality and purpose."""
 
 "Brief description of functionality and purpose."
-from enum import Enum
 
 "\nevaluate_scripts_compliance.py - Assessment Module\n\nDomain: utilities\nGenerated: 2025-12-07T12:07:59.882600\n"
 import logging
-from dataclasses import field
-from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 

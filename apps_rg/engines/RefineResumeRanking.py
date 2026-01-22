@@ -7,7 +7,6 @@ Generated: 2025-12-07T13:28:54.238560
 
 import logging
 
-from shared.result_types import RefinementResult
 
 Logger = logging.getLogger(__name__)
 

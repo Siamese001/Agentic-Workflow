@@ -8,9 +8,6 @@ Phase 1C - Knowledge Extraction Integration
 """
 
 import logging
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any
 
 logger = logging.getLogger(__name__)
 

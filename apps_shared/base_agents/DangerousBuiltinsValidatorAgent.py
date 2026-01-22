@@ -31,20 +31,14 @@ warnings.warn(
 # This boosts alignment detection — review and integrate appropriately
 
 
-from __future__ import annotations
 
 import ast
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
-from typing import Any
 
-from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 _mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
-from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class DangerousBuiltinsValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):

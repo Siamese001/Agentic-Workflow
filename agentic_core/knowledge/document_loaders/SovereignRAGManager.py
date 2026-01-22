@@ -8,6 +8,7 @@ Restored: 2026-01-13 | Version: 2.1.0 (Modernized)
 # Suggested keywords to add in docstring/code: engine, guardrail, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 import logging
 from pathlib import Path
 from typing import Any
@@ -15,10 +16,9 @@ from typing import Any
 from agentic_core.common.healing.healer_mixin import HealerMixin
 from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
 from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
 
-class SovereignRAGManager(MCPHardenedMixin, HealerMixin):
+class SovereignRAGManager(SovereignBaseAgent):
     """Orchestrates the retrieval-augmented generation pipeline."""
 
     def __init__(self, storage_root: Path):

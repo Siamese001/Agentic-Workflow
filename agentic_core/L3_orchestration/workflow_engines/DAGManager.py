@@ -1,8 +1,10 @@
+from __future__ import annotations
 """
-DAGManagerAgent - Extracted for one-class-per-file pattern.
+DAGManager - Extracted for one-class-per-file pattern.
 
 Originally from: DAGMutatorAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
+Renamed: 2026-01-22 (Utility Renaming - Not an Agent)
 """
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
@@ -10,13 +12,13 @@ Extracted: 2026-01-06 (Surgical Extraction)
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 
-class DAGManagerAgent(
+class DAGManager(
     HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin
 ):
     """Manages the dynamic DAG with mutation capabilities.
@@ -51,7 +53,7 @@ class DAGManagerAgent(
             "replaced_nodes": 0,
         }
 
-        Logger.info("Initialized DAGManagerAgent with dynamic mutation support")
+        Logger.info("Initialized DAGManager with dynamic mutation support")
 
     def register_function(self, name: str, function: Callable) -> None:
         """Register a hop function that can be spawned.

@@ -9,7 +9,6 @@
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 
@@ -25,19 +24,15 @@ This file has been split into individual agent files following one-file-per-agen
 TODO: Remove this file after all imports are updated to use new locations.
 """
 import ast
-from pathlib import Path
 
 # GRAVITY VIOLATION: from archives.void_violations.canon_base_agent_interface import CanonBaseAgentInterface
 try:
-    from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 except ImportError:
     CanonBaseAgent = None
-from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 _mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # [SSOT] Derive depth map from SOVEREIGN_REGISTRY
 # NAMING FIXED: DEPTH_MAP → depth_map
@@ -146,7 +141,6 @@ class NestVisitor(ast.NodeVisitor):
 
 # DEPRECATED: Moved to GenerativeGuardAgent.py (Jan 6, 2026)
 # Import for backward compatibility
-from agentic_core.L5_safety.validators.decorators import standard_heal
 
 # GenerativeGuardDeprecatedAgent extracted to GenerativeGuardDeprecatedAgent.py (Phase B Task 5)
 

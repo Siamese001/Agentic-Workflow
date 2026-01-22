@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 BootstrapAgent: Sovereign Boot Integrity & Neural Link Verifier.
@@ -47,7 +48,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
+class BootstrapAgent(SovereignBaseAgent, L0MaintenanceBaseAgent):
     """
     Autonomous boot integrity agent.
     Runs before any validation mission to anchor the environment.

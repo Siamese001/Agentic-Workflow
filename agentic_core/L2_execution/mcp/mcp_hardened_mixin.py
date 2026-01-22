@@ -41,17 +41,8 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-# Import instructional injection patterns for all agents
-try:
-    from agentic_core.utils.core_extensions.instructional_injection_mixin import (
-        InstructionalInjectionMixin,
-    )
-except ImportError:
-
-    class InstructionalInjectionMixin:
-        """Stub for healing resilience."""
-
-        pass
+# InstructionalInjectionMixin moved to InfrastructureMixin (L0 DNA flattening)
+# No longer imported here - MCP protocol is decoupled from prompt safety
 
 
 Logger: Any = logging.getLogger(__name__)
@@ -79,7 +70,7 @@ class MCPValidationResult:
     sanitized_output: Any = None
 
 
-class MCPHardenedMixin(InstructionalInjectionMixin):
+class MCPHardenedMixin:
     """
     Mixin providing hardened MCP operations:
     - Exponential backoff retry (3 attempts by default)
@@ -89,16 +80,16 @@ class MCPHardenedMixin(InstructionalInjectionMixin):
     - Safe MCP call with validation and sandboxing
     - Response validation (code injection, resource limits)
     - Audit trail logging
-    - All 30 instructional injection patterns (via InstructionalInjectionMixin)
 
     MRO HARDENING:
     - Uses cooperative multiple inheritance via **kwargs
     - Always calls super().__init__(**kwargs) to propagate up the chain
     - Private attributes use _mcp_ prefix to avoid collisions
 
-    INSTRUCTIONAL INJECTION (Jan 2026):
-    - Inherits InstructionalInjectionMixin providing all 30 patterns
-    - All worker agents automatically get inject_*_layer() methods
+    L0 DNA FLATTENING (Jan 2026):
+    - InstructionalInjectionMixin moved to InfrastructureMixin
+    - MCP protocol is now decoupled from prompt safety
+    - Prompt injection protection is a core L0 trait, not MCP-specific
     """
 
     MAX_RETRIES: int = 3

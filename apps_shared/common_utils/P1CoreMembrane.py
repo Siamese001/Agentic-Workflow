@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Input Membrane - Zero Trust Input Sanitization
@@ -8,9 +7,7 @@ all external content before it enters the agent's context.
 """
 import logging
 import re
-from typing import Any
 
-from openai import AsyncOpenAI
 
 LOGGER = logging.getLogger(__name__)
 

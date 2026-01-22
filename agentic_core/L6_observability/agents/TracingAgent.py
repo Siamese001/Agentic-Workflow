@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, prompt, state, validator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 TracingAgent: Sovereign Distributed Tracing System
@@ -116,11 +117,9 @@ class Span:
 Span = Span
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+class TracingAgent(SovereignBaseAgent):
     """
     Autonomous distributed tracing agent.
     Manages trace context and Span lifecycle.
@@ -289,7 +288,6 @@ class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
                     # Append with comma separation for JSON array
                     if filepath.exists() and filepath.stat().st_size > 0:
                         f.write(
-                            ",\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n"
                         )
                     else:
                         f.write("[\n")

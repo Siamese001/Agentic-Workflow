@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Script to fix common syntax errors in Python files.
@@ -7,9 +6,7 @@ Targets the most frequent issues found by the canon validator.
 import ast
 import logging
 import os
-from typing import Any
 
-from services.configuration import ConfigurationService
 
 Logger: Any = logging.getLogger(__name__)
 

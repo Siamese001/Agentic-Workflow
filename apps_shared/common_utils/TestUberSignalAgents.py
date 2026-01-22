@@ -12,7 +12,6 @@ import asyncio
 import logging
 
 # Import the three agents
-from runtime.shared import (
     ArchitectureVisualizerAgent,
     CulturalDecoderAgent,
     DiagramType,

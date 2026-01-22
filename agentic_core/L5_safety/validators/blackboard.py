@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Atomic Blackboard - Thread-Safe State Management for Canon Validator
@@ -71,16 +72,14 @@ class HealingLease:
         return max(0, self.expires_at - time.time())
 
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import (
     L4SubatomicTestingMixin,
 )
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
+class AtomicBlackboard(SovereignBaseAgent):
     """
     Thread-safe blackboard for managing validation state.
 

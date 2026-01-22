@@ -13,14 +13,10 @@ Provides automated remediation for:
 3. Gravity violations (wrong layer → correct layer)
 """
 
-from __future__ import annotations
 
 import logging
 import shutil
-from dataclasses import dataclass
 from datetime import datetime
-from pathlib import Path
-from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

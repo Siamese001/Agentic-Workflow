@@ -12,7 +12,6 @@ USAGE:
 
 import argparse
 import re
-from pathlib import Path
 
 import yaml
 

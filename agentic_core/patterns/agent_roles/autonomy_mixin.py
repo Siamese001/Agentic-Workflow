@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 AutonomyMixin – Sovereign Agent Role Mixin (Phase 28 – Dec 30, 2025)
@@ -10,9 +11,7 @@ import logging
 import time
 from typing import Any
 
-# GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 try:
-    _mod = importlib.import_module("agentic_core.L2_execution.mcp.mcp_hardened_mixin_1")
     MCPHardenedMixin = _mod.MCPHardenedMixin
 except (ImportError, AttributeError):
 
@@ -22,7 +21,7 @@ except (ImportError, AttributeError):
         pass
 
 
-class AutonomyMixin(MCPHardenedMixin):
+class AutonomyMixin(SovereignBaseAgent):
     _autonomy_enabled: bool = True
     _proactive_interval: float = 300.0
     _last_proactive_check: float = 0.0

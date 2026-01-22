@@ -7,7 +7,6 @@ to:
     from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 """
 
-from pathlib import Path
 
 
 def fix_healer_mixin_imports(project_root: Path):

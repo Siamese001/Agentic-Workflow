@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L3OrchestrationBaseAgent - Layer 3 Orchestration Base Class
 
@@ -10,7 +11,6 @@ SSOT PRINCIPLE:
     which inherits from SovereignBaseAgent (the root of the MRO chain).
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 

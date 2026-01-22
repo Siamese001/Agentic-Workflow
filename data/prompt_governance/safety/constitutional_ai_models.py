@@ -1,6 +1,5 @@
 """Dataclass models for constitutional_ai."""
 
-from typing import Any
 
 # TODO: Replace 'from .constitutional_ai_enums import *' with explicit imports
 # # from .constitutional_ai_enums import *  # Star import removed

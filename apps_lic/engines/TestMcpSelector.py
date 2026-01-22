@@ -1,6 +1,3 @@
-from src.lic_agentic.mcp import MCPClient, ToolSpec
-from src.lic_agentic.rag import MCPSelector, ToolRegistry, register_discovered_tools
-from src.lic_agentic.telemetry import PolicyController
 
 
 def test_selector_respects_allowlist_and_quarantine():

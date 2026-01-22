@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Scan Guard - Audit Utility for rglob/glob Usage
 
@@ -6,7 +7,6 @@ discourage expensive rglob/glob calls, guiding developers toward the
 high-performance ssot_discovery or file_cache modules.
 
 Usage:
-    from agentic_core.utils.scan_guard import guarded_rglob, guarded_glob
 
     # Instead of: path.rglob("*.py")
     # Use: guarded_rglob(path, "*.py")  # Logs warning + suggests FileCache
@@ -25,7 +25,6 @@ Updated: January 20, 2026
 - Added backup directory blocking
 """
 
-from __future__ import annotations
 
 import functools
 import logging

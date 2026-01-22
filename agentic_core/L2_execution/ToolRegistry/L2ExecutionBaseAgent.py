@@ -1,6 +1,7 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, memory, orchestrator, prompt, state, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 # NEW FILE: Unified L2 Execution Base Agent
@@ -26,7 +27,6 @@
 #   guarded by if self.enable_gemini to avoid overhead in lightweight mode
 # - BANNED_IMPORTS and negative constraint checking preserved (gated)
 
-from __future__ import annotations
 
 import asyncio
 import os

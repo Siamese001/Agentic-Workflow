@@ -4,9 +4,7 @@ This module provides sanitized prompt templates that use functional personas
 instead of numbered nodes. All references to K.X have been eliminated.
 """
 
-from typing import Any
 
-from ..registry.agent_capabilities import AgentRole
 
 
 class PersonaTemplate:

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 """
 UnifiedCodeDetectorAgent - Code Quality Detection
 
@@ -17,7 +19,6 @@ Features:
 - Memory leak pattern detection
 """
 
-from __future__ import annotations
 
 import ast
 import logging
@@ -77,7 +78,7 @@ class DetectorConfig:
     ignore_patterns: list[str] = field(default_factory=lambda: ["test_", "_test.py"])
 
 
-class UnifiedCodeDetectorAgent:
+class UnifiedCodeDetectorAgent(SovereignBaseAgent):
     """
     Unified code quality detector.
 

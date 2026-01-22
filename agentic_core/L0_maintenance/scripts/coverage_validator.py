@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 Convergence Runner - Phase 6 Autonomous Remediation
 Triggers the ConvergenceEngine to heal low-coverage modules.
@@ -9,7 +10,6 @@ Triggers the ConvergenceEngine to heal low-coverage modules.
 # Suggested keywords to add in docstring/code: guardrail, memory, orchestrator, prompt
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import asyncio
 import sys

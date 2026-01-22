@@ -4,9 +4,7 @@ LIC CTA Patterns - Call-to-action patterns and date window engine.
 Ported from: archives/LIC_capabilities/reconstructed_capabilities.py
 """
 
-from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from enum import Enum
 
 
 class RecipientArchetype(Enum):

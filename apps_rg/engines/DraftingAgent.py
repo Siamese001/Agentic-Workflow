@@ -1,19 +1,15 @@
 """Drafting guild stack with specialist agents."""
 
 import json
-from typing import Any
 
-from agent_tools_v10_7 import (
     EvidenceBriefAssemblerTool,
     EvidenceClarificationTool,
 )
-from core_v10_7 import (
     BaseAgent,
     StrategyPlan,
     track_metrics,
 )
 
-from .models import (
     CritiqueFindingRecord,
     CritiquePanelPacket,
     EvidenceBriefRecord,

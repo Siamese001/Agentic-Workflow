@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 import asyncio
 
@@ -8,7 +7,6 @@ import asyncio
 import logging
 import os
 from datetime import datetime, timedelta, timezone
-from typing import Any, Protocol
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -116,7 +114,6 @@ class LockInfo:
         }
 
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 # Legacy L1 version - use L2 canonical (concurrency is execution-level)
