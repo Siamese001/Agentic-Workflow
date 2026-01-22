@@ -181,8 +181,9 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             scan_results = sentinel.scan_architecture()
             all_violations = scan_results.get("violations", [])
             
-            # Critical violations that block execution
-            critical_violations = [v for v in all_violations if v.severity == "CRITICAL" or v.violation_type == "INIT_BYPASS"]
+            # Critical violations that block execution (INIT_BYPASS and DNA_SEVERED are blocking)
+            blocking_types = ("INIT_BYPASS", "DNA_SEVERED")
+            critical_violations = [v for v in all_violations if v.severity == "CRITICAL" or v.violation_type in blocking_types]
             
             if is_fatal or critical_violations:
                 # Log each critical violation
