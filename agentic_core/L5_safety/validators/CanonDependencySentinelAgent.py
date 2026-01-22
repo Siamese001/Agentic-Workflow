@@ -11,6 +11,7 @@ import sys
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
@@ -34,6 +35,16 @@ VALID_AGENT_BASES = {
     "L5SafetyBaseAgent",
     "L6ObservabilityBaseAgent",
     "InfrastructureMixin",
+    "L0MaintenanceBaseAgent",
+}
+
+LAYER_AFFINITY_MAP = {
+    "L1": ["CognitionAgent", "ReasoningMixin"],
+    "L2": ["ExecutionBaseAgent", "ToolInterfaceMixin"],
+    "L3": ["OrchestrationBaseAgent", "SupervisorMixin", "SubatomicTestingMixin"],
+    "L4": ["StateBaseAgent", "MemoryMixin", "RedisCacheMixin", "PineconeVectorMixin"],
+    "L5": ["SafetyBaseAgent", "MCPHardenedMixin", "HealerMixin"],
+    "L6": ["ObservabilityBaseAgent", "MetricsMixin"],
 }
 
 
@@ -44,6 +55,45 @@ class CodeViolation:
     violation_type: str
     message: str
     severity: str = "HIGH"
+
+
+class ArchitectureDNAVisitor(ast.NodeVisitor):
+    """
+    Enforces v3.2 Capability Map: MRO, Mixin Affinity, and DNA integrity.
+    
+    Detects:
+    - DNA_SEVERED: Agents missing L0 foundation (MRO risk)
+    - LAYER_CROSSING: Mixins used outside their designated layer
+    """
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+        self.violations: List[CodeViolation] = []
+
+    def visit_ClassDef(self, node: ast.ClassDef):
+        if not node.name.endswith("Agent"):
+            return
+
+        # 1. MRO Violation: SovereignBaseAgent must be in the bases or a layer base
+        bases = [b.id if isinstance(b, ast.Name) else getattr(b, "attr", "") for b in node.bases]
+        if not any(base in VALID_AGENT_BASES for base in bases):
+            self.violations.append(CodeViolation(
+                self.file_path, node.lineno, "DNA_SEVERED", 
+                f"Agent '{node.name}' has no L0 foundation (MRO risk).", "HIGH"
+            ))
+
+        # 2. Layer Affinity: Check if Mixins match the folder path
+        layer_match = next((l for l in ["L1", "L2", "L3", "L4", "L5", "L6"] if l in self.file_path), None)
+        if layer_match:
+            for base in bases:
+                if "Mixin" in base and base not in LAYER_AFFINITY_MAP.get(layer_match, []):
+                    # Allow InfrastructureMixin as global
+                    if base != "InfrastructureMixin":
+                        self.violations.append(CodeViolation(
+                            self.file_path, node.lineno, "LAYER_CROSSING",
+                            f"Mixin '{base}' does not belong to layer {layer_match}.", "MEDIUM"
+                        ))
+
+        self.generic_visit(node)
 
 
 class AgentASTVisitor(ast.NodeVisitor):
@@ -169,9 +219,17 @@ class CanonDependencySentinelAgent(SovereignBaseAgent, MCPHardenedMixin):
         for fp in self.project_root.rglob("*Agent.py"):
             try:
                 tree = ast.parse(fp.read_text(encoding="utf-8"), filename=str(fp))
+                
+                # Run Syntax Sentinel
                 visitor = AgentASTVisitor(str(fp))
                 visitor.visit(tree)
                 violations.extend(visitor.violations)
+                
+                # Run DNA Auditor
+                dna_visitor = ArchitectureDNAVisitor(str(fp))
+                dna_visitor.visit(tree)
+                violations.extend(dna_visitor.violations)
+                
             except SyntaxError as e:
                 violations.append(
                     CodeViolation(str(fp), e.lineno or 0, "SYNTAX_ERROR", e.msg, "CRITICAL")
