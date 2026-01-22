@@ -170,6 +170,31 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             f"[MISSION] Starting mission with {len(agents)} agents (mode={self.mode.value})"
         )
 
+        # [DNA GATE] Perform Pre-Flight Audit
+        try:
+            from agentic_core.L5_safety.validators.CanonDependencySentinelAgent import CanonDependencySentinelAgent
+            sentinel = CanonDependencySentinelAgent()
+            audit_results = sentinel.heal_repository(dry_run=True, execute=False)
+            
+            if audit_results.get("status") == "FATAL":
+                self.logger.critical("[STOP] Mission Aborted: Structural DNA Violations Detected.")
+                return MissionResult(
+                    success=False,
+                    total_agents=len(agents),
+                    successful_agents=0,
+                    failed_agents=len(agents),
+                    total_violations_found=0,
+                    total_violations_fixed=0,
+                    total_errors=1,
+                    agent_results=[],
+                    phase=ExecutionPhase.VALIDATION,
+                    status="ABORTED",
+                    message="Naked super() or fatal syntax detected in repository.",
+                    metadata={"mode": self.mode.value, "gate": "DNA_SENTINEL"}
+                )
+        except ImportError:
+            self.logger.warning("[GATE] CanonDependencySentinelAgent not found. Proceeding with caution.")
+
         agent_results: list[AgentResult] = []
         total_violations_found = 0
         total_violations_fixed = 0
