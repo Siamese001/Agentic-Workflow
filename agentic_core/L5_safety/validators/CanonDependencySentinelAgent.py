@@ -353,3 +353,48 @@ class CanonDependencySentinelAgent(SovereignBaseAgent, MCPHardenedMixin):
                     CodeViolation(str(fp), e.lineno or 0, "SYNTAX_ERROR", e.msg, "CRITICAL")
                 )
         return {"violations": violations}
+
+    def resurrect_zombie(self, file_path: Path, agent_name: str) -> bool:
+        """
+        [PHASE 33l] Surgical injection of a standardized heal_repository method
+        for agents detected as ZOMBIE_HEALER.
+        
+        Args:
+            file_path: Path to the agent file with zombie healer
+            agent_name: Name of the agent class
+            
+        Returns:
+            True if resurrection successful, False otherwise
+        """
+        import re
+        
+        try:
+            content = file_path.read_text(encoding="utf-8")
+            if "def heal_repository" not in content:
+                Logger.warning(f"No heal_repository found in {file_path.name}")
+                return False
+            
+            # Resurrection patch - standardized healer logic
+            resurrection_patch = '''    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict:
+        """Standardized resurrection healer logic."""
+        violations = self.scan_repository(**kwargs) if hasattr(self, 'scan_repository') else []
+        if execute and not dry_run and violations:
+            return self._fix_violations(violations) if hasattr(self, '_fix_violations') else {"status": "SKIPPED", "violations": len(violations)}
+        return {"status": "PASS" if not violations else "FAIL", "violations_found": len(violations), "violations_fixed": 0}'''
+            
+            # Use regex to replace the stub heal_repository method
+            # Pattern matches: def heal_repository(...): followed by pass/return/docstring only
+            pattern = r'(    def heal_repository\([^)]*\)[^:]*:)\s*(?:"""[^"]*"""\s*)?(?:pass|return[^\n]*)'
+            
+            if re.search(pattern, content):
+                content = re.sub(pattern, resurrection_patch, content)
+                file_path.write_text(content, encoding="utf-8")
+                Logger.info(f"✅ Resurrected zombie healer in {file_path.name}")
+                return True
+            else:
+                Logger.warning(f"Could not match heal_repository pattern in {file_path.name}")
+                return False
+                
+        except Exception as e:
+            Logger.error(f"Resurrection failed for {file_path.name}: {e}")
+            return False
