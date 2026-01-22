@@ -295,6 +295,7 @@ SCRIPTS_PLACEMENT_RULES: dict[str, dict[str, Any]] = {
 }
 
 CORE_SUBFOLDER_MAP: Any = {
+    "base_agents": [],
     "L0_maintenance": ["scripts", "logs", "benchmarks", "mixins"],
     "L1_cognition": ["thought_engine", "intent_analysis", "planning"],
     "L2_execution": ["ToolRegistry", "action_handlers", "mcp", "tool_registry", "unified"],
@@ -1346,6 +1347,16 @@ _semantic_templates = {
 # Maps AST patterns to exact L1/L2 paths for file placement
 # This is the SSOT for AST-based file placement decisions
 AST_PLACEMENT_SIGNALS: dict[str, dict[str, Any]] = {
+    # Base agents - Constitutional Priority
+    "agentic_core/base_agents": {
+        "class_patterns": [".*BaseAgent$"],
+        "base_classes": ["SovereignBaseAgent", "CanonBaseAgent"],
+        "function_patterns": [],
+        "import_signals": [],
+        "keyword_signals": ["sovereign", "base", "inheritance", "abstract", "foundation"],
+        "decorator_signals": [],
+        "weight": 100,  # Constitutional Priority
+    },
     # L1_cognition placements
     "agentic_core/L1_cognition/thought_engine": {
         "class_patterns": [".*Node$", ".*Thought.*", ".*Reason.*", ".*Chain.*"],
@@ -2050,6 +2061,20 @@ AGENT_REGISTRY: Any = {
 
 semantic_l2_registry: Any = {
     "L5_safety": {
+        "base_agents": {
+            "purpose": "Constitutional foundation for all agents. Home of SovereignBaseAgent and LayerBaseAgents.",
+            "entity_types": ["Class"],
+            "keywords": [
+                "base",
+                "sovereign",
+                "foundation",
+                "inheritance",
+                "abstract",
+            ],
+            "imports": [],
+            "bases": ["ABC"],
+            "examples": ["SovereignBaseAgent", "L1CognitionBaseAgent"],
+        },
         "guardrails": {
             "purpose": "Hard safety limits, mutation controls, deletion guards, circuit breakers, rate limits, throttling, and emergency stop mechanisms",
             "entity_types": ["Class"],

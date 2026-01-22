@@ -1,5 +1,5 @@
 from __future__ import annotations
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Sovereign Pinecone MCP Client – Phase 13C (Dec 26, 2025)
@@ -225,9 +225,9 @@ class SovereignPineconeMcpClient(SovereignBaseAgent):
             return {"status": "unhealthy", "error": str(e)}
 
     @standard_heal
-    def heal_repository(self) -> dict:
+    def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
-        return super().heal_repository()
+        return super().heal_repository(**kwargs)
 
 
 _pinecone_mcp_client: SovereignPineconeMCPClient | None = None

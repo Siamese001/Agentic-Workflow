@@ -3,7 +3,7 @@
 # Suggested keywords to add in docstring/code: memory, orchestrator, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import ast
 
 """Brief description of functionality and purpose."""

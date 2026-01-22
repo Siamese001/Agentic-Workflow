@@ -10,7 +10,7 @@ from __future__ import annotations
 # Suggested keywords to add in docstring/code: healer, memory, prompt, state
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 OrchestrationHandshakeAgent - Multi-Hop Agent Collaboration
@@ -125,6 +125,6 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
         return trail
 
     @standard_heal
-    def heal_repository(self) -> dict:
+    def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
-        return super().heal_repository()
+        return super().heal_repository(**kwargs)

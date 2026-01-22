@@ -13,7 +13,7 @@ Provides shared infrastructure for Canon validation agents including:
 # Suggested keywords to add in docstring/code: guardrail, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import asyncio
 import hashlib

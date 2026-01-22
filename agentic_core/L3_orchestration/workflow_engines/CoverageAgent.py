@@ -13,7 +13,7 @@ from typing import Any
 import numpy as np
 
 from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # Gravity-safe imports for active interventions
 try:
@@ -233,6 +233,6 @@ class CoverageAgent(SovereignBaseAgent):
             )
         return results
 
-    def heal_repository(self) -> dict:
+    def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
-        return super().heal_repository()
+        return super().heal_repository(**kwargs)

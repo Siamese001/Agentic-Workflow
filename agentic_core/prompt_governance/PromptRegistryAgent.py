@@ -10,7 +10,7 @@ from __future__ import annotations
 # Suggested keywords to add in docstring/code: engine, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # PromptRegistryAgent - Sovereign Version Registry
 # Territory: agentic_core/prompt_governance/version_registry

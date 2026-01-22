@@ -3,7 +3,7 @@
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from dataclasses import dataclass
 
 """
@@ -43,7 +43,7 @@ class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
         Returns:
             Dict with healing summary
         """
-        super().heal_repository()
+        super().heal_repository(**kwargs)
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 

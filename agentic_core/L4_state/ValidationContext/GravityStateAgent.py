@@ -4,7 +4,7 @@
 from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 GravityStateAgent - Gravity Healing State Tracker
@@ -81,7 +81,7 @@ class GravityStateAgent(SovereignBaseAgent):
         Returns:
             Dict with healing summary
         """
-        super().heal_repository()
+        super().heal_repository(**kwargs)
 
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 

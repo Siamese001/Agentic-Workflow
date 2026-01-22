@@ -17,7 +17,7 @@ to identify where the system breaks or behaves unexpectedly.
 # Suggested keywords to add in docstring/code: engine, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 from dataclasses import dataclass

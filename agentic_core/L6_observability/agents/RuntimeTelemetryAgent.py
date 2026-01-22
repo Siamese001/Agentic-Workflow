@@ -47,7 +47,7 @@ class RuntimeTelemetryAgent(L6ObservabilityBaseAgent):
         Returns:
             Dict with healing summary
         """
-        super().heal_repository()
+        super().heal_repository(**kwargs)
 
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 

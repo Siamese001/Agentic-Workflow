@@ -39,12 +39,19 @@ from agentic_core.utils.core_extensions.instructional_injection_mixin import (
     InstructionalInjectionMixin,
 )
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.tracing_mixin import (
+    TracingMixin,
+)  # [INJECTED] Mandatory Tracing for ALL 278 Agents
 
 Logger = logging.getLogger(__name__)
 
 
 class InfrastructureMixin(
-    HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, InstructionalInjectionMixin
+    HealerMixin,
+    MCPHardenedMixin,
+    SubatomicTestingMixin,
+    InstructionalInjectionMixin,
+    TracingMixin,  # [ENFORCED] Root-level observability
 ):
     """
     Unified infrastructure mixin combining all standard agent capabilities.
@@ -54,7 +61,8 @@ class InfrastructureMixin(
     2. MCP hardening (MCPHardenedMixin)
     3. Subatomic testing (SubatomicTestingMixin)
     4. Prompt injection protection (InstructionalInjectionMixin)
-    5. State verification to catch initialization failures
+    5. Distributed tracing (TracingMixin) [INJECTED Jan 2026]
+    6. State verification to catch initialization failures
 
     MRO Order (L0 DNA Flattening):
         ConcreteAgent -> InfrastructureMixin -> HealerMixin -> MCPHardenedMixin -> SubatomicTestingMixin -> InstructionalInjectionMixin -> object

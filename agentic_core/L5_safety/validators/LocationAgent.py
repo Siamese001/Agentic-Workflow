@@ -1,5 +1,5 @@
 from __future__ import annotations
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 LocationAgent: Sovereign territorial gatekeeper (Canon Key 6 territory)
@@ -345,7 +345,25 @@ class LocationAgent(SovereignBaseAgent, L5Agent):
         return validator.validate_sovereign_roots()
 
     def validate_file_location(self, file_path: Path) -> tuple[bool, str]:
-        """FACADE: Delegates to LocationValidatorAgent."""
+        """
+        FACADE: Delegates to LocationValidatorAgent.
+
+        [CONSTITUTIONAL OVERRIDE 2026-01-22]
+        SovereignBaseAgent and Layer Base Agents have 'Semantic Location Immunity'
+        from standard rules but MUST reside in 'agentic_core/base_agents/'.
+        This check runs BEFORE delegation to prevent validator logic gaps.
+        """
+        # 1. Semantic Check: Base Agent Location Lock
+        if "BaseAgent" in file_path.name or file_path.name == "SovereignBaseAgent.py":
+            # Must be in agentic_core/base_agents/
+            # We check if 'base_agents' is the immediate parent folder name
+            if file_path.parent.name != "base_agents":
+                return (
+                    False,
+                    f"CRITICAL: Base Agents must reside in 'agentic_core/base_agents/', not '{file_path.parent.name}'",
+                )
+
+        # 2. Standard Delegation
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
 
         validator = LocationValidatorAgent(project_root=self.project_root)

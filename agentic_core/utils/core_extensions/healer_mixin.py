@@ -424,7 +424,7 @@ class HealerMixin(InstructionalInjectionMixin):
         Repository-level healing method (Canon Key 51 compliance).
 
         This is the foundational heal_repository that all agents inherit.
-        Subclasses should call super().heal_repository() FIRST to ensure
+        Subclasses should call super().heal_repository(**kwargs) FIRST to ensure
         the shared healing chain (diagnostics, rollback, MCP hardening) runs.
 
         Args:

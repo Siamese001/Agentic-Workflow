@@ -26,6 +26,7 @@ EXIT CODES:
 
 import ast
 import sys
+from pathlib import Path
 
 # Canonical keys that @standard_heal recognizes directly
 CANONICAL_KEYS = {

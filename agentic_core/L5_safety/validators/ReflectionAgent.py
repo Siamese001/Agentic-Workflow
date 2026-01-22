@@ -11,7 +11,7 @@ to long-term memory (Pinecone) for future reference.
 # Suggested keywords to add in docstring/code: engine, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 import os

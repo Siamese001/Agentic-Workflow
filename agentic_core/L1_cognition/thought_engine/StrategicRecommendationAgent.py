@@ -21,7 +21,7 @@ Purpose:
 # Suggested keywords to add in docstring/code: engine, memory, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import json
 import logging
@@ -341,7 +341,7 @@ Output strict JSON:
                     "category": "Healing",
                     "title": "Complete Healing Chain Invocation",
                     "detail": f"Current: {invocation:.1f}% | Gap: {gap:.1f}pp | {len(low_invocation)} territories below 80%",
-                    "action": "Add super().heal_repository() calls to agents that override heal_repository().",
+                    "action": "Add super().heal_repository(**kwargs) calls to agents that override heal_repository().",
                     "impact": "High - Ensures healing propagates through MRO chain.",
                 }
             )

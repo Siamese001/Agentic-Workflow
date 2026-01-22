@@ -21,7 +21,7 @@ except ImportError:
     Observer = object
     FileSystemEventHandler = object
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 # Mock/Placeholder for internal timeout decorator if not available
@@ -72,7 +72,7 @@ class TerritoryChangeHandlerAgent(SovereignBaseAgent, FileSystemEventHandler):
     ) -> dict[str, Any]:
         """L5 validation - operational health check."""
         # Perform base healing
-        base_results = super().heal_repository(dry_run=dry_run, execute=execute)
+        base_results = super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
 
         # Territory specific logic
         return {"status": "active", "last_trigger": self.last_trigger, "base_healing": base_results}

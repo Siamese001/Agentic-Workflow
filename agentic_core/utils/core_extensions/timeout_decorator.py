@@ -27,7 +27,7 @@ def timeout(seconds: int):
 
     Usage:
         @timeout(300)  # 5-minute limit
-        def heal_repository(self, ...):
+        def heal_repository(self, ..., **kwargs):
             ...
     """
 

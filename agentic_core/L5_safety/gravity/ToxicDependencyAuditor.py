@@ -12,7 +12,7 @@ Logic:
 4. Feeds priorities to the DynamicSealAgent for targeted remediation.
 """
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import ast
 from pathlib import Path
 

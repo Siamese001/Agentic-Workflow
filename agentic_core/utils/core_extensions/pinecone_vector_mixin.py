@@ -22,9 +22,15 @@ from agentic_core.config.feature_flags import (
     GRACEFUL_DEGRADATION,
     USE_PINECONE,
 )
-from agentic_core.observability.cache_metrics import get_cache_metrics
+# from agentic_core.L6_observability.cache_metrics import get_cache_metrics  # Optional metrics - commented out
 
 log = logging.getLogger(__name__)
+
+
+# Stub for optional cache metrics
+def get_cache_metrics():
+    """Stub for optional cache metrics tracking."""
+    return {}
 
 
 class PineconeVectorMixin:

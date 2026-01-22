@@ -5,7 +5,7 @@ ConfigurationSecurityGuardrail: Consolidated configuration and secrets managemen
 Merges: SecureConfigManager, SecureCheckpointManager, mcp_sovereign, l5_policy
 """
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 import re

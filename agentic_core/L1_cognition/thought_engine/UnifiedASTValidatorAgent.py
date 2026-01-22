@@ -17,7 +17,7 @@ Territory: agentic_core/L1_cognition/thought_engine/
 Canon Alignment: AST-based code quality validation
 """
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import ast
 from dataclasses import dataclass, field

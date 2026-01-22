@@ -17,7 +17,7 @@ Purpose: Automated remediation of import violations using Dynamic Seal pattern
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -65,7 +65,7 @@ class DynamicSealAgent(SovereignBaseAgent):
         Returns:
             Dict with healing summary
         """
-        super().heal_repository()
+        super().heal_repository(**kwargs)
 
         return {"violations": 0, "fixed": 0, "errors": 0}
 

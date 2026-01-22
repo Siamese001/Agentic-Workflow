@@ -35,7 +35,7 @@ Responsibilities:
 [SSOT] All territorial scope derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 from dataclasses import dataclass, field

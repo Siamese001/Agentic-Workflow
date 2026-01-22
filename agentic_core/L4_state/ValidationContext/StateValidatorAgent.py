@@ -15,7 +15,7 @@ Renamed from StateValidator for consistent Agent suffix.
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass
@@ -129,6 +129,6 @@ class StateValidatorAgent(SovereignBaseAgent):
 
         return is_valid, errors
 
-    def heal_repository(self) -> dict:
+    def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
-        return super().heal_repository()
+        return super().heal_repository(**kwargs)

@@ -1,0 +1,107 @@
+# Windsurf AI Assistant Rules for Agentic-Workflow
+
+## Constitutional Rules (NEVER VIOLATE)
+
+### 1. Base Agent Location Lock [2026-01-22]
+**CRITICAL: All base agents MUST reside in `agentic_core/base_agents/`**
+
+- **Scope:** Any file ending in `BaseAgent.py` (e.g., `SovereignBaseAgent.py`, `L1CognitionBaseAgent.py`)
+- **Enforcement:** `LocationAgent.validate_file_location()` has a constitutional override that short-circuits validation
+- **Rationale:** Base agents are the foundational inheritance hierarchy. Misplacement breaks imports across 200+ files.
+- **Test Coverage:** `tests/unit/test_location_semantic_lock.py` (5 tests)
+- **Pre-commit Hook:** Enforced via `check-base-agent-location` hook
+
+**Examples:**
+```
+✅ VALID:   agentic_core/base_agents/SovereignBaseAgent.py
+✅ VALID:   agentic_core/base_agents/L1CognitionBaseAgent.py
+❌ INVALID: agentic_core/observability/SovereignBaseAgent.py
+❌ INVALID: agentic_core/L1_cognition/L1CognitionBaseAgent.py
+```
+
+**If you need to create or move a base agent:**
+1. ALWAYS place it in `agentic_core/base_agents/`
+2. Update imports across the codebase if moving an existing agent
+3. Run `pytest tests/unit/test_location_semantic_lock.py` to verify
+4. Re-run `python -m agentic_core.L0_maintenance.scripts.full_agent_discovery` to update manifest
+
+### 2. SSOT (Single Source of Truth) Compliance
+- **File Discovery:** Use `agentic_core/utils/ssot_discovery.py` functions, NOT raw `glob/rglob`
+- **Structure Blueprint:** `agentic_core/L5_safety/validators/structure_blueprint.py` is the SSOT for folder structure
+- **Agent Discovery:** `agent_discovery_full.json` is the canonical agent registry
+
+### 3. Governance Hardening
+- **No Unknown Layers:** All agents must have a valid layer assignment (Base, L0-L6, Apps, Utils, Tests)
+- **No Duplicates:** One canonical agent per file (filename stem must match class name)
+- **Import Hygiene:** Always use absolute imports from project root (e.g., `from agentic_core.base_agents.SovereignBaseAgent`)
+
+### 4. Testing Requirements
+- **Pre-commit Hooks:** All hooks in `.pre-commit-config.yaml` must pass before commit
+- **Heal Schema:** Methods decorated with `@standard_heal` must return canonical keys: `violations_found`, `violations_fixed`, `errors`, `skipped`
+- **Dashboard Testing:** Run full e2e suite + Playwright visual inspection before deploying dashboards
+
+## Architectural Patterns
+
+### Layer Hierarchy (L0-L6)
+```
+L0: Maintenance (scripts, healing, bootstrapping)
+L1: Cognition (thought engine, intent analysis, planning)
+L2: Execution (tool registry, MCP, action handlers)
+L3: Orchestration (workflow engines, meta-learning)
+L4: State (validation context, ledger, memory)
+L5: Safety (guardrails, validators, gravity)
+L6: Observability (dashboards, telemetry, logging)
+```
+
+### Base Agents
+- **SovereignBaseAgent:** Root of all agents, provides core infrastructure
+- **Layer Base Agents:** L0-L6 base agents inherit from SovereignBaseAgent
+- **Concrete Agents:** Inherit from layer base agents
+
+## Common Operations
+
+### Creating a New Agent
+1. Determine correct layer (L0-L6, Apps, Utils)
+2. If it's a base agent, place in `agentic_core/base_agents/`
+3. Otherwise, place in appropriate layer subfolder
+4. Inherit from correct base agent
+5. Update `structure_blueprint.py` if creating new subfolder
+6. Run agent discovery to validate
+
+### Moving Files
+1. Use `HierarchyAgent` for structural moves (respects SSOT)
+2. Update imports using mass find-replace scripts if needed
+3. Run tests to verify no broken imports
+4. Re-run agent discovery to update manifest
+
+### Debugging Import Errors
+1. Check if file is in correct location per `structure_blueprint.py`
+2. Verify import path matches actual file location
+3. Run `pytest tests/unit/test_hierarchy_agent_phase*.py` to check hierarchy compliance
+4. Check `agent_discovery_full.json` for duplicate or misplaced agents
+
+## Emergency Procedures
+
+### Broken Imports (200+ files)
+1. Create mass repair script (see `fix_imports_emergency.py` example)
+2. Run from project root
+3. Verify with targeted test suite
+4. Re-run agent discovery
+
+### Unknown Layer Agents
+1. Identify correct layer using agent purpose
+2. Move to correct location
+3. Update `structure_blueprint.py` if needed
+4. Re-run agent discovery
+
+### Duplicate Agents
+1. Identify canonical version (usually in `agentic_core/`, not `apps_*/`)
+2. Remove duplicate
+3. Update imports if needed
+4. Re-run agent discovery
+
+## References
+- **RCA Reports:** See `RCA_*.md` files for root cause analyses
+- **Boundary Tests:** `BOUNDARY_STRESS_TEST_FINDINGS.md`
+- **Structural Changes:** `STRUCTURAL_CHANGES_REPORT.json`
+- **Agent Registry:** `agent_discovery_full.json`

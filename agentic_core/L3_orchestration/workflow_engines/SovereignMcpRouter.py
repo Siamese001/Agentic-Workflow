@@ -1,5 +1,5 @@
 from __future__ import annotations
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """L3 Orchestration: Sovereign MCP Router — Eternal Integration
 Hardened routing of canon violations to MCP tools across all layers and apps.

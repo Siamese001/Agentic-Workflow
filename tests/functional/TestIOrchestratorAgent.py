@@ -285,7 +285,7 @@ class TestCaseC_BaseAgentHygiene:
     def test_l2_execution_base_inherits_sovereign(self):
         """Verify L2ExecutionBaseAgent is subclass of SovereignBaseAgent."""
         from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
-        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         assert issubclass(L2ExecutionBaseAgent, SovereignBaseAgent), (
             "L2ExecutionBaseAgent must inherit from SovereignBaseAgent"

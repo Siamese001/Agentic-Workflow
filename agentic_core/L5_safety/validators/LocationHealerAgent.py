@@ -33,7 +33,7 @@ from agentic_core.L5_safety.validators.location_constants import (
 from agentic_core.L5_safety.validators.location_utils import (
     compute_module_path,
 )
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 
@@ -522,7 +522,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         self, file_path: Path, target_path: Path, reason: str
     ) -> bool:
         """Prompt user for approval before archiving a file.
-        
+
         [BATCH 1 REMEDIATION] Delegates to ArchivalGatekeeper which respects
         SOVEREIGN_AUTO_APPROVE and ARCHIVE_BATCH_ACCEPT environment variables.
 
@@ -530,16 +530,16 @@ class LocationHealerAgent(SovereignBaseAgent):
             True if user approves, False otherwise
         """
         import os
-        
+
         # [REMEDIATION] Check sovereign auto-approve first
         if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
             Logger.info(f"[LocationHealerAgent] Auto-approved archive: {file_path.name}")
             return True
-            
+
         if os.environ.get("ARCHIVE_BATCH_ACCEPT") == "1":
             Logger.info(f"[LocationHealerAgent] Batch-approved archive: {file_path.name}")
             return True
-        
+
         # Delegate to gatekeeper for consistent approval handling
         return self.gatekeeper.safe_operation("archive", f"{file_path} -> {target_path}")
 

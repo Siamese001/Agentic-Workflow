@@ -10,7 +10,7 @@ from __future__ import annotations
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 ⚛️ Adversarial Red-Teamer - The Skeptic

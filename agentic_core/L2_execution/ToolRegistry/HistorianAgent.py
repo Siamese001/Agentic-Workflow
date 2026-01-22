@@ -5,7 +5,7 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
 
@@ -81,7 +81,9 @@ class HistorianAgent(SovereignBaseAgent):
         except OSError as e:
             print(f"   [!] Historian failed to write: {e}")
 
-    def heal_repository(self, dry_run=True, execute=False, depth=0, max_depth=3, _call_path=None, **kwargs) -> dict:
+    def heal_repository(
+        self, dry_run=True, execute=False, depth=0, max_depth=3, _call_path=None, **kwargs
+    ) -> dict:
         """Standardized healing signature with signal propagation."""
         return super().heal_repository(dry_run, execute, depth, max_depth, _call_path, **kwargs)
 

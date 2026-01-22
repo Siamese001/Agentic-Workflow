@@ -15,7 +15,7 @@ SSOT PRINCIPLE:
 
 from dataclasses import dataclass
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass
@@ -49,7 +49,7 @@ class L6ObservabilityBaseAgent(SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
-        **kwargs
+        **kwargs,
     ) -> dict[str, int]:
         """
         L6 observability healing - validates metrics and telemetry.
@@ -83,7 +83,7 @@ class L6ObservabilityBaseAgent(SovereignBaseAgent):
                 depth=depth,
                 max_depth=max_depth,
                 _call_path=_call_path,
-                **kwargs
+                **kwargs,
             )
         finally:
             _call_path.discard(agent_name)

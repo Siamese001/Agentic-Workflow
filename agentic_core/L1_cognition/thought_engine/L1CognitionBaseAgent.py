@@ -15,7 +15,7 @@ from typing import Any
 from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.observability.SovereignBaseAgent import (
+from agentic_core.base_agents.SovereignBaseAgent import (
     SovereignBaseAgent,  # NEW: Root inheritance
 )
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
@@ -399,11 +399,11 @@ Persistent improvements to apply:
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
-        **kwargs
+        **kwargs,
     ) -> dict[str, int]:
         """
         L1 cognition layer healing - prioritize thought consistency.
-        
+
         Args:
             dry_run: If True, only report violations
             execute: If True, apply fixes
@@ -428,7 +428,7 @@ Persistent improvements to apply:
                 depth=depth,
                 max_depth=max_depth,
                 _call_path=_call_path,
-                **kwargs
+                **kwargs,
             )
         finally:
             _call_path.discard(agent_name)

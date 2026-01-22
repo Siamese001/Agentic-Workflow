@@ -11,7 +11,7 @@ and strategic attack patterns designed to expose vulnerabilities.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 from dataclasses import dataclass

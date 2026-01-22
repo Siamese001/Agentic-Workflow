@@ -39,7 +39,7 @@ from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import 
     SubatomicTestingMixin,
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 

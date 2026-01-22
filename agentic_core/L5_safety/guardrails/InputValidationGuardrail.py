@@ -5,7 +5,7 @@ InputValidationGuardrail: Consolidated input validation with composable rules.
 Merges: input_validator, PIISanitizer, PromptInjectionDetector, BiasDetector, safety_guardrail
 """
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 import re

@@ -52,7 +52,7 @@ def print_mro(agent_class, agent_name: str):
 def verify_sovereign_base_agent():
     """Verify SovereignBaseAgent MRO."""
     try:
-        from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         return print_mro(SovereignBaseAgent, "SovereignBaseAgent")
     except ImportError as e:

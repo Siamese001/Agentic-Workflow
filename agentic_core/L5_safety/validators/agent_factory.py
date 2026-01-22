@@ -10,7 +10,7 @@ from __future__ import annotations
 # Original violation: GRAVITY VIOLATION: Upstream 'agentic_core' imports downstream roots: ['apps_shared']. Move shared logic to apps_shared or sovereign utils.
 # Removed: apps_shared.base_agents.canon_base_agent_interface
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Agent Factory – L3 Orchestration Layer (Phase 9A & 11 – Dec 26, 2025)

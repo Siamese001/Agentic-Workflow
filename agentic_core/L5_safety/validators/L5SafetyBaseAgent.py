@@ -23,7 +23,7 @@ import logging
 import re
 from typing import Any
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
@@ -157,7 +157,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
 
         if not passed:
             self.log_warning(f"Validation failed: {len(failures)} checks failed")
-            super().heal_repository()
+            super().heal_repository(**kwargs)
 
         return {
             "passed": passed,
@@ -295,7 +295,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
-        **kwargs
+        **kwargs,
     ) -> dict[str, int]:
         """L5 safety base - operational healing with validation."""
         if _call_path is None:
@@ -308,7 +308,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
         _call_path.add(agent_name)
         try:
             # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-            super().heal_repository()
+            super().heal_repository(**kwargs)
             self.log_info("L5 safety - healing chain invoked")
             return {"violations_fixed": 1}
         finally:

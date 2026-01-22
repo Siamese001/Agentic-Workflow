@@ -3,7 +3,7 @@
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from dataclasses import dataclass
 
 #!/usr/bin/env python3
@@ -52,7 +52,7 @@ class InterfaceBoundaryAgent(SovereignBaseAgent):
         Returns:
             Dict with healing summary
         """
-        super().heal_repository()
+        super().heal_repository(**kwargs)
 
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 

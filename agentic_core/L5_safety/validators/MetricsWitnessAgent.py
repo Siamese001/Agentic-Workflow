@@ -208,11 +208,11 @@ class MetricsWitnessAgent(
             "Healing Resilience": self.calculate_healing_resilience_score(),
         }
 
-    def heal_repository(self) -> dict[str, int]:
+    def heal_repository(self, **kwargs) -> dict[str, int]:
         """
         Execute healing chain via parent class.
 
         Returns:
             Dict with healing results from parent implementation.
         """
-        return super().heal_repository()
+        return super().heal_repository(**kwargs)

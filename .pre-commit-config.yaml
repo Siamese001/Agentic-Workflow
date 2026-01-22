@@ -102,6 +102,15 @@ repos:
         pass_filenames: false
         always_run: true
 
+      - id: check-base-agent-location
+        name: Base Agent Location Lock (Constitutional Override 2026-01-22)
+        entry: pytest
+        args: [tests/unit/test_location_semantic_lock.py, -v, --tb=short]
+        language: python
+        additional_dependencies: [pytest]
+        pass_filenames: false
+        always_run: true
+
       - id: test-hygiene-consolidation
         name: Test Hygiene Consolidation (Survivor Agent Protection)
         entry: pytest

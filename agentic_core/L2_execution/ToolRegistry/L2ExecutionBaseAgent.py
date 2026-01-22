@@ -39,7 +39,7 @@ from dotenv import load_dotenv
 
 # MCPHardenedMixin is now in SovereignBaseAgent - DO NOT import here
 # Root inheritance (includes MCPHardenedMixin)
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 
@@ -113,9 +113,9 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         """Shared initialization logic with cooperative MRO."""
         # Initialize MRO chain - call parent __post_init__ not __init__
         super().__post_init__()
-        
+
         # Set name if not already set
-        if not hasattr(self, 'name') or not self.name:
+        if not hasattr(self, "name") or not self.name:
             self.name = self.__class__.__name__
 
         self.role = re.sub("(?<!^)(?=[A-Z])", "_", self.name).lower()
@@ -202,7 +202,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         if errors:
             clustered = self.cluster_errors(errors)
             self.log_warning(f"Tool execution errors: {clustered}")
-            super().heal_repository()
+            super().heal_repository(**kwargs)
 
         return {
             "results": results,
@@ -253,7 +253,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         if errors:
             clustered = self.cluster_errors(errors)
             self.log_warning(f"Async execution errors: {clustered}")
-            super().heal_repository()
+            super().heal_repository(**kwargs)
 
         return {
             "results": processed_results,
@@ -312,11 +312,11 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
-        **kwargs
+        **kwargs,
     ) -> dict[str, int]:
         """
         L2 execution layer healing - prioritize script integrity.
-        
+
         Args:
             dry_run: If True, only report violations
             execute: If True, apply fixes
@@ -341,7 +341,7 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
                 depth=depth,
                 max_depth=max_depth,
                 _call_path=_call_path,
-                **kwargs
+                **kwargs,
             )
         finally:
             _call_path.discard(agent_name)

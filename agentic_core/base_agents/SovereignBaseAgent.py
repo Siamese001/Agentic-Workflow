@@ -138,19 +138,19 @@ class SovereignBaseAgent(InfrastructureMixin):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
-        **kwargs
+        **kwargs,
     ) -> dict[str, int]:
         """
         Base heal_repository implementation - ROOT termination point.
 
         MRO HARDENING: This is the END of the heal_repository chain.
-        Subclasses should call super().heal_repository() which eventually
+        Subclasses should call super().heal_repository(**kwargs) which eventually
         reaches here and terminates cleanly.
-        
+
         Args:
             **kwargs: Absorbs any additional keyword arguments from subclasses
         """
-        # TERMINATION POINT: We absorb signals here to prevent MRO overflow into 
+        # TERMINATION POINT: We absorb signals here to prevent MRO overflow into
         # InfrastructureMixins that lack healing logic.
         return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1}
 
