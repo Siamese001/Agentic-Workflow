@@ -214,7 +214,6 @@ class ContextualCompressor:
 
         # Import LLM client
         try:
-
             client = get_client(Provider.ANTHROPIC)
 
             prompt = f"""Extract verbatim sentences from the text below that answer this question: '{query}'.

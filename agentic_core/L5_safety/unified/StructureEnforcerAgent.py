@@ -2,6 +2,7 @@ from typing import Any
 from pathlib import Path
 from dataclasses import dataclass
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+
 #!/usr/bin/env python3
 """
 StructureEnforcerAgent - Structural Enforcement
@@ -122,15 +123,16 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         "L6": {"L0", "L1", "L2", "L3", "L4", "L5", "L6"},  # L6 can import all
     }
 
-
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """

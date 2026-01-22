@@ -5,7 +5,6 @@ Ported from: archives/legacy_resume_gen/Job Workflow - JSON/Job_Workflow_v61.27.
 """
 
 
-
 class GateDecision(Enum):
     """Decision from a validation gate."""
 

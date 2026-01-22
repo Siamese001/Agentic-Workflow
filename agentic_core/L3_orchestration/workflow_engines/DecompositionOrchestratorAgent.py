@@ -12,6 +12,7 @@ ARCHITECTURAL CONSTRAINTS:
 
 LAYER: L3_orchestration (workflow coordination)
 """
+
 from typing import Any
 from pathlib import Path
 from dataclasses import dataclass
@@ -20,28 +21,33 @@ import json
 import uuid
 from datetime import datetime
 
+
 @dataclass
 class AtomicTask:
     """Represents a single atomic task in the mission plan."""
+
     task_id: str
     description: str
     target_agent: str
     agent_path: str
     dependencies: list[str] = field(default_factory=list)
-    validation_gate: str = 'L5_safety'
+    validation_gate: str = "L5_safety"
     priority: int = 0
-    estimated_complexity: str = 'medium'
-    status: str = 'pending'
+    estimated_complexity: str = "medium"
+    status: str = "pending"
+
 
 @dataclass
 class MissionPlan:
     """Complete mission plan with DAG of atomic tasks."""
+
     mission_id: str
     created_at: str
     prompt: str
     tasks: list[AtomicTask] = field(default_factory=list)
     execution_order: list[str] = field(default_factory=list)
     validation_summary: dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class DecompositionOrchestratorAgent(L3OrchestrationBaseAgent):
@@ -62,7 +68,8 @@ class DecompositionOrchestratorAgent(L3OrchestrationBaseAgent):
         plan = orchestrator.decompose("Refactor all L2 agents to use new base class")
         orchestrator.execute(plan, dry_run=True)
     """
-    _layer: str = 'L3_orchestration'
+
+    _layer: str = "L3_orchestration"
     _agent_registry: dict[str, Any] = field(default_factory=dict)
     _capability_index: dict[str, list[str]] = field(default_factory=dict)
 
@@ -74,26 +81,37 @@ class DecompositionOrchestratorAgent(L3OrchestrationBaseAgent):
 
     def _load_agent_registry(self) -> None:
         """Load agent capabilities from SSOT discovery JSON."""
-        discovery_path = Path(__file__).resolve().parents[3] / 'agent_discovery_full.json'
+        discovery_path = Path(__file__).resolve().parents[3] / "agent_discovery_full.json"
         if discovery_path.exists():
             try:
-                data = json.loads(discovery_path.read_text(encoding='utf-8'))
+                data = json.loads(discovery_path.read_text(encoding="utf-8"))
                 for agent in data:
-                    name = agent.get('class_name', agent.get('name', ''))
+                    name = agent.get("class_name", agent.get("name", ""))
                     if name:
                         self._agent_registry[name] = agent
-            except Exception as e:
+            except Exception:
                 pass
 
     def _build_capability_index(self) -> None:
         """Build semantic capability index for agent matching."""
-        capability_keywords = {'validate': ['validator', 'check', 'verify', 'audit'], 'heal': ['healer', 'fix', 'repair', 'remediate'], 'format': ['formatter', 'style', 'lint', 'beautify'], 'security': ['security', 'safety', 'guard', 'protect'], 'import': ['import', 'dependency', 'module'], 'structure': ['structure', 'hierarchy', 'architecture'], 'naming': ['naming', 'convention', 'rename'], 'test': ['test', 'coverage', 'quality'], 'orchestrate': ['orchestrator', 'workflow', 'coordinate'], 'decompose': ['decompose', 'split', 'fission']}
+        capability_keywords = {
+            "validate": ["validator", "check", "verify", "audit"],
+            "heal": ["healer", "fix", "repair", "remediate"],
+            "format": ["formatter", "style", "lint", "beautify"],
+            "security": ["security", "safety", "guard", "protect"],
+            "import": ["import", "dependency", "module"],
+            "structure": ["structure", "hierarchy", "architecture"],
+            "naming": ["naming", "convention", "rename"],
+            "test": ["test", "coverage", "quality"],
+            "orchestrate": ["orchestrator", "workflow", "coordinate"],
+            "decompose": ["decompose", "split", "fission"],
+        }
         for agent_name, agent_data in self._agent_registry.items():
             name_lower = agent_name.lower()
-            layer = agent_data.get('layer', '')
-            territory = agent_data.get('territory', '')
+            layer = agent_data.get("layer", "")
+            territory = agent_data.get("territory", "")
             for capability, keywords in capability_keywords.items():
-                if any((kw in name_lower or kw in territory.lower() for kw in keywords)):
+                if any(kw in name_lower or kw in territory.lower() for kw in keywords):
                     if capability not in self._capability_index:
                         self._capability_index[capability] = []
                     self._capability_index[capability].append(agent_name)
@@ -111,7 +129,17 @@ class DecompositionOrchestratorAgent(L3OrchestrationBaseAgent):
             if capability in desc_lower:
                 for agent in agents:
                     scores[agent] = scores.get(agent, 0) + 10
-        task_keywords = {'refactor': ['StructuralEngineerAgent', 'ArchitectureGovernorAgent'], 'validate': ['CodeValidatorAgent', 'StructuralValidatorAgent'], 'fix': ['HierarchyAgent', 'ImportAgent', 'NamingAgent'], 'security': ['SecurityManagerAgent', 'SafetyInspector'], 'format': ['CodeFormatterAgent'], 'test': ['TestCoverageGuardianAgent', 'CoverageAgent'], 'import': ['ImportAgent', 'ImportLockAgent'], 'naming': ['NamingAgent'], 'heal': ['ArchitectureGovernorAgent', 'HygieneGuardianAgent']}
+        task_keywords = {
+            "refactor": ["StructuralEngineerAgent", "ArchitectureGovernorAgent"],
+            "validate": ["CodeValidatorAgent", "StructuralValidatorAgent"],
+            "fix": ["HierarchyAgent", "ImportAgent", "NamingAgent"],
+            "security": ["SecurityManagerAgent", "SafetyInspector"],
+            "format": ["CodeFormatterAgent"],
+            "test": ["TestCoverageGuardianAgent", "CoverageAgent"],
+            "import": ["ImportAgent", "ImportLockAgent"],
+            "naming": ["NamingAgent"],
+            "heal": ["ArchitectureGovernorAgent", "HygieneGuardianAgent"],
+        }
         for keyword, preferred_agents in task_keywords.items():
             if keyword in desc_lower:
                 for agent in preferred_agents:
@@ -120,10 +148,13 @@ class DecompositionOrchestratorAgent(L3OrchestrationBaseAgent):
         if scores:
             best_agent = max(scores, key=scores.get)
             agent_data = self._agent_registry.get(best_agent, {})
-            return (best_agent, agent_data.get('path', ''))
-        return ('UnifiedOrchestratorAgent', 'agentic_core/L3_orchestration/UnifiedOrchestratorAgent.py')
+            return (best_agent, agent_data.get("path", ""))
+        return (
+            "UnifiedOrchestratorAgent",
+            "agentic_core/L3_orchestration/UnifiedOrchestratorAgent.py",
+        )
 
-    def decompose(self, prompt: str, max_tasks: int=10) -> MissionPlan:
+    def decompose(self, prompt: str, max_tasks: int = 10) -> MissionPlan:
         """
         Decompose a high-level prompt into atomic agent tasks.
 
@@ -134,33 +165,49 @@ class DecompositionOrchestratorAgent(L3OrchestrationBaseAgent):
         Returns:
             MissionPlan with DAG of atomic tasks
         """
-        mission_id = f'mission_{uuid.uuid4().hex[:8]}'
-        plan = MissionPlan(mission_id=mission_id, created_at=datetime.utcnow().isoformat(), prompt=prompt)
+        mission_id = f"mission_{uuid.uuid4().hex[:8]}"
+        plan = MissionPlan(
+            mission_id=mission_id, created_at=datetime.utcnow().isoformat(), prompt=prompt
+        )
         task_hints = self._extract_task_hints(prompt)
         previous_task_id: Optional[str] = None
         for i, hint in enumerate(task_hints[:max_tasks]):
-            task_id = f'task_{i + 1:03d}'
+            task_id = f"task_{i + 1:03d}"
             agent_name, agent_path = self._match_agent_for_task(hint)
-            task = AtomicTask(task_id=task_id, description=hint, target_agent=agent_name, agent_path=agent_path, dependencies=[previous_task_id] if previous_task_id else [], validation_gate='L5_safety', priority=i, estimated_complexity=self._estimate_complexity(hint))
+            task = AtomicTask(
+                task_id=task_id,
+                description=hint,
+                target_agent=agent_name,
+                agent_path=agent_path,
+                dependencies=[previous_task_id] if previous_task_id else [],
+                validation_gate="L5_safety",
+                priority=i,
+                estimated_complexity=self._estimate_complexity(hint),
+            )
             plan.tasks.append(task)
             plan.execution_order.append(task_id)
             previous_task_id = task_id
-        plan.validation_summary = {'total_tasks': len(plan.tasks), 'unique_agents': len(set((t.target_agent for t in plan.tasks))), 'has_dependencies': any((t.dependencies for t in plan.tasks)), 'validation_gates': ['L5_safety']}
+        plan.validation_summary = {
+            "total_tasks": len(plan.tasks),
+            "unique_agents": len(set(t.target_agent for t in plan.tasks)),
+            "has_dependencies": any(t.dependencies for t in plan.tasks),
+            "validation_gates": ["L5_safety"],
+        }
         return plan
 
     def _extract_task_hints(self, prompt: str) -> list[str]:
         """Extract atomic task hints from prompt."""
         hints = []
-        if '1.' in prompt or '- ' in prompt:
-            lines = prompt.split('\n')
+        if "1." in prompt or "- " in prompt:
+            lines = prompt.split("\n")
             for line in lines:
                 line = line.strip()
-                if line and (line[0].isdigit() or line.startswith('-')):
-                    clean = line.lstrip('0123456789.-) ').strip()
+                if line and (line[0].isdigit() or line.startswith("-")):
+                    clean = line.lstrip("0123456789.-) ").strip()
                     if clean:
                         hints.append(clean)
-        if not hints and ' and ' in prompt.lower():
-            parts = prompt.split(' and ')
+        if not hints and " and " in prompt.lower():
+            parts = prompt.split(" and ")
             hints = [p.strip() for p in parts if p.strip()]
         if not hints:
             hints = [prompt]
@@ -169,19 +216,42 @@ class DecompositionOrchestratorAgent(L3OrchestrationBaseAgent):
     def _estimate_complexity(self, task_description: str) -> str:
         """Estimate task complexity based on keywords."""
         desc_lower = task_description.lower()
-        high_complexity = ['refactor', 'migrate', 'rewrite', 'redesign', 'consolidate']
-        low_complexity = ['check', 'validate', 'verify', 'list', 'report']
-        if any((kw in desc_lower for kw in high_complexity)):
-            return 'high'
-        if any((kw in desc_lower for kw in low_complexity)):
-            return 'low'
-        return 'medium'
+        high_complexity = ["refactor", "migrate", "rewrite", "redesign", "consolidate"]
+        low_complexity = ["check", "validate", "verify", "list", "report"]
+        if any(kw in desc_lower for kw in high_complexity):
+            return "high"
+        if any(kw in desc_lower for kw in low_complexity):
+            return "low"
+        return "medium"
 
     def to_json(self, plan: MissionPlan) -> str:
         """Serialize mission plan to JSON."""
-        return json.dumps({'mission_id': plan.mission_id, 'created_at': plan.created_at, 'prompt': plan.prompt, 'tasks': [{'task_id': t.task_id, 'description': t.description, 'target_agent': t.target_agent, 'agent_path': t.agent_path, 'dependencies': t.dependencies, 'validation_gate': t.validation_gate, 'priority': t.priority, 'estimated_complexity': t.estimated_complexity, 'status': t.status} for t in plan.tasks], 'execution_order': plan.execution_order, 'validation_summary': plan.validation_summary}, indent=2)
+        return json.dumps(
+            {
+                "mission_id": plan.mission_id,
+                "created_at": plan.created_at,
+                "prompt": plan.prompt,
+                "tasks": [
+                    {
+                        "task_id": t.task_id,
+                        "description": t.description,
+                        "target_agent": t.target_agent,
+                        "agent_path": t.agent_path,
+                        "dependencies": t.dependencies,
+                        "validation_gate": t.validation_gate,
+                        "priority": t.priority,
+                        "estimated_complexity": t.estimated_complexity,
+                        "status": t.status,
+                    }
+                    for t in plan.tasks
+                ],
+                "execution_order": plan.execution_order,
+                "validation_summary": plan.validation_summary,
+            },
+            indent=2,
+        )
 
-    def execute(self, plan: MissionPlan, dry_run: bool=True) -> dict[str, Any]:
+    def execute(self, plan: MissionPlan, dry_run: bool = True) -> dict[str, Any]:
         """
         Execute a mission plan.
 
@@ -192,45 +262,69 @@ class DecompositionOrchestratorAgent(L3OrchestrationBaseAgent):
         Returns:
             Execution results dictionary
         """
-        results = {'mission_id': plan.mission_id, 'dry_run': dry_run, 'tasks_executed': 0, 'tasks_skipped': 0, 'errors': []}
+        results = {
+            "mission_id": plan.mission_id,
+            "dry_run": dry_run,
+            "tasks_executed": 0,
+            "tasks_skipped": 0,
+            "errors": [],
+        }
         for task in plan.tasks:
             if dry_run:
-                results['tasks_skipped'] += 1
+                results["tasks_skipped"] += 1
             else:
-                results['tasks_executed'] += 1
-                task.status = 'completed'
+                results["tasks_executed"] += 1
+                task.status = "completed"
         return results
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set | None=None, **kwargs: Any) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+        **kwargs: Any,
+    ) -> dict[str, int]:
         """
         L3 orchestration healing - coordinates healing across agents.
 
         Maintains healer chain by calling super().heal_repository().
         """
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {'errors': 1, 'cycle_detected': True}
+            return {"errors": 1, "cycle_detected": True}
         if depth > max_depth:
-            return {'errors': 1, 'depth_limited': True}
+            return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            return {'violations_found': 0, 'violations_fixed': 0, 'errors': 0, 'skipped': 0}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
         finally:
             _call_path.discard(agent_name)
+
 
 def create_decomposition_orchestrator() -> DecompositionOrchestratorAgent:
     """Factory function to create DecompositionOrchestratorAgent."""
     return DecompositionOrchestratorAgent()
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     import sys
+
     orchestrator = DecompositionOrchestratorAgent()
     if len(sys.argv) > 1:
-        prompt = ' '.join(sys.argv[1:])
+        prompt = " ".join(sys.argv[1:])
     else:
-        prompt = 'Validate all L5 agents for proper inheritance and fix naming violations'
+        prompt = "Validate all L5 agents for proper inheritance and fix naming violations"
     plan = orchestrator.decompose(prompt)
     results = orchestrator.execute(plan, dry_run=True)

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 [PHASE 15/17] Tiered Batch Processor - Smart Hybrid Disposition.
 
@@ -24,10 +25,10 @@ Logger = logging.getLogger(__name__)
 class TieredBatchProcessor:
     """
     Smart batch processor with tiered disposition strategy.
-    
+
     Tier 1: High-confidence heuristics auto-execute (no LLM)
     Tier 2: Low-confidence routes to LLM with semantic caching
-    
+
     Attributes:
         agent: CognitiveDispositionAgent instance
         heuristic_threshold: Confidence threshold for auto-execution
@@ -45,7 +46,7 @@ class TieredBatchProcessor:
     ):
         """
         Initialize the Tiered Batch Processor.
-        
+
         Args:
             agent: CognitiveDispositionAgent instance
             heuristic_threshold: Min confidence for auto-execution
@@ -64,10 +65,10 @@ class TieredBatchProcessor:
 
         # Statistics
         self.stats = {
-            "tier1_auto": 0,      # High-confidence heuristics
-            "tier2_llm": 0,       # LLM calls
-            "tier2_cached": 0,    # Cache hits
-            "skipped": 0,         # Already processed
+            "tier1_auto": 0,  # High-confidence heuristics
+            "tier2_llm": 0,  # LLM calls
+            "tier2_cached": 0,  # Cache hits
+            "skipped": 0,  # Already processed
             "errors": 0,
         }
 
@@ -99,7 +100,7 @@ class TieredBatchProcessor:
     def _get_semantic_cache(self):
         """
         [PHASE 17] Lazy-load SemanticCacheManager.
-        
+
         Returns:
             SemanticCacheManager instance or None
         """
@@ -108,6 +109,7 @@ class TieredBatchProcessor:
                 from agentic_core.L5_safety.cognition.SemanticCacheManager import (
                     SemanticCacheManager,
                 )
+
                 self._semantic_cache = SemanticCacheManager(
                     api_key=self.agent.api_key,
                 )
@@ -120,15 +122,15 @@ class TieredBatchProcessor:
     def _check_semantic_cache(self, file_path: str, violation_type: str) -> dict | None:
         """
         [PHASE 17] Check semantic cache for cached disposition decision.
-        
+
         Uses dual-layer caching:
         1. Redis: Exact content hash matching
         2. Pinecone: Semantic similarity matching
-        
+
         Args:
             file_path: Path to file
             violation_type: Type of violation
-        
+
         Returns:
             Cached decision dict or None
         """
@@ -148,9 +150,9 @@ class TieredBatchProcessor:
     def _store_semantic_cache(self, file_path: str, violation_type: str, decision: dict) -> None:
         """
         [PHASE 17] Store disposition decision in semantic cache.
-        
+
         Stores in both Redis (exact) and Pinecone (semantic) for meta-learning.
-        
+
         Args:
             file_path: Path to file
             violation_type: Type of violation
@@ -171,10 +173,10 @@ class TieredBatchProcessor:
     def process_batch(self, violations: list[Any]) -> dict[str, Any]:
         """
         Process violations with tiered strategy.
-        
+
         Args:
             violations: List of violation objects
-        
+
         Returns:
             Processing statistics
         """
@@ -266,7 +268,7 @@ class TieredBatchProcessor:
     def _process_tier2(self, tier2_queue: list) -> None:
         """
         Process Tier 2 files with LLM and semantic caching.
-        
+
         Args:
             tier2_queue: List of (violation, file_path, v_type, heuristic) tuples
         """

@@ -4,13 +4,11 @@
 # This boosts alignment detection — review and integrate appropriately
 
 
-
 """HOP-8: QA Report Agent - Persistent markdown report generation."""
 
 __version__ = "13.1"
 
 from datetime import datetime
-
 
 
 @dataclass

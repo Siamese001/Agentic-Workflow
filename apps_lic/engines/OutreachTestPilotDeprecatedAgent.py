@@ -1,11 +1,9 @@
-
 """
 OutreachTestPilotDeprecatedAgent - Extracted for 1:1 sovereign file structure.
 Deprecated agent preserved for backward compatibility.
 """
 
 from OutreachAgent import OutreachAgent
-
 
 
 # Legacy class - use OutreachTestPilotAgent instead

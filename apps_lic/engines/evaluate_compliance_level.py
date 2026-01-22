@@ -1,10 +1,10 @@
-
 """
 EvaluateComplianceLevel.py - Scoring Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.100048
 """
+
 import logging
 
 Logger: Any = logging.getLogger(__name__)

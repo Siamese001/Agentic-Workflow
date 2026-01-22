@@ -11,7 +11,6 @@ import logging
 """Brief description of functionality and purpose."""
 
 
-
 Logger = logging.getLogger(__name__)
 
 

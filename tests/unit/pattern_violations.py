@@ -7,7 +7,6 @@ CodeStandardsEnforcerAgent should detect.
 DO NOT FIX - Used for testing pattern enforcement.
 """
 
-
 import builtins
 
 

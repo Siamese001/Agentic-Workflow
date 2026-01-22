@@ -4,6 +4,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from dataclasses import field
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+
 #!/usr/bin/env python3
 """
 StructureHealerAgent - Structure Healing & Repair
@@ -94,15 +95,16 @@ class StructureHealerAgent(SovereignBaseAgent):
     # Layer hierarchy
     LAYER_ORDER = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
 
-
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """

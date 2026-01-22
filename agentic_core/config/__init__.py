@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Public API for Configuration - SSOT for constants and registry.
 

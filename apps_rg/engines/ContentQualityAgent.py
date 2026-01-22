@@ -1,5 +1,3 @@
-
-
 """
 Specialized Resume Agents - Phase 1 Implementation
 
@@ -14,10 +12,9 @@ This module contains all specialized agents for autonomous resume generation:
 - RgStrategicPlannerAgent: Plans execution strategy
 - RgReflectionAgent: Learns from execution
 """
+
 import json
 import re
-
-
 
 
 @dataclass

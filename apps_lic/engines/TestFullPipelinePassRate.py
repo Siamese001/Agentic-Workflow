@@ -1,6 +1,3 @@
-
-
-
 def test_full_pipeline_pass_rate():
     stack = OutreachStack(ReasoningToggles())
     samples = [

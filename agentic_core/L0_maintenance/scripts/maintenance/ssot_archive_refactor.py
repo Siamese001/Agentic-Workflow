@@ -1,4 +1,5 @@
 from pathlib import Path
+
 #!/usr/bin/env python3
 """
 SSOT Archive Path Refactor

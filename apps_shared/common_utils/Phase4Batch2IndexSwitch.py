@@ -14,7 +14,6 @@ Usage:
     python scripts/phase4_batch2_index_switch.py --execute
 """
 
-
 import argparse
 import re
 

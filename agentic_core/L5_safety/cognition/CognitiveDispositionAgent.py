@@ -25,7 +25,8 @@ Actions:
 
 [SSOT] Integrates with ArchitectureGovernorAgent for violation resolution.
 """
-from typing import Any, Dict, Optional, List, Union
+
+from typing import Any
 from pathlib import Path
 from dataclasses import dataclass, field
 import hashlib
@@ -77,11 +78,11 @@ class DispositionDecision:
     """Structured decision from cognitive analysis."""
 
     action: str  # MOVE, REFACTOR, ARCHIVE, IGNORE, MANUAL_REVIEW
-    target_path: Optional[str] = None
+    target_path: str | None = None
     reason: str = ""
     confidence: float = 0.0
-    suggested_code: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    suggested_code: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         """Validate action is one of the allowed values."""
@@ -96,24 +97,26 @@ class DispositionDecision:
 class CognitiveDispositionAgent(SovereignBaseAgent):
     """
     AI-Powered Architectural Triage Agent.
-    
+
     Analyzes structural violations and determines intelligent resolutions
     using LLM capabilities.
-    
+
     Attributes:
         project_root: Root directory of the project
         confidence_threshold: Minimum confidence to auto-execute decisions
         llm_enabled: Whether to use actual LLM calls (vs mock responses)
     """
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """
@@ -122,14 +125,14 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
 
     def __init__(
         self,
-        project_root: Optional[Path] = None,
+        project_root: Path | None = None,
         confidence_threshold: float = 0.8,
         llm_enabled: bool = False,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
     ):
         """
         Initialize the Cognitive Disposition Agent.
-        
+
         Args:
             project_root: Project root directory
             confidence_threshold: Minimum confidence for auto-execution
@@ -162,19 +165,28 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
 
         # Phase 14: API key validation with graceful degradation
         if not self.api_key:
-            Logger.warning("[COGNITIVE] GEMINI_API_KEY not found. Agent will use heuristic mode only.")
-            Logger.info("[COGNITIVE] To enable LLM: Set GEMINI_API_KEY in .env or pass api_key parameter")
+            Logger.warning(
+                "[COGNITIVE] GEMINI_API_KEY not found. Agent will use heuristic mode only."
+            )
+            Logger.info(
+                "[COGNITIVE] To enable LLM: Set GEMINI_API_KEY in .env or pass api_key parameter"
+            )
         else:
             Logger.info("[COGNITIVE] API key configured successfully")
 
         self._client = None  # Lazy-loaded google.genai Client (Phase 16)
-        
+
         # [PHASE 29/33e] Cache-First LLM Governance
         self._decision_cache = {}  # Local fallback cache
         self._redis_client = None
         self._pinecone_index = None
         self._embedder = None
-        self._cache_stats = {"redis_hits": 0, "pinecone_hits": 0, "llm_calls": 0, "total_requests": 0}
+        self._cache_stats = {
+            "redis_hits": 0,
+            "pinecone_hits": 0,
+            "llm_calls": 0,
+            "total_requests": 0,
+        }
         self._init_redis_cache()
         self._init_pinecone_cache()
         self._init_embedder()
@@ -194,6 +206,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         """[PHASE 29] Initialize Redis connection for LLM decision caching."""
         try:
             import redis
+
             redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
             self._redis_client = redis.from_url(redis_url, decode_responses=True)
             self._redis_client.ping()
@@ -207,13 +220,15 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         try:
             pinecone_key = os.environ.get("PINECONE_API_KEY")
             if not pinecone_key or not Pinecone:
-                Logger.debug("[COGNITIVE] PINECONE_API_KEY not set or lib missing, semantic cache disabled")
+                Logger.debug(
+                    "[COGNITIVE] PINECONE_API_KEY not set or lib missing, semantic cache disabled"
+                )
                 return
-            
+
             pc = Pinecone(api_key=pinecone_key)
             index_name = os.environ.get("PINECONE_INDEX_NAME", "agentic-memory")
             existing_indexes = [idx.name for idx in pc.list_indexes()]
-            
+
             if index_name in existing_indexes:
                 self._pinecone_index = pc.Index(index_name)
                 Logger.info(f"[COGNITIVE] Pinecone connected for semantic lookups: {index_name}")
@@ -245,7 +260,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
             return f"cda:init:{parent}:{violation_type}"
         return f"cda:{file_ext}:{violation_type}"
 
-    def _get_cached_decision(self, cache_key: str) -> Optional[DispositionDecision]:
+    def _get_cached_decision(self, cache_key: str) -> DispositionDecision | None:
         """[PHASE 29] Check Redis/local cache for existing decision."""
         try:
             # Try Redis first
@@ -295,37 +310,34 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         prompt_key = f"{file_path.suffix}:{violation_type}:{sorted(context.items())}"
         return f"cda:hash:{hashlib.sha256(prompt_key.encode()).hexdigest()[:16]}"
 
-    def _semantic_lookup(self, file_path: Path, violation_type: str) -> Optional[DispositionDecision]:
+    def _semantic_lookup(self, file_path: Path, violation_type: str) -> DispositionDecision | None:
         """
         [PHASE 33e] Perform semantic similarity lookup in Pinecone.
-        
+
         Returns cached decision if 95%+ similarity match found.
         """
         if not self._pinecone_index or not self._embedder:
             return None
-        
+
         try:
             # Generate embedding for this query
             query_text = f"violation:{violation_type} file:{file_path.suffix} name:{file_path.stem}"
             embedding = self._embedder.embed(query_text)
-            
+
             if not embedding:
                 return None
-            
+
             # Query Pinecone for similar decisions
             results = self._pinecone_index.query(
-                vector=embedding,
-                top_k=1,
-                include_metadata=True,
-                namespace="cda_decisions"
+                vector=embedding, top_k=1, include_metadata=True, namespace="cda_decisions"
             )
-            
+
             if results.matches and results.matches[0].score >= SEMANTIC_SIMILARITY_THRESHOLD:
                 match = results.matches[0]
                 metadata = match.metadata or {}
                 Logger.info(f"[COGNITIVE] Pinecone HIT: {match.score:.3f} similarity")
                 self._cache_stats["pinecone_hits"] += 1
-                
+
                 return DispositionDecision(
                     action=metadata.get("action", "MANUAL_REVIEW"),
                     target_path=metadata.get("target_path"),
@@ -334,40 +346,44 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                 )
         except Exception as e:
             Logger.debug(f"[COGNITIVE] Semantic lookup failed: {e}")
-        
+
         return None
 
-    def _cache_to_pinecone(self, file_path: Path, violation_type: str, decision: DispositionDecision):
+    def _cache_to_pinecone(
+        self, file_path: Path, violation_type: str, decision: DispositionDecision
+    ):
         """[PHASE 33e] Store decision in Pinecone for semantic retrieval."""
         if not self._pinecone_index or not self._embedder:
             return
-        
+
         try:
             # Generate embedding
             query_text = f"violation:{violation_type} file:{file_path.suffix} name:{file_path.stem}"
             embedding = self._embedder.embed(query_text)
-            
+
             if not embedding:
                 return
-            
+
             # Generate unique ID
             vector_id = f"cda:{hashlib.sha256(query_text.encode()).hexdigest()[:16]}"
-            
+
             # Upsert to Pinecone
             self._pinecone_index.upsert(
-                vectors=[{
-                    "id": vector_id,
-                    "values": embedding,
-                    "metadata": {
-                        "action": decision.action,
-                        "target_path": decision.target_path or "",
-                        "reason": decision.reason,
-                        "confidence": decision.confidence,
-                        "violation_type": violation_type,
-                        "file_ext": file_path.suffix,
+                vectors=[
+                    {
+                        "id": vector_id,
+                        "values": embedding,
+                        "metadata": {
+                            "action": decision.action,
+                            "target_path": decision.target_path or "",
+                            "reason": decision.reason,
+                            "confidence": decision.confidence,
+                            "violation_type": violation_type,
+                            "file_ext": file_path.suffix,
+                        },
                     }
-                }],
-                namespace="cda_decisions"
+                ],
+                namespace="cda_decisions",
             )
             Logger.info(f"[COGNITIVE] Cached to Pinecone: {vector_id}")
         except Exception as e:
@@ -379,48 +395,50 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         total = stats["total_requests"]
         if total == 0:
             return
-        
+
         redis_rate = (stats["redis_hits"] / total) * 100
         pinecone_rate = (stats["pinecone_hits"] / total) * 100
         llm_rate = (stats["llm_calls"] / total) * 100
-        
-        Logger.info(f"[COGNITIVE] Cache Stats: Redis={redis_rate:.1f}%, Pinecone={pinecone_rate:.1f}%, LLM={llm_rate:.1f}% (n={total})")
+
+        Logger.info(
+            f"[COGNITIVE] Cache Stats: Redis={redis_rate:.1f}%, Pinecone={pinecone_rate:.1f}%, LLM={llm_rate:.1f}% (n={total})"
+        )
 
     def analyze_violation(
         self,
-        file_path: Union[str, Path],
+        file_path: str | Path,
         violation_type: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> DispositionDecision:
         """
         Analyze a violation and return a disposition decision.
-        
+
         [PHASE 33e] Cache-First LLM Governance:
         1. Exact match (Redis) - hash lookup
         2. Semantic match (Pinecone) - 95%+ similarity
         3. Heuristic analysis - pattern-based
         4. LLM call - only if all above fail
-        
+
         Args:
             file_path: Path to the file with the violation
             violation_type: Type of violation (ORPHAN, GRAVITY, DUPLICATE, etc.)
             context: Additional context about the violation
-        
+
         Returns:
             DispositionDecision with recommended action
         """
         start_time = time.time()
         file_path = Path(file_path)
         context = context or {}
-        
+
         # Track stats
         self._cache_stats["total_requests"] += 1
 
         Logger.info(f"[COGNITIVE] Analyzing disposition for {file_path.name} ({violation_type})...")
-        
+
         # [PHASE 33e] Check BYPASS_CACHE for forced refresh
         bypass_cache = os.environ.get(BYPASS_CACHE_ENV, "").lower() in ("1", "true", "yes")
-        
+
         if not bypass_cache:
             # Step 1: Exact match (Redis) - fastest
             cache_key = self._get_cache_key(file_path, violation_type)
@@ -430,7 +448,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                 elapsed = (time.time() - start_time) * 1000
                 Logger.info(f"[COGNITIVE] Redis HIT in {elapsed:.1f}ms")
                 return cached_decision
-            
+
             # Step 2: Semantic match (Pinecone) - 95%+ similarity
             semantic_decision = self._semantic_lookup(file_path, violation_type)
             if semantic_decision:
@@ -444,7 +462,9 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         heuristic_decision = self._analyze_heuristic(file_path, violation_type, context)
 
         if heuristic_decision.confidence >= 0.8:
-            Logger.info(f"[COGNITIVE] High-confidence heuristic: {heuristic_decision.action} ({heuristic_decision.confidence:.2f})")
+            Logger.info(
+                f"[COGNITIVE] High-confidence heuristic: {heuristic_decision.action} ({heuristic_decision.confidence:.2f})"
+            )
             cache_key = self._get_cache_key(file_path, violation_type)
             self._cache_decision(cache_key, heuristic_decision)
             self._cache_to_pinecone(file_path, violation_type, heuristic_decision)
@@ -453,15 +473,15 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         # Step 4: LLM call - only if all above fail
         if self.llm_enabled and self.api_key:
             self._cache_stats["llm_calls"] += 1
-            Logger.info(f"[COGNITIVE] Cache MISS - calling LLM...")
+            Logger.info("[COGNITIVE] Cache MISS - calling LLM...")
             llm_decision = self._generate_llm_decision(file_path, violation_type, context)
-            
+
             if llm_decision.action != "MANUAL_REVIEW":
                 # Cache to both Redis and Pinecone for future reuse
                 cache_key = self._get_cache_key(file_path, violation_type)
                 self._cache_decision(cache_key, llm_decision)
                 self._cache_to_pinecone(file_path, violation_type, llm_decision)
-                
+
                 elapsed = (time.time() - start_time) * 1000
                 Logger.info(f"[COGNITIVE] LLM decision in {elapsed:.1f}ms (cached for future)")
                 return llm_decision
@@ -473,11 +493,11 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         self,
         file_path: Path,
         violation_type: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
     ) -> DispositionDecision:
         """
         Heuristic-based analysis when LLM is not available.
-        
+
         Uses file naming patterns and location to suggest disposition.
         """
         file_name = file_path.name
@@ -515,7 +535,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                 confidence=0.95,  # High confidence - always safe to remove prints
                 metadata={"surgery_type": "print_removal"},
             )
-        
+
         elif violation_type == "missing_docstring":
             return DispositionDecision(
                 action="REFACTOR",
@@ -523,7 +543,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                 confidence=0.90,  # High confidence - safe to add docstrings
                 metadata={"surgery_type": "docstring_addition"},
             )
-        
+
         elif violation_type == "orphaned_init":
             return DispositionDecision(
                 action="IGNORE",
@@ -531,7 +551,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                 confidence=0.95,  # High confidence - never delete __init__.py
                 metadata={"protected": True},
             )
-        
+
         elif violation_type == "empty_file":
             # Non-init empty files can be archived
             if file_name != "__init__.py":
@@ -564,7 +584,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
     ) -> DispositionDecision:
         """
         Heuristic analysis for ORPHAN violations.
-        
+
         Suggests target location based on file naming patterns.
         """
         # Agent files -> L5_safety or appropriate layer
@@ -668,7 +688,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
     def _get_client(self):
         """
         [PHASE 16] Lazy-load the google.genai Client.
-        
+
         Returns:
             google.genai.Client instance or None if not configured
         """
@@ -685,18 +705,18 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         self,
         file_path: Path,
         violation_type: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
     ) -> DispositionDecision:
         """
         [PHASE 16] Generate disposition decision using google.genai SDK.
-        
+
         Uses response_mime_type='application/json' for strict JSON enforcement.
-        
+
         Args:
             file_path: Path to the file with violation
             violation_type: Type of violation
             context: Additional context
-        
+
         Returns:
             DispositionDecision from LLM analysis
         """
@@ -745,10 +765,10 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
     def _read_file_safe(self, file_path: Path) -> str:
         """
         Safely read file content with size limits.
-        
+
         Args:
             file_path: Path to file
-        
+
         Returns:
             File content (truncated if needed) or empty string
         """
@@ -767,11 +787,11 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         file_path: Path,
         violation_type: str,
         content: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
     ) -> str:
         """
         [PHASE 12] Build a strict JSON-enforcing prompt for LLM.
-        
+
         Uses explicit instructions to ensure valid JSON output.
         """
         layer_desc = "\n".join(f"- {k}: {v}" for k, v in self.layer_map.items())
@@ -811,12 +831,12 @@ RESPOND WITH ONLY THE JSON OBJECT:"""
     def _parse_llm_json_response(self, response_text: str) -> DispositionDecision:
         """
         [PHASE 12] Parse LLM response with strict JSON extraction.
-        
+
         Handles various response formats including markdown code blocks.
-        
+
         Args:
             response_text: Raw LLM response
-        
+
         Returns:
             DispositionDecision parsed from response
         """
@@ -875,7 +895,7 @@ RESPOND WITH ONLY THE JSON OBJECT:"""
         file_path: Path,
         violation_type: str,
         content: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
     ) -> str:
         """Build the analysis prompt for LLM."""
         return f"""Analyze this architectural violation and recommend a disposition.
@@ -904,10 +924,10 @@ Respond with JSON:
     def should_auto_execute(self, decision: DispositionDecision) -> bool:
         """
         Determine if a decision should be auto-executed.
-        
+
         Args:
             decision: The disposition decision
-        
+
         Returns:
             True if confidence meets threshold and action is executable
         """

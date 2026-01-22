@@ -1,13 +1,8 @@
-
 """
 Base Agent for Outreach Engine
 
 Provides the abstract base class for all outreach agents.
 """
-
-
-
-
 
 
 class OutreachAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):

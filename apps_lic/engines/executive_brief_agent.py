@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 # Import Titanium search tool
 try:
-
     TITANIUM_AVAILABLE = True
     logger.info("ExecutiveBriefAgent: Titanium RAG Pipeline available")
 except ImportError as e:
@@ -84,7 +83,6 @@ class ExecutiveBriefAgent:
 
         # Import tone model for enforcement
         try:
-
             self.tone_model = create_tone_model()
             self.target_tone = ToneType.DIRECT  # Executive briefs should be direct
         except ImportError:

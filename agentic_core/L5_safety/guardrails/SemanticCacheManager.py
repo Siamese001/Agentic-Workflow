@@ -9,6 +9,7 @@ This dramatically reduces token consumption by reusing decisions for similar fil
 
 [SSOT] Integrates with TieredBatchProcessor for intelligent caching.
 """
+
 from typing import Any
 import hashlib
 import json
@@ -22,10 +23,10 @@ Logger = logging.getLogger(__name__)
 class SemanticCacheManager:
     """
     Dual-layer semantic cache for architectural decisions.
-    
+
     Layer 1 (Redis): Exact content hash matching - O(1) lookup
     Layer 2 (Pinecone): Semantic similarity matching - vector search
-    
+
     Attributes:
         redis_enabled: Whether Redis is available
         pinecone_enabled: Whether Pinecone is available
@@ -39,7 +40,7 @@ class SemanticCacheManager:
     ):
         """
         Initialize the Semantic Cache Manager.
-        
+
         Args:
             api_key: API key for embedding generation
             similarity_threshold: Minimum similarity score for semantic match
@@ -71,12 +72,15 @@ class SemanticCacheManager:
             "cache_stores": 0,
         }
 
-        Logger.info(f"[SEMANTIC] Cache initialized (Redis: {self.redis_enabled}, Pinecone: {self.pinecone_enabled})")
+        Logger.info(
+            f"[SEMANTIC] Cache initialized (Redis: {self.redis_enabled}, Pinecone: {self.pinecone_enabled})"
+        )
 
     def _init_redis(self) -> None:
         """Initialize Redis connection for exact matching."""
         try:
             import redis
+
             redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
             self.redis_client = redis.from_url(redis_url, decode_responses=True)
             self.redis_client.ping()
@@ -95,7 +99,6 @@ class SemanticCacheManager:
             return
 
         try:
-
             pc = Pinecone(api_key=pinecone_key)
             index_name = "architectural-decisions"
 
@@ -139,10 +142,10 @@ class SemanticCacheManager:
     def _get_embedding(self, text: str) -> list[float] | None:
         """
         Generate embedding vector for semantic matching.
-        
+
         Args:
             text: Text to embed (truncated to 2000 chars)
-        
+
         Returns:
             List of floats representing the embedding vector
         """
@@ -172,11 +175,11 @@ class SemanticCacheManager:
     ) -> dict[str, Any] | None:
         """
         Check caches in tiered order: Exact -> Semantic.
-        
+
         Args:
             content_snippet: File content or snippet
             violation_type: Type of violation (ORPHAN, GRAVITY, etc.)
-        
+
         Returns:
             Cached decision dict or None if not found
         """
@@ -228,7 +231,7 @@ class SemanticCacheManager:
     ) -> None:
         """
         Store decision in both caches for future meta-learning.
-        
+
         Args:
             content_snippet: File content or snippet
             violation_type: Type of violation
@@ -253,14 +256,18 @@ class SemanticCacheManager:
             vector = self._get_embedding(content_snippet)
             if vector:
                 try:
-                    self.pinecone_index.upsert(vectors=[{
-                        "id": content_hash,
-                        "values": vector,
-                        "metadata": {
-                            "violation_type": violation_type,
-                            "decision_json": decision_json,
-                        },
-                    }])
+                    self.pinecone_index.upsert(
+                        vectors=[
+                            {
+                                "id": content_hash,
+                                "values": vector,
+                                "metadata": {
+                                    "violation_type": violation_type,
+                                    "decision_json": decision_json,
+                                },
+                            }
+                        ]
+                    )
                 except Exception as e:
                     Logger.debug(f"[SEMANTIC] Pinecone upsert failed: {e}")
 

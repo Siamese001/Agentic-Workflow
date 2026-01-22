@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 ULTRA-HARDENED Pinecone Vector Mixin
 

@@ -9,7 +9,6 @@ Usage:
     python scripts/update_phase3_imports.py
 """
 
-
 import argparse
 import re
 import sys

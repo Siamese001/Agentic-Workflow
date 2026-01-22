@@ -4,7 +4,6 @@ Automatically fix lines longer than 100 characters.
 [SSOT] File discovery uses ssot_discovery.py - DO NOT define get_python_files here
 """
 
-
 import logging
 import re
 

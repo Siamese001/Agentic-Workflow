@@ -5,7 +5,6 @@ Ported from: archives/legacy_lic/Agentic LIC/validator_rules_LIC.json
 """
 
 
-
 class ValidationSeverity(Enum):
     """Severity levels for validation errors."""
 

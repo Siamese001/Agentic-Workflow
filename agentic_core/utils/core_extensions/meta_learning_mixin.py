@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 [PHASE 20+/21] Meta-Learning Mixin - The DNA of Collective Intelligence.
 

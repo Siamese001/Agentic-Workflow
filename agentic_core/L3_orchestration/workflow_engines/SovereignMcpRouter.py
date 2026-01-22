@@ -14,10 +14,8 @@ from agentic_core.L3_orchestration.workflow_engines.mcp_manager import (
     MCPConnectionManager,
     load_mcp_config,
 )
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 UnifiedCheckpointManagerAgent - Consolidated L4 Checkpoint Guardian (Priority 2)
 

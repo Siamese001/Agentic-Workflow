@@ -1,5 +1,6 @@
 from __future__ import annotations
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+
 """
 [PHASE 24] SSOT Folder Cleanup Agent - Automated SSOT Compliance Enforcement.
 

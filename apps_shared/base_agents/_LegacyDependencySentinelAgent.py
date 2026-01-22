@@ -1,10 +1,10 @@
-
 """
 DependencySentinelAgent - L1 Guardian for Import Dependencies
 
 Enforces the "Law of Depth" and prevents circular imports.
 Uses AST parsing to analyze and validate import structures.
 """
+
 import ast
 import logging
 
@@ -78,8 +78,6 @@ class DependencyViolation:
             "message": self.message,
             "details": self.details,
         }
-
-
 
 
 # Legacy L1 version - use L2 canonical (dependency management is execution-level)

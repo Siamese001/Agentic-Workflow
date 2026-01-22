@@ -1,8 +1,8 @@
-
 """
 Emergency Fix Script: Remove ALL underscore prefixes from dataclass fields in core_contracts.py
 Session 5 - Critical Issue Resolution
 """
+
 import re
 
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 ConfigurationSecurityGuardrail: Consolidated configuration and secrets management.
 Merges: SecureConfigManager, SecureCheckpointManager, mcp_sovereign, l5_policy

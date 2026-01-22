@@ -2,8 +2,6 @@
 """Pure orchestration of resume generation using shared atoms."""
 
 
-
-
 class ResumeOrchestrator:
     """Orchestrate the multi-hop resume generation workflow."""
 

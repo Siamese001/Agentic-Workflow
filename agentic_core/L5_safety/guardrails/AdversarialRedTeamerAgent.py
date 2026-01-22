@@ -242,8 +242,7 @@ class AdversarialRedTeamerAgent(SovereignBaseAgent, SubAtomicAgent):
     async def _attempt_mass_deletion(self) -> RedTeamResult:
         """Attempt to delete 50% of code and pass preservation check."""
         test_id = "PRES-001"
-        original_code = textwrap.dedent(
-        )
+        original_code = textwrap.dedent()
         modified_code = textwrap.dedent(
             "\n            def function1():\n                pass\n\n            def function2():\n                pass\n        "
         )

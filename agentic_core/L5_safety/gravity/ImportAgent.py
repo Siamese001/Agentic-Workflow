@@ -799,10 +799,10 @@ class ImportAgent(SovereignBaseAgent):
     def _fix_violation(self, violation_entry: tuple) -> bool:
         """
         [PHASE 33k] Execute surgical fix for import violations.
-        
+
         Args:
             violation_entry: Tuple of (file_path, list_of_messages)
-            
+
         Returns:
             True if any fix was successfully applied
         """

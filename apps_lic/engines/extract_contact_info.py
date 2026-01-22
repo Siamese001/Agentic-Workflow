@@ -1,10 +1,10 @@
-
 """
 ExtractContactInfo.py - Retrieval Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.032526
 """
+
 import logging
 
 Logger: Any = logging.getLogger(__name__)

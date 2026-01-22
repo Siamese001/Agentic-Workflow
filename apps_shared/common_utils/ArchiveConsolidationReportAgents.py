@@ -12,7 +12,6 @@ Usage:
     python scripts/archive_consolidation_report_agents.py
 """
 
-
 import argparse
 import shutil
 import sys

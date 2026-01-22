@@ -7,7 +7,6 @@ Formal data models for separating reasoning from action outputs.
 from datetime import datetime
 
 
-
 class ThinkStep(BaseModel):
     """Represents a thinking/reasoning step.
 

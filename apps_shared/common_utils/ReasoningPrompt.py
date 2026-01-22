@@ -10,7 +10,6 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 
 
-
 def build_reasoning_prompt_addendum(params: dict) -> str:
     """Construct system prompt addendum based on reasoning parameters."""
     p = params

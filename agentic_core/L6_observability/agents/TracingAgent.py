@@ -116,8 +116,6 @@ class Span:
 # Uppercase alias for backward compatibility
 Span = Span
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-
 
 class TracingAgent(SovereignBaseAgent):
     """
@@ -287,8 +285,7 @@ class TracingAgent(SovereignBaseAgent):
                 if not self.timestamped_exports:
                     # Append with comma separation for JSON array
                     if filepath.exists() and filepath.stat().st_size > 0:
-                        f.write(
-                        )
+                        f.write()
                     else:
                         f.write("[\n")
                 json.dump(export_data[0] if trace_id else export_data, f, indent=2)

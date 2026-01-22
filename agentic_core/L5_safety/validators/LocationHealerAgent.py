@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+
 """
 LocationHealerAgent: Automated remediation agent for location violations
 

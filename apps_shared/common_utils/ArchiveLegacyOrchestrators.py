@@ -13,7 +13,6 @@ Usage:
     python scripts/archive_legacy_orchestrators.py
 """
 
-
 import argparse
 import shutil
 import sys

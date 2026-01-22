@@ -1,7 +1,6 @@
 """PolicyController behavioral tests covering bound enforcement."""
 
 
-
 def test_policy_controller_enforces_bounds_and_quarantine():
     controller = PolicyController()
     controller.register_tool("beta", quarantined=True)

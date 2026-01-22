@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Constitutional Overseer for validating ActionRequests.
 
 This module provides safety validation for action requests, including:
@@ -173,8 +174,6 @@ class ConstitutionalOverseer:
         return self._forbidden_commands.copy()
 
 
-
-
 @dataclass
 class SafetyInspectorAgent(SovereignBaseAgent):
     """
@@ -239,8 +238,7 @@ class SafetyInspectorAgent(SovereignBaseAgent):
         try:
             with open(file_path, encoding="utf-8") as f:
                 content: Any = f.read()
-                lines: Any = content.split(
-                )
+                lines: Any = content.split()
             for pattern in self.secret_patterns:
                 if re.search(pattern, content, re.IGNORECASE):
                     if self.enable_socratic_judge and file_path not in self._false_positive_cache:

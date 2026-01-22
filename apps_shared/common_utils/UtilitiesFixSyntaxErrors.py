@@ -1,8 +1,8 @@
-
 """
 Script to fix common syntax errors in Python files.
 Targets the most frequent issues found by the canon validator.
 """
+
 import ast
 import logging
 import os

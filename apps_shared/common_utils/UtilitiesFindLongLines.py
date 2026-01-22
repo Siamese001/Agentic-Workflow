@@ -1,5 +1,5 @@
-
 """Find all lines longer than 100 characters."""
+
 import logging
 import os
 

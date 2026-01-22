@@ -4,12 +4,9 @@
 # This boosts alignment detection — review and integrate appropriately
 
 
-
 """HOP-7: Gate Decision Agent - Make the 'Slow Loop' decision."""
 
 __version__ = "13.1"
-
-
 
 
 @dataclass

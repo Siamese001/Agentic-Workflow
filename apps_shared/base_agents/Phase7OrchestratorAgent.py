@@ -1,12 +1,9 @@
-
 """
 Phase7OrchestratorAgent - Extracted for one-class-per-file pattern.
 
 Originally from: StrictDocEnforcerAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
-
-
 
 
 @dataclass

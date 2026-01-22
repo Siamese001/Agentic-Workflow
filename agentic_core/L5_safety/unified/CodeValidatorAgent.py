@@ -26,10 +26,13 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 Logger = logging.getLogger(__name__)
+
 
 class ViolationType(Enum):
     """Types of code violations."""
+
     SYNTAX = auto()
     CANON = auto()
     ASYNC_BLOCKING = auto()
@@ -39,25 +42,33 @@ class ViolationType(Enum):
     TYPE_HINT = auto()
     DOCSTRING = auto()
 
+
 @dataclass
 class Violation:
     """Represents a single code violation."""
+
     violation_type: ViolationType
     message: str
     file_path: Path | None = None
     line_number: int = 0
     column: int = 0
-    severity: str = 'error'
+    severity: str = "error"
     rule_id: str | None = None
     suggestion: str | None = None
 
     def __str__(self) -> str:
-        loc = f'{self.file_path}:{self.line_number}:{self.column}' if self.file_path else f'line {self.line_number}'
-        return f'[{self.violation_type.name}] {loc}: {self.message}'
+        loc = (
+            f"{self.file_path}:{self.line_number}:{self.column}"
+            if self.file_path
+            else f"line {self.line_number}"
+        )
+        return f"[{self.violation_type.name}] {loc}: {self.message}"
+
 
 @dataclass
 class ValidationReport:
     """Aggregated report of all violations found."""
+
     file_path: Path | None = None
     violations: list[Violation] = field(default_factory=list)
     execution_time: float = 0.0
@@ -66,22 +77,22 @@ class ValidationReport:
     @property
     def has_errors(self) -> bool:
         """TODO: Add documentation for has_errors."""
-        return any((v.severity == 'error' for v in self.violations))
+        return any(v.severity == "error" for v in self.violations)
 
     @property
     def has_warnings(self) -> bool:
         """TODO: Add documentation for has_warnings."""
-        return any((v.severity == 'warning' for v in self.violations))
+        return any(v.severity == "warning" for v in self.violations)
 
     @property
     def error_count(self) -> int:
         """TODO: Add documentation for error_count."""
-        return sum((1 for v in self.violations if v.severity == 'error'))
+        return sum(1 for v in self.violations if v.severity == "error")
 
     @property
     def warning_count(self) -> int:
         """TODO: Add documentation for warning_count."""
-        return sum((1 for v in self.violations if v.severity == 'warning'))
+        return sum(1 for v in self.violations if v.severity == "warning")
 
     def by_type(self, violation_type: ViolationType) -> list[Violation]:
         """TODO: Add documentation for by_type."""
@@ -94,9 +105,11 @@ class ValidationReport:
         self.execution_time += other.execution_time
         return self
 
+
 @dataclass
 class RuleSet:
     """Configuration for which validation rules to apply."""
+
     check_syntax: bool = True
     check_canon: bool = True
     check_async: bool = True
@@ -114,7 +127,7 @@ class RuleSet:
     allow_debug_prints: bool = False
     allow_logger_prints: bool = True
     agent_suffix_required: bool = True
-    class_naming_pattern: str = '^[A-Z][a-zA-Z0-9]*Agent$'
+    class_naming_pattern: str = "^[A-Z][a-zA-Z0-9]*Agent$"
 
     @classmethod
     def strict(cls) -> RuleSet:
@@ -124,7 +137,15 @@ class RuleSet:
     @classmethod
     def minimal(cls) -> RuleSet:
         """Create a minimal rule set for quick validation."""
-        return cls(check_syntax=True, check_canon=False, check_async=False, check_print=False, check_imports=False, check_naming=False)
+        return cls(
+            check_syntax=True,
+            check_canon=False,
+            check_async=False,
+            check_print=False,
+            check_imports=False,
+            check_naming=False,
+        )
+
 
 class UnifiedASTVisitor(ast.NodeVisitor):
     """
@@ -133,7 +154,9 @@ class UnifiedASTVisitor(ast.NodeVisitor):
     This is more efficient than running multiple separate visitors.
     """
 
-    def __init__(self, rules: RuleSet, file_path: Path | None=None, source_code: str | None=None):
+    def __init__(
+        self, rules: RuleSet, file_path: Path | None = None, source_code: str | None = None
+    ):
         self.rules = rules
         self.file_path = file_path
         self.source_code = source_code
@@ -145,23 +168,49 @@ class UnifiedASTVisitor(ast.NodeVisitor):
         self._imports: set[str] = set()
         self._from_imports: dict[str, set[str]] = {}
 
-    def _add_violation(self, violation_type: ViolationType, message: str, node: ast.AST | None=None, severity: str='error', rule_id: str | None=None, suggestion: str | None=None) -> None:
+    def _add_violation(
+        self,
+        violation_type: ViolationType,
+        message: str,
+        node: ast.AST | None = None,
+        severity: str = "error",
+        rule_id: str | None = None,
+        suggestion: str | None = None,
+    ) -> None:
         """Add a violation to the list."""
-        line = getattr(node, 'lineno', 0) if node else 0
-        col = getattr(node, 'col_offset', 0) if node else 0
-        self.violations.append(Violation(violation_type=violation_type, message=message, file_path=self.file_path, line_number=line, column=col, severity=severity, rule_id=rule_id, suggestion=suggestion))
+        line = getattr(node, "lineno", 0) if node else 0
+        col = getattr(node, "col_offset", 0) if node else 0
+        self.violations.append(
+            Violation(
+                violation_type=violation_type,
+                message=message,
+                file_path=self.file_path,
+                line_number=line,
+                column=col,
+                severity=severity,
+                rule_id=rule_id,
+                suggestion=suggestion,
+            )
+        )
 
     def visit_Import(self, node: ast.Import) -> None:
         """Track imports and check for forbidden modules."""
         for alias in node.names:
             self._imports.add(alias.name)
-            if self.rules.check_async and alias.name == 'threading':
-                self._add_violation(ViolationType.ASYNC_BLOCKING, "Import of 'threading' module detected. Prefer asyncio for concurrency.", node, severity='warning', rule_id='ASYNC-THREADING', suggestion='Use asyncio instead of threading for async-compatible concurrency')
+            if self.rules.check_async and alias.name == "threading":
+                self._add_violation(
+                    ViolationType.ASYNC_BLOCKING,
+                    "Import of 'threading' module detected. Prefer asyncio for concurrency.",
+                    node,
+                    severity="warning",
+                    rule_id="ASYNC-THREADING",
+                    suggestion="Use asyncio instead of threading for async-compatible concurrency",
+                )
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         """Track from imports."""
-        module = node.module or ''
+        module = node.module or ""
         if module not in self._from_imports:
             self._from_imports[module] = set()
         for alias in node.names:
@@ -185,32 +234,74 @@ class UnifiedASTVisitor(ast.NodeVisitor):
             elif isinstance(dec, ast.Attribute):
                 decorators.append(dec.attr)
         self._class_decorators[node.name] = decorators
-        if self.rules.check_canon and node.name.endswith('Agent'):
+        if self.rules.check_canon and node.name.endswith("Agent"):
             self._check_canon_compliance(node, bases, decorators)
-        if self.rules.check_naming and node.name.endswith('Agent'):
+        if self.rules.check_naming and node.name.endswith("Agent"):
             self._check_naming_compliance(node)
         self.generic_visit(node)
         self._current_class = None
 
-    def _check_canon_compliance(self, node: ast.ClassDef, bases: list[str], decorators: list[str]) -> None:
+    def _check_canon_compliance(
+        self, node: ast.ClassDef, bases: list[str], decorators: list[str]
+    ) -> None:
         """Check canon compliance for agent classes."""
-        if self.rules.require_dataclass and 'dataclass' not in decorators:
-            self._add_violation(ViolationType.CANON, f"Agent class '{node.name}' missing @dataclass decorator", node, severity='warning', rule_id='CANON-001', suggestion='Add @dataclass decorator to agent class')
-        if self.rules.require_healer_mixin and 'HealerMixin' not in bases:
-            self._add_violation(ViolationType.CANON, f"Agent class '{node.name}' missing HealerMixin inheritance", node, severity='warning', rule_id='CANON-002', suggestion='Add HealerMixin to class inheritance')
-        if self.rules.require_subatomic_mixin and 'SubatomicTestingMixin' not in bases:
-            self._add_violation(ViolationType.CANON, f"Agent class '{node.name}' missing SubatomicTestingMixin inheritance", node, severity='warning', rule_id='CANON-003', suggestion='Add SubatomicTestingMixin to class inheritance')
-        if self.rules.require_mcp_mixin and 'MCPHardenedMixin' not in bases:
-            self._add_violation(ViolationType.CANON, f"Agent class '{node.name}' missing MCPHardenedMixin inheritance", node, severity='warning', rule_id='CANON-004', suggestion='Add MCPHardenedMixin to class inheritance')
+        if self.rules.require_dataclass and "dataclass" not in decorators:
+            self._add_violation(
+                ViolationType.CANON,
+                f"Agent class '{node.name}' missing @dataclass decorator",
+                node,
+                severity="warning",
+                rule_id="CANON-001",
+                suggestion="Add @dataclass decorator to agent class",
+            )
+        if self.rules.require_healer_mixin and "HealerMixin" not in bases:
+            self._add_violation(
+                ViolationType.CANON,
+                f"Agent class '{node.name}' missing HealerMixin inheritance",
+                node,
+                severity="warning",
+                rule_id="CANON-002",
+                suggestion="Add HealerMixin to class inheritance",
+            )
+        if self.rules.require_subatomic_mixin and "SubatomicTestingMixin" not in bases:
+            self._add_violation(
+                ViolationType.CANON,
+                f"Agent class '{node.name}' missing SubatomicTestingMixin inheritance",
+                node,
+                severity="warning",
+                rule_id="CANON-003",
+                suggestion="Add SubatomicTestingMixin to class inheritance",
+            )
+        if self.rules.require_mcp_mixin and "MCPHardenedMixin" not in bases:
+            self._add_violation(
+                ViolationType.CANON,
+                f"Agent class '{node.name}' missing MCPHardenedMixin inheritance",
+                node,
+                severity="warning",
+                rule_id="CANON-004",
+                suggestion="Add MCPHardenedMixin to class inheritance",
+            )
 
     def _check_naming_compliance(self, node: ast.ClassDef) -> None:
         """Check naming compliance for agent classes."""
-        if self.rules.agent_suffix_required and (not node.name.endswith('Agent')):
-            self._add_violation(ViolationType.NAMING, f"Agent class '{node.name}' should end with 'Agent' suffix", node, severity='warning', rule_id='NAME-001')
+        if self.rules.agent_suffix_required and (not node.name.endswith("Agent")):
+            self._add_violation(
+                ViolationType.NAMING,
+                f"Agent class '{node.name}' should end with 'Agent' suffix",
+                node,
+                severity="warning",
+                rule_id="NAME-001",
+            )
         if self.rules.class_naming_pattern:
             pattern = re.compile(self.rules.class_naming_pattern)
             if not pattern.match(node.name):
-                self._add_violation(ViolationType.NAMING, f"Class name '{node.name}' does not match pattern '{self.rules.class_naming_pattern}'", node, severity='warning', rule_id='NAME-002')
+                self._add_violation(
+                    ViolationType.NAMING,
+                    f"Class name '{node.name}' does not match pattern '{self.rules.class_naming_pattern}'",
+                    node,
+                    severity="warning",
+                    rule_id="NAME-002",
+                )
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
         """Track async function context."""
@@ -233,23 +324,30 @@ class UnifiedASTVisitor(ast.NodeVisitor):
         if self.rules.check_async:
             try_lines = self._count_node_lines(node.body)
             if try_lines > 20:
-                self._add_violation(ViolationType.ASYNC_BLOCKING, f'Excessive try-except block ({try_lines} lines). Keep try blocks focused and small.', node, severity='warning', rule_id='TRY-EXCESSIVE', suggestion='Break down large try blocks into smaller, focused exception handling')
+                self._add_violation(
+                    ViolationType.ASYNC_BLOCKING,
+                    f"Excessive try-except block ({try_lines} lines). Keep try blocks focused and small.",
+                    node,
+                    severity="warning",
+                    rule_id="TRY-EXCESSIVE",
+                    suggestion="Break down large try blocks into smaller, focused exception handling",
+                )
         self.generic_visit(node)
 
     def _count_node_lines(self, nodes: list[ast.AST]) -> int:
         """Count the number of lines spanned by a list of AST nodes."""
         if not nodes:
             return 0
-        min_line = float('inf')
+        min_line = float("inf")
         max_line = 0
         for node in nodes:
-            if hasattr(node, 'lineno'):
+            if hasattr(node, "lineno"):
                 min_line = min(min_line, node.lineno)
-            if hasattr(node, 'end_lineno') and node.end_lineno:
+            if hasattr(node, "end_lineno") and node.end_lineno:
                 max_line = max(max_line, node.end_lineno)
-            elif hasattr(node, 'lineno'):
+            elif hasattr(node, "lineno"):
                 max_line = max(max_line, node.lineno)
-        if min_line == float('inf'):
+        if min_line == float("inf"):
             return 0
         return max_line - min_line + 1
 
@@ -257,51 +355,95 @@ class UnifiedASTVisitor(ast.NodeVisitor):
         """Check for forbidden print statements."""
         func = node.func
         is_print = False
-        if isinstance(func, ast.Name) and func.id == 'print':
+        if isinstance(func, ast.Name) and func.id == "print":
             is_print = True
-        elif isinstance(func, ast.Attribute) and func.attr == 'print':
+        elif isinstance(func, ast.Attribute) and func.attr == "print":
             is_print = True
         if is_print:
             if self.rules.allow_debug_prints:
                 for arg in node.args:
                     if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
-                        if 'DEBUG' in arg.value.upper() or 'debug' in arg.value.lower():
+                        if "DEBUG" in arg.value.upper() or "debug" in arg.value.lower():
                             return
-            self._add_violation(ViolationType.PRINT_STATEMENT, 'Forbidden print() statement found. Use logging instead.', node, severity='warning', rule_id='PRINT-001', suggestion='Replace print() with Logger.info() or Logger.debug()')
+            self._add_violation(
+                ViolationType.PRINT_STATEMENT,
+                "Forbidden print() statement found. Use logging instead.",
+                node,
+                severity="warning",
+                rule_id="PRINT-001",
+                suggestion="Replace print() with Logger.info() or Logger.debug()",
+            )
 
     def _check_blocking_call(self, node: ast.Call) -> None:
         """Check for blocking calls in async context."""
-        blocking_calls = {'time.sleep', 'requests.get', 'requests.post', 'requests.put', 'requests.delete', 'requests.patch', 'requests.head', 'requests.options', 'open', 'input', 'urllib.request.urlopen'}
+        blocking_calls = {
+            "time.sleep",
+            "requests.get",
+            "requests.post",
+            "requests.put",
+            "requests.delete",
+            "requests.patch",
+            "requests.head",
+            "requests.options",
+            "open",
+            "input",
+            "urllib.request.urlopen",
+        }
         func = node.func
-        call_name = ''
+        call_name = ""
         if isinstance(func, ast.Name):
             call_name = func.id
         elif isinstance(func, ast.Attribute):
             if isinstance(func.value, ast.Name):
-                call_name = f'{func.value.id}.{func.attr}'
+                call_name = f"{func.value.id}.{func.attr}"
             else:
                 call_name = func.attr
-        if call_name in blocking_calls or call_name.split('.')[-1] in ['sleep', 'get', 'post', 'put', 'delete']:
-            suggestion = f'Use async version of {call_name}'
-            if call_name == 'time.sleep':
-                suggestion = 'Use asyncio.sleep() instead of time.sleep()'
-            elif call_name.startswith('requests.'):
-                suggestion = 'Use aiohttp or httpx for async HTTP requests'
-            self._add_violation(ViolationType.ASYNC_BLOCKING, f"Blocking call '{call_name}' in async function. Use async alternative.", node, severity='error', rule_id='ASYNC-BLOCKING-CALL', suggestion=suggestion)
+        if call_name in blocking_calls or call_name.split(".")[-1] in [
+            "sleep",
+            "get",
+            "post",
+            "put",
+            "delete",
+        ]:
+            suggestion = f"Use async version of {call_name}"
+            if call_name == "time.sleep":
+                suggestion = "Use asyncio.sleep() instead of time.sleep()"
+            elif call_name.startswith("requests."):
+                suggestion = "Use aiohttp or httpx for async HTTP requests"
+            self._add_violation(
+                ViolationType.ASYNC_BLOCKING,
+                f"Blocking call '{call_name}' in async function. Use async alternative.",
+                node,
+                severity="error",
+                rule_id="ASYNC-BLOCKING-CALL",
+                suggestion=suggestion,
+            )
 
     def _check_time_sleep_usage(self, node: ast.Call) -> None:
         """Check for time.sleep() usage anywhere (should use asyncio.sleep)."""
         func = node.func
-        call_name = ''
+        call_name = ""
         if isinstance(func, ast.Attribute):
-            if isinstance(func.value, ast.Name) and func.value.id == 'time' and (func.attr == 'sleep'):
-                call_name = 'time.sleep'
-        if call_name == 'time.sleep':
-            self._add_violation(ViolationType.ASYNC_BLOCKING, 'time.sleep() detected. Consider using asyncio.sleep() for async compatibility.', node, severity='warning', rule_id='ASYNC-SLEEP', suggestion='Use asyncio.sleep() instead of time.sleep() for async-compatible code')
+            if (
+                isinstance(func.value, ast.Name)
+                and func.value.id == "time"
+                and (func.attr == "sleep")
+            ):
+                call_name = "time.sleep"
+        if call_name == "time.sleep":
+            self._add_violation(
+                ViolationType.ASYNC_BLOCKING,
+                "time.sleep() detected. Consider using asyncio.sleep() for async compatibility.",
+                node,
+                severity="warning",
+                rule_id="ASYNC-SLEEP",
+                suggestion="Use asyncio.sleep() instead of time.sleep() for async-compatible code",
+            )
 
     def visit_Expr(self, node: ast.Expr) -> None:
         """Check expression statements."""
         self.generic_visit(node)
+
 
 @dataclass
 class CodeValidatorAgent(SovereignBaseAgent):
@@ -323,13 +465,16 @@ class CodeValidatorAgent(SovereignBaseAgent):
         rules = RuleSet(check_async=False)
         report = agent.validate_file(path, rules=rules)
     """
+
     default_rules: RuleSet = field(default_factory=RuleSet)
 
     def __post_init__(self) -> None:
         """Initialize the validator."""
-        Logger.info('CodeValidatorAgent initialized')
+        Logger.info("CodeValidatorAgent initialized")
 
-    def validate_source(self, source_code: str, file_path: Path | None=None, rules: RuleSet | None=None) -> ValidationReport:
+    def validate_source(
+        self, source_code: str, file_path: Path | None = None, rules: RuleSet | None = None
+    ) -> ValidationReport:
         """
         Validate source code string.
 
@@ -345,19 +490,29 @@ class CodeValidatorAgent(SovereignBaseAgent):
         report = ValidationReport(file_path=file_path)
         start_time = datetime.now()
         if rules.check_syntax:
-            report.checks_performed.add('syntax')
+            report.checks_performed.add("syntax")
         if rules.check_canon:
-            report.checks_performed.add('canon')
+            report.checks_performed.add("canon")
         if rules.check_async:
-            report.checks_performed.add('async')
+            report.checks_performed.add("async")
         if rules.check_print:
-            report.checks_performed.add('print')
+            report.checks_performed.add("print")
         if rules.check_naming:
-            report.checks_performed.add('naming')
+            report.checks_performed.add("naming")
         try:
             tree = ast.parse(source_code)
         except SyntaxError as e:
-            report.violations.append(Violation(violation_type=ViolationType.SYNTAX, message=f'Syntax error: {e.msg}', file_path=file_path, line_number=e.lineno or 0, column=e.offset or 0, severity='error', rule_id='SYNTAX-001'))
+            report.violations.append(
+                Violation(
+                    violation_type=ViolationType.SYNTAX,
+                    message=f"Syntax error: {e.msg}",
+                    file_path=file_path,
+                    line_number=e.lineno or 0,
+                    column=e.offset or 0,
+                    severity="error",
+                    rule_id="SYNTAX-001",
+                )
+            )
             report.execution_time = (datetime.now() - start_time).total_seconds()
             return report
         visitor = UnifiedASTVisitor(rules, file_path, source_code)
@@ -366,7 +521,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
         report.execution_time = (datetime.now() - start_time).total_seconds()
         return report
 
-    def validate_file(self, file_path: Path, rules: RuleSet | None=None) -> ValidationReport:
+    def validate_file(self, file_path: Path, rules: RuleSet | None = None) -> ValidationReport:
         """
         Validate a Python file.
 
@@ -378,14 +533,23 @@ class CodeValidatorAgent(SovereignBaseAgent):
             ValidationReport with all violations found
         """
         try:
-            source_code = file_path.read_text(encoding='utf-8')
+            source_code = file_path.read_text(encoding="utf-8")
         except Exception as e:
             report = ValidationReport(file_path=file_path)
-            report.violations.append(Violation(violation_type=ViolationType.SYNTAX, message=f'Could not read file: {e}', file_path=file_path, severity='error'))
+            report.violations.append(
+                Violation(
+                    violation_type=ViolationType.SYNTAX,
+                    message=f"Could not read file: {e}",
+                    file_path=file_path,
+                    severity="error",
+                )
+            )
             return report
         return self.validate_source(source_code, file_path, rules)
 
-    def validate_files(self, file_paths: list[Path], rules: RuleSet | None=None) -> dict[Path, ValidationReport]:
+    def validate_files(
+        self, file_paths: list[Path], rules: RuleSet | None = None
+    ) -> dict[Path, ValidationReport]:
         """
         Validate multiple files.
 
@@ -401,7 +565,13 @@ class CodeValidatorAgent(SovereignBaseAgent):
             results[path] = self.validate_file(path, rules)
         return results
 
-    def validate_directory(self, directory: Path, rules: RuleSet | None=None, pattern: str='**/*.py', exclude_patterns: list[str] | None=None) -> dict[Path, ValidationReport]:
+    def validate_directory(
+        self,
+        directory: Path,
+        rules: RuleSet | None = None,
+        pattern: str = "**/*.py",
+        exclude_patterns: list[str] | None = None,
+    ) -> dict[Path, ValidationReport]:
         """
         Validate all Python files in a directory.
 
@@ -414,7 +584,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
         Returns:
             Dictionary mapping file paths to their reports
         """
-        exclude_patterns = exclude_patterns or ['**/test_*', '**/__pycache__/*']
+        exclude_patterns = exclude_patterns or ["**/test_*", "**/__pycache__/*"]
         files = []
         for path in directory.glob(pattern):
             excluded = False
@@ -427,37 +597,54 @@ class CodeValidatorAgent(SovereignBaseAgent):
         return self.validate_files(files, rules)
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set | None=None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 validation agent - operational healing."""
-        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
+        )
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {'errors': 1, 'cycle_detected': True}
+            return {"errors": 1, "cycle_detected": True}
         if depth > max_depth:
-            return {'errors': 1, 'depth_limited': True}
+            return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            Logger.info(f'[{agent_name}] L5 code validation healing')
-            return {'skipped': 1}
+            Logger.info(f"[{agent_name}] L5 code validation healing")
+            return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+
 
 def create_legacy_syntax_validator(**kwargs: Any) -> CodeValidatorAgent:
     """Factory for backward compatibility with SyntaxValidatorAgent."""
     rules = RuleSet(check_syntax=True, check_canon=False, check_async=False, check_print=False)
     return CodeValidatorAgent(default_rules=rules, **kwargs)
 
+
 def create_legacy_canon_validator(**kwargs: Any) -> CodeValidatorAgent:
     """Factory for backward compatibility with CanonValidatorAgent."""
     rules = RuleSet(check_syntax=True, check_canon=True, check_async=False, check_print=False)
     return CodeValidatorAgent(default_rules=rules, **kwargs)
 
+
 def create_legacy_async_validator(**kwargs: Any) -> CodeValidatorAgent:
     """Factory for backward compatibility with AsyncBlockingValidatorAgent."""
     rules = RuleSet(check_syntax=True, check_canon=False, check_async=True, check_print=False)
     return CodeValidatorAgent(default_rules=rules, **kwargs)
+
 
 def create_legacy_print_validator(**kwargs: Any) -> CodeValidatorAgent:
     """Factory for backward compatibility with PrintStatementValidatorAgent."""

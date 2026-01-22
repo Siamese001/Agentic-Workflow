@@ -39,7 +39,6 @@ from pathlib import Path
 from threading import Lock
 from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -138,9 +137,7 @@ class TelemetryAgent(SovereignBaseAgent):
         """Append event to log file (JSONL format)."""
         try:
             with open(self.log_file, "a", encoding="utf-8") as f:
-                f.write(
-                    json.dumps(event)
-                )
+                f.write(json.dumps(event))
         except Exception as e:
             Logger.warning(f"[TelemetryAgent] Failed to write event to file: {e}")
 

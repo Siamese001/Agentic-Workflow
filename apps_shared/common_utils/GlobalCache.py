@@ -266,7 +266,6 @@ class SimpleEmbedder:
         """Load the embedding model."""
         if self._model is None:
             try:
-
                 self._model = SentenceTransformer(self.model_name)
                 logger.info(f"Loaded embedding model: {self.model_name}")
             except ImportError:

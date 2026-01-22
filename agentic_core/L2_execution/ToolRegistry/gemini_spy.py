@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 L6 Observability: Gemini Spy
 

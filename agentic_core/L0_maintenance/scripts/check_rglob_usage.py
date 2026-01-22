@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 CI Guard: rglob/glob Usage Checker
 

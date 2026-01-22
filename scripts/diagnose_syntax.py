@@ -6,7 +6,6 @@ Usage:
     python scripts/diagnose_syntax.py
 """
 
-
 import ast
 
 

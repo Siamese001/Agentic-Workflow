@@ -5,7 +5,6 @@ Ported from: archives/legacy_lic/Agentic LIC/tools_LIC.py
 """
 
 
-
 @dataclass
 class ScoredCandidate:
     """A scored candidate message."""

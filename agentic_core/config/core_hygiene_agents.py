@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Core Hygiene Agents Registry - Mandatory agents for repo health.
 

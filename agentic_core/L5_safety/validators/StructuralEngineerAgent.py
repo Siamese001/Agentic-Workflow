@@ -29,7 +29,6 @@ from typing import Any
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
@@ -52,8 +51,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, CanonBaseAgent):
 
     async def execute(self) -> Any:
         """Execute Structural Engineer validation checks."""
-        print(
-        )
+        print()
         print(f"   [{self.name}] 🔍 Checking Large Classes...")
         passed, violations = self.check_no_large_classes()
         if not passed:

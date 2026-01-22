@@ -1,9 +1,6 @@
 """E2E check that value claims include evidence anchors."""
 
 
-
-
-
 def extract_artifact_markers(draft: str) -> list[str]:
     return [line for line in draft.splitlines() if line.startswith("[artifact_id:")]
 

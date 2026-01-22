@@ -4,12 +4,13 @@
 Watches for territory healing/ingestion changes and triggers RAG reindexing.
 Acts as a safety gate to ensure the "Canon" stays aligned with the filesystem.
 """
+
 import asyncio
 import time
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional, List, Union
+from typing import Any
 from dataclasses import dataclass
 
 # Required for File System Watching
@@ -22,14 +23,18 @@ except ImportError:
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
+
 # Mock/Placeholder for internal timeout decorator if not available
 def timeout(seconds: int):
     def decorator(func):
         return func
+
     return decorator
+
 
 Logger = logging.getLogger(__name__)
 AGENTIC_CORE_DIR = os.environ.get("AGENTIC_CORE_DIR", ".")
+
 
 @dataclass
 class TerritoryChangeHandlerAgent(SovereignBaseAgent, FileSystemEventHandler):
@@ -50,29 +55,27 @@ class TerritoryChangeHandlerAgent(SovereignBaseAgent, FileSystemEventHandler):
         """Execute on_modified operation when files change."""
         if event.is_directory:
             return
-            
+
         # Watch for core agentic file changes
-        if event.src_path.endswith(('.py', '.json', '.yaml', '.md', '.txt')):
+        if event.src_path.endswith((".py", ".json", ".yaml", ".md", ".txt")):
             current_time = time.time()
             if current_time - self.last_trigger > self.debounce_seconds:
                 self.last_trigger = current_time
-                if self.daemon and hasattr(self.daemon, 'loop'):
+                if self.daemon and hasattr(self.daemon, "loop"):
                     self.daemon.loop.call_soon_threadsafe(
                         lambda: asyncio.create_task(self.daemon.trigger_reindex())
                     )
 
     @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """L5 validation - operational health check."""
         # Perform base healing
         base_results = super().heal_repository(dry_run=dry_run, execute=execute)
-        
+
         # Territory specific logic
-        return {
-            "status": "active",
-            "last_trigger": self.last_trigger,
-            "base_healing": base_results
-        }
+        return {"status": "active", "last_trigger": self.last_trigger, "base_healing": base_results}
 
 
 class AutonomousRagDaemon:
@@ -108,23 +111,32 @@ class AutonomousRagDaemon:
         while self.running:
             await asyncio.sleep(self.health_check_interval)
             try:
-                test_queries = ['Purpose of the Canon?', 'Explain L5 safety', 'How does L1 expansion work?']
+                test_queries = [
+                    "Purpose of the Canon?",
+                    "Explain L5 safety",
+                    "How does L1 expansion work?",
+                ]
                 import random
+
                 query = random.choice(test_queries)
-                
+
                 # Check retriever faithfulness
                 result = await self.orchestrator.sovereign_retrieve(query)
-                faithfulness = result.get('faithfulness', 0.0)
-                
-                self.historian.log_event({
-                    'event': 'health_check', 
-                    'query': query, 
-                    'faithfulness': faithfulness, 
-                    'timestamp': time.time()
-                })
-                
+                faithfulness = result.get("faithfulness", 0.0)
+
+                self.historian.log_event(
+                    {
+                        "event": "health_check",
+                        "query": query,
+                        "faithfulness": faithfulness,
+                        "timestamp": time.time(),
+                    }
+                )
+
                 if faithfulness < 0.75:
-                    Logger.warning(f"[TERRITORY] Faithfulness low ({faithfulness}). Triggering reindex.")
+                    Logger.warning(
+                        f"[TERRITORY] Faithfulness low ({faithfulness}). Triggering reindex."
+                    )
                     await self.trigger_reindex()
             except Exception as e:
                 Logger.error(f"[TERRITORY] Health check failed: {e}")

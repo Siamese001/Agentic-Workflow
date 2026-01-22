@@ -245,8 +245,7 @@ class NeuralAutoImmuneAgent(
         report["predicted_imminent_breaches"] = predictions
 
         if predictions:
-            print(
-            )
+            print()
             for p in predictions[:5]:
                 print(
                     f"   → {p['file']} | {p['risk_score']:.0%} risk | {p['predicted_breach_type']}"

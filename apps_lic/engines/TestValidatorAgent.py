@@ -1,7 +1,6 @@
 """ValidatorAgent behavior tests."""
 
 
-
 class StubQAValidator:
     def __init__(self, responses):
         self._responses = iter(responses)

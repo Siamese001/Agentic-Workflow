@@ -16,7 +16,6 @@ Non-responsibilities:
 - Model invocation
 """
 
-
 import time
 
 

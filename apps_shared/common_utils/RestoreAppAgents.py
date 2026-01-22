@@ -13,7 +13,6 @@ Usage:
     python scripts/restore_app_agents.py
 """
 
-
 import argparse
 import re
 import shutil

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Refactored Cognitive Node - Coordinator Pattern
 

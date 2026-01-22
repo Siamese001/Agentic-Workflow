@@ -1,4 +1,3 @@
-
 """
 Runtime Shared Schemas (Phase 2C Residuals)
 ==========================================
@@ -9,7 +8,6 @@ the LLM response cycle, RAG state management, and workflow checkpoints.
 Note: 'Residual' prefixes are maintained to prevent collisions with
 legacy Phase 1 models during the final migration.
 """
-
 
 
 # ==========================================

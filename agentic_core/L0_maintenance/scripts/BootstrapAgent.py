@@ -41,7 +41,6 @@ except ImportError:
 
 # PHASE 2.1: L0 Structural Standardization - inherit from L0MaintenanceBaseAgent
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)

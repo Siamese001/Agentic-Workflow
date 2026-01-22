@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 L4Agent - Consolidated Base for L4 State Agents
 

@@ -1,4 +1,3 @@
-
 """
 Diff/Patch Generator (DPG) — Phase 2 Tool
 
@@ -10,8 +9,8 @@ Generates reviewable change proposals for human-in-loop validation:
 
 Part of the Tool Registry Enhancement Roadmap.
 """
-import difflib
 
+import difflib
 
 
 class DiffFormat(str, Enum):

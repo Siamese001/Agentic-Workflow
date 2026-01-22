@@ -7,12 +7,10 @@
 import uuid
 
 
-
 # Lazy imports — gravity-safe (same L1 territory)
 def _get_thought_node() -> Any:
     """Get thought node."""
     try:
-
         return ThoughtNode
     except Exception:
         return None
@@ -21,7 +19,6 @@ def _get_thought_node() -> Any:
 def _get_chain_of_thought_executor() -> Any:
     """Get chain of thought executor."""
     try:
-
         return ChainOfThoughtExecutor
     except Exception:
         return None
@@ -30,7 +27,6 @@ def _get_chain_of_thought_executor() -> Any:
 def _get_tree_of_thoughts_node() -> Any:
     """Get tree of thoughts node."""
     try:
-
         return TreeOfThoughtsNode
     except Exception:
         return None
@@ -39,7 +35,6 @@ def _get_tree_of_thoughts_node() -> Any:
 def _get_react_node() -> Any:
     """Get react node."""
     try:
-
         return ReActNode
     except Exception:
         return None
@@ -48,7 +43,6 @@ def _get_react_node() -> Any:
 def _get_intent_classifier() -> Any:
     """Get intent classifier."""
     try:
-
         return IntentClassifier
     except Exception:
         return None
@@ -57,7 +51,6 @@ def _get_intent_classifier() -> Any:
 def _get_mission_decomposer() -> Any:
     """Get mission decomposer."""
     try:
-
         return MissionDecomposer
     except Exception:
         return None
@@ -66,7 +59,6 @@ def _get_mission_decomposer() -> Any:
 def log_event(event_type: str, payload: dict) -> Any:
     """Log event with fallback to print."""
     try:
-
         _log_event(event_type, payload)
     except Exception:
         print(f"[L1CognitionExerciserAgent] Event logged (stub): {event_type} = {payload}")

@@ -1,15 +1,14 @@
-
 """PII Vault for protecting sensitive information.
 
 Grafted from monolith with Presidio-based PII detection and redaction.
 """
+
 import logging
 
 LOGGER = logging.getLogger(__name__)
 
 # pip install presidio-analyzer presidio-anonymizer
 try:
-
     PRESIDIO_AVAILABLE = True
 except ImportError:
     LOGGER.warning("Presidio not installed. PII detection will be limited.")

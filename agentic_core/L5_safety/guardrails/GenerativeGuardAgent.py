@@ -107,7 +107,11 @@ EXCLUDED_DIRS = [
 
 @dataclass
 class GenerativeGuardAgent(
-    SovereignBaseAgent, SubatomicTestingMixin, HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin
+    SovereignBaseAgent,
+    SubatomicTestingMixin,
+    HealerMixin,
+    CanonBaseAgentInterface,
+    MCPHardenedMixin,
 ):
     """
     KEYS: 45 (Dead Code/Runaway Generation)

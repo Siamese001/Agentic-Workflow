@@ -430,22 +430,29 @@ class CodeDeduplicationAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVector
 
     def scan_filename_duplicates(self, python_files: list[Path], project_root: Path) -> None:
         """Detect duplicate basenames with safety check (identical vs divergent content).
-        
+
         Enhanced with intelligent suffix pattern detection to catch all common duplicate
         suffixes: _flat, _1, _2, _from_utils, _copy, etc.
         """
-        print("\n[*] CodeDeduplicationAgent: Scanning for duplicate filenames (intelligent suffix detection)...")
+        print(
+            "\n[*] CodeDeduplicationAgent: Scanning for duplicate filenames (intelligent suffix detection)..."
+        )
         basename_to_entries: dict[str, list[tuple[Path, str]]] = defaultdict(list)
         suffix_duplicates: dict[str, list[Path]] = defaultdict(list)  # Track suffix-based dupes
-        
+
         # Common problematic suffixes that indicate duplicates
         PROBLEMATIC_SUFFIXES = [
             "_flat",
             "_from_utils",
-            "_1", "_2", "_3",  # Numbered variants
-            "_copy", "_backup",
-            "_old", "_new",
-            "_temp", "_tmp",
+            "_1",
+            "_2",
+            "_3",  # Numbered variants
+            "_copy",
+            "_backup",
+            "_old",
+            "_new",
+            "_temp",
+            "_tmp",
         ]
 
         pbar = tqdm(
@@ -470,29 +477,29 @@ class CodeDeduplicationAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVector
             ):
                 pbar.update(1)
                 continue
-            
+
             # Intelligent suffix detection
             basename = path.name
             stem = path.stem
-            
+
             # Check if stem ends with any problematic suffix
             matched_suffix = None
             for suffix in PROBLEMATIC_SUFFIXES:
                 if stem.endswith(suffix):
                     matched_suffix = suffix
                     break
-            
+
             if matched_suffix:
                 # Get canonical name (without suffix)
-                canonical_stem = stem[:-len(matched_suffix)]
+                canonical_stem = stem[: -len(matched_suffix)]
                 canonical_name = f"{canonical_stem}.py"
                 canonical_path = path.parent / canonical_name
-                
+
                 # Check if canonical version exists
                 if canonical_path.exists():
                     suffix_duplicates[canonical_name].append((path, matched_suffix))
                     stats["suffix_dupes"] += 1
-            
+
             file_hash = self._hash_entire_file(path) or "ERROR"
             basename_to_entries[basename].append((path, file_hash))
             if len(basename_to_entries[basename]) == 2:  # New group formed
@@ -508,15 +515,15 @@ class CodeDeduplicationAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVector
         if suffix_duplicates:
             print(f"\n   [!] SUFFIX-BASED DUPLICATES DETECTED: {len(suffix_duplicates)} groups")
             print("       These indicate incomplete operations - canonical version exists:")
-            
+
             # Group by suffix type for better reporting
             suffix_counts = defaultdict(int)
             for canonical_name, dup_list in suffix_duplicates.items():
                 for dup_path, suffix in dup_list:
                     suffix_counts[suffix] += 1
-            
+
             print(f"       Breakdown by suffix: {dict(suffix_counts)}")
-            
+
             for canonical_name, dup_list in suffix_duplicates.items():
                 print(f"       • {canonical_name} has {len(dup_list)} suffix duplicate(s):")
                 for dup_path, suffix in dup_list:

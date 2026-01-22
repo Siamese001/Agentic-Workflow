@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """CanonBaseAgent - Base class for all validation agents.
 
 Provides shared infrastructure for Canon validation agents including:

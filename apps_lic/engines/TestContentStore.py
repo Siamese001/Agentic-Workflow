@@ -1,5 +1,3 @@
-
-
 def test_put_get_freshness():
     store = ContentStore()
     key = make_key(scope="company", query="ACME")

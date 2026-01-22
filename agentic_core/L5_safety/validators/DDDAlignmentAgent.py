@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 DDDAlignmentAgent - Domain-Driven Design Bounded Context Enforcement
 

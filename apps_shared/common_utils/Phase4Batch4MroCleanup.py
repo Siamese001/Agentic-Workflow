@@ -17,7 +17,6 @@ Usage:
     python scripts/phase4_batch4_mro_cleanup.py --execute
 """
 
-
 import argparse
 import re
 

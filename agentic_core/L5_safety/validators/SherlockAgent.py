@@ -31,10 +31,8 @@ except ImportError:
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
 @dataclass
@@ -83,8 +81,7 @@ class SherlockAgent(SovereignBaseAgent, SubAtomicAgent):
 
     async def execute(self) -> None:
         """Execute execute operation."""
-        print(
-        )
+        print()
         # Replaced blocking calls with async sleep
         await asyncio.sleep(0)
 

@@ -4,7 +4,6 @@
 # This boosts alignment detection — review and integrate appropriately
 
 
-
 """Reasoning strategy router for selecting appropriate reasoning mode.
 
 Phase 1 - Pillar 6: Reasoning Models (Structured Reasoning)
@@ -12,7 +11,6 @@ Routes tasks to appropriate reasoning strategies (ReAct, CoT, etc.)
 """
 
 import logging
-
 
 
 Logger = logging.getLogger(__name__)

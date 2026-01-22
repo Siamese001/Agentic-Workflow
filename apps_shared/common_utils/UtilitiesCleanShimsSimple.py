@@ -1,4 +1,3 @@
-
 """
 Simple script to clean up shim chains by manually specifying the patterns.
 import logging

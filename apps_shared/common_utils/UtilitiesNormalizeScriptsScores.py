@@ -1,10 +1,10 @@
-
 """
 NormalizeScriptsScores.py - Scoring Module
 
 Domain: utilities
 Generated: 2025-12-07T12:07:59.887848
 """
+
 import logging
 
 Logger: Any = logging.getLogger(__name__)

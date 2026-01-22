@@ -8,8 +8,6 @@ Integrated with: apps_rg/L3_orchestration/kx_nodes_resume.py
 """
 
 
-
-
 class RAGType(str, Enum):
     """RAG execution type."""
 

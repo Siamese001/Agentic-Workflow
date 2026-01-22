@@ -19,7 +19,6 @@ from pathlib import Path
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
 class ToxicDependencyAuditor(SovereignBaseAgent):

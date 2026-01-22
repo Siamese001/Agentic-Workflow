@@ -5,8 +5,6 @@ instead of numbered nodes. All references to K.X have been eliminated.
 """
 
 
-
-
 class PersonaTemplate:
     """Template for functional persona prompts."""
 

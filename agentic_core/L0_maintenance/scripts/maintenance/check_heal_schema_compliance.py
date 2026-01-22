@@ -1,4 +1,5 @@
 from pathlib import Path
+
 #!/usr/bin/env python3
 """
 Static Analysis: Canonical Schema Compliance Checker for @standard_heal Methods

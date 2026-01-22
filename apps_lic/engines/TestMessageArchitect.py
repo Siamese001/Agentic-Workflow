@@ -1,8 +1,6 @@
 """Unit tests covering MessageArchitect planning and composition."""
 
 
-
-
 class StaticTool(BaseTool):
     name = "static"
 
@@ -100,7 +98,6 @@ def test_draft_package_with_draft_clones_artifacts():
 
 
 def test_score_quality_counts_reflexion_bonus():
-
     assert score_quality("Value for you", reflexion=True) > score_quality(
         "Value for you", reflexion=False
     )

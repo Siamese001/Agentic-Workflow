@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Shared utility functions for location-based operations.
 

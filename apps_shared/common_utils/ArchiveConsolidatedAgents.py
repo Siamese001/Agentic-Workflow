@@ -18,7 +18,6 @@ Usage:
     python scripts/archive_consolidated_agents.py --dry-run
 """
 
-
 import argparse
 import json
 import shutil

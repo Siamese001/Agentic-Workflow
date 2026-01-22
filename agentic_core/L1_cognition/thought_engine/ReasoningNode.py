@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Reasoning Node - Sub-atomic Thought Generation
 

@@ -8,9 +8,6 @@ Proactively identifies and executes outreach tasks with predictive handoff.
 """
 
 
-
-
-
 @dataclass
 class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
     """

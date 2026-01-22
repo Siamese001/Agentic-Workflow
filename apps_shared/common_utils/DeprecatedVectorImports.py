@@ -6,7 +6,6 @@ import pytest
 def _can_import_pinecone() -> bool:
     """Check if Pinecone SDK is properly installed."""
     try:
-
         return True
     except ImportError:
         return False

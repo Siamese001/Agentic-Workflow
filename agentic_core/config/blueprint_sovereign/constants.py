@@ -6,6 +6,7 @@ All feature flags, default values, and configuration constants should be defined
 
 SSOT Location: agentic_core/config/blueprint_sovereign/constants.py
 """
+
 import os
 
 # =============================================================================
@@ -28,25 +29,27 @@ CACHE_METRICS_ENABLED: bool = os.getenv("CACHE_METRICS_ENABLED", "false").lower(
 
 # Default directories to exclude from file discovery
 # This is a frozenset for immutability and hashability
-DEFAULT_EXCLUDE_DIRS: frozenset[str] = frozenset({
-    ".sovereign_healing_backup",
-    "archives",
-    ".git",
-    "__pycache__",
-    ".pytest_cache",
-    ".mypy_cache",
-    "node_modules",
-    ".venv",
-    "venv",
-    "env",
-    ".tox",
-    "build",
-    "dist",
-    "*.egg-info",
-    ".coverage",
-    "htmlcov",
-    ".hypothesis",
-})
+DEFAULT_EXCLUDE_DIRS: frozenset[str] = frozenset(
+    {
+        ".sovereign_healing_backup",
+        "archives",
+        ".git",
+        "__pycache__",
+        ".pytest_cache",
+        ".mypy_cache",
+        "node_modules",
+        ".venv",
+        "venv",
+        "env",
+        ".tox",
+        "build",
+        "dist",
+        "*.egg-info",
+        ".coverage",
+        "htmlcov",
+        ".hypothesis",
+    }
+)
 
 
 # =============================================================================

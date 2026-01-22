@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """Fix all indentation errors in canon_validator_engine.py"""
 

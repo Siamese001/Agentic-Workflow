@@ -134,7 +134,6 @@ class KXNodeExecutor:
 
         # Search vector store
         try:
-
             collection = create_chroma_collection(
                 context.vector_store, context.metadata.get("collection_name", "knowledge_base")
             )

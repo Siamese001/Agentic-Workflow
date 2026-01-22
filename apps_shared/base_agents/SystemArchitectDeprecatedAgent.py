@@ -16,7 +16,6 @@ import os
 import sys
 
 
-
 # Legacy class removed - use SystemArchitectAgent instead
 @dataclass
 class SystemArchitectDeprecatedAgent(

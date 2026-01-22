@@ -1,5 +1,5 @@
-
 """Types and models for message_assembler."""
+
 import logging
 
 Logger: Any = logging.getLogger(__name__)

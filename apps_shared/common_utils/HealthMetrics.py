@@ -1,10 +1,8 @@
-
 """AIS health metrics helpers.
 
 Simple aggregation utilities over error / success events that can be
 used by tests or higher-level evaluation code.
 """
-
 
 
 def compute_error_rate(events: list[dict[str, object]]) -> float:

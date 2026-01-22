@@ -1,5 +1,3 @@
-
-
 def test_selector_respects_allowlist_and_quarantine():
     client = MCPClient(
         tools=[

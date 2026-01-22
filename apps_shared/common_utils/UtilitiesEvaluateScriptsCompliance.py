@@ -1,5 +1,3 @@
-
-
 """Brief description of functionality and purpose."""
 
 "Brief description of functionality and purpose."

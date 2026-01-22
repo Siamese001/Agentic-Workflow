@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Automated refactoring script to update all agents to use shared Sub-Atomic Engine.

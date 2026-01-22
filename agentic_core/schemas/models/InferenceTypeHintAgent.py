@@ -32,7 +32,6 @@ class InferenceTypeHintAgent(SovereignBaseAgent):
     - Apply via AST + unparse (preserves formatting)
     """
 
-
     def __init__(self, ctx: Any, project_root: str | None = None) -> None:
         """
         Initialize with mandatory ctx for sovereign operation.

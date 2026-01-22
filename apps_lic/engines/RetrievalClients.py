@@ -6,7 +6,6 @@ __version__ = "12.0"
 import os
 
 
-
 class GoogleSearchClient:
     """
     Centralized client for all Google Custom Search API calls with circuit breaker protection

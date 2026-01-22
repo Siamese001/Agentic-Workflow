@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 from enum import Enum, auto
-from typing import Any, Dict
+from typing import Any
 from pathlib import Path
 from dataclasses import dataclass
 from dataclasses import field
 
 from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
+
 """
 CodeEnforcerAgent - Code Sovereignty Enforcement
 
@@ -119,15 +120,16 @@ class CodeEnforcerAgent(SovereignBaseAgent):
         enforcer.sync_ssot_registry()
     """
 
-
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-        
+
         Returns:
             Dict with healing summary
         """

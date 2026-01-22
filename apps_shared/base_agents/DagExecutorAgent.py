@@ -8,6 +8,7 @@
 
 Minimal implementation for test compatibility.
 """
+
 import logging
 
 Logger: Any = logging.getLogger(__name__)
@@ -31,8 +32,6 @@ class DagExecutionResult:
     executed_nodes: list[str]
     _errors: list[str] = None
     outputs: dict[str, Any] = None
-
-
 
 
 class DagExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):

@@ -1,4 +1,3 @@
-
 """
 Data enrichment for resume generation HOP-2.
 

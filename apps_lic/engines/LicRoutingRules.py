@@ -5,7 +5,6 @@ Ported from: archives/LIC_capabilities/reconstructed_capabilities.py
 """
 
 
-
 class MessageRoute(Enum):
     """Message Route types for LinkedIn outreach."""
 

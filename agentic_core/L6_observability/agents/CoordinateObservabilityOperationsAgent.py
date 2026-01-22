@@ -52,9 +52,6 @@ class OrchestrationResult:
     final_output: object = None
 
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-
-
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class CoordinateObservabilityOperationsAgent(SovereignBaseAgent):
     """Orchestrator for operations domain."""

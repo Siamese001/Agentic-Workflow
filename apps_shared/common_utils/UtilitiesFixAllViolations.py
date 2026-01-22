@@ -1,8 +1,7 @@
-
 """Comprehensive fixer for cognitive density and micro-fragment violations."""
+
 import ast
 import logging
-
 
 
 def fix_micro_fragments() -> Any:

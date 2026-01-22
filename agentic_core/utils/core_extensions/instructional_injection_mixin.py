@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 InstructionalInjectionMixin - Provides all 30 instructional injection patterns to agents.
 

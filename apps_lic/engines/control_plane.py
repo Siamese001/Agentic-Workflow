@@ -1,4 +1,3 @@
-
 """Control Plane for centralized safety policy routing.
 
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)

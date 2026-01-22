@@ -1,5 +1,5 @@
-
 """Dataclass models for achv_bullet_synthesizer_types."""
+
 import logging
 
 Logger: Any = logging.getLogger(__name__)

@@ -13,7 +13,6 @@ Usage:
     python scripts/archive_phase3_legacy_agents.py
 """
 
-
 import argparse
 import shutil
 import sys

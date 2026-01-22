@@ -1724,17 +1724,17 @@ class LocationAgent(SovereignBaseAgent, L5Agent):
 
     def run_with_cleanup(self, files: list[Path] = None, dry_run: bool = True) -> dict[str, Any]:
         """
-                ULTRA HEALING WORKFLOW — Full location compliance with autonomous cleanup (2026-01-02)
+        ULTRA HEALING WORKFLOW — Full location compliance with autonomous cleanup (2026-01-02)
 
-                Full location compliance scan with automatic cleanup, post-heal validation,
-                import fixing, and batch verification.
+        Full location compliance scan with automatic cleanup, post-heal validation,
+        import fixing, and batch verification.
 
-                Args:
-                    files: Optional list of files to scan (defaults to all .py files)
-                    dry_run: If True, only preview cleanup actions
+        Args:
+            files: Optional list of files to scan (defaults to all .py files)
+            dry_run: If True, only preview cleanup actions
 
-                Returns:
-                    Dict with violation count, actions applied, batch summaries, and details
+        Returns:
+            Dict with violation count, actions applied, batch summaries, and details
         """
         violations = self.run(files)
         cleanup_results = self.cleanup_violations(violations, dry_run=dry_run) if violations else []

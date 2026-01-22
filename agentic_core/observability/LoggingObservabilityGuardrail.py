@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Logging & Observability Guardrail - Consolidated Secure Logging
 

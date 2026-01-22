@@ -4,7 +4,6 @@
 # This boosts alignment detection — review and integrate appropriately
 
 
-
 # File: intelligence_librarian.py
 # Description: Persistent Intelligence Service ("The Librarian") - v13.0
 # Runs offline/async to pre-compute deep research and store in vector database
@@ -21,7 +20,6 @@ from datetime import datetime
 
 # PDF parsing
 try:
-
     PDF_SUPPORT = True
 except ImportError:
     PDF_SUPPORT = False

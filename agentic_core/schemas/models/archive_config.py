@@ -3,6 +3,7 @@
 # Agent: all
 # -*- coding: utf-8 -*-
 from __future__ import annotations
+
 """
 Shared configuration constants and constraint classes.
 

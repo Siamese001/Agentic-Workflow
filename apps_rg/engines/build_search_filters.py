@@ -1,10 +1,10 @@
-
 """
 BuildSearchFilters.py - Formatting Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.192875
 """
+
 import logging
 
 Logger: Any = logging.getLogger(__name__)

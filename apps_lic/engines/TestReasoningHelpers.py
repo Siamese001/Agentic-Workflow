@@ -1,5 +1,3 @@
-
-
 def test_cot_expand_guarantees_minimum_step():
     steps = cot.expand("Consider options", steps=0)
     assert steps == ["Step 1: Consider options"]

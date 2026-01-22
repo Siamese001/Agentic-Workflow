@@ -1,4 +1,5 @@
 from pathlib import Path
+
 #!/usr/bin/env python3
 """
 Gatekeeper Lock - Pre-commit Security Hook

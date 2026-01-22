@@ -14,7 +14,6 @@ from agentic_core.utils.core_extensions.context_propagation_mixin import Context
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.event_emission_mixin import EventEmissionMixin
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
-from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 
 class SovereignObservabilityAgent(

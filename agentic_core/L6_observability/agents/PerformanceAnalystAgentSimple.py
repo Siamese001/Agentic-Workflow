@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 PerformanceAnalystAgent - Simplified L6 Observability Agent
 ============================================================

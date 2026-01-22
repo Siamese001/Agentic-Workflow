@@ -1,4 +1,3 @@
-
 """
 Consolidated Security Utilities for Agentic Workflow
 Implements P3 (Prompt Firewall) and P4 (Fact Checker) on L1
@@ -8,6 +7,7 @@ across the system, providing unified access to:
 - P3: Prompt injection detection and prevention
 - P4: Fact checking and truth anchor validation
 """
+
 import json
 import logging
 import re

@@ -27,7 +27,6 @@ from agentic_core.utils.security import safe_git_execute
 
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

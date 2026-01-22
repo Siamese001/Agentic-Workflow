@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Resource Management Guardrail - Consolidated Resource Control
 

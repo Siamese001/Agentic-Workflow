@@ -7,8 +7,6 @@
 """Brief description of functionality and purpose."""
 
 
-
-
 # NAMING FIXED: Logger → Logger
 class Logger(Protocol):
     """Protocol for a logging mechanism."""

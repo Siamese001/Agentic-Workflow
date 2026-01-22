@@ -1,4 +1,3 @@
-
 import gc
 
 """Brief description of functionality and purpose."""
@@ -63,8 +62,6 @@ class MemorySnapshot:
                 for stat in self.top_allocations[:5]
             ],
         }
-
-
 
 
 class MemoryLeakDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):

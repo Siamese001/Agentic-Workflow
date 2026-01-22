@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Integrity Validation Guardrail - Consolidated Integrity Checks
 

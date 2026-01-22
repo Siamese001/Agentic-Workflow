@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+
 """
 FileCache: Singleton-based file discovery cache for reducing I/O overhead.
 

@@ -4,7 +4,6 @@
 # This boosts alignment detection — review and integrate appropriately
 
 
-
 """Secure Checkpoint Manager - Protected persistence with encryption and integrity.
 
 This module provides a secure Checkpoint implementation that encrypts data at rest,
@@ -17,7 +16,6 @@ import hmac
 import json
 import logging
 import time
-
 
 
 Logger = logging.getLogger(__name__)

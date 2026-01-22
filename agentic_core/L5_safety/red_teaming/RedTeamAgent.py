@@ -80,8 +80,7 @@ class RedTeamAgent(SovereignBaseAgent):
             print("   [!] RedTeamAgent: SubAtomicEngine unavailable")
             return
         renderer: Any = get_sovereign_prompt_renderer()
-        print(
-        )
+        print()
         results: list[dict[str, Any]] = []
         gov_prompt: Any = renderer.render_tagentic(
             base_template="red_team_governance.jinja",

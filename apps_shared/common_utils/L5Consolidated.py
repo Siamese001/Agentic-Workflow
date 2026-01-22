@@ -1,4 +1,3 @@
-
 """
 L5 Consolidated Knowledge Retrieval for Resume Engine
 Consolidates L3 (Pinecone) and L5 (MEMemory) into unified knowledge access
@@ -8,6 +7,7 @@ This module provides unified access to:
 - Cover letter templates from Pinecone/L3
 - Consolidated search across both knowledge bases
 """
+
 import logging
 
 Logger: Any = logging.getLogger(__name__)

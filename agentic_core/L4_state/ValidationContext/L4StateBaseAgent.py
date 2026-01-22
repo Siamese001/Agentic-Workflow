@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """L4StateBaseAgent — L4 Base with Subatomic Testing Framework (Jan 01, 2026)
 
 L4 State agents manage long-term memory, persistence, and reflection.

@@ -1,4 +1,3 @@
-
 """
 Outreach Engine Learning Module
 
@@ -7,10 +6,10 @@ Provides learning and memory capabilities:
 - Confidence scoring for decisions
 - Memory persistence across sessions
 """
+
 import hashlib
 import json
 from datetime import datetime
-
 
 
 class OutreachConfidenceLevel(Enum):

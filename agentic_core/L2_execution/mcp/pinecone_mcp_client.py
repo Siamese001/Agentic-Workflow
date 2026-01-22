@@ -13,13 +13,9 @@ from typing import Any
 
 # ARCHIVED IMPORT REMOVED - dependency no longer available
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
-from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import (
-    L4SubatomicTestingMixin,
-)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)
 

@@ -34,14 +34,9 @@ try:
 except ImportError:
     REDIS_AVAILABLE: Any = False
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
-    SubatomicTestingMixin,
-)
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)
 

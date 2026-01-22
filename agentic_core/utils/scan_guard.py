@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Scan Guard - Audit Utility for rglob/glob Usage
 

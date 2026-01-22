@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Reasoning Strategy Pattern - Polymorphic Thought Execution
 

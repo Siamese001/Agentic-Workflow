@@ -10,7 +10,6 @@ Extracted: 2026-01-06 (Surgical Extraction)
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 import ast
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 

@@ -64,7 +64,6 @@ class QueryDecomposer(SimpleAgentBase):
 
         # Import AdaptiveRetrievalGate for heuristic check
         try:
-
             self.gate = AdaptiveRetrievalGate()
         except ImportError:
             logger.warning("AdaptiveRetrievalGate not available, skipping heuristic check")

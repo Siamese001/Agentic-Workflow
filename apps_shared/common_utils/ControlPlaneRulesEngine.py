@@ -1,5 +1,3 @@
-
-
 def test_rules_engine_detects_pii_email() -> None:
     """Test that rules engine detects PII email addresses in content."""
     ctx = SafetyContext(input_text="Contact me at user@example.com")

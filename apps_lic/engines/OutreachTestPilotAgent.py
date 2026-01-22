@@ -1,12 +1,9 @@
-
-
 """
 OutreachTestPilotAgent - Campaign validation testing agent.
 
 Extracted from LeadQualityAgent.py for one-file-per-agent pattern (Jan 6, 2026).
 Renamed from OutreachTestPilot for consistent Agent suffix.
 """
-
 
 from .OutreachAgent import OutreachAgent
 

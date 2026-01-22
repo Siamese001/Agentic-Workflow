@@ -15,7 +15,6 @@ Usage:
     python scripts/archive_phase4_legacy_agents.py
 """
 
-
 import argparse
 import shutil
 import sys

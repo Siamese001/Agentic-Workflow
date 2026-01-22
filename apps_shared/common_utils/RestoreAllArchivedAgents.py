@@ -15,7 +15,6 @@ Usage:
     python scripts/restore_all_archived_agents.py
 """
 
-
 import argparse
 import json
 import shutil

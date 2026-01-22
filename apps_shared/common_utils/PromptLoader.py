@@ -5,7 +5,6 @@ Loads prompts from modularized markdown files based on agent role.
 """
 
 
-
 class PromptLoader:
     """Loads and caches prompts from markdown files."""
 

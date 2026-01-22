@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Research Cache - File-based cache for RAG results.
 

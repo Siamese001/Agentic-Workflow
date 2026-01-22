@@ -8,7 +8,6 @@ DO NOT FIX THESE MARKERS - Used for testing marker detection.
 """
 
 
-
 # TODO: This is a TODO marker on line 12
 def function_with_todo() -> str:
     """A function with a TODO comment."""
