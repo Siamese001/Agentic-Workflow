@@ -176,27 +176,34 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             sentinel = CanonDependencySentinelAgent()
             audit_results = sentinel.heal_repository(dry_run=True, execute=False)
             
-            # Check for FATAL status or INIT_BYPASS violations
+            # Check for FATAL status or critical violations
             is_fatal = audit_results.get("status") == "FATAL"
             scan_results = sentinel.scan_architecture()
-            init_bypasses = [v for v in scan_results.get("violations", []) if v.violation_type == "INIT_BYPASS"]
+            all_violations = scan_results.get("violations", [])
             
-            if is_fatal or init_bypasses:
-                abort_reason = "Naked super() or fatal syntax" if is_fatal else f"{len(init_bypasses)} agents with severed initialization DNA"
+            # Critical violations that block execution
+            critical_violations = [v for v in all_violations if v.severity == "CRITICAL" or v.violation_type == "INIT_BYPASS"]
+            
+            if is_fatal or critical_violations:
+                # Log each critical violation
+                for v in critical_violations[:10]:  # Limit to first 10
+                    self.logger.critical(f"  VIOLATION: {v.violation_type} in {v.file_path}:{v.line_number}")
+                
+                abort_reason = "Naked super() or fatal syntax" if is_fatal else f"{len(critical_violations)} critical DNA violations"
                 self.logger.critical(f"[STOP] Mission Aborted: {abort_reason}.")
                 return MissionResult(
                     success=False,
                     total_agents=len(agents),
                     successful_agents=0,
                     failed_agents=len(agents),
-                    total_violations_found=len(init_bypasses),
+                    total_violations_found=len(critical_violations),
                     total_violations_fixed=0,
                     total_errors=1,
                     agent_results=[],
                     phase=ExecutionPhase.VALIDATION,
                     status="ABORTED",
                     message=f"{abort_reason} detected in repository.",
-                    metadata={"mode": self.mode.value, "gate": "DNA_SENTINEL", "init_bypasses": len(init_bypasses)}
+                    metadata={"mode": self.mode.value, "gate": "DNA_SENTINEL", "critical_violations": len(critical_violations)}
                 )
         except ImportError:
             self.logger.warning("[GATE] CanonDependencySentinelAgent not found. Proceeding with caution.")
