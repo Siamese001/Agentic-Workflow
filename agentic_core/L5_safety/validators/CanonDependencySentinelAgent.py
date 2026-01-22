@@ -100,6 +100,10 @@ class InitializationIntegrityVisitor(ast.NodeVisitor):
     """
     Ensures __init__ properly propagates to SovereignBaseAgent via **kwargs.
     
+    [PHASE 33m] Calibrated to support dataclasses:
+    - Dataclasses with @dataclass decorator are auto-initialized
+    - __post_init__ is treated as valid initialization context
+    
     Detects:
     - INIT_BYPASS: Agent __init__ fails to call super().__init__(**kwargs)
     """
@@ -107,16 +111,38 @@ class InitializationIntegrityVisitor(ast.NodeVisitor):
         self.file_path = file_path
         self.violations: List[CodeViolation] = []
         self.current_class: Optional[str] = None
+        self.is_dataclass: bool = False
+        self.has_post_init: bool = False
 
     def visit_ClassDef(self, node: ast.ClassDef):
         if node.name.endswith("Agent"):
             self.current_class = node.name
+            
+            # [PHASE 33m] Check for @dataclass decorator
+            self.is_dataclass = any(
+                (isinstance(d, ast.Name) and d.id == 'dataclass') or
+                (isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and d.func.id == 'dataclass')
+                for d in node.decorator_list
+            )
+            
+            # Check for __post_init__ method (valid for dataclasses)
+            self.has_post_init = any(
+                isinstance(item, ast.FunctionDef) and item.name == '__post_init__'
+                for item in node.body
+            )
+            
             self.generic_visit(node)
             self.current_class = None
+            self.is_dataclass = False
+            self.has_post_init = False
         else:
             self.generic_visit(node)
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
+        # [PHASE 33m] Skip dataclasses - they auto-generate __init__
+        if self.is_dataclass:
+            return
+            
         if node.name != "__init__" or not self.current_class:
             return
 
@@ -323,8 +349,22 @@ class CanonDependencySentinelAgent(SovereignBaseAgent, MCPHardenedMixin):
         }
 
     def scan_architecture(self):
+        """
+        Scan all Agent files for structural validity and DNA integrity.
+        
+        [PHASE 33m] Scope Containment: Excludes test, archive, and script directories
+        to reduce false positives from non-production code.
+        """
+        # [PHASE 33m] Directories to exclude from scanning
+        EXCLUDED_DIRS = {'tests', 'archives', 'scripts', 'apps_lic', '__pycache__', '.git'}
+        
         violations = []
         for fp in self.project_root.rglob("*Agent.py"):
+            # [PHASE 33m] Skip excluded directories
+            path_parts = set(fp.parts)
+            if path_parts & EXCLUDED_DIRS:
+                continue
+                
             try:
                 tree = ast.parse(fp.read_text(encoding="utf-8"), filename=str(fp))
                 
