@@ -294,8 +294,8 @@ class ValidationContext:
     websocket_clients: set[Any] = field(default_factory=set)
 
     # Prompts
-    FEW_SHOT_HYGIENE: str = FEW_SHOT_HYGIENE
-    FEW_SHOT_STYLE: str = FEW_SHOT_STYLE
+    FEW_SHOT_HYGIENE: str = few_shot_hygiene
+    FEW_SHOT_STYLE: str = few_shot_style
 
     def __post_init__(self):
         print("   [CTX] 🧠 INITIALIZING TRI-BRAIN...")

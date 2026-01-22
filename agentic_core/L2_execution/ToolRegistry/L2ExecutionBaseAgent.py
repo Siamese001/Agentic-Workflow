@@ -111,8 +111,12 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
 
     def __post_init__(self) -> None:
         """Shared initialization logic with cooperative MRO."""
-        # Initialize MRO chain - mixins first, then SovereignBaseAgent
-        super().__init__(name=self.__class__.__name__)
+        # Initialize MRO chain - call parent __post_init__ not __init__
+        super().__post_init__()
+        
+        # Set name if not already set
+        if not hasattr(self, 'name') or not self.name:
+            self.name = self.__class__.__name__
 
         self.role = re.sub("(?<!^)(?=[A-Z])", "_", self.name).lower()
 
@@ -308,8 +312,19 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs
     ) -> dict[str, int]:
-        """Shared healing stub - operational for L2."""
+        """
+        L2 execution layer healing - prioritize script integrity.
+        
+        Args:
+            dry_run: If True, only report violations
+            execute: If True, apply fixes
+            depth: Current recursion depth
+            max_depth: Maximum recursion depth
+            _call_path: Set of visited agents (cycle detection)
+            **kwargs: Propagated sovereign signals (e.g., auto_approve)
+        """
         if _call_path is None:
             _call_path = set()
         agent_name = self.name
@@ -319,9 +334,14 @@ class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-            super().heal_repository()
             self.log_info("L2 execution - operational healing")
-            return {"healed": 1}
+            return super().heal_repository(
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth,
+                max_depth=max_depth,
+                _call_path=_call_path,
+                **kwargs
+            )
         finally:
             _call_path.discard(agent_name)

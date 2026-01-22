@@ -295,6 +295,7 @@ class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs
     ) -> dict[str, int]:
         """L5 safety base - operational healing with validation."""
         if _call_path is None:

@@ -596,8 +596,19 @@ class CodeDeduplicationAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVector
         return new_path
 
     def resolve_duplicates_safely(self, project_root: Path, dry_run: bool = True) -> None:
-        """Central resolution: identical files → consolidate; divergent filenames → rename."""
+        """Central resolution: identical files → consolidate; divergent filenames → rename.
+        
+        [BATCH 1 REMEDIATION] Respects SOVEREIGN_AUTO_APPROVE for automated healing.
+        """
+        import os
+        
         print("\n[*] SAFE DUPLICATE RESOLUTION SURGERY...")
+        
+        # [REMEDIATION] Check sovereign context for auto-approval
+        auto_approve = os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1"
+        if auto_approve:
+            print("   [SOVEREIGN] Auto-approve mode enabled")
+        
         # First: identical whole files
         for _file_hash, paths in self.file_duplicate_groups.items():
             if len(paths) > 1:
@@ -650,9 +661,10 @@ class CodeDeduplicationAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVector
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs,
     ) -> dict[str, int]:
-        """L2 execution agent - operational only."""
-        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
+        """L2 execution agent - operational only with signal propagation."""
+        super().heal_repository(dry_run, execute, depth, max_depth, _call_path, **kwargs)
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__

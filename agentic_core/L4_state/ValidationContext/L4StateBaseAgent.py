@@ -864,6 +864,7 @@ class L4StateBaseAgent(
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs
     ) -> dict[str, int]:
         """L4 state agent - operational only."""
         if _call_path is None:

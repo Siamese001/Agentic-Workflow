@@ -522,47 +522,26 @@ class LocationHealerAgent(SovereignBaseAgent):
         self, file_path: Path, target_path: Path, reason: str
     ) -> bool:
         """Prompt user for approval before archiving a file.
+        
+        [BATCH 1 REMEDIATION] Delegates to ArchivalGatekeeper which respects
+        SOVEREIGN_AUTO_APPROVE and ARCHIVE_BATCH_ACCEPT environment variables.
 
         Returns:
             True if user approves, False otherwise
         """
-        # Check if we're in a non-interactive environment
-        import sys
-
-        if not sys.stdin.isatty():
-            Logger.warning(
-                f"[LocationHealerAgent] Non-interactive mode - skipping archive: {file_path.name}"
-            )
-            return False
-
-        try:
-            rel_source = file_path.relative_to(self.project_root)
-            rel_target = target_path.relative_to(self.project_root)
-        except ValueError:
-            rel_source = file_path
-            rel_target = target_path
-
-        print(f"\n{'=' * 60}")
-        print("ARCHIVE APPROVAL REQUIRED")
-        print(f"{'=' * 60}")
-        print(f"File:   {rel_source}")
-        print(f"Target: {rel_target}")
-        print(f"Reason: {reason}")
-        print(f"{'=' * 60}")
-
-        try:
-            response = input("Approve archive? [y/n/s(kip all)]: ").strip().lower()
-            if response == "y":
-                return True
-            elif response == "s":
-                # Set flag to skip all future archive prompts in this session
-                self._skip_all_archives = True
-                return False
-            else:
-                return False
-        except (EOFError, KeyboardInterrupt):
-            print("\nArchive cancelled by user")
-            return False
+        import os
+        
+        # [REMEDIATION] Check sovereign auto-approve first
+        if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
+            Logger.info(f"[LocationHealerAgent] Auto-approved archive: {file_path.name}")
+            return True
+            
+        if os.environ.get("ARCHIVE_BATCH_ACCEPT") == "1":
+            Logger.info(f"[LocationHealerAgent] Batch-approved archive: {file_path.name}")
+            return True
+        
+        # Delegate to gatekeeper for consistent approval handling
+        return self.gatekeeper.safe_operation("archive", f"{file_path} -> {target_path}")
 
     # ========================================================================
     # VIOLATION-SPECIFIC HEALING METHODS (Phase 3 Batch 6)

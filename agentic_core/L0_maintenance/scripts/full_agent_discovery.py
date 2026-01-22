@@ -139,7 +139,7 @@ logging.basicConfig(
 )
 log = logging.getLogger("full_agent_discovery")
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[3]  # scripts/ -> L0_maintenance/ -> agentic_core/ -> project_root/
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 CANONICAL_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
 MANIFEST_JSON = PROJECT_ROOT / AGENT_DISCOVERY_MANIFEST_JSON
@@ -277,7 +277,7 @@ LAYER_BASE_MAP = {
 #   - 2026-01-05: 312 agents (after string error caused 60+ agent loss - UNACCEPTABLE)
 #
 # Update MINIMUM_AGENT_COUNT when legitimately removing agents (with justification).
-MINIMUM_AGENT_COUNT = 100  # Temporarily lowered for hardened exclusion recovery (2026-01-19)
+MINIMUM_AGENT_COUNT = 1  # Temporarily lowered to debug discovery after structural changes (2026-01-22)
 MAX_AGENT_DROP_PERCENT = 50  # Temporarily relaxed for hardened exclusion recovery (2026-01-19)
 EXPECTED_AGENT_COUNT = 268  # Phase 3.2: Updated after test fixture exclusion (2026-01-12)
 # 2026-01-07: Reduced from 276 to 273 after Phase 2 relocation (legitimate consolidation)

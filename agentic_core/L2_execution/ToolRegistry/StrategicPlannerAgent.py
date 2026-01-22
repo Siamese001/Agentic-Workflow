@@ -125,9 +125,9 @@ Output ONLY the plan in Markdown.
             print("   [OK] Strategy: Maintain current trajectory.")
 
     @standard_heal
-    def heal_repository(self) -> dict:
-        """Invoke healing chain via super()."""
-        return super().heal_repository()
+    def heal_repository(self, dry_run=True, execute=False, depth=0, max_depth=3, _call_path=None, **kwargs) -> dict:
+        """Standardized healing signature with signal propagation."""
+        return super().heal_repository(dry_run, execute, depth, max_depth, _call_path, **kwargs)
 
 
 # DUPLICATE ACCEPTED: App-specific customization valid

@@ -49,6 +49,7 @@ class L6ObservabilityBaseAgent(SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs
     ) -> dict[str, int]:
         """
         L6 observability healing - validates metrics and telemetry.
@@ -59,6 +60,7 @@ class L6ObservabilityBaseAgent(SovereignBaseAgent):
             depth: Current recursion depth
             max_depth: Maximum recursion depth
             _call_path: Set of already-visited agents (cycle detection)
+            **kwargs: Additional keyword arguments for extensibility
 
         Returns:
             Dictionary with healing results
@@ -74,7 +76,14 @@ class L6ObservabilityBaseAgent(SovereignBaseAgent):
 
         _call_path.add(agent_name)
         try:
-            # L6 observability healing - validate metrics/telemetry
-            return {"skipped": 1, "layer": "L6_observability"}
+            # Propagate signals to SovereignBaseAgent root
+            return super().heal_repository(
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth,
+                max_depth=max_depth,
+                _call_path=_call_path,
+                **kwargs
+            )
         finally:
             _call_path.discard(agent_name)

@@ -163,8 +163,11 @@ class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAg
             layer: Optional layer designation (defaults to L1)
             **kwargs: Additional keyword arguments
         """
-        # Root handles name via __post_init__
-        super().__init__(ctx=context or kwargs.get("ctx"), **kwargs)
+        # Store context separately, don't pass to SovereignBaseAgent
+        self.ctx = context or kwargs.get("ctx")
+        # Filter out ctx from kwargs before passing to parent
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k != "ctx"}
+        super().__init__(**filtered_kwargs)
         self.layer: str = layer or "L1"
 
     def get_file_hash(self, file_path: str) -> str:
@@ -396,9 +399,19 @@ Persistent improvements to apply:
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs
     ) -> dict[str, int]:
-        """L1 cognition agent - operational only."""
-        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
+        """
+        L1 cognition layer healing - prioritize thought consistency.
+        
+        Args:
+            dry_run: If True, only report violations
+            execute: If True, apply fixes
+            depth: Current recursion depth
+            max_depth: Maximum recursion depth
+            _call_path: Set of visited agents (cycle detection)
+            **kwargs: Propagated sovereign signals (e.g., auto_approve)
+        """
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -408,8 +421,15 @@ Persistent improvements to apply:
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            self.log_info("L1 cognition - operational only")
-            return {"skipped": 1}
+            self.log_info("L1 cognition - operational healing")
+            return super().heal_repository(
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth,
+                max_depth=max_depth,
+                _call_path=_call_path,
+                **kwargs
+            )
         finally:
             _call_path.discard(agent_name)
 
