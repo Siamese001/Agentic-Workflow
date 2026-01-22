@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 [PHASE 23] LifecycleMixin - Async Resource Management Protocol.
 
@@ -26,7 +27,6 @@ Usage:
 [SSOT] Foundation for all lifecycle-aware mixins.
 """
 
-from __future__ import annotations
 
 import asyncio
 import logging

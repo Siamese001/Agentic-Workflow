@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 MCP Security Guardrail - Consolidated MCP Protection
 
@@ -10,7 +11,6 @@ Composable Rules:
 - mcp_hardening: MCP hardening rules
 """
 
-from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field

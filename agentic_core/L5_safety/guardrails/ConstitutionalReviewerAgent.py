@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -11,7 +12,6 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 import json
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 from .L5SafetyBaseAgent import L5SafetyBaseAgent  # NEW: Import canonical L5 base class
@@ -46,7 +46,7 @@ async def _format_prompt_with_defaults(template, data, budget_manager, goal_stat
     return template
 
 
-class ConstitutionalReviewerAgent(L5SafetyBaseAgent, MCPHardenedMixin):
+class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBaseAgent):
     """Performs final constitutional review of the output."""
 
     @track_metrics("run_constitutional_review")

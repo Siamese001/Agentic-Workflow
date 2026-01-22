@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 DDDAlignmentAgent - Domain-Driven Design Bounded Context Enforcement
 
@@ -10,7 +11,6 @@ TIER: 2 (Architectural) - runs after structural validation
 LOCATION: agentic_core/L5_safety/validators/ (SSOT-compliant)
 """
 
-from __future__ import annotations
 
 import ast
 import logging
@@ -20,6 +20,7 @@ from typing import Any
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 try:
     from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
@@ -224,7 +225,7 @@ class DDDViolation:
 
 
 @dataclass
-class DDDAlignmentAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class DDDAlignmentAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Domain-Driven Design Alignment Agent.
 

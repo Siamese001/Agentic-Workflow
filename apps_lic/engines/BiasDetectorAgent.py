@@ -2,16 +2,13 @@
 
 import json
 import re
-from typing import Any
 
-from core_v10_7 import (
     BaseAgent,
     ConstitutionalReviewResult,
     _format_prompt_with_defaults,
     detect_bias,
     track_metrics,
 )
-from pydantic import BaseModel, Field
 
 
 class PIISanitizerAgent(BaseAgent):

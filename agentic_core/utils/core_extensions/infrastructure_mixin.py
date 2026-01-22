@@ -1,12 +1,17 @@
+from __future__ import annotations
 """
 InfrastructureMixin - Unified Gatekeeper for Agent Infrastructure
 
-This mixin consolidates HealerMixin, MCPHardenedMixin, and SubatomicTestingMixin
-into a single inheritance point, ensuring proper initialization order and
-providing state verification to catch "silent failure" bugs.
+L0 DNA FLATTENING (Jan 2026):
+This mixin consolidates all core agent capabilities into a single inheritance point:
+- HealerMixin (autonomous repair)
+- MCPHardenedMixin (MCP protocol safety)
+- SubatomicTestingMixin (self-testing)
+- InstructionalInjectionMixin (prompt injection protection - now L0 core trait)
+
+Ensures proper initialization order and provides state verification to catch "silent failure" bugs.
 
 USAGE:
-    from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
 
     class MyAgent(InfrastructureMixin):
         def __init__(self, project_root: Path):
@@ -23,19 +28,19 @@ HARDENING:
     preventing silent failures that lead to hard-to-debug issues.
 """
 
-from __future__ import annotations
 
 import logging
 from typing import Any
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.instructional_injection_mixin import InstructionalInjectionMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
 
-class InfrastructureMixin(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
+class InfrastructureMixin(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, InstructionalInjectionMixin):
     """
     Unified infrastructure mixin combining all standard agent capabilities.
 
@@ -43,10 +48,11 @@ class InfrastructureMixin(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
     1. Healing capabilities (HealerMixin)
     2. MCP hardening (MCPHardenedMixin)
     3. Subatomic testing (SubatomicTestingMixin)
-    4. State verification to catch initialization failures
+    4. Prompt injection protection (InstructionalInjectionMixin)
+    5. State verification to catch initialization failures
 
-    MRO Order:
-        ConcreteAgent -> InfrastructureMixin -> HealerMixin -> MCPHardenedMixin -> SubatomicTestingMixin -> object
+    MRO Order (L0 DNA Flattening):
+        ConcreteAgent -> InfrastructureMixin -> HealerMixin -> MCPHardenedMixin -> SubatomicTestingMixin -> InstructionalInjectionMixin -> object
 
     Critical Requirements:
         - Subclasses MUST call super().__init__() in their __init__

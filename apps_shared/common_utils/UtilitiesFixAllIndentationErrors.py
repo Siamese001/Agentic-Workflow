@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Systematic fix for all indentation errors caused by the reorganization.
@@ -9,7 +8,6 @@ Logger.error
 """
 import os
 import re
-from typing import Any
 
 
 def fix_indentation_errors(file_path: Any) -> Any:

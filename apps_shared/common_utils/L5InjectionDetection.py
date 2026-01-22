@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """Unit Tests for Injection Detection System
 
@@ -10,11 +9,9 @@ import logging
 Logger = logging.getLogger(__name__)
 
 """
-from typing import Any
 
 import pytest
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 class TestInjectionDetector(HealerMixin):

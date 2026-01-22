@@ -130,7 +130,6 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
 # NO HARDCODING OF THESE PATHS IN DOWNSTREAM FILES - ALWAYS IMPORT FROM HERE.
 #
 # Usage Pattern:
-#   from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 #       AGENT_DISCOVERY_JSON, DASHBOARD_DIR, get_validated_project_root
 #   )
 #   discovery_path = get_validated_project_root() / AGENT_DISCOVERY_JSON

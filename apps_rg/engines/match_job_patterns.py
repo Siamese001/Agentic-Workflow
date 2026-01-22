@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 import logging
 
@@ -6,7 +5,6 @@ import logging
 
 """Brief description of functionality and purpose."""
 
-from typing import Any
 
 _logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L1_cognition

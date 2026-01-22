@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, prompt, validator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -26,14 +27,12 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # NAMING FIXED: SovereignRedisOrchestratorAgent → SovereignRedisOrchestratorAgent
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 @dataclass
-class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class SovereignRedisOrchestratorAgent(SovereignBaseAgent):
     """Brief description of functionality and purpose."""
 
     def __init__(self) -> None:

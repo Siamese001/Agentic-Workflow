@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -30,13 +31,10 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger: Any = logging.getLogger(__name__)
 
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class MCPGuardianAgent(SovereignBaseAgent):
     """
     L5 Safety Guardian for MCP integration compliance.
 
@@ -155,7 +153,6 @@ class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
                         {
                             "file": str(py_file.relative_to(self.project_root)),
                             "line": content[: match.start()].count(
-                                "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n"
                             )
                             + 1,
                             "type": ViolationType,

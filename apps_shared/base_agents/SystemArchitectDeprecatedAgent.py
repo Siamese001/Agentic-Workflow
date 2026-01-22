@@ -3,26 +3,18 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from dataclasses import dataclass
 
 """
 SystemArchitectDeprecatedAgent - Extracted from CanonHealerAgent.py
 Legacy system architect logic preserved for backward compatibility.
 Renamed from _SystemArchitect_Deprecated to comply with strict discovery rules.
 """
-from __future__ import annotations
 
 import ast
 import logging
 import os
 import sys
-from pathlib import Path
-from typing import Any
 
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
 
 # Legacy class removed - use SystemArchitectAgent instead

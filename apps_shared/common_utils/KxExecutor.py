@@ -7,13 +7,8 @@ Phase 1C - Knowledge Extraction Integration
 """
 
 import logging
-from dataclasses import dataclass, field
-from typing import Any
 
 from .agent_executor import AgentExecutor, AgentMessage, AgentResponse
-from .kx_nodes import KNodeConfig, ReasoningStrategy, get_kx_registry
-from .observability_clients import create_span, set_span_attribute
-from .vector_store_clients import search_vectors_chroma
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +134,6 @@ class KXNodeExecutor:
 
         # Search vector store
         try:
-            from .vector_store_clients import create_chroma_collection
 
             collection = create_chroma_collection(
                 context.vector_store, context.metadata.get("collection_name", "knowledge_base")

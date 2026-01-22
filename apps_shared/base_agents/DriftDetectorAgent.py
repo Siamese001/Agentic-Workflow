@@ -3,9 +3,7 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 #!/usr/bin/env python3
 """
@@ -13,17 +11,10 @@ L6 Watchdog: Drift Detector Agent
 Scans for files that exist outside the CANON_KEY_TO_FOLDER_MAP.
 Exempts root protected files and __init__.py glue files.
 """
-from pathlib import Path
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.validators.structure_blueprint import (
     CANON_KEY_TO_FOLDER_MAP,
     ROOT_PROTECTED_FILES,
 )
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 def timeout(seconds=0, minutes=0, hours=0):

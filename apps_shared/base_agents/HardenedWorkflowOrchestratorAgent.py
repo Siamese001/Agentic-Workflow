@@ -3,9 +3,7 @@
 # Suggested keywords to add in docstring/code: memory, prompt, validator
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """
 🚀 PHASE 5: THIN WRAPPER - Hardened Workflow Orchestrator
@@ -22,19 +20,11 @@ Legacy API preserved for backward compatibility.
 # - Consolidated 2026-01-06
 
 import logging
-from typing import Any
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
-from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
-from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import (
     L3SubatomicTestingMixin,
 )
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
 @dataclass

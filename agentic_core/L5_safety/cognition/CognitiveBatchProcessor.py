@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 [PHASE 13] Cognitive Batch Processor - High-Volume AI Audit Management.
 
@@ -18,7 +19,6 @@ Responsibilities:
 
 [SSOT] Integrates with CognitiveDispositionAgent for AI-powered triage.
 """
-from __future__ import annotations
 
 import json
 import logging

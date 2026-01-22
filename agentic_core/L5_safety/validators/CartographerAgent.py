@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, orchestrator, prompt, state, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import asyncio
 from dataclasses import dataclass
@@ -21,7 +22,7 @@ from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMix
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 @dataclass
-class CartographerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
+class CartographerAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     ROLE: Memory & Embedding. Maps the codebase into semantic space.
     """
@@ -36,7 +37,6 @@ class CartographerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPH
     async def execute(self) -> None:
         """Execute execute operation."""
         print(
-            f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Mapping code to semantic space..."
         )
         await asyncio.sleep(0)
 

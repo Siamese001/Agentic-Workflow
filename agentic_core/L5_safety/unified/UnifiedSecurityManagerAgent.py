@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 """
 UnifiedSecurityManagerAgent - Vaulted Security Management
 
@@ -15,7 +17,6 @@ Features:
 - Audit logging for all security operations
 """
 
-from __future__ import annotations
 
 import hashlib
 import logging
@@ -98,7 +99,7 @@ class SecureCheckpoint:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
-class UnifiedSecurityManagerAgent:
+class UnifiedSecurityManagerAgent(SovereignBaseAgent):
     """
     Vaulted security manager with permission-based access control.
 

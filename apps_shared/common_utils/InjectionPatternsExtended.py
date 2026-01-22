@@ -5,7 +5,6 @@ to improve the quality and effectiveness of resume and message outputs
 in the Subatomic Hop system.
 """
 
-from .prompt_injection_loader import InjectionPattern, InjectionScope, InjectionType
 
 
 def get_resume_injection_patterns() -> list[InjectionPattern]:

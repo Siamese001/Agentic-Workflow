@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 L5 Consolidated Knowledge Retrieval for Resume Engine
@@ -10,8 +9,6 @@ This module provides unified access to:
 - Consolidated search across both knowledge bases
 """
 import logging
-from dataclasses import dataclass
-from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 

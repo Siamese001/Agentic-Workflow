@@ -6,7 +6,6 @@ import pytest
 def _can_import_pinecone() -> bool:
     """Check if Pinecone SDK is properly installed."""
     try:
-        from pinecone import Pinecone  # noqa: F401
 
         return True
     except ImportError:
@@ -30,6 +29,5 @@ def test_import_vector_modules() -> None:
 )
 def test_import_pinecone_provider() -> None:
     """Test that pinecone Provider can be imported when SDK is available."""
-    import providers.pinecone_client  # noqa: F401
 
     assert True

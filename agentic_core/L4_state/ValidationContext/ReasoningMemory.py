@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Reasoning Memory - Expanded Short-Term Thought Storage
 
@@ -11,7 +12,6 @@ Features:
 - Relevance-based retrieval
 """
 
-from __future__ import annotations
 
 import hashlib
 import time

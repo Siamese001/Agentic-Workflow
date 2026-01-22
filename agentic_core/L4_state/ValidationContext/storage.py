@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Storage adapters for different backend types.
@@ -308,14 +309,12 @@ def create_storage_adapter(adapter_type: str = "local", **kwargs) -> BlobStorage
         raise ValueError(f"Unknown adapter type: {adapter_type}")
 
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
-class RedisDistributedLock(MCPHardenedMixin, HealerMixin):
+class RedisDistributedLock(SovereignBaseAgent):
     """
     Redis-based distributed lock for coordination across multiple processes.
     """
@@ -429,7 +428,7 @@ def _run_self_tests(self) -> dict:
     return results
 
 
-class RedisHotCache(MCPHardenedMixin, HealerMixin):
+class RedisHotCache(SovereignBaseAgent):
     """
     Redis-based hot cache with local fallback for frequently accessed data.
     """

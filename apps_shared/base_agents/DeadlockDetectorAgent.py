@@ -3,7 +3,6 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 """
 DeadlockDetectorAgent - Extracted for one-class-per-file pattern.
@@ -13,13 +12,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 import logging
-from dataclasses import dataclass
-from typing import Any
 
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 

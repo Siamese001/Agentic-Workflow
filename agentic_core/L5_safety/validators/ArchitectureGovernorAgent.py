@@ -1,3 +1,4 @@
+from __future__ import annotations
 """ArchitectureGovernorAgent - Universal Architecture Governance
 
 Phase 1 Upgrade (2026-01-21): Activated from stub to functioning enforcer.
@@ -33,21 +34,18 @@ Responsibilities:
 [SSOT] All territorial scope derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 
 # [PHASE 24] Integrate L0 Maintenance Capability
 from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
@@ -57,7 +55,7 @@ LAYER_DIRS: set[str] = set(SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfo
 
 
 @dataclass
-class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+class ArchitectureGovernorAgent(SovereignBaseAgent):
     """
     [L5 GOVERNOR] Universal Architecture Pattern Enforcement
 

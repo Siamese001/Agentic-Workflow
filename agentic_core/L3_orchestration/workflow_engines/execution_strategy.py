@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Execution Strategy Interface and Implementations
 
@@ -8,7 +9,6 @@ Provides pluggable execution strategies for the UnifiedWorkflowEngine:
 - ReactiveStrategy: Reactive stream-based execution
 """
 
-from __future__ import annotations
 
 import asyncio
 from abc import ABC, abstractmethod

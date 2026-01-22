@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 UnifiedStateManagementAgent - Consolidated L4 State Controller (Phase 5)
 
@@ -18,7 +19,6 @@ Territory: agentic_core/L4_state/ValidationContext/
 Canon Alignment: L4 state persistence, integrity, and recovery
 """
 
-from __future__ import annotations
 
 import asyncio
 import hashlib

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Sovereign Audit Engine – Phase 16H (Dec 27, 2025)
@@ -11,9 +12,7 @@ import os
 import re
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 required_depth: Any = SOVEREIGN_REGISTRY["agentic_core"]["depth"]
 Logger: Any = logging.getLogger(__name__)
@@ -45,7 +44,7 @@ required_clients: Any = [
 ]
 
 
-class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
+class SovereigntyAuditor(SovereignBaseAgent):
     """
     Sovereignty Audit Engine for MCP compliance.
 

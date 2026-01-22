@@ -4,11 +4,7 @@ No inline BaseModel definitions allowed outside schemas/.
 """
 
 import logging
-from enum import Enum
-from pathlib import Path
-from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, validator
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -668,7 +664,6 @@ CORE_CONTRACTS_REGISTRY = core_contracts_registry
 # === Legacy P1 Core Profiles – Phase 2B Migration (Dec 2025) ===
 
 import uuid
-from dataclasses import dataclass, field
 from datetime import datetime
 
 # Context Passport Models

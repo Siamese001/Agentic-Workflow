@@ -3,10 +3,7 @@
 import asyncio
 import json
 import re
-from collections import Counter, defaultdict
-from typing import Any
 
-from core_v10_7 import (
     BaseAgent,
     BulletList,
     CritiqueResult,
@@ -14,7 +11,6 @@ from core_v10_7 import (
     _format_prompt_with_defaults,
     track_metrics,
 )
-from pydantic import BaseModel, Field
 
 
 class BulletEntityExtractionAgent(BaseAgent):

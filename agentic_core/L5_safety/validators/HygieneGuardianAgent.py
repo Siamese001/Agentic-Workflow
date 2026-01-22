@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 HygieneGuardianAgent - Repository Hygiene Enforcement
 
@@ -12,7 +13,7 @@ Consolidates hygiene checks:
 Territory: agentic_core/L5_safety/validators/
 """
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import re
 from collections import Counter
@@ -20,11 +21,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -39,7 +37,7 @@ class HygieneViolation:
     auto_fixable: bool = False
 
 
-class HygieneGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class HygieneGuardianAgent(SovereignBaseAgent):
     """
     Repository hygiene enforcement agent.
 

@@ -13,13 +13,11 @@ Usage:
     python scripts/restore_app_agents.py
 """
 
-from __future__ import annotations
 
 import argparse
 import re
 import shutil
 import sys
-from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVE_DIR = PROJECT_ROOT / "archives" / "hierarchy_violations" / "apps_depth"

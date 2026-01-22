@@ -7,7 +7,6 @@ requires retrieval from the vector database or can be handled from context.
 import logging
 import re
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

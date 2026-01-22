@@ -8,11 +8,9 @@ import asyncio
 import json
 import os
 from datetime import datetime
-from typing import Any
 
 # PDF parsing
 try:
-    import fitz  # PyMuPDF
 
     PDF_SUPPORT = True
 except ImportError:
@@ -20,11 +18,6 @@ except ImportError:
     print("WARNING: PyMuPDF not installed. PDF support disabled.")
 
 # Embedding and vector store
-import google.generativeai as genai
-from llm_clients import GeminiLLMClient
-from memory_LIC import VectorMemoryStore
-from retrieval_clients import GoogleSearchClient
-from utils_LIC import CircuitBreaker
 
 
 class IntelligenceLibrarian:

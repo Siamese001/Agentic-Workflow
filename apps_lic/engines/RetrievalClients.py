@@ -5,8 +5,6 @@ __version__ = "12.0"
 
 import os
 
-from googleapiclient.discovery import build
-from utils_LIC import CircuitBreaker
 
 
 class GoogleSearchClient:

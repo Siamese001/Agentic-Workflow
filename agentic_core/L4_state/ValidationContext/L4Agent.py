@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L4Agent - Consolidated Base for L4 State Agents
 
@@ -20,21 +21,19 @@ L4 agents handle state - caching, persistence, memory.
 # Suggested keywords to add in docstring/code: engine, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 @dataclass
-class L4Agent(HealerMixin, MCPHardenedMixin):
+class L4Agent(SovereignBaseAgent):
     """
     Consolidated base for L4 State agents.
 

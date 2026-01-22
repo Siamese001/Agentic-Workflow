@@ -3,7 +3,6 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 """
 MCP Connection Manager
@@ -13,17 +12,12 @@ Aggregates tools from all servers into a single 'toolbox' for the agent.
 """
 import logging
 import os
-from contextlib import AsyncExitStack
-from pathlib import Path
-from typing import Any
 
 import yaml
 
 LOGGER = logging.getLogger(__name__)
 
 try:
-    from mcp import ClientSession, StdioServerParameters
-    from mcp.client.stdio import stdio_client
 
     MCP_AVAILABLE = True
 except ImportError:

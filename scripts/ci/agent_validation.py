@@ -9,10 +9,8 @@ Exit codes:
 - 0: All validations passed
 - 1: Validation failures detected
 """
-from __future__ import annotations
 
 import sys
-from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -27,7 +25,6 @@ def run_code_deduplication_check() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
-        from agentic_core.L5_safety.validators.CodeDeduplicationAgent import (
             CodeDeduplicationAgent,
         )
         
@@ -67,7 +64,6 @@ def run_architecture_governance_check() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
         

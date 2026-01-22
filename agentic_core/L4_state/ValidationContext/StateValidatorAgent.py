@@ -1,26 +1,25 @@
+from __future__ import annotations
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
-from dataclasses import dataclass
+
 """
 StateValidatorAgent - Validates state files against expected schemas.
 
 Extracted from StateManagerAgent.py for one-file-per-agent pattern (Jan 6, 2026).
 Renamed from StateValidator for consistent Agent suffix.
 """
+from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass
-class StateValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class StateValidatorAgent(SovereignBaseAgent):
     """
     Validates state files against expected schemas.
 
@@ -89,7 +88,8 @@ class StateValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
         return results
 
-def validate_state(cls, hop_id: str, state_data: Dict[str, Any]) -> Tuple[bool, List[str]]:
+    @classmethod
+    def validate_state(cls, hop_id: str, state_data: Dict[str, Any]) -> Tuple[bool, List[str]]:
         """
         Validate state data against expected schema.
 

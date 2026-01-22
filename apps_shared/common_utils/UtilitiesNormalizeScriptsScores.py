@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 NormalizeScriptsScores.py - Scoring Module
@@ -7,8 +6,6 @@ Domain: utilities
 Generated: 2025-12-07T12:07:59.887848
 """
 import logging
-from dataclasses import dataclass, field
-from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 

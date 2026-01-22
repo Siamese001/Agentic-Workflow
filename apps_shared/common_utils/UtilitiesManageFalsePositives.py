@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Human-in-the-Loop False Positive Management
@@ -8,10 +7,7 @@ import json
 import logging
 import sys
 from datetime import datetime
-from pathlib import Path
-from typing import Any
 
-from services.configuration import ConfigurationService
 
 Logger: Any = logging.getLogger(__name__)
 

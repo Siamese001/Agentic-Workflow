@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Cache Invalidation Utilities for Healing Workflows
 
@@ -14,7 +15,6 @@ Usage:
             return {"success": True}
 """
 
-from __future__ import annotations
 
 import functools
 import logging

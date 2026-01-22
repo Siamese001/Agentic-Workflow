@@ -1,3 +1,4 @@
+from __future__ import annotations
 """SovereignScanner - Centralized single-pass repository mapper.
 
 [Phase 5] Provides shared intelligence layer for L5 agents.
@@ -11,7 +12,6 @@ Usage:
     agentic_core_files = scanner.get_root_files("agentic_core")
 """
 
-from __future__ import annotations
 
 import logging
 from pathlib import Path

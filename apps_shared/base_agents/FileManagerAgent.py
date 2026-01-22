@@ -3,7 +3,6 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from dataclasses import dataclass
 
 """
 FileManagerAgent - Filesystem Operations & Healing
@@ -12,18 +11,11 @@ Manages filesystem operations including path healing, backup cleanup, and file i
 Implements parent chain activation for full repository healing integration.
 """
 
-from __future__ import annotations
 
 import logging
-from functools import wraps
-from pathlib import Path
-from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 
@@ -172,7 +164,6 @@ class FileManagerAgent(SovereignBaseAgent):
         cleaned = 0
         try:
             # Phase 6.9: Use ssot_discovery instead of glob
-            from agentic_core.utils.ssot_discovery import get_data_files
 
             for backup_file in get_data_files(self.backup_dir, extensions=[".bak"]):
                 # Check if backup is orphaned (original file missing)
@@ -204,7 +195,6 @@ class FileManagerAgent(SovereignBaseAgent):
         fixed = 0
         try:
             # Phase 6.9: Use ssot_discovery instead of rglob
-            from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
 
             all_items = list(get_python_files(self.project_root)) + list(
                 get_data_files(self.project_root)

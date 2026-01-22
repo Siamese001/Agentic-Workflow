@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 SovereignPineconeClient - Audited Vector Operations
@@ -12,16 +13,14 @@ import logging
 import os
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 
 
-class SovereignPineconeClient(MCPHardenedMixin, HealerMixin):
+class SovereignPineconeClient(SovereignBaseAgent):
     """Sovereign Pinecone client - audit + safe exec for all vector operations."""
 
     def __init__(self, index_name: str | None = None, namespace: str | None = None):

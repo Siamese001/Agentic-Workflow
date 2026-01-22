@@ -3,9 +3,7 @@
 # Suggested keywords to add in docstring/code: engine, orchestrator, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 # File: intelligence_librarian.py
 # Description: Persistent Intelligence Service ("The Librarian") - v13.0
@@ -18,14 +16,11 @@ import asyncio
 import json
 import os
 from datetime import datetime
-from typing import Any
 
 # MCP Hardening
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # PDF parsing
 try:
-    import fitz  # PyMuPDF
 
     PDF_SUPPORT = True
 except ImportError:
@@ -33,11 +28,8 @@ except ImportError:
     print("WARNING: PyMuPDF not installed. PDF support disabled.")
 
 # Embedding and vector store
-import google.generativeai as genai
 
 # Models (updated imports for new locations)
-from apps_shared.utils.circuit_breaker import CircuitBreaker
-from apps_shared.utils.vector_memory import VectorMemoryStore
 
 
 @dataclass

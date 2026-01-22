@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 SovereignHttpClient - Audited HTTP Operations
@@ -13,11 +14,9 @@ import logging
 from typing import Any
 from urllib.parse import urlparse
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -39,7 +38,7 @@ ALLOWED_DOMAINS: set[str] = {
 }
 
 
-class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
+class SovereignHttpClient(SovereignBaseAgent):
     """Sovereign HTTP client - audit + safe exec for all HTTP operations."""
 
     def __init__(self, timeout: int = 30, allow_internal: bool = False):

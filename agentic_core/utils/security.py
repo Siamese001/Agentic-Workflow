@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 Security Utilities for Agentic Workflow
 
@@ -9,7 +10,6 @@ Created: 2026-01-20
 Purpose: Harden all subprocess calls against shell injection attacks
 """
 
-from __future__ import annotations
 
 import logging
 import re

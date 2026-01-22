@@ -6,9 +6,7 @@ active voice) across all generated text in both Resume and Outreach engines.
 
 import logging
 import re
-from enum import Enum
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

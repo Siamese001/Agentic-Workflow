@@ -3,22 +3,15 @@
 # Suggested keywords to add in docstring/code: guardrail, healer, memory, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass
-from typing import Any
 
-from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
-from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
-from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 
 
 # Lazy imports — gravity-safe (same L1 territory)
 def _get_thought_node() -> Any:
     """Get thought node."""
     try:
-        from agentic_core.L1_cognition.thought_engine import ThoughtNode
 
         return ThoughtNode
     except Exception:
@@ -28,7 +21,6 @@ def _get_thought_node() -> Any:
 def _get_chain_of_thought_executor() -> Any:
     """Get chain of thought executor."""
     try:
-        from agentic_core.L1_cognition.thought_engine import ChainOfThoughtExecutor
 
         return ChainOfThoughtExecutor
     except Exception:
@@ -38,7 +30,6 @@ def _get_chain_of_thought_executor() -> Any:
 def _get_tree_of_thoughts_node() -> Any:
     """Get tree of thoughts node."""
     try:
-        from agentic_core.L1_cognition.thought_engine import TreeOfThoughtsNode
 
         return TreeOfThoughtsNode
     except Exception:
@@ -48,7 +39,6 @@ def _get_tree_of_thoughts_node() -> Any:
 def _get_react_node() -> Any:
     """Get react node."""
     try:
-        from agentic_core.L1_cognition.thought_engine import ReActNode
 
         return ReActNode
     except Exception:
@@ -58,7 +48,6 @@ def _get_react_node() -> Any:
 def _get_intent_classifier() -> Any:
     """Get intent classifier."""
     try:
-        from agentic_core.L1_cognition.intent_analysis import IntentClassifier
 
         return IntentClassifier
     except Exception:
@@ -68,7 +57,6 @@ def _get_intent_classifier() -> Any:
 def _get_mission_decomposer() -> Any:
     """Get mission decomposer."""
     try:
-        from agentic_core.L1_cognition.planning import MissionDecomposer
 
         return MissionDecomposer
     except Exception:
@@ -78,7 +66,6 @@ def _get_mission_decomposer() -> Any:
 def log_event(event_type: str, payload: dict) -> Any:
     """Log event with fallback to print."""
     try:
-        from agentic_core.runtime.shared_runtime import log_event as _log_event
 
         _log_event(event_type, payload)
     except Exception:

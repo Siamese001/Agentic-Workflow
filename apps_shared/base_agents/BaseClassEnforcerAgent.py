@@ -48,16 +48,10 @@ This agent:
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any
 
-from agentic_core.bases import L5Agent
-from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     TESTS_DIR,
 )

@@ -1,8 +1,6 @@
 """Shared Pydantic data models for stack coordination."""
 
-from typing import Any
 
-from pydantic import BaseModel, Field
 
 
 class SpecialistDraftPacket(BaseModel):

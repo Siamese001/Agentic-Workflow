@@ -3,9 +3,7 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """Secure Checkpoint Manager - Protected persistence with encryption and integrity.
 
@@ -19,16 +17,8 @@ import hmac
 import json
 import logging
 import time
-from pathlib import Path
 
-from cryptography.fernet import Fernet
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.schemas.models.runtime_models import MicroCheckpoint
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -178,7 +168,6 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
         latest_time = 0
 
         # Phase 6.6: Use ssot_discovery instead of glob
-        from agentic_core.utils.ssot_discovery import get_data_files
 
         # Find all secure Checkpoint files
         all_secure = [
@@ -255,7 +244,6 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
             keep_count: Number of recent checkpoints to keep per stage
         """
         # Phase 6.6: Use ssot_discovery instead of glob
-        from agentic_core.utils.ssot_discovery import get_data_files
 
         # Group checkpoints by stage
         stage_checkpoints = {}
@@ -284,7 +272,6 @@ class SecureCheckpointManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, Heal
     def quarantine_all_checkpoints(self) -> None:
         """Quarantine all checkpoints for this hop (emergency measure)."""
         # Phase 6.6: Use ssot_discovery instead of glob
-        from agentic_core.utils.ssot_discovery import get_data_files
 
         quarantine_dir = self.checkpoint_dir / "quarantine"
         quarantine_dir.mkdir(exist_ok=True)

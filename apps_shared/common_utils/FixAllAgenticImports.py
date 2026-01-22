@@ -3,14 +3,11 @@
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 """
 Fix all import issues in agentic_core after bulk hierarchy heal.
 """
 import re
-from pathlib import Path
-from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -62,7 +59,6 @@ def main() -> Any:
     fixed: Any = 0
     total: Any = 0
     # Phase 6.9: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
 
     for py_file in get_python_files(Path("agentic_core")):
         total += 1

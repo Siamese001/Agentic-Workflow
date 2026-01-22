@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt, state, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -29,13 +30,12 @@ from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
-class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBaseAgent):
+class StructuralEngineerAgent(SovereignBaseAgent, CanonBaseAgent):
     """
     Structural Engineer validates code structure and organization.
 
@@ -53,7 +53,6 @@ class StructuralEngineerAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBase
     async def execute(self) -> Any:
         """Execute Structural Engineer validation checks."""
         print(
-            f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Checking Code Structure..."
         )
         print(f"   [{self.name}] 🔍 Checking Large Classes...")
         passed, violations = self.check_no_large_classes()

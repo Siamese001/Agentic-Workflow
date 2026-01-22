@@ -13,7 +13,6 @@ Usage:
 """
 
 import sys
-from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -276,7 +275,6 @@ def test_api_module():
     print("\n--- Test 3.2: API Module ---")
 
     try:
-        from agentic_core.L6_observability.api.runtime_api import app
 
         record_test("runtime_api.py is importable", True)
         record_test("FastAPI app exists", app is not None)
@@ -428,9 +426,7 @@ def test_api_doc_accuracy():
     print("\n--- Test 5.1: API Endpoint Accuracy ---")
 
     try:
-        from fastapi.testclient import TestClient
 
-        from agentic_core.L6_observability.api.runtime_api import app
 
         client = TestClient(app)
 
@@ -475,9 +471,7 @@ def test_response_schema_accuracy():
     print("\n--- Test 5.2: Response Schema Accuracy ---")
 
     try:
-        from fastapi.testclient import TestClient
 
-        from agentic_core.L6_observability.api.runtime_api import app
 
         client = TestClient(app)
 

@@ -8,7 +8,6 @@ import logging
 import re
 import time
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -215,7 +214,6 @@ class ContextualCompressor:
 
         # Import LLM client
         try:
-            from .multi_provider_clients import Provider, get_client
 
             client = get_client(Provider.ANTHROPIC)
 

@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 ⚛️ Deep Brain Harvest - Pinecone Pattern Storage
@@ -13,18 +12,14 @@ import argparse
 import logging
 import os
 import sys
-from pathlib import Path
-from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 try:
-    from pinecone import Pinecone, ServerlessSpec
 
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False
     print("⚠️  Pinecone not available. Install with: pip install pinecone-client")
-from agentic_core.patterns.subatomic_flattening_rule import get_flattening_pattern
 
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)

@@ -7,7 +7,6 @@ Generated: 2025-12-07T13:28:54.207251
 
 import logging
 
-from shared.result_types import OperationResult
 
 Logger = logging.getLogger(__name__)
 

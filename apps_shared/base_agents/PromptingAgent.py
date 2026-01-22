@@ -1,8 +1,6 @@
 """Prompt engineering stack."""
 
-from typing import Any
 
-from core_v10_7 import (
     BaseAgent,
     GeneratedPrompts,
     StrategyPlan,

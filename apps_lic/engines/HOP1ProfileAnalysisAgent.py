@@ -3,22 +3,14 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """HOP-1: Profile Analysis Agent - Classify recipient Archetype."""
 
 __version__ = "13.1"
 
 import logging
-from typing import Any
 
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from apps_lic.domain.lic_models import OutreachMission
-from apps_shared.utils.state_manager import StateManager
 
 Logger = logging.getLogger(__name__)
 

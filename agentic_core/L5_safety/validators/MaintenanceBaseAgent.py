@@ -1,3 +1,4 @@
+from __future__ import annotations
 """MaintenanceBaseAgent — L0 Base with Subatomic Delegation Framework (Jan 01, 2026)
 
 L0 Maintenance agents handle bootstrapping, filesystem reconciliation, and healing.
@@ -15,7 +16,7 @@ Table Decision (L0 Maintenance):
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 from enum import Enum
@@ -75,7 +76,7 @@ class L0SovereignSeverity(Enum):
     CRITICAL = "CRITICAL"
 
 
-class L0DelegationMixin(MCPHardenedMixin):
+class L0DelegationMixin(SovereignBaseAgent):
     """Mixin providing L0 delegation-only capabilities.
 
     L0 Table Decision:

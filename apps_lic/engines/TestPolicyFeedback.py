@@ -1,9 +1,4 @@
-from types import SimpleNamespace
-from unittest.mock import patch
 
-from src.lic_agentic.agents.k3_message_architect import DraftPackage
-from src.lic_agentic.reasoning.toggles import ReasoningToggles
-from src.lic_agentic.stacks.outreach_stack import OutreachStack
 
 
 def test_policy_feedback_updates_toggles_and_budget():

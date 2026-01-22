@@ -1,9 +1,9 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, validator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import ast
 
@@ -11,12 +11,13 @@ import ast
 
 from typing import Any
 
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 # NAMING FIXED: SubAtomicAgent → SubAtomicAgent
-class SubAtomicAgent:
+class SubAtomicAgent(SovereignBaseAgent):
     """Base class stub for structural agents."""
 
     @timeout(300)

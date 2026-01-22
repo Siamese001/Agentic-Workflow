@@ -3,7 +3,6 @@
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 """
 L5+ Integrity Gate Executor with Two-Pass Validation.
@@ -17,12 +16,8 @@ fast checks already detect issues.
 """
 import logging
 import re
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any, Protocol
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -166,10 +161,6 @@ class ValidationResult:
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class L5IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 UnifiedCodeValidatorAgent - Single-Pass AST Code Validation
 
@@ -16,7 +17,7 @@ Features:
 - Backward compatible factory methods
 """
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import ast
 import logging
@@ -27,9 +28,6 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
@@ -418,7 +416,7 @@ class UnifiedASTVisitor(ast.NodeVisitor):
 
 
 @dataclass
-class UnifiedCodeValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class UnifiedCodeValidatorAgent(SovereignBaseAgent):
     """
     Unified code validation with single-pass AST analysis.
 

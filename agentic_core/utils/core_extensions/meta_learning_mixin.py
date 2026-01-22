@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 [PHASE 20+/21] Meta-Learning Mixin - The DNA of Collective Intelligence.
 
@@ -29,7 +30,6 @@ Usage:
 [SSOT] Integrates with L4_state/memory/SemanticCacheManager, KnowledgeGraphBridge, and GraphMemoryBridge.
 """
 
-from __future__ import annotations
 
 import hashlib
 import logging

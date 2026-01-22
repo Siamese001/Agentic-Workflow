@@ -3,9 +3,7 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """HOP-3: Sender Grounding Agent - Extract sender capabilities from knowledge base."""
 
@@ -13,13 +11,7 @@ __version__ = "13.1"
 
 import json
 import os
-from typing import Any
 
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from apps_shared.utils.state_manager import StateManager
 
 
 @dataclass

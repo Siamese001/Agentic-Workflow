@@ -3,6 +3,7 @@
 # Suggested keywords to add in docstring/code: memory, orchestrator, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 import ast
 
 """Brief description of functionality and purpose."""
@@ -12,12 +13,11 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+class InferenceTypeHintAgent(SovereignBaseAgent):
     """
     Uses LLM inference to add accurate type hints to functions/methods.
 
@@ -32,7 +32,6 @@ class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
     - Apply via AST + unparse (preserves formatting)
     """
 
-    PROMPT_TEMPLATE: str = "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\nAdd precise Python type hints to the following function/method.\n\nRules:\n- Use concrete types when possible (List[str], Dict[str, int], etc.)\n- Use from __future__ import annotations if needed\n- Preserve all existing code, comments, and formatting\n- Only modify type annotations (parameters and return)\n- If uncertain, use Any from typing\n\nOutput ONLY the fully annotated function (no explanations, no markdown).\n\nFUNCTION:\n{code}\n"
 
     def __init__(self, ctx: Any, project_root: str | None = None) -> None:
         """

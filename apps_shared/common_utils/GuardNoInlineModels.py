@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Sovereign Guard: Block Inline Pydantic Models (Final Sovereign Version)

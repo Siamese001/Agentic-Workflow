@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Logging & Observability Guardrail - Consolidated Secure Logging
 
@@ -10,7 +11,6 @@ Composable Rules:
 - audit_trails: Audit log management
 """
 
-from __future__ import annotations
 
 import hashlib
 import re

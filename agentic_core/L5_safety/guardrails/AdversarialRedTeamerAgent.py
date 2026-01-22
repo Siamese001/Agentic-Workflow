@@ -1,6 +1,7 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -9,7 +10,7 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 ⚛️ Adversarial Red-Teamer - The Skeptic
@@ -32,10 +33,8 @@ from dataclasses import dataclass
 from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
@@ -66,7 +65,7 @@ class RedTeamResult:
 
 
 # NAMING CANON COMPLIANCE — renamed to AdversarialRedTeamerAgent for discovery and sovereignty — 2025-12-30
-class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
+class AdversarialRedTeamerAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     The Skeptic - Adversarial Red Team Agent
 
@@ -244,7 +243,6 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHarden
         """Attempt to delete 50% of code and pass preservation check."""
         test_id = "PRES-001"
         original_code = textwrap.dedent(
-            "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n            def function1():\n                pass\n\n            def function2():\n                pass\n\n            def function3():\n                pass\n\n            def function4():\n                pass\n        "
         )
         modified_code = textwrap.dedent(
             "\n            def function1():\n                pass\n\n            def function2():\n                pass\n        "

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Unified Workflow Engine - Canonical Orchestration Pattern
 
@@ -10,7 +11,6 @@ Implements single entrypoint with specialized coordinators for different mission
 # Suggested keywords to add in docstring/code: agent, healer, memory, prompt, state, validator
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum

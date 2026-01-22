@@ -7,11 +7,7 @@ traversal to enable multi-hop reasoning and relationship-based queries.
 import asyncio
 import logging
 import re
-from dataclasses import dataclass
-from enum import Enum
-from typing import Any
 
-from .knowledge_graph_agent import GraphContext, KnowledgeGraphAgent
 
 logger = logging.getLogger(__name__)
 

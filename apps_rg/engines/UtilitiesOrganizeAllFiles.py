@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Comprehensive file organization script for sovereign silos
@@ -8,9 +7,7 @@ import argparse
 import logging
 import os
 import shutil
-from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
     TESTS_DIR,

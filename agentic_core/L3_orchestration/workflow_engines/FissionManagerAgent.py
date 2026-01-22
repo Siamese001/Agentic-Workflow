@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 FissionManagerAgent - L3 Orchestration Layer
@@ -25,7 +26,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 try:
@@ -41,7 +41,6 @@ from dotenv import load_dotenv
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 load_dotenv()
 Logger: Any = logging.getLogger(__name__)
@@ -59,7 +58,7 @@ class FissionResult:
     error_message: str | None = None
 
 
-class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+class FissionManagerAgent(SovereignBaseAgent):
     """
     L3 Orchestration Layer: Manages transition from healing to atomic fission.
 
@@ -166,7 +165,6 @@ class FissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
         """
         base_name: Any = os.path.splitext(os.path.basename(file_name))[0]
         parent_dir: Any = os.path.dirname(file_name) or "."
-        return f'### MISSION: ATOMIC FISSION (Monolith Decomposition)\nThe target file `{file_name}` has exceeded L1 Cognition limits and is structurally unstable.\n\nORIGINAL FILE CONTENT:\n{content}\n```\n\n### OBJECTIVE:\nPartition `{file_name}` into three sub-modules to clear Key 42 violations.\n\n### REQUIRED STRUCTURE:\n1. `{file_name}` (Main Facade/Imports - preserves the original interface)\n2. `{parent_dir}/{base_name}_core.py` (Primary state management and core logic)\n3. `{parent_dir}/{base_name}_signals.py` (L1-L5 communication and helper methods)\n\n### CONSTRAINTS:\n- SIGNATURE PARITY: Do NOT delete or change existing function signatures\n- LINE LIMIT: Each new file MUST be under 350 lines\n- LOGIC PRESERVATION: Total line count across new files must match original (+/- 5%)\n- FACADE PATTERN: Original file becomes import facade for backward compatibility\n- ZERO DATA LOSS: All functionality must be preserved\n\n### OUTPUT FORMAT:\nReturn ONLY a valid JSON object mapping file paths to their content:\n```json\n{{\n    "{file_name}": "# Facade pattern\n\1 agentic_core.{base_name}_core import *\n\1 agentic_core.{base_name}_signals import *",\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin\n    "{parent_dir}/{base_name}_core.py": "# Core logic\\n\n\1 CoreClass:\\n    pass",\n    "{parent_dir}/{base_name}_signals.py": "# Signal handling\\n\n\1 handle_signal():\\n    pass"\n}}\n```\n\nCRITICAL:\n- Return ONLY the JSON object, no markdown code blocks\n- Ensure facade maintains all original exports\n- Preserve all imports and dependencies\n- Each file must be syntactically valid Python\n'
 
     async def execute_fission(self, file_path: str, content: str, reason: str) -> FissionResult:
         """

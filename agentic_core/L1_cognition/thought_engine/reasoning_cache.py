@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Reasoning Path Caching Module
 
@@ -5,7 +6,6 @@ Implements memoization for reasoning paths to reduce redundant LLM calls
 and improve latency on repeated sub-problems.
 """
 
-from __future__ import annotations
 
 import functools
 import hashlib

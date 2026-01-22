@@ -9,7 +9,6 @@ All tests must pass 100%.
 """
 
 import sys
-from pathlib import Path
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -52,7 +51,6 @@ def test_2_ssot_utility_works():
     print("=" * 60)
 
     try:
-        from agentic_core.utils.ssot_discovery import (
             get_agent_names,
             get_agent_paths,
             load_agent_discovery,

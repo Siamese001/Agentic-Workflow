@@ -17,11 +17,9 @@ Usage:
     python scripts/phase4_batch4_mro_cleanup.py --execute
 """
 
-from __future__ import annotations
 
 import argparse
 import re
-from pathlib import Path
 
 # Files to EXCLUDE from refactoring
 EXCLUDED_FILES = {

@@ -6,8 +6,6 @@ compare_agent_lists.py - Compare agent lists between commits to trace reductions
 import json
 import subprocess
 import sys
-from collections import defaultdict
-from pathlib import Path
 
 
 def get_agents_at_commit(commit_hash):

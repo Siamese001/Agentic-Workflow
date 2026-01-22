@@ -5,9 +5,7 @@ Ported from: archives/legacy_resume_gen/Job Workflow - JSON/Job_Workflow_v61.27.
 """
 
 import hashlib
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
 
 
 class ProvenanceType(Enum):

@@ -13,7 +13,6 @@ USAGE:
 """
 
 import sys
-from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -24,8 +23,6 @@ def test_ssot_import():
     """Test 1: Verify ArchivalGatekeeper can import ARCHIVES_DIR."""
     print("\n[TEST 1] SSOT Import Test")
     try:
-        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
-        from agentic_core.L5_safety.validators.structure_blueprint import ARCHIVES_DIR
 
         # Verify ARCHIVES_DIR value
         assert ARCHIVES_DIR == "archives", f"Expected 'archives', got '{ARCHIVES_DIR}'"
@@ -50,7 +47,6 @@ def test_path_resolution():
     """Test 2: Verify archive_root resolves to archives/ not .archive."""
     print("\n[TEST 2] Path Resolution Test")
     try:
-        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 
         project_root = Path.cwd()
         ArchivalGatekeeper.reset_instance()
@@ -82,7 +78,6 @@ def test_exclusion_logic():
     """Test 3: Verify archives/ is in SOVEREIGN_EXCLUDED_FOLDERS."""
     print("\n[TEST 3] Exclusion Logic Test")
     try:
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_EXCLUDED_FOLDERS
 
         assert "archives" in SOVEREIGN_EXCLUDED_FOLDERS, (
             "'archives' not in SOVEREIGN_EXCLUDED_FOLDERS"
@@ -102,7 +97,6 @@ def test_no_hardcoded_paths():
     try:
         import inspect
 
-        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 
         # Get source code
         source = inspect.getsource(ArchivalGatekeeper)

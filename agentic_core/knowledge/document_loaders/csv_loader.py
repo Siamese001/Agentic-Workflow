@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 CSV Document Loader - Pandas-based structured data loading for RAG.
 
@@ -5,7 +6,6 @@ Restored: 2026-01-13 | Version: 2.0.0
 Original: archives/unmapped_drift/20260107/agentic_core/knowledge/document_loaders/csv_loader.py
 """
 
-from __future__ import annotations
 
 from pathlib import Path
 from typing import Any

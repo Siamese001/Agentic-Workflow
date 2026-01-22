@@ -1,9 +1,9 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, validator
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 """
 FilesystemSSOTReconcilerAgent - FILESYSTEM-LEVEL SSOT RECONCILER
@@ -74,10 +74,10 @@ from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveE
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
-# GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 # Use correct MCP mixin location
 try:
-    from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 except ImportError:
     # Fallback for testing
     class MCPHardenedMixin:

@@ -5,7 +5,6 @@ Ported from: archives/legacy_lic/Agentic LIC/memory_LIC.py
 """
 
 import hashlib
-from dataclasses import dataclass
 
 
 @dataclass
@@ -75,7 +74,6 @@ class LICVectorMemory:
         """
         try:
             import chromadb
-            from shared.configuration.ReasoningConfig import Settings
 
             self._client = chromadb.PersistentClient(
                 path=self.persist_directory,

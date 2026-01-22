@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 SSOT for Sovereign Blueprint Configuration.
 
@@ -14,7 +15,6 @@ For backward compatibility, this module also re-exports from
 L5_safety/validators/structure_blueprint.py
 """
 
-from __future__ import annotations
 
 # SSOT Exports - Import from structure_blueprint (actual SSOT location)
 try:

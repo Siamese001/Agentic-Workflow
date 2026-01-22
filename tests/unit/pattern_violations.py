@@ -7,10 +7,8 @@ CodeStandardsEnforcerAgent should detect.
 DO NOT FIX - Used for testing pattern enforcement.
 """
 
-from __future__ import annotations
 
 import builtins
-from typing import Any
 
 
 # VIOLATION Key 26: Mutable default argument

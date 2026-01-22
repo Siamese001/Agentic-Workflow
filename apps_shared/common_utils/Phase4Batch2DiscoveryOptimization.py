@@ -14,12 +14,10 @@ EXCLUDED FILES:
 - full_agent_discovery.py (special discovery logic)
 """
 
-from __future__ import annotations
 
 import argparse
 import ast
 import re
-from pathlib import Path
 
 # Files to EXCLUDE from refactoring
 EXCLUDED_FILES = {

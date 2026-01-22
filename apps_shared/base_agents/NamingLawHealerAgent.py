@@ -3,9 +3,7 @@
 # Suggested keywords to add in docstring/code: orchestrator, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 #!/usr/bin/env python3
 """
@@ -27,8 +25,6 @@ This file will be removed in a future release.
 import json
 import re
 import warnings
-from pathlib import Path
-from typing import Any
 
 # Emit deprecation warning on import
 warnings.warn(
@@ -38,13 +34,9 @@ warnings.warn(
     stacklevel=2,
 )
 
-from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.L5_safety.validators.structure_blueprint import (
     CANON_SIGNALS,
     FORBIDDEN_PATTERNS,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 @dataclass
@@ -122,7 +114,6 @@ Current date: December 24, 2025
         self.healed_files = []
 
         # Sub-20: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
 
         for py_file in get_python_files(self.root):
             # Skip protected files and __init__ files

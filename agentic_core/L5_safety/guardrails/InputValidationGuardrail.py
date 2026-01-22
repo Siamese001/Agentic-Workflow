@@ -1,9 +1,10 @@
+from __future__ import annotations
 """
 InputValidationGuardrail: Consolidated input validation with composable rules.
 Merges: input_validator, PIISanitizer, PromptInjectionDetector, BiasDetector, safety_guardrail
 """
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 import re
@@ -11,13 +12,12 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class InputValidationGuardrail(HealerMixin):
+class InputValidationGuardrail(SovereignBaseAgent):
     """
     Consolidated input validation with composable rule sets.
     Handles: PII detection, prompt injection, bias detection, format validation.

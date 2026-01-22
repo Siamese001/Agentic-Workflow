@@ -7,10 +7,8 @@ and messages.
 
 import json
 import logging
-from typing import Any
 
 from .instructional_injections import get_instructional_injections, get_required_injections
-from .shared_models import (
     InjectionConfig,
     InjectionMatch,
     InjectionPattern,
@@ -409,7 +407,6 @@ class PromptInjectionLoader:
 
         # Use prompt assembler for semantic fencing (lazy import)
         try:
-            from .prompt_assembler import assemble_prompt
 
             enhanced = assemble_prompt(
                 role="Assistant",
@@ -461,7 +458,6 @@ class PromptInjectionLoader:
             Fully assembled prompt with semantic fencing
         """
         # Lazy import to avoid circular dependency
-        from .prompt_assembler import assemble_prompt
 
         # Find matching injections
         matches = self.find_matching_injections(

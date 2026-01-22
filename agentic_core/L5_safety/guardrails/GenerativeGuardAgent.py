@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 from dataclasses import dataclass
@@ -28,7 +29,6 @@ _mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_m
 MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # Import CanonBaseAgentInterface
 try:
@@ -107,7 +107,7 @@ EXCLUDED_DIRS = [
 
 @dataclass
 class GenerativeGuardAgent(
-    SubatomicTestingMixin, HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin
+    SovereignBaseAgent, SubatomicTestingMixin, HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin
 ):
     """
     KEYS: 45 (Dead Code/Runaway Generation)

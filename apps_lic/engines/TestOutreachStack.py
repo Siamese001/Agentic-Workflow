@@ -1,9 +1,6 @@
 """Tests for OutreachStack coordination logic."""
 
-from unittest.mock import patch
 
-from src.lic_agentic.reasoning.toggles import ReasoningToggles
-from src.lic_agentic.stacks.outreach_stack import OutreachStack, StackInputs
 
 
 def test_outreach_stack_blocks_high_risk_prompt():

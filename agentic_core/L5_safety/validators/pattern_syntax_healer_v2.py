@@ -1,6 +1,7 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -9,7 +10,6 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 """
 Pattern Syntax Healer v2 - Automated Final Sweep
@@ -119,7 +119,7 @@ class PatternSyntaxHealerV2:
 
         Example:
         from agentic_core.L5_safety.validators.structure_blueprint import (
-        from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+        from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
             SOVEREIGN_REGISTRY,
         )
 
@@ -128,7 +128,7 @@ class PatternSyntaxHealerV2:
             SOVEREIGN_REGISTRY,
         )
 
-        from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+        from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
         """
         fixes = 0
 

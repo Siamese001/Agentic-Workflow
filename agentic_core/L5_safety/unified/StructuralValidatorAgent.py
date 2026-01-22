@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 StructuralValidatorAgent - Universal Structure and Architecture Validation
 
@@ -20,7 +21,7 @@ Features:
 - [SOVEREIGN] Active Healing: Replaces stub with execution driver
 """
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import ast
 import json
@@ -31,9 +32,6 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.file_cache import FileCache
 from agentic_core.utils.sovereign_scanner import SovereignScanner
@@ -310,7 +308,7 @@ class GravityVisitor(ast.NodeVisitor):
 
 
 @dataclass
-class StructuralValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class StructuralValidatorAgent(SovereignBaseAgent):
     """
     [L5 EXECUTIVE] Universal Structure and Architecture Validation.
 

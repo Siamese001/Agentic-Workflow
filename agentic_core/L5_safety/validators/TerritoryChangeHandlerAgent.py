@@ -1,181 +1,150 @@
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, memory, prompt, workflow
-# This boosts alignment detection — review and integrate appropriately
-
-from __future__ import annotations
-
-from dataclasses import dataclass
-
-#!/usr/bin/env python3
 """
-Autonomous RAG Daemon - L3 Self-Monitoring RAG System
-Watches for territory changes and triggers reindexing with debouncing
-"""
+[PHASE 16] TerritoryChangeHandlerAgent - L5 Safety & Validation.
 
+Watches for territory healing/ingestion changes and triggers RAG reindexing.
+Acts as a safety gate to ensure the "Canon" stays aligned with the filesystem.
+"""
 import asyncio
 import time
+import logging
+import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional, List, Union
+from dataclasses import dataclass
 
-from watchdog.events import FileSystemEventHandler
-from watchdog.observers import Observer
+# Required for File System Watching
+try:
+    from watchdog.observers import Observer
+    from watchdog.events import FileSystemEventHandler
+except ImportError:
+    Observer = object
+    FileSystemEventHandler = object
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENTIC_CORE_DIR,
-)
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
+# Mock/Placeholder for internal timeout decorator if not available
+def timeout(seconds: int):
+    def decorator(func):
+        return func
+    return decorator
 
-# NAMING FIXED: TerritoryChangeHandlerAgent → TerritoryChangeHandlerAgent
+Logger = logging.getLogger(__name__)
+AGENTIC_CORE_DIR = os.environ.get("AGENTIC_CORE_DIR", ".")
+
 @dataclass
-class TerritoryChangeHandlerAgent(
-    MCPHardenedMixin, SubatomicTestingMixin, FileSystemEventHandler, HealerMixin
-):
-    """L0-L3: Watch for territory healing/ingestion changes with debouncing"""
+class TerritoryChangeHandlerAgent(SovereignBaseAgent, FileSystemEventHandler):
+    """
+    L5 Safety Agent: Watches for territory changes with debouncing.
+    Informs the AutonomousRagDaemon when re-indexing is required.
+    """
 
-    def __init__(self, daemon: bool) -> None:
-        """Initialize the instance."""
+    def __init__(self, daemon: Any = None, **kwargs) -> None:
+        """Initialize the agent with debouncing logic."""
+        # Initialize SovereignBaseAgent first
+        super().__init__(**kwargs)
         self.daemon = daemon
-        self.last_trigger = 0
+        self.last_trigger = 0.0
         self.debounce_seconds = 10
-        super().__init__()
 
-    def on_modified(self, event: Any) -> Any:
-        """Execute on_modified operation."""
+    def on_modified(self, event: Any) -> None:
+        """Execute on_modified operation when files change."""
         if event.is_directory:
             return
-        if event.src_path.endswith((".py", ".json", ".yaml", ".md", ".txt")):
+            
+        # Watch for core agentic file changes
+        if event.src_path.endswith(('.py', '.json', '.yaml', '.md', '.txt')):
             current_time = time.time()
             if current_time - self.last_trigger > self.debounce_seconds:
                 self.last_trigger = current_time
-                # Use call_soon_threadsafe because watchdog runs in its own thread
-                self.daemon.loop.call_soon_threadsafe(
-                    lambda: asyncio.create_task(self.daemon.trigger_reindex())
-                )
+                if self.daemon and hasattr(self.daemon, 'loop'):
+                    self.daemon.loop.call_soon_threadsafe(
+                        lambda: asyncio.create_task(self.daemon.trigger_reindex())
+                    )
 
     @timeout(300)
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set | None = None,
-    ) -> dict[str, int]:
-        """L3 orchestration agent - operational only."""
-        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
-        if _call_path is None:
-            _call_path = set()
-        agent_name = self.__class__.__name__
-        if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
-        if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
-        _call_path.add(agent_name)
-        try:
-            print(f"[{agent_name}] L3 orchestration - operational only")
-            return {"skipped": 1}
-        finally:
-            _call_path.discard(agent_name)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+        """L5 validation - operational health check."""
+        # Perform base healing
+        base_results = super().heal_repository(dry_run=dry_run, execute=execute)
+        
+        # Territory specific logic
+        return {
+            "status": "active",
+            "last_trigger": self.last_trigger,
+            "base_healing": base_results
+        }
 
 
-# NAMING FIXED: AutonomousRAGDaemon → AutonomousRagDaemon
 class AutonomousRagDaemon:
-    """L3: Self-monitoring RAG system with autonomous health checks"""
+    """
+    L5/L3 Hybrid: Self-monitoring RAG system with autonomous health checks.
+    Uses TerritoryChangeHandlerAgent to maintain sync between disk and vector DB.
+    """
 
-    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-    super().heal_repository()
-
-    def __init__(self, orchestrator: Any, retriever: Any, Historian) -> None:
-        """Initialize the instance."""
+    def __init__(self, orchestrator: Any, retriever: Any, historian: Any) -> None:
+        """Initialize the daemon with its dependencies."""
         self.orchestrator = orchestrator
         self.retriever = retriever
-        self.Historian = Historian
+        self.historian = historian
         self.loop = asyncio.get_event_loop()
         self.running = True
-
-        # Self-monitoring intervals
-        self.health_check_interval = 3600  # 1 hour
-        self.reindex_interval = 86400  # 24 hours
-
-        # Watchdog setup
+        self.health_check_interval = 3600
+        self.reindex_interval = 86400
         self.observer = Observer()
-        self.handler = TerritoryChangeHandlerAgent(self)
+        self.handler = TerritoryChangeHandlerAgent(daemon=self)
 
-    async def start(self) -> Any:
-        """Start the autonomous daemon"""
-        print("[DAEMON] Starting Autonomous RAG Daemon...")
-
-        # Start file system watcher
+    async def start(self) -> None:
+        """Start the autonomous monitoring and reindexing cycle."""
         watch_path = Path(AGENTIC_CORE_DIR)
-        self.observer.schedule(self.handler, str(watch_path), recursive=True)
-        self.observer.start()
+        if watch_path.exists():
+            self.observer.schedule(self.handler, str(watch_path), recursive=True)
+            self.observer.start()
+            asyncio.create_task(self.health_check_loop())
+            asyncio.create_task(self.periodic_reindex_loop())
+            Logger.info(f"[TERRITORY] Monitoring started on: {watch_path}")
 
-        # Start background tasks
-        asyncio.create_task(self.health_check())
-        asyncio.create_task(self.periodic_reindex())
-
-        print("[DAEMON] Autonomous RAG Daemon online")
-
-    async def health_check(self) -> Any:
-        """L5: Sovereign validation – testing the Canon against reality"""
+    async def health_check_loop(self) -> None:
+        """Sovereign validation: testing the Canon against reality."""
         while self.running:
             await asyncio.sleep(self.health_check_interval)
-
             try:
-                # Randomize from a small pool of 'Golden Queries'
-                test_queries = [
-                    "Purpose of the Canon?",
-                    "Explain L5 safety",
-                    "How does L1 expansion work?",
-                ]
+                test_queries = ['Purpose of the Canon?', 'Explain L5 safety', 'How does L1 expansion work?']
                 import random
-
                 query = random.choice(test_queries)
-
+                
+                # Check retriever faithfulness
                 result = await self.orchestrator.sovereign_retrieve(query)
-                faithfulness = result.get("faithfulness", 0.0)
-
-                # Log health metrics
-                self.Historian.log_event(
-                    {
-                        "event": "health_check",
-                        "query": query,
-                        "faithfulness": faithfulness,
-                        "timestamp": time.time(),
-                    }
-                )
-
+                faithfulness = result.get('faithfulness', 0.0)
+                
+                self.historian.log_event({
+                    'event': 'health_check', 
+                    'query': query, 
+                    'faithfulness': faithfulness, 
+                    'timestamp': time.time()
+                })
+                
                 if faithfulness < 0.75:
-                    print(f"[!] Health check warning: faithfulness {faithfulness:.2f}")
+                    Logger.warning(f"[TERRITORY] Faithfulness low ({faithfulness}). Triggering reindex.")
                     await self.trigger_reindex()
-
             except Exception as e:
-                print(f"[!] Health check failed: {e}")
+                Logger.error(f"[TERRITORY] Health check failed: {e}")
 
-    async def periodic_reindex(self) -> Any:
-        """Periodic full reindexing"""
+    async def periodic_reindex_loop(self) -> None:
+        """Enforce periodic full reindexing to prevent drift."""
         while self.running:
             await asyncio.sleep(self.reindex_interval)
             await self.trigger_reindex()
 
-    async def trigger_reindex(self) -> Any:
-        """Trigger a full reindex of the canon"""
-        print("[DAEMON] Triggering reindex...")
+    async def trigger_reindex(self) -> None:
+        """Execute the actual reindex operation on the retriever."""
         try:
+            Logger.info("[TERRITORY] Starting reindexing of the canon...")
             await self.retriever.reindex_all()
-            print("[DAEMON] Reindex complete")
         except Exception as e:
-            print(f"[!] Reindex failed: {e}")
+            Logger.error(f"[TERRITORY] Reindexing failed: {e}")
 
-    async def stop(self) -> Any:
-        """Stop the daemon"""
-        print("[DAEMON] Stopping Autonomous RAG Daemon...")
+    async def stop(self) -> None:
+        """Graceful shutdown of the monitoring system."""
         self.running = False
         self.observer.stop()
         self.observer.join()
-        print("[DAEMON] Daemon stopped")

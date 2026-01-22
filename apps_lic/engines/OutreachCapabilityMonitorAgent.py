@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Proactive Scheduling and Predictive Handoff for Outreach Engine L4.5 Autonomy
@@ -8,12 +7,8 @@ Provides:
 - OutreachPredictiveHandoff: Signals before reaching capability edge
 - OutreachCapabilityMonitorAgent: Tracks agent capabilities and limits
 """
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any
 
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 from .context import OutreachEngineContext
 

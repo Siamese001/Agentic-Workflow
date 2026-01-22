@@ -14,18 +14,11 @@ Typical usage:
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import ast
 import hashlib
 import logging
-from collections import defaultdict
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.validators.structure_blueprint import (
     GLOBAL_EXCLUDED_DIRS,
     L0_MAINTENANCE_DIR,
     L1_COGNITION_DIR,
@@ -34,9 +27,6 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L4_STATE_DIR,
     L5_SAFETY_DIR,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
@@ -46,8 +36,6 @@ ARCHIVES_DIR = "archives"
 
 # Tree-sitter for AST fingerprinting
 try:
-    from tree_sitter import Language, Parser
-    from tree_sitter_python import language
 
     TREE_SITTER_AVAILABLE = True
 except ImportError:

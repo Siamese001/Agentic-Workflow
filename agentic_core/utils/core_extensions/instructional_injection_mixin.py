@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 InstructionalInjectionMixin - Provides all 30 instructional injection patterns to agents.
 
@@ -16,7 +17,6 @@ LAYERS:
 - Output Layer (26-30): JSON-only, schema enforcement, stability, error envelopes, minimality
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum

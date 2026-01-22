@@ -23,10 +23,8 @@ Pre-commit Hook Entry:
       always_run: true
 """
 
-from __future__ import annotations
 
 import sys
-from pathlib import Path
 
 
 def main() -> int:
@@ -36,7 +34,6 @@ def main() -> int:
         project_root = Path(__file__).resolve().parent.parent.parent
         sys.path.insert(0, str(project_root))
 
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 

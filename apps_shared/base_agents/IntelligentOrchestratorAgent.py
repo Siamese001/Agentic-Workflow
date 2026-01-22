@@ -3,9 +3,7 @@
 # Suggested keywords to add in docstring/code: memory, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """
 Canon Validator Intelligent Orchestrator
@@ -16,26 +14,12 @@ import asyncio
 
 # GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency
 import importlib
-from typing import Any
 
-from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
-from agentic_core.canon_agents_pattern import SemanticMapperAgent, UIValidationAgent
-from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
-from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
-from agentic_core.L1_cognition.thought_engine.PatternEnforcerAgent import PatternEnforcerAgent
-from agentic_core.L1_cognition.thought_engine.TypeMechanicAgent import TypeMechanicAgent
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-from archives.void_violations.BudgetAgent import BudgetAgent
-from archives.void_violations.DocumentationAgent import DocumentationAgent
 
 _struct_mod = importlib.import_module(
     "agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent"
 )
 StructuralEngineerAgent = _struct_mod.StructuralEngineerAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.runtime.shared.canon_validation_context import ValidationContext
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass

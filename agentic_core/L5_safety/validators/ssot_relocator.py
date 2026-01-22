@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 SSOT Relocator - Automated Violation Remediation
 
@@ -13,7 +14,6 @@ Provides automated remediation for:
 3. Gravity violations (wrong layer → correct layer)
 """
 
-from __future__ import annotations
 
 import logging
 from dataclasses import dataclass

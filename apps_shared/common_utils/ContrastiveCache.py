@@ -7,10 +7,7 @@ queries and serve cached responses instantly.
 import json
 import logging
 import time
-from typing import Any
 
-import numpy as np
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -92,8 +89,6 @@ class ContrastiveSemanticCache:
             return False
         # Try to check availability without loading
         try:
-            import numpy as np
-            from sentence_transformers import SentenceTransformer
 
             return True
         except ImportError:
@@ -113,8 +108,6 @@ class ContrastiveSemanticCache:
 
         try:
             # Import required libraries
-            import numpy as np
-            from sentence_transformers import SentenceTransformer
 
             logger.info(f"Loading SentenceTransformer model: {self.model_name}")
             start_time = time.time()

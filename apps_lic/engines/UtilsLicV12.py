@@ -4,11 +4,8 @@
 __version__ = "12.0"
 
 import re
-from collections import defaultdict
-from collections.abc import Callable
 from datetime import datetime, timedelta
 
-from models_LIC import Archetype, CircuitBreakerOpenError, CircuitState
 
 # ============================================================================
 # NEW v11.6: CIRCUIT BREAKER (FEATURE 4.1)

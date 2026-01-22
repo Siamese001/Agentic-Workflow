@@ -11,9 +11,7 @@ This script:
 
 import json
 import re
-from pathlib import Path
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
 )
 

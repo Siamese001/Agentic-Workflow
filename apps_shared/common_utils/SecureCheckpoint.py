@@ -10,11 +10,8 @@ import hmac
 import json
 import logging
 import time
-from pathlib import Path
 
-from cryptography.fernet import Fernet
 
-from ..shared_models import MicroCheckpoint
 
 logger = logging.getLogger(__name__)
 

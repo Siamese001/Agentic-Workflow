@@ -22,7 +22,6 @@ EXIT CODES:
 
 import subprocess
 import sys
-from pathlib import Path
 
 # Protected files that require explicit override to modify
 PROTECTED_FILES = [

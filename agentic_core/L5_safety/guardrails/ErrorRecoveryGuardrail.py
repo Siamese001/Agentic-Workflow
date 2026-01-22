@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Error Recovery Guardrail - Consolidated Error Handling & Self-Healing
 
@@ -12,7 +13,6 @@ Composable Rules:
 - self_healing: Auto-recovery mechanisms
 """
 
-from __future__ import annotations
 
 import time
 import traceback

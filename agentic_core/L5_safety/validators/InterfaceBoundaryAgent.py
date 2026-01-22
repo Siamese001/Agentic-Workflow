@@ -3,6 +3,7 @@
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from dataclasses import dataclass
 
 #!/usr/bin/env python3
@@ -23,7 +24,6 @@ import ast
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
@@ -32,7 +32,7 @@ from agentic_core.utils.ssot_discovery import get_python_files
 
 
 @dataclass
-class InterfaceBoundaryAgent(MCPHardenedMixin):
+class InterfaceBoundaryAgent(SovereignBaseAgent):
     """
     The Architect Agent.
     Prevents L0 utilities from polluting the upper layers by enforcing interface boundaries.

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """
 UnifiedCodeHealerAgent - Code Healing & Repair
 
@@ -15,7 +17,6 @@ Features:
 - Safe file mutation with backup
 """
 
-from __future__ import annotations
 
 import ast
 import logging
@@ -25,6 +26,8 @@ import threading
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 
@@ -66,7 +69,7 @@ class HealerConfig:
     backup_dir: Path | None = None
 
 
-class UnifiedCodeHealerAgent:
+class UnifiedCodeHealerAgent(SovereignBaseAgent):
     """
     Unified code healer for canon, imports, and structure.
 
@@ -242,12 +245,10 @@ class UnifiedCodeHealerAgent:
                 line_number=1,
                 description="Add __future__ annotations import",
                 old_code="",
-                new_code="from __future__ import annotations",
             )
             actions.append(action)
 
             if not self.config.dry_run:
-                new_lines.insert(0, "from __future__ import annotations")
                 modified = True
                 action.applied = True
 

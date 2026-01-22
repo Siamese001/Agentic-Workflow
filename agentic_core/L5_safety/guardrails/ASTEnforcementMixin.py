@@ -1,3 +1,4 @@
+from __future__ import annotations
 """ASTEnforcementMixin — Ultra L5 Mixin for AST Enforcement (Jan 01, 2026)
 
 Add to validators/enforcers for precise AST analysis (no regex).
@@ -6,7 +7,6 @@ Add to validators/enforcers for precise AST analysis (no regex).
 - Maximizes AST opportunities across all validators
 """
 
-from __future__ import annotations
 
 import ast
 from pathlib import Path

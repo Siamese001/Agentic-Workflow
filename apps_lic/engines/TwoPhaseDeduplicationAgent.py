@@ -27,18 +27,11 @@ Territory: agentic_core/L5_safety/guardrails/
 Canon Key 51 Compliance: Includes heal_repository() method
 """
 
-from __future__ import annotations
 
 import ast
 import hashlib
 import logging
-from collections import defaultdict
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.validators.structure_blueprint import (
     L0_MAINTENANCE_DIR,
     L1_COGNITION_DIR,
     L2_EXECUTION_DIR,
@@ -47,9 +40,6 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     L5_SAFETY_DIR,
     SOVEREIGN_REGISTRY,
 )
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 

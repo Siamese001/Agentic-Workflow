@@ -9,19 +9,15 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, state, validator
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
 
 """Brief description of functionality and purpose."""
 
 "Brief description of functionality and purpose."
-from typing import Any
 
 _logger = logging.getLogger(__name__)
 "\nfrom agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nL2 safety execution for resume compliance and protection workflows.\n\nExecutes comprehensive safety validation to ensure resume content\nmeets security standards for job alignment.\n"
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 @dataclass

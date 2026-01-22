@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Base Agent for Outreach Engine
@@ -7,14 +6,8 @@ Provides the abstract base class for all outreach agents.
 """
 
 
-from abc import ABC, abstractmethod
 
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-from .context import OutreachEngineContext
 
 
 class OutreachAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):

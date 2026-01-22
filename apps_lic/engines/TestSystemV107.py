@@ -4,14 +4,8 @@ import asyncio
 import json
 import sys
 import types
-from collections.abc import Callable
-from functools import partial
-from pathlib import Path
-from typing import Any
 
 import pytest
-from agent_tools_v10_7 import resolve_mcp_client
-from core_v10_7 import (
     BaseTool,
     CacheManager,
     CircuitBreaker,
@@ -38,7 +32,6 @@ from core_v10_7 import (
     exponential_backoff_retry,
     wrap_mcp,
 )
-from strategy_ensemble_v10_7 import (
     DomainPlannerAgent,
     FeasibilityAnalystAgent,
     RiskAssessorAgent,
@@ -79,7 +72,6 @@ if "langgraph" not in sys.modules:  # pragma: no cover - setup code
     sys.modules["langgraph.graph"] = graph_module
     sys.modules["langgraph.errors"] = errors_module
 
-from agent_orchestration_v10_7 import load_dynamic_tools
 
 
 class InMemoryRedis:
@@ -1561,7 +1553,6 @@ def test_dynamic_tool_loader_respects_mcp_requirements(
     tool_dir.mkdir()
     tool_file = tool_dir / "mcp_tool.py"
     tool_code = """
-from core_v10_7 import BaseTool, BaseToolOutput, track_metrics
 
 class MCPSampleTool(BaseTool):
     tool_name = "mcp_sample_tool"

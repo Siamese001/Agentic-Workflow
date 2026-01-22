@@ -1,6 +1,8 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
@@ -13,13 +15,11 @@ Implements membrane security model: airlock entry/exit, rate limiting, content f
 mutation blocking, circuit breaking, PII protection, and specialized enforcement.
 """
 
-from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
@@ -253,7 +253,7 @@ class AuthorizationGuardrail(Guardrail):
 
 
 @dataclass
-class CompositeGuardrailAgent(MCPHardenedMixin):
+class CompositeGuardrailAgent(SovereignBaseAgent):
     """
     Unified guardrail agent - membrane pattern composition.
 

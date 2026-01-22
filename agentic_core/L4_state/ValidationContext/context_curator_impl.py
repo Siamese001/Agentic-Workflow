@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """Implementation for ContextCurator."""
 import logging
@@ -7,12 +8,11 @@ from typing import Any
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
 
-class ContextCurator(HealerMixin):
+class ContextCurator(SovereignBaseAgent):
     """Curates and manages the context window dynamically.
 
     Features:

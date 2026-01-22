@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 LocationAgent: Sovereign territorial gatekeeper (Canon Key 6 territory)
@@ -193,7 +194,6 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = "") -> bool
     return False
 
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.L5Agent import L5Agent
 
 
@@ -202,7 +202,7 @@ from agentic_core.L5_safety.validators.L5Agent import L5Agent
     purpose="Enforces territory/file placement rules",
     territory="templates",
 )
-class LocationAgent(L5Agent, MCPHardenedMixin):
+class LocationAgent(SovereignBaseAgent, L5Agent):
     r"""
     Autonomous agent responsible for territorial integrity.
     Run independently or as first stage in compliance orchestrator.
@@ -1728,7 +1728,6 @@ class LocationAgent(L5Agent, MCPHardenedMixin):
 
                 Full location compliance scan with automatic cleanup, post-heal validation,
                 import fixing, and batch verification.
-        from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 
                 Args:
                     files: Optional list of files to scan (defaults to all .py files)

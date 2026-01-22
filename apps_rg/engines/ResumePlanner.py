@@ -8,8 +8,6 @@ Resume Analysis Planning → K1 Extraction → K2 Cleaning → K3 Quantification
 """
 
 import logging
-from dataclasses import dataclass, field
-from typing import Any
 
 Logger = logging.getLogger(__name__)
 

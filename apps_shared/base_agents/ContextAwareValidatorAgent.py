@@ -1,6 +1,4 @@
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """
 ContextAwareValidatorAgent – Sovereign Agent Role Component (Phase 32 – Dec 30, 2025)
@@ -20,11 +18,7 @@ Constitutional Alignment:
 """
 
 import logging
-from pathlib import Path
-from typing import Any
 
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 @dataclass

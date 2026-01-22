@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Runtime Shared Schemas (Phase 2C Residuals)
@@ -11,11 +10,7 @@ Note: 'Residual' prefixes are maintained to prevent collisions with
 legacy Phase 1 models during the final migration.
 """
 
-from dataclasses import dataclass
-from enum import Enum
-from typing import Any
 
-from pydantic import BaseModel
 
 # ==========================================
 # Messaging & Communication

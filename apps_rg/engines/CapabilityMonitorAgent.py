@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Proactive Scheduling and Predictive Handoff for L4.5 Autonomy
@@ -8,14 +7,8 @@ Provides:
 - PredictiveHandoff: Signals before reaching capability edge
 - CapabilityMonitorAgent: Tracks agent capabilities and limits
 """
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any
 
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 from .context import ResumeEngineContext
 

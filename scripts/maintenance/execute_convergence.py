@@ -13,11 +13,9 @@ Exit Codes:
     1 - Convergence failed, unresolved violations remain
     2 - Error during execution
 """
-from __future__ import annotations
 
 import logging
 import sys
-from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 Logger = logging.getLogger("ConvergenceDriver")
@@ -29,7 +27,6 @@ def run_terminal_convergence() -> int:
         project_root = Path(__file__).resolve().parent.parent.parent
         sys.path.insert(0, str(project_root))
 
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 

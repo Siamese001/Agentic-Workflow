@@ -1,11 +1,8 @@
 """Regression test enforcing retrieval latency SLO."""
 
-from __future__ import annotations
 
 import math
 
-from src.lic_agentic.agents.k3_message_architect import MessageArchitect
-from src.lic_agentic.reasoning.toggles import ReasoningToggles
 
 
 def percentile(values: list[int], pct: float) -> float:

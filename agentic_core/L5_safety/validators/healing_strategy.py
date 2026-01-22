@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 HealingStrategy - Tiered Healing Execution Strategy
 
@@ -12,7 +13,6 @@ TIERS:
     Tier 4: Final Gate - Safety validation, final checks
 
 USAGE:
-    from agentic_core.L3_orchestration.strategies.healing_strategy import HealingStrategy
     from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
 
     strategy = HealingStrategy(project_root=Path.cwd())
@@ -20,7 +20,6 @@ USAGE:
     result = orchestrator.run_mission({"dry_run": True})
 """
 
-from __future__ import annotations
 
 import logging
 from datetime import datetime
@@ -311,7 +310,8 @@ class HealingStrategy:
                 Logger.info("[PHASE B] Running Deep SSOT Duplicate Check...")
                 result = agent.heal_repository(dry_run=dry_run, execute=execute, phase="B")
             elif hasattr(agent, "heal_repository"):
-                result = agent.heal_repository(dry_run=dry_run, execute=execute)
+                # [PHASE 33j] Propagate all kwargs to agents for future-proof signal continuity
+                result = agent.heal_repository(dry_run=dry_run, execute=execute, **kwargs)
             else:
                 return {
                     "status": "ERROR",

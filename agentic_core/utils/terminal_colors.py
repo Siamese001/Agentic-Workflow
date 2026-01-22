@@ -17,7 +17,6 @@ Color Scheme:
 - BLUE: Agent activity, processing
 
 Usage:
-    from agentic_core.utils.terminal_colors import (
         status_bar, progress_bar, phase_header, agent_status,
         Colors, print_success, print_error, print_warning, print_info
     )

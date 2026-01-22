@@ -3,7 +3,6 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, prompt, state
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 """
 L5 Autonomous Orchestrator - Thin Wrapper
@@ -16,10 +15,7 @@ import asyncio
 import logging
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from typing import Any
 
-from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
-from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 Logger: Any = logging.getLogger(__name__)
 

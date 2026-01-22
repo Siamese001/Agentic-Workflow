@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Public API for Configuration - SSOT for constants and registry.
 
@@ -12,7 +13,6 @@ Use:
     from agentic_core.config import DEFAULT_EXCLUDE_DIRS
 """
 
-from __future__ import annotations
 
 # Re-export from the SSOT modules
 # Import from structure_blueprint (actual SSOT location)

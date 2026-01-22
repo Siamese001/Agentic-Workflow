@@ -9,12 +9,10 @@ Usage:
     python scripts/update_phase3_imports.py
 """
 
-from __future__ import annotations
 
 import argparse
 import re
 import sys
-from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 

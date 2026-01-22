@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Constitutional Overseer for validating ActionRequests.
 
 This module provides safety validation for action requests, including:
@@ -23,7 +24,7 @@ Typical usage:
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 import re
@@ -172,12 +173,10 @@ class ConstitutionalOverseer:
         return self._forbidden_commands.copy()
 
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 @dataclass
-class SafetyInspectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class SafetyInspectorAgent(SovereignBaseAgent):
     """
     L5 Safety Inspector with Socratic Judge for false positive mitigation.
 
@@ -241,7 +240,6 @@ class SafetyInspectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin)
             with open(file_path, encoding="utf-8") as f:
                 content: Any = f.read()
                 lines: Any = content.split(
-                    "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n"
                 )
             for pattern in self.secret_patterns:
                 if re.search(pattern, content, re.IGNORECASE):

@@ -7,7 +7,6 @@ Generated: 2025-12-07T13:28:54.223993
 
 import logging
 
-from shared.result_types import ScoreResult
 
 Logger = logging.getLogger(__name__)
 

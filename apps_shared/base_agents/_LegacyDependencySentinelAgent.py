@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 DependencySentinelAgent - L1 Guardian for Import Dependencies
@@ -8,11 +7,8 @@ Uses AST parsing to analyze and validate import structures.
 """
 import ast
 import logging
-from pathlib import Path
-from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -84,9 +80,6 @@ class DependencyViolation:
         }
 
 
-from agentic_core.L2_execution.ToolRegistry.governance import DependencySentinelAgent
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 # Legacy L1 version - use L2 canonical (dependency management is execution-level)

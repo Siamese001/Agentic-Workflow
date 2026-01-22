@@ -12,8 +12,6 @@ Identifies duplicate agent files across the repository and provides remediation 
 import ast
 import hashlib
 import json
-from collections import defaultdict
-from pathlib import Path
 
 
 def compute_file_hash(file_path: Path) -> str:

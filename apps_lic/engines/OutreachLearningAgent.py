@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Outreach Engine Learning Module
@@ -10,14 +9,8 @@ Provides learning and memory capabilities:
 """
 import hashlib
 import json
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from pathlib import Path
-from typing import Any
 
-from .context import OutreachEngineContext
-from .outreach_base import OutreachAgent
 
 
 class OutreachConfidenceLevel(Enum):

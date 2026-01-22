@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Healing Strategy Pattern - Polymorphic Violation Healing
 
@@ -5,7 +6,6 @@ Replaces if/elif branching with strategy classes for different violation types.
 Each strategy encapsulates healing logic for a specific violation category.
 """
 
-from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod

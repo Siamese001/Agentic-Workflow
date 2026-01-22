@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, prompt, workflow
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -37,7 +38,6 @@ from threading import Lock
 from typing import Any, List, Tuple
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import List, Tuple, timeout
 
@@ -45,7 +45,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class MetricsAgent(SovereignBaseAgent):
     """
     MetricsAgent: Sovereign quantitative state and alert governor.
     Thread-safe, in-memory Metric store with alerting rule generation.
@@ -226,9 +226,7 @@ class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             for k, v in cfg["annotations"].items():
                 yaml_lines.append(f"          {k}: '{v}'")
 
-        yaml_str = "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n".join(
-            yaml_lines
-        )
+        yaml_str = "\n".join(yaml_lines)
 
         if self.alerting_rules_file:
             try:

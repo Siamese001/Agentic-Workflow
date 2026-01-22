@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 GravityStateAgent - Gravity Healing State Tracker
@@ -58,7 +59,7 @@ class HealingRecord:
     line_number: int | None = None
 
 
-class GravityStateAgent(SubatomicTestingMixin, MCPHardenedMixin):
+class GravityStateAgent(SovereignBaseAgent):
     """
     [L4 STATE] Tracks gravity healing operations and prevents re-flagging.
 

@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Network Operations - API Calls, Redis, and External Service Integration
@@ -6,7 +5,6 @@ Consolidated from core_utils.py, network_utils.py, and security_utils.py
 """
 import json
 import logging
-from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 

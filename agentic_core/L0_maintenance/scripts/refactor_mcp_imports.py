@@ -19,10 +19,10 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 REPO = Path(__file__).parent.parent
 
 # Old import pattern (L5 - violates hierarchy)
-OLD_IMPORT = "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin"
+OLD_IMPORT = "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin"
 
 # New import pattern (utils - foundational layer)
-NEW_IMPORT = "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin"
+NEW_IMPORT = "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin"
 
 
 def refactor_file(file_path: Path) -> bool:

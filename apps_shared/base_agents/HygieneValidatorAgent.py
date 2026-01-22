@@ -40,18 +40,11 @@ warnings.warn(
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import ast
 import hashlib
 import os
-from collections import defaultdict
-from pathlib import Path
-from typing import Any
 
-from agentic_core.bases import L0MaintenanceBaseAgent
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L5_safety.validators.structure_blueprint import (
     SCRIPTS_DIR,
     TESTS_DIR,
 )
@@ -106,7 +99,6 @@ class HygieneValidatorAgent(L0MaintenanceBaseAgent, MCPHardenedMixin):
         Logs warning if tests soft-fail but does not halt boot.
         """
         try:
-            from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import (
                 L0DelegationTestingMixin,
             )
 

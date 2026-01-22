@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: orchestrator, state, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 ⚛️ Context Curator - Prompt Engineer Agent
@@ -78,7 +79,7 @@ class HandoffSummary:
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class ContextCuratorAgent(SubatomicTestingMixin, MCPHardenedMixin, SubAtomicAgent):
+class ContextCuratorAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     The Context Curator - Prompt Engineer Agent
 

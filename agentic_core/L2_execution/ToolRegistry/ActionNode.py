@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Action Node - Sub-atomic Execution & Output Generation
 
@@ -5,7 +6,6 @@ Handles tool selection, execution, and output formatting.
 Isolated from perception and reasoning logic.
 """
 
-from __future__ import annotations
 
 import asyncio
 import time

@@ -1,10 +1,8 @@
-from __future__ import annotations
 
 """Global architectural constants and governance laws."""
 
 # [SSOT] Import from structure_blueprint.py instead of hardcoding
 import sys
-from pathlib import Path
 
 sys.path.insert(
     0, str(Path(__file__).resolve().parent.parent.parent / "agentic_core" / "config" / "P1_core")

@@ -9,13 +9,11 @@ Updated: 2025-12-12 - Integrated Titanium RAG Pipeline
 import logging
 import time
 
-from shared.result_types import ExecutionResult
 
 Logger = logging.getLogger(__name__)
 
 # Import Titanium search tool
 try:
-    from runtime.shared.titanium_search_tool import (
         get_pipeline_stats,
         get_titanium_search_tool,
         get_titanium_search_with_sources,

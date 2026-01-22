@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Base Coordinator Class
 
@@ -5,7 +6,6 @@ Provides the base interface and common functionality for all specialized coordin
 Each coordinator owns a specific orchestration domain with clear responsibilities.
 """
 
-from __future__ import annotations
 
 import time
 from abc import ABC, abstractmethod

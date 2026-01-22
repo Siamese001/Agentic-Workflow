@@ -5,7 +5,6 @@ description: Verifies that no files from tests/ or archives/ exist in the discov
 
 import json
 import sys
-from pathlib import Path
 
 import pytest
 

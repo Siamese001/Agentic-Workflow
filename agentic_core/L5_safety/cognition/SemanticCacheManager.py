@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 [PHASE 17] Semantic Cache Manager - The "Meta-Learning" Brain.
 
@@ -9,7 +10,6 @@ This dramatically reduces token consumption by reusing decisions for similar fil
 
 [SSOT] Integrates with TieredBatchProcessor for intelligent caching.
 """
-from __future__ import annotations
 
 import hashlib
 import json

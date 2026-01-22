@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Reasoning Node - Sub-atomic Thought Generation
 
@@ -5,7 +6,6 @@ Handles reasoning strategy selection, thought generation, and planning.
 Integrates Phase 1-3 optimizations (caching, pruning, adaptive planning).
 """
 
-from __future__ import annotations
 
 import asyncio
 import time

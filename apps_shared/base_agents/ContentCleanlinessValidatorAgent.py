@@ -1,12 +1,6 @@
-from __future__ import annotations
 
 import re
-from dataclasses import dataclass
-from typing import Any
 
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 @dataclass
@@ -110,7 +104,6 @@ __version__ = "11.10"
 
 # import scripts.validation.check_canonical_structure  # TODO: Replace with sovereign equivalent
 # from scripts.utilities.FormatScriptsContext import TfidfVectorizer  # TODO: Replace with sovereign equivalent
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 # ============================================================================
 # NEW v11.6: GLOBAL ERROR CODE REGISTRY (GAP 6.1)
@@ -221,7 +214,6 @@ class ConstraintFeasibilityChecker:
         # This function needs access to ConfigRegistry, but to avoid circular
         # imports, we'll use hardcoded fallbacks if the import fails.
         try:
-            from shared.configuration.config import CONFIG_REGISTRY
 
             constraints = CONFIG_REGISTRY.get_route_constraints(Route, Archetype)
         except ImportError:

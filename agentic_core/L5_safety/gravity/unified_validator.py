@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Unified SSOT Validator - Consolidates All Validation Logic
 
@@ -16,7 +17,6 @@ Performance: <5 seconds for complete validation (vs 60+ seconds running 5 tools)
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import ast
 from dataclasses import dataclass, field

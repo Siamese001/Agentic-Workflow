@@ -1,13 +1,6 @@
 """Unit tests covering MessageArchitect planning and composition."""
 
-from types import SimpleNamespace
-from unittest.mock import patch
 
-from src.lic_agentic.agents.k3_message_architect import DraftPackage, MessageArchitect
-from src.lic_agentic.rag.content_store import ContentStore
-from src.lic_agentic.rag.retrieval_planner import RetrievalJob
-from src.lic_agentic.rag.tool_registry import BaseTool, ToolRegistry, ToolResult
-from src.lic_agentic.reasoning.toggles import ReasoningToggles
 
 
 class StaticTool(BaseTool):
@@ -107,7 +100,6 @@ def test_draft_package_with_draft_clones_artifacts():
 
 
 def test_score_quality_counts_reflexion_bonus():
-    from src.lic_agentic.agents.k3_message_architect import score_quality
 
     assert score_quality("Value for you", reflexion=True) > score_quality(
         "Value for you", reflexion=False

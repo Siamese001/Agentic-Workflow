@@ -7,9 +7,7 @@ voice to match, preventing the "Generic AI" voice.
 
 import logging
 import re
-from enum import Enum
 
-from pydantic import BaseModel, Field, confloat, validator
 
 logger = logging.getLogger(__name__)
 

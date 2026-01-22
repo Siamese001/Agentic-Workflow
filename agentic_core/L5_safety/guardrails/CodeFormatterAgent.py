@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Code Formatter Agent - Enforces consistent formatting using Black + Ruff.
 
 This module provides an atomic agent that enforces consistent code formatting
@@ -13,22 +14,19 @@ Typical usage:
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.security import safe_execute
 
 
 @dataclass
-class CodeFormatterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class CodeFormatterAgent(SovereignBaseAgent):
     """L5 Safety agent that enforces consistent formatting using Black + Ruff.
 
     This atomic agent applies Black formatting and Ruff lint auto-fixes to

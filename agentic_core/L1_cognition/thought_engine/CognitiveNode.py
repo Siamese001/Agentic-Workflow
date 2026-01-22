@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Cognitive Node - Central L1 Cognition Pipeline
 
@@ -8,7 +9,6 @@ Integrates all L1 components:
 - Governance for policy enforcement
 """
 
-from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field

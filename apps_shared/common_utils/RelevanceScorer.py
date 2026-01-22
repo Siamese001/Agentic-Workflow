@@ -5,9 +5,6 @@ Calculates relevance of context chunks to current Think-Act-Observe step.
 """
 
 import logging
-from dataclasses import dataclass
-from enum import Enum
-from typing import Any
 
 Logger = logging.getLogger(__name__)
 

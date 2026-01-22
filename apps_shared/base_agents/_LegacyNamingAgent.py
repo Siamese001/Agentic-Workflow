@@ -8,13 +8,10 @@ Part of the quality enforcement agent family.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 import ast
 import re
-from typing import Any
 
-from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
 
 
 # NOT_AN_AGENT — legacy L1 class removed 2026-01-06, use utils canonical

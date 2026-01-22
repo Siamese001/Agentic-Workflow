@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shared utility functions for location-based operations.
 
@@ -5,7 +6,6 @@ Extracted from LocationAgent.py during SRP fission.
 All location-related agents should import from this module.
 """
 
-from __future__ import annotations
 
 import os
 from pathlib import Path

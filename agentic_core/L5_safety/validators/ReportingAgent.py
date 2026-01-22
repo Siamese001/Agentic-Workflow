@@ -1,9 +1,9 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, prompt, state, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -58,11 +58,12 @@ except ImportError:  # MetricsAgent not implemented yet or optional
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
 @dataclass
-class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class ReportingAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Autonomous diagnostic agent for compliance reporting and visualization.
     Operates independently — no validation, only observation.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L0MaintenanceBaseAgent - Consolidated Base for L0 Maintenance Agents
 
@@ -19,7 +20,6 @@ MRO HARDENING:
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any

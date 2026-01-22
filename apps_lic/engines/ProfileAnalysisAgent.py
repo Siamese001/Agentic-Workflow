@@ -71,18 +71,8 @@ import asyncio
 import hashlib
 import json
 import re
-from collections import defaultdict
-from collections.abc import Callable
-from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from enum import Enum
-from pathlib import Path
-from typing import Any, Optional
-from uuid import uuid4
 
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 
 # ============================================================================
 # ENUMS & CONSTANTS

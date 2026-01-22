@@ -12,20 +12,12 @@
 # File: agentic_core/L5_safety/validators/PythonFileSovereigntyEnforcerAgent.py
 # CANONICAL: True - Enforces dedicated ClassNameAgent.py file naming (2026-01-06)
 
-from __future__ import annotations
 
 import ast
 import subprocess
-from dataclasses import dataclass
-from pathlib import Path
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
-from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -52,7 +44,6 @@ class PythonFileSovereigntyEnforcerAgent(SubatomicTestingMixin, MCPHardenedMixin
         actions: list[dict[str, str]] = []
 
         # Absolute Zero: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
 
         for py_file in get_python_files(self.project_root):
             rel_path = py_file.relative_to(self.project_root)

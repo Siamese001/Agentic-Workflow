@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 HARDENED RL Coordinator - Replaces 5 legacy RL orchestrators
 
@@ -12,7 +13,6 @@ Consolidates:
 - RLOrchestratorAgent
 """
 
-from __future__ import annotations
 
 import logging
 from typing import Any

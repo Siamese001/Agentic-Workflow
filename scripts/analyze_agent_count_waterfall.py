@@ -8,7 +8,6 @@ Produces a detailed waterfall showing how agent count changed over time.
 import json
 import subprocess
 import sys
-from collections import defaultdict
 
 
 def get_agent_count_at_commit(commit_hash):

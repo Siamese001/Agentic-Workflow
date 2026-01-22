@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Reasoning Strategy Pattern - Polymorphic Thought Execution
 
@@ -5,7 +6,6 @@ Replaces if/elif branching with strategy classes for different reasoning modes.
 Each strategy encapsulates a distinct reasoning approach (CoT, ToT, ReAct, etc.).
 """
 
-from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod

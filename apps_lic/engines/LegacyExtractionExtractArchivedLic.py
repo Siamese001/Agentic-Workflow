@@ -1,12 +1,8 @@
-from __future__ import annotations
 
 """Extract net incremental files from legacy_lic archive to staging directory."""
 import logging
 import shutil
-from pathlib import Path
-from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
 
@@ -29,7 +25,6 @@ def get_existing_files() -> set[str]:
     existing: Any = set()
     repo_root: Any = Path(".")
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
 
     for root in SOVEREIGN_ROOTS:
         root_path: Any = repo_root / root
@@ -53,7 +48,6 @@ def extract_net_incremental() -> None:
     existing_files: Any = get_existing_files()
     extracted_files: Any = []
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
 
     for py_file in get_python_files(source_dir):
         FILENAME: Any = py_file.name

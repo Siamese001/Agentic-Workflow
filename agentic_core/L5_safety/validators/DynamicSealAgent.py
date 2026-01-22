@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 DYNAMIC SEAL AGENT
 ------------------
@@ -15,7 +16,7 @@ Purpose: Automated remediation of import violations using Dynamic Seal pattern
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -40,7 +41,7 @@ class SealResult:
     error: str | None = None
 
 
-class DynamicSealAgent(SubatomicTestingMixin, MCPHardenedMixin):
+class DynamicSealAgent(SovereignBaseAgent):
     """
     Sovereign Agent responsible for surgical refactoring of upward dependencies.
 

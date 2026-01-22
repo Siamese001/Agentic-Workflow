@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Refactored Cognitive Node - Coordinator Pattern
 
@@ -8,7 +9,6 @@ Orchestrates PerceptionNode, ReasoningNode, and ActionNode with:
 - Per-node performance monitoring
 """
 
-from __future__ import annotations
 
 import asyncio
 import hashlib

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 [PHASE 15/17] Tiered Batch Processor - Smart Hybrid Disposition.
 
@@ -10,7 +11,6 @@ This dramatically reduces LLM API calls while maintaining intelligent triage.
 
 [SSOT] Integrates with CognitiveDispositionAgent and SemanticCacheManager.
 """
-from __future__ import annotations
 
 import json
 import logging

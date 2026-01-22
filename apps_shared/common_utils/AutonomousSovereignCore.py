@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 L3 Orchestration: Autonomous Sovereign Core
@@ -7,10 +6,7 @@ Cross-layer orchestrator that coordinates autonomous responses across L1-L5.
 
 import asyncio
 from datetime import datetime
-from pathlib import Path
 
-from watchdog.events import FileSystemEventHandler
-from watchdog.observers import Observer
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -40,34 +36,27 @@ class AutonomousSovereignCore:
         self.running = True
 
         # Import autonomous improvements
-        from agentic_core.L1_cognition.thought_engine.AdaptiveLearningEngine import (
             create_adaptive_learning_engine,
         )
-        from agentic_core.L2_execution.ToolRegistry.ProactiveResourceManagerAgent import (
             create_proactive_resource_manager,
         )
-        from agentic_core.L3_orchestration.workflow_engines.autonomous_execution_engine import (
             create_autonomous_execution_engine,
         )
-        from agentic_core.L3_orchestration.workflow_engines.SelfRecoveringOrchestratorAgent import (
             create_self_recovering_orchestrator,
         )
 
         # GRAVITY FIXED: Dynamic imports for autonomous components
         try:
-            from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import (
                 create_autonomous_checkpoint_manager,
             )
         except ImportError:
             create_autonomous_checkpoint_manager = lambda: None
         try:
-            from agentic_core.L4_state.validation_context.autonomous_state_guardian import (
                 create_autonomous_state_guardian,
             )
         except ImportError:
             create_autonomous_state_guardian = lambda: None
         try:
-            from agentic_core.L5_safety.guardrails.self_updating_safety_engine import (
                 create_self_updating_safety_engine,
             )
         except ImportError:

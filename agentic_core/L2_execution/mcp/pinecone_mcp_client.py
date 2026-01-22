@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Sovereign Pinecone MCP Client – Phase 13C (Dec 26, 2025)
@@ -18,13 +19,12 @@ from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import 
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)
 
 
-class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
+class SovereignPineconeMcpClient(SovereignBaseAgent):
     """
     Official Pinecone MCP client — L3 routed, L5 shielded.
 

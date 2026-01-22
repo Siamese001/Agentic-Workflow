@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 # import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types  # INVALID: Cannot import from path with hyphens
 

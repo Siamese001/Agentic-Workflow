@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 """
 UnifiedStructureEnforcerAgent - Structural Enforcement
 
@@ -19,7 +21,6 @@ Features:
 - Auto-rename for non-compliant classes
 """
 
-from __future__ import annotations
 
 import ast
 import logging
@@ -82,7 +83,7 @@ class StructureConfig:
     min_docstring_length: int = 10
 
 
-class UnifiedStructureEnforcerAgent:
+class UnifiedStructureEnforcerAgent(SovereignBaseAgent):
     """
     Unified structure enforcement with gravity and naming.
 

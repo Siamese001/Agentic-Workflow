@@ -1,7 +1,5 @@
-from __future__ import annotations
 
 """Clerk extraction for resume generation HOP-1."""
-from typing import Any
 
 
 class ClerkExtractor:

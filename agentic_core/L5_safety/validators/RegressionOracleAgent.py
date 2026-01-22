@@ -1,6 +1,8 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, validator, workflow
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
@@ -13,11 +15,9 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 
-from __future__ import annotations
 
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
@@ -25,7 +25,7 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
 @dataclass
-class RegressionOracleAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
+class RegressionOracleAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     The Regression Oracle - Automated Test Synthesizer
 

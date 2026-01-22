@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import asyncio
 from dataclasses import dataclass
@@ -33,12 +34,11 @@ except ImportError:
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
 @dataclass
-class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, HealerMixin):
+class SherlockAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     ROLE: Root Cause Analysis. Triggered when TestPilot fails.
     Analyzes cross-file dependencies and fixes interaction bugs.
@@ -84,7 +84,6 @@ class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, Hea
     async def execute(self) -> None:
         """Execute execute operation."""
         print(
-            f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Investigating test failure..."
         )
         # Replaced blocking calls with async sleep
         await asyncio.sleep(0)

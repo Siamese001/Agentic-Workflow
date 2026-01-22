@@ -1,6 +1,8 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -18,7 +20,6 @@ Created: 2026-01-13 | Version: 2.0.0
 This agent monitors prompt performance via MetaLearningAgent feedback and applies
 evolutionary mutations to improve LLM efficiency and output quality.
 """
-from __future__ import annotations
 
 import hashlib
 import logging
@@ -28,7 +29,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
@@ -37,7 +37,7 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class AutonomousPromptEvolutionAgent(SovereignBaseAgent):
     """
     Autonomous agent that evolves prompt templates based on performance metrics.
 

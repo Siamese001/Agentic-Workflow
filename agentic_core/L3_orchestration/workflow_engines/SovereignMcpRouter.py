@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """L3 Orchestration: Sovereign MCP Router — Eternal Integration
 Hardened routing of canon violations to MCP tools across all layers and apps.
@@ -16,13 +17,12 @@ from agentic_core.L3_orchestration.workflow_engines.mcp_manager import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)
 
 
-class SovereignMcpRouter(HealerMixin, MCPHardenedMixin):
+class SovereignMcpRouter(SovereignBaseAgent):
     """Ultra-hardened L3 MCP switchboard — zero tolerance for failure"""
 
     def __init__(self, role: str = "validator", config_path: str = "config/mcp_mappings.yaml"):

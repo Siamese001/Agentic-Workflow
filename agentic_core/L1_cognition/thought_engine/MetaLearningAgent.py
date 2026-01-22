@@ -8,6 +8,7 @@ Restored: 2026-01-13 | Version: 2.1.0 (With Telemetry)
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -15,8 +16,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.sovereign_index import SovereignIndex
 
 # Type alias for telemetry callback
@@ -34,7 +33,7 @@ class Experience:
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
 
-class MetaLearningAgent(SubatomicTestingMixin, HealerMixin):
+class MetaLearningAgent(SovereignBaseAgent):
     """
     Learns success/failure patterns across execution cycles to optimize
     thinking strategy selection.

@@ -1,6 +1,4 @@
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 """
 Specialized Resume Agents - Phase 1 Implementation
@@ -18,12 +16,8 @@ This module contains all specialized agents for autonomous resume generation:
 """
 import json
 import re
-from typing import Any
 
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-from .resume_base import ResumeAgent
 
 
 @dataclass

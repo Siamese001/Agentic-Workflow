@@ -7,14 +7,8 @@ ambiguity and demonstrate proper adherence.
 
 import json
 import logging
-from dataclasses import dataclass
-from enum import Enum
-from pathlib import Path
-from typing import Any
 
-from pydantic import BaseModel, Field
 
-from .prompt_injection_loader import InjectionPattern
 
 logger = logging.getLogger(__name__)
 

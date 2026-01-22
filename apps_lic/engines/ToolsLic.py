@@ -5,10 +5,7 @@
 __version__ = "13.0"
 
 import re
-from typing import Any
 
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 
 
 class CodeInterpreterTool:
@@ -189,7 +186,6 @@ class CodeInterpreterTool:
             return []
 
         # Simple frequency-based extraction
-        from collections import Counter
 
         word_counts = Counter(words)
 

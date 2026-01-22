@@ -6,11 +6,7 @@ Evaluates agent outputs against golden test cases.
 
 import json
 import logging
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any
 
-from observability.golden_state import (
     JudgeEvaluationResult,
     JudgeEvaluator,
     create_judge_evaluator,

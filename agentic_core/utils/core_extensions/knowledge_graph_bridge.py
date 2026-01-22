@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 [PHASE 20+] Knowledge Graph Bridge - The Reasoning Layer for Meta-Learning DNA.
 
@@ -13,7 +14,6 @@ Storage Layer Roles:
 
 [SSOT] Integrates with Memory MCP server for knowledge graph operations.
 """
-from __future__ import annotations
 
 import logging
 import threading

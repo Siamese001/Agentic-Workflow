@@ -3,6 +3,7 @@
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 from dataclasses import dataclass
 
 """
@@ -13,12 +14,11 @@ import ast
 from typing import Any
 
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # Sovereign Agent for type enforcement and precision engineering
 @dataclass
-class TypeMechanicAgent(SubatomicTestingMixin, SubAtomicAgent):
+class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     Type Mechanic Agent - Type hints and code quality enforcement.
 

@@ -29,13 +29,11 @@ Exit Codes:
     1 - No API key found
     2 - Error during execution
 """
-from __future__ import annotations
 
 import argparse
 import logging
 import os
 import sys
-from pathlib import Path
 
 logging.basicConfig(
     level=logging.INFO,
@@ -82,7 +80,6 @@ def run_cognitive_purge(
         project_root = Path(__file__).resolve().parent.parent.parent
         sys.path.insert(0, str(project_root))
 
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 

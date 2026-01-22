@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 IOrchestratorAgent Protocol - Phase 1 Foundation
 
@@ -18,7 +19,6 @@ Date: January 19, 2026
 Phase: 1 - Foundation & Zero-Loss Protocols
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum

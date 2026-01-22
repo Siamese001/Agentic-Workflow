@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+                r"(from __future__ import [^\n]+\n)",
 """
 Batch fix typing issues in agent files.
 Adds missing type hints to function parameters and return types.
@@ -174,7 +175,6 @@ def ensure_typing_imports(source: str) -> str:
         # Add typing import after __future__ import or at top
         if "from __future__" in source:
             source = re.sub(
-                r"(from __future__ import [^\n]+\n)",
                 rf"\1from typing import {', '.join(sorted(needed_types))}\n",
                 source,
             )

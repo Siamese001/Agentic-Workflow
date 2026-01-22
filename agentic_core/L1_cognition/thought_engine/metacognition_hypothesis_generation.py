@@ -1,4 +1,5 @@
 from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 
@@ -8,12 +9,11 @@ import logging
 from typing import Any
 
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
 
-class DummyRag(HealerMixin):
+class DummyRag(SovereignBaseAgent):
     """TODO: Add docstring."""
 
     def __init__(self: Any, evidence_count: int) -> None:
@@ -22,7 +22,7 @@ class DummyRag(HealerMixin):
     "TODO: Add docstring."
 
 
-class DummyAgentCard(HealerMixin):
+class DummyAgentCard(SovereignBaseAgent):
     """TODO: Add docstring."""
 
     def __init__(self: Any, agent_id: str) -> None:

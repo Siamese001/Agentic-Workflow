@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Episodic Memory - Expanded Mission/Episode Storage
 
@@ -11,7 +12,6 @@ Features:
 - Mission history retention across sessions
 """
 
-from __future__ import annotations
 
 import hashlib
 import time

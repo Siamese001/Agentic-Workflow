@@ -9,15 +9,12 @@ Enhanced with Titanium RAG Pipeline for SOTA company research and insights.
 
 import logging
 from datetime import datetime
-from typing import Any
 
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
 # Import Titanium search tool
 try:
-    from .titanium_search_tool import get_titanium_search_tool, get_titanium_search_with_sources
 
     TITANIUM_AVAILABLE = True
     logger.info("ExecutiveBriefAgent: Titanium RAG Pipeline available")
@@ -87,7 +84,6 @@ class ExecutiveBriefAgent:
 
         # Import tone model for enforcement
         try:
-            from .tone_model import ToneType, create_tone_model
 
             self.tone_model = create_tone_model()
             self.target_tone = ToneType.DIRECT  # Executive briefs should be direct

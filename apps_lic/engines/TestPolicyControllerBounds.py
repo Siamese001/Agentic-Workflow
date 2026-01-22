@@ -1,6 +1,5 @@
 """PolicyController behavioral tests covering bound enforcement."""
 
-from src.lic_agentic.telemetry.policy_controller import PolicyController
 
 
 def test_policy_controller_enforces_bounds_and_quarantine():

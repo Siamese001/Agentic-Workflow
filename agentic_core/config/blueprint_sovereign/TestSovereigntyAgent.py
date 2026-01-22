@@ -1,6 +1,8 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
+from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -20,18 +22,15 @@ Delegated from L2-L4 agents for coverage, integration, regression.
 - Atomic temp cleanup
 - SovereignEvent with Severity enum
 """
-from __future__ import annotations
 
 import re
 from enum import Enum
 from pathlib import Path
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.security import safe_execute
 
@@ -46,7 +45,7 @@ class SovereignSeverity(Enum):
 
 
 @dataclass
-class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
+class TestSovereigntyAgent(SovereignBaseAgent, CanonBaseAgent):
     """L5 specialist — advanced sovereign testing."""
 
     def __init__(

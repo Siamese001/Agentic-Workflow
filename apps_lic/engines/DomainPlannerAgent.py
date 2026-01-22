@@ -1,11 +1,8 @@
 """Specialist planner ensemble and coordinator for v10.7 strategies."""
 
-from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any
 
-from core_v10_7 import (
     BaseAgent,
     PlannerAssessment,
     ScenarioSimulationResult,
@@ -13,7 +10,6 @@ from core_v10_7 import (
 )
 
 if TYPE_CHECKING:
-    from core_v10_7 import WorkflowContext
 
 
 def _truncate(text: str, limit: int = 160) -> str:

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 LocationValidatorAgent: Pure validation agent for territorial compliance
 
@@ -10,7 +11,6 @@ Responsibility: Validate file locations against sovereign structure rules
 Extracted from LocationAgent.py as part of SRP fission.
 """
 
-from __future__ import annotations
 
 import ast
 from dataclasses import dataclass, field

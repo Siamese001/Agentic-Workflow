@@ -1,12 +1,13 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: prompt, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
-Autonomy Guardian Agent - Autonomy Meta-Enforcement (Canon Key 51)
+Autonomy Guardian Agent - L0 DNA Integrity Enforcement
 HARDENED: Pure L5 Validation & Enforcement.
 Reporting logic and discovery are delegated to the L6 Modular Engine to ensure Logic Sovereignty.
 """
@@ -17,7 +18,6 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
@@ -25,23 +25,19 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 )
 from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
 from agentic_core.prompt_governance.renderer import DashboardRenderer
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 log = logging.getLogger(__name__)
 
 
-class AutonomyGuardianAgent(
-    SubatomicTestingMixin, HealerMixin, MCPHardenedMixin, RedisCacheMixin, PineconeVectorMixin
-):
+class AutonomyGuardianAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVectorMixin):
     """
     Sovereign guardian for agent autonomy enforcement.
 
     Responsibilities:
-    1. Validate agents meet Canon Key 51 (heal_repository requirement).
+    1. Validate agents have Autonomous Repair Capability (heal_repository via SovereignBaseAgent).
     2. Detect and purge forbidden external runner scripts.
     3. Delegate high-complexity reporting to L6 Observability engine.
     """
@@ -302,10 +298,35 @@ class AutonomyGuardianAgent(
                         tree = ast.parse(content)
 
                     has_heal_method = False
+                    inherits_sovereign_base = False
+                    
+                    # Base classes that provide heal_repository via MRO
+                    # These all inherit from SovereignBaseAgent or InfrastructureMixin
+                    SOVEREIGN_BASE_CLASSES = {
+                        "SovereignBaseAgent",
+                        "InfrastructureMixin",
+                        "L3OrchestrationBaseAgent",
+                        "L4StateBaseAgent",
+                        "L5SafetyBaseAgent",
+                        "L6ObservabilityBaseAgent",
+                        "HealerMixin",
+                    }
+                    
                     for node in ast.walk(tree):
+                        # Check for explicit heal_repository definition
                         if isinstance(node, ast.FunctionDef) and node.name == "heal_repository":
                             has_heal_method = True
-                            break
+                        # Check for SovereignBaseAgent or layer base inheritance (provides heal_repository via MRO)
+                        if isinstance(node, ast.ClassDef):
+                            for base in node.bases:
+                                if isinstance(base, ast.Name) and base.id in SOVEREIGN_BASE_CLASSES:
+                                    inherits_sovereign_base = True
+                                elif isinstance(base, ast.Attribute) and base.attr in SOVEREIGN_BASE_CLASSES:
+                                    inherits_sovereign_base = True
+                    
+                    # SovereignBaseAgent provides heal_repository via InfrastructureMixin -> HealerMixin
+                    if inherits_sovereign_base:
+                        has_heal_method = True
 
                     if not has_heal_method:
                         summary["violations"] += 1
@@ -342,7 +363,7 @@ class AutonomyGuardianAgent(
                                     "",
                                     f"{method_indent}def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:",
                                     f'{method_indent}    """',
-                                    f"{method_indent}    Autonomous healing method (Canon Key 51 compliance).",
+                                    f"{method_indent}    Autonomous Repair Capability (L0 DNA Integrity).",
                                     f"{method_indent}    ",
                                     f"{method_indent}    Args:",
                                     f"{method_indent}        dry_run: If True, only report violations without fixing",
@@ -403,7 +424,7 @@ class AutonomyGuardianAgent(
 
                 # Pinecone: Semantic Meta-Learning with Gemini embeddings
                 vector_id = f"autonomy_healing_{self.timestamp.replace(':', '-')}"
-                healing_description = f"AutonomyGuardian healed {summary['fixed']} agents missing heal_repository() method. Canon Key 51 compliance enforced."
+                healing_description = f"AutonomyGuardian healed {summary['fixed']} agents missing heal_repository() method. L0 DNA Integrity enforced."
 
                 if self.gemini_embedder:
                     try:

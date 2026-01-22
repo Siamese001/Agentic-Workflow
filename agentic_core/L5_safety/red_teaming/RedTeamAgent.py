@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, state, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 import json
 
@@ -20,7 +21,6 @@ from agentic_core.prompt_governance.rendering.SovereignPromptRenderer import (
 from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # Template content loading for registry
@@ -46,7 +46,7 @@ jailbreak_content = jailbreak_path.read_text(encoding="utf-8") if jailbreak_path
     territory="templates",
     content=jailbreak_content,
 )
-class RedTeamAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+class RedTeamAgent(SovereignBaseAgent):
     """
     Sovereign red-teaming agent for guardrail penetration testing.
 
@@ -81,7 +81,6 @@ class RedTeamAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             return
         renderer: Any = get_sovereign_prompt_renderer()
         print(
-            "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[*] RED-TEAM VALIDATION MISSION: Executing adversarial guardrail tests..."
         )
         results: list[dict[str, Any]] = []
         gov_prompt: Any = renderer.render_tagentic(

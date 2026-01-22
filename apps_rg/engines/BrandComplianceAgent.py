@@ -7,14 +7,9 @@ Extracted: 2026-01-06 (Surgical Extraction)
 Ensures brand voice and professional tone in resume content.
 """
 
-from __future__ import annotations
 
 import json
-from dataclasses import dataclass
-from typing import Any
 
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 @dataclass

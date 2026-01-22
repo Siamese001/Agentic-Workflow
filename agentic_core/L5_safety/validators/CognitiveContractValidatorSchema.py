@@ -10,10 +10,10 @@ Renamed from CognitiveContractValidatorAgent to avoid naming collision with L1 c
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 import logging
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +77,7 @@ class ConsistencyError(Exception):
     pass
 
 
-class CognitiveContractValidatorSchema(MCPHardenedMixin):
+class CognitiveContractValidatorSchema(SovereignBaseAgent):
     """
     Schema validator for cognitive contracts (data model, not an agent).
 

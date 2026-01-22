@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, prompt, state, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 
@@ -20,7 +21,6 @@ from typing import Any
 
 import redis
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 
@@ -28,12 +28,12 @@ from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveE
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 @dataclass
 class NeuralAutoImmuneAgent(
+    SovereignBaseAgent,
     SubatomicTestingMixin,
     AutonomyMixin,
     AdaptiveExecutionMixin,
@@ -246,7 +246,6 @@ class NeuralAutoImmuneAgent(
 
         if predictions:
             print(
-                f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\n[🔮 PREDICTIVE IMMUNE ALERT] {len(predictions)} high-risk files identified"
             )
             for p in predictions[:5]:
                 print(

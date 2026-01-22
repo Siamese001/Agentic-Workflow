@@ -14,7 +14,6 @@ import asyncio
 import sys
 
 try:
-    from playwright.async_api import async_playwright
 except ImportError:
     print("❌ ERROR: Playwright not installed")
     print("   Install with: pip install playwright")

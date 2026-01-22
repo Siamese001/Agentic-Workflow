@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 L6 Observability: Gemini Spy
 
 Monitors and logs Gemini API interactions for observability.
 """
 
-from __future__ import annotations
 
 import logging
 from typing import Any

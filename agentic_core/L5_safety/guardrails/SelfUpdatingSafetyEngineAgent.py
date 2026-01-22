@@ -1,9 +1,10 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, orchestrator, prompt, state, validator, workflow
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Self-Updating Safety Engine - L5 Safety Enhancement
@@ -133,14 +134,11 @@ class ThreatDetection:
     recommendations: list[str]
 
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
     """
     Safety engine that learns and adapts to new threats.
 

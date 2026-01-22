@@ -3,9 +3,7 @@
 # Suggested keywords to add in docstring/code: engine, memory, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
 
-from dataclasses import dataclass
 
 #!/usr/bin/env python3
 """
@@ -14,17 +12,9 @@ CachedOrchestratorAgent - Eternal L3 Orchestration with Redis Sovereign Cache
 
 import hashlib
 import json
-from pathlib import Path
-from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 # NAMING FIXED: CachedOrchestratorAgent → CachedOrchestratorAgent

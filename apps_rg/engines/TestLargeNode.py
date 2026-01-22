@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Test Protocol: Key 42 Fission Trigger
@@ -6,7 +5,6 @@ Responsible for:
 - Testing autonomous code splitting of files > 1000 lines.
 - Verifying AST integrity post-split.
 """
-from typing import Any
 
 
 def dummy_function_0() -> Any:

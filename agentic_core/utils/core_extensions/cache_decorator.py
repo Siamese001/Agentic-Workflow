@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ULTRA-HARDENED @cached Decorator
 
@@ -17,7 +18,6 @@ Usage:
             return await self._compute(key)
 """
 
-from __future__ import annotations
 
 import functools
 import hashlib

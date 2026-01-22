@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 DDD Alignment Guardian - Sovereign Edition (December 29, 2025)
@@ -11,9 +10,7 @@ Detects violations of Domain-Driven Design tactical patterns:
 """
 
 import ast
-from pathlib import Path
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
     SCRIPTS_DIR,
     TESTS_DIR,
 )
@@ -33,7 +30,6 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
         return violations
 
     # Phase 6.9: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
 
     python_files = list(get_python_files(root))
 

@@ -8,11 +8,7 @@ everywhere through semantic similarity matching.
 import hashlib
 import logging
 import time
-from collections import OrderedDict
-from typing import Any
 
-import numpy as np
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -270,7 +266,6 @@ class SimpleEmbedder:
         """Load the embedding model."""
         if self._model is None:
             try:
-                from sentence_transformers import SentenceTransformer
 
                 self._model = SentenceTransformer(self.model_name)
                 logger.info(f"Loaded embedding model: {self.model_name}")

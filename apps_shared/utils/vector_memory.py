@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 # File: vector_memory.py
 # Description: Vector Memory Store for persistent intelligence - v13.0
@@ -9,12 +8,10 @@ __version__ = "13.1"
 
 import os
 from datetime import datetime
-from typing import Any
 
 # ChromaDB for vector storage
 try:
     import chromadb
-    from chromadb.config import Settings
 
     CHROMADB_AVAILABLE = True
 except ImportError:
@@ -22,7 +19,6 @@ except ImportError:
     print("WARNING: ChromaDB not installed. Install with: pip install chromadb")
 
 # Gemini embeddings
-import google.generativeai as genai
 
 
 class VectorMemoryStore:

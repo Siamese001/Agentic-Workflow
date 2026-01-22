@@ -4,8 +4,6 @@ LIC Code Interpreter Tool - Fast loop for deterministic evaluation.
 Ported from: archives/legacy_lic/Agentic LIC/tools_LIC.py
 """
 
-from dataclasses import dataclass
-from typing import Any
 
 
 @dataclass

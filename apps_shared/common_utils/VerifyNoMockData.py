@@ -13,7 +13,6 @@ Comprehensive verification that all mock data has been eliminated:
 import re
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.L5_safety.validators.structure_blueprint import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )

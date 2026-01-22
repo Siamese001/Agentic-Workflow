@@ -1,6 +1,7 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
+from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -9,7 +10,7 @@
 # Suggested keywords to add in docstring/code: memory, orchestrator
 # This boosts alignment detection — review and integrate appropriately
 
-from __future__ import annotations
+from agentic_core.observability.SovereignBaseAgent import SovereignBaseAgent
 
 """
 ImportAgent: Gravity & Import Convention Enforcer (Key 6/Gravity territory)
@@ -51,7 +52,6 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     DOWNSTREAM_ROOTS,
     GRAVITY_SURGERY_ENABLED,
@@ -60,8 +60,6 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,
     UPSTREAM_SOVEREIGN_ROOTS,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Optional prompt registry for meta-learning
 try:
@@ -145,7 +143,7 @@ class ImportValidationVisitor(ast.NodeVisitor):
     purpose="Fixes import violations and gravity conventions",
     territory="templates",
 )
-class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
+class ImportAgent(SovereignBaseAgent):
     """
     Autonomous agent for import convention and gravity compliance.
     Requires file content access → run only on location-valid files.
@@ -797,6 +795,21 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             return {"violations_found": total_violations, "fixed": 0}
         finally:
             _call_path.discard(agent_name)
+
+    def _fix_violation(self, violation_entry: tuple) -> bool:
+        """
+        [PHASE 33k] Execute surgical fix for import violations.
+        
+        Args:
+            violation_entry: Tuple of (file_path, list_of_messages)
+            
+        Returns:
+            True if any fix was successfully applied
+        """
+        file_path, messages = violation_entry
+        # Use existing cleanup_violations logic which handles backups and safe rewrites
+        cleanup_results = self.cleanup_violations([(file_path, messages)], dry_run=False)
+        return any(action.get("applied", False) for action in cleanup_results)
 
 
 # Singleton getter for canon_validator compatibility

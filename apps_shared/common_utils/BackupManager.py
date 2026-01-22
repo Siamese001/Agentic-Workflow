@@ -12,7 +12,6 @@ All agents should use BackupManager for backup operations.
 
 import shutil
 from datetime import datetime
-from pathlib import Path
 
 
 class BackupManager:

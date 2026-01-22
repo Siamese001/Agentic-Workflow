@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """
 Diff/Patch Generator (DPG) — Phase 2 Tool
@@ -12,11 +11,7 @@ Generates reviewable change proposals for human-in-loop validation:
 Part of the Tool Registry Enhancement Roadmap.
 """
 import difflib
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any
 
-from pydantic import BaseModel, Field
 
 
 class DiffFormat(str, Enum):

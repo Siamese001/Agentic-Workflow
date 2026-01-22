@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 #!/usr/bin/env python3
 """
@@ -15,12 +14,7 @@ This agent doesn't just flag violations; it actively stops the bleeding.
 
 import re
 import warnings
-from pathlib import Path
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 class GravityEnforcerAgent(

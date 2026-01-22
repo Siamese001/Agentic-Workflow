@@ -6,9 +6,7 @@ rules including metric source binding, redundancy guards, and forbidden content.
 
 import logging
 import re
-from typing import Any
 
-from runtime.shared.validation_executor import (
     RuleFailure,
     ValidationGateExecutor,
 )
