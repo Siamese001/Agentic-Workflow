@@ -5,6 +5,7 @@ RAGGuardrail - L5 RAG Content Filtering and Reranking
 """
 import asyncio
 import math
+import re
 from typing import Any
 
 import torch
@@ -70,10 +71,33 @@ class RagGuardrail:
 
     async def filter_hallucinations(self, documents: list[Any], query: str) -> list[Any]:
         """
-        Filter out potentially hallucinated content
+        Heuristic: Checks if key entities in the query/response are supported by documents.
         """
         if not documents:
             return documents
+
+        combined_context = " ".join([d.text.lower() for d in documents])
+
+        # Extract capitalized words (heuristic for entities) from query
+        # In a real scenario, we would check the *Response*, but here we check if
+        # the documents retrieved actually support the Query's entities.
+        query_entities = set(re.findall(r"\b[A-Z][a-z]+\b", query))
+
+        if not query_entities:
+            return documents
+
+        supported_entities = 0
+        for entity in query_entities:
+            if entity.lower() in combined_context:
+                supported_entities += 1
+
+        # If the retrieved docs don't contain at least 50% of the query's entities, warn.
+        ratio = supported_entities / len(query_entities)
+        if ratio < 0.5:
+            print(
+                f"   [WARN] Retrieval Validity Low: Only {ratio:.1%} of query entities found in context."
+            )
+
         return documents
 
     async def apply_safety_filters(self, documents: list[Any]) -> list[Any]:

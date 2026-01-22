@@ -10,9 +10,10 @@ import logging
 import time
 from typing import Any
 
+# ERROR FIX: Resolve undefined _mod reference
 try:
-    MCPHardenedMixin = _mod.MCPHardenedMixin
-except (ImportError, AttributeError):
+    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+except ImportError:
 
     class MCPHardenedMixin:
         """Fallback stub for MCPHardenedMixin."""

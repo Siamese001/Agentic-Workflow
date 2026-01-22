@@ -139,7 +139,9 @@ logging.basicConfig(
 )
 log = logging.getLogger("full_agent_discovery")
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]  # scripts/ -> L0_maintenance/ -> agentic_core/ -> project_root/
+PROJECT_ROOT = (
+    Path(__file__).resolve().parents[3]
+)  # scripts/ -> L0_maintenance/ -> agentic_core/ -> project_root/
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 CANONICAL_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
 MANIFEST_JSON = PROJECT_ROOT / AGENT_DISCOVERY_MANIFEST_JSON
@@ -218,6 +220,46 @@ EXCLUDED_PATH_PATTERNS = {
     "/fakes/",
 }
 
+# ============================================================================
+# STRICT AGENT TYPING: Infrastructure Exclusion List (v4 Hardening)
+# ============================================================================
+# These files are NEVER agents regardless of class naming. They are:
+# - Scripts (standalone utilities)
+# - Data classes (Pydantic models, TypedDicts)
+# - Mixins (capability providers, not autonomous agents)
+# - Helpers (utility functions wrapped in classes)
+#
+# Whitelist exceptions: Files in this list that ARE legitimate agents
+AGENT_PATH_WHITELIST = {
+    # L0 scripts that ARE agents (legitimate placement)
+    "agentic_core/L0_maintenance/scripts/BootstrapAgent.py",
+    "agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py",
+}
+
+# Paths that indicate infrastructure, not agents (unless whitelisted)
+INFRASTRUCTURE_PATH_PATTERNS = {
+    "scripts/",  # Script directories (except whitelisted)
+    "utils/",  # Utility directories
+    "mixins/",  # Mixin directories
+    "helpers/",  # Helper directories
+}
+
+# Classes that are NEVER agents (infrastructure by name)
+INFRASTRUCTURE_CLASS_PATTERNS = {
+    "Client",  # MCP clients, API clients
+    "Factory",  # Object factories
+    "Registry",  # Service registries
+    "Serializer",  # Data serializers
+    "Validator",  # Standalone validators (not ValidatorAgent)
+    "Context",  # Validation/execution contexts
+    "Manager",  # Resource managers
+    "Handler",  # Event/request handlers
+    "Loader",  # Data loaders
+    "Parser",  # Data parsers
+    "Builder",  # Object builders
+    "Visitor",  # AST/tree visitors
+}
+
 # PHASE 2: Special layer mappings for non-standard paths (fixes "Unknown" territories)
 SPECIAL_LAYER_MAPPINGS = {
     "schemas": "L1",  # Validation schemas are cognition-related
@@ -277,7 +319,9 @@ LAYER_BASE_MAP = {
 #   - 2026-01-05: 312 agents (after string error caused 60+ agent loss - UNACCEPTABLE)
 #
 # Update MINIMUM_AGENT_COUNT when legitimately removing agents (with justification).
-MINIMUM_AGENT_COUNT = 1  # Temporarily lowered to debug discovery after structural changes (2026-01-22)
+MINIMUM_AGENT_COUNT = (
+    1  # Temporarily lowered to debug discovery after structural changes (2026-01-22)
+)
 MAX_AGENT_DROP_PERCENT = 50  # Temporarily relaxed for hardened exclusion recovery (2026-01-19)
 EXPECTED_AGENT_COUNT = 268  # Phase 3.2: Updated after test fixture exclusion (2026-01-12)
 # 2026-01-07: Reduced from 276 to 273 after Phase 2 relocation (legitimate consolidation)
@@ -1061,6 +1105,63 @@ def count_loc(source: str) -> int:
     return count
 
 
+def is_sovereign_agent(
+    class_node: ast.ClassDef, bases: set[str], rel_path: Path | None = None
+) -> bool:
+    """
+    STRICT SOVEREIGN AGENT TYPING (v4 Hardening – Jan 22, 2026)
+
+    Determines if a class is a TRUE Sovereign Agent vs infrastructure.
+    This is the GATE function that prevents misclassification of:
+    - Scripts (standalone utilities)
+    - Data classes (Pydantic models, TypedDicts, dataclasses)
+    - Mixins (capability providers)
+    - Helpers/Clients/Factories (infrastructure)
+
+    A TRUE Sovereign Agent MUST:
+    1. Have class name ending with 'Agent'
+    2. Inherit from SovereignBaseAgent or a Layer Base (directly or transitively)
+    3. NOT be in an infrastructure path (scripts/, utils/, mixins/) unless whitelisted
+    4. NOT be a Mixin class
+
+    Returns:
+        True if class is a TRUE Sovereign Agent, False otherwise
+    """
+    name = class_node.name
+    path_str = str(rel_path).replace("\\", "/") if rel_path else ""
+    path_lower = path_str.lower()
+
+    # =========================================================================
+    # LAYER 0: WHITELIST CHECK (Highest Priority)
+    # =========================================================================
+    # Some files in infrastructure paths ARE legitimate agents
+    if path_str in AGENT_PATH_WHITELIST:
+        # Still must pass basic agent checks
+        if name.endswith("Agent") or name.endswith("BaseAgent"):
+            return True
+
+    # =========================================================================
+    # LAYER 1: INFRASTRUCTURE PATH EXCLUSION
+    # =========================================================================
+    # Files in scripts/, utils/, mixins/ are NOT agents (unless whitelisted above)
+    for pattern in INFRASTRUCTURE_PATH_PATTERNS:
+        if pattern in path_lower:
+            log.debug(f"EXCLUDED {name}: infrastructure path '{pattern}' in {path_str}")
+            return False
+
+    # =========================================================================
+    # LAYER 2: INFRASTRUCTURE CLASS NAME EXCLUSION
+    # =========================================================================
+    # Classes ending with infrastructure suffixes are NOT agents
+    for suffix in INFRASTRUCTURE_CLASS_PATTERNS:
+        if name.endswith(suffix) and not name.endswith("Agent"):
+            log.debug(f"EXCLUDED {name}: infrastructure suffix '{suffix}'")
+            return False
+
+    # Delegate to existing is_agent_class for remaining checks
+    return is_agent_class(class_node, bases, rel_path)
+
+
 def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | None = None) -> bool:
     """
     STRICT Agent Classification (Post-Bulk Extraction Enforcement – Jan 06, 2026)
@@ -1583,8 +1684,8 @@ def main():
 
             bases = extract_bases(node)
 
-            # Skip if not an agent class
-            if not is_agent_class(node, bases, rel_path=rel_path):
+            # Skip if not a TRUE Sovereign Agent (v4 hardening)
+            if not is_sovereign_agent(node, bases, rel_path=rel_path):
                 continue
 
             # Skip lowercase/snake_case (aliases)
