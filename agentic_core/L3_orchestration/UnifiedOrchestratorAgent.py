@@ -176,21 +176,27 @@ class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
             sentinel = CanonDependencySentinelAgent()
             audit_results = sentinel.heal_repository(dry_run=True, execute=False)
             
-            if audit_results.get("status") == "FATAL":
-                self.logger.critical("[STOP] Mission Aborted: Structural DNA Violations Detected.")
+            # Check for FATAL status or INIT_BYPASS violations
+            is_fatal = audit_results.get("status") == "FATAL"
+            scan_results = sentinel.scan_architecture()
+            init_bypasses = [v for v in scan_results.get("violations", []) if v.violation_type == "INIT_BYPASS"]
+            
+            if is_fatal or init_bypasses:
+                abort_reason = "Naked super() or fatal syntax" if is_fatal else f"{len(init_bypasses)} agents with severed initialization DNA"
+                self.logger.critical(f"[STOP] Mission Aborted: {abort_reason}.")
                 return MissionResult(
                     success=False,
                     total_agents=len(agents),
                     successful_agents=0,
                     failed_agents=len(agents),
-                    total_violations_found=0,
+                    total_violations_found=len(init_bypasses),
                     total_violations_fixed=0,
                     total_errors=1,
                     agent_results=[],
                     phase=ExecutionPhase.VALIDATION,
                     status="ABORTED",
-                    message="Naked super() or fatal syntax detected in repository.",
-                    metadata={"mode": self.mode.value, "gate": "DNA_SENTINEL"}
+                    message=f"{abort_reason} detected in repository.",
+                    metadata={"mode": self.mode.value, "gate": "DNA_SENTINEL", "init_bypasses": len(init_bypasses)}
                 )
         except ImportError:
             self.logger.warning("[GATE] CanonDependencySentinelAgent not found. Proceeding with caution.")

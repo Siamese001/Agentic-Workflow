@@ -96,6 +96,59 @@ class ArchitectureDNAVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
+class InitializationIntegrityVisitor(ast.NodeVisitor):
+    """
+    Ensures __init__ properly propagates to SovereignBaseAgent via **kwargs.
+    
+    Detects:
+    - INIT_BYPASS: Agent __init__ fails to call super().__init__(**kwargs)
+    """
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+        self.violations: List[CodeViolation] = []
+        self.current_class: Optional[str] = None
+
+    def visit_ClassDef(self, node: ast.ClassDef):
+        if node.name.endswith("Agent"):
+            self.current_class = node.name
+            self.generic_visit(node)
+            self.current_class = None
+        else:
+            self.generic_visit(node)
+
+    def visit_FunctionDef(self, node: ast.FunctionDef):
+        if node.name != "__init__" or not self.current_class:
+            return
+
+        # Verify super().__init__ exists and passes **kwargs
+        has_super_init = False
+        passes_kwargs = False
+
+        for stmt in ast.walk(node):
+            if isinstance(stmt, ast.Call):
+                # Check for super().__init__(...) pattern
+                if isinstance(stmt.func, ast.Attribute) and stmt.func.attr == "__init__":
+                    if isinstance(stmt.func.value, ast.Call):
+                        func_value = stmt.func.value
+                        if isinstance(func_value.func, ast.Name) and func_value.func.id == "super":
+                            has_super_init = True
+                            # Check for **kwargs in the call
+                            for kw in stmt.keywords:
+                                if kw.arg is None:  # **kwargs
+                                    passes_kwargs = True
+
+        if not has_super_init:
+            self.violations.append(CodeViolation(
+                self.file_path, node.lineno, "INIT_BYPASS",
+                f"Agent '{self.current_class}' __init__ missing super().__init__() call.", "HIGH"
+            ))
+        elif not passes_kwargs:
+            self.violations.append(CodeViolation(
+                self.file_path, node.lineno, "INIT_BYPASS",
+                f"Agent '{self.current_class}' __init__ fails to propagate **kwargs to L0 Foundation.", "HIGH"
+            ))
+
+
 class AgentASTVisitor(ast.NodeVisitor):
     def __init__(self, file_path: str):
         self.file_path = file_path
@@ -229,6 +282,11 @@ class CanonDependencySentinelAgent(SovereignBaseAgent, MCPHardenedMixin):
                 dna_visitor = ArchitectureDNAVisitor(str(fp))
                 dna_visitor.visit(tree)
                 violations.extend(dna_visitor.violations)
+                
+                # Run Init Integrity Auditor
+                init_visitor = InitializationIntegrityVisitor(str(fp))
+                init_visitor.visit(tree)
+                violations.extend(init_visitor.violations)
                 
             except SyntaxError as e:
                 violations.append(
