@@ -149,6 +149,61 @@ class InitializationIntegrityVisitor(ast.NodeVisitor):
             ))
 
 
+class HealerComplianceVisitor(ast.NodeVisitor):
+    """
+    Detects 'Zombie' Healers that exist but do nothing.
+    
+    Detects:
+    - ZOMBIE_HEALER: heal_repository method is a no-op stub (only pass/return)
+    """
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+        self.violations: List[CodeViolation] = []
+        self.current_class: Optional[str] = None
+
+    def visit_ClassDef(self, node: ast.ClassDef):
+        if node.name.endswith("Agent"):
+            self.current_class = node.name
+            self.generic_visit(node)
+            self.current_class = None
+        else:
+            self.generic_visit(node)
+
+    def visit_FunctionDef(self, node: ast.FunctionDef):
+        if node.name != "heal_repository" or not self.current_class:
+            return
+            
+        # Check if body is trivial (only pass, or only return with simple value)
+        is_trivial = True
+        if len(node.body) > 1:
+            is_trivial = False
+        elif len(node.body) == 1:
+            stmt = node.body[0]
+            # Pass is trivial
+            if isinstance(stmt, ast.Pass):
+                is_trivial = True
+            # Return with just a dict literal is trivial
+            elif isinstance(stmt, ast.Return):
+                if stmt.value is None:
+                    is_trivial = True
+                elif isinstance(stmt.value, ast.Dict):
+                    # Check if it's just returning a status dict with no real logic
+                    is_trivial = True
+                else:
+                    is_trivial = False
+            # Docstring only is trivial
+            elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant):
+                is_trivial = True
+            else:
+                is_trivial = False
+                
+        if is_trivial:
+            self.violations.append(CodeViolation(
+                self.file_path, node.lineno, "ZOMBIE_HEALER",
+                f"Agent '{self.current_class}' heal_repository method appears to be a no-op stub.", "MEDIUM"
+            ))
+
+
 class AgentASTVisitor(ast.NodeVisitor):
     def __init__(self, file_path: str):
         self.file_path = file_path
@@ -287,6 +342,11 @@ class CanonDependencySentinelAgent(SovereignBaseAgent, MCPHardenedMixin):
                 init_visitor = InitializationIntegrityVisitor(str(fp))
                 init_visitor.visit(tree)
                 violations.extend(init_visitor.violations)
+                
+                # Run Healer Compliance Auditor
+                healer_visitor = HealerComplianceVisitor(str(fp))
+                healer_visitor.visit(tree)
+                violations.extend(healer_visitor.violations)
                 
             except SyntaxError as e:
                 violations.append(
