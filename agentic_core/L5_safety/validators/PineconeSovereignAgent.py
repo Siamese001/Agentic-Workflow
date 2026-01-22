@@ -103,7 +103,37 @@ class PineconeSovereignAgent(SovereignBaseAgent):
 
         self.index = self.pc.Index(self.index_name)
 
+        # [PHASE 1 MIGRATION] Strict Dimension Guarding
+        try:
+            desc = self.pc.describe_index(self.index_name)
+            if desc.dimension != self.dimension:
+                print(
+                    f"   [CRITICAL] Dimension Mismatch: Index={desc.dimension}, Env={self.dimension}"
+                )
+                self.dimension = desc.dimension  # Force sync to prevent crash
+        except Exception as e:
+            print(f"   [!] Could not verify dimensions: {e}")
+
         # Note: bootstrap_territory_vectors is now async and will be called from execute()
+
+    # [PHASE 1 MIGRATION] Absorbed from pinecone_sync.py
+    async def sync_fission_state(self, monolith_path: str, new_files: list[str]) -> bool:
+        """Updates Pinecone to reflect new modular architecture after atomic fission."""
+        try:
+            print(f"   [Memory] Purging stale embeddings for {monolith_path}...")
+            self.index.delete(filter={"file_path": {"$eq": monolith_path}})
+            for file_path in new_files:
+                content = Path(file_path).read_text(encoding="utf-8", errors="ignore")
+                emb = await self.get_embedding(content)
+                path_str = str(file_path).replace('/', '_').replace('\\', '_')
+                vec_id = f"vec_{path_str}"
+                self.index.upsert(
+                    vectors=[(vec_id, emb, {"file_path": file_path, "parent": monolith_path})]
+                )
+            return True
+        except Exception as e:
+            print(f"   [X] Fission sync failed: {e}")
+            return False
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L4 compliance."""

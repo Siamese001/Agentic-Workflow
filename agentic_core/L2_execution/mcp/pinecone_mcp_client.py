@@ -20,9 +20,16 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 Logger: Any = logging.getLogger(__name__)
 
 
-class SovereignPineconeMcpClient(SovereignBaseAgent):
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+
+
+class SovereignPineconeMcpClient(RedisCacheMixin, SovereignBaseAgent):
     """
     Official Pinecone MCP client — L3 routed, L5 shielded.
+
+    [PHASE 34] Redis-Cached for Meta-Learning Layer:
+    - Search results cached with 1-hour TTL
+    - Reduces MCP call overhead
 
     All vector operations flow through the Sovereign MCP Router for:
     - L5 safety validation
@@ -36,13 +43,24 @@ class SovereignPineconeMcpClient(SovereignBaseAgent):
     - CRITIQUE emission on exhausted retries
     """
 
+    # RedisCacheMixin configuration
+    _cache_prefix: str = "pinecone_mcp"
+    _default_ttl: int = 3600  # 1 hour
+
     def __init__(self):
-        """Initialize the Pinecone MCP client with sovereign routing."""
+        """Initialize the Pinecone MCP client with sovereign routing and Redis."""
         super().__init__()
         self.router = SovereignMCPRouter(role="semantic_memory")
         self.initialized = False
+        self.audit_log: list[dict] = []  # [PHASE 1] Absorbed from pinecone.py
         self._mcp_audit("init")
         Logger.info("[L4 PINECONE MCP] Client initialized")
+
+    def _audit(self, operation: str, success: bool):
+        """[PHASE 1] Record operation for L2 auditing."""
+        import time
+
+        self.audit_log.append({"op": operation, "success": success, "ts": time.time()})
 
     async def initialize(self) -> Any:
         """Async initialization of MCP router."""
@@ -61,9 +79,10 @@ class SovereignPineconeMcpClient(SovereignBaseAgent):
         namespace: str | None = None,
         rerank: bool = True,
         filters: dict | None = None,
+        use_cache: bool = True,  # [PHASE 34] New parameter
     ) -> dict[str, Any]:
         """
-        Execute semantic search with optional server-side reranking.
+        Execute semantic search with Redis caching and optional server-side reranking.
 
         Args:
             query_text: Text to search for
@@ -71,14 +90,32 @@ class SovereignPineconeMcpClient(SovereignBaseAgent):
             namespace: Optional namespace to search in
             rerank: Whether to apply reranking
             filters: Optional metadata filters
+            use_cache: Whether to use Redis cache (default: True)
 
         Returns:
             Search results with scores and metadata
         """
+        import hashlib
+
         if not config.PINECONE_MCP_ENABLED:
             raise RuntimeError("Pinecone MCP is disabled in Sovereign Config.")
         if not self.initialized:
             await self.initialize()
+
+        # [PHASE 34] Cache Check
+        effective_ns = namespace or config.PINECONE_DEFAULT_NAMESPACE
+        cache_key = ""
+
+        if use_cache:
+            # Deterministic hash of query + critical params
+            q_hash = hashlib.sha256(query_text.encode()).hexdigest()[:16]
+            cache_key = f"search:{q_hash}:{top_k}:{effective_ns}:{rerank}"
+
+            cached = await self.cache_get(cache_key)
+            if cached:
+                Logger.debug("[L4 PINECONE MCP] Search cache HIT")
+                return cached
+
         try:
             result: Any = await self._hardened_call(
                 "pinecone_search",
@@ -87,11 +124,16 @@ class SovereignPineconeMcpClient(SovereignBaseAgent):
                 args={
                     "query": query_text,
                     "top_k": top_k,
-                    "namespace": namespace or config.PINECONE_DEFAULT_NAMESPACE,
+                    "namespace": effective_ns,
                     "rerank": rerank,
                     "rerank_model": config.PINECONE_RERANK_MODEL if rerank else None,
                 },
             )
+
+            # [PHASE 34] Cache Write
+            if use_cache and result.get("matches"):
+                await self.cache_set(cache_key, result, ttl=self._default_ttl)
+
             Logger.info(
                 f"[L4 PINECONE MCP] Search completed: {len(result.get('matches', []))} results"
             )
