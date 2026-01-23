@@ -93,5 +93,24 @@
       "strategic_alignment",
       "sender_grounding"
     ]
+  },
+  "gate_decision_agent": {
+    "factual_failure_rules": [
+      "STRATEGIC_ALIGNMENT",
+      "SENDER_GROUNDING_MISMATCH",
+      "FACTUAL_INACCURACY"
+    ],
+    "max_factual_loops": 2,
+    "max_creative_retries": 3
+  },
+  "qa_report_agent": {
+    "report_sections": ["Summary", "Logic_Flow", "Research_Audit", "Validation_Results", "Final_Score"],
+    "output_directory": "outputs/qa_reports",
+    "scoring_weights": {
+      "research": 0.3,
+      "alignment": 0.2,
+      "validation": 0.3,
+      "generation": 0.2
+    }
   }
 }

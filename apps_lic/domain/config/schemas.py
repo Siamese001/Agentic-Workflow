@@ -6,6 +6,7 @@ Defines the Pydantic models for type-safe configuration loading.
 
 from __future__ import annotations
 
+from typing import Dict, List
 from pydantic import BaseModel, Field
 
 
@@ -62,11 +63,26 @@ class RouteDef(BaseModel):
     constraints: RouteConstraints
 
 
+class QAReportConfig(BaseModel):
+    """Settings for the QA Report Agent (Chronicler)."""
+    report_sections: List[str]
+    output_directory: str
+    scoring_weights: Dict[str, float]
+
+
+class GateConfig(BaseModel):
+    """Settings for the Gate Decision Agent (Governor)."""
+    factual_failure_rules: List[str]
+    # Limits are stored here for the Orchestrator to read, 
+    # but the Agent should not track current counts.
+    max_factual_loops: int
+    max_creative_retries: int
+
+
 class ValidationConfig(BaseModel):
     """Settings for Validation Agent."""
-
     severity_threshold: str
-    rule_categories: list[str]
+    rule_categories: List[str]
 
 
 class GenerationConfig(BaseModel):
@@ -91,3 +107,5 @@ class AgentSpecs(BaseModel):
     routing_agent: RoutingConfig
     generation_agent: GenerationConfig
     validation_agent: ValidationConfig
+    gate_decision_agent: GateConfig
+    qa_report_agent: QAReportConfig
