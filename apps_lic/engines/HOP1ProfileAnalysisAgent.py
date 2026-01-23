@@ -36,12 +36,12 @@ class HOP1ProfileAnalysisAgent(V2AgentBase):
         5. Final Gate Approval & Write.
         """
         registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
-        
+
         # 1. Read Mission Input (Sovereign Defensiveness)
         # Support both mission_input (new) and recipient_profile (legacy)
         mission_input = buffer.read("mission_input")
         profile = buffer.read("recipient_profile")
-        
+
         # Determine input source
         if mission_input and isinstance(mission_input, dict):
             # New format: mission_input with contact_* fields
@@ -59,36 +59,37 @@ class HOP1ProfileAnalysisAgent(V2AgentBase):
         else:
             registry.add_trace("DATA_ERROR", {"msg": "Missing mission_input or recipient_profile"})
             raise ValueError("HOP-1 requires mission_input or recipient_profile in buffer")
-        
+
         # Defensive Title Normalization
         title = (title or "").strip()
         about = (about or "").strip()
         registry.add_trace("INPUT_NORMALIZED", {"title_len": len(title), "about_len": len(about)})
-        
+
         # Gate 2: Contact Block Validation
         if not title:
             registry.add_trace("GATE_2_FAILED", {"reason": "missing_title"})
             raise ValueError("GATE_2_FAILED: Contact title is required")
-        
+
         registry.add_trace("PHASE_STEP", {"action": "starting_gate_validation"})
-        
+
         # Gate 4: Archetype Classification with CXO Precedence
         combined_text = f"{title} {about}".upper()
-        
+
         archetype = None
         confidence = 0.0
         cxo_triggered = False
         key_indicators = []
         reasoning = ""
-        
+
         # Rule: CXO Precedence tokens take immediate priority
         # Hardened boundary regex: word boundaries + exclusion of common false-positives
         import re
+
         cxo_tokens = self.config.profile_analysis_agent.cxo_precedence_tokens
         for token in cxo_tokens:
             # Hardened boundary regex: case-insensitive flag in pattern
             # Target: 'CEO', 'CTO', 'CFO', 'COO', 'CHRO', 'CMO'
-            pattern = r'(?i)\b' + re.escape(token) + r'\b'
+            pattern = r"(?i)\b" + re.escape(token) + r"\b"
             if re.search(pattern, combined_text):
                 archetype = "C_LEVEL"
                 confidence = 1.0  # CXO precedence = 100% confidence
@@ -97,7 +98,7 @@ class HOP1ProfileAnalysisAgent(V2AgentBase):
                 reasoning = f"K.1 CXO Precedence: Token '{token}' found in profile"
                 registry.add_trace("CXO_PRECEDENCE_TRIGGERED", {"token": token})
                 break
-        
+
         # Heuristic Classification Fallback
         if not archetype:
             result = self._classify_heuristic(title.lower())
@@ -105,27 +106,29 @@ class HOP1ProfileAnalysisAgent(V2AgentBase):
             confidence = result["confidence"]
             key_indicators = result["key_indicators"]
             reasoning = result["reasoning"]
-        
+
         # L3 Slow Path: Reasoning Injection for low confidence
         needs_override = confidence < self.config.profile_analysis_agent.manual_override_threshold
         if needs_override:
-            registry.add_trace("REASONING_ACTIVATED", {
-                "reason": "low_confidence", 
-                "score": confidence,
-                "threshold": self.config.profile_analysis_agent.manual_override_threshold
-            })
+            registry.add_trace(
+                "REASONING_ACTIVATED",
+                {
+                    "reason": "low_confidence",
+                    "score": confidence,
+                    "threshold": self.config.profile_analysis_agent.manual_override_threshold,
+                },
+            )
             # [Logic: Internal LLM call for CoT/ToT reasoning if confidence < threshold]
             if self.toggles.use_cot and self.llm:
                 try:
-                    llm_response = self._execute_reasoning(title, {
-                        "archetype": archetype,
-                        "confidence": confidence
-                    })
+                    llm_response = self._execute_reasoning(
+                        title, {"archetype": archetype, "confidence": confidence}
+                    )
                     if llm_response["confidence"] > confidence:
-                        registry.add_trace("DECISION_OVERRIDE", {
-                            "old": archetype, 
-                            "new": llm_response["archetype"]
-                        })
+                        registry.add_trace(
+                            "DECISION_OVERRIDE",
+                            {"old": archetype, "new": llm_response["archetype"]},
+                        )
                         archetype = llm_response["archetype"]
                         confidence = llm_response["confidence"]
                         needs_override = False
@@ -135,7 +138,7 @@ class HOP1ProfileAnalysisAgent(V2AgentBase):
                 registry.add_trace("REASONING_SKIPPED", {"reason": "LLM_or_COT_disabled"})
         else:
             registry.add_trace("REASONING_NOT_REQUIRED", {"confidence": confidence})
-        
+
         # Final Gate Approval & Write
         # Get profile data for output (handle both input formats)
         if profile and isinstance(profile, dict):
@@ -147,7 +150,7 @@ class HOP1ProfileAnalysisAgent(V2AgentBase):
         else:
             recipient_name = ""
             recipient_company = ""
-        
+
         output_data = {
             "Archetype": archetype,
             "confidence": confidence,
@@ -159,7 +162,7 @@ class HOP1ProfileAnalysisAgent(V2AgentBase):
             "recipient_title": title,
             "recipient_name": recipient_name,
             "recipient_company": recipient_company,
-            "metadata": {"title": title}
+            "metadata": {"title": title},
         }
 
         buffer.write_once("hop1_analysis", output_data)

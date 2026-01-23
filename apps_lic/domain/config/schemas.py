@@ -6,7 +6,6 @@ Defines the Pydantic models for type-safe configuration loading.
 
 from __future__ import annotations
 
-from typing import Dict, List
 from pydantic import BaseModel, Field
 
 
@@ -24,7 +23,9 @@ class ProfileAnalysisConfig(BaseModel):
     default_archetype: str
     default_confidence: float
     manual_override_threshold: float
-    cxo_precedence_tokens: List[str] = Field(default_factory=lambda: ["CEO", "CFO", "COO", "CTO", "CMO", "CIO", "CISO", "CPO", "CRO"])
+    cxo_precedence_tokens: list[str] = Field(
+        default_factory=lambda: ["CEO", "CFO", "COO", "CTO", "CMO", "CIO", "CISO", "CPO", "CRO"]
+    )
 
 
 class ResearchConfig(BaseModel):
@@ -66,15 +67,17 @@ class RouteDef(BaseModel):
 
 class QAReportConfig(BaseModel):
     """Settings for the QA Report Agent (Chronicler)."""
-    report_sections: List[str]
+
+    report_sections: list[str]
     output_directory: str
-    scoring_weights: Dict[str, float]
+    scoring_weights: dict[str, float]
 
 
 class GateConfig(BaseModel):
     """Settings for the Gate Decision Agent (Governor)."""
-    factual_failure_rules: List[str]
-    # Limits are stored here for the Orchestrator to read, 
+
+    factual_failure_rules: list[str]
+    # Limits are stored here for the Orchestrator to read,
     # but the Agent should not track current counts.
     max_factual_loops: int
     max_creative_retries: int
@@ -82,8 +85,9 @@ class GateConfig(BaseModel):
 
 class ValidationConfig(BaseModel):
     """Settings for Validation Agent."""
+
     severity_threshold: str
-    rule_categories: List[str]
+    rule_categories: list[str]
 
 
 class GenerationConfig(BaseModel):

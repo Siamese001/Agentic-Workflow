@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
 from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
@@ -40,18 +40,13 @@ class HOP3SenderGroundingAgent(V2AgentBase):
         try:
             config = self.config.sender_grounding_agent
             source_files = config.source_files
-        except Exception as e:
+        except Exception:
             registry.add_trace("DATA_ERROR", {"msg": "Missing grounding config"})
             raise RuntimeError("HOP-3 missing configuration targets")
 
         registry.add_trace("PHASE_STEP", {"action": "starting_grounding_extraction"})
-        
-        grounding_map = {
-            "team_members": [],
-            "products": [],
-            "achievements": [],
-            "case_studies": []
-        }
+
+        grounding_map = {"team_members": [], "products": [], "achievements": [], "case_studies": []}
         loaded_sources = []
 
         # 2. Specialist Extraction Loop
@@ -69,13 +64,13 @@ class HOP3SenderGroundingAgent(V2AgentBase):
         output_data = {
             "grounding_whitelists": grounding_map,
             "metric_source_map": metric_map,
-            "metadata": {"sources_loaded": len(loaded_sources)}
+            "metadata": {"sources_loaded": len(loaded_sources)},
         }
 
         buffer.write_once("hop3_sender_grounding", output_data)
         registry.add_trace("DECISION_FINAL", {"status": "GROUNDING_COMPLETE"})
 
-    def _load_json_file(self, filename: str) -> Dict[str, Any] | None:
+    def _load_json_file(self, filename: str) -> dict[str, Any] | None:
         """Load and parse a JSON file, returning None on failure."""
         file_path = Path(filename)
         if not file_path.exists():
@@ -86,16 +81,16 @@ class HOP3SenderGroundingAgent(V2AgentBase):
         except (json.JSONDecodeError, Exception):
             return None
 
-    def _extract_grounded_entities(self, data: Dict, mapping: Dict, reg: TraceRegistry) -> None:
+    def _extract_grounded_entities(self, data: dict, mapping: dict, reg: TraceRegistry) -> None:
         """Strictly extracts entities based on whitelist targets."""
         # Map config targets to data keys
         target_key_map = {
             "products": ["whitelisted_products", "products"],
             "team_members": ["whitelisted_team_members", "team_members"],
             "achievements": ["quantifiable_achievements", "achievements"],
-            "case_studies": ["whitelisted_case_studies", "case_studies"]
+            "case_studies": ["whitelisted_case_studies", "case_studies"],
         }
-        
+
         for target in self.config.sender_grounding_agent.extraction_targets:
             if target in target_key_map:
                 for data_key in target_key_map[target]:
@@ -106,22 +101,21 @@ class HOP3SenderGroundingAgent(V2AgentBase):
                             extracted = []
                             for item in items:
                                 if isinstance(item, dict):
-                                    extracted.append(item.get("name", item.get("client", str(item))))
+                                    extracted.append(
+                                        item.get("name", item.get("client", str(item)))
+                                    )
                                 else:
                                     extracted.append(item)
                             mapping[target].extend(extracted)
-                            reg.add_trace("ENTITY_EXTRACTED", {"category": target, "count": len(extracted)})
+                            reg.add_trace(
+                                "ENTITY_EXTRACTED", {"category": target, "count": len(extracted)}
+                            )
                         break
 
-    def _map_metrics(self, achievements: List[Any]) -> Dict[str, List[str]]:
+    def _map_metrics(self, achievements: list[Any]) -> dict[str, list[str]]:
         """Map achievements to metric categories for HOP-5 generation."""
-        metric_map = {
-            "revenue": [],
-            "efficiency": [],
-            "growth": [],
-            "other": []
-        }
-        
+        metric_map = {"revenue": [], "efficiency": [], "growth": [], "other": []}
+
         for achievement in achievements:
             text = str(achievement).lower()
             if any(kw in text for kw in ["revenue", "sales", "$", "million", "billion"]):
@@ -132,10 +126,12 @@ class HOP3SenderGroundingAgent(V2AgentBase):
                 metric_map["growth"].append(str(achievement))
             else:
                 metric_map["other"].append(str(achievement))
-        
+
         return metric_map
 
-    def _extract_data_legacy(self, data: dict[str, Any], filename: str, grounding: dict[str, Any]) -> None:
+    def _extract_data_legacy(
+        self, data: dict[str, Any], filename: str, grounding: dict[str, Any]
+    ) -> None:
         """Legacy extraction method - kept for backward compatibility."""
         # Heuristic 1: Sender Knowledge Base Structure
         if "whitelisted_team_members" in data:

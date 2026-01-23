@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
-from typing import Any, Dict, List
+from typing import Any
 
 # V2 Architecture Imports
 from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
@@ -71,21 +71,21 @@ class HOP2ResearchAgent(V2AgentBase):
         # 1. Read Sovereign Input and Mission Context
         hop1 = buffer.read("hop1_analysis")
         mission_input = buffer.read("mission_input")
-        
+
         if not hop1:
             registry.add_trace("DATA_ERROR", {"msg": "Missing hop1_analysis"})
             raise RuntimeError("HOP-2 missing critical upstream context")
-        
+
         # Defensive check for C_LEVEL requirements
         archetype = hop1.get("Archetype", "UNKNOWN")
         if archetype == "C_LEVEL" and not mission_input.get("company_id"):
             registry.add_trace("INPUT_WARNING", {"msg": "C_LEVEL mission missing company_id"})
 
         registry.add_trace("PHASE_STEP", {"action": "starting_retrieval_planning"})
-        
+
         # 2. Derive Research 'Wants' (K.3 Logic)
         wants = self._derive_wants(archetype, mission_input or {})
-        
+
         # 3. Build and Execute Retrieval Plan
         # [Logic: Prioritizes Vector DB, falls back to Web Search for gaps]
         retrievals = self._execute_plan(wants, registry)
@@ -94,12 +94,14 @@ class HOP2ResearchAgent(V2AgentBase):
         evidence_pack = []
         for item in retrievals:
             artifact_id = self._generate_stable_id(item)
-            evidence_pack.append({
-                "artifact_id": artifact_id,
-                "summary": item["text"],
-                "source": item["source"],
-                "confidence": item.get("confidence", 0.7)
-            })
+            evidence_pack.append(
+                {
+                    "artifact_id": artifact_id,
+                    "summary": item["text"],
+                    "source": item["source"],
+                    "confidence": item.get("confidence", 0.7),
+                }
+            )
 
         # 5. Strategic Brief Generation (Specialist Hook)
         strategic_brief = self._summarize_for_archetype(evidence_pack, archetype)
@@ -108,25 +110,30 @@ class HOP2ResearchAgent(V2AgentBase):
         output_data = {
             "evidence_pack": evidence_pack,
             "strategic_brief": strategic_brief,
-            "metadata": {"wants_count": len(wants), "retrieval_count": len(retrievals)}
+            "metadata": {"wants_count": len(wants), "retrieval_count": len(retrievals)},
         }
 
         buffer.write_once("hop2_research", output_data)
         registry.add_trace("RETRIEVAL_PLAN_COMPLETED", {"artifacts": len(evidence_pack)})
 
-    def _derive_wants(self, archetype: str, mission_input: dict) -> List[str]:
+    def _derive_wants(self, archetype: str, mission_input: dict) -> list[str]:
         """K.3 Logic: Determines context needs based on seniority and mission targets."""
         contact_name = mission_input.get("contact_name", "Unknown")
         company_id = mission_input.get("company_id", "Unknown")
         contact_id = mission_input.get("recipient_id", "Unknown")
-        
+
         # Primary Anchor: Profile Highlights
         wants = [f"Strategic background for {contact_name} ({contact_id})"]
-        
+
         # Secondary Anchor: Seniority-based signals
         if archetype == "C_LEVEL":
-            wants.extend([f"{company_id} 2025 strategic priorities", f"{company_id} quarterly earnings signals"])
-        
+            wants.extend(
+                [
+                    f"{company_id} 2025 strategic priorities",
+                    f"{company_id} quarterly earnings signals",
+                ]
+            )
+
         if not wants:
             wants.append("Context for: prospect overview")
         return wants
@@ -141,48 +148,50 @@ class HOP2ResearchAgent(V2AgentBase):
         seed = f"v2.5|{company_id}|{tool}|{source}|{text[:64]}"
         return hashlib.sha256(seed.encode()).hexdigest()[:12]
 
-    def _execute_plan(self, wants: List[str], registry: TraceRegistry) -> List[Dict[str, Any]]:
+    def _execute_plan(self, wants: list[str], registry: TraceRegistry) -> list[dict[str, Any]]:
         """
         Execute retrieval plan against available data sources.
         Uses vector store if available, otherwise returns mock data.
         """
         results = []
-        
+
         # If we have a memory store, use it
-        if hasattr(self, 'memory_store') and self.memory_store:
+        if hasattr(self, "memory_store") and self.memory_store:
             for want in wants:
                 try:
                     # Query vector store for each want
                     query_results = self.memory_store.query_by_company(
-                        company_name=want.split()[-1] if want else "",
-                        query_text=want,
-                        n_results=3
+                        company_name=want.split()[-1] if want else "", query_text=want, n_results=3
                     )
                     for r in query_results:
-                        results.append({
-                            "text": r.get("text", "")[:200],
-                            "source": r.get("metadata", {}).get("source_url", "vector_store"),
-                            "confidence": r.get("metadata", {}).get("source_weight", 0.7)
-                        })
+                        results.append(
+                            {
+                                "text": r.get("text", "")[:200],
+                                "source": r.get("metadata", {}).get("source_url", "vector_store"),
+                                "confidence": r.get("metadata", {}).get("source_weight", 0.7),
+                            }
+                        )
                 except Exception:
                     pass
-        
+
         # Fallback: Generate placeholder results for testing
         if not results:
             for want in wants:
-                results.append({
-                    "text": f"Research result for: {want}",
-                    "source": "internal_knowledge_base",
-                    "confidence": 0.7
-                })
-        
+                results.append(
+                    {
+                        "text": f"Research result for: {want}",
+                        "source": "internal_knowledge_base",
+                        "confidence": 0.7,
+                    }
+                )
+
         return results
 
-    def _summarize_for_archetype(self, evidence_pack: List[Dict], archetype: str) -> str:
+    def _summarize_for_archetype(self, evidence_pack: list[dict], archetype: str) -> str:
         """Generate strategic brief tailored to archetype."""
         if not evidence_pack:
             return "No evidence available for strategic brief."
-        
+
         # FIX: Resolve nested loop syntax error and ensure 100-char truncation
         summaries = [str(e["summary"])[:100].strip() for e in evidence_pack[:3]]
         brief = f"Strategic Brief for {archetype}: " + " | ".join(summaries)

@@ -3,6 +3,7 @@ HOP-4 Sovereign Navigator Test Suite.
 
 MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf execution.
 """
+
 import pytest
 from apps_lic.engines.HOP4RoutingAgent import HOP4RoutingAgent
 from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
@@ -23,16 +24,19 @@ class TestHOP4SovereignNavigator:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "C_LEVEL"})
-        buffer.write_once("mission_input", {
-            "route_override": "INMAIL", 
-            "premium_available": False  # The Conflict
-        })
-        
+        buffer.write_once(
+            "mission_input",
+            {
+                "route_override": "INMAIL",
+                "premium_available": False,  # The Conflict
+            },
+        )
+
         agent = HOP4RoutingAgent()
         # V2AgentBase wraps exceptions in RuntimeError
         with pytest.raises(RuntimeError):
             agent.run_phase(buffer, registry)
-        
+
         assert registry.count("GATE_6_FAILED") == 1
 
     def test_deterministic_route_selection_inmail(self):
@@ -42,14 +46,13 @@ class TestHOP4SovereignNavigator:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "EXECUTIVE"})
-        buffer.write_once("mission_input", {
-            "connection_status": "NOT_CONNECTED",
-            "premium_available": True
-        })
-        
+        buffer.write_once(
+            "mission_input", {"connection_status": "NOT_CONNECTED", "premium_available": True}
+        )
+
         agent = HOP4RoutingAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop4_routing")
         assert result["route"] == "INMAIL"
 
@@ -60,13 +63,16 @@ class TestHOP4SovereignNavigator:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "RECRUITER"})
-        buffer.write_once("mission_input", {
-            "connection_status": "CONNECTED"  # Should trigger FOLLOW_UP
-        })
-        
+        buffer.write_once(
+            "mission_input",
+            {
+                "connection_status": "CONNECTED"  # Should trigger FOLLOW_UP
+            },
+        )
+
         agent = HOP4RoutingAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop4_routing")
         # FOLLOW_UP maps to DIRECT_MESSAGE which has char_limit 2000
         assert result["constraints"]["char_limit"] == 2000
@@ -79,10 +85,10 @@ class TestHOP4SovereignNavigator:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "SENIOR_TA"})
         buffer.write_once("mission_input", {"connection_status": "NOT_CONNECTED"})
-        
+
         agent = HOP4RoutingAgent()
         agent.run_phase(buffer, registry)
-        
+
         traces = [t["type"] for t in registry.get_traces()]
         assert "DECISION_FINAL" in traces
 
@@ -92,18 +98,21 @@ class TestHOP4SovereignNavigator:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "EXECUTIVE"})
-        buffer.write_once("mission_input", {
-            "connection_status": "CONNECTED",
-            "route_override": "INMAIL",
-            "premium_available": True
-        })
-        
+        buffer.write_once(
+            "mission_input",
+            {
+                "connection_status": "CONNECTED",
+                "route_override": "INMAIL",
+                "premium_available": True,
+            },
+        )
+
         agent = HOP4RoutingAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop4_routing")
         assert result["route"] == "INMAIL"
-        
+
         traces = [t["type"] for t in registry.get_traces()]
         assert "ROUTE_OVERRIDE_APPLIED" in traces
 
@@ -113,13 +122,11 @@ class TestHOP4SovereignNavigator:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "MANAGER"})
-        buffer.write_once("mission_input", {
-            "connection_status": "CONNECTED"
-        })
-        
+        buffer.write_once("mission_input", {"connection_status": "CONNECTED"})
+
         agent = HOP4RoutingAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop4_routing")
         assert result["route"] == "FOLLOW_UP"
 
@@ -129,14 +136,13 @@ class TestHOP4SovereignNavigator:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "RECRUITER"})
-        buffer.write_once("mission_input", {
-            "connection_status": "NOT_CONNECTED",
-            "premium_available": False
-        })
-        
+        buffer.write_once(
+            "mission_input", {"connection_status": "NOT_CONNECTED", "premium_available": False}
+        )
+
         agent = HOP4RoutingAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop4_routing")
         assert result["route"] == "CONNECTION_REQ"
 
@@ -146,13 +152,11 @@ class TestHOP4SovereignNavigator:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "C_LEVEL"})
-        buffer.write_once("mission_input", {
-            "connection_status": "CONNECTED"
-        })
-        
+        buffer.write_once("mission_input", {"connection_status": "CONNECTED"})
+
         agent = HOP4RoutingAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop4_routing")
         assert "metadata" in result
         assert result["metadata"]["archetype_aligned"] == "C_LEVEL"

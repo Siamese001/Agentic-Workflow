@@ -3,6 +3,7 @@ HOP-2 Sovereign Strategist Test Suite (v2.5).
 
 MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf execution.
 """
+
 import pytest
 from unittest.mock import MagicMock
 from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
@@ -24,10 +25,10 @@ class TestHOP2SovereignStrategist:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "C_LEVEL"})
         buffer.write_once("mission_input", {"company_id": "AcmeCorp", "contact_name": "Jane Doe"})
-        
+
         agent = HOP2ResearchAgent(memory_store=MagicMock())
         agent.run_phase(buffer, registry)
-        
+
         # Verify 100% Pass: C-Level wants must be derived correctly.
         result = buffer.read("hop2_research")
         assert result["metadata"]["wants_count"] >= 3
@@ -43,10 +44,10 @@ class TestHOP2SovereignStrategist:
         agent = HOP2ResearchAgent(memory_store=None)
         item1 = {"text": "Strategic AI Growth", "source": "url_1", "company_id": "ABC"}
         item2 = {"text": "Strategic AI Growth", "source": "url_1", "company_id": "ABC"}
-        
+
         id1 = agent._generate_stable_id(item1)
         id2 = agent._generate_stable_id(item2)
-        
+
         # Verify 100% Pass: Same inputs must produce same ID.
         assert id1 == id2
         assert len(id1) == 12
@@ -58,10 +59,10 @@ class TestHOP2SovereignStrategist:
         """
         agent = HOP2ResearchAgent(memory_store=None)
         evidence = [{"summary": "fact 1"}, {"summary": "fact 2"}]
-        
+
         # This previously failed with 'summaries is not iterable'
         brief = agent._summarize_for_archetype(evidence, "EXECUTIVE")
-        
+
         # Verify 100% Pass: Brief must contain the summaries.
         assert "fact 1" in brief
         assert "Strategic Brief" in brief
@@ -74,11 +75,11 @@ class TestHOP2SovereignStrategist:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         # hop1_analysis is intentionally missing
         buffer.write_once("mission_input", {"id": "123"})
-        
+
         agent = HOP2ResearchAgent(memory_store=None)
         with pytest.raises(RuntimeError):
             agent.run_phase(buffer, registry)
-        
+
         # Verify 100% Pass: DATA_ERROR must be logged.
         assert any(t["type"] == "DATA_ERROR" for t in registry.get_traces())
 
@@ -89,10 +90,10 @@ class TestHOP2SovereignStrategist:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "RECRUITER"})
         buffer.write_once("mission_input", {"company_id": "Acme", "contact_name": "Bob"})
-        
+
         agent = HOP2ResearchAgent()
         agent.run_phase(buffer, registry)
-        
+
         traces = [t["type"] for t in registry.get_traces()]
         assert "RETRIEVAL_PLAN_COMPLETED" in traces
 
@@ -103,15 +104,15 @@ class TestHOP2SovereignStrategist:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "SENIOR_TA"})
         buffer.write_once("mission_input", {"company_id": "TestCorp", "contact_name": "Alice"})
-        
+
         agent = HOP2ResearchAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop2_research")
         assert "evidence_pack" in result
         assert "strategic_brief" in result
         assert "metadata" in result
-        
+
         # Check evidence item structure
         if result["evidence_pack"]:
             evidence = result["evidence_pack"][0]
@@ -127,10 +128,10 @@ class TestHOP2SovereignStrategist:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "C_LEVEL"})
         buffer.write_once("mission_input", {"company_id": "BigCorp", "contact_name": "CEO John"})
-        
+
         agent = HOP2ResearchAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop2_research")
         assert result["strategic_brief"] is not None
         assert len(result["strategic_brief"]) > 0
@@ -143,11 +144,13 @@ class TestHOP2SovereignStrategist:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("hop1_analysis", {"Archetype": "RECRUITER"})
-        buffer.write_once("mission_input", {"company_id": "SmallCo", "contact_name": "Recruiter Jane"})
-        
+        buffer.write_once(
+            "mission_input", {"company_id": "SmallCo", "contact_name": "Recruiter Jane"}
+        )
+
         agent = HOP2ResearchAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop2_research")
         # Non-C-Level should have only 1 want (profile highlights)
         assert result["metadata"]["wants_count"] == 1

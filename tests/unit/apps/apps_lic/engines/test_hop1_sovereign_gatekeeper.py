@@ -3,6 +3,7 @@ HOP-1 Sovereign Gatekeeper Test Suite.
 
 MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf execution.
 """
+
 import pytest
 from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
@@ -22,14 +23,14 @@ class TestHOP1SpecialistGatekeeper:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         # 'CEO' is in the C_LEVEL keywords in agent_specs.json
-        buffer.write_once("mission_input", {
-            "contact_title": "Interim CEO", 
-            "contact_about": "Strategic AI leadership"
-        })
-        
+        buffer.write_once(
+            "mission_input",
+            {"contact_title": "Interim CEO", "contact_about": "Strategic AI leadership"},
+        )
+
         agent = HOP1ProfileAnalysisAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop1_analysis")
         assert result["Archetype"] == "C_LEVEL"
         assert result["confidence"] == 1.0  # Force-multiplier per K1 rule
@@ -43,12 +44,12 @@ class TestHOP1SpecialistGatekeeper:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("mission_input", {"contact_name": "John Doe"})  # Missing title
-        
+
         agent = HOP1ProfileAnalysisAgent()
         # V2AgentBase wraps exceptions in RuntimeError
         with pytest.raises(RuntimeError):
             agent.run_phase(buffer, registry)
-        
+
         traces = [t["type"] for t in registry.get_traces()]
         assert "GATE_2_FAILED" in traces
 
@@ -60,10 +61,10 @@ class TestHOP1SpecialistGatekeeper:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         # Use a title that contains 'recruiter' keyword
         buffer.write_once("mission_input", {"contact_title": "Technical Recruiter"})
-        
+
         agent = HOP1ProfileAnalysisAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop1_analysis")
         assert result["Archetype"] == "RECRUITER"
         assert result["cxo_precedence_triggered"] is False
@@ -76,10 +77,10 @@ class TestHOP1SpecialistGatekeeper:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         # Use a title with no matching keywords - will get default confidence 0.5
         buffer.write_once("mission_input", {"contact_title": "Coordinator of Special Projects"})
-        
+
         agent = HOP1ProfileAnalysisAgent()
         agent.run_phase(buffer, registry)
-        
+
         traces = [t["type"] for t in registry.get_traces()]
         # Confidence for unknown titles is 0.5 (default_confidence)
         # threshold is 0.6 (manual_override_threshold)
@@ -91,16 +92,19 @@ class TestHOP1SpecialistGatekeeper:
         CTO triggers CXO precedence with 1.0 confidence.
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
-        buffer.write_once("recipient_profile", {
-            "title": "CTO",  # Use exact CXO token
-            "about": "Tech leadership",
-            "name": "Jane Smith",
-            "company": "TechCorp"
-        })
-        
+        buffer.write_once(
+            "recipient_profile",
+            {
+                "title": "CTO",  # Use exact CXO token
+                "about": "Tech leadership",
+                "name": "Jane Smith",
+                "company": "TechCorp",
+            },
+        )
+
         agent = HOP1ProfileAnalysisAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop1_analysis")
         assert result["Archetype"] == "C_LEVEL"
         assert result["confidence"] == 1.0  # CXO precedence forces 1.0
@@ -114,10 +118,10 @@ class TestHOP1SpecialistGatekeeper:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("mission_input", {"contact_title": "VP of Engineering"})
-        
+
         agent = HOP1ProfileAnalysisAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop1_analysis")
         assert "entrance_gates_passed" in result
         assert "GATE_2_BLOCK" in result["entrance_gates_passed"]
@@ -129,10 +133,10 @@ class TestHOP1SpecialistGatekeeper:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("mission_input", {"contact_title": "Director of Sales"})
-        
+
         agent = HOP1ProfileAnalysisAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop1_analysis")
         assert "metadata" in result
         assert result["metadata"]["title"] == "Director of Sales"
@@ -144,14 +148,17 @@ class TestHOP1SpecialistGatekeeper:
         MANDATORY: 100% Pass Requirement for Windsurf Execution.
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
-        buffer.write_once("mission_input", {
-            "contact_title": "Interim Chief Executive Officer",
-            "contact_about": "I used to be a coordinator but now I am the CEO."
-        })
-        
+        buffer.write_once(
+            "mission_input",
+            {
+                "contact_title": "Interim Chief Executive Officer",
+                "contact_about": "I used to be a coordinator but now I am the CEO.",
+            },
+        )
+
         agent = HOP1ProfileAnalysisAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop1_analysis")
         assert result["Archetype"] == "C_LEVEL"
         assert result["confidence"] == 1.0
@@ -164,14 +171,17 @@ class TestHOP1SpecialistGatekeeper:
         MANDATORY: 100% Pass Requirement for Windsurf Execution.
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
-        buffer.write_once("mission_input", {
-            "contact_title": "Project Coordinator", 
-            "contact_about": "Expert in cooperative systems."
-        })
-        
+        buffer.write_once(
+            "mission_input",
+            {
+                "contact_title": "Project Coordinator",
+                "contact_about": "Expert in cooperative systems.",
+            },
+        )
+
         agent = HOP1ProfileAnalysisAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop1_analysis")
         # Should NOT be C_LEVEL if the token 'COO' was the only trigger attempt
         assert result["Archetype"] != "C_LEVEL"
@@ -184,11 +194,11 @@ class TestHOP1SpecialistGatekeeper:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("mission_input", {"contact_about": "Just a bio."})
-        
+
         agent = HOP1ProfileAnalysisAgent()
         with pytest.raises(RuntimeError):  # V2AgentBase wraps in RuntimeError
             agent.run_phase(buffer, registry)
-        
+
         assert any(t["type"] == "GATE_2_FAILED" for t in registry.get_traces())
 
     def test_l3_slow_path_confidence_trigger(self):
@@ -199,10 +209,10 @@ class TestHOP1SpecialistGatekeeper:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         # Unknown title should result in low confidence fallback
         buffer.write_once("mission_input", {"contact_title": "Grand Master of Magic"})
-        
+
         agent = HOP1ProfileAnalysisAgent()
         agent.run_phase(buffer, registry)
-        
+
         assert any(t["type"] == "REASONING_ACTIVATED" for t in registry.get_traces())
 
     def test_input_normalization_trace(self):
@@ -211,14 +221,17 @@ class TestHOP1SpecialistGatekeeper:
         MANDATORY: 100% Pass Requirement for Windsurf Execution.
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
-        buffer.write_once("mission_input", {
-            "contact_title": "  CEO  ",  # Whitespace should be stripped
-            "contact_about": "  Leadership  "
-        })
-        
+        buffer.write_once(
+            "mission_input",
+            {
+                "contact_title": "  CEO  ",  # Whitespace should be stripped
+                "contact_about": "  Leadership  ",
+            },
+        )
+
         agent = HOP1ProfileAnalysisAgent()
         agent.run_phase(buffer, registry)
-        
+
         traces = registry.get_traces()
         norm_trace = next((t for t in traces if t["type"] == "INPUT_NORMALIZED"), None)
         assert norm_trace is not None
@@ -235,10 +248,10 @@ class TestHOP1SpecialistGatekeeper:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("mission_input", {"contact_title": "CEO"})
-        
+
         agent = HOP1ProfileAnalysisAgent()
         agent.run_phase(buffer, registry)
-        
+
         traces = registry.get_traces()
         # CXO precedence gives 1.0 confidence, so reasoning not required
         assert any(t["type"] == "REASONING_NOT_REQUIRED" for t in traces)
@@ -250,13 +263,13 @@ class TestHOP1SpecialistGatekeeper:
         """
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("mission_input", {"contact_title": "Unknown Title"})
-        
+
         # Create agent without LLM (None by default)
         agent = HOP1ProfileAnalysisAgent(llm_client=None)
         # ReasoningToggles is frozen, so we can't modify it
         # By default, use_cot is False when llm is None
         agent.run_phase(buffer, registry)
-        
+
         traces = registry.get_traces()
         # Low confidence but no LLM, so reasoning skipped
         assert any(t["type"] == "REASONING_SKIPPED" for t in traces)

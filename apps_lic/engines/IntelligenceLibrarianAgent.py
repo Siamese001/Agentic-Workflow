@@ -36,7 +36,9 @@ except ImportError:
 
 
 @dataclass
-class IntelligenceLibrarianSpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class IntelligenceLibrarianSpecialist(
+    V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+):
     """
     V2.5 Sovereign Intelligence Librarian Specialist.
     Offline research agent that pre-computes intelligence (MCP Hardened)

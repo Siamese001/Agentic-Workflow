@@ -4,10 +4,10 @@ HOP-9: Integration Agent (V2.5 Architecture).
 V2.5 Sovereign Dispatcher.
 Handles delivery payload formatting and final audit verification.
 """
+
 from __future__ import annotations
 
 import hashlib
-from typing import Any, Dict
 
 from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
 from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
@@ -35,7 +35,7 @@ class HOP9IntegrationAgent(V2AgentBase):
         4. Write to Buffer and Seal.
         """
         registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
-        
+
         # 1. Read Sovereign Mission Output
         try:
             hop5 = buffer.read("hop5_generation")
@@ -51,7 +51,7 @@ class HOP9IntegrationAgent(V2AgentBase):
             raise RuntimeError("HOP-9 missing final mission artifacts")
 
         registry.add_trace("PHASE_STEP", {"action": "starting_integration_handoff"})
-        
+
         final_draft = hop5["selected_draft"]["text"]
         route = hop4["route"]
 
@@ -59,9 +59,11 @@ class HOP9IntegrationAgent(V2AgentBase):
         # Ensuring the message hasn't been mutated since HOP-5/6 validation.
         current_checksum = hashlib.sha256(final_draft.encode()).hexdigest()
         stored_checksum = hop5["selected_draft"].get("checksum")
-        
+
         if stored_checksum and current_checksum != stored_checksum:
-            registry.add_trace("INTEGRITY_FAILURE", {"expected": stored_checksum, "actual": current_checksum})
+            registry.add_trace(
+                "INTEGRITY_FAILURE", {"expected": stored_checksum, "actual": current_checksum}
+            )
             raise ValueError("HOP-9 Integrity Violation: Final draft checksum mismatch")
 
         # 3. Format Delivery Payload
@@ -71,32 +73,33 @@ class HOP9IntegrationAgent(V2AgentBase):
             hop1 = buffer.read("hop1_analysis")
             if hop1:
                 archetype = hop1.get("Archetype", "UNKNOWN")
-        
+
         # Determine priority based on archetype
         priority = "HIGH" if "C_LEVEL" in archetype else "NORMAL"
-        
+
         # Get recipient ID
         recipient_id = None
         if mission_input:
             recipient_id = mission_input.get("recipient_id")
-        
+
         delivery_payload = {
             "message": final_draft,
             "delivery_route": route,
             "recipient_id": recipient_id,
             "audit_report_path": hop8.get("report_path") if hop8 else None,
-            "priority": priority
+            "priority": priority,
         }
 
         # 4. Write to Buffer and Seal
-        buffer.write_once("hop9_integration", {
-            "status": "READY_FOR_DELIVERY",
-            "payload": delivery_payload,
-            "checksum": current_checksum
-        })
-        
-        registry.add_trace("MISSION_COMPLETED", {
-            "status": "SUCCESS", 
-            "route": route,
-            "archetype": archetype
-        })
+        buffer.write_once(
+            "hop9_integration",
+            {
+                "status": "READY_FOR_DELIVERY",
+                "payload": delivery_payload,
+                "checksum": current_checksum,
+            },
+        )
+
+        registry.add_trace(
+            "MISSION_COMPLETED", {"status": "SUCCESS", "route": route, "archetype": archetype}
+        )

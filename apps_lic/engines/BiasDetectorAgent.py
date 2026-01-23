@@ -1,4 +1,5 @@
 """Safety guard stack agents - V2.5 Sovereign Specialists."""
+
 from __future__ import annotations
 
 import json
@@ -52,24 +53,26 @@ class BiasDetectorSpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixi
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """Execute bias detection on buffer content."""
         registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
-        
+
         mission_input = buffer.read("mission_input") or {}
         text = mission_input.get("text", "")
-        
+
         # Simple bias pattern detection
         bias_patterns = ["always", "never", "everyone", "no one"]
         patterns_found = [p for p in bias_patterns if p.lower() in text.lower()]
-        
+
         result = {
             "bias_detected": len(patterns_found) > 0,
             "patterns": patterns_found,
         }
-        
+
         buffer.write_once("bias_detection_result", result)
         registry.add_trace("PHASE_COMPLETE", {"agent": self.__class__.__name__, "result": result})
 
 
-class PromptInjectionDetectorSpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class PromptInjectionDetectorSpecialist(
+    V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+):
     """Detects prompt-injection attacks."""
 
     class PIDetectionOutput(BaseModel):

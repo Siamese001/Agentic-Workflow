@@ -59,6 +59,7 @@ class SafetyProtocol(BaseModel):
 
 class GovernanceShieldLevel(IntEnum):
     """Risk enforcement levels for outreach governance."""
+
     LOW = 1
     MEDIUM = 2
     HIGH = 3
