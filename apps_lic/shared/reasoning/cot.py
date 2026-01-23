@@ -4,42 +4,42 @@ Chain of Thought (CoT) Helpers.
 Provides utility functions to expand simple prompts into multi-step
 reasoning chains without requiring full agent instantiation.
 """
+
 from __future__ import annotations
 
-from typing import List, Optional
 
-def expand_thought_process(prompt: str, steps: int = 3) -> List[str]:
+def expand_thought_process(prompt: str, steps: int = 3) -> list[str]:
     """
     Expands a single prompt into a sequence of reasoning steps.
-    
+
     Args:
         prompt (str): The core objective or question.
-        steps (int): Number of reasoning steps to generate. 
+        steps (int): Number of reasoning steps to generate.
                      Must be between 1 and 10.
-    
+
     Returns:
         List[str]: A list of strings representing step-by-step headers.
-        
+
     Raises:
         ValueError: If steps is out of bounds.
     """
     if not 1 <= steps <= 10:
         raise ValueError(f"Steps must be between 1 and 10. Got {steps}.")
-        
+
     if not prompt or not prompt.strip():
         return ["Step 1: Analyze empty request"]
 
     base_steps = [
-        f"Step {i+1}: {action}" 
-        for i, action in enumerate(_generate_generic_steps(steps))
+        f"Step {i + 1}: {action}" for i, action in enumerate(_generate_generic_steps(steps))
     ]
-    
+
     # Inject context into the first step
     base_steps[0] = f"Step 1: Analyze context for '{prompt}'"
-    
+
     return base_steps
 
-def _generate_generic_steps(count: int) -> List[str]:
+
+def _generate_generic_steps(count: int) -> list[str]:
     """Generates generic reasoning placeholders."""
     templates = [
         "Analyze context and constraints",
@@ -51,7 +51,7 @@ def _generate_generic_steps(count: int) -> List[str]:
         "Verification pass 2",
         "Final formatting",
         "Pre-flight check",
-        "Commit result"
+        "Commit result",
     ]
     # Cycle through templates if count > len(templates)
     return [templates[i % len(templates)] for i in range(count)]

@@ -10,7 +10,6 @@ Enhanced with Titanium RAG Pipeline for SOTA company research and insights.
 import logging
 from datetime import datetime
 
-
 logger = logging.getLogger(__name__)
 
 # Import Titanium search tool

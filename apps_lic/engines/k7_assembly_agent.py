@@ -6,7 +6,6 @@ header order enforcement, and final QA block ordering.
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

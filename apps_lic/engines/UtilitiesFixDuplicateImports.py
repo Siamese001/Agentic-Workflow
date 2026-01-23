@@ -4,7 +4,6 @@ import logging
 import os
 import re
 
-
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)
 

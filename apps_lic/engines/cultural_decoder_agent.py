@@ -6,7 +6,6 @@ to align with the target company's specific cultural DNA and dialect.
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

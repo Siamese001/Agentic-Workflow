@@ -4,10 +4,11 @@ HOP-2: Research Agent (V2 Architecture).
 Synthesizes research context using a Vector-First strategy with Fallback RAG.
 Migrated to V2AgentBase for immutable I/O and structured tracing.
 """
+
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # V2 Architecture Imports
 from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
@@ -16,6 +17,7 @@ from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
 
 # Domain Imports
 from apps_shared.utils.vector_memory import VectorMemoryStore
+
 
 class HOP2ResearchAgent(V2AgentBase):
     """
@@ -29,14 +31,11 @@ class HOP2ResearchAgent(V2AgentBase):
     """
 
     def __init__(
-        self,
-        memory_store: VectorMemoryStore,
-        search_client: Any = None,
-        llm_client: Any = None
+        self, memory_store: VectorMemoryStore, search_client: Any = None, llm_client: Any = None
     ) -> None:
         """
         Initialize with dependencies.
-        
+
         Args:
             memory_store: Vector DB connection for fast-path knowledge.
             search_client: Tool for slow-path RAG (Google Search/Perplexity).
@@ -44,16 +43,16 @@ class HOP2ResearchAgent(V2AgentBase):
         """
         # Initialize V2 base (loads config, toggles, etc.)
         super().__init__(llm_client=llm_client)
-        
+
         self.memory_store = memory_store
         self.search_client = search_client
-        
+
         # Load specific configs from the V2 AgentSpecs singleton
         self.vector_params = self.config.research_agent.vector_store_query_params
         self.fallback_params = self.config.research_agent.fallback_rag_params
-        
+
         # Note: critiques params might need to be added to AgentSpecs schema if not present
-        # For now, defaulting or reading from raw config if needed, 
+        # For now, defaulting or reading from raw config if needed,
         # but adhering to schema is preferred.
         self.critique_params = {
             "min_confidence_score": 0.6,
@@ -80,14 +79,15 @@ class HOP2ResearchAgent(V2AgentBase):
         # 2. Fast Path: Query Vector Store
         # (Note: Using asyncio.run if called synchronously, or await if _process were async.
         # V2AgentBase._process is sync, so we wrap async calls here.)
-        cached_context = self._run_async(
-            self._query_vector_store(company, recipient, archetype)
+        cached_context = self._run_async(self._query_vector_store(company, recipient, archetype))
+
+        registry.add_trace(
+            "VECTOR_RESULTS",
+            {
+                "count": len(cached_context["all_results"]),
+                "confidence": cached_context["cache_confidence"],
+            },
         )
-        
-        registry.add_trace("VECTOR_RESULTS", {
-            "count": len(cached_context["all_results"]),
-            "confidence": cached_context["cache_confidence"]
-        })
 
         # 3. Critique Cache Quality
         is_sufficient, gaps = self._critique_cache(cached_context)
@@ -96,16 +96,16 @@ class HOP2ResearchAgent(V2AgentBase):
         fallback_used = False
 
         if is_sufficient:
-            registry.add_trace("DECISION_CACHE_HIT", {"confidence": cached_context["cache_confidence"]})
+            registry.add_trace(
+                "DECISION_CACHE_HIT", {"confidence": cached_context["cache_confidence"]}
+            )
         else:
             registry.add_trace("DECISION_CACHE_MISS", {"gaps": gaps})
-            
+
             # 4. Slow Path: Fallback RAG
             if self.search_client:
                 registry.add_trace("RAG_ACTIVATED", {"gaps": gaps})
-                fallback_context = self._run_async(
-                    self._run_fallback_rag(company, recipient, gaps)
-                )
+                fallback_context = self._run_async(self._run_fallback_rag(company, recipient, gaps))
                 final_context = self._merge_contexts(cached_context, fallback_context)
                 fallback_used = True
             else:
@@ -121,15 +121,15 @@ class HOP2ResearchAgent(V2AgentBase):
             "cache_hit": is_sufficient,
             "fallback_used": fallback_used,
             "total_sources": len(final_context["all_results"]),
-            "gaps_identified": gaps
+            "gaps_identified": gaps,
         }
 
         buffer.write_once("hop2_research", output_data)
-        
-        registry.add_trace("DECISION_FINAL", {
-            "signal_score": output_data["signal_score"],
-            "sources": output_data["total_sources"]
-        })
+
+        registry.add_trace(
+            "DECISION_FINAL",
+            {"signal_score": output_data["signal_score"], "sources": output_data["total_sources"]},
+        )
 
     # --- Helper Methods (Ported from v13.1) ---
 
@@ -144,7 +144,7 @@ class HOP2ResearchAgent(V2AgentBase):
 
     async def _query_vector_store(
         self, company: str, recipient: str, archetype: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Query vector store for pre-computed intelligence."""
         # Safety check for memory store availability
         if not self.memory_store:
@@ -160,7 +160,7 @@ class HOP2ResearchAgent(V2AgentBase):
         company_results = self.memory_store.query_by_company(
             company_name=company,
             query_text="strategic priorities initiatives roadmap platform",
-            n_results=self.vector_params.get("top_k", 10), # specific config mapping
+            n_results=self.vector_params.get("top_k", 10),  # specific config mapping
         )
 
         exec_results = self.memory_store.query_by_executive(
@@ -192,7 +192,7 @@ class HOP2ResearchAgent(V2AgentBase):
             "cache_confidence": cache_confidence,
         }
 
-    def _critique_cache(self, cached_context: Dict[str, Any]) -> Tuple[bool, List[str]]:
+    def _critique_cache(self, cached_context: dict[str, Any]) -> tuple[bool, list[str]]:
         """Evaluate if cached context is sufficient."""
         min_confidence = self.critique_params["min_confidence_score"]
         min_recency = self.critique_params["min_recency_days"]
@@ -204,7 +204,8 @@ class HOP2ResearchAgent(V2AgentBase):
             gaps.append("strategic_brief")
 
         recent_sources = [
-            r for r in cached_context["all_results"]
+            r
+            for r in cached_context["all_results"]
             if r.get("metadata", {}).get("age_days", 999) < min_recency
         ]
         if len(recent_sources) < 3:
@@ -220,11 +221,11 @@ class HOP2ResearchAgent(V2AgentBase):
         return is_sufficient, gaps
 
     async def _run_fallback_rag(
-        self, company: str, recipient: str, gaps: List[str]
-    ) -> Dict[str, Any]:
+        self, company: str, recipient: str, gaps: list[str]
+    ) -> dict[str, Any]:
         """Run fallback RAG only for identified gaps."""
         fallback_results = []
-        
+
         # Check explicit self.search_client just in case
         if not self.search_client:
             return {"rag_results": []}
@@ -241,15 +242,15 @@ class HOP2ResearchAgent(V2AgentBase):
             elif gap == "recipient_profile":
                 query = f"{recipient} {company} LinkedIn profile"
                 source_type = "RECIPIENT_LINKEDIN_ABOUT"
-            
+
             if query:
                 results = self.search_client.search(query, num_results=3)
                 fallback_results.extend(self._format_search_results(results, source_type))
-                await asyncio.sleep(0.5) # Rate limit protection
+                await asyncio.sleep(0.5)  # Rate limit protection
 
         return {"rag_results": fallback_results}
 
-    def _merge_contexts(self, cached: Dict[str, Any], fallback: Dict[str, Any]) -> Dict[str, Any]:
+    def _merge_contexts(self, cached: dict[str, Any], fallback: dict[str, Any]) -> dict[str, Any]:
         """Merge cached and fallback contexts."""
         merged = cached.copy()
         # Ensure deep copy of list if needed, or simple extend
@@ -257,7 +258,7 @@ class HOP2ResearchAgent(V2AgentBase):
         merged["signal_score"] = self._calculate_signal_score(merged["all_results"])
         return merged
 
-    def _calculate_signal_score(self, results: List[Dict[str, Any]]) -> float:
+    def _calculate_signal_score(self, results: list[dict[str, Any]]) -> float:
         """Calculate aggregate signal quality score."""
         if not results:
             return 0.0
@@ -273,20 +274,22 @@ class HOP2ResearchAgent(V2AgentBase):
         has_exec = min(1.0, len(exec_results) / 5)
         return has_strategic * 0.5 + has_company * 0.3 + has_exec * 0.2
 
-    def _format_search_results(self, results: list, source_type: str) -> List[Dict[str, Any]]:
+    def _format_search_results(self, results: list, source_type: str) -> list[dict[str, Any]]:
         """Format search results for consistency."""
         formatted = []
         for result in results:
-            formatted.append({
-                "text": result.get("snippet", ""),
-                "metadata": {
-                    "SourceType": source_type,
-                    "source_url": result.get("link", ""),
-                    "title": result.get("title", ""),
-                    "age_days": 0,
-                    "source_weight": 1.0,
-                },
-            })
+            formatted.append(
+                {
+                    "text": result.get("snippet", ""),
+                    "metadata": {
+                        "SourceType": source_type,
+                        "source_url": result.get("link", ""),
+                        "title": result.get("title", ""),
+                        "age_days": 0,
+                        "source_weight": 1.0,
+                    },
+                }
+            )
         return formatted
 
     def heal_repository(self) -> None:
@@ -295,10 +298,10 @@ class HOP2ResearchAgent(V2AgentBase):
         Wraps domain-specific checks in the V2 error handling.
         """
         super().heal_repository()
-        
+
         # Domain specific healing - Note: log methods not available in current mixin
         if not self.memory_store:
             pass  # Would log warning about vector store missing
-        
+
         if not self.search_client:
             pass  # Would log warning about search client missing
