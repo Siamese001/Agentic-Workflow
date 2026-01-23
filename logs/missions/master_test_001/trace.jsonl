@@ -1,0 +1,10 @@
+{"timestamp": "2026-01-23T15:15:51.221836", "type": "ORCHESTRATOR_START", "details": {"mission_id": "master_test_001"}}
+{"timestamp": "2026-01-23T15:15:51.222953", "type": "CXO_PRECEDENCE_TRIGGERED", "details": {"token": "CHIEF"}}
+{"timestamp": "2026-01-23T15:15:51.225107", "type": "PHASE_START", "details": {"hop": "HOP1"}}
+{"timestamp": "2026-01-23T15:15:51.226849", "type": "PHASE_START", "details": {"hop": "HOP2"}}
+{"timestamp": "2026-01-23T15:15:51.228228", "type": "PHASE_START", "details": {"hop": "HOP3"}}
+{"timestamp": "2026-01-23T15:15:51.230021", "type": "PHASE_START", "details": {"hop": "HOP4"}}
+{"timestamp": "2026-01-23T15:15:51.232621", "type": "PHASE_START", "details": {"hop": "HOP5"}}
+{"timestamp": "2026-01-23T15:15:51.233972", "type": "PHASE_START", "details": {"hop": "HOP6"}}
+{"timestamp": "2026-01-23T15:15:51.234712", "type": "PHASE_START", "details": {"hop": "HOP7"}}
+{"timestamp": "2026-01-23T15:15:51.236741", "type": "PHASE_START", "details": {"hop": "HOP8"}}

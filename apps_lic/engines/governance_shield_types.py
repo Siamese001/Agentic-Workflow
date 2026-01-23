@@ -57,6 +57,14 @@ class SafetyProtocol(BaseModel):
         )
 
 
+class GovernanceShieldLevel(IntEnum):
+    """Risk enforcement levels for outreach governance."""
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
+
+
 class GovernanceShieldAgent:
     """Audits and upgrades content for risk maturity."""
 

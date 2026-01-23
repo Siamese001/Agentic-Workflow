@@ -24,6 +24,7 @@ class ProfileAnalysisConfig(BaseModel):
     default_archetype: str
     default_confidence: float
     manual_override_threshold: float
+    cxo_precedence_tokens: List[str] = Field(default_factory=lambda: ["CEO", "CFO", "COO", "CTO", "CMO", "CIO", "CISO", "CPO", "CRO"])
 
 
 class ResearchConfig(BaseModel):

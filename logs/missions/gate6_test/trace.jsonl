@@ -1,0 +1,9 @@
+{"timestamp": "2026-01-23T15:15:51.455632", "type": "ORCHESTRATOR_START", "details": {"mission_id": "gate6_fallback"}}
+{"timestamp": "2026-01-23T15:15:51.457659", "type": "PHASE_START", "details": {"hop": "HOP1"}}
+{"timestamp": "2026-01-23T15:15:51.460179", "type": "PHASE_START", "details": {"hop": "HOP2"}}
+{"timestamp": "2026-01-23T15:15:51.461202", "type": "PHASE_START", "details": {"hop": "HOP3"}}
+{"timestamp": "2026-01-23T15:15:51.462208", "type": "PHASE_START", "details": {"hop": "HOP4"}}
+{"timestamp": "2026-01-23T15:15:51.464203", "type": "PHASE_START", "details": {"hop": "HOP5"}}
+{"timestamp": "2026-01-23T15:15:51.464203", "type": "PHASE_START", "details": {"hop": "HOP6"}}
+{"timestamp": "2026-01-23T15:15:51.466746", "type": "PHASE_START", "details": {"hop": "HOP7"}}
+{"timestamp": "2026-01-23T15:15:51.468748", "type": "PHASE_START", "details": {"hop": "HOP8"}}

@@ -1,25 +1,25 @@
 """
-Outreach Engine Agents - Specialized Agents for Campaign Automation
+Lead Quality Specialist - V2.5 Sovereign Agent for Lead Validation.
 
-Provides domain-specific agents for outreach campaigns:
-- LeadQualityAgent: Validates lead quality
-- ContactValidatorAgent: Validates contact information
-- MessageComplianceAgent: Ensures message compliance
-- RgTemplateOptimizerAgent: Optimizes message templates
-- CampaignBalanceAgent: Balances campaign elements
-- DeliverabilityAgent: Checks email deliverability
-- OutreachTestPilot: Runs validation tests
-- CampaignPlannerAgent: Strategic campaign planning
-- LicReflectionAgent: Reflects on execution
+Validates lead quality for outreach campaigns.
+Hardened for inclusion in HOP-1 / HOP-2 foundations.
 """
+from __future__ import annotations
 
-from .OutreachAgent import OutreachAgent
+from dataclasses import dataclass
+from typing import Any
+
+from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
+from apps_lic.shared.v2_patterns.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
 
 
 @dataclass
-class LeadQualityAgent(OutreachAgent):
+class LeadQualitySpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
-    Validates and scores lead quality.
+    V2.5 Sovereign Lead Quality Specialist.
+    Hardened for inclusion in HOP-1 / HOP-2 foundations.
 
     Validates:
     - Required fields (company, contact info)
@@ -27,7 +27,7 @@ class LeadQualityAgent(OutreachAgent):
     - Spam indicators
     """
 
-    async def execute(self) -> None:
+    def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
         Execute lead quality validation.
 
@@ -35,13 +35,11 @@ class LeadQualityAgent(OutreachAgent):
         - Required fields presence
         - Contact information completeness
         - Suspicious email domains
-
-        Raises:
-            LEAD_QUALITY_ISSUE signal if validation fails
         """
-        print(f"   [{self.name}] Analyzing lead quality...")
-
-        leads = self.ctx.leads
+        registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
+        
+        mission_input = buffer.read("mission_input") or {}
+        leads = mission_input.get("leads", [])
 
         if not leads:
             print(f"   [{self.name}] ⚠️ No leads to analyze")

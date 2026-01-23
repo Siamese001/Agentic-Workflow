@@ -4,8 +4,16 @@ This agent implements the mandatory 7 Prompt Shell Entrance Gates, classifies
 the recipient archetype using CXO precedence rules, and selects the correct
 route (INMAIL vs CONNECTION_REQ) with premium routing validation.
 """
+from __future__ import annotations
 
 import logging
+from dataclasses import dataclass
+from typing import Any
+
+from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
+from apps_lic.shared.v2_patterns.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -41,8 +49,9 @@ class K1Output:
     metadata: dict[str, Any]
 
 
-class K1_RoutingAgent(Agent):
-    """K.1 specialist agent for routing and archetype classification.
+class RoutingSpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+    """V2.5 Sovereign Routing Specialist.
+    Merged logic from k1_router_agent stub.
 
     This agent executes the mandatory 7 Prompt Shell Entrance Gates:
     1. Lifecycle determination (NEW vs EXISTING)

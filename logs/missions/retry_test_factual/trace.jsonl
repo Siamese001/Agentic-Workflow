@@ -1,0 +1,16 @@
+{"timestamp": "2026-01-23T15:15:51.259970", "type": "ORCHESTRATOR_START", "details": {"mission_id": "retry_001"}}
+{"timestamp": "2026-01-23T15:15:51.261611", "type": "CXO_PRECEDENCE_TRIGGERED", "details": {"token": "CTO"}}
+{"timestamp": "2026-01-23T15:15:51.262059", "type": "PHASE_START", "details": {"hop": "HOP1"}}
+{"timestamp": "2026-01-23T15:15:51.264086", "type": "PHASE_START", "details": {"hop": "HOP2"}}
+{"timestamp": "2026-01-23T15:15:51.265108", "type": "PHASE_START", "details": {"hop": "HOP3"}}
+{"timestamp": "2026-01-23T15:15:51.267173", "type": "PHASE_START", "details": {"hop": "HOP4"}}
+{"timestamp": "2026-01-23T15:15:51.269202", "type": "PHASE_START", "details": {"hop": "HOP5"}}
+{"timestamp": "2026-01-23T15:15:51.271332", "type": "PHASE_START", "details": {"hop": "HOP6"}}
+{"timestamp": "2026-01-23T15:15:51.272526", "type": "FACTUAL_LOOP_TRIGGERED", "details": {"reason": "FACTUAL_FAILURE"}}
+{"timestamp": "2026-01-23T15:15:51.274948", "type": "PHASE_START", "details": {"hop": "HOP7"}}
+{"timestamp": "2026-01-23T15:15:51.276978", "type": "ORCHESTRATOR_RETRY", "details": {"action": "RETRY_HOP2", "reason": "FACTUAL_FAILURE"}}
+{"timestamp": "2026-01-23T15:15:51.276978", "type": "PHASE_START", "details": {"hop": "HOP2"}}
+{"timestamp": "2026-01-23T15:15:51.279008", "type": "PHASE_START", "details": {"hop": "HOP5"}}
+{"timestamp": "2026-01-23T15:15:51.281631", "type": "PHASE_START", "details": {"hop": "HOP6"}}
+{"timestamp": "2026-01-23T15:15:51.281631", "type": "PHASE_START", "details": {"hop": "HOP7"}}
+{"timestamp": "2026-01-23T15:15:51.283698", "type": "PHASE_START", "details": {"hop": "HOP8"}}
