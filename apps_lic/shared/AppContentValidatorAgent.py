@@ -80,7 +80,7 @@ class ContentValidationReport:
 
 @dataclass
 class ContentConfig:
-    """Configuration for content validation."""
+    """configuration for content validation."""
 
     # Contact validation
     validate_email: bool = True

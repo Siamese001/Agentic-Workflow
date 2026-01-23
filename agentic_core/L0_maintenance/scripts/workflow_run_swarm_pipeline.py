@@ -82,9 +82,9 @@ async def demo_phase2_batch_embeddings() -> Any:
 
 
 async def demo_phase2_vector_cache(embeddings: list) -> Any:
-    """Demonstrate Phase 2: In-Memory Vector Cache."""
+    """Demonstrate Phase 2: In-Memory Vector cache."""
     print("\n" + "=" * 80)
-    print("💾 PHASE 2 DEMO: In-Memory Vector Cache")
+    print("💾 PHASE 2 DEMO: In-Memory Vector cache")
     print("=" * 80)
     vector_cache: Any = create_memory_vector_cache(collection_name="demo_resumes", max_memory_gb=8)
     documents: Any = [f"Resume {i}" for i in range(len(embeddings))]
@@ -97,7 +97,7 @@ async def demo_phase2_vector_cache(embeddings: list) -> Any:
     )
     time_add: Any = time.time() - start_add
     print(f"   Time: {time_add:.2f}s")
-    print(f"   Cache size: {vector_cache.get_count()} documents")
+    print(f"   cache size: {vector_cache.get_count()} documents")
     print("\n🔍 Searching hot cache...")
     query_embedding: Any = embeddings[0]
     start_disk: Any = time.time()

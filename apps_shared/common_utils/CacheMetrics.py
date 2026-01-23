@@ -1,5 +1,5 @@
 """
-Cache Metrics Collector - Singleton for tracking Redis/Pinecone performance
+cache Metrics Collector - Singleton for tracking Redis/Pinecone performance
 
 Tracks:
 - Hit/miss rates per operation type

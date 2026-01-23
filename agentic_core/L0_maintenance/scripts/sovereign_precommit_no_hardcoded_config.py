@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-Sovereign Guard: Block Hardcoded Configuration Constants
+Sovereign Guard: Block Hardcoded configuration Constants
 Enforces that all operational constants must be centralized in sovereign_config.py
 
 Usage: Called automatically by pre-commit hook

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 """ReAct (Reasoning and Acting) Engine implementation.
 
-Phase 1 - Pillar 6: Reasoning Models (Structured Reasoning)
+Phase 1 - Pillar 6: Reasoning models (Structured Reasoning)
 Migrated from archives/legacy_root_folders/infra/reasoning/react.py
 
 The ReAct framework interleaves reasoning and action steps to solve complex tasks.

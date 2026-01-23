@@ -36,7 +36,7 @@ def validate_json_schema(schema: dict[str, object]) -> list[str]:
     except FileNotFoundError:
         errors.append("Draft-07 meta-schema not found")
     except jsonschema.ValidationError as e:
-        errors.append(f"Schema validation error: {e.message}")
+        errors.append(f"schema validation error: {e.message}")
     except Exception as e:
         errors.append(f"Unexpected validation error: {e}")
 
@@ -83,7 +83,7 @@ def validate_mcp_catalogs() -> dict[str, object]:
             if "structured_output_schemas" in catalog:
                 for schema_name, schema_ref in catalog["structured_output_schemas"].items():
                     if "file" not in schema_ref:
-                        catalog_errors.append(f"Schema {schema_name} missing file reference")
+                        catalog_errors.append(f"schema {schema_name} missing file reference")
                     else:
                         # Check if referenced file exists
                         ref_path = Path(schema_ref["file"])

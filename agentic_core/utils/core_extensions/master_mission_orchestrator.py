@@ -6,7 +6,7 @@ from __future__ import annotations
 
 
 """
-Master Mission Orchestrator - Observability Sovereignty Execution
+Master Mission Orchestrator - observability Sovereignty Execution
 Responsible for:
 - Orchestrating sovereign canon validation sweeps.
 - Enforcing Zero-Latency Neural Link integrity.

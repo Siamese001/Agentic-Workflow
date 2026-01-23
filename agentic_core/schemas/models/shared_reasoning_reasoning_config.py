@@ -34,7 +34,7 @@ class ModelProvider(str, Enum):
 @dataclass
 # NAMING FIXED: ModelConfig → ModelConfig
 class ModelConfig:
-    """Configuration for LLM model parameters."""
+    """configuration for LLM model parameters."""
 
     _provider: ModelProvider = ModelProvider.OPENAI
     _model_name: str = "gpt-4o"
@@ -50,7 +50,7 @@ class ModelConfig:
 @dataclass
 # NAMING FIXED: RAGConfig → RagConfig
 class RagConfig:
-    """Configuration for Retrieval-Augmented Generation."""
+    """configuration for Retrieval-Augmented Generation."""
 
     _enabled: bool = True
     _vector_store_path: str = "data/vector_store"
@@ -66,7 +66,7 @@ class RagConfig:
 @dataclass
 # NAMING FIXED: GovernorConfig → GovernorConfig
 class GovernorConfig:
-    """Configuration for governance and safety controls."""
+    """configuration for governance and safety controls."""
 
     _safety_enabled: bool = True
     _safety_threshold: float = 0.95

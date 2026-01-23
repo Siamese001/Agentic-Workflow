@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-# --- Configuration ---
+# --- configuration ---
 LIVE_CORE_PATH = Path("agentic_core")
 DEPRECATED_TERMS = [
     "CanonBaseAgent",

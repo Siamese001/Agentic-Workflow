@@ -164,11 +164,11 @@ def test_phase3_2_redis_monitor():
             "setOperations method not found",
         )
 
-        # Test 7: Cache hit/miss styling
+        # Test 7: cache hit/miss styling
         record_test(
-            "Cache hit/miss styling implemented",
+            "cache hit/miss styling implemented",
             "cache-hit" in content and "cache-miss" in content,
-            "Cache hit/miss styling not found",
+            "cache hit/miss styling not found",
         )
 
 

@@ -148,7 +148,7 @@ class StrategicPlannerAgent(HealerMixin, MCPHardenedMixin):
 
             self.McpRouterAgent = SovereignMCPRouter(role="cognition_strategic")
         except Exception as e:
-            LOGGER.warning(f"MCP Router initialization failed: {e}. Using legacy planning.")
+            LOGGER.warning(f"MCP router initialization failed: {e}. Using legacy planning.")
             self.McpRouterAgent = None
         LOGGER.info("StrategicPlannerAgent initialized")
 

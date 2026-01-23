@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class AgentConfig:
-    """Configuration for agent execution."""
+    """configuration for agent execution."""
 
     provider: Provider = Provider.OPENAI
     model: str | None = None

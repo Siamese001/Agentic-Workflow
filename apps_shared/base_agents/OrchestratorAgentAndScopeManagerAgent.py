@@ -80,7 +80,7 @@ signal.signal(signal.SIGTERM, _signal_handler)
 
 @dataclass
 class OrchestratorConfig:
-    """Configuration for the consolidated orchestrator."""
+    """configuration for the consolidated orchestrator."""
 
     max_cycles: int = 5
     quality_threshold: float = 0.75

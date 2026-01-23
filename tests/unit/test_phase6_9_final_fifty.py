@@ -8,7 +8,7 @@ Test Cases:
 - TC-52: Exhaustion Test - verify < 10 rglob hits in agentic_core (excluding ssot_discovery.py)
 - TC-53: L5 Safety Validators - verify all validators use ssot_discovery
 - TC-54: L0 Maintenance Scripts - verify scripts use ssot_discovery
-- TC-55: Observability Tests - verify test files use ssot_discovery
+- TC-55: observability Tests - verify test files use ssot_discovery
 - TC-56: Final Fifty Achievement - verify 50+ call reduction across all phases
 
 Author: Cascade
@@ -220,12 +220,12 @@ def test_tc54_l0_maintenance_scripts():
 
 def test_tc55_observability_tests():
     """
-    TC-55: Observability Tests
+    TC-55: observability Tests
 
     Verify observability test files use ssot_discovery.
     """
     print("\n" + "=" * 60)
-    print("TC-55: Observability Tests")
+    print("TC-55: observability Tests")
     print("=" * 60)
 
     test_files = [
@@ -315,7 +315,7 @@ def test_tc56_final_fifty_achievement():
     print("\n   Phase 6.9 refactored categories:")
     print("   - L5 Safety Validators: 7 files")
     print("   - L0 Maintenance Scripts: 7+ files")
-    print("   - Observability Tests: 1 file")
+    print("   - observability Tests: 1 file")
     print("   - Total files refactored: 62+")
 
     if total_count < 90:
@@ -341,7 +341,7 @@ def main():
         ("TC-52: Exhaustion Test", test_tc52_exhaustion_test),
         ("TC-53: L5 Safety Validators", test_tc53_l5_safety_validators),
         ("TC-54: L0 Maintenance Scripts", test_tc54_l0_maintenance_scripts),
-        ("TC-55: Observability Tests", test_tc55_observability_tests),
+        ("TC-55: observability Tests", test_tc55_observability_tests),
         ("TC-56: Final Fifty Achievement", test_tc56_final_fifty_achievement),
     ]
 

@@ -117,7 +117,7 @@ class ConfigurationSecurityGuardrail(SovereignBaseAgent):
                 {
                     "type": "invalid_structure",
                     "severity": "high",
-                    "message": "Configuration must be a dictionary",
+                    "message": "configuration must be a dictionary",
                 }
             )
 

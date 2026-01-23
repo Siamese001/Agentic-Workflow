@@ -107,7 +107,7 @@ class ValidationReport:
 
 @dataclass
 class RuleSet:
-    """Configuration for which validation rules to apply."""
+    """configuration for which validation rules to apply."""
 
     check_syntax: bool = True
     check_canon: bool = True

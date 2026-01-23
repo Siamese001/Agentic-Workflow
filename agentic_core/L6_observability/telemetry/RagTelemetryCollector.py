@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-RAG Telemetry Collector - L6 Observability
+RAG Telemetry Collector - L6 observability
 Tracks RAG performance metrics for dashboard visualization
 """
 from collections import defaultdict
@@ -76,7 +76,7 @@ class RagTelemetryCollector:
         """Record a RAG query execution."""
         self.metrics.total_queries += 1
 
-        # Cache tracking
+        # cache tracking
         if cached:
             self.metrics.cache_hits += 1
         else:

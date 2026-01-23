@@ -105,7 +105,7 @@ def main():
         print(f"\n{i}. {agent['name']}")
         print(f"   Path: {agent['path']}")
         print(
-            f"   Typed: {agent['typed']:.1f}% | Documented: {agent['doc']:.1f}% | Schema: {agent['schema']:.1f}%"
+            f"   Typed: {agent['typed']:.1f}% | Documented: {agent['doc']:.1f}% | schema: {agent['schema']:.1f}%"
         )
         print(f"   Total deficit: {agent['deficit']:.1f} points")
 

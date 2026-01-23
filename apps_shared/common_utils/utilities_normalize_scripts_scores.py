@@ -1,5 +1,5 @@
 """
-NormalizeScriptsScores.py - Scoring Module
+NormalizeScriptsScores.py - scoring Module
 
 Domain: utilities
 Generated: 2025-12-07T12:07:59.887848
@@ -21,7 +21,7 @@ class ScoreResult:
 
 
 class NormalizeScriptsScores:
-    """Scoring engine for utilities domain."""
+    """scoring engine for utilities domain."""
 
 
 def __init__(self: Any, config: dict[str, object] | None) -> None:

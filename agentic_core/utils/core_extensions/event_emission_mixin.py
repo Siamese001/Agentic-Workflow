@@ -26,11 +26,11 @@ class SovereignEvent(BaseModel):
 
 class event_emission_mixin:
     """
-    Phase 2 Observability Infrastructure: Event Emission (Report 4.3).
+    Phase 2 observability Infrastructure: Event Emission (Report 4.3).
 
     Standardizes how agents broadcast internal state changes to L6.
     Features:
-    - Structured Event Schema (Pydantic)
+    - Structured Event schema (Pydantic)
     - Automatic Source Attribution
     - Severity-based Filtering
     - Trace ID correlation support
@@ -84,7 +84,7 @@ class event_emission_mixin:
         log_level = getattr(logging, event.severity, logging.INFO)
         self._ee_logger.log(log_level, f"EVENT [{event.event_type}]: {event.payload}")
 
-        # 2. L6 Observability Hook (Placeholder for L6 Central Dispatch)
+        # 2. L6 observability Hook (Placeholder for L6 Central Dispatch)
         # In production, this would send to a centralized event bus or Redis stream
         self._dispatch_to_observability(event)
 

@@ -36,7 +36,7 @@ except ImportError as e:
     logger.error("Make sure the runtime modules are properly installed")
     sys.exit(1)
 
-# Test Configuration
+# Test configuration
 TEST_JOB_ID = "titanium_acceptance_v2_001"
 TEST_CONFIG = {
     "target_role": "Senior AI Engineer",
@@ -131,7 +131,7 @@ def _print_success_report(state_location: Any, execution_time: Any) -> None:
     LOGGER.INFO("=" * 60)
     logger.info("[SUCCESS] TITANIUM WORKFLOW COMPLETE")
     logger.info(f"State persisted to: {state_location}")
-    logger.info("Router Execution: HEALTHY")
+    logger.info("router Execution: HEALTHY")
     logger.info(f"⏱️ Total Execution Time: {execution_time:.2f} seconds")
     LOGGER.INFO("=" * 60)
     logger.info("🎉 ACCEPTANCE TEST PASSED")

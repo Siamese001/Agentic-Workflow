@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-# --- Configuration ---
+# --- configuration ---
 RESTORED_AGENTS_MAP = [
     ("MetaLearningAgent", "agentic_core.L1_cognition.thought_engine.MetaLearningAgent"),
     (

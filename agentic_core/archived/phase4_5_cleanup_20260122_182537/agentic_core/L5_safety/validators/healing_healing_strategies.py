@@ -327,7 +327,7 @@ class ObservabilityHealing(HealingStrategy):
     """Heals observability footprint violations by injecting L6 logging."""
 
     def __init__(self):
-        super().__init__("Observability", priority=3)
+        super().__init__("observability", priority=3)
 
     async def diagnose(self, issues: list[dict]) -> list[dict]:
         """Diagnose observability violations and propose logging injections."""
@@ -475,7 +475,7 @@ class DirectRedisHealing(HealingStrategy):
 
 # NAMING FIXED: DirectLLMHealing → DirectLlmHealing
 class DirectLlmHealing(HealingStrategy):
-    """Fixes direct OpenAI/Anthropic calls — routes through LLM Router MCP"""
+    """Fixes direct OpenAI/Anthropic calls — routes through LLM router MCP"""
 
     def __init__(self):
         super().__init__("DirectLLM", priority=1)

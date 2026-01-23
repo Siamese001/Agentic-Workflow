@@ -301,8 +301,8 @@ class SafetyInspectorAgent(SovereignBaseAgent):
 
     async def _socratic_verify(self, file_path: str, issue: str, question: str) -> str:
         """
-        Ask LLM Router MCP to verify if an issue is actually a Violation.
-        Phase 16B: Replaced direct google.generativeai with sovereign LLM Router.
+        Ask LLM router MCP to verify if an issue is actually a Violation.
+        Phase 16B: Replaced direct google.generativeai with sovereign LLM router.
 
         Args:
             file_path: Path to the file being checked

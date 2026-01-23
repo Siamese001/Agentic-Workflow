@@ -1,5 +1,5 @@
 """
-Test Suite for Phase 6 Configuration Manager
+Test Suite for Phase 6 configuration Manager
 
 Tests TC-PHASE6-001 through TC-PHASE6-004:
 - Config defaults

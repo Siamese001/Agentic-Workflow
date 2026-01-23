@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class HardenedAnthropicConfig:
-    """Configuration for HardenedAnthropicExecutor."""
+    """configuration for HardenedAnthropicExecutor."""
 
     # Model context limits (tokens)
     MODEL_LIMITS = {

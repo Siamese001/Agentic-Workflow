@@ -1,4 +1,4 @@
-"""Tool Use Observability Execution - Tool-based execution adapter for observability.
+"""Tool Use observability Execution - Tool-based execution adapter for observability.
 
 This module provides tool-based adapters for executing observability operations
 with standardized tool interfaces, execution management, and error handling.
@@ -61,7 +61,7 @@ class ToolExecutionRequest:
 
 @dataclass
 class ToolExecutionConfig:
-    """Configuration for tool execution."""
+    """configuration for tool execution."""
 
     default_timeout: float = 30.0
     max_retries: int = 3

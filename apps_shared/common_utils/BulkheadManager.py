@@ -32,7 +32,7 @@ class TaskPriority(str, Enum):
 
 @dataclass
 class BulkheadConfig:
-    """Configuration for a bulkhead."""
+    """configuration for a bulkhead."""
 
     max_concurrency: int
     priority: TaskPriority

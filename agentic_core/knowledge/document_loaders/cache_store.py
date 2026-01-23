@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-Research Cache - File-based cache for RAG results.
+Research cache - File-based cache for RAG results.
 
 Restored: 2026-01-13 | Version: 2.0.0
 Original: archives/unmapped_drift/20260107/agentic_core/knowledge/document_loaders/cache_store.py

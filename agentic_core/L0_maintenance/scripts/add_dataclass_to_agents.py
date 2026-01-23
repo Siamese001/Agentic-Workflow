@@ -125,7 +125,7 @@ def add_dataclass_to_file(file_path: Path) -> bool:
 
 def main():
     print("=" * 70)
-    print("Adding @dataclass decorator to agents for Schema Strictness 100%")
+    print("Adding @dataclass decorator to agents for schema Strictness 100%")
     print("=" * 70)
 
     # Load agent discovery

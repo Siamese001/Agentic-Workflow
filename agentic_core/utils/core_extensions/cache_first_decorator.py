@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-Cache-First Decorator for Meta-Learning DNA
+cache-First Decorator for Meta-Learning DNA
 
 [PHASE 33g] Provides @cache_first decorator for mandatory Redis/Pinecone lookups
 before any expensive operation (LLM calls, analysis, healing).
@@ -17,7 +17,7 @@ Usage:
             # This only runs on cache miss
             return self._expensive_llm_call(file_path, violation_type)
 
-Cache-First Flow:
+cache-First Flow:
     1. Generate cache key from function args
     2. Check Redis for exact match
     3. Check Pinecone for semantic similarity (if embedding available)
@@ -133,8 +133,8 @@ def cache_first(
                     raise
                 Logger.debug(f"[CACHE-FIRST] Pinecone lookup failed: {e}")
 
-            # === STEP 3: Cache miss - call wrapped function ===
-            Logger.debug(f"[CACHE-FIRST] Cache MISS for {func_name} - executing")
+            # === STEP 3: cache miss - call wrapped function ===
+            Logger.debug(f"[CACHE-FIRST] cache MISS for {func_name} - executing")
             start_time = time.time()
             result = func(self, *args, **kwargs)
             execution_time = time.time() - start_time
@@ -161,7 +161,7 @@ def cache_first(
 
                     Logger.debug(f"[CACHE-FIRST] Stored result in cache ({execution_time:.2f}s)")
             except Exception as e:
-                Logger.debug(f"[CACHE-FIRST] Cache storage failed: {e}")
+                Logger.debug(f"[CACHE-FIRST] cache storage failed: {e}")
 
             return result
 
@@ -203,7 +203,7 @@ def cache_first_async(
             except Exception as e:
                 if not skip_on_error:
                     raise
-                Logger.debug(f"[CACHE-FIRST-ASYNC] Cache lookup failed: {e}")
+                Logger.debug(f"[CACHE-FIRST-ASYNC] cache lookup failed: {e}")
 
             # === STEP 2: Check Pinecone/semantic memory ===
             try:
@@ -213,8 +213,8 @@ def cache_first_async(
             except Exception as e:
                 Logger.debug(f"[CACHE-FIRST-ASYNC] Semantic lookup failed: {e}")
 
-            # === STEP 3: Cache miss - call wrapped function ===
-            Logger.debug(f"[CACHE-FIRST-ASYNC] Cache MISS for {func_name}")
+            # === STEP 3: cache miss - call wrapped function ===
+            Logger.debug(f"[CACHE-FIRST-ASYNC] cache MISS for {func_name}")
             start_time = time.time()
             result = await func(self, *args, **kwargs)
             execution_time = time.time() - start_time
@@ -231,7 +231,7 @@ def cache_first_async(
                         self._local_cache[cache_key] = serialized
                     Logger.debug(f"[CACHE-FIRST-ASYNC] Stored result ({execution_time:.2f}s)")
             except Exception as e:
-                Logger.debug(f"[CACHE-FIRST-ASYNC] Cache storage failed: {e}")
+                Logger.debug(f"[CACHE-FIRST-ASYNC] cache storage failed: {e}")
 
             return result
 
@@ -299,7 +299,7 @@ class CacheFirstMixin:
             Logger.debug(f"[CACHE-FIRST] HIT for {operation_name}")
             return self._local_cache[cache_key]
 
-        # Cache miss - execute
+        # cache miss - execute
         self._cache_stats["misses"] += 1
         Logger.debug(f"[CACHE-FIRST] MISS for {operation_name}")
 
@@ -328,7 +328,7 @@ class CacheFirstMixin:
         """Clear all cached data."""
         self._local_cache.clear()
         self._local_vectors.clear()
-        Logger.info(f"[CACHE-FIRST] Cache cleared for {self._cache_prefix}")
+        Logger.info(f"[CACHE-FIRST] cache cleared for {self._cache_prefix}")
 
 
 __all__ = [

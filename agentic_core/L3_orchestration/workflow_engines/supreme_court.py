@@ -10,7 +10,7 @@ from typing import Any
 
 from agentic_core.schemas.models.core_contracts import ConsensusVerdict
 
-# Models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
+# models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
 
 
 # NAMING FIXED: SupremeCourt → SupremeCourt

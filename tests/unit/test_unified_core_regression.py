@@ -6,7 +6,7 @@ Consolidated from Phase 1-4 test suites:
 - Phase 1: Orchestrator Consolidation (8 tests)
 - Phase 2: Validator Consolidation (8 tests)
 - Phase 3: Manager & Enforcer Consolidation (7 tests)
-- Phase 4: Detector/Healer/Router/Executor Consolidation (5 tests)
+- Phase 4: Detector/Healer/router/Executor Consolidation (5 tests)
 
 MANDATORY 100% PASS RATE REQUIRED FOR DEPLOYMENT
 
@@ -31,7 +31,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 
 class TestPhase1CachePersistence(unittest.TestCase):
-    """Test 1.1: Cache persistence for repeated tasks."""
+    """Test 1.1: cache persistence for repeated tasks."""
 
     def test_cache_persistence(self):
         """Ensure repeated tasks retrieve from cache."""

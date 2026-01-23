@@ -1,5 +1,5 @@
 """
-AssessContentRisk.py - Scoring Module
+AssessContentRisk.py - scoring Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.098372

@@ -19,7 +19,7 @@ from data.sdks_mcps.reference_clients.minimal_anthropic import (
 
 @dataclass
 class AnthropicConfig:
-    """Configuration for Anthropic client."""
+    """configuration for Anthropic client."""
 
     api_key: str | None = None
     base_url: str | None = None
@@ -43,7 +43,7 @@ class AnthropicClient:
             max_retries=self.config.max_retries,
         )
 
-        # Cache control header for prompt caching
+        # cache control header for prompt caching
         self.cache_control = {"type": "ephemeral"} if self.config.enable_caching else None
 
         # Track usage for cost monitoring
@@ -325,7 +325,7 @@ class AnthropicClient:
             self.usage_stats["input_tokens"] += usage.input_tokens
             self.usage_stats["output_tokens"] += usage.output_tokens
 
-            # Cache tokens (Claude 3.5+)
+            # cache tokens (Claude 3.5+)
             cache_creation = getattr(usage, "cache_creation_input_tokens", 0)
             cache_read = getattr(usage, "cache_read_input_tokens", 0)
 

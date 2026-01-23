@@ -66,7 +66,7 @@ class TrackObservabilityCostAgent(SovereignBaseAgent):
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
-        """Observability/metrics - operational only."""
+        """observability/metrics - operational only."""
         if _call_path is None:
             _call_path = set()
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
@@ -85,7 +85,7 @@ class TrackObservabilityCostAgent(SovereignBaseAgent):
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] Observability/metrics - operational only")
+            print(f"[{agent_name}] observability/metrics - operational only")
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)

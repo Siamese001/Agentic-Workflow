@@ -909,7 +909,7 @@ def run_all_tests() -> bool:
             table2_fields = [
                 "Typed %",
                 "Documented %",
-                "Schema Strictness %",
+                "schema Strictness %",
                 "Canonical Inheritance %",
                 "Code Quality Score",
             ]
@@ -1230,7 +1230,7 @@ def run_all_tests() -> bool:
             tooltip_issues.append("Table 2 has NO tooltips (Table 1 has tooltips for all metrics)")
         elif table2_tooltip_count < 4:  # Should have 4 metrics with tooltips
             tooltip_issues.append(
-                f"Table 2 has only {table2_tooltip_count} tooltips (should have 4 for Typed/Documented/Schema/BaseClass)"
+                f"Table 2 has only {table2_tooltip_count} tooltips (should have 4 for Typed/Documented/schema/BaseClass)"
             )
 
         # Verify custom-tooltip class is used
@@ -1437,13 +1437,13 @@ def run_all_tests() -> bool:
         else:
             footnote_checks.append("Documented %: Missing docstrings explanation")
 
-        # Schema Strictness %
-        if "Schema Strictness" in js_content and (
+        # schema Strictness %
+        if "schema Strictness" in js_content and (
             "@dataclass" in js_content or "Pydantic" in js_content or "BaseModel" in js_content
         ):
-            print("   ✅ Schema Strictness %: Correct definition")
+            print("   ✅ schema Strictness %: Correct definition")
         else:
-            footnote_checks.append("Schema Strictness %: Missing @dataclass/Pydantic explanation")
+            footnote_checks.append("schema Strictness %: Missing @dataclass/Pydantic explanation")
 
         # Canonical Inheritance %
         if "Canonical Inheritance" in js_content and (
@@ -1464,7 +1464,7 @@ def run_all_tests() -> bool:
         # Check for stale patterns
         stale_patterns = [
             ("Typed.*35%", "Stale Typed % weight (should be 30%)"),
-            ("Schema.*30%.*Typed.*35%", "Stale Code Quality formula"),
+            ("schema.*30%.*Typed.*35%", "Stale Code Quality formula"),
             ("Metadata.*15%", "Stale metadata reference"),
         ]
         for pattern, msg in stale_patterns:
@@ -1482,7 +1482,7 @@ def run_all_tests() -> bool:
                 "   ✓ Table 1: 6 metrics verified (Heal Cap, Invocation, MCP, Test, Complexity, Health)"
             )
             print(
-                "   ✓ Table 2: 5 metrics verified (Typed, Documented, Schema, Base Class, Quality Score)"
+                "   ✓ Table 2: 5 metrics verified (Typed, Documented, schema, Base Class, Quality Score)"
             )
 
     except Exception as e:
@@ -1567,10 +1567,10 @@ def run_all_tests() -> bool:
         for error in errors[:5]:  # Show first 5 errors
             print(f"   {error}")
 
-    # Test 15: Browser Cache & JavaScript Validation
+    # Test 15: Browser cache & JavaScript Validation
     # Note: Core JS validation is done in Test 6. This test provides cache guidance.
     print("\n" + "─" * 70)
-    print("Running: Browser Cache & JavaScript Validation")
+    print("Running: Browser cache & JavaScript Validation")
     print("─" * 70)
 
     print("   ⚠️  Remember to hard refresh browser (Ctrl+Shift+R) after changes")
@@ -1623,7 +1623,7 @@ def run_all_tests() -> bool:
             "L3 Orchestration/Base Class": "L3 Orchestration/Base Agent",
             "L4 State/Base Class": "L4 State/Base Agent",
             "L5 Safety/Base Class": "L5 Safety/Base Agent",
-            "L6_Observability/Base Class": "L6 Observability/Base Agent",
+            "L6_Observability/Base Class": "L6 observability/Base Agent",
         }
 
         expected_base_classes = set()
@@ -1738,7 +1738,7 @@ def run_all_tests() -> bool:
         if total_row:
             dashboard_typed = total_row.get("Typed %", 0)
             dashboard_documented = total_row.get("Documented %", 0)
-            dashboard_schema = total_row.get("Schema Strictness %", 0)
+            dashboard_schema = total_row.get("schema Strictness %", 0)
             dashboard_proper_base = total_row.get("Canonical Inheritance %", 0)
 
             hardcoded_issues = []
@@ -1754,7 +1754,7 @@ def run_all_tests() -> bool:
                 )
             if abs(dashboard_schema - expected_schema) > tolerance:
                 hardcoded_issues.append(
-                    f"Schema Strictness %: Dashboard={dashboard_schema}, Expected={expected_schema}"
+                    f"schema Strictness %: Dashboard={dashboard_schema}, Expected={expected_schema}"
                 )
             if abs(dashboard_proper_base - expected_proper_base) > tolerance:
                 hardcoded_issues.append(
@@ -1773,7 +1773,7 @@ def run_all_tests() -> bool:
                 )
                 print(f"   Typed: {dashboard_typed}% (expected {expected_typed}%)")
                 print(f"   Documented: {dashboard_documented}% (expected {expected_documented}%)")
-                print(f"   Schema: {dashboard_schema}% (expected {expected_schema}%)")
+                print(f"   schema: {dashboard_schema}% (expected {expected_schema}%)")
                 print(f"   Canonical: {dashboard_proper_base}% (expected {expected_proper_base}%)")
         else:
             errors.append("Test 18 FAILED: Could not find TOTAL row in dashboard data")
@@ -2508,9 +2508,9 @@ def run_all_tests() -> bool:
         errors.append(f"Test 26 FAILED: {e}")
         print(f"❌ Test 26 FAILED: {e}")
 
-    # Test 27: Cache-Busting Verification
+    # Test 27: cache-Busting Verification
     print("\n" + "─" * 70)
-    print("Running: Cache-Busting Verification")
+    print("Running: cache-Busting Verification")
     print("─" * 70)
 
     try:
@@ -2558,7 +2558,7 @@ def run_all_tests() -> bool:
             for issue in cache_issues:
                 print(f"      - {issue}")
             # Don't fail test, just warn
-            print("✅ Test 27 PASSED (with warnings): Cache-busting instructions provided")
+            print("✅ Test 27 PASSED (with warnings): cache-busting instructions provided")
         else:
             print("✅ Test 27 PASSED: All files are fresh")
 
@@ -2630,7 +2630,7 @@ def run_all_tests() -> bool:
         # Check Phase 5 section headers
         phase5_sections = [
             ("Meta-Learning Activity", "Meta-Learning section"),
-            ("Redis Cache Activity", "Redis section"),
+            ("Redis cache Activity", "Redis section"),
             ("Pinecone Vector Operations", "Pinecone section"),
             ("Agent Execution Flow", "Execution Flow section"),
         ]
@@ -2995,7 +2995,7 @@ def run_all_tests() -> bool:
                 return 4
             elif "L5" in territory or "Safety" in territory:
                 return 5
-            elif "L6" in territory or "Observability" in territory:
+            elif "L6" in territory or "observability" in territory:
                 return 6
             elif "Apps" in territory:
                 return 7

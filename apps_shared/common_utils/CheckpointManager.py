@@ -27,7 +27,7 @@ class CheckpointStorage(str, Enum):
 
 
 class CheckpointConfig(BaseModel):
-    """Configuration for checkpoint manager."""
+    """configuration for checkpoint manager."""
 
     storage_type: CheckpointStorage = CheckpointStorage.FILE
     storage_path: str = "./checkpoints"
@@ -646,7 +646,7 @@ class CheckpointManager:
             stages: List of stage names in order
 
         Returns:
-            Envelope with completed stages marked
+            envelope with completed stages marked
         """
         envelope = await self.load_checkpoint(trace_id)
         if not envelope:

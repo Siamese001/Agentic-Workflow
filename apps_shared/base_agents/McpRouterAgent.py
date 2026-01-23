@@ -5,7 +5,7 @@
 
 
 """
-MCP Router - L3 Orchestration Switchboard
+MCP router - L3 Orchestration Switchboard
 
 Routes layer-specific failures to appropriate MCPs for resolution.
 Prevents L1 Cognition from wasting reasoning tokens on tasks that
@@ -40,7 +40,7 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
 
     def __init__(self, tui_handle: Any | None = None) -> None:
         """
-        Initialize MCP Router.
+        Initialize MCP router.
 
         Args:
             tui_handle: Optional TUI dashboard for status updates
@@ -53,7 +53,7 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
             "L4": ["pinecone", "memory", "filesystem"],
             "L5": ["sequential_thinking", "gitkraken"],
         }
-        Logger.info("[OK] MCP Router initialized with L1-L5 registry")
+        Logger.info("[OK] MCP router initialized with L1-L5 registry")
 
     async def resolve_failure(self, layer: str, error_context: str) -> dict[str, Any]:
         """
@@ -66,7 +66,7 @@ class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
         Returns:
             Resolution result from MCP
         """
-        Logger.info(f"🔀 MCP Router: Resolving {layer} failure")
+        Logger.info(f"🔀 MCP router: Resolving {layer} failure")
         if layer == "L1":
             Logger.info("   → Routing to Sequential Thinking for reasoning breakdown")
             return await self.call_mcp(

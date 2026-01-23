@@ -1,4 +1,4 @@
-"""Tool Perform Observability Operation - Tool-based operation performance adapter.
+"""Tool Perform observability Operation - Tool-based operation performance adapter.
 
 This module provides tool-based adapters for performing observability operations
 with standardized interfaces, error handling, and result processing.
@@ -60,7 +60,7 @@ class OperationExecutionContext:
 
 @dataclass
 class OperationExecutionConfig:
-    """Configuration for operation execution."""
+    """configuration for operation execution."""
 
     default_timeout: float = 30.0
     enable_tracing: bool = True

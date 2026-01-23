@@ -253,7 +253,7 @@ class TelemetryAgent(SovereignBaseAgent):
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
-        """Observability agent - invoke shared healing chain."""
+        """observability agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
         # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
@@ -264,7 +264,7 @@ class TelemetryAgent(SovereignBaseAgent):
             max_depth=max_depth,
             _call_path=_call_path,
         )
-        print(f"[{self.__class__.__name__}] Observability agent - healing chain invoked")
+        print(f"[{self.__class__.__name__}] observability agent - healing chain invoked")
         return {"skipped": 1}
 
 

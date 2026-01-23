@@ -16,7 +16,7 @@ import time
 # NAMING FIXED: Consistent Logger usage
 Logger = logging.getLogger(__name__)
 
-# Configuration (NAMING FIXED: Consistent lowercase to match usage)
+# configuration (NAMING FIXED: Consistent lowercase to match usage)
 max_phase_time = 300  # 5 minutes
 heartbeat_interval = 30  # 30 seconds
 deadlock_threshold = 2  # Alerts after 2 timeouts

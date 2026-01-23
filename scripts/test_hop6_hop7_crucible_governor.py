@@ -4,7 +4,7 @@ MANDATORY Test Suite: HOP 6-7 Crucible & Governor
 
 Focus Areas:
 - HOP-6: Specialist Rule Enforcement (LIC-E001, LIC-E015, LIC-E008)
-- HOP-6: Externalized Rule Configuration
+- HOP-6: Externalized Rule configuration
 - HOP-7: Governor Classification (Factual vs Creative)
 - HOP-7: Stagnation Detection
 """

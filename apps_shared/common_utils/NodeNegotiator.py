@@ -48,7 +48,7 @@ class NegotiationRound(BaseModel):
 
 
 class NegotiationConfig(BaseModel):
-    """Configuration for negotiation protocol."""
+    """configuration for negotiation protocol."""
 
     max_rounds: int = Field(default=2, ge=1, le=5)
     max_message_length: int = Field(default=1000, ge=100, le=10000)
@@ -374,7 +374,7 @@ def get_node_negotiator(**kwargs) -> NodeNegotiator:
     """Get or create global NodeNegotiator instance.
 
     Args:
-        **kwargs: Configuration arguments
+        **kwargs: configuration arguments
 
     Returns:
         NodeNegotiator instance

@@ -73,7 +73,7 @@ def main():
     violations = tracking.get("violations", [])
 
     print(f"\n{'=' * 70}")
-    print("Schema Violation Auto-Fix")
+    print("schema Violation Auto-Fix")
     print(f"{'=' * 70}")
     print(f"Mode: {'DRY RUN' if args.dry_run else 'EXECUTE'}")
     print(f"Total files to process: {len(violations)}")

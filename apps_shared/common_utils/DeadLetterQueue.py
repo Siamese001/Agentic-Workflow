@@ -560,7 +560,7 @@ class DeadLetterQueue:
             notes: Notes for requeue
 
         Returns:
-            Envelope if found and requeued
+            envelope if found and requeued
         """
         item = await self.storage.get(trace_id)
         if not item:
@@ -568,7 +568,7 @@ class DeadLetterQueue:
 
         # Check retry limit
         if item.retry_count >= item.max_retries:
-            logger.warning(f"Envelope {trace_id} exceeded max retries ({item.max_retries})")
+            logger.warning(f"envelope {trace_id} exceeded max retries ({item.max_retries})")
             return None
 
         # Update retry count

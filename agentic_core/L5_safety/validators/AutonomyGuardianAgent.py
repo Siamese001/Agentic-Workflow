@@ -37,7 +37,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
     Responsibilities:
     1. Validate agents have Autonomous Repair Capability (heal_repository via SovereignBaseAgent).
     2. Detect and purge forbidden external runner scripts.
-    3. Delegate high-complexity reporting to L6 Observability engine.
+    3. Delegate high-complexity reporting to L6 observability engine.
     """
 
     _cache_prefix: str = "guardian_compliance"

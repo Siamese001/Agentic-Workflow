@@ -158,7 +158,7 @@ class RedisSovereignAgent(SovereignBaseAgent):
                 print(f"   [CACHE] Purged {deleted} ghost entries for: {file_path.name}")
         except Exception as e:
             # Non-critical, don't break the healer
-            print(f"   [!] Cache invalidation failed for {file_path}: {e}")
+            print(f"   [!] cache invalidation failed for {file_path}: {e}")
 
     async def execute(self, ctx=None) -> Any:
         """Execute execute operation."""

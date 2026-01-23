@@ -239,7 +239,7 @@ def test_vertex_client() -> dict[str, object]:
 
 def test_multi_provider_router() -> dict[str, object]:
     """Test multi-provider router functionality."""
-    results = {"provider": "Multi-Provider Router", TESTS_DIR: {}, "overall": False}
+    results = {"provider": "Multi-Provider router", TESTS_DIR: {}, "overall": False}
 
     try:
         # Test router initialization
@@ -248,7 +248,7 @@ def test_multi_provider_router() -> dict[str, object]:
 
         # Test basic routing
         routing_result = router.chat_completion(
-            [{"role": "user", "content": "Say 'Router test passed' in 5 words"}],
+            [{"role": "user", "content": "Say 'router test passed' in 5 words"}],
             strategy="priority",
         )
 

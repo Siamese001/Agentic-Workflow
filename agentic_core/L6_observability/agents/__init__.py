@@ -1,5 +1,5 @@
 """
-L6 Observability Agents
+L6 observability Agents
 =======================
 
 Strategic observation and analysis agents for dashboard monitoring.

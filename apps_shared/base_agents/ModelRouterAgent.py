@@ -202,7 +202,7 @@ class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
             budget: Cost budget
 
         Returns:
-            Models within budget
+            models within budget
         """
         within_budget = []
         for model in models:

@@ -5,7 +5,7 @@ This test suite ensures no legacy functionality is dropped during Phase 6.6
 Scorched Earth refactoring to reach sub-150 rglob count.
 
 Test Cases:
-- TC-41: SecureCheckpoint Security - correctly locates encrypted backups using SSOT discovery
+- TC-41: secure_checkpoint Security - correctly locates encrypted backups using SSOT discovery
 - TC-42: Depth Compliance - force_app_depth correctly identifies files exceeding L6 boundary
 - TC-43: Dashboard Integrity - test_dashboard_end_to_end uses SSOT for JS file discovery
 
@@ -24,13 +24,13 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 def test_tc41_secure_checkpoint_security():
     """
-    TC-41: SecureCheckpoint Security
+    TC-41: secure_checkpoint Security
 
     Verify SecureCheckpointManagerAgent correctly locates encrypted backups
     using SSOT discovery instead of glob.
     """
     print("\n" + "=" * 60)
-    print("TC-41: SecureCheckpoint Security")
+    print("TC-41: secure_checkpoint Security")
     print("=" * 60)
 
     secure_checkpoint = (
@@ -280,7 +280,7 @@ def main():
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
-        ("TC-41: SecureCheckpoint Security", test_tc41_secure_checkpoint_security),
+        ("TC-41: secure_checkpoint Security", test_tc41_secure_checkpoint_security),
         ("TC-42: Depth Compliance", test_tc42_depth_compliance),
         ("TC-43: Dashboard Integrity", test_tc43_dashboard_integrity),
         ("BONUS: Phase 6.6 Scorched Earth Achievement", test_phase6_6_reduction),

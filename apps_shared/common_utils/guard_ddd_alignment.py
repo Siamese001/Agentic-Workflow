@@ -2,7 +2,7 @@
 """
 DDD Alignment Guardian - Sovereign Edition (December 29, 2025)
 Detects violations of Domain-Driven Design tactical patterns:
-- Anemic Domain Models (data holders without behavior)
+- Anemic Domain models (data holders without behavior)
 - God Classes (excessive responsibilities)
 - Mutable Value Objects
 - Service layer bloat indicators
@@ -257,7 +257,7 @@ def validate_ddd_alignment(root_path: str) -> tuple[float, list[str]]:
     """
     detailed_violations = get_ddd_violations_detailed(root_path)
 
-    # Scoring: 5 points per Violation, clamped to 0-100
+    # scoring: 5 points per Violation, clamped to 0-100
     base_score = 100.0
     penalty_per_violation = 5.0
 

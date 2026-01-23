@@ -18,7 +18,7 @@ Logger = logging.getLogger(__name__)
 
 
 # ============================================================================
-# SubatomicHop Models
+# SubatomicHop models
 # ============================================================================
 
 
@@ -75,7 +75,7 @@ class StageTransition(BaseModel):
 
 
 # ============================================================================
-# Prompt Injection Models
+# Prompt Injection models
 # ============================================================================
 
 
@@ -169,7 +169,7 @@ class InjectionMatch(BaseModel):
 
 
 class InjectionConfig(BaseModel):
-    """Configuration for injection loader."""
+    """configuration for injection loader."""
 
     injection_dir: Path = Field(default=Path("./injections"))
     max_injections_per_hop: int = Field(default=5, ge=1, le=10)

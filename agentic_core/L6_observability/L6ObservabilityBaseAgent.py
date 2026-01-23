@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-L6ObservabilityBaseAgent - Layer 6 Observability Base Class
+L6ObservabilityBaseAgent - Layer 6 observability Base Class
 
 This module provides the base class for all L6 observability agents.
 All observability agents should inherit from this class to ensure
@@ -21,7 +21,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 @dataclass
 class L6ObservabilityBaseAgent(SovereignBaseAgent):
     """
-    Base class for all L6 Observability layer agents.
+    Base class for all L6 observability layer agents.
 
     Provides:
     - Metrics collection and reporting

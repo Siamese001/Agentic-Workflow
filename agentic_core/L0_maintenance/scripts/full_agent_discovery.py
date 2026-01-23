@@ -898,7 +898,7 @@ def check_proper_base(class_node: ast.ClassDef, layer: str) -> bool:
 
 
 def calculate_schema_strictness(class_node: ast.ClassDef, source: str = "") -> float:
-    """Phase 4: Schema Strictness - % with strict Pydantic/dataclass schema validation.
+    """Phase 4: schema Strictness - % with strict Pydantic/dataclass schema validation.
 
     Checks for:
     1. @dataclass decorator on the class
@@ -1238,7 +1238,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
             return False
 
     # 1d. Data container suffixes without 'Agent'
-    data_container_suffixes = ("Config", "Settings", "Context", "Options", "Schema", "State")
+    data_container_suffixes = ("Config", "Settings", "Context", "Options", "schema", "State")
     if name.endswith(data_container_suffixes) and "Agent" not in name:
         log.debug(f"EXCLUDED {name}: data container suffix without 'Agent'")
         return False
@@ -1259,7 +1259,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
         "Blackboard",  # Infrastructure: AtomicBlackboard
         "Ledger",  # Infrastructure: CachedStateLedger
         "Lock",  # Infrastructure: RedisDistributedLock
-        "Cache",  # Infrastructure: RedisHotCache
+        "cache",  # Infrastructure: RedisHotCache
         "Guardrail",  # Guardrails are NOT agents (different from GuardrailAgent)
         "Generator",  # Infrastructure: ResumeGenerator
         "Executor",  # Infrastructure: BaseTaskExecutor (unless ends with Agent)
@@ -1481,7 +1481,7 @@ def main():
             try:
                 old_manifest = json.loads(MANIFEST_JSON.read_text(encoding="utf-8"))
 
-                # HARDENED: Schema validation
+                # HARDENED: schema validation
                 required = {"file_hashes", "agent_count", "generated_at"}
                 if not all(k in old_manifest for k in required):
                     missing = required - old_manifest.keys()
@@ -1634,7 +1634,7 @@ def main():
 
     # First pass: Build inheritance map for MRO-like detection
     log.info("[PASS 1] Building inheritance map (required for MRO healing detection)...")
-    parsed_files = {}  # Cache parsed ASTs
+    parsed_files = {}  # cache parsed ASTs
     for py_file in all_py_files:
         if should_exclude_file(py_file):
             continue

@@ -187,7 +187,7 @@ class ResumeBulletFormatter(FormatterStrategy):
 
         Args:
             bullets: List of bullets
-            config: Configuration
+            config: configuration
 
         Returns:
             Modified bullets
@@ -258,7 +258,7 @@ class ResumeSectionFormatter(FormatterStrategy):
 
         Args:
             data: Section data
-            config: Configuration
+            config: configuration
 
         Returns:
             Formatted section
@@ -322,7 +322,7 @@ class ResumeSectionFormatter(FormatterStrategy):
 
         Args:
             text: Section text
-            config: Configuration
+            config: configuration
 
         Returns:
             Formatted text
@@ -375,7 +375,7 @@ class OutreachMessageFormatter(FormatterStrategy):
 
         Args:
             text: Message text
-            config: Configuration
+            config: configuration
 
         Returns:
             Formatted text
@@ -405,7 +405,7 @@ class OutreachMessageFormatter(FormatterStrategy):
 
         Args:
             data: Message data
-            config: Configuration
+            config: configuration
 
         Returns:
             Formatted message
@@ -460,7 +460,7 @@ class OutreachSubjectFormatter(FormatterStrategy):
 
         Args:
             text: Subject text
-            config: Configuration
+            config: configuration
 
         Returns:
             Formatted subject

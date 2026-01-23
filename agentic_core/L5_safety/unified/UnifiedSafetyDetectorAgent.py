@@ -64,7 +64,7 @@ class SafetyThreat:
 
 @dataclass
 class SafetyConfig:
-    """Configuration for safety detection."""
+    """configuration for safety detection."""
 
     enable_bias: bool = True
     enable_hallucination: bool = True

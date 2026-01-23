@@ -156,7 +156,7 @@ def calculate_metrics(agents_in_territory):
         "Documented %": round(documented_pct, 1),
         "Metadata %": 100.0,
         "Canonical Inheritance %": 100.0,
-        "Schema Strictness %": 100.0,
+        "schema Strictness %": 100.0,
         "Complexity Health": round(complexity_health, 1),
         "Code Quality Score": round(code_quality, 1),
         "Health": round(health, 1),
@@ -170,11 +170,11 @@ def calculate_metrics(agents_in_territory):
 TERRITORY_ORDER = [
     # Sovereign Base Agent (root of hierarchy)
     "Sovereign Base Agent",
-    # L6 Observability (highest layer)
-    "L6 Observability/Base Agent",
-    "L6 Observability/Core",
-    "L6 Observability/Infrastructure",
-    "L6 Observability/Metrics",
+    # L6 observability (highest layer)
+    "L6 observability/Base Agent",
+    "L6 observability/Core",
+    "L6 observability/Infrastructure",
+    "L6 observability/Metrics",
     # L5 Safety
     "L5 Safety/Base Agent",
     "L5 Safety/Core",
@@ -371,7 +371,7 @@ def generate_agent_data(agents, territories):
                     "schema_pct": schema_pct,
                     "proper_base_pct": proper_base_pct,
                     "code_quality": round(code_quality, 1),
-                    # Observability summary
+                    # observability summary
                     "obs_summary": f"Logging: {'✓' if a.get('observability', {}).get('logging') else '✗'} | Metrics: {'✓' if a.get('observability', {}).get('metrics') else '✗'} | Tracing: {'✓' if a.get('observability', {}).get('tracing') else '✗'}",
                     # MCP summary
                     "mcp_summary": f"Shield: {'✓' if mcp_hardened else '✗'} | @hardened: {'✓' if hardened_pct > 40 else '✗'} | Safe: {'✓' if hardened_pct > 20 else '✗'}",

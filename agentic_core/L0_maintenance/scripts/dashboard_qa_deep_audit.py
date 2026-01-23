@@ -55,7 +55,7 @@ def get_territory_for_agent(agent: dict) -> str:
     path = agent.get("path", "").replace("\\", "/")
     layer = agent.get("layer", "")
 
-    # L6 Observability territories
+    # L6 observability territories
     if "L6_observability" in path or layer == "L6":
         if "/metrics" in path:
             return "L6_Observability/Metrics"

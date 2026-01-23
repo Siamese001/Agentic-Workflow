@@ -1,4 +1,4 @@
-"""LLM Cache Key Generation Utilities.
+"""LLM cache Key Generation Utilities.
 
 Provides high-performance cache key generation for LLM requests.
 """
@@ -18,7 +18,7 @@ def generate_llm_cache_key(model: str, messages: list[dict[str, Any]]) -> str:
         messages: List of message dictionaries
 
     Returns:
-        Cache key string
+        cache key string
     """
     # Create a normalized representation
     key_data = {"model": model, "messages": messages}
@@ -41,7 +41,7 @@ def generate_llm_cache_key_with_fingerprint(
         fingerprint: Additional identifier for cache variation
 
     Returns:
-        Cache key string with fingerprint
+        cache key string with fingerprint
     """
     # Include fingerprint in the key data
     key_data = {"model": model, "messages": messages, "fingerprint": fingerprint}

@@ -30,7 +30,7 @@ class TaskComplexity(Enum):
 
 @dataclass
 class ModelConfig:
-    """Configuration for an LLM model."""
+    """configuration for an LLM model."""
 
     model_id: str
     Provider: str

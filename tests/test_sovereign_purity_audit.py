@@ -31,7 +31,7 @@ class test_sovereign_purity_audit:
         # Verify 100% Pass: Stateless tools must have been moved
         assert not (engine_path / "generate_subject_line.py").exists(), "Stateless tools should be in shared/tools/"
         assert not (engine_path / "aggregate_campaign_state.py").exists(), "Stateless tools should be in shared/tools/"
-        assert not (engine_path / "ToolsLic.py").exists(), "Stateless tools should be in shared/tools/"
+        assert not (engine_path / "tools_lic.py").exists(), "Stateless tools should be in shared/tools/"
 
     def test_nomenclature_debt_purge(self, disable_path_shield):
         """Verify that passive Enums are no longer labeled as 'Agents'."""
@@ -63,7 +63,7 @@ class test_sovereign_purity_audit:
         expected_tools = [
             "generate_subject_line.py",
             "action_call_generator.py",
-            "ToolsLic.py",
+            "tools_lic.py",
             "aggregate_campaign_state.py",
         ]
         for tool in expected_tools:
@@ -75,10 +75,10 @@ class test_sovereign_purity_audit:
         
         # Check for moved support structures
         expected_files = [
-            "LicArchetypes.py",
-            "LicCtaPatterns.py",
-            "LicRoutingRules.py",
-            "Models.py",
+            "lic_archetypes.py",
+            "lic_cta_patterns.py",
+            "lic_routing_rules.py",
+            "models.py",
         ]
         for f in expected_files:
             assert (domain_path / f).exists(), f"{f} should be in domain/"
@@ -91,8 +91,8 @@ class test_sovereign_purity_audit:
         # Check for archived files
         expected_legacy = [
             "MainV107.py",
-            "CoreV107.py",
-            "UtilsLicV12.py",
+            "core_v107.py",
+            "utils_lic_v12.py",
             "OutreachEngineRefactored.py",
         ]
         for f in expected_legacy:

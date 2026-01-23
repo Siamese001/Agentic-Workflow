@@ -59,7 +59,7 @@ class StructureHealingAction:
 
 @dataclass
 class StructureHealerConfig:
-    """Configuration for structure healing."""
+    """configuration for structure healing."""
 
     enable_gravity: bool = True
     enable_hierarchy: bool = True

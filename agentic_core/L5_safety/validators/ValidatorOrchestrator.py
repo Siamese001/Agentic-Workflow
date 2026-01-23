@@ -43,7 +43,7 @@ class ValidatorOrchestrator:
 
     _instance: ValidatorOrchestrator | None = None
 
-    # [PHASE 6] Configuration now managed by SovereignConfigManager
+    # [PHASE 6] configuration now managed by SovereignConfigManager
 
     # State
     _validators: dict[str, ValidatorProtocol] = field(default_factory=dict)

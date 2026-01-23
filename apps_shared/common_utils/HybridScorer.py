@@ -127,7 +127,7 @@ class HybridScorer:
         """Initialize hybrid scorer.
 
         Args:
-            weights: Scoring weights for different components
+            weights: scoring weights for different components
         """
         self.weights = weights or ScoringWeights()
         self.bm25_scorer = BM25Scorer()

@@ -1,4 +1,4 @@
-"""Dynamic Signal Weighter - Archetype-Aware Document Scoring.
+"""Dynamic Signal Weighter - Archetype-Aware Document scoring.
 
 This module provides dynamic weighting of retrieved documents based on recipient
 archetype and industry, enabling more relevant content selection for personalized

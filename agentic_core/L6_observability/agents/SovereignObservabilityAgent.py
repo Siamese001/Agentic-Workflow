@@ -29,7 +29,7 @@ class SovereignObservabilityAgent(
     ContextPropagationMixin,
 ):
     """
-    L6 Observability Agent: The Consumer (Report 4.3 Part C).
+    L6 observability Agent: The Consumer (Report 4.3 Part C).
 
     Responsible for reading the global event stream and updating KPIs.
     Consumes events from Redis streams and performs real-time observability analysis.

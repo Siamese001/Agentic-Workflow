@@ -23,7 +23,7 @@ from vertexai.preview import grounding as vertex_grounding
 
 @dataclass
 class VertexConfig:
-    """Configuration for Vertex AI client."""
+    """configuration for Vertex AI client."""
 
     project_id: str | None = None
     location: str = "us-central1"

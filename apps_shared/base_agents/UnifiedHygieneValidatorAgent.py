@@ -65,7 +65,7 @@ class UnifiedHygieneValidatorAgent(L5Agent):
     layer: str = "L5"
     project_root: Path = field(default_factory=Path.cwd)
 
-    # Configuration
+    # configuration
     DEBT_MARKERS: list[str] = field(default_factory=lambda: ["TODO", "FIXME", "HACK", "XXX", "BUG"])
     MIN_FILE_SIZE: int = 10  # Bytes - files smaller are considered empty
     ALLOWED_EMPTY: set[str] = field(default_factory=lambda: {"__init__.py"})

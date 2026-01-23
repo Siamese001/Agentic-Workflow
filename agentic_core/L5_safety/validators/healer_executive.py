@@ -107,8 +107,8 @@ class TitleComposerResult:
     attempts: int
 
 
-# NAMING FIXED: ExecutiveTitleComposer → ExecutiveTitleComposer
-class ExecutiveTitleComposer:
+# NAMING FIXED: executive_title_composer → executive_title_composer
+class executive_title_composer:
     """
     K.4 - Headline Generator
 
@@ -396,6 +396,6 @@ class ExecutiveTitleComposer:
 
 def create_executive_title_composer(
     config: TitleComposerConfig | None = None,
-) -> ExecutiveTitleComposer:
-    """Factory function to create ExecutiveTitleComposer instance"""
-    return ExecutiveTitleComposer(config=config)
+) -> executive_title_composer:
+    """Factory function to create executive_title_composer instance"""
+    return executive_title_composer(config=config)

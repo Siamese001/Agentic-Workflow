@@ -35,7 +35,7 @@ COL_COMPLEXITY_HEALTH = "Complexity Health %"
 COL_HEALTH = "Health"
 COL_TYPED = "Typed %"
 COL_DOCUMENTED = "Documented %"
-COL_SCHEMA_STRICTNESS = "Schema Strictness %"
+COL_SCHEMA_STRICTNESS = "schema Strictness %"
 COL_CANONICAL_INHERITANCE = "Canonical Inheritance %"
 COL_CODE_QUALITY = "Code Quality Score"
 COL_AVG_CC = "Avg CC"
@@ -333,7 +333,7 @@ def calc_documented_pct(agents: list[dict]) -> float:
 
 def calc_schema_strictness_pct(agents: list[dict]) -> float:
     """
-    Calculate average Schema Strictness % for a set of agents.
+    Calculate average schema Strictness % for a set of agents.
 
     Definition: Average schema strictness score across all agents.
 
@@ -424,7 +424,7 @@ def calc_health_score(
         heal_cap_pct: Heal Capability %
         invocation_pct: Heal Invocation %
         test_pct: Test Coverage %
-        observable_pct: Observability % (placeholder at 50 currently)
+        observable_pct: observability % (placeholder at 50 currently)
         complexity_health: Complexity Health score
         is_l0: If True, use L0-specific formula
 
@@ -457,12 +457,12 @@ def calc_code_quality_score(
 
     Definition: Weighted composite of code quality metrics.
         Quality = (Typed * WEIGHT_CODE_QUALITY_TYPED) + (Documented * WEIGHT_CODE_QUALITY_DOCUMENTED) +
-                  (Schema * WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS) + (Canonical * WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE)
+                  (schema * WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS) + (Canonical * WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE)
 
     Args:
         typed_pct: Typed %
         documented_pct: Documented %
-        schema_pct: Schema Strictness %
+        schema_pct: schema Strictness %
         canonical_pct: Canonical Inheritance %
 
     Returns:
@@ -513,7 +513,7 @@ def get_territory_sort_key(territory: str) -> tuple:
     5. L3 Orchestration
     6. L4 State
     7. L5 Safety
-    8. L6 Observability
+    8. L6 observability
     9. Apps (alphabetically)
 
     Args:

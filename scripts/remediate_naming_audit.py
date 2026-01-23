@@ -41,7 +41,7 @@ PROTECTED_SUFFIXES = (
     "Registry.py",
     "Engine.py",
     "Model.py",
-    "Schema.py",
+    "schema.py",
     "Config.py",
     "Exception.py",
     "Error.py",

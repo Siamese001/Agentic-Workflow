@@ -32,7 +32,7 @@ class ConfigFormat(Enum):
 
 
 class ConfigScope(Enum):
-    """Configuration scopes."""
+    """configuration scopes."""
 
     GLOBAL = "global"
     REGION = "region"
@@ -97,7 +97,7 @@ class ConfigLoadPlan:
 
 @dataclass
 class ConfigLoadConfig:
-    """Configuration for config load planning."""
+    """configuration for config load planning."""
 
     enable_validation: bool = True
     enable_encryption: bool = False

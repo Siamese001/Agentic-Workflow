@@ -41,7 +41,7 @@ class CostGovernorAgent(SovereignBaseAgent):
     when the configured limit is exceeded.
 
     Attributes:
-        config: Configuration dictionary with budget settings.
+        config: configuration dictionary with budget settings.
         limit: Maximum allowed spend in dollars.
         spend: Current accumulated spend in dollars.
 
@@ -54,7 +54,7 @@ class CostGovernorAgent(SovereignBaseAgent):
         """Initialize the cost governor with budget configuration.
 
         Args:
-            config: Configuration dictionary containing:
+            config: configuration dictionary containing:
                 - budget_limit: Maximum allowed spend in dollars (default: 10.0)
         """
         self.config: dict[str, Any] = config

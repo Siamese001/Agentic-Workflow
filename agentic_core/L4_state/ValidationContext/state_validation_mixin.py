@@ -120,7 +120,7 @@ class StateValidationMixin:
                     except Exception as e:
                         raise StateValidationError(f"Post-condition error in {func.__name__}: {e}")
 
-                # 5. Cache Result (if idempotent)
+                # 5. cache Result (if idempotent)
                 if idempotent and op_hash:
                     self._operation_ledger[op_hash] = result
 

@@ -1,5 +1,5 @@
 """
-Reasoning Configuration Toggles.
+Reasoning configuration Toggles.
 
 Defines the bounds and safety switches for advanced reasoning capabilities
 (CoT, ToT, Reflexion) within the agentic workflow.
@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field, field_validator
 
 class ReasoningToggles(BaseModel):
     """
-    Configuration object for enabling/disabling advanced reasoning features.
+    configuration object for enabling/disabling advanced reasoning features.
     Enforces strict safety bounds to prevent infinite loops or token exhaustion.
     """
 

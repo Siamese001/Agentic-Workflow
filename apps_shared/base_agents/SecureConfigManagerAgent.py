@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-"""Secure Configuration Management - Handles secrets, keys, and config validation.
+"""Secure configuration Management - Handles secrets, keys, and config validation.
 
 This module provides secure configuration management with encrypted key storage,
 configuration validation, and prevention of hardcoded secrets.
@@ -125,7 +125,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         """Load encrypted configuration.
 
         Returns:
-            Configuration dictionary
+            configuration dictionary
         """
         if not self.config_file.exists():
             return {}
@@ -138,7 +138,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
             return json.loads(decrypted_data)
         except Exception as e:
             Logger.error(f"Failed to load config: {e}")
-            raise ConfigurationError(f"Configuration load failed: {e}")
+            raise ConfigurationError(f"configuration load failed: {e}")
 
     def _save_config(self) -> None:
         """Save encrypted configuration."""
@@ -154,7 +154,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
 
         except Exception as e:
             Logger.error(f"Failed to save config: {e}")
-            raise ConfigurationError(f"Configuration save failed: {e}")
+            raise ConfigurationError(f"configuration save failed: {e}")
 
     def _load_keys(self) -> dict[str, dict[str, Any]]:
         """Load encryption keys with metadata.
@@ -195,11 +195,11 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         """Get a configuration value.
 
         Args:
-            key: Configuration key
+            key: configuration key
             default: Default value if not found
 
         Returns:
-            Configuration value
+            configuration value
         """
         with self._lock:
             # Check environment first
@@ -215,7 +215,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         """Set a configuration value.
 
         Args:
-            key: Configuration key
+            key: configuration key
             value: Value to set
             sensitive: Whether the value is sensitive
         """
@@ -376,7 +376,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
         """Check if a key is considered sensitive.
 
         Args:
-            key: Configuration key
+            key: configuration key
 
         Returns:
             True if key is sensitive
@@ -464,7 +464,7 @@ class SecureConfigManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMi
                 metrics["violations"] += enc_results.get("violations", 0)
                 metrics["fixed"] += enc_results.get("fixed", 0)
 
-            # 2. Schema Reconciliation
+            # 2. schema Reconciliation
             if hasattr(self, "_reconcile_config_schema"):
                 schema_results = self._reconcile_config_schema(dry_run=dry_run)
                 metrics["violations"] += schema_results.get("violations", 0)
@@ -510,11 +510,11 @@ def get_config(key: str, default: Any = None) -> Any:
     """Get a configuration value from the default manager.
 
     Args:
-        key: Configuration key
+        key: configuration key
         default: Default value
 
     Returns:
-        Configuration value
+        configuration value
     """
     return get_config_manager().get(key, default)
 
@@ -523,7 +523,7 @@ def set_config(key: str, value: Any, sensitive: bool = False) -> None:
     """Set a configuration value in the default manager.
 
     Args:
-        key: Configuration key
+        key: configuration key
         value: Value to set
         sensitive: Whether the value is sensitive
     """

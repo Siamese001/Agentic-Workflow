@@ -36,7 +36,7 @@ HEALTH_WEIGHTS: dict[str, float] = {
     "heal_capability": 0.30,  # 30% - Ability to self-heal
     "invocation": 0.10,  # 10% - Invocation status
     "test_coverage": 0.25,  # 25% - Test coverage
-    "observability": 0.20,  # 20% - Observability metrics
+    "observability": 0.20,  # 20% - observability metrics
     "complexity": 0.15,  # 15% - Complexity health
 }
 
@@ -57,7 +57,7 @@ def calculate_health_score(
         heal_cap: Heal capability percentage (0.0 to 100.0)
         invoc: Invocation percentage (0.0 to 100.0)
         test_cov: Test coverage percentage (0.0 to 100.0)
-        obs: Observability percentage (0.0 to 100.0)
+        obs: observability percentage (0.0 to 100.0)
         comp_health: Complexity health percentage (0.0 to 100.0)
 
     Returns:
@@ -183,7 +183,7 @@ def validate_health_components(
         heal_cap: Heal capability percentage
         invoc: Invocation percentage
         test_cov: Test coverage percentage
-        obs: Observability percentage
+        obs: observability percentage
         comp_health: Complexity health percentage
 
     Returns:
@@ -235,7 +235,7 @@ AGENT_CATEGORY_PATTERNS: dict[str, list] = {
         r"Workflow",
         r"Engine",
         r"Coordinator",
-        r"Router",
+        r"router",
         r"Conductor",
         r"Exerciser",
         r"System",
@@ -261,7 +261,7 @@ AGENT_CATEGORY_PATTERNS: dict[str, list] = {
         r"Planning",
     ],
     "Executor": [r"Executor", r"Execution", r"Tool", r"Action", r"Handler"],
-    "State": [r"State", r"Memory", r"Cache", r"Store", r"Ledger", r"Context"],
+    "State": [r"State", r"Memory", r"cache", r"Store", r"Ledger", r"Context"],
 }
 
 

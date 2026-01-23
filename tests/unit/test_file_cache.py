@@ -185,11 +185,11 @@ class TestFileCacheInvalidation:
 
         # Populate cache
         _ = cache.get_all_files()
-        assert cache.is_cached(), "Cache should be populated"
+        assert cache.is_cached(), "cache should be populated"
 
         # Invalidate
         cache.invalidate()
-        assert not cache.is_cached(), "Cache should be cleared after invalidation"
+        assert not cache.is_cached(), "cache should be cleared after invalidation"
 
     def test_invalidation_triggers_rescan(self):
         """Verify invalidation triggers rescan on next access."""
@@ -299,7 +299,7 @@ class TestFileCacheLazyLoading:
         cache = FileCache.get_instance(self.temp_dir)
 
         assert cache.get_scan_count() == 0, "No scan should occur on instantiation"
-        assert not cache.is_cached(), "Cache should not be populated on instantiation"
+        assert not cache.is_cached(), "cache should not be populated on instantiation"
 
     def test_scan_on_first_access(self):
         """Verify scan occurs on first access."""
@@ -308,7 +308,7 @@ class TestFileCacheLazyLoading:
         _ = cache.get_all_files()
 
         assert cache.get_scan_count() == 1, "Scan should occur on first access"
-        assert cache.is_cached(), "Cache should be populated after access"
+        assert cache.is_cached(), "cache should be populated after access"
 
     def test_no_scan_on_subsequent_access(self):
         """Verify no additional scan on subsequent access."""
@@ -347,11 +347,11 @@ class TestFileCacheConvenienceFunctions:
         cache = FileCache.get_instance(self.temp_dir)
         _ = cache.get_all_files()
 
-        assert cache.is_cached(), "Cache should be populated"
+        assert cache.is_cached(), "cache should be populated"
 
         invalidate_cache()
 
-        assert not cache.is_cached(), "Cache should be invalidated"
+        assert not cache.is_cached(), "cache should be invalidated"
 
 
 class TestFileCacheProjectRootIntegration:
@@ -395,7 +395,7 @@ class TestFileCacheProjectRootIntegration:
 
 
 class TestCacheRefreshOnDemand:
-    """Test Case: Cache Invalidation and Refresh
+    """Test Case: cache Invalidation and Refresh
 
     Verify that cache invalidation correctly refreshes file list.
     """

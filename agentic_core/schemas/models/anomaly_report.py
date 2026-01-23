@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-AnomalyReport - Sovereign Anomaly Detection Schema
+AnomalyReport - Sovereign Anomaly Detection schema
 
 Provides standardized anomaly propagation across layers (L2-L5, apps).
 Integrates with HealerMixin for audited healing decisions.

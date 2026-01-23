@@ -40,7 +40,7 @@ except ImportError:
     print("Error: pinecone-client not installed. Run: pip install pinecone-client")
     sys.exit(1)
 
-# Configuration
+# configuration
 PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "agentic-semantic-search")
 BATCH_SIZE = 50  # Records per batch for upsert
 
@@ -467,7 +467,7 @@ class PineconePopulator:
                 pass
 
             embed_content = (
-                f"Configuration Blueprint: {filename}. "
+                f"configuration Blueprint: {filename}. "
                 f"Defines: {', '.join(definitions[:20])}. "
                 f"Content preview: {content[:1000]}"
             )

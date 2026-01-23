@@ -6,7 +6,7 @@ from __future__ import annotations
 
 
 """
-Canon Validator Configuration
+Canon Validator configuration
 Defines exclusion zones and constants for validation.
 """
 import os

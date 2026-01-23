@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class EnhancementConfig:
-    """Configuration for prompt enhancement."""
+    """configuration for prompt enhancement."""
 
     enable_semantic_fencing: bool = True
     enable_cognitive_contracts: bool = False

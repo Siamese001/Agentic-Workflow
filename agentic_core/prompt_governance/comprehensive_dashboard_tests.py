@@ -65,7 +65,7 @@ class DashboardTestSuite:
         self.test_data_integrity()
         print()
 
-        # Category 3: Target Configuration Tests
+        # Category 3: Target configuration Tests
         print("🎯 TARGET CONFIGURATION TESTS")
         self.test_target_configuration()
         print()
@@ -100,7 +100,7 @@ class DashboardTestSuite:
         self.test_gauge_kpis()
         print()
 
-        # Category 10: Timer Configuration Tests
+        # Category 10: Timer configuration Tests
         print("⏱️ TIMER CONFIGURATION TESTS")
         self.test_timer_configuration()
         print()
@@ -237,8 +237,8 @@ class DashboardTestSuite:
                 f"Missing in {sample.get('Territory')}",
             )
             self.test(
-                "Target Observability present",
-                "Target Observability" in sample,
+                "Target observability present",
+                "Target observability" in sample,
                 f"Missing in {sample.get('Territory')}",
             )
             self.test(
@@ -455,7 +455,7 @@ class DashboardTestSuite:
             "Target Invocation",
             "Target MCP",
             "Target Tests",
-            "Target Observability",
+            "Target observability",
             "Target Complexity",
         ]
 
@@ -504,9 +504,9 @@ class DashboardTestSuite:
         # Verify target values match expected defaults (100 for invocation, 95 for observability)
         sample = non_total_rows[0] if non_total_rows else {}
         self.test(
-            "Target Observability matches config",
-            sample.get("Target Observability") in [95, 100, "N/A"],
-            f"Unexpected value: {sample.get('Target Observability')}",
+            "Target observability matches config",
+            sample.get("Target observability") in [95, 100, "N/A"],
+            f"Unexpected value: {sample.get('Target observability')}",
         )
 
     def test_context_target_resolver(self):
@@ -682,7 +682,7 @@ class DashboardTestSuite:
                 "Target Invocation",
                 "Target MCP",
                 "Target Tests",
-                "Target Observability",
+                "Target observability",
                 "Target Complexity",
             ]:
                 if row.get(field) == "N/A":

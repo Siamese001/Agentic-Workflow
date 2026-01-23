@@ -104,7 +104,7 @@ class DashboardDataGenerator:
             if avg_cc > 8 or health < 80
             else "LOW",
             "Priority": priority,
-            "Schema Strictness %": round(metrics["schema_strictness"] / t, 1),
+            "schema Strictness %": round(metrics["schema_strictness"] / t, 1),
             "Proper Base %": round(metrics["proper_base"] / t, 1),
         }
 
@@ -129,7 +129,7 @@ class DashboardDataGenerator:
             "Documented %": weighted_avg("Documented %"),
             "Health": health,
             "Risk": "HIGH" if health < 70 else "MED" if health < 85 else "LOW",
-            "Schema Strictness %": weighted_avg("Schema Strictness %"),
+            "schema Strictness %": weighted_avg("schema Strictness %"),
             "Proper Base %": weighted_avg("Proper Base %"),
         }
 

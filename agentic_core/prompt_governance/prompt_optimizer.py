@@ -31,7 +31,7 @@ class OptimizationLevel(Enum):
 
 @dataclass
 class OptimizationConfig:
-    """Configuration for prompt optimization."""
+    """configuration for prompt optimization."""
 
     strategy: OptimizationStrategy
     level: OptimizationLevel

@@ -8,7 +8,7 @@ Phase 11: Heuristic-based analysis
 Phase 12: Gemini LLM integration with JSON enforcement
 Phase 14: Environment loading with python-dotenv
 Phase 16: Migration to google.genai SDK (deprecated google-generativeai)
-Phase 33e: Cache-First Governance (Redis + Pinecone)
+Phase 33e: cache-First Governance (Redis + Pinecone)
 Phase 33h: Hardened Semantic Broadening (Parallel Execution)
 
 Responsibilities:
@@ -71,7 +71,7 @@ def get_gemini_embedder():
 
 Logger = logging.getLogger(__name__)
 
-# [PHASE 33e] Cache-First LLM Governance Configuration
+# [PHASE 33e] cache-First LLM Governance configuration
 BYPASS_CACHE_ENV = "BYPASS_CACHE"
 SEMANTIC_SIMILARITY_THRESHOLD = 0.95  # 95% similarity for Pinecone matches
 
@@ -179,7 +179,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
 
         self._client = None  # Lazy-loaded google.genai Client (Phase 16)
 
-        # [PHASE 29/33e] Cache-First LLM Governance
+        # [PHASE 29/33e] cache-First LLM Governance
         self._decision_cache = {}  # Local fallback cache
         self._redis_client = None
         self._pinecone_index = None
@@ -202,7 +202,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
             "L3_orchestration": "Workflow orchestration",
             "L4_state": "State management and persistence",
             "L5_safety": "Safety, validation, and governance",
-            "L6_observability": "Observability and telemetry",
+            "L6_observability": "observability and telemetry",
         }
 
     def _init_redis_cache(self):
@@ -271,7 +271,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                 cached = self._redis_client.get(cache_key)
                 if cached:
                     data = json.loads(cached)
-                    Logger.info(f"[COGNITIVE] Cache HIT: {cache_key}")
+                    Logger.info(f"[COGNITIVE] cache HIT: {cache_key}")
                     return DispositionDecision(
                         action=data["action"],
                         target_path=data.get("target_path"),
@@ -283,7 +283,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                 Logger.info(f"[COGNITIVE] Local cache HIT: {cache_key}")
                 return self._decision_cache[cache_key]
         except Exception as e:
-            Logger.debug(f"[COGNITIVE] Cache lookup failed: {e}")
+            Logger.debug(f"[COGNITIVE] cache lookup failed: {e}")
         return None
 
     def _cache_decision(self, cache_key: str, decision: DispositionDecision):
@@ -302,10 +302,10 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
             # Always store in local cache too
             self._decision_cache[cache_key] = decision
         except Exception as e:
-            Logger.debug(f"[COGNITIVE] Cache store failed: {e}")
+            Logger.debug(f"[COGNITIVE] cache store failed: {e}")
 
     # ========================================================================
-    # [PHASE 33e] Cache-First LLM Governance - Semantic Lookup
+    # [PHASE 33e] cache-First LLM Governance - Semantic Lookup
     # ========================================================================
 
     def _get_prompt_hash(self, file_path: Path, violation_type: str, context: dict) -> str:
@@ -404,7 +404,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         llm_rate = (stats["llm_calls"] / total) * 100
 
         Logger.info(
-            f"[COGNITIVE] Cache Stats: Redis={redis_rate:.1f}%, Pinecone={pinecone_rate:.1f}%, LLM={llm_rate:.1f}% (n={total})"
+            f"[COGNITIVE] cache Stats: Redis={redis_rate:.1f}%, Pinecone={pinecone_rate:.1f}%, LLM={llm_rate:.1f}% (n={total})"
         )
 
     def analyze_violation(
@@ -416,7 +416,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         """
         Analyze a violation and return a disposition decision.
 
-        [PHASE 33e] Cache-First LLM Governance:
+        [PHASE 33e] cache-First LLM Governance:
         1. Exact match (Redis) - hash lookup
         2. Semantic match (Pinecone) - 95%+ similarity
         3. Heuristic analysis - pattern-based
@@ -476,11 +476,11 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         # Step 4: LLM call - only if all above fail
         if self.llm_enabled and self.api_key:
             self._cache_stats["llm_calls"] += 1
-            Logger.info("[COGNITIVE] Cache MISS - calling LLM...")
+            Logger.info("[COGNITIVE] cache MISS - calling LLM...")
             llm_decision = self._generate_llm_decision(file_path, violation_type, context)
 
             if llm_decision.action != "MANUAL_REVIEW":
-                # Cache to both Redis and Pinecone for future reuse
+                # cache to both Redis and Pinecone for future reuse
                 cache_key = self._get_cache_key(file_path, violation_type)
                 self._cache_decision(cache_key, llm_decision)
                 self._cache_to_pinecone(file_path, violation_type, llm_decision)

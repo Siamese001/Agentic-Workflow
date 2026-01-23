@@ -46,7 +46,7 @@ DATA_DIR = ROOT_DIR  # All data JSONs are in the root
 OUTPUT_DIR = ROOT_DIR / "workflow_outputs"
 CACHE_DIR = ROOT_DIR / "cache"
 
-# NOTE: Cache dir creation moved to lazy initialization (created when first accessed)
+# NOTE: cache dir creation moved to lazy initialization (created when first accessed)
 # This prevents read-only filesystem errors during import
 # ============================================================================
 
@@ -109,7 +109,7 @@ class FilePathsConfig:
 
 @dataclass
 class ArtistConfig:
-    """Configuration for the Artist Generator (resume content generation)."""
+    """configuration for the Artist Generator (resume content generation)."""
 
     provenance_split_targets: dict = field(default_factory=dict)
     bullet_word_count_ranges: dict = field(default_factory=dict)
@@ -135,7 +135,7 @@ class ArtistConfig:
 
 @dataclass
 class ValidatorConfig:
-    """Configuration for validation rules and constraints."""
+    """configuration for validation rules and constraints."""
 
     forbidden_verbs: list[str] = field(default_factory=list)
     required_sections: set[str] = field(default_factory=set)
@@ -161,7 +161,7 @@ class ValidatorConfig:
 
 @dataclass
 class PromptsConfig:
-    """Configuration for all prompt templates."""
+    """configuration for all prompt templates."""
 
     prompts: dict[str, dict[str, str]] = field(default_factory=dict)
 
@@ -200,7 +200,7 @@ class PromptsConfig:
 
 @dataclass
 class WebRagConfig:
-    """Configuration for Web RAG (Retrieval Augmented Generation)."""
+    """configuration for Web RAG (Retrieval Augmented Generation)."""
 
     peers_by_industry: dict = field(
         default_factory=lambda: {
@@ -221,7 +221,7 @@ class WebRagConfig:
 
 @dataclass
 class EnricherConfig:
-    """Configuration for data enrichment."""
+    """configuration for data enrichment."""
 
     canonical_verbs: dict = field(
         default_factory=lambda: {
@@ -241,7 +241,7 @@ class EnricherConfig:
 
 @dataclass
 class RAGConfig:
-    """Configuration for RAG (Retrieval Augmented Generation) system."""
+    """configuration for RAG (Retrieval Augmented Generation) system."""
 
     # --- FIX: Changed model name to gemini-2.5-pro ---
     model: str = "gemini-2.5-pro"
@@ -315,7 +315,7 @@ class RAGConfig:
 @dataclass
 class ReasoningConfig:
     """
-    Configuration for reasoning strategies (CoT, ToT, Self-Consistency, Reflexion).
+    configuration for reasoning strategies (CoT, ToT, Self-Consistency, Reflexion).
 
     PHASE 2 CHANGE: Rationalized reasoning parameters.
     - Lowered self_consistency intensity since Inspector handles evaluation
@@ -401,7 +401,7 @@ class SignalControlConfig:
 
 @dataclass
 class PromptAddendumConfig:
-    """Configuration for reasoning prompt addendums."""
+    """configuration for reasoning prompt addendums."""
 
     HEADER: str = "\n\n**REASONING IMPLEMENTATION DIRECTIVES (v16.40):**\n\n"
     FOOTER: str = "\nAll directives MUST be followed in the output.\n"

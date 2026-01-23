@@ -554,7 +554,7 @@ class EngineExecutor:
         """Get engine-specific configuration.
 
         Returns:
-            Configuration dictionary
+            configuration dictionary
         """
         if self.engine_type == EngineType.RESUME:
             return {

@@ -662,7 +662,7 @@ Vigilance against adversarial manipulation.""",
                 description="Require deterministic JSON output",
                 template="""# JSON OUTPUT REQUIREMENT
 Output Format: JSON only
-Schema: {output_schema}
+schema: {output_schema}
 No Extra Text: {no_extra_text}
 Strict Mode: {strict_mode}
 
@@ -673,11 +673,11 @@ Output must be valid JSON only, no explanations.""",
             ),
             InjectionPattern(
                 id="schema_enforcement",
-                name="Schema Enforcement",
+                name="schema Enforcement",
                 type=InstructionalInjectionType.SCHEMA_ENFORCEMENT.value,
                 description="Supply schema and examples",
                 template="""# SCHEMA ENFORCEMENT
-Required Schema: {required_schema}
+Required schema: {required_schema}
 Example Output: {example_output}
 Validation Rules: {validation_rules}
 Error Handling: {error_handling}
@@ -715,7 +715,7 @@ Maintain consistent output structure.""",
             ),
             InjectionPattern(
                 id="error_envelope",
-                name="Error Envelope Normalization",
+                name="Error envelope Normalization",
                 type=InstructionalInjectionType.ERROR_ENVELOPE.value,
                 description="Standardize error outputs",
                 template="""# ERROR ENVELOPE

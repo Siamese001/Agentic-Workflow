@@ -5,10 +5,10 @@ Tests for validating that all Pinecone operations use Redis as a fast cache
 for the Meta-Learning Layer.
 
 Test Cases:
-- TC-REDIS-001: Verify Redis Cache Hit for Pinecone Queries (L4)
-- TC-REDIS-002: Verify Embedding Cache in pinecone_sync.py (L4)
+- TC-REDIS-001: Verify Redis cache Hit for Pinecone Queries (L4)
+- TC-REDIS-002: Verify Embedding cache in pinecone_sync.py (L4)
 - TC-REDIS-003: Verify PineconeVectorMixin Uses RedisCacheMixin (Utils)
-- TC-REDIS-004: Verify SovereignPineconeMcpClient Cache (L2)
+- TC-REDIS-004: Verify SovereignPineconeMcpClient cache (L2)
 - TC-REDIS-005: Verify Graceful Degradation (Resilience)
 """
 

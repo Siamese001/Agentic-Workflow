@@ -31,7 +31,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
 MANIFEST_JSON = PROJECT_ROOT / AGENT_DISCOVERY_MANIFEST_JSON
 
-# Configuration
+# configuration
 STALENESS_THRESHOLD = timedelta(hours=1)
 
 # Shared exclude logic with discovery

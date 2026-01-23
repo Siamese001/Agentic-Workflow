@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Analyze archives for files that should be restored to apps_* folders."""
 
-# Configuration
+# configuration
 RESUME_KEYWORDS = {"resume", "cv", "ats", "job", "skill", "experience", "bullet", "section"}
 OUTREACH_KEYWORDS = {
     "outreach",

@@ -136,14 +136,14 @@ class GravityEnforcerAgent(
             try:
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write(new_content)
-                # Cache the Verdict
+                # cache the Verdict
                 Verdict = {"had_violations": True, "healed": True}
                 self.store_verdict("gravity", str(file_path), Verdict)
                 return True
             except Exception as e:
                 print(f"   [!] Could not write to {file_path}: {e}")
 
-        # Cache no violations
+        # cache no violations
         Verdict = {"had_violations": False, "healed": False}
         self.store_verdict("gravity", str(file_path), Verdict)
         return False

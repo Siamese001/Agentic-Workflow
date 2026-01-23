@@ -1,4 +1,4 @@
-"""Observability - Runtime Layer
+"""observability - Runtime Layer
 
 This module provides observability compatibility shim.
 

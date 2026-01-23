@@ -71,7 +71,7 @@ class NamingRule:
 
 @dataclass
 class StructureConfig:
-    """Configuration for structure enforcement."""
+    """configuration for structure enforcement."""
 
     enable_gravity: bool = True
     enable_hierarchy: bool = True

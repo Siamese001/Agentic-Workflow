@@ -196,7 +196,7 @@ class MutationResult(BaseModel):
 
 
 class DAGConfig(BaseModel):
-    """Configuration for DAG management."""
+    """configuration for DAG management."""
 
     max_depth: int = Field(default=10, ge=1, le=50)
     max_fan_out: int = Field(default=5, ge=1, le=20)
@@ -565,7 +565,7 @@ def get_dag_manager(**kwargs) -> DAGManagerAgent:
     super().heal_repository()
 
     Args:
-        **kwargs: Configuration arguments
+        **kwargs: configuration arguments
 
     Returns:
         DAGManagerAgent instance

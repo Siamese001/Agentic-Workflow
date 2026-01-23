@@ -8,7 +8,7 @@ but are actually needed for the system to function properly.
 Categories to restore:
 1. DAG/Workflow agents -> L3_orchestration/workflow_engines/
 2. Key orchestration agents -> L3_orchestration/workflow_engines/
-3. Observability agents (unique ones) -> L6_observability/
+3. observability agents (unique ones) -> L6_observability/
 
 NOT restored (have active replacements):
 - CanonValidatorAgent -> LegacyCanonValidatorAgent
@@ -43,7 +43,7 @@ RESTORE_MAP: dict[str, str] = {
     "NervousSystemAgent.py": "L3_orchestration/workflow_engines/",
     "OrchestrationHandshakeAgent.py": "L3_orchestration/workflow_engines/",
     "SelfRecoveringOrchestratorAgent.py": "L3_orchestration/workflow_engines/",
-    # Observability agents -> L6
+    # observability agents -> L6
     "TracingAgent.py": "L6_observability/agents/",
     "AutonomicMonitorAgent.py": "L6_observability/agents/",
     # Safety/validation agents -> L5

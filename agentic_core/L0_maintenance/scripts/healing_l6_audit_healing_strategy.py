@@ -59,7 +59,7 @@ class L6AuditHealingStrategy:
                 {
                     "action": "emit_corrective_event",
                     "event_data": event_data,
-                    "reason": "L6 Observability Gap: Action detected without corresponding audit event.",
+                    "reason": "L6 observability Gap: Action detected without corresponding audit event.",
                     "priority": self.priority,
                     "strategy": self.name,
                 }

@@ -48,7 +48,7 @@ def main() -> Any:
         f.write("=== BULK HIERARCHY HEAL ===\n")
         f.write(f"Target: {TARGET_ROOT}\n")
         f.write(f"Timestamp: {datetime.now().isoformat()}\n")
-        f.write(f"Configuration: DRY_RUN = {DRY_RUN}\n\n")
+        f.write(f"configuration: DRY_RUN = {DRY_RUN}\n\n")
         for file_path in python_files:
             rel: Any = file_path.relative_to(project_root)
             parts: Any = rel.parts

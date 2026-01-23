@@ -1,4 +1,4 @@
-"""Tool Execute Observability Execution - Tool wrapper for observability execution.
+"""Tool Execute observability Execution - Tool wrapper for observability execution.
 
 This module provides tool-based adapters for executing observability operations
 with standardized tool interfaces and protocol compliance.
@@ -60,7 +60,7 @@ class ToolExecutionContext:
 
 @dataclass
 class ToolExecutionConfig:
-    """Configuration for tool execution."""
+    """configuration for tool execution."""
 
     timeout: float = 30.0
     retry_count: int = 3

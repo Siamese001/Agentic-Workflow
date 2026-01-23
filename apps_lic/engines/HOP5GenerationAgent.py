@@ -25,7 +25,7 @@ class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
         - HOP-2 (Research/Context)
         - HOP-3 (Sender Grounding)
         - HOP-4 (Route/Constraints)
-    - Logic: N-Candidate Generation -> Scoring -> Selection.
+    - Logic: N-Candidate Generation -> scoring -> Selection.
     - Output: 'hop5_generation'
     """
 

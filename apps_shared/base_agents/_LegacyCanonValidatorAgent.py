@@ -105,7 +105,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         try:
             current_mtime = os.path.getmtime(self.manifest_path)
         except FileNotFoundError:
-            Logger.warning("Manifest not found. Cache invalidation may be disabled.")
+            Logger.warning("Manifest not found. cache invalidation may be disabled.")
             self.manifest_cache = {}
             self.manifest_lookup = {}
             return
@@ -226,7 +226,7 @@ class _LegacyCanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             Logger.info("Reasoning cache miss due to Redis error.")
             return None
         if cached_data:
-            Logger.info(f"🟢 L1 Cache Hit for {file_path or 'global'}")
+            Logger.info(f"🟢 L1 cache Hit for {file_path or 'global'}")
             return json.loads(cached_data)
         Logger.info("Reasoning cache miss - Code version may have changed.")
         return None

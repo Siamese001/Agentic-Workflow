@@ -8,7 +8,7 @@ from dataclasses import dataclass
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Performance Analyst Agent - L6 Observability Specialist
+Performance Analyst Agent - L6 observability Specialist
 ========================================================
 
 Concrete implementation of L6 Base Agent focused on performance analysis.

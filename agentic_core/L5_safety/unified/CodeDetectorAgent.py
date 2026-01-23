@@ -69,7 +69,7 @@ class Detection:
 
 @dataclass
 class DetectorConfig:
-    """Configuration for code detection."""
+    """configuration for code detection."""
 
     enable_dead_code: bool = True
     enable_drift: bool = True

@@ -59,7 +59,7 @@ class HealingAction:
 
 @dataclass
 class HealerConfig:
-    """Configuration for code healing."""
+    """configuration for code healing."""
 
     enable_canon: bool = True
     enable_import: bool = True

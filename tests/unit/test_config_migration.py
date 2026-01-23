@@ -1,5 +1,5 @@
 """
-Pytest suite for Configuration Migration ensuring SSOT compliance.
+Pytest suite for configuration Migration ensuring SSOT compliance.
 
 Tests verify that:
 - Registry loads from new config location

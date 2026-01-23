@@ -76,15 +76,15 @@ def cached(ttl: int = 3600, prefix: str | None = None):
                 if cached_value is not None:
                     if CACHE_METRICS_ENABLED:
                         metrics.record(f"cached_{func.__name__}", hit=True, latency_ms=latency)
-                    log.debug(f"Cache HIT {func.__name__} key={cache_key[:16]}...")
+                    log.debug(f"cache HIT {func.__name__} key={cache_key[:16]}...")
                     return cached_value
 
                 if CACHE_METRICS_ENABLED:
                     metrics.record(f"cached_{func.__name__}", hit=False, latency_ms=latency)
-                log.debug(f"Cache MISS {func.__name__} key={cache_key[:16]}...")
+                log.debug(f"cache MISS {func.__name__} key={cache_key[:16]}...")
 
             except Exception as e:
-                log.debug(f"Cache lookup failed ({e}) - executing function")
+                log.debug(f"cache lookup failed ({e}) - executing function")
                 if CACHE_METRICS_ENABLED:
                     metrics.record_error(f"cached_{func.__name__}")
 
@@ -96,7 +96,7 @@ def cached(ttl: int = 3600, prefix: str | None = None):
                 await self.cache_set(cache_key, result, ttl=ttl)
                 log.debug(f"Cached result for {func.__name__} TTL={ttl}s")
             except Exception as e:
-                log.debug(f"Cache store failed ({e}) - result not cached")
+                log.debug(f"cache store failed ({e}) - result not cached")
 
             return result
 

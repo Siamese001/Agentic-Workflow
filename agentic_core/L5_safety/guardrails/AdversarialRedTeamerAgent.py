@@ -392,9 +392,9 @@ class AdversarialRedTeamerAgent(SovereignBaseAgent, SubAtomicAgent):
             vulnerability_found=not detected,
             details="Simulated change output schema in Stage 2",
             Severity="high" if not detected else None,
-            Recommendation="Schema drift detected"
+            Recommendation="schema drift detected"
             if detected
-            else "WARNING: Schema drift undetected!",
+            else "WARNING: schema drift undetected!",
         )
 
     async def _attempt_missing_field(self) -> RedTeamResult:

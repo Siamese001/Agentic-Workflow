@@ -1,4 +1,4 @@
-"""Enhanced Semantic Cache for RAG systems.
+"""Enhanced Semantic cache for RAG systems.
 
 Provides semantic similarity-based caching for query results.
 """
@@ -117,7 +117,7 @@ class EnhancedSemanticCache:
             ttl_seconds: Optional custom TTL
 
         Returns:
-            Cache key for the stored entry
+            cache key for the stored entry
         """
         # Generate cache key
         cache_key = self._generate_cache_key(query, content)
@@ -183,7 +183,7 @@ class EnhancedSemanticCache:
             value = int(hex_pair, 16) / 255.0 * 2 - 1
             embedding.append(value)
 
-        # Cache the embedding
+        # cache the embedding
         self.embedding_cache[text] = embedding
         return embedding
 
@@ -232,7 +232,7 @@ class EnhancedSemanticCache:
         """Lookup cache entries by fingerprint.
 
         Args:
-            fingerprint: Cache fingerprint
+            fingerprint: cache fingerprint
 
         Returns:
             Cached data or None
@@ -251,7 +251,7 @@ class EnhancedSemanticCache:
         """Store content in cache.
 
         Args:
-            fingerprint: Cache fingerprint
+            fingerprint: cache fingerprint
             data: Data to cache
             ttl_hours: Optional TTL in hours
         """

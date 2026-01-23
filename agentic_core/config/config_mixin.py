@@ -1,5 +1,5 @@
 """
-ConfigMixin - Unified Configuration Access for Agents
+ConfigMixin - Unified configuration Access for Agents
 
 [PHASE 6 MIGRATION] Provides access to SovereignConfigManager.
 """

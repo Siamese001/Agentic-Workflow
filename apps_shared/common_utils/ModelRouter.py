@@ -1,4 +1,4 @@
-"""Model Router - Smart LLM selection based on task complexity.
+"""Model router - Smart LLM selection based on task complexity.
 
 This module optimizes cost and latency by dynamically selecting the appropriate
 LLM based on task type, complexity, and budget constraints.
@@ -36,7 +36,7 @@ class TaskType(str, Enum):
 
 @dataclass
 class ModelConfig:
-    """Configuration for a specific model."""
+    """configuration for a specific model."""
 
     provider: str  # openai, anthropic, etc.
     model_name: str

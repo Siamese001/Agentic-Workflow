@@ -21,7 +21,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 CSS_CONTENT = '''from __future__ import annotations
 
 """
-CachedSafetyShield - Eternal L5 Safety Base with Sovereign Cache.
+CachedSafetyShield - Eternal L5 Safety Base with Sovereign cache.
 [PHASE 18 REFACTOR] Uses SovereignBaseAgent native caching.
 """
 import hashlib

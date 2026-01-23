@@ -85,7 +85,7 @@ class TitaniumPipelineIntegrationTest:
                 "description": "Should be blocked by AdaptiveRetrievalGate",
             },
             {
-                "name": "Cache Hit (SOTA Layer)",
+                "name": "cache Hit (SOTA Layer)",
                 "query": "What is our strategy?",
                 "expected_phase": "cache_hit",
                 "description": "Should hit semantic cache on second query",
@@ -234,12 +234,12 @@ class TitaniumPipelineIntegrationTest:
             print(f"   Reranked {len(test_docs)} to {len(reranked)} documents")
 
         # Test cache availability
-        print(f"   Cache available: {self.pipeline.cache.is_available}")
+        print(f"   cache available: {self.pipeline.cache.is_available}")
         if self.pipeline.cache.is_available:
             # Put and get
             self.pipeline.cache.put("test query", "test response")
             cached = self.pipeline.cache.get("test query")
-            print(f"   Cache test: {'Hit' if cached else 'Miss'}")
+            print(f"   cache test: {'Hit' if cached else 'Miss'}")
 
     async def test_full_pipeline_scenarios(self):
         """Test complete pipeline with various scenarios."""
@@ -278,7 +278,7 @@ class TitaniumPipelineIntegrationTest:
                 time2 = time.time() - start_time
 
                 print(f"   Second query: {time2:.3f}s")
-                print(f"   Cache speedup: {time1 / time2:.1f}x faster")
+                print(f"   cache speedup: {time1 / time2:.1f}x faster")
                 print(f"   Cached hit: {result2['metadata']['cached']}")
 
             # Verify expected behavior
@@ -311,7 +311,7 @@ class TitaniumPipelineIntegrationTest:
         print("\nPipeline Statistics:")
         print(f"   Total queries: {stats['total_queries']}")
         print(f"   Gate blocks: {stats['gate_blocks']} ({stats['gate_block_rate']:.1%})")
-        print(f"   Cache hits: {stats['cache_hits']} ({stats['cache_hit_rate']:.1%})")
+        print(f"   cache hits: {stats['cache_hits']} ({stats['cache_hit_rate']:.1%})")
         print(f"   Decompositions: {stats['decompositions']} ({stats['decomposition_rate']:.1%})")
         print(f"   Compressions: {stats['compressions']} ({stats['compression_rate']:.1%})")
         print(f"   Rerankings: {stats['rerankings']} ({stats['reranking_rate']:.1%})")
@@ -323,7 +323,7 @@ class TitaniumPipelineIntegrationTest:
         print("   Phase 2 (Reasoning): Available")
         print(
             f"   Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']}, "
-            f"Cache={component_info['phase_3_sota']['cache_available']}"
+            f"cache={component_info['phase_3_sota']['cache_available']}"
         )
 
     async def test_error_handling(self):
@@ -399,7 +399,7 @@ class TitaniumPipelineIntegrationTest:
             f"    - Reranker: {'✅' if component_info['phase_3_sota']['reranker_available'] else '⚠️  Fallback'}"
         )
         print(
-            f"    - Cache: {'✅' if component_info['phase_3_sota']['cache_available'] else '⚠️  Fallback'}"
+            f"    - cache: {'✅' if component_info['phase_3_sota']['cache_available'] else '⚠️  Fallback'}"
         )
 
         # Run all tests

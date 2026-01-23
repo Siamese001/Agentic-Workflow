@@ -159,7 +159,7 @@ class ContentConstraintsConfig:
 
 @dataclass
 class SignalControlConfig:
-    """Configuration for signal quality control thresholds."""
+    """configuration for signal quality control thresholds."""
 
     # K.1 Executive Summary
     K1_MAX_DIFFERENTIATORS: int = 4

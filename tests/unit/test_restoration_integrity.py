@@ -10,7 +10,7 @@ import sys
 
 import pytest
 
-# --- Configuration ---
+# --- configuration ---
 RESTORED_AGENTS_MAP = [
     # (Class Name, Full Module Path)
     ("MetaLearningAgent", "agentic_core.L1_cognition.thought_engine.MetaLearningAgent"),

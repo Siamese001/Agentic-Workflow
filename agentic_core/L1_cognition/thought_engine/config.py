@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""Configuration types for the agentic framework.
+"""configuration types for the agentic framework.
 
 Defines OrchestratorConfig and related configuration dataclasses.
 """
@@ -11,7 +11,7 @@ from typing import Any
 @dataclass
 # NAMING FIXED: OrchestratorConfig → OrchestratorConfig
 class OrchestratorConfig:
-    """Configuration for the orchestrator (Nervous System).
+    """configuration for the orchestrator (Nervous System).
 
     Attributes:
         mission_id: Unique identifier for the mission
@@ -59,7 +59,7 @@ class OrchestratorConfig:
 @dataclass
 # NAMING FIXED: CognitiveConfig → CognitiveConfig
 class CognitiveConfig:
-    """Configuration for the cognitive plane.
+    """configuration for the cognitive plane.
     Attributes:
         model: LLM model to use for reasoning
         temperature: Sampling temperature
@@ -88,7 +88,7 @@ class CognitiveConfig:
 @dataclass
 # NAMING FIXED: ActionConfig → ActionConfig
 class ActionConfig:
-    """Configuration for the action plane.
+    """configuration for the action plane.
 
     Attributes:
         sandbox_enabled: Whether to run actions in sandbox

@@ -141,7 +141,7 @@ class HealerMixin(instructional_injection_mixin):
             Logger.debug(f"[HEALING] {self.__class__.__name__}: Healing disabled")
             return False
 
-        # 1. Cache short-circuit (zero-cost repeat suppression)
+        # 1. cache short-circuit (zero-cost repeat suppression)
         if anomaly and anomaly.type in self._healer_cache:
             cached_ts, cached_success = self._healer_cache[anomaly.type]
             if time.time() - cached_ts < self._healer_cache_ttl:
@@ -269,7 +269,7 @@ class HealerMixin(instructional_injection_mixin):
             self._healer_metrics["total_time"] += duration
             if success:
                 self._healer_metrics["success_count"] += 1
-            # Cache result for repeat suppression
+            # cache result for repeat suppression
             if anomaly:
                 self._healer_cache[anomaly.type] = (time.time(), success)
             # Optional audited emit (zero-loss safe)

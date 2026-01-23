@@ -1,5 +1,5 @@
 """
-Operational Configuration for Runtime Agents
+Operational configuration for Runtime Agents
 Centralized settings for file scanning, deduplication, and operational tasks.
 
 This is separate from structure_blueprint.py which defines compliance rules.
@@ -79,7 +79,7 @@ OPERATIONAL_ALLOWED_DUPLICATES: frozenset[str] = frozenset(
         "__main__.py",
         # Testing infrastructure (pytest requires these)
         "conftest.py",
-        # Configuration files (can exist per-module)
+        # configuration files (can exist per-module)
         "config.py",
         "settings.py",
         # Common base classes (legitimately duplicated)

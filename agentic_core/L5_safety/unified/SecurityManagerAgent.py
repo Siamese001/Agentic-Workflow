@@ -81,7 +81,7 @@ class AgentPermission:
 
 
 @dataclass
-class SecureConfig:
+class secure_config:
     """Secure configuration entry."""
 
     key: str
@@ -93,7 +93,7 @@ class SecureConfig:
 
 
 @dataclass
-class SecureCheckpoint:
+class secure_checkpoint:
     """Secure checkpoint record."""
 
     checkpoint_id: str
@@ -144,8 +144,8 @@ class SecurityManagerAgent(SovereignBaseAgent):
     def __init__(self, vault_path: Path | None = None):
         self._lock = threading.RLock()
         self._permissions: dict[str, AgentPermission] = {}
-        self._configs: dict[str, SecureConfig] = {}
-        self._checkpoints: dict[str, SecureCheckpoint] = {}
+        self._configs: dict[str, secure_config] = {}
+        self._checkpoints: dict[str, secure_checkpoint] = {}
         self._audit_log: list[SecurityAuditEntry] = []
         self._vault_path = vault_path
 
@@ -287,7 +287,7 @@ class SecurityManagerAgent(SovereignBaseAgent):
                 )
                 return False
 
-            self._configs[key] = SecureConfig(
+            self._configs[key] = secure_config(
                 key=key,
                 value=value,
                 encrypted=encrypted,
@@ -320,7 +320,7 @@ class SecurityManagerAgent(SovereignBaseAgent):
         agent_id: str,
         data: dict[str, Any],
         encrypted: bool = True,
-    ) -> SecureCheckpoint | None:
+    ) -> secure_checkpoint | None:
         """Create a secure checkpoint."""
         with self._lock:
             if not self._check_permission(agent_id, PermissionLevel.SECURE_WRITER):
@@ -336,7 +336,7 @@ class SecurityManagerAgent(SovereignBaseAgent):
             checkpoint_id = secrets.token_hex(16)
             data_hash = hashlib.sha256(str(data).encode()).hexdigest()
 
-            checkpoint = SecureCheckpoint(
+            checkpoint = secure_checkpoint(
                 checkpoint_id=checkpoint_id,
                 created_by=agent_id,
                 created_at=datetime.utcnow(),

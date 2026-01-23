@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-archive_phase4_legacy_agents.py - Phase 4 Detector/Healer/Router/Executor Hard Migration
+archive_phase4_legacy_agents.py - Phase 4 Detector/Healer/router/Executor Hard Migration
 
 Archives legacy agents that have been consolidated into:
 - UnifiedCodeDetectorAgent
@@ -102,7 +102,7 @@ def main():
     args = parser.parse_args()
 
     print("=" * 70)
-    print("Phase 4 Hard Migration - Detector/Healer/Router/Executor Archive")
+    print("Phase 4 Hard Migration - Detector/Healer/router/Executor Archive")
     print("=" * 70)
 
     if args.dry_run:

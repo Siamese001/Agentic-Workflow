@@ -102,7 +102,7 @@ AGENT_SUFFIXES = {
     "Executor",
     "Validator",
     "Orchestrator",
-    "Router",
+    "router",
     "Dispatcher",
     "Governor",
     "Enforcer",

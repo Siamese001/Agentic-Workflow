@@ -110,7 +110,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     Validates input data against schema and rules.
 
     Provides comprehensive validation including:
-    - Schema-based validation
+    - schema-based validation
     - Type safety checks
     - Protection against malformed data
     - JSON/XML attack prevention
@@ -391,7 +391,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
 
         Args:
             value: Dictionary value
-            schema: Schema definition
+            schema: schema definition
 
         Raises:
             InputValidationError: If validation fails
@@ -407,7 +407,7 @@ class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
         """Get validation type from schema.
 
         Args:
-            schema: Schema definition
+            schema: schema definition
 
         Returns:
             Validation type

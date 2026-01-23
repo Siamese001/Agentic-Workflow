@@ -198,7 +198,7 @@ def get_from_langcache(key: str) -> str | None:
     Mock: Retrieves final result from LangCache.
 
     Args:
-        key: Cache key
+        key: cache key
 
     Returns:
         Cached value or None
@@ -211,7 +211,7 @@ def set_to_langcache(key: str, value: str, ttl: int = 86400) -> None:
     Mock: Writes result to LangCache with TTL.
 
     Args:
-        key: Cache key
+        key: cache key
         value: Value to cache
         ttl: Time to live in seconds
     """

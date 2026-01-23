@@ -468,7 +468,7 @@ import old_module
 
 
 # =============================================================================
-# Configuration Safety Interlock Tests (Phase 26)
+# configuration Safety Interlock Tests (Phase 26)
 # =============================================================================
 
 

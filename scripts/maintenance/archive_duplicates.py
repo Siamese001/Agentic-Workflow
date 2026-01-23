@@ -24,7 +24,7 @@ TARGETS = [
     "agentic_core/L5_safety/guardrails/UnifiedStructureEnforcerAgent.py",
     "agentic_core/L5_safety/guardrails/UnifiedStructureHealerAgent.py",
     "agentic_core/L5_safety/guardrails/UnifiedStructureValidatorAgent.py",
-    # 2. The Duplicate Model Router (from tool_registry)
+    # 2. The Duplicate Model router (from tool_registry)
     "agentic_core/L2_execution/tool_registry/UnifiedModelRouterAgent.py",
     # 3. The Duplicate Hygiene Agent (from apps_shared)
     "apps_shared/base_agents/HygieneGuardianAgent.py",

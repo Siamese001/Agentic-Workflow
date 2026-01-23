@@ -1,4 +1,4 @@
-"""Schema Load Planner - Plans schema loading and validation operations.
+"""schema Load Planner - Plans schema loading and validation operations.
 
 This planner manages the loading phase for schema requests,
 including schema parsing, validation, and dependency resolution.
@@ -24,7 +24,7 @@ class SchemaType(Enum):
 
 
 class ValidationMode(Enum):
-    """Schema validation modes."""
+    """schema validation modes."""
 
     STRICT = "strict"
     LENIENT = "lenient"
@@ -33,7 +33,7 @@ class ValidationMode(Enum):
 
 
 class SchemaScope(Enum):
-    """Schema scopes."""
+    """schema scopes."""
 
     REQUEST = "request"
     RESPONSE = "response"
@@ -96,7 +96,7 @@ class SchemaLoadPlan:
 
 @dataclass
 class SchemaLoadConfig:
-    """Configuration for schema load planning."""
+    """configuration for schema load planning."""
 
     enable_validation: bool = True
     enable_transforms: bool = True
@@ -204,7 +204,7 @@ class SchemaLoadPlanner:
             return result
 
         except Exception as e:
-            self.logger.error(f"Schema load planning failed: {str(e)}")
+            self.logger.error(f"schema load planning failed: {str(e)}")
             return SchemaLoadResult(
                 success=False,
                 errors=[str(e)],
@@ -217,7 +217,7 @@ class SchemaLoadPlanner:
     def _validate_request(self, request: dict[str, Any]) -> None:
         """Validate schema load planning request."""
         if not request:
-            raise ValueError("Schema load planning request cannot be empty")
+            raise ValueError("schema load planning request cannot be empty")
 
         if "plan_name" not in request:
             raise ValueError("Plan name is required in schema load planning request")

@@ -16,7 +16,7 @@ import backoff
 
 @dataclass
 class OpenAIConfig:
-    """Configuration for OpenAI client."""
+    """configuration for OpenAI client."""
 
     api_key: str | None = None
     base_url: str | None = None

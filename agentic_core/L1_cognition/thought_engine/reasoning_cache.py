@@ -71,7 +71,7 @@ class ReasoningCache:
         self, problem: str, context: dict[str, Any], params: tuple, result: dict[str, Any]
     ) -> None:
         """
-        Cache reasoning result.
+        cache reasoning result.
 
         Args:
             problem: Problem statement
@@ -109,7 +109,7 @@ class ReasoningCache:
 
 
 class ObservationCache:
-    """Cache for ReAct observations to avoid redundant tool calls."""
+    """cache for ReAct observations to avoid redundant tool calls."""
 
     def __init__(self, maxsize: int = 5000):
         """Initialize observation cache."""
@@ -127,7 +127,7 @@ class ObservationCache:
             context_hash: Hash of context
 
         Returns:
-            Cache key
+            cache key
         """
         key_input = f"{action}|{context_hash}"
         return hashlib.sha256(key_input.encode()).hexdigest()
@@ -155,7 +155,7 @@ class ObservationCache:
 
     def put(self, action: str, context_hash: str, observation: str) -> None:
         """
-        Cache observation.
+        cache observation.
 
         Args:
             action: Action executed
@@ -213,7 +213,7 @@ def cached_reasoning(func):
             print(f"[CACHE HIT] Problem: {problem[:50]}...")
             return cached_result
 
-        # Cache miss - execute function
+        # cache miss - execute function
         print(f"[CACHE MISS] Problem: {problem[:50]}...")
         result = func(self, problem, context, *args, **kwargs)
 
@@ -240,7 +240,7 @@ def cached_observation(func):
             print(f"[OBS CACHE HIT] Action: {action[:50]}...")
             return cached_result
 
-        # Cache miss - execute function
+        # cache miss - execute function
         print(f"[OBS CACHE MISS] Action: {action[:50]}...")
         result = func(self, action, context, *args, **kwargs)
 

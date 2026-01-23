@@ -126,7 +126,7 @@ class RedSentinelAgent(SovereignBaseAgent):
     ) -> list[dict[str, Any]]:
         """
         Generate 5 hostile inputs for a function.
-        Phase 16B: Uses LLM Router MCP instead of direct google.generativeai.
+        Phase 16B: Uses LLM router MCP instead of direct google.generativeai.
 
         Args:
             func_name: Name of the function

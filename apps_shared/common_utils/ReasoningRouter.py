@@ -1,6 +1,6 @@
 """Reasoning strategy router for selecting appropriate reasoning mode.
 
-Phase 1 - Pillar 6: Reasoning Models (Structured Reasoning)
+Phase 1 - Pillar 6: Reasoning models (Structured Reasoning)
 Routes tasks to appropriate reasoning strategies (ReAct, CoT, etc.)
 """
 

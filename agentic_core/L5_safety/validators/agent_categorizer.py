@@ -72,14 +72,14 @@ class AgentCategorizer:
             "name": "Orchestration & Routing",
             "patterns": [
                 r"Orchestrator|Orchestration",
-                r"Router|Route|Routing",
+                r"router|Route|Routing",
                 r"Conductor|Coordinate",
                 r"Scheduler|Schedule",
             ],
             "exclude": [r"Validator|Healer"],
         },
         {
-            "name": "Observability & Monitoring",
+            "name": "observability & Monitoring",
             "patterns": [
                 r"Monitor|Monitoring",
                 r"Metric|Metrics",

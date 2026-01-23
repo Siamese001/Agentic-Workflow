@@ -255,5 +255,5 @@ def log_titanium_usage(hop_id: str, query: str, results: dict[str, Any]):
         stats_data = stats.get("statistics", {})
         Logger.info(
             f"  Pipeline Stats - Total: {stats_data.get('total_queries', 0)}, "
-            f"Cache Hit Rate: {stats_data.get('cache_hit_rate', 0):.1%}"
+            f"cache Hit Rate: {stats_data.get('cache_hit_rate', 0):.1%}"
         )

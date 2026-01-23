@@ -95,7 +95,7 @@ def test_mcp_tool_availability():
     # This test checks if the tool would be available in the Cascade environment
     # We can't directly call it from this script, but we can verify the setup
 
-    print("✅ PASS: Configuration verified (tool availability requires Cascade restart)")
+    print("✅ PASS: configuration verified (tool availability requires Cascade restart)")
     print("   Note: You must restart Windsurf/Cascade for MCP changes to take effect")
     return True
 

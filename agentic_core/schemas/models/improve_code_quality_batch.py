@@ -192,7 +192,7 @@ def main():
         print(f"\n[{i}/{len(agents_to_improve)}] {agent['name']}")
         print(f"  Path: {agent['path']}")
         print(
-            f"  Current: Typed={agent['typed']:.0f}% | Doc={agent['doc']:.0f}% | Schema={agent['schema']:.0f}%"
+            f"  Current: Typed={agent['typed']:.0f}% | Doc={agent['doc']:.0f}% | schema={agent['schema']:.0f}%"
         )
 
         if not agent["path"].exists():
@@ -217,7 +217,7 @@ def main():
         if agent["needs_schema"]:
             print("  [ACTION] Improving schema strictness...")
             if improve_schema_strictness(agent["path"]):
-                print("  [OK] Schema improved")
+                print("  [OK] schema improved")
                 success = True
 
         if success:

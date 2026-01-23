@@ -1,4 +1,4 @@
-"""Tool Invoke Observability Tool - Tool-based invocation adapter for observability.
+"""Tool Invoke observability Tool - Tool-based invocation adapter for observability.
 
 This module provides tool-based adapters for invoking observability operations
 with standardized tool interfaces, protocol compliance, and error handling.
@@ -64,7 +64,7 @@ class ToolInvocationContext:
 
 @dataclass
 class ToolInvocationConfig:
-    """Configuration for tool invocation."""
+    """configuration for tool invocation."""
 
     default_timeout: float = 30.0
     max_retries: int = 3

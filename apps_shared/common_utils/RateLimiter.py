@@ -49,7 +49,7 @@ class RateLimitExceeded(Exception):
 
 @dataclass
 class RateLimitConfig:
-    """Configuration for rate limiting."""
+    """configuration for rate limiting."""
 
     limit: int  # Number of requests
     window: int  # Time window in seconds

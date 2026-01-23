@@ -150,7 +150,7 @@ def _get_phase3_manager_enforcer_mapping() -> dict[str, type]:
 
 def _get_phase4_detector_healer_router_executor_mapping() -> dict[str, type]:
     """
-    Phase 4 Detector/Healer/Router/Executor Consolidation: Hard Migration mappings.
+    Phase 4 Detector/Healer/router/Executor Consolidation: Hard Migration mappings.
 
     Returns:
         Dictionary mapping legacy detector/healer/router/executor names to unified classes.
@@ -371,7 +371,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
 
         if vectors:
             self.method_index.upsert(vectors=vectors)
-            print(f"   [OK] SubAtomicRegistry: Indexed {len(vectors)} methods + Cache Warmed")
+            print(f"   [OK] SubAtomicRegistry: Indexed {len(vectors)} methods + cache Warmed")
 
     def find_method(self, Task: str, top_k: int = 3) -> list[dict]:
         """Hybrid search for best method — now cache-first"""

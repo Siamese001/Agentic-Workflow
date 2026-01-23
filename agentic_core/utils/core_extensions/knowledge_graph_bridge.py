@@ -156,7 +156,7 @@ class KnowledgeGraphBridge:
 
         Args:
             agent_name: Name of the agent (e.g., "GovernorAgent")
-            agent_type: Type of the agent (e.g., "Agent", "Validator", "Router")
+            agent_type: Type of the agent (e.g., "Agent", "Validator", "router")
 
         Returns:
             True if registered successfully, False otherwise

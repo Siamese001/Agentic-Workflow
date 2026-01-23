@@ -25,7 +25,7 @@ class GoldenStateTestCase:
 
 @dataclass
 class JudgeVerdict:
-    """Schema for LM-as-a-Judge evaluation results."""
+    """schema for LM-as-a-Judge evaluation results."""
 
     score: float
     rating: str

@@ -27,9 +27,9 @@ class test_sovereign_purity:
 
     def test_config_eviction(self, disable_path_shield):
         """Confirm passive config has been evicted from the engines folder."""
-        old_config = PROJECT_ROOT / "apps_lic" / "engines" / "OutreachOrchestrationConfig.py"
+        old_config = PROJECT_ROOT / "apps_lic" / "engines" / "outreach_orchestration_config.py"
         new_config = (
-            PROJECT_ROOT / "apps_lic" / "domain" / "config" / "OutreachOrchestrationConfig.py"
+            PROJECT_ROOT / "apps_lic" / "domain" / "config" / "outreach_orchestration_config.py"
         )
         assert not old_config.exists(), f"Config still in engines: {old_config}"
         assert new_config.exists(), f"Config not in domain/config: {new_config}"

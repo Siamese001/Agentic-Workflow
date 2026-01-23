@@ -239,7 +239,7 @@ class LICStateManager:
             # Check schema version
             if data.get("schema_version") != self.SCHEMA_VERSION:
                 result.warnings.append(
-                    f"Schema version mismatch: expected {self.SCHEMA_VERSION}, "
+                    f"schema version mismatch: expected {self.SCHEMA_VERSION}, "
                     f"got {data.get('schema_version')}"
                 )
 

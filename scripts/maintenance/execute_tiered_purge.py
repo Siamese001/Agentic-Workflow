@@ -5,7 +5,7 @@
 Executes the AI-driven architectural purge with tiered strategy:
 - Tier 1: High-confidence heuristics (>=0.75) - auto-execute immediately
 - Tier 2: Low-confidence files (<0.75) - route to LLM Gemini
-- Meta-learning: Cache decisions in Redis for future reference
+- Meta-learning: cache decisions in Redis for future reference
 
 This dramatically reduces LLM API calls from 2166 to ~200-400.
 

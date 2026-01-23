@@ -109,7 +109,7 @@ class GospelSyncAgent(L0MaintenanceBaseAgent):
 
     def report_drift(self) -> None:
         """
-        Generates a Sovereign Sync Report for L6 Observability consumption.
+        Generates a Sovereign Sync Report for L6 observability consumption.
         """
         if not self.heresy and not self.missing:
             print("✅ GOSPEL SYNC: Filesystem is in 100% synchronization with the Blueprint.")

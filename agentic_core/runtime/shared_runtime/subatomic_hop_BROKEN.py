@@ -57,7 +57,7 @@ class SubatomicHop:
 
         Args:
             role: Agent role identifier
-            config: Configuration dictionary
+            config: configuration dictionary
             storage: LocalDiskAdapter instance (injected)
             genealogy: GenealogyRegistry instance (injected)
             PiiVault: PIIVault instance (injected)

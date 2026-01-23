@@ -40,14 +40,14 @@ def test_fail(test_id: str, msg: str):
 
 
 # ============================================================================
-# Test Suite 1: Initialization and Configuration
+# Test Suite 1: Initialization and configuration
 # ============================================================================
 
 
 def test_initialization():
     """Test agent initialization."""
     print("\n" + "=" * 60)
-    print("Test Suite 1: Initialization and Configuration")
+    print("Test Suite 1: Initialization and configuration")
     print("=" * 60)
 
     try:

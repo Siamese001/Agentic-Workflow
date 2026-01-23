@@ -40,7 +40,7 @@ class RagHealthCheckAgent(SovereignBaseAgent):
     - BM25 store availability
     - Embedder functionality
     - Reranker availability
-    - Cache connectivity
+    - cache connectivity
     - Latency performance
     - Dimension consistency
     """
@@ -88,7 +88,7 @@ class RagHealthCheckAgent(SovereignBaseAgent):
         # Check 4: Reranker
         reranker_ok = await self._check_reranker(issues, warnings, metrics)
 
-        # Check 5: Cache
+        # Check 5: cache
         cache_ok = await self._check_cache(issues, warnings, metrics)
 
         # Check 6: Latency Performance

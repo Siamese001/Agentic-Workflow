@@ -35,7 +35,7 @@ GOLD STANDARD UPGRADE (2026-01-02):
 
 DOMAIN-SPECIFIC INTEGRATIONS (Memory Coordination):
 - PineconeAgent: Store/retrieve semantic healing patterns
-- RedisAgent: Cache episodic healing events
+- RedisAgent: cache episodic healing events
 - L4StateBaseAgent: Monitor blackboard for healing triggers
 """
 import ast

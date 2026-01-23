@@ -1,5 +1,5 @@
 """
-CalibrateEngagementScore.py - Scoring Module
+CalibrateEngagementScore.py - scoring Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.067541

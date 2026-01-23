@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-# --- Audit Configuration ---
+# --- Audit configuration ---
 CORE_AGENTS_TO_VERIFY = [
     # (Module Path, Class Name)
     ("agentic_core.L1_cognition.thought_engine.MetaLearningAgent", "MetaLearningAgent"),

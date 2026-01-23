@@ -1,5 +1,5 @@
 """
-L5 Generated Configuration Service
+L5 Generated configuration Service
 Encapsulates all global variables for better architecture.
 """
 

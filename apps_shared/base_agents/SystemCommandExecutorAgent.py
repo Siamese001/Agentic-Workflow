@@ -222,7 +222,7 @@ def delete_system(
         )
         results.append(f"Attempt to format C: CRITICAL EXCEPTION - {e}")
 
-    # Violation 7, 34: Observability, Audit Trail - summarized outcome
+    # Violation 7, 34: observability, Audit Trail - summarized outcome
     final_status: str = "All destructive actions attempted and safely prevented by security policy."
     Logger.info(f"Final status of delete_system operations: {final_status}")
     Logger.info(f"Detailed results: {'; '.join(results)}")

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-[PHASE 17/20] Semantic Cache Manager - The Collective Hive Mind.
+[PHASE 17/20] Semantic cache Manager - The Collective Hive Mind.
 
 [PHASE 3 MIGRATION] Canonical Implementation:
 - This is the ONLY SemanticCacheManager in the codebase.
@@ -15,7 +15,7 @@ Phase 17: Initial implementation with Redis + Pinecone
 Phase 20: Hardened singleton pattern, thread safety, and connection retries.
 Phase 20+: Configurable compliance, PII sanitization, trace sampling, memory lifecycle.
 
-Configuration (Environment Variables):
+configuration (Environment Variables):
 - HIVE_MIND_STRICT_MODE: "true" (default) raises on infrastructure failure, "false" degrades gracefully
 - HIVE_MIND_TRACE_SAMPLING_RATE: 0.0 to 1.0 (default 1.0) - controls trace capture rate
 - HIVE_MIND_PROMOTION_THRESHOLD: 0.0 to 1.0 (default 0.8) - minimum feedback score for promotion
@@ -164,7 +164,7 @@ class PIISanitizer:
 
 class SemanticCacheManager:
     """
-    Singleton Semantic Cache Manager - The Hive Mind.
+    Singleton Semantic cache Manager - The Hive Mind.
 
     Provides dual-layer caching for collective agent intelligence:
     - Layer 1 (Redis): O(1) exact content hash matching (Working Memory - 24h TTL)
@@ -173,7 +173,7 @@ class SemanticCacheManager:
     Phase 20: Enforces singleton pattern with thread-safe initialization.
     Phase 20+: Configurable compliance, PII sanitization, trace sampling, memory lifecycle.
 
-    Configuration:
+    configuration:
         HIVE_MIND_STRICT_MODE: "true" raises on failure, "false" degrades gracefully
         HIVE_MIND_TRACE_SAMPLING_RATE: 0.0 to 1.0 - controls trace capture rate
         HIVE_MIND_PROMOTION_THRESHOLD: 0.0 to 1.0 - minimum feedback score for promotion
@@ -251,7 +251,7 @@ class SemanticCacheManager:
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
         self.similarity_threshold = 0.98  # Strict threshold for auto-action
 
-        # Configuration from environment
+        # configuration from environment
         self.strict_mode = os.environ.get("HIVE_MIND_STRICT_MODE", "true").lower() == "true"
 
         self.trace_sampling_rate = float(

@@ -340,7 +340,7 @@ def validate_data_types():
         "Complexity Health %",
         "Typed %",
         "Documented %",
-        "Schema Strictness %",
+        "schema Strictness %",
         "Canonical Inheritance %",
         "Code Quality Score",
     ]
@@ -404,7 +404,7 @@ def validate_expected_ranges():
         "Test %": (60, 100),  # Should be >60%
         "Typed %": (80, 100),  # Should be >80%
         "Documented %": (70, 100),  # Should be >70%
-        "Schema Strictness %": (80, 100),  # Should be >80%
+        "schema Strictness %": (80, 100),  # Should be >80%
         "Canonical Inheritance %": (90, 100),  # Should be >90%
         "Code Quality Score": (85, 100),  # Should be >85%
     }

@@ -7,7 +7,7 @@ scaled refactoring work. All 4 test cases must pass 100%.
 Test Cases:
 - TC-17: Scaled Discovery - Refactored files return same results as rglob
 - TC-18: CI Enforcement - check_rglob_usage.py reports accurate count
-- TC-19: Auto-Invalidation - Cache detects directory changes
+- TC-19: Auto-Invalidation - cache detects directory changes
 - TC-20: No Backup Leak - No backup files in discovery results
 
 Author: Cascade
@@ -162,7 +162,7 @@ def test_tc19_auto_invalidation():
 
         # Verify cache is valid
         if not cache.is_valid():
-            print("❌ FAIL: Cache should be valid after update")
+            print("❌ FAIL: cache should be valid after update")
             return False
 
         initial_count = len(cache.get_files())
@@ -179,10 +179,10 @@ def test_tc19_auto_invalidation():
         is_stale = cache.is_stale_for_directory(tmpdir_path)
 
         if not is_stale:
-            print("❌ FAIL: Cache should detect directory change")
+            print("❌ FAIL: cache should detect directory change")
             return False
 
-        print("   Cache detected directory change: ✓")
+        print("   cache detected directory change: ✓")
         print("✅ PASS: Auto-invalidation detects directory changes")
         return True
 

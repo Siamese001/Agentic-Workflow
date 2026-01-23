@@ -59,7 +59,7 @@ class PipelineContext:
             data: Data to hash
 
         Returns:
-            Cache key
+            cache key
         """
         content = json.dumps(data, sort_keys=True, default=str)
         hash_key = hashlib.sha256(f"{component}:{content}".encode()).hexdigest()[:16]
@@ -141,7 +141,7 @@ class InputProcessingStage(PipelineStage):
             # Update envelope
             self._update_payload_with_processed_data(envelope, processed)
 
-            # Cache result
+            # cache result
             self.semantic_cache.set(cache_key, processed)
 
             # Mark complete
@@ -303,7 +303,7 @@ class ContextEnrichmentStage(PipelineStage):
             # Update envelope
             self._update_envelope_with_context(envelope, enriched)
 
-            # Cache result
+            # cache result
             self.semantic_cache.set(cache_key, enriched)
 
             # Mark complete
@@ -433,7 +433,7 @@ class SignalAugmentationStage(PipelineStage):
             # Update envelope
             self._update_envelope_with_augmented(envelope, augmented)
 
-            # Cache result
+            # cache result
             self.semantic_cache.set(cache_key, augmented)
 
             # Mark complete
@@ -1155,7 +1155,7 @@ class UnifiedSignalPipeline:
             trace_id: Trace ID to resume from
 
         Returns:
-            Envelope if found, None otherwise
+            envelope if found, None otherwise
         """
         checkpoint_manager = await self._get_checkpoint_manager()
 

@@ -1,5 +1,5 @@
 """
-Unit tests for Configuration Infrastructure.
+Unit tests for configuration Infrastructure.
 Ensures schemas define correct types and loader handles caching/validation.
 """
 

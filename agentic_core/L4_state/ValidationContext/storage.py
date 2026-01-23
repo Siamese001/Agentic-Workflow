@@ -453,7 +453,7 @@ class RedisHotCache(SovereignBaseAgent):
         Set a value in cache.
 
         Args:
-            key: Cache key
+            key: cache key
             value: Value to cache (must be JSON serializable)
             ttl: Time to live (uses default if None)
 
@@ -488,7 +488,7 @@ class RedisHotCache(SovereignBaseAgent):
         Get a value from cache.
 
         Args:
-            key: Cache key
+            key: cache key
 
         Returns:
             Cached value or None if not found
@@ -507,10 +507,10 @@ class RedisHotCache(SovereignBaseAgent):
             serialized: Any = await self.redis.get(cache_key)
             if serialized:
                 value: Any = json.loads(serialized)
-                LOGGER.debug(f"Cache hit: {key}")
+                LOGGER.debug(f"cache hit: {key}")
                 return value
             else:
-                LOGGER.debug(f"Cache miss: {key}")
+                LOGGER.debug(f"cache miss: {key}")
                 return None
         except Exception as e:
             LOGGER.error(f"Error getting cache {key}: {e}")
@@ -524,7 +524,7 @@ class RedisHotCache(SovereignBaseAgent):
         Delete a value from cache.
 
         Args:
-            key: Cache key
+            key: cache key
 
         Returns:
             True if deleted, False otherwise

@@ -30,7 +30,7 @@ class IsolationLevel(Enum):
 
 @dataclass
 class IsolationConfig:
-    """Configuration for VM isolation."""
+    """configuration for VM isolation."""
 
     level: IsolationLevel = IsolationLevel.FULL
     allow_network: bool = False

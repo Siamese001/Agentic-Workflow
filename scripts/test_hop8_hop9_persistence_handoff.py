@@ -3,7 +3,7 @@ MANDATORY Test Suite: HOP 8-9 Persistence & Handoff
 100% Pass Requirement for Windsurf Execution.
 
 Focus Areas:
-- HOP-8: Report Persistence & Quality Scoring
+- HOP-8: Report Persistence & Quality scoring
 - HOP-8: Defensive State Aggregation
 - HOP-9: Checksum Integrity Verification
 - HOP-9: Priority Escalation for C_LEVEL

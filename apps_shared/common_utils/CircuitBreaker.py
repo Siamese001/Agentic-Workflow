@@ -35,7 +35,7 @@ class CriticalServiceFailure(Exception):
 
 @dataclass
 class CircuitBreakerConfig:
-    """Configuration for circuit breaker behavior."""
+    """configuration for circuit breaker behavior."""
 
     failure_threshold: int = 3
     recovery_timeout: float = 60.0  # seconds

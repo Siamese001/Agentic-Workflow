@@ -64,7 +64,7 @@ def validate_totals():
         ("Hardened %", "MCP Hardened"),
         ("Test %", "Test Coverage"),
         ("Typed %", "Typing"),
-        ("Observable %", "Observability"),
+        ("Observable %", "observability"),
     ]
 
     all_valid = True

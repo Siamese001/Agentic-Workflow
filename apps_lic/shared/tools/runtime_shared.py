@@ -63,7 +63,7 @@ class AgentResponse:
 
 
 # ==========================================
-# Validation & Configuration
+# Validation & configuration
 # ==========================================
 
 
@@ -77,7 +77,7 @@ class ResidualValidationResult(BaseModel):
 
 
 class ReasoningConfig(BaseModel):
-    """Configuration for reasoning operations."""
+    """configuration for reasoning operations."""
 
     temperature: float = 0.7
     max_tokens: int = 1000

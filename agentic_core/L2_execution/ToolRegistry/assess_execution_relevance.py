@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-AssessContentRelevance.py - Scoring Module
+AssessContentRelevance.py - scoring Module
 
 Domain: resume
 Generated: 2025-12-07T13:29:00.509990

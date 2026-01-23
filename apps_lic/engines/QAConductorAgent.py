@@ -667,7 +667,7 @@ async def run_constitutional_review(state: dict, workflow_context: WorkflowConte
 
 # HIL Nodes
 async def run_feedback_router(state: dict, workflow_context: WorkflowContext) -> dict:
-    """Node 11: HIL Feedback Router"""
+    """Node 11: HIL Feedback router"""
     context = workflow_context
     workflow_id = state.get("metadata", {}).get("workflow_id", "")
     human_feedback = state.get("hil", {}).get("raw_feedback") or "Default to drafting"

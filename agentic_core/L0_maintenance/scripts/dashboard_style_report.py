@@ -28,11 +28,11 @@ def calc_avg(agents_list, key):
 rows = []
 for territory in sorted(by_territory.keys()):
     agents_list = by_territory[territory]
-    row = {'Territory': territory, 'Total': len(agents_list), 'Heal Cap %': calc_pct(agents_list, 'has_healing'), 'MCP Hardened %': calc_pct(agents_list, 'mcp_hardened'), 'Subatomic %': calc_pct(agents_list, 'has_subatomic'), 'Has Tools %': calc_pct(agents_list, 'has_tools'), 'Has Tests %': calc_pct(agents_list, 'has_tests'), 'Typed %': calc_avg(agents_list, 'typed_pct'), 'Documented %': calc_avg(agents_list, 'documented_pct'), 'Schema %': calc_avg(agents_list, 'schema_strictness'), 'Proper Base %': calc_pct(agents_list, 'proper_base_class')}
+    row = {'Territory': territory, 'Total': len(agents_list), 'Heal Cap %': calc_pct(agents_list, 'has_healing'), 'MCP Hardened %': calc_pct(agents_list, 'mcp_hardened'), 'Subatomic %': calc_pct(agents_list, 'has_subatomic'), 'Has Tools %': calc_pct(agents_list, 'has_tools'), 'Has Tests %': calc_pct(agents_list, 'has_tests'), 'Typed %': calc_avg(agents_list, 'typed_pct'), 'Documented %': calc_avg(agents_list, 'documented_pct'), 'schema %': calc_avg(agents_list, 'schema_strictness'), 'Proper Base %': calc_pct(agents_list, 'proper_base_class')}
     rows.append(row)
 all_agents = agents
-total_row = {'Territory': 'TOTAL', 'Total': len(all_agents), 'Heal Cap %': calc_pct(all_agents, 'has_healing'), 'MCP Hardened %': calc_pct(all_agents, 'mcp_hardened'), 'Subatomic %': calc_pct(all_agents, 'has_subatomic'), 'Has Tools %': calc_pct(all_agents, 'has_tools'), 'Has Tests %': calc_pct(all_agents, 'has_tests'), 'Typed %': calc_avg(all_agents, 'typed_pct'), 'Documented %': calc_avg(all_agents, 'documented_pct'), 'Schema %': calc_avg(all_agents, 'schema_strictness'), 'Proper Base %': calc_pct(all_agents, 'proper_base_class')}
-header = f"{'Territory':<45} {'#':>4} {'Heal%':>6} {'MCP%':>6} {'Sub%':>6} {'Tool%':>6} {'Test%':>6} {'Type%':>6} {'Doc%':>6} {'Schema%':>7} {'Base%':>6}"
+total_row = {'Territory': 'TOTAL', 'Total': len(all_agents), 'Heal Cap %': calc_pct(all_agents, 'has_healing'), 'MCP Hardened %': calc_pct(all_agents, 'mcp_hardened'), 'Subatomic %': calc_pct(all_agents, 'has_subatomic'), 'Has Tools %': calc_pct(all_agents, 'has_tools'), 'Has Tests %': calc_pct(all_agents, 'has_tests'), 'Typed %': calc_avg(all_agents, 'typed_pct'), 'Documented %': calc_avg(all_agents, 'documented_pct'), 'schema %': calc_avg(all_agents, 'schema_strictness'), 'Proper Base %': calc_pct(all_agents, 'proper_base_class')}
+header = f"{'Territory':<45} {'#':>4} {'Heal%':>6} {'MCP%':>6} {'Sub%':>6} {'Tool%':>6} {'Test%':>6} {'Type%':>6} {'Doc%':>6} {'schema%':>7} {'Base%':>6}"
 r = total_row
 current_group = None
 for r in rows:

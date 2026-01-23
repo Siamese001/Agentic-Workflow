@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-PerformanceAnalystAgent - Simplified L6 Observability Agent
+PerformanceAnalystAgent - Simplified L6 observability Agent
 ============================================================
 
 Simplified version for Phase 5 integration that avoids circular imports.
@@ -71,7 +71,7 @@ class PerformanceAnalystAgentSimple:
         """
         Performance analyst healing - reports metrics status.
         """
-        Logger.info("[PerformanceAnalyst] L6 Observability - ready for telemetry")
+        Logger.info("[PerformanceAnalyst] L6 observability - ready for telemetry")
         return {
             "status": "ready",
             "metrics_collected": len(self.metrics),

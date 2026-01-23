@@ -17,7 +17,7 @@ class RoutingTier(str, Enum):
 
 @dataclass
 class RouteConfig:
-    """Configuration for a routing tier.
+    """configuration for a routing tier.
 
     Defines the primary provider and fallback chain for a specific
     routing tier. The router will attempt providers in order until

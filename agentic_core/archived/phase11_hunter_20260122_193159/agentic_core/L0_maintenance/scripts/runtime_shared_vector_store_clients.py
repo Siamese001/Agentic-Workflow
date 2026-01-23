@@ -22,7 +22,7 @@ class VectorStoreProvider(str, Enum):
 
 @dataclass
 class ChromaConfig:
-    """Configuration for ChromaDB."""
+    """configuration for ChromaDB."""
 
     _persist_directory: str = "./chroma_db"
     collection_name: str = "default"
@@ -31,7 +31,7 @@ class ChromaConfig:
 
 @dataclass
 class QdrantConfig:
-    """Configuration for Qdrant."""
+    """configuration for Qdrant."""
 
     _url: str | None = None
     _host: str = "localhost"
@@ -43,7 +43,7 @@ class QdrantConfig:
 
 @dataclass
 class PineconeConfig:
-    """Configuration for Pinecone."""
+    """configuration for Pinecone."""
 
     api_key: str | None = None
     _environment: str = "us-east-1"

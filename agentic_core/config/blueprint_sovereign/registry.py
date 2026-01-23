@@ -1,5 +1,5 @@
 """
-SSOT for Sovereign Registry Configuration.
+SSOT for Sovereign Registry configuration.
 
 This module contains the core registry data structures that define
 the sovereign territory structure of the codebase.

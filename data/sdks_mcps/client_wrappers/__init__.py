@@ -29,7 +29,7 @@ __all__ = [
     "OpenAIClient",
     "AnthropicClient",
     "VertexClient",
-    # Configuration classes
+    # configuration classes
     "OpenAIConfig",
     "AnthropicConfig",
     "VertexConfig",
