@@ -28,7 +28,9 @@ class TestSovereignPurity:
     def test_config_eviction(self, disable_path_shield):
         """Confirm passive config has been evicted from the engines folder."""
         old_config = PROJECT_ROOT / "apps_lic" / "engines" / "OutreachOrchestrationConfig.py"
-        new_config = PROJECT_ROOT / "apps_lic" / "domain" / "config" / "OutreachOrchestrationConfig.py"
+        new_config = (
+            PROJECT_ROOT / "apps_lic" / "domain" / "config" / "OutreachOrchestrationConfig.py"
+        )
         assert not old_config.exists(), f"Config still in engines: {old_config}"
         assert new_config.exists(), f"Config not in domain/config: {new_config}"
 
@@ -36,7 +38,9 @@ class TestSovereignPurity:
         """Confirm redundant agents are quarantined in legacy."""
         redundant = ["CampaignPlannerAgent.py", "ProfileAnalysisAgent.py", "OutreachAgent.py"]
         for agent in redundant:
-            assert not (PROJECT_ROOT / "apps_lic" / "engines" / agent).exists(), f"{agent} still in engines"
+            assert not (PROJECT_ROOT / "apps_lic" / "engines" / agent).exists(), (
+                f"{agent} still in engines"
+            )
             assert (PROJECT_ROOT / "apps_lic" / "legacy" / agent).exists(), f"{agent} not in legacy"
 
     def test_stateless_tool_path(self, disable_path_shield):
@@ -57,7 +61,9 @@ class TestSovereignPurity:
         assert agent_path.exists(), f"Agent not found: {agent_path}"
         content = agent_path.read_text()
         assert "class GovernanceShieldAgent" in content, "GovernanceShieldAgent class not found"
-        assert "from apps_lic.domain.governance_shield_types import" in content, "Missing domain import"
+        assert "from apps_lic.domain.governance_shield_types import" in content, (
+            "Missing domain import"
+        )
 
     def test_stateless_tools_count(self, disable_path_shield):
         """Verify at least 50 stateless tools are in shared/tools."""
@@ -75,7 +81,9 @@ class TestSovereignPurity:
     def test_outreach_validation_executor_in_legacy(self, disable_path_shield):
         """Verify OutreachValidationExecutor.py is in legacy."""
         legacy_executor = PROJECT_ROOT / "apps_lic" / "legacy" / "OutreachValidationExecutor.py"
-        assert legacy_executor.exists(), f"OutreachValidationExecutor.py not in legacy: {legacy_executor}"
+        assert legacy_executor.exists(), (
+            f"OutreachValidationExecutor.py not in legacy: {legacy_executor}"
+        )
 
 
 if __name__ == "__main__":

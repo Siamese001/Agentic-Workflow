@@ -17,7 +17,6 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 import pytest
-from unittest.mock import MagicMock, patch
 from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
@@ -48,7 +47,7 @@ class TestHOP2SovereignStrategist:
         # Verify 100% Pass: C-Level must trigger 3+ strategic wants
         assert result is not None, "hop2_research output missing"
         assert result["metadata"]["wants_count"] >= 3, "C_LEVEL should escalate to 3+ wants"
-        
+
         # Verify strategic priorities are in trace logs
         traces = registry.get_traces()
         trace_str = str(traces)
@@ -100,8 +99,10 @@ class TestHOP2SovereignStrategist:
         """
         agent = HOP2ResearchAgent()
         brief = agent._summarize_for_archetype([], "C_LEVEL")
-        
-        assert brief == "No evidence available for strategic brief.", "Should return fallback message"
+
+        assert brief == "No evidence available for strategic brief.", (
+            "Should return fallback message"
+        )
 
     def test_deterministic_artifact_id_traceability(self):
         """
@@ -160,7 +161,7 @@ class TestHOP2SovereignStrategist:
         # LICAgentBase wraps errors with agent name
         with pytest.raises(RuntimeError, match="HOP2ResearchAgent execution failed"):
             agent.run_phase(buffer, registry)
-        
+
         # Verify the underlying error was about missing hop1_analysis
         traces = registry.get_traces()
         error_trace = next((t for t in traces if t.get("type") == "PHASE_ERROR"), None)
@@ -182,10 +183,7 @@ class TestHOP2SovereignStrategist:
 
         # Verify: Warning trace should be logged
         traces = registry.get_traces()
-        warning_found = any(
-            "INPUT_WARNING" in str(t) and "company_id" in str(t)
-            for t in traces
-        )
+        warning_found = any("INPUT_WARNING" in str(t) and "company_id" in str(t) for t in traces)
         assert warning_found, "Should log warning for C_LEVEL without company_id"
 
     def test_evidence_pack_structure(self):
@@ -230,7 +228,7 @@ class TestHOP2SovereignStrategist:
         agent.run_phase(buffer, registry)
 
         result = buffer.read("hop2_research")
-        
+
         # Verify: Strategic brief exists and has content
         assert "strategic_brief" in result, "Missing strategic_brief"
         assert len(result["strategic_brief"]) > 0, "Strategic brief should not be empty"

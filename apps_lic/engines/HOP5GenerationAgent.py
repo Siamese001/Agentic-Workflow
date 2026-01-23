@@ -373,6 +373,7 @@ class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
         # Fenced block assembly for delivery integrity
         full_text = "```\n" + "\n\n".join(parts) + "\n```"
         import hashlib
+
         checksum = hashlib.sha256(full_text.encode()).hexdigest()
 
         registry.add_trace(
