@@ -11,9 +11,10 @@ import asyncio
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class HOP5GenerationAgent(LICAgentBase):
+class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
     """
     V2 Implementation of HOP-5 Writer.
 
@@ -81,14 +82,15 @@ class HOP5GenerationAgent(LICAgentBase):
             cta_data = self._run_k5_cta_generation(hop4, registry)
 
             # K.7: Final Message Assembly (Immutable Signature + Fencing)
-            final_message = self._assemble_k7_final_message(
+            assembly_data = self._assemble_k7_final_message(
                 body_data["text"], bullet_data["bullets"], cta_data["text"], hop1, registry
             )
 
             candidates.append(
                 {
                     "id": i,
-                    "text": final_message,
+                    "text": assembly_data["full_text"],
+                    "checksum": assembly_data["checksum"],
                     "body": body_data["text"],
                     "bullets": bullet_data["bullets"],
                     "cta": cta_data["text"],
@@ -329,17 +331,22 @@ class HOP5GenerationAgent(LICAgentBase):
 
     def _assemble_k7_final_message(
         self, body: str, bullets: list, cta: str, hop1: dict, registry: TraceRegistry
-    ) -> str:
+    ) -> dict:
         """
         K.7: Final Message Assembly with Immutable Signature and Fencing.
 
         Format:
+        ```
         [Body]
         [Bullets]
 
         [CTA]
 
         [4-line Signature]
+        ```
+
+        Returns:
+            dict with 'full_text' (fenced message) and 'checksum' (SHA256)
         """
         # Get sender name from config or default
         sender_name = getattr(self.config, "sender_name", "Best regards")
@@ -363,17 +370,18 @@ class HOP5GenerationAgent(LICAgentBase):
         parts.append(cta)
         parts.append(signature)
 
-        final_message = "\n\n".join(parts)
+        # Fenced block assembly for delivery integrity
+        full_text = "```\n" + "\n\n".join(parts) + "\n```"
+        import hashlib
+        checksum = hashlib.sha256(full_text.encode()).hexdigest()
 
         registry.add_trace(
             "K7_MESSAGE_ASSEMBLED",
             {
                 "body_length": len(body),
                 "bullets_count": len(bullets),
-                "cta_length": len(cta),
-                "signature_lines": 4,
-                "total_length": len(final_message),
+                "checksum": checksum[:8],
             },
         )
 
-        return final_message
+        return {"full_text": full_text, "checksum": checksum}

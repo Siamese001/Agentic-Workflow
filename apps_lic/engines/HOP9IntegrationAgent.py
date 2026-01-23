@@ -12,9 +12,10 @@ import hashlib
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class HOP9IntegrationAgent(LICAgentBase):
+class HOP9IntegrationAgent(SubatomicTestingMixin, LICAgentBase):
     """
     LIC Sovereign Dispatcher.
 
@@ -55,14 +56,19 @@ class HOP9IntegrationAgent(LICAgentBase):
         final_draft = hop5["selected_draft"]["text"]
         route = hop4["route"]
 
-        # 2. Checksum Integrity Verification
-        # Ensuring the message hasn't been mutated since HOP-5/6 validation.
+        # 2. Hardened Checksum Integrity Verification
+        # Ensuring the message hasn't been mutated since generation.
         current_checksum = hashlib.sha256(final_draft.encode()).hexdigest()
         stored_checksum = hop5["selected_draft"].get("checksum")
 
-        if stored_checksum and current_checksum != stored_checksum:
+        if not stored_checksum:
+            registry.add_trace("INTEGRITY_WARNING", {"msg": "No stored checksum found in HOP-5 output"})
+        elif current_checksum != stored_checksum:
             registry.add_trace(
-                "INTEGRITY_FAILURE", {"expected": stored_checksum, "actual": current_checksum}
+                "INTEGRITY_FAILURE", {
+                    "expected": stored_checksum,
+                    "actual": current_checksum
+                }
             )
             raise ValueError("HOP-9 Integrity Violation: Final draft checksum mismatch")
 

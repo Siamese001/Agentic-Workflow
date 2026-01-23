@@ -14,11 +14,10 @@ from apps_lic.domain.config.loader import load_agent_specs
 from apps_lic.domain.config.schemas import AgentSpecs
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
-from apps_lic.shared.core.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
-from apps_lic.shared.core.agent_base import LICAgentBase
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class HOPOrchestratorAgent(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class HOPOrchestratorAgent(SubatomicTestingMixin):
     """
     V2 Orchestrator for LIC Outreach Pipeline.
 
@@ -33,8 +32,9 @@ class HOPOrchestratorAgent(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin
         self.registry = TraceRegistry(persistence_path=trace_path)
         self.agents: dict[str, LICAgentBase] = {}
 
-        # Global Safety Limits
-        self.GLOBAL_STEP_LIMIT = 20  # Absolute max hops to prevent infinite loops
+        # Hardened Global Safety Limits
+        self.GLOBAL_STEP_LIMIT = 20
+        self.MAX_RETRY_ITERATIONS = 5
 
     def register_agent(self, hop_id: str, agent: LICAgentBase) -> None:
         """Registers a LIC-compliant agent instance."""
@@ -72,11 +72,10 @@ class HOPOrchestratorAgent(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin
                     )
                 self._execute_hop(hop, buffer)
 
-            # Phase 5-7: Generation & Validation (Looping)
-            max_iterations = 10  # Safety limit
+            # Phase 5-7: The Validation Crucible (Cyclic)
             iteration = 0
 
-            while iteration < max_iterations:
+            while iteration < self.MAX_RETRY_ITERATIONS:
                 iteration += 1
 
                 # Check global step limit before each loop iteration
@@ -109,18 +108,26 @@ class HOPOrchestratorAgent(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin
                     break
 
                 # Handle Retries via Buffer Forking
-                action = gate["action"]
-                buffer = self._handle_retry(gate, buffer)
+                action = gate.get("action")
+                retry_context = {
+                    "iteration": iteration,
+                    "total_steps": step_count,
+                    "reason": gate.get("reason")
+                }
+
+                buffer = self._handle_retry(gate, buffer, retry_context)
 
                 # Re-execute from the appropriate HOP based on retry type
                 if action == "RETRY_HOP2":
                     # Factual failure: Re-execute research, then continue through pipeline
                     self._execute_hop("HOP2", buffer)
-                    # Don't need to re-execute HOP3/HOP4 as they don't depend on HOP2
-                    # Loop will continue with HOP5
+                    step_count += 1
                 elif action == "RETRY_HOP5":
-                    # Creative failure: Just loop back to HOP5 (already handled by while loop)
+                    # Creative failure: Simply loop back to HOP5 execution
                     pass
+            else:
+                self.registry.add_trace("MISSION_HALTED", {"reason": "Max iterations reached"})
+                raise RuntimeError(f"Mission failed: Could not satisfy quality gates after {iteration} retries")
 
             # Phase 8: Reporting
             self._execute_hop("HOP8", buffer)
@@ -144,35 +151,36 @@ class HOPOrchestratorAgent(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin
         agent.run_phase(buffer, self.registry)
 
     def _handle_retry(
-        self, gate: dict, current_buffer: ImmutableStagingBuffer
+        self, gate: dict, current_buffer: ImmutableStagingBuffer, ctx: dict
     ) -> ImmutableStagingBuffer:
         """
         Creates a new buffer snapshot to allow 'overwriting' state
         in a retry loop without violating V2 immutability.
-
-        Args:
-            gate: Gate decision containing action directive
-            current_buffer: Current immutable buffer state
-
-        Returns:
-            New buffer with selective state retention
         """
-        action = gate["action"]
-        self.registry.add_trace(
-            "ORCHESTRATOR_RETRY", {"action": action, "reason": gate.get("reason")}
-        )
+        action = gate.get("action", "RETRY_HOP5")
+        self.registry.add_trace("ORCHESTRATOR_RETRY", {
+            "action": action,
+            "iteration": ctx["iteration"],
+            "reason": ctx["reason"]
+        })
 
         new_buffer = ImmutableStagingBuffer()
         # Seed new buffer with legacy data we want to keep
         snapshot = current_buffer.get_snapshot()
 
-        # Determine which keys to 'clear' (don't copy to new buffer)
-        keys_to_purge = ["hop5_generation", "hop6_validation_report", "hop7_gate_decision"]
+        # Deterministic State Purging
+        keys_to_purge = {
+            "hop5_generation",
+            "hop6_validation_report",
+            "hop7_gate_decision",
+            "hop8_qa_report"  # Ensure report is always fresh
+        }
+
         if action == "RETRY_HOP2":
-            keys_to_purge.append("hop2_research")
+            keys_to_purge.add("hop2_research")
 
         for k, v in snapshot.items():
-            if k not in keys_to_purge:
+            if k not in keys_to_purge and v is not None:
                 new_buffer.write_once(k, v)
 
         return new_buffer
