@@ -1,7 +1,7 @@
 """
 SMART REMEDIATION: PASCAL CASE AUDIT LOG
 ----------------------------------------
-Objective: 
+Objective:
     1. Parse 'pascal_case_audit_log.txt'.
     2. Apply heuristic filtering to separate 'Agents' (Keep) from 'Scripts' (Rename).
     3. Generate and execute `git mv` commands for high-confidence script renames.
@@ -19,7 +19,6 @@ import os
 import sys
 import re
 from pathlib import Path
-from typing import List, Tuple
 
 # --- CONFIGURATION ---
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -35,51 +34,69 @@ VERB_PATTERN = re.compile(
 
 # Suffixes that denote a Class entity (Keep Pascal)
 PROTECTED_SUFFIXES = (
-    "Agent.py", "Orchestrator.py", "Validator.py", "Factory.py", 
-    "Registry.py", "Engine.py", "Model.py", "Schema.py", "Config.py",
-    "Exception.py", "Error.py", "Client.py", "Service.py", "Manager.py"
+    "Agent.py",
+    "Orchestrator.py",
+    "Validator.py",
+    "Factory.py",
+    "Registry.py",
+    "Engine.py",
+    "Model.py",
+    "Schema.py",
+    "Config.py",
+    "Exception.py",
+    "Error.py",
+    "Client.py",
+    "Service.py",
+    "Manager.py",
 )
+
 
 def to_snake_case(name: str) -> str:
     """Converts PascalCase to snake_case."""
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
-def get_files_from_log() -> List[Path]:
+
+def get_files_from_log() -> list[Path]:
     if not AUDIT_LOG.exists():
         print(f"[ERROR] Audit log not found at {AUDIT_LOG}")
         sys.exit(1)
-    
-    with open(AUDIT_LOG, 'r') as f:
+
+    with open(AUDIT_LOG) as f:
         lines = [line.strip() for line in f if line.strip()]
-    
+
     files = []
     for line in lines:
-        if "]" in line: line = line.split("]")[-1].strip()
+        if "]" in line:
+            line = line.split("]")[-1].strip()
         clean_path = line.strip()
         full_path = ROOT_DIR / clean_path
-        
-        if "\\" in str(full_path): full_path = Path(str(full_path).replace("\\", "/"))
-            
+
+        if "\\" in str(full_path):
+            full_path = Path(str(full_path).replace("\\", "/"))
+
         if full_path.exists():
             files.append(full_path)
         else:
             rel_path = ROOT_DIR / clean_path.replace("\\", "/")
-            if rel_path.exists(): files.append(rel_path)
-                
+            if rel_path.exists():
+                files.append(rel_path)
+
     return files
 
-def update_imports(renames: List[Tuple[Path, str]]):
+
+def update_imports(renames: list[tuple[Path, str]]):
     """Scans codebase to update imports for renamed files."""
     print("\n[Phase 2] Updating Imports (Safe Regex)...")
     rename_map = {p.stem: Path(n).stem for p, n in renames}
     count = 0
     for root, _, files in os.walk(ROOT_DIR):
         for file in files:
-            if not file.endswith(".py"): continue
+            if not file.endswith(".py"):
+                continue
             file_path = Path(root) / file
             try:
-                content = file_path.read_text(encoding='utf-8')
+                content = file_path.read_text(encoding="utf-8")
                 original_content = content
                 for old, new in rename_map.items():
                     if old in content:
@@ -87,40 +104,42 @@ def update_imports(renames: List[Tuple[Path, str]]):
                         if pattern.search(content):
                             content = pattern.sub(new, content)
                 if content != original_content:
-                    file_path.write_text(content, encoding='utf-8')
+                    file_path.write_text(content, encoding="utf-8")
                     count += 1
-            except Exception: pass
+            except Exception:
+                pass
     print(f"  Modified {count} files with import updates.")
+
 
 def main():
     print(f"[*] Starting Remediation based on {AUDIT_LOG.name}")
     targets = get_files_from_log()
     print(f"[*] Loaded {len(targets)} verified existing files.")
-    
+
     rename_queue = []
     skipped = []
-    
+
     for file_path in targets:
         name = file_path.name
         stem = file_path.stem
-        
+
         if name.endswith(PROTECTED_SUFFIXES):
             skipped.append((name, "Protected Suffix"))
             continue
-            
+
         if VERB_PATTERN.match(stem):
             new_name = to_snake_case(stem) + ".py"
             rename_queue.append((file_path, new_name))
             continue
-            
+
         skipped.append((name, "No safe rename pattern match"))
 
     print(f"\n[Analysis] Renaming {len(rename_queue)} files. Skipping {len(skipped)}.")
-    
+
     if not rename_queue:
         print("No safe renames found.")
         sys.exit(0)
-        
+
     print("\n[Phase 1] Executing Git Moves...")
     success_count = 0
     for old_path, new_name in rename_queue:
@@ -128,7 +147,7 @@ def main():
         if new_path.exists():
             print(f"  [SKIP] Target exists: {new_name}")
             continue
-            
+
         cmd = f'git mv "{old_path}" "{new_path}"'
         ret = os.system(cmd)
         if ret != 0:
@@ -136,12 +155,15 @@ def main():
         else:
             print(f"  [OK-GIT] {old_path.name} -> {new_name}")
             success_count += 1
-            
-    if success_count > 0: update_imports(rename_queue)
-    
+
+    if success_count > 0:
+        update_imports(rename_queue)
+
     with open(ROOT_DIR / "remediation_skipped.log", "w") as f:
-        for name, reason in skipped: f.write(f"{name}: {reason}\n")
-    print(f"\n[*] Skipped log written.")
+        for name, reason in skipped:
+            f.write(f"{name}: {reason}\n")
+    print("\n[*] Skipped log written.")
+
 
 if __name__ == "__main__":
     main()

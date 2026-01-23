@@ -84,7 +84,7 @@ class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
         K.7/PlaceholderDetector logic: Zero tolerance for [bracketed] text.
         """
         # Logic: Use patterns from config or default to sovereign standards
-        pattern = getattr(config, 'placeholder_regex', r"\[.*?\]|\{.*?\}|<.*?>")
+        pattern = getattr(config, "placeholder_regex", r"\[.*?\]|\{.*?\}|<.*?>")
         found = re.findall(pattern, text)
         return {
             "rule_id": "LIC-E001",
@@ -97,7 +97,7 @@ class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
         """
         K.7/Strategic logic: Ensure overlap with strategic brief keywords.
         """
-        min_match = getattr(config, 'min_keyword_match', 1)
+        min_match = getattr(config, "min_keyword_match", 1)
         brief = hop2.get("strategic_brief", "")
 
         if not brief:
@@ -130,7 +130,7 @@ class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
         K.7/ForbiddenVerbs logic: Detect overly promotional language.
         """
         # Logic: Ingest forbidden list from config
-        forbidden_verbs = getattr(config, 'forbidden_verbs', ["revolutionize", "disrupt"])
+        forbidden_verbs = getattr(config, "forbidden_verbs", ["revolutionize", "disrupt"])
         text_lower = text.lower()
 
         found = [verb for verb in forbidden_verbs if verb in text_lower]

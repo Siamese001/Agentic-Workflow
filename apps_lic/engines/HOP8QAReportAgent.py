@@ -3,22 +3,23 @@ HOP-8: QA Report Agent (LIC Sovereign Architecture).
 
 Aggregates mission state into a persistent Markdown Audit Trail and calculates quality scores.
 """
+
 from __future__ import annotations
 
-import os
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
+
 class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
     """
     V2 Implementation of HOP-8.
-    
+
     Responsibilities:
     - Aggregate all HOP outputs from the ImmutableStagingBuffer.
     - Calculate a multi-dimensional Quality Score.
@@ -28,7 +29,7 @@ class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
         Execute QA report generation logic.
-        
+
         1. Aggregate all HOP outputs from buffer.
         2. Calculate multi-dimensional quality scores.
         3. Generate Markdown audit trail.
@@ -42,7 +43,7 @@ class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
             "hop4": buffer.read("hop4_routing") or {},
             "hop5": buffer.read("hop5_generation") or {},
             "hop6": buffer.read("hop6_validation_report") or {},
-            "hop7": buffer.read("hop7_gate_decision") or {}
+            "hop7": buffer.read("hop7_gate_decision") or {},
         }
 
         # 2. Calculate Scoring
@@ -56,56 +57,53 @@ class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
 
         # 4. Persistence (Physical Disk + Buffer)
         report_path = self._save_report(report_md, states.get("hop1", {}))
-        
+
         output_data = {
             "total_score": total_score,
             "score_breakdown": scores,
             "report_path": str(report_path),
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
-        
-        buffer.write_once("hop8_qa_report", output_data)
-        
-        registry.add_trace("DECISION_FINAL", {
-            "score": total_score,
-            "path": str(report_path)
-        })
 
-    def _calculate_scores(self, states: Dict[str, Any]) -> Dict[str, float]:
+        buffer.write_once("hop8_qa_report", output_data)
+
+        registry.add_trace("DECISION_FINAL", {"score": total_score, "path": str(report_path)})
+
+    def _calculate_scores(self, states: dict[str, Any]) -> dict[str, float]:
         """Calculates weighted scores across 4 dimensions."""
         weights = self.config.qa_report_agent.scoring_weights
-        
+
         # Research Score (0-100)
         h2 = states.get("hop2") or {}
         research_raw = (h2.get("signal_score", 0) * 100) if h2 else 0
-        
+
         # Alignment Score (0-100)
         h6 = states.get("hop6") or {}
         val_results = h6.get("validation_results", [])
         passed_rules = sum(1 for r in val_results if r.get("passed"))
         alignment_raw = (passed_rules / len(val_results) * 100) if val_results else 0
-        
+
         # Validation Success (Binary multiplier)
         val_raw = 100 if h6.get("passed") else 0
-        
+
         # Generation Quality (Constraints check)
         h5 = states.get("hop5") or {}
         draft_score = h5.get("selected_draft", {}).get("score", 0)
-        gen_raw = max(0, draft_score * 10) # Mapping 10pt base to 100
-        
+        gen_raw = max(0, draft_score * 10)  # Mapping 10pt base to 100
+
         return {
             "research": research_raw * weights.get("research", 0.25),
             "alignment": alignment_raw * weights.get("alignment", 0.25),
             "validation": val_raw * weights.get("validation", 0.25),
-            "generation": gen_raw * weights.get("generation", 0.25)
+            "generation": gen_raw * weights.get("generation", 0.25),
         }
 
-    def _generate_markdown(self, states: Dict, scores: Dict, total: float) -> str:
+    def _generate_markdown(self, states: dict, scores: dict, total: float) -> str:
         """Constructs the Audit Trail Markdown string."""
         h1 = states.get("hop1") or {}
         h4 = states.get("hop4") or {}
         h5 = states.get("hop5") or {}
-        
+
         md = [
             f"# Mission Audit Report: {h1.get('recipient_name', 'Unknown')}",
             f"**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC",
@@ -121,18 +119,18 @@ class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
             f"{h5.get('selected_draft', {}).get('text', 'NO DRAFT GENERATED')}",
             "```",
             "\n## 🔍 Trace Logs",
-            "Refer to TraceRegistry for granular execution steps."
+            "Refer to TraceRegistry for granular execution steps.",
         ]
         return "\n".join(md)
 
-    def _save_report(self, content: str, hop1: Dict) -> Path:
+    def _save_report(self, content: str, hop1: dict) -> Path:
         """Persists report to the configured output directory."""
         out_dir = Path(self.config.qa_report_agent.output_directory)
         out_dir.mkdir(parents=True, exist_ok=True)
-        
+
         safe_name = "".join(x for x in hop1.get("recipient_name", "Report") if x.isalnum())
         filename = f"QA_{safe_name}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.md"
-        
+
         report_path = out_dir / filename
         with open(report_path, "w", encoding="utf-8") as f:
             f.write(content)

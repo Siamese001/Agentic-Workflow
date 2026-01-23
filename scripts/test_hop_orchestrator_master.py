@@ -17,10 +17,9 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 class TestMasterOrchestrator:
@@ -33,15 +32,15 @@ class TestMasterOrchestrator:
         """Verify that the orchestrator terminates if step count > GLOBAL_STEP_LIMIT."""
         orchestrator = HOPOrchestratorAgent(mission_id="safety_test")
         orchestrator.GLOBAL_STEP_LIMIT = 3  # Force low limit (will exceed after HOP1-4)
-        
+
         # Register minimal agents that do nothing
         for hop in ["HOP1", "HOP2", "HOP3", "HOP4"]:
             mock_agent = MagicMock()
             mock_agent.run_phase = MagicMock()
             orchestrator.register_agent(hop, mock_agent)
-        
+
         mission_input = {"mission_id": "safety_001"}
-        
+
         # Verify: Should raise RuntimeError when limit exceeded during foundation phase
         result = orchestrator.run_mission(mission_input)
         # The mission will fail but return a dict with status FAILED
@@ -53,15 +52,15 @@ class TestMasterOrchestrator:
         orchestrator = HOPOrchestratorAgent()
         gate = {"action": "RETRY_HOP2", "reason": "Factual Gap"}
         ctx = {"iteration": 1, "total_steps": 10, "reason": "test"}
-        
+
         old_buffer = ImmutableStagingBuffer()
         old_buffer.write_once("hop1_analysis", {"Archetype": "C_LEVEL"})
         old_buffer.write_once("hop2_research", {"old_data": True})
         old_buffer.write_once("hop5_generation", {"bad_draft": True})
         old_buffer.write_once("hop6_validation_report", {"passed": False})
-        
+
         new_buffer = orchestrator._handle_retry(gate, old_buffer, ctx)
-        
+
         # Verify 100% Pass: HOP1 is kept, HOP2/5/6 are purged
         assert new_buffer.read("hop1_analysis") is not None, "HOP1 should be retained"
         assert new_buffer.read("hop2_research") is None, "HOP2 should be purged"
@@ -73,15 +72,15 @@ class TestMasterOrchestrator:
         orchestrator = HOPOrchestratorAgent()
         gate = {"action": "RETRY_HOP5", "reason": "Creative Flaw"}
         ctx = {"iteration": 1, "total_steps": 10, "reason": "test"}
-        
+
         old_buffer = ImmutableStagingBuffer()
         old_buffer.write_once("hop1_analysis", {"Archetype": "MANAGER"})
         old_buffer.write_once("hop2_research", {"strategic_signals": ["AI"]})
         old_buffer.write_once("hop5_generation", {"bad_draft": True})
         old_buffer.write_once("hop6_validation_report", {"passed": False})
-        
+
         new_buffer = orchestrator._handle_retry(gate, old_buffer, ctx)
-        
+
         # Verify: HOP1/2 kept, HOP5/6 purged
         assert new_buffer.read("hop1_analysis") is not None, "HOP1 should be retained"
         assert new_buffer.read("hop2_research") is not None, "HOP2 should be retained"
@@ -93,13 +92,13 @@ class TestMasterOrchestrator:
         orchestrator = HOPOrchestratorAgent()
         gate = {"action": "RETRY_HOP5", "reason": "Creative"}
         ctx = {"iteration": 1, "total_steps": 10, "reason": "test"}
-        
+
         old_buffer = ImmutableStagingBuffer()
         old_buffer.write_once("hop8_qa_report", {"old_report": True})
         old_buffer.write_once("hop1_analysis", {"Archetype": "EXECUTIVE"})
-        
+
         new_buffer = orchestrator._handle_retry(gate, old_buffer, ctx)
-        
+
         # Verify: HOP8 always purged
         assert new_buffer.read("hop8_qa_report") is None, "HOP8 should always be purged"
 
@@ -108,12 +107,12 @@ class TestMasterOrchestrator:
         orchestrator = HOPOrchestratorAgent()
         gate = {"action": "RETRY_HOP2", "reason": "Strategic gap"}
         ctx = {"iteration": 3, "total_steps": 15, "reason": "Strategic gap"}
-        
+
         old_buffer = ImmutableStagingBuffer()
         old_buffer.write_once("hop1_analysis", {"Archetype": "C_LEVEL"})
-        
+
         orchestrator._handle_retry(gate, old_buffer, ctx)
-        
+
         # Verify: Trace logged with context
         traces = orchestrator.registry.get_traces()
         retry_trace = next((t for t in traces if t.get("type") == "ORCHESTRATOR_RETRY"), None)
@@ -125,11 +124,11 @@ class TestMasterOrchestrator:
     def test_max_retry_iterations_halt(self):
         """Verify that MAX_RETRY_ITERATIONS constant exists and is used for loop control."""
         orchestrator = HOPOrchestratorAgent(mission_id="stagnation_test")
-        
+
         # Verify: MAX_RETRY_ITERATIONS constant exists and has correct default
         assert hasattr(orchestrator, "MAX_RETRY_ITERATIONS"), "Should have MAX_RETRY_ITERATIONS"
         assert orchestrator.MAX_RETRY_ITERATIONS == 5, "Default should be 5"
-        
+
         # Verify: Can be overridden for testing
         orchestrator.MAX_RETRY_ITERATIONS = 2
         assert orchestrator.MAX_RETRY_ITERATIONS == 2, "Should allow override"
@@ -139,7 +138,7 @@ class TestMasterOrchestrator:
         orchestrator = HOPOrchestratorAgent()
         gate = {"action": "RETRY_HOP2", "reason": "Test"}
         ctx = {"iteration": 1, "total_steps": 10, "reason": "test"}
-        
+
         old_buffer = ImmutableStagingBuffer()
         old_buffer.write_once("hop1_analysis", {"data": 1})
         old_buffer.write_once("hop2_research", {"data": 2})
@@ -147,9 +146,9 @@ class TestMasterOrchestrator:
         old_buffer.write_once("hop6_validation_report", {"data": 6})
         old_buffer.write_once("hop7_gate_decision", {"data": 7})
         old_buffer.write_once("hop8_qa_report", {"data": 8})
-        
+
         new_buffer = orchestrator._handle_retry(gate, old_buffer, ctx)
-        
+
         # Verify: All expected keys purged
         assert new_buffer.read("hop2_research") is None, "HOP2 should be purged"
         assert new_buffer.read("hop5_generation") is None, "HOP5 should be purged"
@@ -163,14 +162,14 @@ class TestMasterOrchestrator:
         orchestrator = HOPOrchestratorAgent()
         gate = {"action": "RETRY_HOP5", "reason": "Test"}
         ctx = {"iteration": 1, "total_steps": 10, "reason": "test"}
-        
+
         old_buffer = ImmutableStagingBuffer()
         old_buffer.write_once("hop1_analysis", {"data": 1})
         # Simulate a None value (though write_once typically doesn't allow this)
         # This tests the v is not None check in the code
-        
+
         new_buffer = orchestrator._handle_retry(gate, old_buffer, ctx)
-        
+
         # Verify: Buffer created successfully
         assert new_buffer is not None, "New buffer should be created"
 
@@ -179,12 +178,12 @@ class TestMasterOrchestrator:
         orchestrator = HOPOrchestratorAgent()
         gate = {"action": "RETRY_HOP2", "reason": "Missing strategic signals"}
         ctx = {"iteration": 2, "total_steps": 12, "reason": "Missing strategic signals"}
-        
+
         old_buffer = ImmutableStagingBuffer()
         old_buffer.write_once("hop1_analysis", {"Archetype": "C_LEVEL"})
-        
+
         orchestrator._handle_retry(gate, old_buffer, ctx)
-        
+
         # Verify: Trace contains all context
         traces = orchestrator.registry.get_traces()
         retry_trace = next((t for t in traces if t.get("type") == "ORCHESTRATOR_RETRY"), None)
@@ -197,7 +196,7 @@ class TestMasterOrchestrator:
         """Verify that step_count is incremented when RETRY_HOP2 re-executes research."""
         # This is tested via integration but we verify the logic exists
         orchestrator = HOPOrchestratorAgent()
-        
+
         # Verify: MAX_RETRY_ITERATIONS constant exists
         assert hasattr(orchestrator, "MAX_RETRY_ITERATIONS"), "Should have MAX_RETRY_ITERATIONS"
         assert orchestrator.MAX_RETRY_ITERATIONS == 5, "Default should be 5"
@@ -205,7 +204,7 @@ class TestMasterOrchestrator:
     def test_hardened_safety_limits_constants(self):
         """Verify that hardened safety limit constants are set correctly."""
         orchestrator = HOPOrchestratorAgent()
-        
+
         # Verify: Both constants exist
         assert hasattr(orchestrator, "GLOBAL_STEP_LIMIT"), "Should have GLOBAL_STEP_LIMIT"
         assert hasattr(orchestrator, "MAX_RETRY_ITERATIONS"), "Should have MAX_RETRY_ITERATIONS"
@@ -217,20 +216,22 @@ class TestMasterOrchestrator:
         orchestrator = HOPOrchestratorAgent()
         gate = {"reason": "Test"}  # Missing 'action' key
         ctx = {"iteration": 1, "total_steps": 10, "reason": "test"}
-        
+
         old_buffer = ImmutableStagingBuffer()
         old_buffer.write_once("hop1_analysis", {"data": 1})
         old_buffer.write_once("hop2_research", {"data": 2})  # Add HOP2 to test purging
-        
+
         # Should not raise KeyError
         new_buffer = orchestrator._handle_retry(gate, old_buffer, ctx)
-        
+
         # Verify: Uses safe .get() and defaults to RETRY_HOP5
         traces = orchestrator.registry.get_traces()
         retry_trace = next((t for t in traces if t.get("type") == "ORCHESTRATOR_RETRY"), None)
         assert retry_trace is not None, "Should log retry"
         # When action is missing, defaults to RETRY_HOP5, so HOP2 should be retained
-        assert new_buffer.read("hop2_research") is not None, "HOP2 should be retained for RETRY_HOP5"
+        assert new_buffer.read("hop2_research") is not None, (
+            "HOP2 should be retained for RETRY_HOP5"
+        )
 
 
 def run_tests():

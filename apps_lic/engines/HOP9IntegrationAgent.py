@@ -62,13 +62,12 @@ class HOP9IntegrationAgent(SubatomicTestingMixin, LICAgentBase):
         stored_checksum = hop5["selected_draft"].get("checksum")
 
         if not stored_checksum:
-            registry.add_trace("INTEGRITY_WARNING", {"msg": "No stored checksum found in HOP-5 output"})
+            registry.add_trace(
+                "INTEGRITY_WARNING", {"msg": "No stored checksum found in HOP-5 output"}
+            )
         elif current_checksum != stored_checksum:
             registry.add_trace(
-                "INTEGRITY_FAILURE", {
-                    "expected": stored_checksum,
-                    "actual": current_checksum
-                }
+                "INTEGRITY_FAILURE", {"expected": stored_checksum, "actual": current_checksum}
             )
             raise ValueError("HOP-9 Integrity Violation: Final draft checksum mismatch")
 

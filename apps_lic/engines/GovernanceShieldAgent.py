@@ -9,7 +9,6 @@ import logging
 import re
 
 from apps_lic.domain.governance_shield_types import (
-    GovernanceShieldLevel,
     IndustrySensitivity,
     RiskProfile,
     SafetyProtocol,

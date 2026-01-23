@@ -7,14 +7,17 @@ import logging
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import ClassVar
+
 
 # Import from models for CompetitiveAnalysisConfig
 # NOTE: CompetitiveAnalysisConfig was undefined - adding stub to fix import
 @dataclass
 class CompetitiveAnalysisConfig:
     """Stub for competitive analysis configuration."""
+
     pass
+
 
 # --- GEMINI API SETUP ---
 try:

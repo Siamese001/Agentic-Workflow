@@ -112,7 +112,7 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
                 retry_context = {
                     "iteration": iteration,
                     "total_steps": step_count,
-                    "reason": gate.get("reason")
+                    "reason": gate.get("reason"),
                 }
 
                 buffer = self._handle_retry(gate, buffer, retry_context)
@@ -127,7 +127,9 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
                     pass
             else:
                 self.registry.add_trace("MISSION_HALTED", {"reason": "Max iterations reached"})
-                raise RuntimeError(f"Mission failed: Could not satisfy quality gates after {iteration} retries")
+                raise RuntimeError(
+                    f"Mission failed: Could not satisfy quality gates after {iteration} retries"
+                )
 
             # Phase 8: Reporting
             self._execute_hop("HOP8", buffer)
@@ -158,11 +160,10 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
         in a retry loop without violating V2 immutability.
         """
         action = gate.get("action", "RETRY_HOP5")
-        self.registry.add_trace("ORCHESTRATOR_RETRY", {
-            "action": action,
-            "iteration": ctx["iteration"],
-            "reason": ctx["reason"]
-        })
+        self.registry.add_trace(
+            "ORCHESTRATOR_RETRY",
+            {"action": action, "iteration": ctx["iteration"], "reason": ctx["reason"]},
+        )
 
         new_buffer = ImmutableStagingBuffer()
         # Seed new buffer with legacy data we want to keep
@@ -173,7 +174,7 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
             "hop5_generation",
             "hop6_validation_report",
             "hop7_gate_decision",
-            "hop8_qa_report"  # Ensure report is always fresh
+            "hop8_qa_report",  # Ensure report is always fresh
         }
 
         if action == "RETRY_HOP2":
