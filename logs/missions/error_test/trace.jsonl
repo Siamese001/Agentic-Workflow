@@ -1,0 +1,4 @@
+{"timestamp": "2026-01-23T13:54:49.730764", "type": "ORCHESTRATOR_START", "details": {"mission_id": "error_test"}}
+{"timestamp": "2026-01-23T13:54:49.734795", "type": "ORCHESTRATOR_ERROR", "details": {"error": "HOP3 failed"}}
+{"timestamp": "2026-01-23T13:57:07.567908", "type": "ORCHESTRATOR_START", "details": {"mission_id": "error_test"}}
+{"timestamp": "2026-01-23T13:57:07.572185", "type": "ORCHESTRATOR_ERROR", "details": {"error": "HOP3 failed"}}

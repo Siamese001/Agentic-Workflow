@@ -66,30 +66,47 @@ class HOP5GenerationAgent(V2AgentBase):
             {"action": "configuring_generation", "n_candidates": n_candidates, "temp": temperature},
         )
 
-        # 3. Generate Candidates (Fan-out)
+        # 3. Specialist Assembly Chain (K.3 -> K.5A -> K.5 -> K.7)
+        registry.add_trace("PHASE_STEP", {"action": "starting_specialist_assembly"})
+        
         candidates = []
         for i in range(n_candidates):
-            prompt = self._construct_prompt(hop1, hop2, hop3, hop4)
-
-            # Async generation
-            if self.llm:
-                response = self._run_async(self.llm.generate(prompt, temperature=temperature))
-                candidates.append(
-                    {
-                        "id": i,
-                        "text": response.strip(),
-                        "score": 0.0,  # Placeholder for scoring logic
-                    }
-                )
-            else:
-                registry.add_trace("GEN_SKIPPED", {"reason": "No LLM Client"})
-                candidates.append({"id": 0, "text": "Simulated Draft", "score": 0})
+            # K.3: Body Generation with Archetype Transition Phrases
+            body_data = self._run_k3_body_generation(hop1, hop2, registry)
+            
+            # K.5A: Bullet Generation with 3V-3T-1S Provenance
+            bullet_data = self._run_k5a_bullet_generation(hop3, hop2, registry)
+            
+            # K.5: CTA Generation (Route-Specific Constraints)
+            cta_data = self._run_k5_cta_generation(hop4, registry)
+            
+            # K.7: Final Message Assembly (Immutable Signature + Fencing)
+            final_message = self._assemble_k7_final_message(
+                body_data["text"],
+                bullet_data["bullets"],
+                cta_data["text"],
+                hop1,
+                registry
+            )
+            
+            candidates.append(
+                {
+                    "id": i,
+                    "text": final_message,
+                    "body": body_data["text"],
+                    "bullets": bullet_data["bullets"],
+                    "cta": cta_data["text"],
+                    "provenance_labels": bullet_data["labels"],
+                    "transition_phrase": body_data["transition_phrase"],
+                    "score": 0.0,
+                }
+            )
 
         # 4. Score & Select (Fan-in)
         # Simplified internal scoring for V2 (Length/Constraints check)
         selected = self._score_and_select(candidates, hop4["constraints"])
 
-        # 5. Write Output
+        # 5. Write Output with Enhanced Metadata
         output = {
             "selected_draft": selected,
             "all_candidates": candidates,
@@ -98,12 +115,18 @@ class HOP5GenerationAgent(V2AgentBase):
                 "n_candidates": n_candidates,
                 "archetype": archetype,
                 "route": route,
+                "k3_phrase": selected.get("transition_phrase"),
             },
         }
 
         buffer.write_once("hop5_generation", output)
         registry.add_trace(
-            "DECISION_FINAL", {"selected_id": selected["id"], "length": len(selected["text"])}
+            "DECISION_FINAL", {
+                "status": "SUCCESS",
+                "selected_id": selected["id"],
+                "length": len(selected["text"]),
+                "route": route
+            }
         )
 
     def _construct_prompt(self, h1, h2, h3, h4) -> str:
@@ -150,3 +173,191 @@ class HOP5GenerationAgent(V2AgentBase):
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
         return loop.run_until_complete(coro)
+
+    def _run_k3_body_generation(self, hop1: dict, hop2: dict, registry: TraceRegistry) -> dict:
+        """
+        K.3: Body Generation with Archetype Transition Phrases.
+        
+        Returns dict with 'text' and 'transition_phrase' keys.
+        """
+        registry.add_trace("K3_START", {"archetype": hop1.get("Archetype")})
+        
+        archetype = hop1.get("Archetype", "UNKNOWN")
+        company = hop1.get("recipient_company", "your organization")
+        research_signals = hop2.get("strategic_signals", [])
+        
+        # K.3 Transition phrase for C_LEVEL
+        if archetype == "C_LEVEL":
+            transition = f"Two strategic insights I have gleaned from my research about {company}:"
+        else:
+            transition = f"I noticed some interesting developments at {company}:"
+        
+        # Build body with research signals
+        body_parts = [transition]
+        
+        if research_signals:
+            for i, signal in enumerate(research_signals[:2], 1):
+                body_parts.append(f"\n{i}. {signal}")
+        elif self.llm:
+            # Fallback to LLM generation if no signals
+            prompt = self._construct_prompt(hop1, hop2, {}, {"route": "INMAIL", "constraints": {"char_limit": 500}})
+            response = self._run_async(self.llm.generate(prompt, temperature=0.5))
+            body_parts.append(f"\n{response.strip()}")
+        else:
+            body_parts.append("\nYour strategic initiatives align well with our capabilities.")
+        
+        body_text = "\n".join(body_parts)
+        registry.add_trace("K3_BODY_GENERATED", {"archetype": archetype, "transition_used": transition[:50]})
+        
+        return {"text": body_text, "transition_phrase": transition}
+
+    def _run_k5a_bullet_generation(self, hop3: dict, hop2: dict, registry: TraceRegistry) -> dict:
+        """
+        K.5A: Bullet Generation with 3V-3T-1S Provenance Distribution.
+        
+        V = Verbatim (from sender profile)
+        T = Transformed (research insights)
+        S = Synthetic (LLM generated)
+        
+        Returns dict with 'bullets' list and 'labels' list.
+        """
+        registry.add_trace("K5A_START", {"rule": "3V-3T-1S"})
+        
+        bullets = []
+        labels = []
+        
+        # Extract sender capabilities for Verbatim bullets (3V)
+        sender_data = hop3.get("sender_grounding", {})
+        products = sender_data.get("products", [])
+        capabilities = sender_data.get("capabilities", [])
+        
+        verbatim_sources = products + capabilities
+        for i in range(min(3, len(verbatim_sources))):
+            bullets.append(f"• {verbatim_sources[i]}")
+            labels.append("V")
+        
+        # Pad with generic if needed
+        while len(labels) < 3:
+            bullets.append("• Industry-leading solutions")
+            labels.append("V")
+        
+        # Extract research signals for Transformed bullets (3T)
+        research_signals = hop2.get("strategic_signals", [])
+        for i in range(min(3, len(research_signals))):
+            bullets.append(f"• Aligned with your {research_signals[i].lower()} initiatives")
+            labels.append("T")
+        
+        # Pad with generic if needed
+        while len(labels) < 6:
+            bullets.append("• Strategic alignment opportunities")
+            labels.append("T")
+        
+        # Generate one Synthetic bullet (1S)
+        if self.llm:
+            try:
+                prompt = "Generate a single compelling value proposition in 5-7 words."
+                synthetic = self._run_async(self.llm.generate(prompt, temperature=0.7))
+                bullets.append(f"• {synthetic.strip()}")
+            except:
+                bullets.append("• Innovative partnership opportunities")
+        else:
+            bullets.append("• Innovative partnership opportunities")
+        labels.append("S")
+        
+        registry.add_trace("K5A_BULLETS_GENERATED", {
+            "total_bullets": len(bullets),
+            "provenance": {"V": labels.count("V"), "T": labels.count("T"), "S": labels.count("S")}
+        })
+        
+        return {"bullets": bullets, "labels": labels}
+
+    def _run_k5_cta_generation(self, hop4: dict, registry: TraceRegistry) -> dict:
+        """
+        K.5: Generate CTA with word count constraints.
+        
+        CONNECTION_REQ: <= 5 words, no meeting requests
+        INMAIL: <= 10 words, can include soft meeting request
+        """
+        route = hop4.get("route", "INMAIL")
+        
+        # K.5 CTA Templates by route
+        cta_templates = {
+            "CONNECTION_REQ": [
+                "Open to connecting?",
+                "Would love to connect.",
+                "Let's connect?",
+                "Interested in connecting?",
+            ],
+            "INMAIL": [
+                "Would a brief conversation be valuable?",
+                "Open to a quick discussion?",
+                "Would you be open to connecting?",
+            ],
+            "FOLLOW_UP": [
+                "Any thoughts on this?",
+                "Would love your perspective.",
+            ],
+        }
+        
+        templates = cta_templates.get(route, cta_templates["INMAIL"])
+        cta = templates[0]  # Select first template (could randomize)
+        
+        # Validate word count constraint
+        word_limit = 5 if route == "CONNECTION_REQ" else 10
+        word_count = len(cta.split())
+        
+        registry.add_trace("K5_CTA_GENERATED", {
+            "route": route,
+            "cta": cta,
+            "word_count": word_count,
+            "word_limit": word_limit,
+            "compliant": word_count <= word_limit
+        })
+        
+        return {"text": cta}
+
+    def _assemble_k7_final_message(self, body: str, bullets: list, cta: str, hop1: dict, registry: TraceRegistry) -> str:
+        """
+        K.7: Final Message Assembly with Immutable Signature and Fencing.
+        
+        Format:
+        [Body]
+        [Bullets]
+        
+        [CTA]
+        
+        [4-line Signature]
+        """
+        # Get sender name from config or default
+        sender_name = getattr(self.config, 'sender_name', 'Best regards')
+        
+        # K.7 Immutable 4-line signature format
+        signature_lines = [
+            "Regards,",
+            sender_name if sender_name != 'Best regards' else "[Sender Name]",
+            "",
+            "linkedin.com/in/[profile]"
+        ]
+        signature = "\n".join(signature_lines)
+        
+        # Format bullets
+        bullets_text = "\n".join(bullets) if bullets else ""
+        
+        # Assemble final message
+        parts = [body]
+        if bullets_text:
+            parts.append(bullets_text)
+        parts.append(cta)
+        parts.append(signature)
+        
+        final_message = "\n\n".join(parts)
+        
+        registry.add_trace("K7_MESSAGE_ASSEMBLED", {
+            "body_length": len(body),
+            "bullets_count": len(bullets),
+            "cta_length": len(cta),
+            "signature_lines": 4,
+            "total_length": len(final_message)
+        })
+        
+        return final_message

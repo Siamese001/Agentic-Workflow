@@ -1,10 +1,13 @@
 """
-HOP-4: Routing Agent (V2 Architecture).
+HOP-4: Routing Agent (V2.5 Architecture).
 
-Determines optimal outreach route based on connection status and history.
+V2.5 Sovereign Navigator.
+Implements Gate 5 (Route Selection) and Gate 6 (Premium Mismatch).
 """
 
 from __future__ import annotations
+
+from typing import Dict, Any, Optional
 
 from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
 from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
@@ -13,64 +16,91 @@ from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
 
 class HOP4RoutingAgent(V2AgentBase):
     """
-    V2 Implementation of HOP-4 Rule Engine.
+    V2.5 Sovereign Navigator.
 
     Architecture:
     - Base: V2AgentBase
-    - Input: 'mission_input' (connection status, message count)
-    - Logic: Rule-based routing evaluation
-    - Output: 'hop4_routing' (route, constraints, reasoning)
+    - Input: 'mission_input', 'hop1_analysis'
+    - Logic: Gate 5 (Route Selection) -> Gate 6 (Premium Mismatch)
+    - Output: 'hop4_routing' (route, constraints, metadata)
     """
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
         Execute routing logic.
 
-        1. Read mission input (connection status, message count).
-        2. Evaluate routing rules in order.
-        3. Select first matching route or fallback to default.
-        4. Write immutable routing decision.
+        1. Read Sovereign Context.
+        2. Gate 5: Route Selection Logic.
+        3. Gate 6: Premium Routing Mismatch Detection.
+        4. Fetch Route Constraints.
+        5. Write to Immutable Buffer.
         """
-        # 1. Read Inputs
+        # 1. Read Sovereign Context
         mission_input = buffer.read("mission_input")
         if not mission_input:
-            registry.add_trace("DATA_ERROR", {"msg": "Missing 'mission_input'"})
-            raise ValueError("HOP-4 requires 'mission_input'")
+            registry.add_trace("DATA_ERROR", {"msg": "Missing mission_input"})
+            raise RuntimeError("HOP-4 missing critical mission input")
 
         hop1 = buffer.read("hop1_analysis")
-        # hop1 is optional for routing logic but good for context
+        premium_available = mission_input.get("premium_available", False)
+        route_override = mission_input.get("route_override")
+        connection_status = mission_input.get("connection_status", "NOT_CONNECTED")
 
-        status = mission_input.get("connection_status", "UNKNOWN")
-        msg_count = mission_input.get("prior_message_count", 0)
+        registry.add_trace("PHASE_STEP", {"action": "executing_gate_5_selection"})
+        
+        # 2. Gate 5: Route Selection Logic
+        # Prioritize Override -> Connection Status -> Premium Availability
+        selected_route = "CONNECTION_REQ"
+        
+        if route_override:
+            selected_route = route_override
+            registry.add_trace("ROUTE_OVERRIDE_APPLIED", {"route": selected_route})
+        elif connection_status == "CONNECTED":
+            selected_route = "FOLLOW_UP"
+        elif premium_available:
+            selected_route = "INMAIL"
 
-        registry.add_trace(
-            "PHASE_STEP", {"action": "evaluating_routes", "status": status, "msgs": msg_count}
-        )
+        # 3. Gate 6: Premium Routing Mismatch Detection (CRITICAL)
+        if selected_route == "INMAIL" and not premium_available:
+            registry.add_trace("GATE_6_FAILED", {"reason": "premium_unavailable_for_inmail"})
+            raise ValueError("GATE_6_BLOCKED: INMAIL route selected but Premium InMail not available")
 
-        # 2. Evaluate Rules
-        selected_route = "INMAIL"  # Default
-        constraints = {"word_range": [0, 2000], "char_limit": 2000}
-        match_reason = "Default Fallback"
-
+        # 4. Fetch Route Constraints from Specs
         config = self.config.routing_agent
+        route_config = None
+        
+        # Map selected route to config key
+        route_key_map = {
+            "CONNECTION_REQ": "CONNECTION_REQUEST",
+            "FOLLOW_UP": "DIRECT_MESSAGE",
+            "INMAIL": "INMAIL"
+        }
+        config_key = route_key_map.get(selected_route, selected_route)
+        
+        if config_key in config.routing_rules:
+            route_config = config.routing_rules[config_key]
+            constraints = route_config.constraints.model_dump()
+        else:
+            # Fallback to CONNECTION_REQUEST constraints
+            fallback = config.routing_rules.get("CONNECTION_REQUEST")
+            if fallback:
+                constraints = fallback.constraints.model_dump()
+            else:
+                constraints = {"word_range": [0, 2000], "char_limit": 2000}
 
-        for route_name, rules in config.routing_rules.items():
-            if self._check_conditions(rules.conditions, status, msg_count):
-                selected_route = route_name
-                constraints = rules.constraints.model_dump()
-                match_reason = f"Matched rules for {route_name}"
-                break
-
-        # 3. Write Output
-        output = {
+        # 5. Write to Immutable Buffer
+        archetype = hop1.get("Archetype", "UNKNOWN") if hop1 else "UNKNOWN"
+        output_data = {
             "route": selected_route,
             "constraints": constraints,
-            "reasoning": match_reason,
-            "context": {"status": status, "msg_count": msg_count},
+            "metadata": {
+                "premium_validated": True,
+                "archetype_aligned": archetype
+            }
         }
 
-        buffer.write_once("hop4_routing", output)
-        registry.add_trace("DECISION_FINAL", {"route": selected_route, "reason": match_reason})
+        buffer.write_once("hop4_routing", output_data)
+        registry.add_trace("DECISION_FINAL", {"route": selected_route})
 
     def _check_conditions(self, conditions, status, msg_count) -> bool:
         """

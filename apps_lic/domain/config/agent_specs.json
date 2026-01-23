@@ -96,6 +96,7 @@
   },
   "gate_decision_agent": {
     "factual_failure_rules": [
+      "LIC-E015",
       "STRATEGIC_ALIGNMENT",
       "SENDER_GROUNDING_MISMATCH",
       "FACTUAL_INACCURACY"

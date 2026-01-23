@@ -1,0 +1,10 @@
+{"timestamp": "2026-01-23T13:54:49.556116", "type": "ORCHESTRATOR_START", "details": {"mission_id": "cxo_test"}}
+{"timestamp": "2026-01-23T13:54:49.558121", "type": "PHASE_START", "details": {"agent": "HOP1ProfileAnalysisAgent"}}
+{"timestamp": "2026-01-23T13:54:49.560125", "type": "DATA_ERROR", "details": {"msg": "Missing or invalid recipient_profile"}}
+{"timestamp": "2026-01-23T13:54:49.562124", "type": "PHASE_ERROR", "details": {"agent": "HOP1ProfileAnalysisAgent", "error": "HOP-1 requires 'recipient_profile' in buffer"}}
+{"timestamp": "2026-01-23T13:54:49.563850", "type": "ORCHESTRATOR_ERROR", "details": {"error": "HOP1ProfileAnalysisAgent execution failed"}}
+{"timestamp": "2026-01-23T13:57:07.450589", "type": "ORCHESTRATOR_START", "details": {"mission_id": "cxo_test"}}
+{"timestamp": "2026-01-23T13:57:07.453138", "type": "PHASE_START", "details": {"agent": "HOP1ProfileAnalysisAgent"}}
+{"timestamp": "2026-01-23T13:57:07.455429", "type": "CXO_PRECEDENCE_TRIGGERED", "details": {"token": "CEO"}}
+{"timestamp": "2026-01-23T13:57:07.456955", "type": "DECISION_FINAL", "details": {"archetype": "C_LEVEL", "confidence": 1.0}}
+{"timestamp": "2026-01-23T13:57:07.459040", "type": "PHASE_COMPLETE", "details": {"agent": "HOP1ProfileAnalysisAgent"}}

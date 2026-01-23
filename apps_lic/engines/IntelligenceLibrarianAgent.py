@@ -14,7 +14,12 @@ __version__ = "13.1"
 import asyncio
 import json
 import os
+from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
+
+from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
+from apps_lic.shared.v2_patterns.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
 
 # MCP Hardening
 
@@ -31,9 +36,10 @@ except ImportError:
 
 
 @dataclass
-class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
+class IntelligenceLibrarianSpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
-    v13.1: Offline research agent that pre-computes intelligence (MCP Hardened)
+    V2.5 Sovereign Intelligence Librarian Specialist.
+    Offline research agent that pre-computes intelligence (MCP Hardened)
 
     The Librarian runs asynchronously (e.g., nightly via cron) to:
     1. Research target companies and executives

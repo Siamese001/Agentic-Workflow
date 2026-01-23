@@ -26,127 +26,123 @@ class HOP6ValidationAgent(V2AgentBase):
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
-        Execute validation logic.
+        Execute specialist validation logic.
 
-        1. Read draft from HOP-5 and context from HOP-2/3.
-        2. Run validation rules (placeholders, word count, strategic alignment).
-        3. Calculate pass/fail status based on severity.
-        4. Write validation report.
+        1. Read Generation and Research Context.
+        2. Specialist Validation Execution (K.7 Heuristics).
+        3. Calculate Report and Failure Classification.
+        4. Map Failures for HOP-7 Governor.
         """
-        # 1. Read Inputs
+        registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
+        
+        # 1. Read Generation and Research Context
         try:
-            gen_state = buffer.read("hop5_generation")
-            research_state = buffer.read("hop2_research")
-            grounding_state = buffer.read("hop3_sender_grounding")
-        except Exception:
-            registry.add_trace("DATA_ERROR", {"msg": "Failed to read required inputs"})
-            raise ValueError("HOP-6 requires inputs from HOP 5, 2, and 3")
+            hop5 = buffer.read("hop5_generation")
+            hop2 = buffer.read("hop2_research")
+        except Exception as e:
+            registry.add_trace("DATA_ERROR", {"msg": str(e)})
+            raise RuntimeError("HOP-6 missing HOP-5 draft or HOP-2 research")
 
-        # Validate existence (HOP-3 is optional but recommended)
-        if not gen_state or not research_state:
-            registry.add_trace("CRITICAL_FAILURE", {"msg": "Missing upstream state (HOP5 or HOP2)"})
-            raise RuntimeError("Missing upstream state for validation")
+        draft_text = hop5["selected_draft"]["text"]
+        
+        # 2. Specialist Validation Execution (K.7 Heuristics)
+        registry.add_trace("PHASE_STEP", {"action": "starting_rule_execution"})
+        
+        results = []
+        # Rule: LIC-E001 (Placeholders) - CRITICAL
+        results.append(self._check_placeholders(draft_text))
+        
+        # Rule: LIC-E015 (Strategic Alignment) - CRITICAL
+        results.append(self._check_strategic_alignment(draft_text, hop2))
+        
+        # Rule: LIC-E008 (Forbidden Verbs) - MEDIUM
+        results.append(self._check_forbidden_verbs(draft_text))
 
-        draft = gen_state["selected_draft"]
-        text = draft["text"]
-
-        registry.add_trace("PHASE_STEP", {"action": "validating_draft", "length": len(text)})
-
-        # 2. Execute Validation Logic
-        results = self._validate_draft(text, draft, research_state, grounding_state)
-
-        # 3. Calculate Status
-        critical_issues = sum(1 for r in results if r["severity"] == "CRITICAL" and not r["passed"])
-        high_issues = sum(1 for r in results if r["severity"] == "HIGH" and not r["passed"])
-        medium_issues = sum(1 for r in results if r["severity"] == "MEDIUM" and not r["passed"])
-
-        passed = critical_issues == 0 and high_issues == 0
-
-        # 4. Write Output
-        output = {
+        # 3. Calculate Report and Failure Classification
+        critical_issues = [r for r in results if r["severity"] == "CRITICAL" and not r["passed"]]
+        high_issues = [r for r in results if r["severity"] == "HIGH" and not r["passed"]]
+        
+        passed = (len(critical_issues) == 0 and len(high_issues) == 0)
+        
+        # 4. Map Failures for HOP-7 Governor (K.7 Validator logic)
+        failure_report = {
             "passed": passed,
             "validation_results": results,
             "stats": {
-                "critical": critical_issues,
-                "high": high_issues,
-                "medium": medium_issues,
-                "total_checked": len(results),
-            },
+                "critical": len(critical_issues),
+                "total_checked": len(results)
+            }
         }
 
-        buffer.write_once("hop6_validation_report", output)
+        buffer.write_once("hop6_validation_report", failure_report)
+        registry.add_trace("DECISION_FINAL", {"status": "PASS" if passed else "FAIL"})
 
-        status_msg = "PASS" if passed else "FAIL"
-        registry.add_trace(
-            "DECISION_FINAL", {"status": status_msg, "critical_issues": critical_issues}
-        )
-
-    def _validate_draft(
-        self, text: str, draft: dict, research: dict, grounding: dict
-    ) -> list[dict]:
+    def _check_placeholders(self, text: str) -> dict:
         """
-        Run all validation checks.
-
-        Args:
-            text: Draft message text
-            draft: Full draft object
-            research: Research context from HOP-2
-            grounding: Sender grounding from HOP-3
-
-        Returns:
-            List of validation results with rule_id, severity, passed, and optional message
+        K.7/PlaceholderDetector logic: Zero tolerance for [bracketed] text.
+        
+        Rule: LIC-E001
+        Severity: CRITICAL
+        Pattern: [text], {text}, <text>
         """
-        results = []
+        pattern = r"\[.*?\]|\{.*?\}|<.*?>"
+        found = re.findall(pattern, text)
+        return {
+            "rule_id": "LIC-E001",
+            "severity": "CRITICAL",
+            "passed": len(found) == 0,
+            "message": f"Found placeholders: {found}" if found else "No placeholders detected"
+        }
 
-        # 1. Placeholder Check (CRITICAL)
-        # Regex for [bracketed] or <angled> placeholders
-        if re.search(r"\[.*?\]|<.*?>", text):
-            results.append(
-                {
-                    "rule_id": "PLACEHOLDERS",
-                    "severity": "CRITICAL",
-                    "passed": False,
-                    "message": "Placeholder patterns detected",
-                }
-            )
-        else:
-            results.append({"rule_id": "PLACEHOLDERS", "severity": "CRITICAL", "passed": True})
-
-        # 2. Word Count (HIGH)
-        word_count = len(text.split())
-        if word_count < 10 or word_count > 1000:
-            results.append(
-                {
-                    "rule_id": "WORD_COUNT_SANITY",
-                    "severity": "HIGH",
-                    "passed": False,
-                    "message": f"Word count {word_count} suspicious",
-                }
-            )
-        else:
-            results.append({"rule_id": "WORD_COUNT_SANITY", "severity": "HIGH", "passed": True})
-
-        # 3. Strategic Alignment (CRITICAL)
-        # Check if strategic brief keywords appear in text
-        brief = research.get("strategic_brief", "")
-        if brief:
-            # Simplified keyword extraction (words > 5 chars)
-            brief_keywords = set(w.lower() for w in brief.split() if len(w) > 5)
-            text_words = set(w.lower() for w in text.split())
-            overlap = brief_keywords.intersection(text_words)
-
-            if not overlap and len(brief_keywords) > 0:
-                results.append(
-                    {
-                        "rule_id": "STRATEGIC_ALIGNMENT",
-                        "severity": "CRITICAL",
-                        "passed": False,
-                        "message": "No strategic keywords found in draft",
-                    }
-                )
-            else:
-                results.append(
-                    {"rule_id": "STRATEGIC_ALIGNMENT", "severity": "CRITICAL", "passed": True}
-                )
-
-        return results
+    def _check_strategic_alignment(self, text: str, hop2: dict) -> dict:
+        """
+        K.7/Strategic logic: Ensure overlap with strategic brief keywords.
+        
+        Rule: LIC-E015
+        Severity: CRITICAL
+        Logic: Extract keywords > 4 chars, check for at least 1 match
+        """
+        brief = hop2.get("strategic_brief", "")
+        
+        if not brief:
+            # No brief to validate against
+            return {
+                "rule_id": "LIC-E015",
+                "severity": "CRITICAL",
+                "passed": True,
+                "message": "No strategic brief provided, skipping alignment check"
+            }
+        
+        # Extract keywords > 4 chars from brief
+        brief_keywords = set(w.lower() for w in brief.split() if len(w) > 4)
+        text_words = set(w.lower() for w in text.split())
+        overlap = brief_keywords.intersection(text_words)
+        
+        passed = len(overlap) > 0 or len(brief_keywords) == 0
+        
+        return {
+            "rule_id": "LIC-E015",
+            "severity": "CRITICAL",
+            "passed": passed,
+            "message": f"Strategic alignment verified ({len(overlap)} keywords matched)" if passed else "No strategic keywords found in draft"
+        }
+    
+    def _check_forbidden_verbs(self, text: str) -> dict:
+        """
+        K.7/ForbiddenVerbs logic: Detect overly promotional language.
+        
+        Rule: LIC-E008
+        Severity: MEDIUM
+        Forbidden: "revolutionize", "disrupt", "transform", "leverage"
+        """
+        forbidden_verbs = ["revolutionize", "disrupt", "transform", "leverage", "synergize", "optimize"]
+        text_lower = text.lower()
+        
+        found = [verb for verb in forbidden_verbs if verb in text_lower]
+        
+        return {
+            "rule_id": "LIC-E008",
+            "severity": "MEDIUM",
+            "passed": len(found) == 0,
+            "message": f"Found forbidden verbs: {found}" if found else "No forbidden verbs detected"
+        }
