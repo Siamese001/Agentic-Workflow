@@ -1,5 +1,5 @@
 """
-HOP-7: Gate Decision Agent (V2 Architecture).
+HOP-7: Gate Decision Agent (LIC Sovereign Architecture).
 
 Acts as the 'Governor' by evaluating validation reports and
 directing the workflow (Pass, Retry Research, or Retry Generation).
@@ -8,12 +8,12 @@ directing the workflow (Pass, Retry Research, or Retry Generation).
 from __future__ import annotations
 
 
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
-class HOP7GateDecisionAgent(V2AgentBase):
+class HOP7GateDecisionAgent(LICAgentBase):
     """
     V2.5 Governor Agent.
 

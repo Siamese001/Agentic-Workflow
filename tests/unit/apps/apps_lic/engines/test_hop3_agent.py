@@ -10,8 +10,8 @@ import pytest
 
 from apps_lic.domain.config.schemas import SenderGroundingConfig
 from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 # --- Mock Data ---
 
@@ -44,14 +44,14 @@ def resources():
 @pytest.fixture
 def mock_config(monkeypatch):
     """Inject mock config into the agent."""
-    # We mock the V2AgentBase configuration loading to return our test config
+    # We mock the LICAgentBase configuration loading to return our test config
     mock_specs = MagicMock()
     mock_specs.sender_grounding_agent = SenderGroundingConfig(
         source_files=["kb.json", "resume.json"], extraction_targets=["products", "achievements"]
     )
 
-    # Patch the load_agent_specs used by V2AgentBase
-    with patch("apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs):
+    # Patch the load_agent_specs used by LICAgentBase
+    with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
         yield mock_specs
 
 

@@ -7,8 +7,8 @@ Requirement: 100% Pass Rate for Back-Hop Routing.
 
 import pytest
 from apps_lic.engines.HOP7GateDecisionAgent import HOP7GateDecisionAgent
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 class TestHOP7GovernorLogic:
@@ -94,7 +94,7 @@ class TestHOP7GovernorLogic:
         with pytest.raises(RuntimeError):
             agent.run_phase(buffer, registry)
 
-        # Verify error trace was logged (V2AgentBase logs PHASE_ERROR)
+        # Verify error trace was logged (LICAgentBase logs PHASE_ERROR)
         traces = [t["type"] for t in registry.get_traces()]
         assert "PHASE_ERROR" in traces or "DATA_ERROR" in traces
 

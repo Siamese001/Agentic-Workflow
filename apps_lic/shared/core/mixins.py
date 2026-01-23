@@ -1,7 +1,7 @@
 """
-V2 Pattern Mixins - Re-exports for LIC agents.
+LIC Core Mixins - Re-exports for LIC Sovereign Architecture agents.
 
-Provides convenient access to sovereign mixins for V2 agent consolidation.
+Provides convenient access to sovereign mixins for LIC agent consolidation.
 """
 
 from __future__ import annotations

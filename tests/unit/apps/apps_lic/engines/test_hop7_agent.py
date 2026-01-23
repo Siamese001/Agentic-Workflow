@@ -5,8 +5,8 @@ Ensures failure classification and workflow direction logic.
 import pytest
 from unittest.mock import MagicMock, patch
 from apps_lic.engines.HOP7GateDecisionAgent import HOP7GateDecisionAgent
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 from apps_lic.domain.config.schemas import GateConfig
 
 @pytest.fixture
@@ -31,7 +31,7 @@ class TestHOP7GateLogic:
         # Mock a passing report
         buffer.write_once("hop6_validation_report", {"passed": True, "validation_results": []})
         
-        with patch("apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs):
+        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP7GateDecisionAgent()
             agent.run_phase(buffer, registry)
         
@@ -50,7 +50,7 @@ class TestHOP7GateLogic:
         }
         buffer.write_once("hop6_validation_report", report)
         
-        with patch("apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs):
+        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP7GateDecisionAgent()
             agent.run_phase(buffer, registry)
         
@@ -69,7 +69,7 @@ class TestHOP7GateLogic:
         }
         buffer.write_once("hop6_validation_report", report)
         
-        with patch("apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs):
+        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP7GateDecisionAgent()
             agent.run_phase(buffer, registry)
         
@@ -82,7 +82,7 @@ class TestHOP7GateLogic:
         buffer, registry = resources
         # No validation report written
         
-        with patch("apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs):
+        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP7GateDecisionAgent()
             with pytest.raises(RuntimeError):
                 agent.run_phase(buffer, registry)

@@ -1,7 +1,7 @@
 """
 HOP-9: Integration Agent (V2.5 Architecture).
 
-V2.5 Sovereign Dispatcher.
+LIC Sovereign Dispatcher.
 Handles delivery payload formatting and final audit verification.
 """
 
@@ -9,17 +9,17 @@ from __future__ import annotations
 
 import hashlib
 
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
-class HOP9IntegrationAgent(V2AgentBase):
+class HOP9IntegrationAgent(LICAgentBase):
     """
-    V2.5 Sovereign Dispatcher.
+    LIC Sovereign Dispatcher.
 
     Architecture:
-    - Base: V2AgentBase (Config, Tracing, Healing)
+    - Base: LICAgentBase (Config, Tracing, Healing)
     - Inputs: HOP-4 (Route), HOP-5 (Draft), HOP-8 (QA Report)
     - Logic: Checksum Integrity -> Payload Formatting -> Delivery Seal
     - Output: 'hop9_integration' to ImmutableStagingBuffer

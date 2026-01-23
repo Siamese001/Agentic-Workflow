@@ -1,5 +1,5 @@
 """
-HOP-5: Generation Agent (V2 Architecture).
+HOP-5: Generation Agent (LIC Sovereign Architecture).
 
 Synthesizes inputs from HOPs 1-4 to generate candidate messages.
 """
@@ -8,17 +8,17 @@ from __future__ import annotations
 
 import asyncio
 
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
-class HOP5GenerationAgent(V2AgentBase):
+class HOP5GenerationAgent(LICAgentBase):
     """
     V2 Implementation of HOP-5 Writer.
 
     Architecture:
-    - Base: V2AgentBase
+    - Base: LICAgentBase
     - Inputs:
         - HOP-1 (Archetype)
         - HOP-2 (Research/Context)

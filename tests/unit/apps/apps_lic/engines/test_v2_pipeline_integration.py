@@ -9,7 +9,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 # V2 Core Imports
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
 
 # Agent Imports
@@ -74,7 +74,7 @@ def orchestrator(tmp_path):
     orch.register_agent("HOP7", HOP7GateDecisionAgent())
 
     # Configure HOP8 to use tmp_path - patch at agent instantiation
-    with patch("apps_lic.shared.foundation.agent_base.load_agent_specs") as mock_specs:
+    with patch("apps_lic.shared.core.agent_base.load_agent_specs") as mock_specs:
         mock_config = MagicMock()
         mock_config.qa_report_agent.output_directory = str(tmp_path)
         mock_config.qa_report_agent.scoring_weights = {
@@ -92,7 +92,7 @@ def orchestrator(tmp_path):
 
 class TestV2PipelineIntegrity:
     """
-    Mandatory Test Suite for V2 Architecture.
+    Mandatory Test Suite for LIC Sovereign Architecture.
     Requirement: 100% Pass Rate for Production Readiness.
     """
 

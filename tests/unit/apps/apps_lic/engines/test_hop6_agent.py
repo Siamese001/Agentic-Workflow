@@ -9,8 +9,8 @@ import pytest
 
 from apps_lic.domain.config.schemas import ValidationConfig
 from apps_lic.engines.HOP6ValidationAgent import HOP6ValidationAgent
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 @pytest.fixture
@@ -37,7 +37,7 @@ class TestHOP6Validation:
         buffer.write_once("hop3_sender_grounding", {})
 
         with patch(
-            "apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs
+            "apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs
         ):
             agent = HOP6ValidationAgent()
             agent.run_phase(buffer, registry)
@@ -64,7 +64,7 @@ class TestHOP6Validation:
         buffer.write_once("hop3_sender_grounding", {})
 
         with patch(
-            "apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs
+            "apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs
         ):
             agent = HOP6ValidationAgent()
             agent.run_phase(buffer, registry)
@@ -82,7 +82,7 @@ class TestHOP6Validation:
         buffer, registry = resources
 
         with patch(
-            "apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs
+            "apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs
         ):
             agent = HOP6ValidationAgent()
             with pytest.raises(RuntimeError):

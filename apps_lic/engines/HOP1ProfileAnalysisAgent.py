@@ -1,7 +1,7 @@
 """
 HOP-1: Profile Analysis Agent (V2.5 Architecture).
 
-V2.5 Sovereign Gatekeeper.
+LIC Sovereign Gatekeeper.
 Implements mandatory LIC 7 Entrance Gates and CXO Precedence Rules.
 """
 
@@ -9,17 +9,17 @@ from __future__ import annotations
 
 from typing import Any
 
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
-class HOP1ProfileAnalysisAgent(V2AgentBase):
+class HOP1ProfileAnalysisAgent(LICAgentBase):
     """
-    V2.5 Sovereign Gatekeeper.
+    LIC Sovereign Gatekeeper.
 
     Architecture:
-    - Base: V2AgentBase (Config, Tracing, Healing)
+    - Base: LICAgentBase (Config, Tracing, Healing)
     - Input: 'mission_input' or 'recipient_profile' from ImmutableStagingBuffer
     - Logic: Gate Validation -> CXO Precedence -> Heuristic Classification
     - Output: 'hop1_analysis' (Dict) to ImmutableStagingBuffer

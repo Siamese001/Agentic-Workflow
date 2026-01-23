@@ -8,8 +8,8 @@ from unittest.mock import MagicMock
 import pytest
 
 from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 # --- Fixtures ---
 
@@ -116,7 +116,7 @@ class TestHOP2FastPath:
     def test_missing_input_failure(self, mock_memory_store, resources):
         """
         Scenario: Buffer missing 'hop1_analysis'.
-        Expected: RuntimeError (raised by V2AgentBase) wrapping ValueError.
+        Expected: RuntimeError (raised by LICAgentBase) wrapping ValueError.
         """
         buffer, registry = resources
         # Do NOT write input

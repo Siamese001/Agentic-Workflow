@@ -14,8 +14,8 @@ from apps_lic.domain.config.schemas import (
     RoutingConfig,
 )
 from apps_lic.engines.HOP4RoutingAgent import HOP4RoutingAgent
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 # --- Fixtures ---
 
@@ -60,7 +60,7 @@ def agent_with_config(mock_routing_config):
     mock_specs = MagicMock()
     mock_specs.routing_agent = mock_routing_config
 
-    with patch("apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs):
+    with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
         return HOP4RoutingAgent()
 
 

@@ -1,4 +1,4 @@
-"""Safety guard stack agents - V2.5 Sovereign Specialists."""
+"""Safety guard stack agents - LIC Sovereign Specialists."""
 
 from __future__ import annotations
 
@@ -8,13 +8,13 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
-class PIISanitizerSpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class PIISanitizerSpecialist(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """Performs local PII detection using regex heuristics."""
 
     PII_PATTERNS = {
@@ -47,8 +47,8 @@ class PIISanitizerSpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixi
         return text
 
 
-class BiasDetectorSpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
-    """V2.5 Sovereign Bias Detector - Runs local bias detection with dynamic constitution rules."""
+class BiasDetectorSpecialist(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+    """LIC Sovereign Bias Detector - Runs local bias detection with dynamic constitution rules."""
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """Execute bias detection on buffer content."""
@@ -71,7 +71,7 @@ class BiasDetectorSpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixi
 
 
 class PromptInjectionDetectorSpecialist(
-    V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+    LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
 ):
     """Detects prompt-injection attacks."""
 

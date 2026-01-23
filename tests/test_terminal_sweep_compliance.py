@@ -36,7 +36,7 @@ class TestTerminalSweepCompliance:
             if agent_path.exists():
                 content = agent_path.read_text(encoding="utf-8", errors="ignore")
                 assert (
-                    "V2AgentBase" in content
+                    "LICAgentBase" in content
                     or "SubatomicTestingMixin" in content
                     or "HealerMixin" in content
                 ), f"File {agent_file} should have V2 patterns after upgrade"
@@ -83,7 +83,7 @@ class TestTerminalSweepCompliance:
         content = bias_file.read_text(encoding="utf-8")
 
         assert "BiasDetectorSpecialist" in content, "BiasDetectorSpecialist class must exist"
-        assert "V2AgentBase" in content, "Must inherit from V2AgentBase"
+        assert "LICAgentBase" in content, "Must inherit from LICAgentBase"
         assert "SubatomicTestingMixin" in content, "Must include SubatomicTestingMixin"
 
     def test_specialist_node_upgrade_intelligence_librarian(self, disable_path_shield):
@@ -95,7 +95,7 @@ class TestTerminalSweepCompliance:
         assert "IntelligenceLibrarianSpecialist" in content, (
             "IntelligenceLibrarianSpecialist class must exist"
         )
-        assert "V2AgentBase" in content, "Must inherit from V2AgentBase"
+        assert "LICAgentBase" in content, "Must inherit from LICAgentBase"
         assert "SubatomicTestingMixin" in content, "Must include SubatomicTestingMixin"
 
     def test_test_script_quarantine(self, disable_path_shield):

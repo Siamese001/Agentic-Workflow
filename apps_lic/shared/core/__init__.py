@@ -1,5 +1,5 @@
 """
-V2 Architecture Patterns for apps_lic.
+LIC Sovereign Architecture Patterns for apps_lic.
 Provides hardened state management, tracing, and persistence.
 """
 

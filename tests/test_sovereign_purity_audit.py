@@ -18,11 +18,11 @@ class TestSovereignPurityAudit:
     """
 
     def test_foundation_directory_rename(self, disable_path_shield):
-        """Verify the legacy 'v2_patterns' is now 'foundation'."""
-        old = REPO_ROOT / "apps_lic" / "shared" / "v2_patterns"
+        """Verify the legacy 'core' is now 'foundation'."""
+        old = REPO_ROOT / "apps_lic" / "shared" / "core"
         new = REPO_ROOT / "apps_lic" / "shared" / "foundation"
         # Verify 100% Pass: The core DNA must be in 'foundation'
-        assert not old.exists(), "v2_patterns should no longer exist"
+        assert not old.exists(), "core should no longer exist"
         assert new.exists(), "foundation directory must exist"
 
     def test_engine_folder_specialist_purity(self, disable_path_shield):

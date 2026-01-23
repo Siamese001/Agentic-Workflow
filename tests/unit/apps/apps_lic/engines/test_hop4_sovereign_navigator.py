@@ -6,8 +6,8 @@ MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf exec
 
 import pytest
 from apps_lic.engines.HOP4RoutingAgent import HOP4RoutingAgent
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 class TestHOP4SovereignNavigator:
@@ -33,7 +33,7 @@ class TestHOP4SovereignNavigator:
         )
 
         agent = HOP4RoutingAgent()
-        # V2AgentBase wraps exceptions in RuntimeError
+        # LICAgentBase wraps exceptions in RuntimeError
         with pytest.raises(RuntimeError):
             agent.run_phase(buffer, registry)
 

@@ -6,12 +6,12 @@ Verifies linear flow, factual retry loops, and creative retry loops.
 import pytest
 from unittest.mock import MagicMock, patch
 from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
-from apps_lic.shared.foundation.agent_base import V2AgentBase
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
+from apps_lic.shared.core.agent_base import LICAgentBase
 
 
-class MockAgent(V2AgentBase):
+class MockAgent(LICAgentBase):
     """Mock agent for testing orchestrator."""
 
     def __init__(self, hop_id: str, output_data: dict):
