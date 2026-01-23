@@ -7,8 +7,8 @@ Requirement: 100% Pass Rate for Back-Hop Routing.
 
 import pytest
 from apps_lic.engines.HOP7GateDecisionAgent import HOP7GateDecisionAgent
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
 
 
 class TestHOP7GovernorLogic:

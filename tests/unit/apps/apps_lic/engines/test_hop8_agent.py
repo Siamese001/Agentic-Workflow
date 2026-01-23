@@ -6,8 +6,8 @@ import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 from apps_lic.engines.HOP8QAReportAgent import HOP8QAReportAgent
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
 from apps_lic.domain.config.schemas import QAReportConfig
 
 @pytest.fixture
@@ -43,7 +43,7 @@ class TestHOP8ReportLogic:
         """Verify score is calculated and file is saved."""
         buffer, registry = populated_buffer
         
-        with patch("apps_lic.shared.v2_patterns.agent_base.load_agent_specs", return_value=mock_specs):
+        with patch("apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP8QAReportAgent()
             agent.run_phase(buffer, registry)
         
@@ -61,7 +61,7 @@ class TestHOP8ReportLogic:
         # Only HOP-1 provided
         buffer.write_once("hop1_analysis", {"recipient_name": "Ghost"})
         
-        with patch("apps_lic.shared.v2_patterns.agent_base.load_agent_specs", return_value=mock_specs):
+        with patch("apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP8QAReportAgent()
             agent.run_phase(buffer, registry)
         

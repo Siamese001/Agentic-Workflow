@@ -9,7 +9,7 @@ import pytest
 import json
 from unittest.mock import MagicMock
 from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
 
 
 class TestV25OrchestratorHardening:

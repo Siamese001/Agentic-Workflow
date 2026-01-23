@@ -15,8 +15,8 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from apps_lic.domain.config.loader import load_agent_specs
 from apps_lic.domain.config.schemas import AgentSpecs
 from apps_lic.shared.reasoning.toggles import ReasoningToggles
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
 
 
 class V2AgentBase(MCPHardenedMixin, HealerMixin, ABC):

@@ -10,8 +10,8 @@ import pytest
 
 from apps_lic.domain.config.schemas import SenderGroundingConfig
 from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
 
 # --- Mock Data ---
 
@@ -51,7 +51,7 @@ def mock_config(monkeypatch):
     )
 
     # Patch the load_agent_specs used by V2AgentBase
-    with patch("apps_lic.shared.v2_patterns.agent_base.load_agent_specs", return_value=mock_specs):
+    with patch("apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs):
         yield mock_specs
 
 

@@ -6,9 +6,9 @@ Verifies linear flow, factual retry loops, and creative retry loops.
 import pytest
 from unittest.mock import MagicMock, patch
 from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
-from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.agent_base import V2AgentBase
 
 
 class MockAgent(V2AgentBase):
