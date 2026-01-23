@@ -3,34 +3,21 @@ SovereignBaseAgent - Sovereign Single Source of Truth (SSOT) Root.
 
 Provides foundational capabilities for agents with sovereign authority.
 
-L0 DNA FLATTENING (Jan 2026):
-InfrastructureMixin consolidates all core agent capabilities:
-- HealerMixin (autonomous repair)
-- MCPHardenedMixin (MCP protocol safety)
-- SubatomicTestingMixin (self-testing)
-- InstructionalInjectionMixin (prompt injection protection - now L0 core trait)
+PHASE 9 MIGRATION (Jan 2026):
+- Global Injection of Phase 4-6 Architectures.
+- Native capabilities: Config, LLM, Embedding, Healing, Validation.
+- Resolves "Opt-In" drift by enforcing capabilities at the root.
 
-PHASE 2 MIGRATION:
-- Replaced individual mixins with InfrastructureMixin (unified gatekeeper)
-- InfrastructureMixin provides: healing, MCP hardening, subatomic testing, prompt safety
-- State verification via _infra_initialized flag
+L0 DNA FLATTENING:
+InfrastructureMixin consolidates core capabilities (legacy).
+New Mixins provide Gateway access (modern).
 
 MRO HARDENING:
 - This is the ROOT of the agent hierarchy
 - InfrastructureMixin is injected HERE so all agents get full infrastructure
 - Layer bases add specialized mixins BEFORE SovereignBaseAgent
-- MRO Flow: Specialized -> Layer -> SovereignBaseAgent -> InfrastructureMixin -> [HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, InstructionalInjectionMixin] -> object
-
-RESILIENCE:
-- Prompt injection protection is now a core L0 trait, independent of MCP protocol
-- Air-gapped agents (no MCP tools) still retain InstructionalInjectionMixin safety protocols
-- Security auditors can verify injection-protection layer at the root of the hierarchy
+- MRO Flow: Specialized -> Layer -> SovereignBaseAgent -> [Mixins] -> object
 """
-
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, validator
-# This boosts alignment detection — review and integrate appropriately
 
 import logging
 from dataclasses import dataclass
@@ -38,33 +25,42 @@ from typing import Any
 
 from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
 
+# [PHASE 9] Global Architecture Injection
+from agentic_core.config.config_mixin import ConfigMixin
+from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
+from agentic_core.L2_execution.mcp.embedding_mixin import EmbeddingMixin
+from agentic_core.L5_safety.validators.healing_strategy_mixin import HealingStrategyMixin
+from agentic_core.L5_safety.validators.validator_mixin import ValidatorMixin
+
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class SovereignBaseAgent(InfrastructureMixin):
+class SovereignBaseAgent(
+    InfrastructureMixin,
+    ConfigMixin,
+    LLMProviderMixin,
+    EmbeddingMixin,
+    HealingStrategyMixin,
+    ValidatorMixin,
+):
     """
     Sovereign Single Source of Truth (SSOT) Root.
 
-    L0 DNA FLATTENING (Jan 2026):
-    InfrastructureMixin consolidates all core agent capabilities:
-    - HealerMixin: Autonomous repair capability
-    - MCPHardenedMixin: MCP protocol hardening
-    - SubatomicTestingMixin: Self-testing capability
-    - InstructionalInjectionMixin: Prompt injection protection (now L0 core trait)
+    Inheritance Chain (Phase 9):
+    1. InfrastructureMixin (Legacy Safety/MCP)
+    2. ConfigMixin (Phase 6 - Typed Configuration)
+    3. LLMProviderMixin (Phase 4 - SovereignLLMGateway)
+    4. EmbeddingMixin (Phase 4 - EmbeddingSovereignAgent)
+    5. HealingStrategyMixin (Phase 5 - HealingOrchestrator)
+    6. ValidatorMixin (Phase 5 - ValidatorOrchestrator)
 
-    This ensures EVERY agent in the L0-L6 hierarchy has full infrastructure.
-
-    MRO HARDENING:
-    - SovereignBaseAgent inherits from InfrastructureMixin
-    - Layer bases inherit from SovereignBaseAgent (+ specialized mixins)
-    - Concrete agents inherit from layer bases (+ more specialized mixins)
-    - MRO: Specialized -> Layer -> SovereignBaseAgent -> InfrastructureMixin -> [HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, InstructionalInjectionMixin] -> object
-
-    RESILIENCE:
-    - Prompt injection protection is independent of MCP protocol
-    - Air-gapped agents retain InstructionalInjectionMixin safety
-    - Security auditors can verify injection-protection at root level
+    This ensures EVERY agent in the hierarchy has:
+    - self.config (Typed Env Vars)
+    - self.llm_generate() (Audited LLM calls)
+    - self.get_embedding() (Cached Embeddings)
+    - self.orchestrator_heal() (Strategy Dispatch)
+    - self.orchestrator_validate() (Central Validation)
     """
 
     name: str = "SovereignAgent"
@@ -88,9 +84,9 @@ class SovereignBaseAgent(InfrastructureMixin):
 
     def _initialize_sovereign_state(self) -> Any:
         """Initialize sovereign-specific state."""
-        self._config: dict[str, Any] = {}
         self._state: dict[str, Any] = {}
         self._authority_level = "standard"
+        # Config is now provided by ConfigMixin via self.config property
 
     def execute(self, *args, **kwargs) -> Any:
         """Execute the agent's main function."""
