@@ -48,7 +48,7 @@ def test_1_signal_saturation_sweep():
 
     try:
         from agentic_core.L5_safety.validators.context import ValidationContext
-        from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+        from agentic_core.L2_execution.L2ExecutionBaseAgent import L2ExecutionBaseAgent
         from dataclasses import dataclass
 
         # Create a concrete test agent

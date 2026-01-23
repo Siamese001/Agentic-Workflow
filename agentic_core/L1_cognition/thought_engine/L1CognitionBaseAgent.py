@@ -18,8 +18,6 @@ from agentic_core.L1_cognition.thought_engine.validation_protocol import Validat
 from agentic_core.base_agents.SovereignBaseAgent import (
     SovereignBaseAgent,  # NEW: Root inheritance
 )
-from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO").upper())
@@ -27,7 +25,7 @@ Logger: Any = logging.getLogger(__name__)
 
 
 @dataclass
-class L1CognitionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
+class L1CognitionBaseAgent(SovereignBaseAgent):
     """L1 Cognition base class - unified under SovereignBaseAgent.
 
     HARDENED: Now with Redis caching + Pinecone vector support.

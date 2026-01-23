@@ -43,13 +43,12 @@ import json
 import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
 from typing import Any
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.security import safe_execute
 
@@ -459,18 +458,14 @@ def test_artifact_exists():
 
 
 @dataclass
-class L4StateBaseAgent(
-    L4SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent
-):
+class L4StateBaseAgent(L4SubatomicTestingMixin, SovereignBaseAgent):
     """Base class for L4 State agents with subatomic testing.
 
-    MRO HARDENING:
+    MRO HARDENING (Phase 21.1):
     - L4SubatomicTestingMixin: First (L4-specific testing)
-    - RedisCacheMixin: Second (caching infrastructure)
-    - PineconeVectorMixin: Third (vector infrastructure)
-    - SovereignBaseAgent: Last (root - includes MCPHardenedMixin)
+    - SovereignBaseAgent: Last (root - includes InfrastructureMixin with Redis/Pinecone)
 
-    MRO: L4SubatomicTestingMixin -> RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
+    MRO: L4SubatomicTestingMixin -> SovereignBaseAgent -> InfrastructureMixin -> PineconeVectorMixin -> RedisCacheMixin -> object
 
     L4 Table Decision:
     - Basic Self-Testing: YES (state consistency, idempotency)

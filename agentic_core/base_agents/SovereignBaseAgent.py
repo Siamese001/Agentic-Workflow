@@ -47,15 +47,19 @@ class SovereignBaseAgent(
     """
     Sovereign Single Source of Truth (SSOT) Root.
 
-    Inheritance Chain (Phase 9):
-    1. InfrastructureMixin (Legacy Safety/MCP)
-    2. ConfigMixin (Phase 6 - Typed Configuration)
-    3. LLMProviderMixin (Phase 4 - SovereignLLMGateway)
-    4. EmbeddingMixin (Phase 4 - EmbeddingSovereignAgent)
-    5. HealingStrategyMixin (Phase 5 - HealingOrchestrator)
-    6. ValidatorMixin (Phase 5 - ValidatorOrchestrator)
+    Inheritance Chain (Phase 21.1 - Hierarchy Normalization):
+    1. RedisCacheMixin (Direct Redis access - cache_get, cache_set)
+    2. PineconeVectorMixin (Direct Pinecone access - vector_search)
+    3. InfrastructureMixin (Legacy Safety/MCP)
+    4. ConfigMixin (Phase 6 - Typed Configuration)
+    5. LLMProviderMixin (Phase 4 - SovereignLLMGateway)
+    6. EmbeddingMixin (Phase 4 - EmbeddingSovereignAgent)
+    7. HealingStrategyMixin (Phase 5 - HealingOrchestrator)
+    8. ValidatorMixin (Phase 5 - ValidatorOrchestrator)
 
     This ensures EVERY agent in the hierarchy has:
+    - self.cache_get() / self.cache_set() (Redis capabilities)
+    - self.vector_search() (Pinecone capabilities)
     - self.config (Typed Env Vars)
     - self.llm_generate() (Audited LLM calls)
     - self.get_embedding() (Cached Embeddings)

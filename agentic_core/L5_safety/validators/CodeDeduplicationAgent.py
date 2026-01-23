@@ -85,15 +85,13 @@ except ImportError:
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # Archives directory constant for exclusion
 ARCHIVES_DIR = "archives"
 
 
-class CodeDeduplicationAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVectorMixin):
+class CodeDeduplicationAgent(SovereignBaseAgent):
     """
     Batch agent for detecting and optionally refactoring duplicated code.
 

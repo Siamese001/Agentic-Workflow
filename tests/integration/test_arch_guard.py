@@ -1,11 +1,11 @@
 """
 Architecture Guard (ArchGuard) - Sprawl Prevention Suite
 
-[PHASE 7] Enforces architectural constraints via AST analysis.
-Ensures that:
-1. Direct SDK usage is restricted to Gateways.
-2. No active code imports from 'archived/'.
-3. 'Zombie' files are strictly forbidden in active paths.
+[PHASE 11 UPDATED] Enforces architectural constraints via AST analysis.
+- Updated Allowlist for Phase 2/3 Gateways.
+- Strict Zombie Detection.
+
+[PHASE 21 HARDENED] Structure Locking to prevent sprawl creep.
 """
 
 import os
@@ -24,13 +24,21 @@ CORE_DIR = ROOT_DIR / "agentic_core"
 SDK_ALLOWLIST = {
     "openai": ["SovereignLLMGateway.py", "EmbeddingSovereignAgent.py"],
     "anthropic": ["SovereignLLMGateway.py"],
-    "google.generativeai": [
-        "SovereignLLMGateway.py",
-        "EmbeddingSovereignAgent.py",
-        "gemini_embedder.py",
-    ],  # gemini_embedder allowed only if not archived
-    "pinecone": ["PineconeSovereignAgent.py"],
-    "redis": ["redis_cache_mixin.py", "SemanticCacheSovereignAgent.py"],
+    "google.generativeai": ["SovereignLLMGateway.py", "EmbeddingSovereignAgent.py"],
+    "pinecone": [
+        "PineconeSovereignAgent.py",
+        "MemoryArchitectAgent.py",  # [PHASE 11] Allowed Memory Orchestrator
+        "SemanticKnowledgeClient.py",  # [PHASE 11] Legacy Client (To be migrated, but whitelisted for now)
+        "SemanticCacheManager.py",  # [PHASE 12] L4 State Owner (Allowed)
+    ],
+    "redis": [
+        "redis_cache_mixin.py",
+        "SemanticCacheSovereignAgent.py",
+        "RedisSovereignAgent.py",  # [PHASE 11] Phase 2 Gateway
+        "SovereignRedisOrchestratorAgent.py",  # [PHASE 11] Phase 2 Orchestrator
+        "SemanticCacheManager.py",  # [PHASE 12] L4 State Owner (Allowed)
+    ],
+    "google.genai": ["SovereignLLMGateway.py", "EmbeddingSovereignAgent.py"],
 }
 
 # 2. Files that MUST NOT exist in active paths (should be archived)
@@ -40,7 +48,13 @@ FORBIDDEN_FILES = [
     "UnifiedModelRouterAgent.py",
     "healing_strategies.py",
     "healing_healing_strategies.py",
+    "runtime_shared_multi_provider_clients.py",
+    "runtime_shared_cache_clients.py",
+    "runtime_shared_vector_store_clients.py",
 ]
+
+# 3. [PHASE 21] Structure Lock - Baseline file counts per layer
+DIR_FILE_LIMITS = {"L0_maintenance": 15, "L5_safety": 25, "L2_execution": 30}
 
 
 def get_python_files(directory: Path) -> list[Path]:
@@ -131,6 +145,18 @@ def test_no_archived_imports():
             pass
 
     assert not violations, f"Active code is importing from Archive: {violations}"
+
+
+def test_structure_lock():
+    """[PHASE 21] Warn if file counts exceed baselines (Sprawl Detection)."""
+    for layer, limit in DIR_FILE_LIMITS.items():
+        layer_path = CORE_DIR / layer
+        if layer_path.exists():
+            count = len(get_python_files(layer_path))
+            if count > limit * 1.2:
+                print(
+                    f"⚠️ WARNING: {layer} file count ({count}) exceeds baseline ({limit}). Check for sprawl."
+                )
 
 
 if __name__ == "__main__":

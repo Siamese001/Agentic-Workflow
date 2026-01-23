@@ -25,14 +25,12 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 )
 from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
 from agentic_core.prompt_governance.renderer import DashboardRenderer
-from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 log = logging.getLogger(__name__)
 
 
-class AutonomyGuardianAgent(SovereignBaseAgent, RedisCacheMixin, PineconeVectorMixin):
+class AutonomyGuardianAgent(SovereignBaseAgent):
     """
     Sovereign guardian for agent autonomy enforcement.
 

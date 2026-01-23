@@ -9,8 +9,6 @@ import asyncio
 import logging
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
-from agentic_core.config.config_mixin import ConfigMixin
 
 # Import schemas from SSOT
 from agentic_core.schemas.models.consensus import ConsensusVerdict, ModelOpinion
@@ -18,7 +16,7 @@ from agentic_core.schemas.models.consensus import ConsensusVerdict, ModelOpinion
 Logger = logging.getLogger(__name__)
 
 
-class SupremeCourt(SovereignBaseAgent, LLMProviderMixin, ConfigMixin):
+class SupremeCourt(SovereignBaseAgent):
     """
     Multi-model consensus system for critical decision making.
     """

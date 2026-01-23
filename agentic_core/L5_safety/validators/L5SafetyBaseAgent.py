@@ -25,21 +25,17 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
 
 # NOT_AN_AGENT — Base class for L5 agents, not a true agent itself
-class L5SafetyBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
+class L5SafetyBaseAgent(SovereignBaseAgent):
     """Base class for L5 Safety agents with healing capability.
 
-    MRO HARDENING:
-    - RedisCacheMixin: First (caching infrastructure)
-    - PineconeVectorMixin: Second (vector infrastructure)
-    - SovereignBaseAgent: Last (root - includes MCPHardenedMixin)
+    MRO HARDENING (Phase 21.1):
+    - SovereignBaseAgent: Root (includes InfrastructureMixin with Redis/Pinecone)
 
     MRO: RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
 

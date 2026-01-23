@@ -6,18 +6,19 @@ Atomic Blackboard - Thread-Safe State Management for Canon Validator
 [PHASE 10 REFACTOR] Uses SovereignBaseAgent native infrastructure.
 """
 import hashlib
-import json
 import os
 import time
 from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+from agentic_core.schemas.models.anomaly_report import AnomalyReport
+
 
 @dataclass
 class FileHealthScore:
     """Health score for a single file."""
+
     file_path: str
     current_violations: int
     last_healed_timestamp: float
@@ -43,6 +44,7 @@ class FileHealthScore:
             last_hash=data.get("last_hash", ""),
         )
 
+
 @dataclass
 class HealingLease:
     file_path: str
@@ -53,6 +55,7 @@ class HealingLease:
 
     def is_expired(self) -> bool:
         return time.time() > self.expires_at
+
 
 class AtomicBlackboard(SovereignBaseAgent):
     """
@@ -66,7 +69,7 @@ class AtomicBlackboard(SovereignBaseAgent):
         self.max_backoff = int(os.getenv("MAX_LEASE_BACKOFF", "60"))
         self.health_score_ttl = int(os.getenv("HEALTH_SCORE_TTL", "86400"))
         self._leases: dict[str, HealingLease] = {}
-        
+
         # Fallback if Redis is unavailable (handled by Mixin usually, but kept for logic safety)
         self.redis_fallback: dict[str, Any] = {}
 
@@ -88,7 +91,7 @@ class AtomicBlackboard(SovereignBaseAgent):
                 return None
             except Exception as e:
                 self.log_error(f"Redis lease failed: {e}")
-        
+
         return None
 
     def release_lease(self, lease: HealingLease) -> bool:
@@ -111,17 +114,19 @@ class AtomicBlackboard(SovereignBaseAgent):
             return FileHealthScore.from_dict(data)
         return None
 
-    def update_health_score(self, file_path: str, violations: int, file_hash: str = "") -> FileHealthScore:
+    def update_health_score(
+        self, file_path: str, violations: int, file_hash: str = ""
+    ) -> FileHealthScore:
         score_key = f"health:{file_path}"
         existing = self.get_health_score(file_path)
-        
+
         if existing:
             attempts = existing.healing_attempts + 1
         else:
             attempts = 1
-            
+
         score = FileHealthScore(file_path, violations, time.time(), attempts, file_hash)
-        
+
         # Use native cache_set
         self.cache_set(score_key, score.to_dict(), ttl=self.health_score_ttl)
         return score
@@ -144,21 +149,22 @@ class AtomicBlackboard(SovereignBaseAgent):
         score = self.get_health_score(file_path)
         if not score:
             return True
-        
+
         # Check if file has changed
         current_hash = self.get_file_hash(file_path)
         if current_hash and current_hash != score.last_hash:
             return True
-            
+
         # Check if enough time has passed since last heal
         time_since_heal = time.time() - score.last_healed_timestamp
-        backoff = min(2 ** score.healing_attempts, self.max_backoff)
-        
+        backoff = min(2**score.healing_attempts, self.max_backoff)
+
         return time_since_heal > backoff
 
 
 # Singleton accessor
 _blackboard_instance = None
+
 
 def get_blackboard() -> AtomicBlackboard:
     global _blackboard_instance

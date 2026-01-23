@@ -23,9 +23,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
-
 
 class ThreatLevel(Enum):
     """Threat severity levels."""
@@ -71,7 +68,7 @@ class ThreatAnalysisResult:
     analysis_time_ms: float = 0.0
 
 
-class ThreatDetectionGuardrail(SovereignBaseAgent, RedisCacheMixin, PineconeVectorMixin):
+class ThreatDetectionGuardrail(SovereignBaseAgent):
     """
     Consolidated Threat Detection Guardrail.
 

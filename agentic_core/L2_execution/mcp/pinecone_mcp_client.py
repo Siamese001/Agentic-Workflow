@@ -20,10 +20,7 @@ from agentic_core.utils.core_extensions.decorators import standard_heal
 Logger: Any = logging.getLogger(__name__)
 
 
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
-
-
-class SovereignPineconeMcpClient(RedisCacheMixin, SovereignBaseAgent):
+class SovereignPineconeMcpClient(SovereignBaseAgent):
     """
     Official Pinecone MCP client — L3 routed, L5 shielded.
 

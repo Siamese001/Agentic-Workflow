@@ -35,22 +35,20 @@ from typing import Any
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.instructional_injection_mixin import (
-    InstructionalInjectionMixin,
-)
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.tracing_mixin import (
     TracingMixin,
 )  # [INJECTED] Mandatory Tracing for ALL 278 Agents
+from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
 
 Logger = logging.getLogger(__name__)
 
 
 class InfrastructureMixin(
+    PineconeVectorMixin,
     HealerMixin,
     MCPHardenedMixin,
     SubatomicTestingMixin,
-    InstructionalInjectionMixin,
     TracingMixin,  # [ENFORCED] Root-level observability
 ):
     """

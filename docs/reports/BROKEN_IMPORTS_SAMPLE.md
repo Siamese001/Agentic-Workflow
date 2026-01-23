@@ -1,15 +1,15 @@
 # Sample of Broken Imports (5 Representative Files)
 
-**Total Broken Imports:** 212 files across 197 Python modules  
-**Pattern:** All import from `agentic_core.observability.SovereignBaseAgent`  
+**Total Broken Imports:** 212 files across 197 Python modules
+**Pattern:** All import from `agentic_core.observability.SovereignBaseAgent`
 **Required Fix:** Change to `agentic_core.base_agents.SovereignBaseAgent`
 
 ---
 
 ## Sample File 1: L5 Safety Validator (HierarchyAgent)
 
-**File:** `agentic_core/L5_safety/validators/HierarchyAgent.py`  
-**Line:** 7  
+**File:** `agentic_core/L5_safety/validators/HierarchyAgent.py`
+**Line:** 7
 **Category:** Core L5 Safety Agent
 
 ### Current (Broken):
@@ -43,8 +43,8 @@ Consolidates HierarchyEnforcerAgent and HierarchyHealerAgent into a single agent
 
 ## Sample File 2: L5 Safety Validator (LocationAgent)
 
-**File:** `agentic_core/L5_safety/validators/LocationAgent.py`  
-**Line:** 2  
+**File:** `agentic_core/L5_safety/validators/LocationAgent.py`
+**Line:** 2
 **Category:** Core L5 Safety Agent
 
 ### Current (Broken):
@@ -75,8 +75,8 @@ Enforces:
 
 ## Sample File 3: L1 Cognition Base Agent
 
-**File:** `agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py`  
-**Lines:** 18-20  
+**File:** `agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py`
+**Lines:** 18-20
 **Category:** Layer Base Agent
 
 ### Current (Broken):
@@ -114,8 +114,8 @@ from agentic_core.observability.SovereignBaseAgent import (  # ❌ BROKEN
 
 ## Sample File 4: L6 Observability Agent (DocstringComplianceAgent)
 
-**File:** `agentic_core/L6_observability/DocstringComplianceAgent.py`  
-**Line:** 7  
+**File:** `agentic_core/L6_observability/DocstringComplianceAgent.py`
+**Line:** 7
 **Category:** L6 Observability Agent (Recently Moved)
 
 ### Current (Broken):
@@ -147,8 +147,8 @@ import ast
 
 ## Sample File 5: Unit Test (HierarchyAgent Phase 1)
 
-**File:** `tests/unit/test_hierarchy_agent_phase1.py`  
-**Line:** 14  
+**File:** `tests/unit/test_hierarchy_agent_phase1.py`
+**Line:** 14
 **Category:** Test File
 
 ### Current (Broken):
@@ -299,11 +299,11 @@ python -m pytest tests/ -v
 
 ## Summary
 
-**Files Sampled:** 5 representative files  
-**Import Pattern:** Consistent across all 212 files  
-**Fix Complexity:** Simple find-and-replace operation  
-**Risk Level:** Low (mechanical change, no logic modification)  
-**Estimated Fix Time:** 2-3 minutes (automated script)  
+**Files Sampled:** 5 representative files
+**Import Pattern:** Consistent across all 212 files
+**Fix Complexity:** Simple find-and-replace operation
+**Risk Level:** Low (mechanical change, no logic modification)
+**Estimated Fix Time:** 2-3 minutes (automated script)
 **Verification Time:** 5-10 minutes (test suite execution)
 
 **Next Action:** Execute automated fix script to update all 212 import statements.

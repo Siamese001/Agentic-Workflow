@@ -13,6 +13,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 
+
 class ConversationalRepair(SovereignBaseAgent):
     """
     Manages multi-agent debate using Sovereign Architecture.
@@ -29,15 +30,15 @@ class ConversationalRepair(SovereignBaseAgent):
 
     async def debate_failure(self, failure_context: dict[str, Any]) -> dict[str, Any]:
         self.log_info("Initiating conversational repair")
-        
+
         # Example using native LLM call
         prompt = f"Analyze failure: {json.dumps(failure_context)}"
         response = await self.llm_generate(prompt, provider="openai")
-        
+
         return {
             "success": True,
             "consensus_code": "# Fixed code via Sovereign LLM",
-            "consensus_reasoning": response["content"]
+            "consensus_reasoning": response["content"],
         }
 
     async def _query_llm(self, prompt: str) -> str:
@@ -47,6 +48,7 @@ class ConversationalRepair(SovereignBaseAgent):
 
 
 _conversational_repair = None
+
 
 def get_conversational_repair() -> ConversationalRepair:
     global _conversational_repair
