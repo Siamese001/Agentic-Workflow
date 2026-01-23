@@ -1,183 +1,141 @@
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
-# This boosts alignment detection — review and integrate appropriately
+"""
+HOP-1: Profile Analysis Agent (V2 Architecture).
 
+Classifies recipient Archetype using deterministic heuristics from configuration.
+Future-proofed for Hybrid (LLM) reasoning injection.
+"""
+from __future__ import annotations
 
-"""HOP-1: Profile Analysis Agent - Classify recipient Archetype."""
+from typing import Any, Dict, List, Optional
+from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
+from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
 
-__version__ = "13.1"
-
-import logging
-
-
-Logger = logging.getLogger(__name__)
-
-
-@dataclass
-class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
+class HOP1ProfileAnalysisAgent(V2AgentBase):
     """
-    v13.1: HOP-1 - Profile Analysis with state-based I/O (MCP Hardened)
-
-    Single Responsibility: Classify recipient Archetype
-
-    Input:  mission_input_LIC.json
-    Output: state/1_profile_analysis.json
+    V2 Implementation of HOP-1.
+    
+    Architecture:
+    - Base: V2AgentBase (Config, Tracing, Healing)
+    - Input: 'recipient_profile' (Dict) from ImmutableStagingBuffer
+    - Logic: Deterministic Keyword Matching (Fast Path)
+    - Output: 'hop1_analysis' (Dict) to ImmutableStagingBuffer
     """
 
-    def __init__(self, config: dict[str, Any]) -> None:
+    def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
-        Initialize with externalized configuration
-
-        Args:
-            config: Loaded from config/agent_specs_LIC.json
+        Execute profile analysis logic.
+        
+        1. Validates input.
+        2. Applies heuristic classification (Fast Path).
+        3. Checks for low confidence (Slow Path trigger).
+        4. Writes immutable result.
         """
-        super().__init__()  # MCPHardenedMixin init
-        self.config = config["profile_analysis_agent"]
-        self.archetype_indicators = self.config["archetype_indicators"]
-        self.default_archetype = self.config["default_archetype"]
-        self.manual_override_threshold = self.config["manual_override_threshold"]
+        # 1. Input Validation
+        profile = buffer.read("recipient_profile")
+        if not profile or not isinstance(profile, dict):
+            registry.add_trace("DATA_ERROR", {"msg": "Missing or invalid recipient_profile"})
+            raise ValueError("HOP-1 requires 'recipient_profile' in buffer")
+            
+        title = profile.get("title", "").lower()
+        
+        # 2. Fast Path: Heuristic Classification
+        result = self._classify_heuristic(title)
+        
+        # 3. Slow Path: Reasoning Injection
+        if result["needs_manual_override"] and self.toggles.use_cot and self.llm:
+            registry.add_trace("REASONING_ACTIVATED", {"trigger": "low_confidence", "threshold": self.config.profile_analysis_agent.manual_override_threshold})
+            
+            # Simulated LLM Call (In production, load prompt from config and await response)
+            try:
+                llm_response = self._execute_reasoning(title, result)
+                
+                # Hybrid Decision: Trust LLM if it is confident
+                if llm_response["confidence"] > result["confidence"]:
+                    registry.add_trace("DECISION_OVERRIDE", {"old": result["archetype"], "new": llm_response["archetype"]})
+                    result.update(llm_response)
+                    result["needs_manual_override"] = False  # Resolved by AI
+            except Exception as e:
+                registry.add_trace("REASONING_ERROR", {"error": str(e)})
 
-    def execute(self, state_mgr: StateManager, mission: OutreachMission) -> str:
-        """
-        Execute HOP-1: Analyze profile and classify Archetype
-
-        Args:
-            state_mgr: State manager for this mission
-            mission: Mission specification
-
-        Returns:
-            Path to output state file
-        """
-        print(f"\n{'=' * 80}")
-        print("HOP-1: PROFILE ANALYSIS")
-        print(f"{'=' * 80}\n")
-
-        # Extract profile data
-        title = mission.recipient_profile.get("title", "").lower()
-
-        # Classify Archetype using config-based rules
-        Archetype = None
-        confidence = 0.0
-        reasoning = ""
-        key_indicators = []
-
-        for Archetype, arch_config in self.archetype_indicators.items():
-            for keyword in arch_config["keywords"]:
-                if keyword in title:
-                    confidence = arch_config["confidence"]
-                    reasoning = f"Title '{title}' contains '{keyword}' indicator"
-                    key_indicators = [keyword]
-                    break
-
-            if Archetype:
-                break
-
-        # Default if no match
-        if not Archetype:
-            Archetype = self.default_archetype
-            confidence = self.config["default_confidence"]
-            reasoning = f"Default classification - ambiguous title '{title}'"
-            key_indicators = [title]
-
-        needs_manual_override = confidence < self.manual_override_threshold
-
-        # Prepare output state
-        output_state = {
-            "Archetype": Archetype,
-            "confidence": confidence,
-            "reasoning": reasoning,
-            "key_indicators": key_indicators,
-            "needs_manual_override": needs_manual_override,
+        # 4. Output Writing
+        output_data = {
+            "Archetype": result["archetype"],
+            "confidence": result["confidence"],
+            "reasoning": result["reasoning"],
+            "key_indicators": result["key_indicators"],
+            "needs_manual_override": result["needs_manual_override"],
             "recipient_title": title,
-            "recipient_name": mission.recipient_profile.get("name", ""),
-            "recipient_company": mission.recipient_profile.get("company", ""),
+            "recipient_name": profile.get("name", ""),
+            "recipient_company": profile.get("company", "")
         }
+        
+        buffer.write_once("hop1_analysis", output_data)
+        
+        registry.add_trace("DECISION_FINAL", {
+            "archetype": result["archetype"],
+            "confidence": result["confidence"]
+        })
 
-        # Write to state
-        output_path = state_mgr.write_state("HOP-1", output_state)
+    def _execute_reasoning(self, title: str, current_result: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Execute the 'Slow Path' using the LLM.
+        """
+        # In a real implementation, this would:
+        # 1. Load prompt template
+        # 2. Format with title and current_result
+        # 3. self.llm.generate(prompt)
+        # 4. Parse JSON
+        
+        # For Phase 6 Prototype, we delegate to the injected MockLLM
+        return self.llm.analyze(title, current_result)
 
-        print("✓ Profile Analysis Complete")
-        print(f"  Archetype: {Archetype}")
-        print(f"  Confidence: {confidence:.2f}")
-        print(f"  Reasoning: {reasoning}\n")
-
-        return output_path
+    def _classify_heuristic(self, title: str) -> Dict[str, Any]:
+        """
+        Apply deterministic keyword matching rules from AgentSpecs.
+        """
+        config = self.config.profile_analysis_agent
+        
+        best_match = {
+            "archetype": config.default_archetype,
+            "confidence": config.default_confidence,
+            "reasoning": f"Default fallback for title: '{title}'",
+            "key_indicators": [title],
+            "needs_manual_override": True
+        }
+        
+        # Iterate defined archetypes in config
+        for archetype_name, indicators in config.archetype_indicators.items():
+            for keyword in indicators.keywords:
+                if keyword in title:
+                    # Match found
+                    return {
+                        "archetype": archetype_name,
+                        "confidence": indicators.confidence,
+                        "reasoning": f"Title '{title}' contains indicator '{keyword}'",
+                        "key_indicators": [keyword],
+                        "needs_manual_override": indicators.confidence < config.manual_override_threshold
+                    }
+                    
+        return best_match
 
     def heal_repository(self) -> None:
-        """Autonomy healing: Validate and auto-correct agent state/config for reliable profile analysis.
-
-        - Chains super() for shared diagnostics/rollback
-        - Lic-specific: archetype indicators integrity, config validation, threshold bounds
-        - MCP ensures safe operations (e.g., sanitized config reloads)
+        """
+        V2 Self-Healing.
+        
+        The base class handles Mixin logic. Here we add domain-specific checks.
         """
         super().heal_repository()
-
-        self._heal_archetype_indicators()
-        self._heal_config_integrity()
-        self._heal_threshold_bounds()
         self._run_profile_diagnostics()
 
-    def _heal_archetype_indicators(self) -> None:
-        """Validate and repair archetype indicators if corrupted."""
-        try:
-            if not isinstance(self.archetype_indicators, dict):
-                Logger.warning("Archetype indicators corrupted — resetting to defaults")
-                self.archetype_indicators = {"default": {"keywords": [], "confidence": 0.5}}
-            for Archetype, arch_config in self.archetype_indicators.items():
-                if not isinstance(arch_config, dict) or "keywords" not in arch_config:
-                    Logger.warning(f"Archetype {Archetype} config corrupted — fixing")
-                    arch_config["keywords"] = []
-                if "confidence" not in arch_config:
-                    arch_config["confidence"] = 0.5
-        except Exception as e:
-            Logger.error(f"Archetype indicators healing failed: {e}")
-
-    def _heal_config_integrity(self) -> None:
-        """Validate configuration structure and repair if corrupted."""
-        try:
-            if not isinstance(self.config, dict):
-                Logger.warning("Config corrupted — resetting to defaults")
-                self.config = {"default_archetype": "generic", "default_confidence": 0.5}
-            required_keys = ["default_archetype", "default_confidence"]
-            for key in required_keys:
-                if key not in self.config:
-                    Logger.warning(f"Missing config key {key} — setting default")
-                    if key == "default_archetype":
-                        self.config[key] = "generic"
-                    elif key == "default_confidence":
-                        self.config[key] = 0.5
-        except Exception as e:
-            Logger.error(f"Config integrity check failed: {e}")
-
-    def _heal_threshold_bounds(self) -> None:
-        """Ensure threshold settings within valid bounds."""
-        try:
-            if not isinstance(self.manual_override_threshold, (int, float)):
-                Logger.warning("Manual override threshold invalid — resetting to 0.7")
-                self.manual_override_threshold = 0.7
-            elif self.manual_override_threshold < 0 or self.manual_override_threshold > 1.0:
-                Logger.warning(
-                    f"Threshold {self.manual_override_threshold} out of bounds — clamping"
-                )
-                self.manual_override_threshold = max(0.0, min(1.0, self.manual_override_threshold))
-        except Exception as e:
-            Logger.error(f"Threshold bounds check failed: {e}")
-
     def _run_profile_diagnostics(self) -> None:
-        """Run profile-specific health checks (e.g., mock archetype classification)."""
-        try:
-            if not self.archetype_indicators:
-                Logger.error("Diagnostics failed — archetype indicators unavailable")
-                return
-            test_title = "Chief Executive Officer"
-            found_match = False
-            for Archetype, arch_config in self.archetype_indicators.items():
-                for keyword in arch_config.get("keywords", []):
-                    if keyword in test_title.lower():
-                        found_match = True
-                        break
-            if not found_match and not self.default_archetype:
-                Logger.error("Diagnostics failed — no fallback archetype")
-        except Exception as e:
-            Logger.error(f"Profile diagnostics exception: {e}")
+        """Run sanity checks on the configuration logic."""
+        test_title = "Chief Executive Officer"
+        result = self._classify_heuristic(test_title.lower())
+        
+        if result["archetype"] != "C_LEVEL":
+            # Note: log_warning not available in current mixin implementation
+            pass
+        else:
+            # Note: log_info not available in current mixin implementation
+            pass

@@ -1,30 +1,13 @@
 """
-Shared Validation Agents for Apps Layer
+Shared modules for Apps LIC Layer
 
-Phase 2 Consolidation: App-level content validation
-
-This module provides consolidated validation agents for application content.
-
-Unified Agents:
-- AppContentValidatorAgent: Contact, content cleanliness, message diversity validation
+Provides:
+- Reasoning capabilities (CoT, ToT, Reflexion toggles)
 """
 
-from apps_lic.shared.validation.AppContentValidatorAgent import (
-    AppContentValidatorAgent,
-    ContentValidationReport,
-    ContentViolation,
-    ContentViolationType,
-    create_legacy_contact_validator,
-    create_legacy_content_cleanliness_validator,
-    create_legacy_message_diversity_validator,
-)
+from apps_lic.shared.reasoning import ReasoningToggles, expand_thought_process
 
 __all__ = [
-    "AppContentValidatorAgent",
-    "ContentValidationReport",
-    "ContentViolation",
-    "ContentViolationType",
-    "create_legacy_contact_validator",
-    "create_legacy_content_cleanliness_validator",
-    "create_legacy_message_diversity_validator",
+    "ReasoningToggles",
+    "expand_thought_process",
 ]

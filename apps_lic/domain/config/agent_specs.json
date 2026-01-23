@@ -1,0 +1,97 @@
+{
+  "profile_analysis_agent": {
+    "archetype_indicators": {
+      "C_LEVEL": {
+        "keywords": ["ceo", "cto", "cfo", "chief", "president", "founder"],
+        "confidence": 0.95
+      },
+      "EXECUTIVE": {
+        "keywords": ["vp", "vice president", "director", "head of"],
+        "confidence": 0.85
+      },
+      "SENIOR_TA": {
+        "keywords": ["senior", "lead", "principal", "staff"],
+        "confidence": 0.75
+      },
+      "RECRUITER": {
+        "keywords": ["recruiter", "talent", "sourcer"],
+        "confidence": 0.90
+      }
+    },
+    "default_archetype": "SENIOR_TA",
+    "default_confidence": 0.5,
+    "manual_override_threshold": 0.6
+  },
+  "research_agent": {
+    "vector_store_query_params": {
+      "top_k": 10.0,
+      "similarity_threshold": 0.7
+    },
+    "fallback_rag_params": {
+      "max_results": 5,
+      "timeout_seconds": 30
+    }
+  },
+  "sender_grounding_agent": {
+    "source_files": [
+      "data/sender_knowledge_base.json",
+      "data/master_resume.json"
+    ],
+    "extraction_targets": [
+      "products",
+      "achievements",
+      "team_members",
+      "case_studies"
+    ]
+  },
+  "routing_agent": {
+    "routing_rules": {
+      "CONNECTION_REQUEST": {
+        "conditions": {
+          "connection_status": "NOT_CONNECTED",
+          "prior_message_count": 0
+        },
+        "constraints": {
+          "word_range": [0, 300],
+          "char_limit": 300
+        }
+      },
+      "DIRECT_MESSAGE": {
+        "conditions": {
+          "connection_status": "CONNECTED"
+        },
+        "constraints": {
+          "word_range": [50, 200],
+          "char_limit": 2000
+        }
+      },
+      "INMAIL": {
+        "conditions": {
+          "connection_status": "NOT_CONNECTED",
+          "prior_message_count_gt": 0
+        },
+        "constraints": {
+          "word_range": [0, 2000],
+          "char_limit": 2000
+        }
+      }
+    }
+  },
+  "generation_agent": {
+    "base_temperatures": {
+      "C_LEVEL": 0.6,
+      "EXECUTIVE": 0.5,
+      "SENIOR_TA": 0.4,
+      "RECRUITER": 0.4
+    },
+    "c_level_n_candidates": 3
+  },
+  "validation_agent": {
+    "severity_threshold": "WARNING",
+    "rule_categories": [
+      "content_cleanliness",
+      "strategic_alignment",
+      "sender_grounding"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "profile_analysis_reasoning": {
+    "template": "You are an expert recruiter. Analyze this title: '{title}'.\n\nContext:\n- Keywords found: {keywords}\n- Heuristic Class: {heuristic_class} (Confidence: {heuristic_confidence})\n\nTask:\nDetermine if this title warrants a higher seniority classification.\nValid Archetypes: C_LEVEL, EXECUTIVE, SENIOR_TA, RECRUITER.\n\nReturn JSON: {\"archetype\": \"...\", \"confidence\": 0.0-1.0, \"reasoning\": \"...\"}"
+  }
+}
