@@ -179,6 +179,7 @@ def path_shield(request, monkeypatch):
         "test.py",
         "patterns.json",
         "rules.json",
+        "agent_specs.json",
     ]
 
     # Save original functions before patching

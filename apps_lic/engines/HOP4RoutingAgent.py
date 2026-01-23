@@ -1,139 +1,103 @@
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
-# This boosts alignment detection — review and integrate appropriately
+"""
+HOP-4: Routing Agent (V2 Architecture).
+
+Determines optimal outreach route based on connection status and history.
+"""
+
+from __future__ import annotations
+from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
+from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
 
 
-"""HOP-4: Routing Agent - Determine optimal message Route."""
-
-__version__ = "13.1"
-
-
-@dataclass
-class HOP4RoutingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
+class HOP4RoutingAgent(V2AgentBase):
     """
-    v13.1: HOP-4 - Routing Decision with state-based I/O (MCP Hardened)
+    V2 Implementation of HOP-4 Rule Engine.
 
-    Single Responsibility: Determine optimal message Route
-
-    Input:  state/1_profile_analysis.json, mission_input_LIC.json
-    Output: state/4_routing_decision.json
+    Architecture:
+    - Base: V2AgentBase
+    - Input: 'mission_input' (connection status, message count)
+    - Logic: Rule-based routing evaluation
+    - Output: 'hop4_routing' (route, constraints, reasoning)
     """
 
-    def __init__(self, config: dict[str, Any]) -> None:
+    def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
-        Initialize with externalized configuration
+        Execute routing logic.
 
-        Args:
-            config: Loaded from config/agent_specs_LIC.json
+        1. Read mission input (connection status, message count).
+        2. Evaluate routing rules in order.
+        3. Select first matching route or fallback to default.
+        4. Write immutable routing decision.
         """
-        super().__init__()  # MCPHardenedMixin init
-        self.config = config["routing_agent"]
-        self.routing_rules = self.config["routing_rules"]
+        # 1. Read Inputs
+        mission_input = buffer.read("mission_input")
+        if not mission_input:
+            registry.add_trace("DATA_ERROR", {"msg": "Missing 'mission_input'"})
+            raise ValueError("HOP-4 requires 'mission_input'")
 
-    def execute(self, state_mgr: StateManager, mission: OutreachMission) -> str:
-        """
-        Execute HOP-4: Determine message Route
+        hop1 = buffer.read("hop1_analysis")
+        # hop1 is optional for routing logic but good for context
 
-        Args:
-            state_mgr: State manager for this mission
-            mission: Mission specification
+        status = mission_input.get("connection_status", "UNKNOWN")
+        msg_count = mission_input.get("prior_message_count", 0)
 
-        Returns:
-            Path to output state file
-        """
-        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'=' * 80}")
-        print("HOP-4: ROUTING DECISION")
-        print(f"{'=' * 80}\n")
+        registry.add_trace(
+            "PHASE_STEP", {"action": "evaluating_routes", "status": status, "msgs": msg_count}
+        )
 
-        # Read HOP-1 state
-        profile_state = state_mgr.read_state("HOP-1")
-        Archetype = profile_state["Archetype"]
+        # 2. Evaluate Rules
+        selected_route = "INMAIL"  # Default
+        constraints = {"word_range": [0, 2000], "char_limit": 2000}
+        match_reason = "Default Fallback"
 
-        # Extract mission context
-        connection_status = mission.connection_status
-        prior_message_count = mission.prior_message_count
+        config = self.config.routing_agent
 
-        # Apply routing rules from config
-        selected_route = None
-        reasoning = []
-
-        for route_name, RouteConfig in self.routing_rules.items():
-            conditions = RouteConfig["conditions"]
-
-            # Check all conditions
-            matches = True
-
-            if "connection_status" in conditions:
-                if connection_status != conditions["connection_status"]:
-                    matches = False
-
-            if "prior_message_count" in conditions:
-                if prior_message_count != conditions["prior_message_count"]:
-                    matches = False
-
-            if "prior_message_count_gte" in conditions:
-                if prior_message_count < conditions["prior_message_count_gte"]:
-                    matches = False
-
-            if "prior_message_count_gt" in conditions:
-                if prior_message_count <= conditions["prior_message_count_gt"]:
-                    matches = False
-
-            if matches:
+        for route_name, rules in config.routing_rules.items():
+            if self._check_conditions(rules.conditions, status, msg_count):
                 selected_route = route_name
-                reasoning.append(f"Route {route_name} selected:")
-                reasoning.append(f"  - Connection status: {connection_status}")
-                reasoning.append(f"  - Prior messages: {prior_message_count}")
+                constraints = rules.constraints.model_dump()
+                match_reason = f"Matched rules for {route_name}"
                 break
 
-        # Default to INMAIL if no match
-        if not selected_route:
-            selected_route = "INMAIL"
-            reasoning.append("Default Route: INMAIL")
-
-        # Get constraints for this Route
-        constraints = self.routing_rules[selected_route]["constraints"]
-
-        # Prepare output state
-        output_state = {
-            "Route": selected_route,
-            "Archetype": Archetype,
+        # 3. Write Output
+        output = {
+            "route": selected_route,
             "constraints": constraints,
-            "reasoning": "\n".join(reasoning),
-            "connection_status": connection_status,
-            "prior_message_count": prior_message_count,
+            "reasoning": match_reason,
+            "context": {"status": status, "msg_count": msg_count},
         }
 
-        # Write to state
-        output_path = state_mgr.write_state("HOP-4", output_state)
+        buffer.write_once("hop4_routing", output)
+        registry.add_trace("DECISION_FINAL", {"route": selected_route, "reason": match_reason})
 
-        print("✓ Routing Decision Complete")
-        print(f"  Route: {selected_route}")
-        print(f"  Archetype: {Archetype}")
-        print(f"  Word range: {constraints['word_range']}")
-        print(f"  Char limit: {constraints['char_limit']}\n")
+    def _check_conditions(self, conditions, status, msg_count) -> bool:
+        """
+        Check if conditions match current context.
 
-        return output_path
+        Args:
+            conditions: RouteConditions from config
+            status: Connection status string
+            msg_count: Prior message count
 
-    @timeout(300)
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set = None,
-    ) -> dict[str, int]:
-        """Operational agent - invoke shared healing chain."""
-        if _call_path is None:
-            _call_path = set()
-        super().heal_repository(
-            dry_run=dry_run,
-            execute=execute,
-            depth=depth,
-            max_depth=max_depth,
-            _call_path=_call_path,
-        )
-        print(f"[{self.__class__.__name__}] Operational agent - healing chain invoked")
-        return {"skipped": 1}
+        Returns:
+            True if all conditions match, False otherwise
+        """
+        if conditions.connection_status and conditions.connection_status != status:
+            return False
+        if (
+            conditions.prior_message_count is not None
+            and conditions.prior_message_count != msg_count
+        ):
+            return False
+        if (
+            conditions.prior_message_count_gt is not None
+            and msg_count <= conditions.prior_message_count_gt
+        ):
+            return False
+        if (
+            conditions.prior_message_count_gte is not None
+            and msg_count < conditions.prior_message_count_gte
+        ):
+            return False
+        return True

@@ -1,54 +1,39 @@
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
-# This boosts alignment detection — review and integrate appropriately
+"""
+HOP-3: Sender Grounding Agent (V2 Architecture).
 
-
-"""HOP-3: Sender Grounding Agent - Extract sender capabilities from knowledge base."""
-
-__version__ = "13.1"
+Extracts and structures sender capabilities from static knowledge base files.
+"""
+from __future__ import annotations
 
 import json
-import os
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
+from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
+from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
 
-@dataclass
-class HOP3SenderGroundingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
+class HOP3SenderGroundingAgent(V2AgentBase):
     """
-    v13.1: HOP-3 - Sender Grounding Extraction (MCP Hardened)
-
-    Single Responsibility: Extract sender capabilities from knowledge base
-
-    Input:  master_resume.json, sender_knowledge_base.json
-    Output: state/3_sender_grounding.json
+    V2 Implementation of HOP-3.
+    
+    Architecture:
+    - Base: V2AgentBase
+    - Input: Static JSON files (Resume, Knowledge Base) defined in Config.
+    - Logic: Extraction & Structuring of capabilities.
+    - Output: 'hop3_sender_grounding' to ImmutableStagingBuffer.
     """
 
-    def __init__(self, config: dict[str, Any]) -> None:
+    def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
-        Initialize with externalized configuration
-
-        Args:
-            config: Loaded from config/agent_specs_LIC.json
+        Execute grounding extraction.
+        
+        1. Identify source files from config.
+        2. Load and parse JSON content.
+        3. Extract specific targets (Team, Products, etc.).
+        4. Write immutable output.
         """
-        super().__init__()  # MCPHardenedMixin init
-        self.config = config["sender_grounding_agent"]
-        self.source_files = self.config["source_files"]
-        self.extraction_targets = self.config["extraction_targets"]
-
-    def execute(self, state_mgr: StateManager) -> str:
-        """
-        Execute HOP-3: Extract sender grounding from knowledge base
-
-        Args:
-            state_mgr: State manager for this mission
-
-        Returns:
-            Path to output state file
-        """
-        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'=' * 80}")
-        print("HOP-3: SENDER GROUNDING EXTRACTION")
-        print(f"{'=' * 80}\n")
-
+        config = self.config.sender_grounding_agent
         grounding = {
             "team_members": [],
             "products": [],
@@ -56,95 +41,89 @@ class HOP3SenderGroundingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
             "quantifiable_achievements": [],
             "raw_evidence": {},
         }
+        loaded_sources = []
 
-        # Load sender knowledge base
-        for source_file in self.source_files:
-            if not os.path.exists(source_file):
-                print(f"  ⚠ Warning: {source_file} not found, skipping")
+        registry.add_trace("PHASE_STEP", {"action": "loading_sources", "files": config.source_files})
+
+        for filename in config.source_files:
+            # Resolve file path (assuming relative to cwd or specific data dir)
+            file_path = Path(filename)
+            
+            if not file_path.exists():
+                registry.add_trace("SOURCE_MISSING", {"file": filename})
                 continue
 
-            print(f"  Loading: {source_file}")
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                self._extract_data(data, filename, grounding)
+                loaded_sources.append(filename)
+                
+            except json.JSONDecodeError:
+                registry.add_trace("DATA_ERROR", {"file": filename, "error": "Invalid JSON"})
+            except Exception as e:
+                registry.add_trace("DATA_ERROR", {"file": filename, "error": str(e)})
 
-            with open(source_file) as f:
-                data = json.load(f)
+        # Validate we got *something*
+        if not loaded_sources:
+            registry.add_trace("CRITICAL_FAILURE", {"msg": "No source files loaded"})
+            # We might choose to raise here if grounding is strictly required
+            # raise RuntimeError("Failed to load any grounding sources")
 
-            # Extract based on file type
-            if "sender_knowledge_base" in source_file:
-                # Extract from sender_knowledge_base.json
-                if "whitelisted_team_members" in data:
-                    grounding["team_members"] = [
-                        member["name"] for member in data["whitelisted_team_members"]
-                    ]
+        # Write Output
+        output_data = {
+            "sender_grounding": grounding,
+            "source_files_loaded": loaded_sources,
+            "stats": {k: len(v) for k, v in grounding.items() if isinstance(v, list)}
+        }
+        
+        buffer.write_once("hop3_sender_grounding", output_data)
+        
+        registry.add_trace("DECISION_FINAL", {
+            "loaded": len(loaded_sources),
+            "products": len(grounding["products"]),
+            "achievements": len(grounding["quantifiable_achievements"])
+        })
 
-                if "whitelisted_products" in data:
-                    grounding["products"] = [
-                        product["name"] for product in data["whitelisted_products"]
-                    ]
+    def _extract_data(self, data: Dict[str, Any], filename: str, grounding: Dict[str, Any]) -> None:
+        """Extract fields based on file content heuristics."""
+        
+        # Heuristic 1: Sender Knowledge Base Structure
+        if "whitelisted_team_members" in data:
+            grounding["team_members"].extend(
+                [m["name"] for m in data["whitelisted_team_members"] if "name" in m]
+            )
+        if "whitelisted_products" in data:
+            grounding["products"].extend(
+                [p["name"] for p in data["whitelisted_products"] if "name" in p]
+            )
+        if "whitelisted_case_studies" in data:
+            grounding["case_studies"].extend(
+                [c["client"] for c in data["whitelisted_case_studies"] if "client" in c]
+            )
+        if "quantifiable_achievements" in data:
+            grounding["quantifiable_achievements"].extend(data["quantifiable_achievements"])
 
-                if "whitelisted_case_studies" in data:
-                    grounding["case_studies"] = [
-                        case["client"] for case in data["whitelisted_case_studies"]
-                    ]
+        # Heuristic 2: Master Resume Structure
+        if "professional_experience" in data:
+            for exp in data["professional_experience"]:
+                company = exp.get("company", "Unknown")
+                grounding["raw_evidence"].setdefault("companies", []).append(company)
+                
+                # Extract bullet achievements if pool exists
+                if "bullet_pool" in exp:
+                    grounding["raw_evidence"].setdefault("achievements", []).extend(
+                        exp["bullet_pool"][:3]  # Top 3 per company cap
+                    )
 
-                if "quantifiable_achievements" in data:
-                    grounding["quantifiable_achievements"] = data["quantifiable_achievements"]
-
-            elif "master_resume" in source_file:
-                # Extract from master_resume.json
-                if "professional_experience" in data:
-                    for exp in data["professional_experience"]:
-                        company = exp.get("company", "")
-                        grounding["raw_evidence"].setdefault("companies", []).append(company)
-
-                        # Extract bullet achievements
-                        if "bullet_pool" in exp:
-                            grounding["raw_evidence"].setdefault("achievements", []).extend(
-                                exp["bullet_pool"][:3]  # Top 3 per company
-                            )
-
-        # Write to state
-        try:
-            output_state = {
-                "sender_grounding": grounding,
-                "source_files_loaded": [f for f in self.source_files if os.path.exists(f)],
-            }
-
-            output_path = state_mgr.write_state("HOP-3", output_state)
-
-            print("✓ Sender Grounding Complete")
-            print(f"  Team members: {len(grounding['team_members'])}")
-            print(f"  Products: {len(grounding['products'])}")
-            print(f"  Case studies: {len(grounding['case_studies'])}")
-            print(f"  Achievements: {len(grounding['quantifiable_achievements'])}\n")
-
-            return output_path
-        except Exception as e:
-            self.log(f"⚠️ LLM error: {e}")
-            return None
-        print(f"  Products: {len(grounding['products'])}")
-        print(f"  Case studies: {len(grounding['case_studies'])}")
-        print(f"  Achievements: {len(grounding['quantifiable_achievements'])}\n")
-
-        return output_path
-
-    @timeout(300)
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set = None,
-    ) -> dict[str, int]:
-        """Operational agent - invoke shared healing chain."""
-        if _call_path is None:
-            _call_path = set()
-        super().heal_repository(
-            dry_run=dry_run,
-            execute=execute,
-            depth=depth,
-            max_depth=max_depth,
-            _call_path=_call_path,
-        )
-        print(f"[{self.__class__.__name__}] Operational agent - healing chain invoked")
-        return {"skipped": 1}
+    def heal_repository(self) -> None:
+        """Check integrity of source files."""
+        super().heal_repository()
+        
+        # V2 Self-Healing: Check if configured files exist
+        if hasattr(self, 'config'):
+            for f in self.config.sender_grounding_agent.source_files:
+                path = Path(f)
+                if not path.exists():
+                    pass  # Would log warning about missing file

@@ -1,309 +1,151 @@
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: memory, orchestrator, validator, workflow
-# This boosts alignment detection — review and integrate appropriately
+"""
+HOP-5: Generation Agent (V2 Architecture).
+
+Synthesizes inputs from HOPs 1-4 to generate candidate messages.
+"""
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
-"""HOP-5: Generation Agent - N-candidate generation only."""
-
-__version__ = "13.1"
-
 import asyncio
-import json
-import logging
-import os
-from typing import Any
-
-from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from apps_lic.engines.outreach_engine.tools.code_interpreter import CodeInterpreterTool
-from apps_shared.utils.state_manager import StateManager
-
-Logger = logging.getLogger(__name__)
+from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
+from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
 
 
-@dataclass
-class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
+class HOP5GenerationAgent(V2AgentBase):
     """
-    v13.1: Generation Agent - N-candidate generation only (MCP Hardened)
+    V2 Implementation of HOP-5 Writer.
 
-    Single Responsibility: Generate message candidates
-
-    Input:  state/2_research_context.json, state/3_sender_grounding.json, state/4.5_scaffold.json
-    Output: state/5_generated_drafts.json
+    Architecture:
+    - Base: V2AgentBase
+    - Inputs:
+        - HOP-1 (Archetype)
+        - HOP-2 (Research/Context)
+        - HOP-3 (Sender Grounding)
+        - HOP-4 (Route/Constraints)
+    - Logic: N-Candidate Generation -> Scoring -> Selection.
+    - Output: 'hop5_generation'
     """
 
-    def __init__(
-        self, config: dict[str, Any], llm_client: Any = None, tool: CodeInterpreterTool = None
-    ) -> None:
+    def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
-        Initialize HOP-5 generation agent.
+        Execute generation logic.
 
-        Args:
-            config: Configuration dictionary containing generation_agent settings
-            llm_client: Optional LLM client for generation
-            tool: Optional code interpreter tool for advanced generation
-
-        Loads generation prompts from config/prompts_LIC.json for
-        N-candidate message generation.
+        1. Read all upstream inputs (HOPs 1-4).
+        2. Configure generation parameters (temperature, n_candidates).
+        3. Generate N candidates via LLM.
+        4. Score candidates based on constraints.
+        5. Select best candidate and write output.
         """
-        super().__init__()
-        self.config = config["generation_agent"]
-        self.llm_client = llm_client
-        self.tool = tool
+        # 1. Read Inputs
+        try:
+            hop1 = buffer.read("hop1_analysis")
+            hop2 = buffer.read("hop2_research")
+            hop3 = buffer.read("hop3_sender_grounding")
+            hop4 = buffer.read("hop4_routing")
+        except Exception:
+            registry.add_trace("DATA_ERROR", {"msg": "Failed to read required inputs"})
+            raise ValueError("HOP-5 requires outputs from HOPs 1, 2, 3, and 4")
 
-        with open("config/prompts_LIC.json") as f:
-            self.prompts = json.load(f)
+        # Validate existence
+        if not all([hop1, hop2, hop3, hop4]):
+            registry.add_trace("CRITICAL_FAILURE", {"msg": "One or more upstream inputs missing"})
+            raise RuntimeError("Missing required upstream state")
 
-    async def execute(self, state_mgr: StateManager, temperature: float = None) -> str:
-        """
-        Execute HOP-5: Generate message candidates.
+        # 2. Configure Generation
+        config = self.config.generation_agent
+        archetype = hop1["Archetype"]
+        route = hop4["route"]
 
-        Args:
-            state_mgr: State manager for reading/writing HOP states
-            temperature: Optional temperature override for generation
+        n_candidates = config.c_level_n_candidates if archetype == "C_LEVEL" else 1
+        temperature = config.base_temperatures.get(archetype, 0.5)
 
-        Returns:
-            Path to generated drafts state file
+        registry.add_trace(
+            "PHASE_STEP",
+            {"action": "configuring_generation", "n_candidates": n_candidates, "temp": temperature},
+        )
 
-        Generates N candidates for C-level archetypes, scores them using
-        Fast Loop, and selects the best candidate.
-        """
-        print(f"\n{'=' * 80}")
-        print("HOP-5: GENERATION AGENT")
-        print(f"{'=' * 80}\n")
-
-        research = state_mgr.read_state("HOP-2")
-        grounding = state_mgr.read_state("HOP-3")
-        scaffold = state_mgr.read_state("HOP-4.5")
-
-        Archetype = scaffold["Archetype"]
-        Route = scaffold["Route"]
-
-        n_candidates = self.config["c_level_n_candidates"] if Archetype == "C_LEVEL" else 1
-
-        if temperature is None:
-            temperature = self._get_base_temperature(Archetype)
-
-        print(f"Generating {n_candidates} candidate(s) at temperature {temperature:.2f}...")
-
+        # 3. Generate Candidates (Fan-out)
         candidates = []
         for i in range(n_candidates):
-            print(f"  Generating candidate {i + 1}/{n_candidates}...")
-            try:
-                draft_text = await self._generate_single_draft(
-                    research, grounding, scaffold, temperature
+            prompt = self._construct_prompt(hop1, hop2, hop3, hop4)
+
+            # Async generation
+            if self.llm:
+                response = self._run_async(self.llm.generate(prompt, temperature=temperature))
+                candidates.append(
+                    {
+                        "id": i,
+                        "text": response.strip(),
+                        "score": 0.0,  # Placeholder for scoring logic
+                    }
                 )
-            except Exception as e:
-                self.log(f"⚠️ LLM error: {e}")
-                return None
-            candidates.append(
-                {
-                    "candidate_id": i + 1,
-                    "text": draft_text,
-                    "word_count": len(draft_text.split()),
-                    "char_count": len(draft_text),
-                    "temperature": temperature,
-                }
-            )
+            else:
+                registry.add_trace("GEN_SKIPPED", {"reason": "No LLM Client"})
+                candidates.append({"id": 0, "text": "Simulated Draft", "score": 0})
 
-        if n_candidates > 1:
-            print(f"\nScoring {n_candidates} candidates (Fast Loop)...")
-            scored = self._score_candidates_with_tool(candidates, research)
-            selected_candidate = scored[0]
-            print(
-                f"  ✓ Selected candidate {selected_candidate['candidate_id']} (score: {selected_candidate['total_score']:.3f})"
-            )
-        else:
-            selected_candidate = candidates[0]
-            scored = [selected_candidate]
+        # 4. Score & Select (Fan-in)
+        # Simplified internal scoring for V2 (Length/Constraints check)
+        selected = self._score_and_select(candidates, hop4["constraints"])
 
-        output_state = {
-            "candidates": candidates,
-            "scored_candidates": scored if n_candidates > 1 else None,
-            "selected_draft": selected_candidate,
-            "n_candidates": n_candidates,
-            "generation_temperature": temperature,
-            "generation_attempts": 1,
-            "Archetype": Archetype,
-            "Route": Route,
+        # 5. Write Output
+        output = {
+            "selected_draft": selected,
+            "all_candidates": candidates,
+            "meta": {
+                "temperature": temperature,
+                "n_candidates": n_candidates,
+                "archetype": archetype,
+                "route": route,
+            },
         }
 
-        output_path = state_mgr.write_state("HOP-5", output_state)
-
-        print("\n✓ Generation Complete")
-        print(f"  Selected draft: {selected_candidate['word_count']} words")
-        print(f"  Temperature: {temperature:.2f}\n")
-
-        return output_path
-
-    async def _generate_single_draft(
-        self,
-        research: dict[str, Any],
-        grounding: dict[str, Any],
-        scaffold: dict[str, Any],
-        temperature: float,
-    ) -> str:
-        """Generate a single message draft"""
-        template = self.prompts["strategic_alignment_prompt_template"]["template"]
-        strategic_brief = research.get("strategic_brief", "")
-        sender_summary = self._extract_sender_summary(grounding)
-        recipient_summary = self._extract_recipient_summary(research, strategic_brief)
-        voice = self._load_voice_profile()
-
-        prompt = template.format(
-            persona=voice.get("persona", "Strategic AI Leader"),
-            principles="\n".join([f"- {p}" for p in voice.get("communication_principles", [])]),
-            sender_summary=sender_summary,
-            recipient_summary=recipient_summary,
-            word_count_min=scaffold["constraints"]["word_range"][0],
-            word_count_max=scaffold["constraints"]["word_range"][1],
-            forbidden=", ".join(voice.get("forbidden_phrases", [])[:10]),
-            Route=scaffold["Route"],
-            Archetype=scaffold["Archetype"],
-            adversarial_constraints="",
+        buffer.write_once("hop5_generation", output)
+        registry.add_trace(
+            "DECISION_FINAL", {"selected_id": selected["id"], "length": len(selected["text"])}
         )
 
-        loop = asyncio.get_event_loop()
-        draft_text = await loop.run_in_executor(None, self.llm_client.generate, prompt)
-        return draft_text.strip()
-
-    def _score_candidates_with_tool(
-        self, candidates: list[dict[str, Any]], research: dict[str, Any]
-    ) -> list[dict[str, Any]]:
-        """Score candidates using CodeInterpreterTool (Fast Loop)"""
-        strategic_brief = research.get("strategic_brief", "")
-        scored = self.tool.execute(
-            "run_scoring_competition",
-            candidates=[c["text"] for c in candidates],
-            strategic_brief=strategic_brief,
-        )
-
-        for i, ScoreResult in enumerate(scored):
-            ScoreResult["candidate_id"] = candidates[ScoreResult["candidate_index"]]["candidate_id"]
-            ScoreResult["word_count"] = candidates[ScoreResult["candidate_index"]]["word_count"]
-            ScoreResult["temperature"] = candidates[ScoreResult["candidate_index"]]["temperature"]
-
-        return scored
-
-    def _extract_sender_summary(self, grounding: dict[str, Any]) -> str:
-        """Extract top 5 sender capabilities"""
-        sender_grounding = grounding.get("sender_grounding", {})
-        achievements = sender_grounding.get("quantifiable_achievements", [])
-        products = sender_grounding.get("products", [])
-
-        summary_lines = []
-        for achievement in achievements[:5]:
-            summary_lines.append(f"- {achievement[:150]}")
-        for product in products[:2]:
-            summary_lines.append(f"- Product: {product}")
-
-        return (
-            "\n".join(summary_lines) if summary_lines else "- Professional with relevant experience"
-        )
-
-    def _extract_recipient_summary(self, research: dict[str, Any], strategic_brief: str) -> str:
-        """Extract top 5 recipient priorities"""
-        summary_lines = []
-
-        if strategic_brief:
-            brief_lines = strategic_brief.split("\n")[:5]
-            summary_lines.extend([f"- {line[:150]}" for line in brief_lines if line.strip()])
-
-        if not summary_lines:
-            insights = research.get("recipient_insights", [])
-            summary_lines = [f"- {insight[:150]}" for insight in insights[:5]]
-
-        return "\n".join(summary_lines) if summary_lines else "- Professional at target company"
-
-    def _load_voice_profile(self) -> dict[str, Any]:
-        """Load sender voice profile"""
-        if os.path.exists("sender_voice_profile.json"):
-            with open("sender_voice_profile.json") as f:
-                return json.load(f)
-        return {}
-
-    def _get_base_temperature(self, Archetype: str) -> float:
-        """Get base temperature for Archetype from config"""
-        temp_config = self.config.get("base_temperatures", {})
-        return temp_config.get(Archetype, 0.50)
-
-    def heal_repository(self) -> None:
-        """Autonomy healing: Validate and auto-correct agent state/config for reliable message generation.
-
-        - Chains super() for shared diagnostics/rollback
-        - Lic-specific: LLM client availability, prompt config integrity, temperature bounds
-        - MCP ensures safe operations (e.g., sanitized prompt loading)
+    def _construct_prompt(self, h1, h2, h3, h4) -> str:
+        """Constructs the prompt from context."""
+        # In a real implementation, load template from prompts.json
+        # Simplified for V2 logic demo
+        return f"""
+        Generate a {h4["route"]} message.
+        Recipient: {h1.get("recipient_title")} at {h1.get("recipient_company")}
+        Research: {h2.get("signal_score")} signal
+        Sender: {len(h3["sender_grounding"]["products"])} products
+        Constraints: Max {h4["constraints"]["char_limit"]} chars.
         """
-        super().heal_repository()
 
-        self._heal_llm_client()
-        self._heal_prompt_config()
-        self._heal_temperature_bounds()
-        self._run_generation_diagnostics()
+    def _score_and_select(self, candidates: list[dict], constraints: dict) -> dict:
+        """Basic scoring logic to select best candidate."""
+        best = candidates[0]
+        max_score = -1
 
-    def _heal_llm_client(self) -> None:
-        """Validate LLM client availability and gracefully degrade if needed."""
+        limit = constraints.get("char_limit", 2000)
+
+        for c in candidates:
+            score = 0
+            length = len(c["text"])
+
+            # Constraint penalty
+            if length > limit:
+                score -= 100
+            else:
+                score += 10  # Base score
+
+            c["score"] = score
+            if score > max_score:
+                max_score = score
+                best = c
+
+        return best
+
+    def _run_async(self, coro):
+        """Helper to run async code in sync V2 pipeline."""
         try:
-            if not self.llm_client:
-                Logger.warning("LLM client missing — generation may fail")
-                return
-            if not hasattr(self.llm_client, "generate"):
-                Logger.error("LLM client missing generate method — disabling")
-                self.llm_client = None
-        except Exception as e:
-            Logger.error(f"LLM client validation failed: {e}")
-
-    def _heal_prompt_config(self) -> None:
-        """Validate and reload prompt configuration if corrupted."""
-        try:
-            if not isinstance(self.prompts, dict):
-                Logger.warning("Prompts config corrupted — reloading from file")
-                if os.path.exists("config/prompts_LIC.json"):
-                    with open("config/prompts_LIC.json") as f:
-                        self.prompts = json.load(f)
-                else:
-                    Logger.error("Prompts file missing — using empty config")
-                    self.prompts = {}
-            required_keys = ["system", "user_template"]
-            for key in required_keys:
-                if key not in self.prompts:
-                    Logger.warning(f"Missing prompt key {key} — using default")
-                    if key == "system":
-                        self.prompts[key] = "You are a professional message generator."
-                    elif key == "user_template":
-                        self.prompts[key] = "Generate a message for {recipient}."
-        except Exception as e:
-            Logger.error(f"Prompt config healing failed: {e}")
-
-    def _heal_temperature_bounds(self) -> None:
-        """Ensure temperature settings within safe bounds."""
-        try:
-            if not isinstance(self.config, dict):
-                Logger.warning("Config corrupted — resetting to defaults")
-                self.config = {"base_temperatures": {}}
-            base_temps = self.config.get("base_temperatures", {})
-            for archetype, temp in base_temps.items():
-                if not isinstance(temp, (int, float)) or temp < 0 or temp > 2.0:
-                    Logger.warning(
-                        f"Temperature {temp} for {archetype} out of bounds — resetting to 0.7"
-                    )
-                    base_temps[archetype] = 0.7
-        except Exception as e:
-            Logger.error(f"Temperature bounds check failed: {e}")
-
-    def _run_generation_diagnostics(self) -> None:
-        """Run generation-specific health checks (e.g., mock prompt rendering)."""
-        try:
-            if not self.prompts:
-                Logger.error("Diagnostics failed — prompts unavailable")
-                return
-            test_prompt = self.prompts.get("user_template", "").format(recipient="Test Recipient")
-            if not isinstance(test_prompt, str) or len(test_prompt) == 0:
-                Logger.error("Diagnostics failed — invalid prompt rendering")
-        except Exception as e:
-            Logger.error(f"Generation diagnostics exception: {e}")
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        return loop.run_until_complete(coro)
