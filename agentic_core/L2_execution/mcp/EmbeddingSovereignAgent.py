@@ -1,0 +1,217 @@
+"""
+EmbeddingSovereignAgent - Unified Embedding Gateway
+
+[PHASE 4 MIGRATION] Consolidates all embedding operations:
+- Gemini embeddings
+- OpenAI embeddings
+- Dimension validation
+- Batch processing
+- Redis caching integration (via mixin)
+"""
+
+from __future__ import annotations
+from dataclasses import dataclass, field
+from typing import Any, Literal
+import time
+import logging
+import os
+import hashlib
+
+from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.config.SovereignConfigManager import get_sovereign_config
+
+Logger = logging.getLogger(__name__)
+
+EmbeddingProvider = Literal["gemini", "openai"]
+
+
+@dataclass
+class EmbeddingSovereignAgent(RedisCacheMixin):
+    """
+    Unified Embedding Gateway with Redis caching.
+
+    [PHASE 4 MIGRATION] Absorbed from:
+    - gemini_embedder.py
+    - core_embedder.py
+    - PineconeSovereignAgent.get_embedding()
+
+    [PHASE 8] NOT an agent - utility singleton to avoid circular imports.
+    """
+
+    _instance: EmbeddingSovereignAgent | None = None
+
+    # [PHASE 6] Configuration now managed by SovereignConfigManager
+
+    _cache_prefix: str = "emb"
+    _default_ttl: int = 86400  # 24 hours
+
+    operation_stats: dict[str, int] = field(
+        default_factory=lambda: {
+            "gemini": 0,
+            "openai": 0,
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "total": 0,
+        }
+    )
+
+    audit_log: list[dict[str, Any]] = field(default_factory=list)
+
+    def __new__(cls):
+        """Singleton constructor."""
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    @classmethod
+    def reset_instance(cls):
+        """[TESTING ONLY] Reset the singleton instance."""
+        cls._instance = None
+
+    @property
+    def config(self):
+        """[PHASE 6] Access centralized config."""
+        return get_sovereign_config()
+
+    @property
+    def EXPECTED_DIMENSIONS(self) -> dict[str, int]:
+        """[PHASE 6] Dynamic dimensions from config."""
+        return {
+            "gemini": self.config.EMBEDDING_DIM_GEMINI,
+            "openai": self.config.EMBEDDING_DIM_OPENAI,
+        }
+
+    def _audit(self, provider: str, success: bool, cached: bool, latency_ms: float) -> None:
+        """
+        [PHASE 4] Record embedding operation.
+        Includes FIFO rotation to prevent memory leaks.
+        """
+        # [PHASE 6] Dynamic limit from config
+        limit = self.config.max_audit_log_size
+
+        if len(self.audit_log) >= limit:
+            # Prune 10% when full
+            prune_count = max(1, int(limit * 0.1))
+            self.audit_log = self.audit_log[prune_count:]
+
+        self.audit_log.append(
+            {
+                "provider": provider,
+                "success": success,
+                "cached": cached,
+                "latency_ms": latency_ms,
+                "ts": time.time(),
+            }
+        )
+        self.operation_stats["total"] += 1
+        if cached:
+            self.operation_stats["cache_hits"] += 1
+        else:
+            self.operation_stats["cache_misses"] += 1
+            if success:
+                self.operation_stats[provider] = self.operation_stats.get(provider, 0) + 1
+
+    def _content_hash(self, content: str) -> str:
+        """Generate deterministic hash for caching."""
+        return hashlib.sha256(content.encode()).hexdigest()[:16]
+
+    async def get_embedding(
+        self, content: str, provider: EmbeddingProvider = "gemini", use_cache: bool = True
+    ) -> list[float]:
+        """
+        Get embedding vector with optional caching.
+
+        [PHASE 4] Unified interface for all embedding providers.
+        """
+        start = time.time()
+
+        # Check cache first
+        cache_key = f"{self._cache_prefix}:{provider}:{self._content_hash(content)}"
+
+        if use_cache:
+            try:
+                cached = await self.cache_get(cache_key)
+                if cached:
+                    latency = (time.time() - start) * 1000
+                    self._audit(provider, True, True, latency)
+                    return cached
+            except Exception as e:
+                Logger.warning(f"Redis cache lookup failed: {e}")
+
+        # Generate embedding
+        try:
+            if provider == "gemini":
+                embedding = await self._get_gemini_embedding(content)
+            elif provider == "openai":
+                embedding = await self._get_openai_embedding(content)
+            else:
+                raise ValueError(f"Unknown provider: {provider}")
+
+            # Validate dimension
+            expected_dim = self.EXPECTED_DIMENSIONS.get(provider)
+            if expected_dim and len(embedding) != expected_dim:
+                Logger.warning(f"Dimension mismatch: got {len(embedding)}, expected {expected_dim}")
+
+            # Cache result
+            if use_cache:
+                try:
+                    await self.cache_set(cache_key, embedding, ttl=self._default_ttl)
+                except Exception as e:
+                    Logger.warning(f"Redis cache set failed: {e}")
+
+            latency = (time.time() - start) * 1000
+            self._audit(provider, True, False, latency)
+            return embedding
+
+        except Exception as e:
+            latency = (time.time() - start) * 1000
+            self._audit(provider, False, False, latency)
+            Logger.error(f"Embedding failed: {e}")
+            raise
+
+    async def get_embeddings_batch(
+        self, contents: list[str], provider: EmbeddingProvider = "gemini", use_cache: bool = True
+    ) -> list[list[float]]:
+        """
+        Get embeddings for multiple contents.
+        [PHASE 4] Batch processing with caching.
+        """
+        results = []
+        for content in contents:
+            # Sequential processing to ensure consistent caching logic and error handling
+            # Future optimization: Use provider batch APIs where available
+            embedding = await self.get_embedding(content, provider, use_cache)
+            results.append(embedding)
+        return results
+
+    async def _get_gemini_embedding(self, content: str) -> list[float]:
+        """Get embedding from Gemini."""
+        import google.generativeai as genai
+
+        if not os.getenv("GOOGLE_API_KEY"):
+            raise ValueError("GOOGLE_API_KEY missing")
+
+        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+        # 'retrieval_document' is generally preferred for storage
+        result = genai.embed_content(
+            model="models/text-embedding-004", content=content, task_type="retrieval_document"
+        )
+        return result["embedding"]
+
+    async def _get_openai_embedding(self, content: str) -> list[float]:
+        """Get embedding from OpenAI."""
+        import openai
+
+        if not os.getenv("OPENAI_API_KEY"):
+            raise ValueError("OPENAI_API_KEY missing")
+
+        client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        response = client.embeddings.create(model="text-embedding-3-small", input=content)
+        return response.data[0].embedding
+
+
+# Singleton accessor
+def get_embedding_gateway() -> EmbeddingSovereignAgent:
+    """Get or create the global embedding gateway."""
+    return EmbeddingSovereignAgent()
