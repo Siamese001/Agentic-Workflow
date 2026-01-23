@@ -82,7 +82,7 @@ class AtomicBlackboard(SovereignBaseAgent):
         self.max_backoff = int(os.getenv("MAX_LEASE_BACKOFF", "60"))
         self.health_score_ttl = int(os.getenv("HEALTH_SCORE_TTL", "86400"))
         self._leases: dict[str, HealingLease] = {}
-        
+
         # Fallback if Redis is unavailable (handled by Mixin usually, but kept for logic safety)
         self.redis_fallback: dict[str, Any] = {}
 
@@ -104,7 +104,7 @@ class AtomicBlackboard(SovereignBaseAgent):
                 return None
             except Exception as e:
                 self.log_error(f"Redis lease failed: {e}")
-        
+
         return None
 
     def release_lease(self, lease: HealingLease) -> bool:
@@ -130,14 +130,14 @@ class AtomicBlackboard(SovereignBaseAgent):
     def update_health_score(self, file_path: str, violations: int, file_hash: str = "") -> FileHealthScore:
         score_key = f"health:{file_path}"
         existing = self.get_health_score(file_path)
-        
+
         if existing:
             attempts = existing.healing_attempts + 1
         else:
             attempts = 1
-            
+
         score = FileHealthScore(file_path, violations, time.time(), attempts, file_hash)
-        
+
         # Use native cache_set
         self.cache_set(score_key, score.to_dict(), ttl=self.health_score_ttl)
         return score
@@ -160,16 +160,16 @@ class AtomicBlackboard(SovereignBaseAgent):
         score = self.get_health_score(file_path)
         if not score:
             return True
-        
+
         # Check if file has changed
         current_hash = self.get_file_hash(file_path)
         if current_hash and current_hash != score.last_hash:
             return True
-            
+
         # Check if enough time has passed since last heal
         time_since_heal = time.time() - score.last_healed_timestamp
         backoff = min(2 ** score.healing_attempts, self.max_backoff)
-        
+
         return time_since_heal > backoff
 
 
@@ -216,11 +216,11 @@ class ConversationalRepair(SovereignBaseAgent):
 
     async def debate_failure(self, failure_context: dict[str, Any]) -> dict[str, Any]:
         self.log_info("Initiating conversational repair")
-        
+
         # Example using native LLM call
         prompt = f"Analyze failure: {json.dumps(failure_context)}"
         response = await self.llm_generate(prompt, provider="openai")
-        
+
         return {
             "success": True,
             "consensus_code": "# Fixed code via Sovereign LLM",
@@ -242,9 +242,10 @@ def get_conversational_repair() -> ConversationalRepair:
     return _conversational_repair
 '''
 
+
 def apply_refactors():
     print("--- STARTING PHASE 10 AGENT REFACTOR ---")
-    
+
     # 1. Blackboard
     bb_path = PROJECT_ROOT / "agentic_core/L5_safety/validators/blackboard.py"
     if bb_path.exists():
@@ -264,6 +265,7 @@ def apply_refactors():
         print(f"[ERROR] {cr_path.name} not found")
 
     print("--- REFACTOR COMPLETE ---")
+
 
 if __name__ == "__main__":
     apply_refactors()

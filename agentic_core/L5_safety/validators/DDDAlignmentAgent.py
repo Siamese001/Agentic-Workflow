@@ -19,7 +19,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -226,7 +225,7 @@ class DDDViolation:
 
 
 @dataclass
-class DDDAlignmentAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class DDDAlignmentAgent(SovereignBaseAgent):
     """
     Domain-Driven Design Alignment Agent.
 

@@ -345,7 +345,7 @@ class AgentASTVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-class CanonDependencySentinelAgent(SovereignBaseAgent, MCPHardenedMixin):
+class CanonDependencySentinelAgent(SovereignBaseAgent):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.agent_name = "CanonDependencySentinel"

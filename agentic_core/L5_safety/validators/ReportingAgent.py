@@ -55,15 +55,12 @@ try:
 except ImportError:  # MetricsAgent not implemented yet or optional
     METRICS_AGENT_AVAILABLE = False
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
 
 
 @dataclass
-class ReportingAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class ReportingAgent(SovereignBaseAgent):
     """
     Autonomous diagnostic agent for compliance reporting and visualization.
     Operates independently — no validation, only observation.
@@ -79,6 +76,7 @@ class ReportingAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerMixin, MCP
         - MetricsAgent is optional — ReportingAgent remains functional without it
         - Loose coupling prevents gravity drift
         """
+        super().__init__()
         self.project_root = project_root.resolve()
         # Union of general sovereign exclusions + reporting-specific
         self.exclude_dirs = SOVEREIGN_EXCLUDED_FOLDERS | SCOPE_SUMMARY_EXCLUSIONS

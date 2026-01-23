@@ -8,15 +8,9 @@ Provides vector database implementations for semantic memory operations.
 # This package must remain safe to import even when optional providers
 # (Pinecone SDK, credentials, etc.) are not available.
 
-try:
-    from .pinecone_sync import SovereignPineconeStoreAgent
-except Exception:
-    SovereignPineconeStoreAgent = None
-
-try:
-    from .pinecone_store import PineconeVectorStore
-except Exception:
-    PineconeVectorStore = None
+# [PHASE 19] Removed legacy imports - now using SovereignLLMGateway
+SovereignPineconeStoreAgent = None
+PineconeVectorStore = None
 
 try:
     from .bm25_store import Bm25Store, get_bm25_store

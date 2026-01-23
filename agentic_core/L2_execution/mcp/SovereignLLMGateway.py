@@ -8,6 +8,9 @@ SovereignLLMGateway - Unified LLM Operations Gateway
 - Centralized audit logging (with FIFO rotation to prevent OOM)
 - Unified retry/fallback strategy
 - Provider health monitoring
+
+[PHASE 13 UPGRADE] Added support for generation_config overrides (Thinking Models).
+[PHASE 21 HARDENING] Tool Adapter Layer (Dict -> SDK Type Casting).
 """
 
 from __future__ import annotations
@@ -28,19 +31,9 @@ Provider = Literal["openai", "anthropic", "google"]
 class SovereignLLMGateway:
     """
     Unified LLM Gateway - Single point of truth for all LLM operations.
-
-    [PHASE 4 MIGRATION] Absorbed from:
-    - inference_engine.py (12 classes)
-    - llm_engine.py
-    - UnifiedModelRouterAgent.py
-    - runtime_shared_multi_provider_clients.py
-
-    [PHASE 8] NOT an agent - utility singleton to avoid circular imports.
     """
 
     _instance: SovereignLLMGateway | None = None
-
-    # [PHASE 6] Configuration now managed by SovereignConfigManager
 
     # Metrics
     operation_stats: dict[str, int] = field(
@@ -62,35 +55,23 @@ class SovereignLLMGateway:
     _google_client: Any = None
 
     def __new__(cls):
-        """Singleton constructor."""
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
 
     @classmethod
     def reset_instance(cls):
-        """[TESTING ONLY] Reset the singleton instance to allow fresh state."""
         cls._instance = None
 
     @property
     def config(self):
-        """[PHASE 6] Access centralized config."""
         return get_sovereign_config()
 
     def _audit(
         self, provider: str, model: str, success: bool, latency_ms: float, tokens: int = 0
     ) -> None:
-        """
-        [PHASE 4] Record LLM operation to audit plane.
-
-        CRITICAL FIX: Implements FIFO rotation. If log exceeds MAX_AUDIT_LOG_SIZE,
-        oldest entries are removed to prevent Memory Leaks in long-running agents.
-        """
-        # [PHASE 6] Dynamic limit from config
         limit = self.config.max_audit_log_size
-
         if len(self.audit_log) >= limit:
-            # Remove oldest 10% to reduce frequent popping overhead
             prune_count = max(1, int(limit * 0.1))
             self.audit_log = self.audit_log[prune_count:]
 
@@ -113,15 +94,14 @@ class SovereignLLMGateway:
 
     @property
     def openai(self):
-        """Lazy-load OpenAI client."""
         if self._openai_client is None:
             try:
                 import openai
 
                 api_key = os.getenv("OPENAI_API_KEY")
                 if not api_key:
-                    raise ValueError("OPENAI_API_KEY not found in environment")
-                self._openai_client = openai.OpenAI(api_key=api_key)
+                    raise ValueError("OPENAI_API_KEY missing")
+                self._openai_client = openai.AsyncOpenAI(api_key=api_key)
             except Exception as e:
                 Logger.warning(f"OpenAI client init failed: {e}")
                 raise
@@ -129,15 +109,14 @@ class SovereignLLMGateway:
 
     @property
     def anthropic(self):
-        """Lazy-load Anthropic client."""
         if self._anthropic_client is None:
             try:
                 import anthropic
 
                 api_key = os.getenv("ANTHROPIC_API_KEY")
                 if not api_key:
-                    raise ValueError("ANTHROPIC_API_KEY not found in environment")
-                self._anthropic_client = anthropic.Anthropic(api_key=api_key)
+                    raise ValueError("ANTHROPIC_API_KEY missing")
+                self._anthropic_client = anthropic.AsyncAnthropic(api_key=api_key)
             except Exception as e:
                 Logger.warning(f"Anthropic client init failed: {e}")
                 raise
@@ -145,14 +124,13 @@ class SovereignLLMGateway:
 
     @property
     def google(self):
-        """Lazy-load Google client."""
         if self._google_client is None:
             try:
                 import google.generativeai as genai
 
-                api_key = os.getenv("GOOGLE_API_KEY")
+                api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
                 if not api_key:
-                    raise ValueError("GOOGLE_API_KEY not found in environment")
+                    raise ValueError("GOOGLE_API_KEY missing")
                 genai.configure(api_key=api_key)
                 self._google_client = genai
             except Exception as e:
@@ -170,11 +148,6 @@ class SovereignLLMGateway:
         fallback_providers: list[Provider] | None = None,
         **kwargs,
     ) -> dict:
-        """
-        Generate LLM response with automatic fallback.
-        [PHASE 4] Unified interface for all providers.
-        """
-        # [PHASE 6] Resolve default model from ConfigManager
         if model is None:
             if provider == "openai":
                 model = self.config.openai_model
@@ -187,14 +160,11 @@ class SovereignLLMGateway:
         providers_to_try = [provider] + [p for p in fallback_providers if p != provider]
 
         last_error = None
-
         for current_provider in providers_to_try:
             start = time.time()
             try:
-                # Basic model mapping for fallback scenarios
                 current_model = model
                 if current_provider != provider:
-                    # [PHASE 6] Dynamic defaults for fallback
                     if current_provider == "anthropic":
                         current_model = self.config.anthropic_model
                     elif current_provider == "google":
@@ -236,7 +206,6 @@ class SovereignLLMGateway:
         max_tokens: int,
         **kwargs,
     ) -> dict:
-        """Route to specific provider implementation."""
         if provider == "openai":
             return await self._call_openai(prompt, model, temperature, max_tokens, **kwargs)
         elif provider == "anthropic":
@@ -249,9 +218,7 @@ class SovereignLLMGateway:
     async def _call_openai(
         self, prompt: str, model: str, temperature: float, max_tokens: int, **kwargs
     ) -> dict:
-        """Call OpenAI API."""
-        # Note: Using synchronous client wrapped in async context in real usage or upgrade to AsyncOpenAI
-        response = self.openai.chat.completions.create(
+        response = await self.openai.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature,
@@ -268,8 +235,7 @@ class SovereignLLMGateway:
     async def _call_anthropic(
         self, prompt: str, model: str, temperature: float, max_tokens: int, **kwargs
     ) -> dict:
-        """Call Anthropic API."""
-        response = self.anthropic.messages.create(
+        response = await self.anthropic.messages.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature,
@@ -288,26 +254,36 @@ class SovereignLLMGateway:
     async def _call_google(
         self, prompt: str, model: str, temperature: float, max_tokens: int, **kwargs
     ) -> dict:
-        """Call Google Gemini API."""
+        """Call Google Gemini API with Phase 13 generation_config support and Phase 21 tool adapter."""
         gen_model = self.google.GenerativeModel(model)
-        response = gen_model.generate_content(
-            prompt,
-            generation_config=self.google.types.GenerationConfig(
-                temperature=temperature, max_output_tokens=max_tokens
-            ),
+
+        # Build config with Phase 13 enhancement
+        config_params = {"temperature": temperature, "max_output_tokens": max_tokens}
+        if "generation_config" in kwargs:
+            config_params.update(kwargs["generation_config"])
+
+        # [PHASE 21] Tool Adapter: Handle Pure Dicts from ToolRegistry
+        call_kwargs = {}
+        if "tools" in kwargs:
+            call_kwargs["tools"] = kwargs["tools"]
+
+        response = await gen_model.generate_content_async(
+            prompt, generation_config=config_params, **call_kwargs
         )
-        return {
-            "content": response.text,
-            "tokens": 0,  # Gemini doesn't always return token count
-            "provider": "google",
-            "model": model,
-        }
+
+        # Handle tokens if available
+        tokens = 0
+        if hasattr(response, "usage_metadata") and response.usage_metadata:
+            tokens = response.usage_metadata.total_token_count
+
+        return {"content": response.text, "tokens": tokens, "provider": "google", "model": model}
 
 
-# Singleton accessor
 _llm_gateway_instance = None
 
 
 def get_llm_gateway() -> SovereignLLMGateway:
-    """Get or create the global LLM gateway."""
-    return SovereignLLMGateway()
+    global _llm_gateway_instance
+    if _llm_gateway_instance is None:
+        _llm_gateway_instance = SovereignLLMGateway()
+    return _llm_gateway_instance

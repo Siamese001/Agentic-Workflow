@@ -1,8 +1,8 @@
 # Root Cause Analysis: SovereignBaseAgent Wrong Folder Location
 
-**Date:** January 22, 2026  
-**Incident:** SovereignBaseAgent discovered in `agentic_core/observability/` instead of `agentic_core/base_agents/`  
-**Severity:** HIGH - Governance Bypass (Unknown layer assignment)  
+**Date:** January 22, 2026
+**Incident:** SovereignBaseAgent discovered in `agentic_core/observability/` instead of `agentic_core/base_agents/`
+**Severity:** HIGH - Governance Bypass (Unknown layer assignment)
 **Status:** ✅ RESOLVED
 
 ---
@@ -16,8 +16,8 @@
 ## Timeline of Events
 
 ### January 22, 2026 - 09:52 AM
-**Commit:** `2626152be46790f1693b29b90258238e0f3b589c`  
-**Action:** PHASE 4 REFACTOR - Modified `SovereignBaseAgent.py` in `agentic_core/observability/`  
+**Commit:** `2626152be46790f1693b29b90258238e0f3b589c`
+**Action:** PHASE 4 REFACTOR - Modified `SovereignBaseAgent.py` in `agentic_core/observability/`
 **Changes:** Added 23 lines, removed 5 lines (DNA injection updates)
 
 **Git Log Evidence:**
@@ -107,7 +107,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -> bool:
     """
     L5 Sovereign Structural SSOT - Hard-enforcement of path validity.
-    
+
     Enforces:
     1. Path must be within project root
     2. Root folder must be in SOVEREIGN_REGISTRY (whitelist)
@@ -328,6 +328,6 @@ The `SovereignBaseAgent` location issue was caused by a **missing test coverage 
 
 ---
 
-**Report Generated:** January 22, 2026, 11:55 AM EST  
-**Author:** Cascade AI  
+**Report Generated:** January 22, 2026, 11:55 AM EST
+**Author:** Cascade AI
 **Status:** COMPLETE - AWAITING IMPORT FIX

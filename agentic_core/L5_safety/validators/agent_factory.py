@@ -29,7 +29,7 @@ Phase 11: Configurable Implementation Factory
 from typing import Any
 
 try:
-    from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+    from agentic_core.L2_execution.L2ExecutionBaseAgent import L2ExecutionBaseAgent
 except ImportError:
     L2ExecutionBaseAgent = None
 MockL2ExecutionBaseAgent = None  # Stub

@@ -8,8 +8,6 @@ StructuredEngine - Intent to Plan Converter
 import logging
 from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
-from agentic_core.config.config_mixin import ConfigMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -22,7 +20,7 @@ class AgentPlan:
         self.tool_calls = tool_calls
 
 
-class StructuredEngine(SovereignBaseAgent, LLMProviderMixin, ConfigMixin):
+class StructuredEngine(SovereignBaseAgent):
     """
     L2 Execution: Structured LLM output engine.
     """

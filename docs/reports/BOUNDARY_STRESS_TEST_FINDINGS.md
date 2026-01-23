@@ -1,8 +1,8 @@
 # Stress Test: Movement & Archival Boundaries - Final Report
 
-**Test Date:** January 22, 2026, 11:41 AM EST  
-**Test Executor:** Direct HierarchyAgent Invocation + Governance Hardening Verification Suite  
-**Test Duration:** ~5 minutes (combined)  
+**Test Date:** January 22, 2026, 11:41 AM EST
+**Test Executor:** Direct HierarchyAgent Invocation + Governance Hardening Verification Suite
+**Test Duration:** ~5 minutes (combined)
 **Status:** ✅ **ALL TESTS PASSED - PRODUCTION READY**
 
 ---
@@ -96,20 +96,20 @@ def _prompt_user_for_move_approval(self, source: Path, target: Path, reason: str
     # Check for skip-all flag
     if self._skip_all_moves:
         return False
-    
+
     # Check for approve-all flag
     if self._approve_all_moves:
         return True
-    
+
     # [PHASE 33j] Check SOVEREIGN_AUTO_APPROVE at runtime
     if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
         Logger.info(f"[HierarchyAgent] SOVEREIGN_AUTO_APPROVE: {source.name} -> {target}")
         return True
-    
+
     # Check Sovereign Override (auto_approve from heal_hierarchy)
     if self._auto_approve:
         return True
-    
+
     # Delegate to ArchivalGatekeeper's approval mechanism
     return True  # Gatekeeper will handle approval in safe_move()
 ```
@@ -257,8 +257,8 @@ heal_result = agent.heal_repository(
 **Evidence:**
 ```
 ✅ heal_repository returned: {'violations': 0, 'fixed': 0, 'errors': 0, 'skipped': 1}
-✅ MRO: ['DirectSovereignAgent', 'SovereignBaseAgent', 'InfrastructureMixin', 
-         'HealerMixin', 'MCPHardenedMixin', 'SubatomicTestingMixin', 
+✅ MRO: ['DirectSovereignAgent', 'SovereignBaseAgent', 'InfrastructureMixin',
+         'HealerMixin', 'MCPHardenedMixin', 'SubatomicTestingMixin',
          'InstructionalInjectionMixin', 'object']
 ✅ SovereignBaseAgent correctly positioned before object
 ```
@@ -288,27 +288,27 @@ heal_result = agent.heal_repository(
 ## Stress Test Scenarios - Results
 
 ### Scenario 1: Non-Interactive Shell with --yes
-**Question:** Does the system crash when a prompt is expected in a non-interactive shell?  
+**Question:** Does the system crash when a prompt is expected in a non-interactive shell?
 **Answer:** ✅ **NO** - With `--yes` flag (or `auto_approve=True`), no prompts appear. System runs fully automated.
 
 ### Scenario 2: Structural Move Triggers Prompt
-**Question:** Did any structural (in-repo) moves trigger a prompt?  
+**Question:** Did any structural (in-repo) moves trigger a prompt?
 **Answer:** ✅ **NO** - All 4 file relocations and 49 orphan purges happened automatically without prompts.
 
 ### Scenario 3: Archival Move Bypasses Prompt
-**Question:** Did any archival (out-of-repo) moves bypass the prompt when they shouldn't?  
+**Question:** Did any archival (out-of-repo) moves bypass the prompt when they shouldn't?
 **Answer:** ✅ **NO** - Archival moves respect `auto_approve` flag. With `auto_approve=True`, automatic (as designed). With `auto_approve=False`, code shows prompts would appear.
 
 ### Scenario 4: CLI Flag Ignored
-**Question:** Did the CLI flag correctly override environment variables?  
+**Question:** Did the CLI flag correctly override environment variables?
 **Answer:** ✅ **YES** - Both `ARCHIVE_BATCH_ACCEPT` and `SOVEREIGN_AUTO_APPROVE` correctly set to 1.
 
 ### Scenario 5: Signal Bus TypeError
-**Question:** Does the signal bus raise TypeError when custom kwargs are passed?  
+**Question:** Does the signal bus raise TypeError when custom kwargs are passed?
 **Answer:** ✅ **NO** - Custom signals (`telemetry_id`, `custom_flag`, `auto_approve`) propagate cleanly through L2 → L1 → Sovereign chain.
 
 ### Scenario 6: MRO Overflow
-**Question:** Does SovereignBaseAgent overflow into non-compliant mixins?  
+**Question:** Does SovereignBaseAgent overflow into non-compliant mixins?
 **Answer:** ✅ **NO** - SovereignBaseAgent is the termination point. Returns `{skipped: 1}` without calling super().
 
 ---
@@ -516,9 +516,9 @@ Test 4: MRO Integrity Check
 
 ---
 
-**Report Generated:** January 22, 2026, 11:41 AM EST  
-**Test Framework:** Direct HierarchyAgent Invocation + Governance Hardening Verification Suite  
-**Total Tests:** 7 (3 boundary + 4 governance)  
-**Pass Rate:** 100% (7/7)  
-**Total Test Duration:** ~5 minutes  
+**Report Generated:** January 22, 2026, 11:41 AM EST
+**Test Framework:** Direct HierarchyAgent Invocation + Governance Hardening Verification Suite
+**Total Tests:** 7 (3 boundary + 4 governance)
+**Pass Rate:** 100% (7/7)
+**Total Test Duration:** ~5 minutes
 **Confidence Level:** HIGH (100% pass rate, no open items)
