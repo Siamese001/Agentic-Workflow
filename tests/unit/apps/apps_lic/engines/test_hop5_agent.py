@@ -9,8 +9,8 @@ import pytest
 
 from apps_lic.domain.config.schemas import GenerationConfig
 from apps_lic.engines.HOP5GenerationAgent import HOP5GenerationAgent
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
 
 # --- Fixtures ---
 
@@ -48,7 +48,7 @@ def mock_gen_config():
     mock_specs.generation_agent = GenerationConfig(
         base_temperatures={"C_LEVEL": 0.7}, c_level_n_candidates=2
     )
-    with patch("apps_lic.shared.v2_patterns.agent_base.load_agent_specs", return_value=mock_specs):
+    with patch("apps_lic.shared.foundation.agent_base.load_agent_specs", return_value=mock_specs):
         yield mock_specs
 
 

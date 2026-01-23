@@ -8,9 +8,9 @@ directing the workflow (Pass, Retry Research, or Retry Generation).
 from __future__ import annotations
 
 
-from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.agent_base import V2AgentBase
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
 
 
 class HOP7GateDecisionAgent(V2AgentBase):

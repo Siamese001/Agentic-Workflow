@@ -6,8 +6,8 @@ Requirement: 100% Pass Rate for LIC Specialist Assembly.
 """
 
 from apps_lic.engines.HOP5GenerationAgent import HOP5GenerationAgent
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
 
 
 class TestHOP5SpecialistAssembly:

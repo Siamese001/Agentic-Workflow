@@ -12,10 +12,10 @@ from typing import Any
 
 from apps_lic.domain.config.loader import load_agent_specs
 from apps_lic.domain.config.schemas import AgentSpecs
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
-from apps_lic.shared.v2_patterns.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
-from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+from apps_lic.shared.foundation.agent_base import V2AgentBase
 
 
 class HOPOrchestratorAgent(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):

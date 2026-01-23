@@ -11,8 +11,8 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
-from apps_lic.shared.v2_patterns.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+from apps_lic.shared.foundation.agent_base import V2AgentBase
+from apps_lic.shared.foundation.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
 
 logger = logging.getLogger(__name__)
 

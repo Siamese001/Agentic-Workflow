@@ -8,9 +8,9 @@ Implements Gate 5 (Route Selection) and Gate 6 (Premium Mismatch).
 from __future__ import annotations
 
 
-from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.agent_base import V2AgentBase
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
 
 
 class HOP4RoutingAgent(V2AgentBase):

@@ -7,8 +7,8 @@ MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf exec
 import pytest
 import hashlib
 from apps_lic.engines.HOP9IntegrationAgent import HOP9IntegrationAgent
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
 
 
 class TestHOP9SovereignDispatcher:

@@ -12,9 +12,10 @@ import hashlib
 from typing import Any
 
 # V2 Architecture Imports
-from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.agent_base import V2AgentBase
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Domain Imports
 try:
@@ -23,7 +24,7 @@ except ImportError:
     VectorMemoryStore = None  # Allow stub mode
 
 
-class HOP2ResearchAgent(V2AgentBase):
+class HOP2ResearchAgent(SubatomicTestingMixin, V2AgentBase):
     """
     V2.5 Sovereign Strategist.
 

@@ -6,8 +6,8 @@ Requirement: 100% Pass Rate for Validation Gate.
 """
 
 from apps_lic.engines.HOP6ValidationAgent import HOP6ValidationAgent
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
 
 
 class TestHOP6SpecialistValidation:

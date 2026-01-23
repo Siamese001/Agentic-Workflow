@@ -5,9 +5,9 @@ Verifies immutability, tracing, and persistence logic.
 
 import pytest
 
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.manifest_manager import ManifestManager
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
+from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.foundation.manifest_manager import ManifestManager
+from apps_lic.shared.foundation.trace_registry import TraceRegistry
 
 # Mocking Mixins if not available in test env,
 # but assuming they import correctly based on previous phases.
