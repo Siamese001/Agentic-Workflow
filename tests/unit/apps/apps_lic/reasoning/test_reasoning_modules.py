@@ -2,10 +2,13 @@
 Unit tests for apps_lic.shared.reasoning module.
 Ensures bounds enforcement and logic correctness.
 """
+
 import pytest
 from pydantic import ValidationError
-from apps_lic.shared.reasoning.toggles import ReasoningToggles
+
 from apps_lic.shared.reasoning.cot import expand_thought_process
+from apps_lic.shared.reasoning.toggles import ReasoningToggles
+
 
 class TestReasoningToggles:
     def test_default_initialization(self):
@@ -17,11 +20,7 @@ class TestReasoningToggles:
 
     def test_valid_custom_initialization(self):
         """Test valid custom overrides."""
-        toggles = ReasoningToggles(
-            tot_branches=5,
-            temperature_cap=0.9,
-            use_reflexion=False
-        )
+        toggles = ReasoningToggles(tot_branches=5, temperature_cap=0.9, use_reflexion=False)
         assert toggles.tot_branches == 5
         assert toggles.temperature_cap == 0.9
         assert toggles.use_reflexion is False
@@ -60,7 +59,7 @@ class TestCoTExpansion:
         """Test that step counts are validated."""
         with pytest.raises(ValueError, match="between 1 and 10"):
             expand_thought_process("Test", steps=11)
-            
+
         with pytest.raises(ValueError, match="between 1 and 10"):
             expand_thought_process("Test", steps=0)
 

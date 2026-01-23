@@ -3,17 +3,19 @@ Unit tests for HOP4RoutingAgent (V2).
 Verifies rule-based routing logic and V2 architecture compliance.
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
+
+from apps_lic.domain.config.schemas import (
+    RouteConditions,
+    RouteConstraints,
+    RouteDef,
+    RoutingConfig,
+)
 from apps_lic.engines.HOP4RoutingAgent import HOP4RoutingAgent
 from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
-from apps_lic.domain.config.schemas import (
-    RoutingConfig,
-    RouteDef,
-    RouteConditions,
-    RouteConstraints,
-)
 
 # --- Fixtures ---
 

@@ -7,7 +7,6 @@ description analysis and company maturity.
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

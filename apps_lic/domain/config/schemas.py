@@ -5,6 +5,7 @@ Defines the Pydantic models for type-safe configuration loading.
 """
 
 from __future__ import annotations
+
 from pydantic import BaseModel, Field
 
 

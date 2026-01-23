@@ -7,7 +7,6 @@ route (INMAIL vs CONNECTION_REQ) with premium routing validation.
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -2,12 +2,16 @@
 Unit tests for V2AgentBase.
 Verifies the Bridge Pattern enforces tracing, config loading, and error handling.
 """
-import pytest
+
 from unittest.mock import MagicMock, patch
+
+import pytest
+
+from apps_lic.domain.config.schemas import AgentSpecs
 from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
 from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
-from apps_lic.domain.config.schemas import AgentSpecs
+
 
 # Concrete implementation for testing
 class ConcreteTestAgent(V2AgentBase):
@@ -17,20 +21,21 @@ class ConcreteTestAgent(V2AgentBase):
         buffer.write_once("output_key", f"processed_{input_val}")
         registry.add_trace("DEBUG", {"msg": "processing_done"})
 
+
 class FailingTestAgent(V2AgentBase):
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         raise ValueError("Simulated failure")
 
+
 class TestV2AgentBase:
-    
     @patch("apps_lic.shared.v2_patterns.agent_base.load_agent_specs")
     def test_initialization_loads_config(self, mock_load):
         """Test that __init__ automatically loads configuration."""
         mock_specs = MagicMock(spec=AgentSpecs)
         mock_load.return_value = mock_specs
-        
+
         agent = ConcreteTestAgent()
-        
+
         assert agent.config == mock_specs
         assert agent.toggles is not None
         mock_load.assert_called_once()
@@ -42,26 +47,26 @@ class TestV2AgentBase:
         agent = ConcreteTestAgent()
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
+
         # Pre-seed buffer
         buffer.write_once("input_key", "test")
-        
+
         # Execute
         agent.run_phase(buffer, registry)
-        
+
         # Verify Buffer Output
         assert buffer.read("output_key") == "processed_test"
-        
+
         # Verify Traces
         traces = registry.get_traces()
         assert len(traces) >= 3
         assert traces[0]["type"] == "PHASE_START"
         assert traces[0]["details"]["agent"] == "ConcreteTestAgent"
-        
+
         # Verify internal trace from _process
         debug_trace = next(t for t in traces if t["type"] == "DEBUG")
         assert debug_trace["details"]["msg"] == "processing_done"
-        
+
         assert traces[-1]["type"] == "PHASE_COMPLETE"
 
     @patch("apps_lic.shared.v2_patterns.agent_base.load_agent_specs")
@@ -70,13 +75,13 @@ class TestV2AgentBase:
         agent = FailingTestAgent()
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
+
         # Execute expecting error
         with pytest.raises(RuntimeError) as exc:
             agent.run_phase(buffer, registry)
-        
+
         assert "FailingTestAgent execution failed" in str(exc.value)
-        
+
         # Verify Error Trace
         traces = registry.get_traces()
         assert traces[-1]["type"] == "PHASE_ERROR"

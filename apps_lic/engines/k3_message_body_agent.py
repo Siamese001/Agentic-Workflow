@@ -6,7 +6,6 @@ micro-structure enforcement, and placeholder detection blocking.
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

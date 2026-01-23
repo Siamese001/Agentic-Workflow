@@ -3,12 +3,14 @@ Unit tests for HOP5GenerationAgent (V2).
 Verifies multi-candidate generation, scoring, and V2 architecture compliance.
 """
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
+
+from apps_lic.domain.config.schemas import GenerationConfig
 from apps_lic.engines.HOP5GenerationAgent import HOP5GenerationAgent
 from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
-from apps_lic.domain.config.schemas import GenerationConfig
 
 # --- Fixtures ---
 

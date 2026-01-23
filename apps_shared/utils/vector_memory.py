@@ -7,7 +7,7 @@ __version__ = "13.1"
 
 import os
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # ChromaDB for vector storage
 try:

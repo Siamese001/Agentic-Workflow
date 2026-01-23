@@ -4,28 +4,33 @@ Reasoning Configuration Toggles.
 Defines the bounds and safety switches for advanced reasoning capabilities
 (CoT, ToT, Reflexion) within the agentic workflow.
 """
+
 from __future__ import annotations
 
-from typing import Any
-from pydantic import BaseModel, Field, field_validator, ValidationError
+from pydantic import BaseModel, Field, field_validator
+
 
 class ReasoningToggles(BaseModel):
     """
     Configuration object for enabling/disabling advanced reasoning features.
     Enforces strict safety bounds to prevent infinite loops or token exhaustion.
     """
-    
+
     # Core Toggles
     use_cot: bool = Field(default=True, description="Enable Chain-of-Thought reasoning.")
     use_reflexion: bool = Field(default=True, description="Enable self-correction loops.")
-    
+
     # Tree of Thought Parameters
     tot_branches: int = Field(default=3, description="Number of alternative reasoning paths.")
     min_tot_depth: int = Field(default=2, description="Minimum depth for tree exploration.")
-    
+
     # Sampling Parameters
-    self_consistency_samples: int = Field(default=3, description="Number of samples for majority voting.")
-    temperature_cap: float = Field(default=0.5, description="Maximum temperature for reasoning steps.")
+    self_consistency_samples: int = Field(
+        default=3, description="Number of samples for majority voting."
+    )
+    temperature_cap: float = Field(
+        default=0.5, description="Maximum temperature for reasoning steps."
+    )
 
     @field_validator("tot_branches")
     @classmethod
@@ -50,4 +55,5 @@ class ReasoningToggles(BaseModel):
 
     class Config:
         """Pydantic configuration."""
-        frozen = True # Configs should be immutable once loaded
+
+        frozen = True  # Configs should be immutable once loaded

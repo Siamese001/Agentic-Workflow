@@ -8,7 +8,6 @@ constraints (28-33 words per bullet).
 import logging
 import re
 
-
 logger = logging.getLogger(__name__)
 
 

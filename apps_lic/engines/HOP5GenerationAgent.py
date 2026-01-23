@@ -7,6 +7,7 @@ Synthesizes inputs from HOPs 1-4 to generate candidate messages.
 from __future__ import annotations
 
 import asyncio
+
 from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
 from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry

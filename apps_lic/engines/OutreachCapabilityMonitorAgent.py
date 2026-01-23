@@ -9,7 +9,6 @@ Provides:
 
 from datetime import datetime
 
-
 from .context import OutreachEngineContext
 
 
