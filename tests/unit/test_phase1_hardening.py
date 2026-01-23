@@ -4,7 +4,7 @@ Test Suite: Phase 1 Hardening - Safety Net Components
 
 Tests for the foundational hardening components:
 1. IOrchestrator Protocol adherence
-2. InfrastructureMixin state verification
+2. infrastructure_mixin state verification
 3. SovereignIndex cache invalidation
 
 All tests must pass 100%.
@@ -96,14 +96,14 @@ class TestIOrchestrator:
         )
 
 
-class TestInfrastructureMixin:
-    """Tests for InfrastructureMixin state verification."""
+class test_infrastructure_mixin:
+    """Tests for infrastructure_mixin state verification."""
 
     def test_proper_initialization(self):
         """Proper initialization sets _infra_initialized flag."""
-        from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
+        from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
 
-        class ProperAgent(InfrastructureMixin):
+        class ProperAgent(infrastructure_mixin):
             def __init__(self):
                 super().__init__()
 
@@ -114,9 +114,9 @@ class TestInfrastructureMixin:
 
     def test_broken_chain_no_super_init(self):
         """Test Case A: Forgetting super().__init__() causes verify_state to raise."""
-        from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
+        from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
 
-        class BrokenAgent(InfrastructureMixin):
+        class BrokenAgent(infrastructure_mixin):
             def __init__(self):
                 # BROKEN: Forgot to call super().__init__()
                 self.project_root = Path(".")
@@ -135,9 +135,9 @@ class TestInfrastructureMixin:
 
     def test_get_infrastructure_status(self):
         """get_infrastructure_status returns correct status."""
-        from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
+        from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
 
-        class StatusAgent(InfrastructureMixin):
+        class StatusAgent(infrastructure_mixin):
             def __init__(self):
                 super().__init__()
 
@@ -150,9 +150,9 @@ class TestInfrastructureMixin:
 
     def test_reset_infrastructure(self):
         """reset_infrastructure clears the initialized flag."""
-        from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
+        from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
 
-        class ResetAgent(InfrastructureMixin):
+        class ResetAgent(infrastructure_mixin):
             def __init__(self):
                 super().__init__()
 

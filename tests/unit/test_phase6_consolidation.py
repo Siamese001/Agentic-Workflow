@@ -306,7 +306,7 @@ class TestZeroLossMergeIntegrity:
         assert fixed == 0
 
 
-class TestPhase6Integration:
+class test_phase6_integration:
     """Phase 6 Tests: Integration with heal_repository."""
 
     @pytest.fixture

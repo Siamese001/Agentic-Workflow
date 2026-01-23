@@ -3,7 +3,7 @@
 MRO Verification Script
 
 Verifies the Method Resolution Order (MRO) for complex agents after
-the InfrastructureMixin consolidation.
+the infrastructure_mixin consolidation.
 
 Opportunity #4: Mixin Inheritance Complexity - Phase 4 Verification
 """
@@ -28,14 +28,14 @@ def print_mro(agent_class, agent_name: str):
 
     print(f"\nTotal classes in MRO: {len(mro)}")
 
-    # Check for InfrastructureMixin
-    has_infra = any("InfrastructureMixin" in cls.__name__ for cls in mro)
+    # Check for infrastructure_mixin
+    has_infra = any("infrastructure_mixin" in cls.__name__ for cls in mro)
     has_healer = any("HealerMixin" in cls.__name__ for cls in mro)
     has_mcp = any("MCPHardened" in cls.__name__ for cls in mro)
     has_testing = any("SubatomicTesting" in cls.__name__ for cls in mro)
 
     print("\nInfrastructure Components:")
-    print(f"  InfrastructureMixin: {'✅' if has_infra else '❌'}")
+    print(f"  infrastructure_mixin: {'✅' if has_infra else '❌'}")
     print(f"  HealerMixin: {'✅' if has_healer else '❌'}")
     print(f"  MCPHardenedMixin: {'✅' if has_mcp else '❌'}")
     print(f"  SubatomicTestingMixin: {'✅' if has_testing else '❌'}")
@@ -125,27 +125,27 @@ def main():
     success_count = sum(1 for r in results.values() if r is not None and r.get("has_infra"))
     total_count = len(results)
 
-    print(f"\nAgents with InfrastructureMixin: {success_count}/{total_count}")
+    print(f"\nAgents with infrastructure_mixin: {success_count}/{total_count}")
 
     for agent_name, result in results.items():
         if result is None:
             print(f"  ❌ {agent_name}: Failed to import")
         elif result.get("has_infra"):
             print(
-                f"  ✅ {agent_name}: InfrastructureMixin present (MRO length: {result['mro_length']})"
+                f"  ✅ {agent_name}: infrastructure_mixin present (MRO length: {result['mro_length']})"
             )
         else:
             print(
-                f"  ⚠️  {agent_name}: InfrastructureMixin missing (MRO length: {result['mro_length']})"
+                f"  ⚠️  {agent_name}: infrastructure_mixin missing (MRO length: {result['mro_length']})"
             )
 
     # Validation
     if success_count == total_count:
-        print("\n✅ ALL AGENTS VERIFIED: InfrastructureMixin consolidation successful")
+        print("\n✅ ALL AGENTS VERIFIED: infrastructure_mixin consolidation successful")
         return 0
     else:
         print(
-            f"\n❌ VERIFICATION FAILED: {total_count - success_count} agents missing InfrastructureMixin"
+            f"\n❌ VERIFICATION FAILED: {total_count - success_count} agents missing infrastructure_mixin"
         )
         return 1
 

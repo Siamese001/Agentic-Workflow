@@ -27,7 +27,7 @@ import re
 from enum import Enum
 from pathlib import Path
 
-from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )

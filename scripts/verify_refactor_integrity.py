@@ -46,9 +46,9 @@ def main():
     # 2. Scan for Broken Imports
     print("\n[Phase 2] Scanning for Legacy Import References...")
     # Patterns to look for:
-    # from apps_shared.common_utils import Config
-    # import apps_shared.common_utils.Config
-    # from . import Config
+    # from apps_shared.common_utils import app_config
+    # import apps_shared.common_utils.app_config
+    # from . import app_config
 
     import_patterns = {stem: re.compile(rf"(from|import).*\b{stem}\b") for stem in RENAMES.keys()}
 

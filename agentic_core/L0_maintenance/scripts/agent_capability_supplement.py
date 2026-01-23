@@ -330,8 +330,8 @@ def analyze_supplementation():
     if "git_operations" in unique_to_dead or "git_integration" in unique_to_dead:
         recommendations.append(
             "→ Merge GitAgent methods into ToolsmithAgent or new L2 GitToolAgent\n"
-            "  Source: agentic_core/L2_execution/ToolRegistry/GitAgent.py\n"
-            "  Target: agentic_core/L2_execution/ToolRegistry/ToolsmithAgent.py (add git_* methods)"
+            "  Source: agentic_core/L2_execution/tool_registry/GitAgent.py\n"
+            "  Target: agentic_core/L2_execution/tool_registry/ToolsmithAgent.py (add git_* methods)"
         )
 
     if "dead_code_analysis" in unique_to_dead:

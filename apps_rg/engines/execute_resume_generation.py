@@ -1,5 +1,5 @@
 """
-ExecuteResumeGeneration.py - Execution Module
+execute_resume_generation.py - Execution Module
 
 Domain: resume
 Generated: 2025-12-07T13:29:00.515392
@@ -29,7 +29,7 @@ Logger: Any = logging.getLogger(__name__)
 
 
 # NOT_AN_AGENT — Task executor service, not a true agent — excluded from agent discovery
-class ExecuteResumeGeneration:
+class execute_resume_generation:
     """Executor for resume domain."""
 
     def __init__(
@@ -126,4 +126,4 @@ class ExecuteResumeGeneration:
 
 def execute(action: str, params: dict[str, object], config: dict | None = None) -> ExecutionResult:
     """Execute action."""
-    return ExecuteResumeGeneration(config).execute(action, params)
+    return execute_resume_generation(config).execute(action, params)

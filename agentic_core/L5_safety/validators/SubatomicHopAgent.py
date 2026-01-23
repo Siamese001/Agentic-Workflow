@@ -76,7 +76,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
             mcp_manager: MCPConnectionManager instance (injected)
             sandbox: DockerSandbox instance (injected)
             StructuredEngine: StructuredEngine instance (injected)
-            gatekeeper: SemanticGatekeeper instance (injected)
+            gatekeeper: semantic_gatekeeper instance (injected)
             telemetry: TelemetryRecorder instance (injected)
 
         Raises:
@@ -96,7 +96,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
         self.mcp = self._ensure_dep(mcp_manager, "MCPConnectionManager")
         self.sandbox = self._ensure_dep(sandbox, "DockerSandbox")
         self.StructuredEngine = self._ensure_dep(StructuredEngine, "StructuredEngine")
-        self.gatekeeper = self._ensure_dep(gatekeeper, "SemanticGatekeeper")
+        self.gatekeeper = self._ensure_dep(gatekeeper, "semantic_gatekeeper")
         self.telemetry = self._ensure_dep(telemetry, "TelemetryRecorder")
 
     def _run_self_tests(self) -> bool:

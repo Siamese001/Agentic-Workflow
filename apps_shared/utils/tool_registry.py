@@ -14,7 +14,7 @@ import logging
 Logger = logging.getLogger(__name__)
 
 
-class ToolRegistry:
+class tool_registry:
     """
     SSOT for all tools. Ensures tools reside in Sovereign Territory.
 
@@ -25,18 +25,18 @@ class ToolRegistry:
     - Logging of registration attempts
     """
 
-    _instance: Optional["ToolRegistry"] = None
+    _instance: Optional["tool_registry"] = None
     _tools: dict[str, dict[str, Any]] = {}
 
-    def __new__(cls) -> "ToolRegistry":
+    def __new__(cls) -> "tool_registry":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._tools = {}
         return cls._instance
 
     @classmethod
-    def get_instance(cls) -> "ToolRegistry":
-        """Get the singleton instance of ToolRegistry."""
+    def get_instance(cls) -> "tool_registry":
+        """Get the singleton instance of tool_registry."""
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance

@@ -241,8 +241,8 @@ L4_SUBFOLDER_MAP: dict[str, dict[str, list[str]]] = {
         "mcp": ["mcp_security", "mcp_guards"],
         "detection": ["duplicate_detectors", "threat_detectors"],
     },
-    # L2_execution/ToolRegistry/ - 145 .py files, 1 subdir
-    "ToolRegistry": {
+    # L2_execution/tool_registry/ - 145 .py files, 1 subdir
+    "tool_registry": {
         "core": ["registry_core", "registry_types"],
         "tools": ["tool_implementations"],
         "handlers": ["tool_handlers"],
@@ -268,7 +268,7 @@ L4_APPROVED_FOLDERS: set[str] = {
     "agentic_core/L5_safety/guardrails",
     "agentic_core/L5_safety/validators",  # 135 files - added per SSOT review
     "agentic_core/L5_safety/gravity",  # 22 files - added per SSOT review
-    "agentic_core/L2_execution/ToolRegistry",
+    "agentic_core/L2_execution/tool_registry",
     "agentic_core/L2_execution/mcp",  # 26 files - added per SSOT review
     "agentic_core/L4_state/ValidationContext",  # 41 files - added per SSOT review
     "agentic_core/schemas/models",  # 42 files - added per SSOT review
@@ -298,7 +298,7 @@ CORE_SUBFOLDER_MAP: Any = {
     "base_agents": [],
     "L0_maintenance": ["scripts", "logs", "benchmarks", "mixins"],
     "L1_cognition": ["thought_engine", "intent_analysis", "planning"],
-    "L2_execution": ["ToolRegistry", "action_handlers", "mcp", "tool_registry", "unified"],
+    "L2_execution": ["tool_registry", "action_handlers", "mcp", "tool_registry", "unified"],
     "L3_orchestration": [
         "workflow_engines",
         "fission_logic",
@@ -625,7 +625,7 @@ CORE_TERRITORY_KEYWORDS: dict[str, dict[str, set[str]]] = {
         "primary": {"think", "reason", "plan", "decompose", "critique", "reflect"}
     },
     "L1_cognition/intent_analysis": {"primary": {"intent", "goal", "understand", "parse", "user"}},
-    "L2_execution/ToolRegistry": {"primary": {"tool", "execute", "call", "registry", "runner"}},
+    "L2_execution/tool_registry": {"primary": {"tool", "execute", "call", "registry", "runner"}},
     "L2_execution/mcp": {"primary": {"mcp", "client", "fetch", "protocol"}},
     "L3_orchestration/workflow_engines": {
         "primary": {"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"}
@@ -652,7 +652,7 @@ MIN_ALIGNMENT_SCORE: float = 1.5
 # === ULTRA HEALING DEFAULTS (2026-01-02 Reliability Hardening) ===
 # Fallback targets when AST scoring is inconclusive
 DEFAULT_APP_HEALING_TARGET: str = "apps_rg/engines"  # Most common leak destination
-DEFAULT_CORE_HEALING_TERRITORY: str = "L2_execution/ToolRegistry"  # Safe neutral territory
+DEFAULT_CORE_HEALING_TERRITORY: str = "L2_execution/tool_registry"  # Safe neutral territory
 
 # Violation severity levels for prioritized healing
 VIOLATION_SEVERITY: dict[str, int] = {
@@ -795,7 +795,7 @@ NAMING_CONVENTIONS: dict[str, dict[str, Any]] = {
     "core_module": {
         "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){1,2}\.py$",
         "description": "snake_case with 2-3 words containing high-signal keyword",
-        "examples": ["InferenceEngine.py", "HybridRetriever.py", "SemanticCache.py"],
+        "examples": ["InferenceEngine.py", "HybridRetriever.py", "semantic_cache.py"],
         "anti_examples": ["utils.py", "base.py", "core.py", "a_very_long_module_name_here.py"],
         "extensions": [".py"],
         "min_words": 2,
@@ -1093,7 +1093,7 @@ MCP_CAPABILITIES: Any = {
     "filesystem": {"enabled": True, "path": "agentic_core.L4_state.filesystem"},
     "figma": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
     "fetch": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
-    "SemanticCache": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
+    "semantic_cache": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
 }
 SCOPE_SUMMARY_EXCLUSIONS: frozenset[str] = frozenset(
     {"stubs", ".sovereign_healing_backup", "__pycache__"}
@@ -1384,11 +1384,11 @@ AST_PLACEMENT_SIGNALS: dict[str, dict[str, Any]] = {
         "weight": 8,
     },
     # L2_execution placements
-    "agentic_core/L2_execution/ToolRegistry": {
+    "agentic_core/L2_execution/tool_registry": {
         "class_patterns": [".*Agent$", ".*Tool$", ".*Handler$"],
         "base_classes": ["SubAtomicAgent", "BaseTool", "ToolHandler"],
         "function_patterns": ["execute_.*", "run_tool.*", "invoke_.*"],
-        "import_signals": ["ToolRegistry", "SubAtomicAgent"],
+        "import_signals": ["tool_registry", "SubAtomicAgent"],
         "keyword_signals": ["tool", "execute", "invoke", "action", "handler"],
         "decorator_signals": ["@tool", "@action"],
         "weight": 9,
@@ -1595,7 +1595,7 @@ L2_TO_L1_MAP: dict[str, str] = {
     "thought_engine": "L1_cognition",
     "intent_analysis": "L1_cognition",
     "planning": "L1_cognition",
-    "ToolRegistry": "L2_execution",
+    "tool_registry": "L2_execution",
     "action_handlers": "L2_execution",
     "mcp": "L2_execution",
     "workflow_engines": "L3_orchestration",
@@ -1700,79 +1700,79 @@ AGENT_REGISTRY: Any = {
     "L2": [
         {
             "name": "CanonBaseAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/ExecutionCanonBaseAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/ExecutionCanonBaseAgent.py",
             "methods": 13,
             "fingerprint": "00b4b4376214468b",
         },
         {
             "name": "CodeDeduplicationAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/CodeDeduplicationAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/CodeDeduplicationAgent.py",
             "methods": 11,
             "fingerprint": "1c26bf7b92ef3fb8",
         },
         {
             "name": "CodeJanitorAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/CodeJanitorAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/CodeJanitorAgent.py",
             "methods": 12,
             "fingerprint": "ae825674e1abeb55",
         },
         {
             "name": "ContextCuratorAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/ContextCuratorAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/ContextCuratorAgent.py",
             "methods": 13,
             "fingerprint": "b55bbeb3cc150054",
         },
         {
             "name": "DependencyDiplomatAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/DependencyDiplomatAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/DependencyDiplomatAgent.py",
             "methods": 11,
             "fingerprint": "15bc567d77279e31",
         },
         {
             "name": "DynamicModelRouterAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/DynamicModelRouterAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/DynamicModelRouterAgent.py",
             "methods": 11,
             "fingerprint": "e6532e4040366631",
         },
         {
             "name": "GitAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/GitAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/GitAgent.py",
             "methods": 12,
             "fingerprint": "82c9b049e6fd5597",
         },
         {
             "name": "IntegrityGateExecutorAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/IntegrityGateExecutorAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/IntegrityGateExecutorAgent.py",
             "methods": 8,
             "fingerprint": "cc6465bde4266c9f",
         },
         {
             "name": "MemoryArchitectAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/MemoryArchitectAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/MemoryArchitectAgent.py",
             "methods": 13,
             "fingerprint": "b07bc5ecfbb20791",
         },
         {
             "name": "SovereignActionPlaneAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/SovereignActionPlaneAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/SovereignActionPlaneAgent.py",
             "methods": 11,
             "fingerprint": "91faa15364d0a1a5",
         },
         {
             "name": "StructuralEngineerAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/StructuralEngineerAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/StructuralEngineerAgent.py",
             "methods": 8,
             "fingerprint": "37d55e1531ee303e",
         },
         {
             "name": "SystemArchitectAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/SystemArchitectAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/SystemArchitectAgent.py",
             "methods": 8,
             "fingerprint": "e340d23c73eb4451",
         },
         {
             "name": "ToolsmithAgent",
-            "file": "agentic_core/L2_execution/ToolRegistry/ToolsmithAgent.py",
+            "file": "agentic_core/L2_execution/tool_registry/ToolsmithAgent.py",
             "methods": 17,
             "fingerprint": "920d8dc7ea2d38d4",
         },
@@ -2396,7 +2396,7 @@ semantic_l2_registry: Any = {
         },
     },
     "L2_execution": {
-        "ToolRegistry": {
+        "tool_registry": {
             "purpose": "Registration and discovery of external tools, base tool definitions, and tool metadata management",
             "entity_types": ["Class", "Function"],
             "keywords": [
@@ -2409,8 +2409,8 @@ semantic_l2_registry: Any = {
                 "toolset",
             ],
             "imports": ["agentic_core.L2_execution.tool_registry", "pydantic", "typing"],
-            "bases": ["BaseTool", "ToolRegistry"],
-            "examples": ["ToolRegistry", "register_tool", "AvailableToolsList", "ToolMetadata"],
+            "bases": ["BaseTool", "tool_registry"],
+            "examples": ["tool_registry", "register_tool", "AvailableToolsList", "ToolMetadata"],
         },
         "action_handlers": {
             "purpose": "Action dispatch logic, handler mapping, execution routing, and fallback strategies for tool calls",
@@ -2437,7 +2437,7 @@ semantic_l2_registry: Any = {
             ],
         },
         "mcp": {
-            "purpose": "Multi-Component Protocol clients and tool implementations (figma, fetch, filesystem, SemanticCache, router, marketplace_filter)",
+            "purpose": "Multi-Component Protocol clients and tool implementations (figma, fetch, filesystem, semantic_cache, router, marketplace_filter)",
             "entity_types": ["Class"],
             "keywords": [
                 "mcp",
@@ -2445,7 +2445,7 @@ semantic_l2_registry: Any = {
                 "figma",
                 "fetch",
                 "filesystem",
-                "SemanticCache",
+                "semantic_cache",
                 "router",
                 "marketplace",
                 "filter",
@@ -2727,7 +2727,7 @@ semantic_l2_registry: Any = {
             ],
             "imports": ["agentic_core.runtime.shared_runtime"],
             "bases": ["RuntimeContext"],
-            "examples": ["VoidComplianceCheck", "RuntimeBootstrapper", "GlobalInit"],
+            "examples": ["VoidComplianceCheck", "runtime_bootstrapper", "GlobalInit"],
         },
         "resource_management": {
             "purpose": "Resource allocation, throttling quotas, thread pool management, and cleanup",

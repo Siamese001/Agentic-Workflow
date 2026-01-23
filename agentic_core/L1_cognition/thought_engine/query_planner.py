@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-QueryPlanner - L1 Cognition Query Decomposition and Expansion
+query_planner - L1 Cognition Query Decomposition and Expansion
 """
 import json
 import logging
@@ -13,14 +13,14 @@ from typing import Any
 Logger: Any = logging.getLogger(__name__)
 
 
-class QueryPlanner:
+class query_planner:
     """
     Sovereign L1 Query Planner – transforms queries for maximum recall/precision
     """
 
-    def __init__(self, engine: SubAtomicEngine | None = None, cache: SemanticCache | None = None):
+    def __init__(self, engine: SubAtomicEngine | None = None, cache: semantic_cache | None = None):
         self.engine = engine or SubAtomicEngine(gemini_client=None)
-        self.cache = cache or SemanticCache()
+        self.cache = cache or semantic_cache()
         self.expansion_temperature = 0.7
         self.reflection_temperature = 0.3
 

@@ -82,7 +82,7 @@ class L1CognitionBaseAgent(SovereignBaseAgent):
         import importlib
 
         _struct_mod = importlib.import_module(
-            "agentic_core.L2_execution.ToolRegistry.StructuralEngineerAgent"
+            "agentic_core.L2_execution.tool_registry.StructuralEngineerAgent"
         )
         StructuralEngineerAgent = _struct_mod.StructuralEngineerAgent
         arch = SystemArchitect(ctx)

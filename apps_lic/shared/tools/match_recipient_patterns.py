@@ -14,9 +14,9 @@ _logger = logging.getLogger(__name__)
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 
-# NAMING FIXED: MatchRecipientPatterns → MatchRecipientPatterns
-class MatchRecipientPatterns:
-    """MatchRecipientPatterns implementation."""
+# NAMING FIXED: match_recipient_patterns → match_recipient_patterns
+class match_recipient_patterns:
+    """match_recipient_patterns implementation."""
 
 
 def __init__(self: Any) -> None:

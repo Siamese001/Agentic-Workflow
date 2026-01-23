@@ -115,7 +115,7 @@ def find_legacy_usage():
     return violations
 
 
-class TestDependencyPostConsolidation:
+class test_dependency_post_consolidation:
     def test_no_legacy_imports_in_core(self):
         """
         TC-001: Verifies that no live files in agentic_core use deprecated bases/orchestrators.

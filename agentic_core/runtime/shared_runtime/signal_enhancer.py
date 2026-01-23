@@ -116,7 +116,7 @@ class SignalAssessment:
         )
 
 
-class SignalEnhancer:
+class signal_enhancer:
     """Enhances signal quality through multi-stage validation."""
 
     def __init__(self, name: str = "default", thresholds: QualityThresholds | None = None):
@@ -138,7 +138,7 @@ class SignalEnhancer:
             "flag_distribution": {},
         }
 
-        Logger.debug(f"Initialized SignalEnhancer: {name}")
+        Logger.debug(f"Initialized signal_enhancer: {name}")
 
     def assess_signal(
         self, content: str, context: dict[str, Any] | None = None
@@ -790,12 +790,12 @@ class SignalEnhancer:
 
 
 # Global enhancer registry
-_enhancers: dict[str, SignalEnhancer] = {}
+_enhancers: dict[str, signal_enhancer] = {}
 
 
 def get_signal_enhancer(
     name: str = "default", thresholds: QualityThresholds | None = None
-) -> SignalEnhancer:
+) -> signal_enhancer:
     """Get or create a signal enhancer.
 
     Args:
@@ -803,8 +803,8 @@ def get_signal_enhancer(
         thresholds: Optional quality thresholds
 
     Returns:
-        SignalEnhancer instance
+        signal_enhancer instance
     """
     if name not in _enhancers:
-        _enhancers[name] = SignalEnhancer(name, thresholds)
+        _enhancers[name] = signal_enhancer(name, thresholds)
     return _enhancers[name]

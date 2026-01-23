@@ -41,7 +41,7 @@ class ToolMatch:
 # Alias for consistency
 ToolMatch = ToolMatch
 
-class ToolRegistry:
+class tool_registry:
     """
     Dynamic tool registry that enables agents to discover tools at runtime.
 
@@ -336,7 +336,7 @@ predefined_tool_categories['code_manipulation'] = 'AST-based code transformation
 # =============================================================================
 # DEPENDENCY GRAPH ANALYZER (DGA) — Phase 2 Tool
 # =============================================================================
-from agentic_core.L2_execution.ToolRegistry.tools.DependencyGraph import (
+from agentic_core.L2_execution.tool_registry.tools.DependencyGraph import (
     DependencyGraphArgs,
     GraphOperation,
     DependencyGraph,
@@ -419,7 +419,7 @@ def diff_generator_tool(args: DiffGeneratorArgs) -> Dict[str, Any]:
     return generate_diff(args)
 
 
-def create_tool_registry(embedder: Any, enable_caching: bool=True) -> ToolRegistry:
+def create_tool_registry(embedder: Any, enable_caching: bool=True) -> tool_registry:
     """
     Factory function to create a tool registry.
 
@@ -428,6 +428,6 @@ def create_tool_registry(embedder: Any, enable_caching: bool=True) -> ToolRegist
         enable_caching: Whether to enable caching
 
     Returns:
-        ToolRegistry instance
+        tool_registry instance
     """
-    return ToolRegistry(embedder=embedder, enable_caching=enable_caching)
+    return tool_registry(embedder=embedder, enable_caching=enable_caching)

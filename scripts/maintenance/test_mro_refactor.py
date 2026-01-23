@@ -50,17 +50,17 @@ def test_tc_mro_002_l4_state_base_agent_mro():
             mro_names.index("SovereignBaseAgent") if "SovereignBaseAgent" in mro_names else -1
         )
         infra_idx = (
-            mro_names.index("InfrastructureMixin") if "InfrastructureMixin" in mro_names else -1
+            mro_names.index("infrastructure_mixin") if "infrastructure_mixin" in mro_names else -1
         )
 
         assert l4_idx >= 0, "L4SubatomicTestingMixin not in MRO"
         assert sovereign_idx >= 0, "SovereignBaseAgent not in MRO"
-        assert infra_idx >= 0, "InfrastructureMixin not in MRO"
+        assert infra_idx >= 0, "infrastructure_mixin not in MRO"
         assert l4_idx < sovereign_idx, (
             "L4SubatomicTestingMixin should come before SovereignBaseAgent"
         )
         assert sovereign_idx < infra_idx, (
-            "SovereignBaseAgent should come before InfrastructureMixin"
+            "SovereignBaseAgent should come before infrastructure_mixin"
         )
 
         print("   ✅ 100% PASS: MRO Linearity Verified")
@@ -100,7 +100,7 @@ def test_tc_cap_001_redis_capability_retention():
 
         agent = AutonomyGuardianAgent(project_root=PROJECT_ROOT)
 
-        # Check that cache_get exists (from RedisCacheMixin via InfrastructureMixin)
+        # Check that cache_get exists (from RedisCacheMixin via infrastructure_mixin)
         has_cache_get = hasattr(agent, "cache_get")
         has_cache_set = hasattr(agent, "cache_set")
 
@@ -122,7 +122,7 @@ def test_tc_cap_002_healer_capability_retention():
 
         agent = DDDAlignmentAgent(project_root=PROJECT_ROOT)
 
-        # Check that heal_repository exists (from HealerMixin via InfrastructureMixin)
+        # Check that heal_repository exists (from HealerMixin via infrastructure_mixin)
         has_heal = hasattr(agent, "heal_repository")
 
         assert has_heal, "DDDAlignmentAgent missing 'heal_repository' method"

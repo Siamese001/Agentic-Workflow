@@ -61,7 +61,7 @@ CRITICAL_INFRASTRUCTURE_FILES = [
     "agentic_core/observability/SovereignBaseAgent.py",
     "agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py",
     "agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py",
-    "agentic_core/L2_execution/ToolRegistry/L2ExecutionBaseAgent.py",
+    "agentic_core/L2_execution/tool_registry/L2ExecutionBaseAgent.py",
     "agentic_core/L4_state/ValidationContext/L4StateBaseAgent.py",
     "agentic_core/L5_safety/validators/L5SafetyBaseAgent.py",
     # Core validators

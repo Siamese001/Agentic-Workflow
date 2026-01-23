@@ -18,7 +18,7 @@ def test_derive_wants_falls_back_to_prompt():
 
 def test_record_evidence_supports_cached_strings():
     toggles = ReasoningToggles()
-    registry = ToolRegistry()
+    registry = tool_registry()
     registry.register(StaticTool())
     store = ContentStore()
     architect = MessageArchitect(toggles, tool_registry=registry, content_store=store)

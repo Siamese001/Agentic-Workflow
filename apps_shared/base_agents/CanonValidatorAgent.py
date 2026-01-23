@@ -14,7 +14,7 @@ import json
 import logging
 
 try:
-    from core.SemanticGatekeeper import get_gatekeeper
+    from core.semantic_gatekeeper import get_gatekeeper
 except ImportError:
     get_gatekeeper = lambda: None
 try:

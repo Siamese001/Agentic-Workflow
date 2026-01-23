@@ -52,8 +52,8 @@ def test_is_path_allowed_valid_sovereign():
     from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
 
     # Test Valid Core Path (L2 Execution is in SOVEREIGN_REGISTRY)
-    if is_path_allowed("agentic_core/L2_execution/ToolRegistry/SomeAgent.py"):
-        test_pass("VALID_CORE", "agentic_core/L2_execution/ToolRegistry/SomeAgent.py")
+    if is_path_allowed("agentic_core/L2_execution/tool_registry/SomeAgent.py"):
+        test_pass("VALID_CORE", "agentic_core/L2_execution/tool_registry/SomeAgent.py")
     else:
         test_fail("VALID_CORE", "Should allow valid core path")
 
@@ -112,7 +112,7 @@ def test_is_path_allowed_depth_check():
     from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
 
     # Deeply nested valid path (is_path_allowed only checks root + subfolder)
-    if is_path_allowed("agentic_core/L2_execution/ToolRegistry/extra/deep/file.py"):
+    if is_path_allowed("agentic_core/L2_execution/tool_registry/extra/deep/file.py"):
         test_pass("DEEP_VALID", "Deep path passes sovereign gate (depth check is separate)")
     else:
         test_fail(

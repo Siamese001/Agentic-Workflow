@@ -33,7 +33,7 @@ RESTORED_AGENTS_MAP = [
 ]
 
 
-class TestSystemHardening:
+class test_system_hardening:
     """System hardening verification tests."""
 
     # =========================================================================

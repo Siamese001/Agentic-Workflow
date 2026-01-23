@@ -12,7 +12,7 @@ import pytest
 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
 
-class TestHierarchyAgentPhase3:
+class test_hierarchy_agent_phase3:
     @pytest.fixture
     def mock_project(self, tmp_path):
         """Setup project with empty dirs and orphaned files."""

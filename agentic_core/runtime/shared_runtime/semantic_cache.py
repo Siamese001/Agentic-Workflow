@@ -78,7 +78,7 @@ class CacheMiss:
     reason: str = "not_found"
 
 
-class SemanticCache:
+class semantic_cache:
     """Enhanced semantic cache with optional embedding-based similarity matching."""
 
     def __init__(
@@ -281,7 +281,7 @@ def create_semantic_cache(
     max_entries: int = 10000,
     enable_semantic_matching: bool = True,
     similarity_threshold: float = SIMILARITY_THRESHOLD,
-) -> SemanticCache:
+) -> semantic_cache:
     """Factory function to create a semantic cache.
 
     Args:
@@ -291,9 +291,9 @@ def create_semantic_cache(
         similarity_threshold: Cosine similarity threshold for semantic matches
 
     Returns:
-        Configured SemanticCache instance
+        Configured semantic_cache instance
     """
-    return SemanticCache(
+    return semantic_cache(
         ttl=ttl,
         max_entries=max_entries,
         enable_semantic_matching=enable_semantic_matching,

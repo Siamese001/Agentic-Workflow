@@ -94,9 +94,9 @@ def test_tc49_l1_l3_deep_stack():
         "L1_cognition/thought_engine/analyze_legacy_files.py": "get_python_files",
         "L1_cognition/thought_engine/auditors_guard_observability_footprint.py": "get_python_files",
         "L1_cognition/intent_analysis/extract_net_incremental.py": "get_python_files",
-        "L2_execution/ToolRegistry/fix_all_invocations.py": "get_python_files",
-        "L2_execution/ToolRegistry/mission_orchestrator.py": "get_python_files",
-        "L2_execution/ToolRegistry/SubAtomicRegistryAgent.py": "get_python_files",
+        "L2_execution/tool_registry/fix_all_invocations.py": "get_python_files",
+        "L2_execution/tool_registry/mission_orchestrator.py": "get_python_files",
+        "L2_execution/tool_registry/SubAtomicRegistryAgent.py": "get_python_files",
         "L3_orchestration/workflow_engines/toolbox.py": "get_python_files",
     }
 

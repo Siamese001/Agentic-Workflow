@@ -1,5 +1,5 @@
 """
-SemanticCacheMixin - Unified Semantic Cache Access
+semantic_cache_mixin - Unified Semantic Cache Access
 
 [PHASE 3 MIGRATION] Provides single interface to canonical SemanticCacheManager.
 """
@@ -7,14 +7,14 @@ SemanticCacheMixin - Unified Semantic Cache Access
 from typing import Any
 
 
-class SemanticCacheMixin:
+class semantic_cache_mixin:
     """
     Mixin providing unified semantic cache access.
 
     [PHASE 3 MIGRATION] Routes to canonical L4 implementation.
 
     Usage:
-        class MyAgent(SemanticCacheMixin, SovereignBaseAgent):
+        class MyAgent(semantic_cache_mixin, SovereignBaseAgent):
             async def process(self, query: str):
                 cached = await self.semantic_recall(query)
                 if cached:

@@ -316,10 +316,10 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
 
         # [GHOST PURGE] Connect to Redis and Pinecone for cleanup
         try:
-            from agentic_core.L2_execution.ToolRegistry.PineconeSovereignAgent import (
+            from agentic_core.L2_execution.tool_registry.PineconeSovereignAgent import (
                 PineconeSovereignAgent,
             )
-            from agentic_core.L2_execution.ToolRegistry.RedisSovereignAgent import (
+            from agentic_core.L2_execution.tool_registry.RedisSovereignAgent import (
                 RedisSovereignAgent,
             )
 

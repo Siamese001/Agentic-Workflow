@@ -26,7 +26,7 @@ MOCK_ENV = {
 }
 
 
-class TestPineconePhase1Migration(unittest.TestCase):
+class test_pinecone_phase1_migration(unittest.TestCase):
     """
     Test suite for Phase 1 migration: consolidating Pinecone operations.
     """
@@ -213,7 +213,7 @@ def run_tests():
     print("PINECONE PHASE 1 MIGRATION TEST SUITE")
     print("=" * 80)
 
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestPineconePhase1Migration)
+    suite = unittest.TestLoader().loadTestsFromTestCase(test_pinecone_phase1_migration)
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
 

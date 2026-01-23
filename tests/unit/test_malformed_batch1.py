@@ -36,8 +36,8 @@ def test_batch1_structural_integrity():
     print("=" * 70)
 
     targets = [
-        "agentic_core/L2_execution/ToolRegistry/DeadCodeDetectorAgent.py",
-        "agentic_core/L2_execution/ToolRegistry/DriftDetectorAgent.py",
+        "agentic_core/L2_execution/tool_registry/DeadCodeDetectorAgent.py",
+        "agentic_core/L2_execution/tool_registry/DriftDetectorAgent.py",
         "agentic_core/L3_orchestration/workflow_engines/CoordinateObservabilityOperationsAgent.py",
         "agentic_core/L5_safety/guardrails/TestCoverageGuardianAgent.py",
         "agentic_core/L5_safety/guardrails/MultiProviderRouterAgent.py",

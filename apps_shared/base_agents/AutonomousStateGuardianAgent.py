@@ -200,7 +200,7 @@ class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
 
                     # Trigger reindex as a non-blocking Task
                     try:
-                        from agentic_core.L2_execution.ToolRegistry.HybridRetriever import (
+                        from agentic_core.L2_execution.tool_registry.HybridRetriever import (
                             HybridRetriever,
                         )
 

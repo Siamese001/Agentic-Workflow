@@ -57,23 +57,23 @@ class CanonSwarmScheduler:
             raise ValueError(
                 "No agent classes provided. Call set_phases() or provide agent_classes in constructor."
             )
-        from agentic_core.L2_execution.ToolRegistry.governance import DependencySentinelAgent
-        from agentic_core.L2_execution.ToolRegistry.infrastructure import (
+        from agentic_core.L2_execution.tool_registry.governance import DependencySentinelAgent
+        from agentic_core.L2_execution.tool_registry.infrastructure import (
             BenchmarkingAgent,
             Historian,
         )
-        from agentic_core.L2_execution.ToolRegistry.quality import (
+        from agentic_core.L2_execution.tool_registry.quality import (
             CodeStyleGuardian,
             HygieneGuardian,
             PerformanceEnforcer,
         )
-        from agentic_core.L2_execution.ToolRegistry.repair import TestPilot, ToolsmithAgent
-        from agentic_core.L2_execution.ToolRegistry.security import (
+        from agentic_core.L2_execution.tool_registry.repair import TestPilot, ToolsmithAgent
+        from agentic_core.L2_execution.tool_registry.security import (
             ConcurrencyGuardianAgent,
             SafetyInspectorAgent,
             SecurityEnforcer,
         )
-        from agentic_core.L2_execution.ToolRegistry.specialized import (
+        from agentic_core.L2_execution.tool_registry.specialized import (
             DocEnforcer,
             NamingEnforcer,
             TheCartographer,

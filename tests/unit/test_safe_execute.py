@@ -22,7 +22,7 @@ from agentic_core.utils.security import (
 )
 
 
-class TestSafeExecute:
+class test_safe_execute:
     """Test suite for safe_execute wrapper."""
 
     def test_basic_execution_success(self):

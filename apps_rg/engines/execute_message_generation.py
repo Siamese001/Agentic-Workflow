@@ -1,5 +1,5 @@
 """
-ExecuteMessageGeneration.py - Execution Module
+execute_message_generation.py - Execution Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.121081
@@ -12,7 +12,7 @@ Logger: Any = logging.getLogger(__name__)
 
 
 # NOT_AN_AGENT — Task executor service, not a true agent — excluded from agent discovery
-class ExecuteMessageGeneration:
+class execute_message_generation:
     """Executor for outreach domain."""
 
     def __init__(self, config: dict[str, object] | None = None):
@@ -41,4 +41,4 @@ class ExecuteMessageGeneration:
 
 def execute(action: str, params: dict[str, object], config: dict | None = None) -> ExecutionResult:
     """Execute action."""
-    return ExecuteMessageGeneration(config).execute(action, params)
+    return execute_message_generation(config).execute(action, params)

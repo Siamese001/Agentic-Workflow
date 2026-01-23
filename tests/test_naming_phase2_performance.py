@@ -46,7 +46,7 @@ def test_scoped_import_replacement():
     """Verify that only lines starting with import/from are modified."""
     from scripts.remediate_naming_phase2 import to_snake_case
     
-    old = "FixAllAgenticImports"
+    old = "fix_all_agentic_imports"
     new = to_snake_case(old)
     
     import_line = f"from common_utils import {old}"

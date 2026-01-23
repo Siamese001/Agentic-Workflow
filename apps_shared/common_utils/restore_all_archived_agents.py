@@ -28,7 +28,7 @@ AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
 TARGETS = {
     "L0": "L0_maintenance/scripts/",
     "L1": "L1_cognition/thought_engine/",
-    "L2": "L2_execution/ToolRegistry/",
+    "L2": "L2_execution/tool_registry/",
     "L3": "L3_orchestration/workflow_engines/",
     "L4": "L4_state/ValidationContext/",
     "L5": "L5_safety/validators/",

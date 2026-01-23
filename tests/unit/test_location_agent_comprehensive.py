@@ -450,8 +450,8 @@ def test_case_5_collision_handling():
 
     Context: The healer tries to flatten a file, but a file with the same name exists.
     Setup:
-      - File A: agentic_core/L2_execution/ToolRegistry/_TestRunner.py (Existing, Valid)
-      - File B: agentic_core/L2_execution/ToolRegistry/_test_mistake/_TestRunner.py (Deep Violation)
+      - File A: agentic_core/L2_execution/tool_registry/_TestRunner.py (Existing, Valid)
+      - File B: agentic_core/L2_execution/tool_registry/_test_mistake/_TestRunner.py (Deep Violation)
     Expected: File B moved to _TestRunner_1.py or similar
     """
     print("\n" + "=" * 70)
@@ -461,8 +461,8 @@ def test_case_5_collision_handling():
     test_root = PROJECT_ROOT
 
     # Setup: Two files with same name at different depths
-    valid_file = test_root / "agentic_core" / "L2_execution" / "ToolRegistry" / "_TestRunner.py"
-    deep_dir = test_root / "agentic_core" / "L2_execution" / "ToolRegistry" / "_test_mistake"
+    valid_file = test_root / "agentic_core" / "L2_execution" / "tool_registry" / "_TestRunner.py"
+    deep_dir = test_root / "agentic_core" / "L2_execution" / "tool_registry" / "_test_mistake"
     deep_file = deep_dir / "_TestRunner.py"
 
     CLEANUP_PATHS.append(valid_file)
@@ -509,7 +509,7 @@ def test_case_5_collision_handling():
 
             # Check for renamed file or collision handling
             runner_files = list(
-                (test_root / "agentic_core" / "L2_execution" / "ToolRegistry").glob(
+                (test_root / "agentic_core" / "L2_execution" / "tool_registry").glob(
                     "_TestRunner*.py"
                 )
             )

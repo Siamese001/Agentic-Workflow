@@ -15,7 +15,7 @@ from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import (
 )
 
 
-class TestUnifiedOrchestratorModes:
+class test_unified_orchestrator_modes:
     """Test suite for orchestrator mode-based execution."""
 
     @pytest.fixture

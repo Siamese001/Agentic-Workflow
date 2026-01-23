@@ -72,7 +72,7 @@ def _get_imports():
         approval_event,
         start_intervention_server,
     )
-    from agentic_core.L2_execution.ToolRegistry.infrastructure import WatchmanHandler
+    from agentic_core.L2_execution.tool_registry.infrastructure import WatchmanHandler
 
     # GRAVITY FIX: Removed all scripts.CanonValidatorAgent imports
     # These agents need to be moved to agentic_core or refactored

@@ -5,7 +5,7 @@ import pytest
 from unittest.mock import patch
 
 
-class TestDualGateRemediation:
+class test_dual_gate_remediation:
     """Test that agents delegate approval to ArchivalGatekeeper without redundant prompts."""
 
     @pytest.fixture

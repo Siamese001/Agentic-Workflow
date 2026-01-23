@@ -8,10 +8,10 @@ import logging
 from typing import Any
 
 from agentic_core.L0_maintenance.logs.TelemetryRecorder import TelemetryRecorder
-from agentic_core.L1_cognition.boundaries.SemanticGatekeeper import SemanticGatekeeper
+from agentic_core.L1_cognition.boundaries.semantic_gatekeeper import semantic_gatekeeper
 from agentic_core.L1_cognition.thought_engine.StructuredEngine import StructuredEngine
 from agentic_core.L2_execution.action_handlers.sandbox import DockerSandbox
-from agentic_core.L2_execution.ToolRegistry.mcp_manager import MCPConnectionManager
+from agentic_core.L2_execution.tool_registry.mcp_manager import MCPConnectionManager
 
 # ARCHIVED IMPORT REMOVED - dependency no longer available
 from agentic_core.L3_orchestration.workflow_engines.SupremeCourt import SupremeCourt
@@ -29,7 +29,7 @@ from agentic_core.runtime.P1_core.SubatomicHop import SubatomicHop
 Logger: Any = logging.getLogger(__name__)
 
 
-class RuntimeBootstrapper:
+class runtime_bootstrapper:
     """
     The Sovereign Assembler.
     Responsible for instantiating the 13 Pillars and injecting them into the Hop.
@@ -47,7 +47,7 @@ class RuntimeBootstrapper:
             config=self.config,
             telemetry=self._get_tool("telemetry", lambda: TelemetryRecorder(self.config)),
             StructuredEngine=self._get_tool("engine", lambda: StructuredEngine(self.config)),
-            gatekeeper=self._get_tool("gatekeeper", lambda: SemanticGatekeeper(self.config)),
+            gatekeeper=self._get_tool("gatekeeper", lambda: semantic_gatekeeper(self.config)),
             sandbox=self._get_tool("sandbox", lambda: DockerSandbox(self.config)),
             mcp_manager=self._get_tool("mcp", lambda: MCPConnectionManager(self.config)),
             SupremeCourt=self._get_tool("court", lambda: SupremeCourt(self.config)),

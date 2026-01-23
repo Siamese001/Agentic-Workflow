@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 """
 GravityHealerAgent - Unified Gravity Law Repair
-Territory: agentic_core/L2_execution/ToolRegistry/
+Territory: agentic_core/L2_execution/tool_registry/
 
 CONSOLIDATION (2026-01-07):
 Merges healing logic from:

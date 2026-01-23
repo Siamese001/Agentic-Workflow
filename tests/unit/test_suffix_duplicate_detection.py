@@ -17,7 +17,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 
-class TestSuffixDuplicateDetection:
+class test_suffix_duplicate_detection:
     """Test CodeDeduplicationAgent detects suffix-based duplicates."""
     
     def test_detect_flat_suffix_duplicates(self, tmp_path):

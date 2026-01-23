@@ -12,7 +12,7 @@ from enum import Enum
 from typing import Any
 
 from ..core.quality.feedback_loop import FeedbackLoop
-from ..core.quality.signal_enhancer import QualityThresholds, SignalAssessment, SignalEnhancer
+from ..core.quality.signal_enhancer import QualityThresholds, SignalAssessment, signal_enhancer
 
 logger = logging.getLogger(__name__)
 
@@ -407,12 +407,12 @@ class SharedSignalInfrastructure:
             EngineType.RESUME: ResumeValidator(),
             EngineType.OUTREACH: OutreachValidator(),
         }
-        self._enhancers: dict[str, SignalEnhancer] = {}
+        self._enhancers: dict[str, signal_enhancer] = {}
         self._feedback_loops: dict[str, FeedbackLoop] = {}
 
         logger.info("Initialized SharedSignalInfrastructure")
 
-    def get_enhancer(self, engine_type: EngineType, domain_config: DomainConfig) -> SignalEnhancer:
+    def get_enhancer(self, engine_type: EngineType, domain_config: DomainConfig) -> signal_enhancer:
         """Get a signal enhancer for the specified engine.
 
         Args:
@@ -425,7 +425,7 @@ class SharedSignalInfrastructure:
         enhancer_key = f"{engine_type.value}_{id(domain_config)}"
 
         if enhancer_key not in self._enhancers:
-            enhancer = SignalEnhancer(
+            enhancer = signal_enhancer(
                 name=f"{engine_type.value}_enhancer", thresholds=domain_config.quality_thresholds
             )
 

@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from ..rag import ContentStore, EvidenceRegistry, RetrievalPlan
-from ..rag.tool_registry import ToolRegistry, ToolResult
+from ..rag.tool_registry import tool_registry, ToolResult
 from ..reasoning import cot, reflexion, tot
 from ..reasoning.toggles import ReasoningToggles
 
@@ -50,12 +50,12 @@ class MessageArchitect:
         self,
         toggles: ReasoningToggles,
         *,
-        tool_registry: ToolRegistry | None = None,
+        tool_registry: tool_registry | None = None,
         content_store: ContentStore | None = None,
         evidence_registry: EvidenceRegistry | None = None,
     ) -> None:
         self.toggles = toggles
-        self.tool_registry = tool_registry or ToolRegistry.default_with_builtins()
+        self.tool_registry = tool_registry or tool_registry.default_with_builtins()
         self.content_store = content_store or ContentStore()
         self.evidence_registry = evidence_registry or EvidenceRegistry()
 

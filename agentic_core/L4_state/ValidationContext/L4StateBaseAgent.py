@@ -463,9 +463,9 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, SovereignBaseAgent):
 
     MRO HARDENING (Phase 21.1):
     - L4SubatomicTestingMixin: First (L4-specific testing)
-    - SovereignBaseAgent: Last (root - includes InfrastructureMixin with Redis/Pinecone)
+    - SovereignBaseAgent: Last (root - includes infrastructure_mixin with Redis/Pinecone)
 
-    MRO: L4SubatomicTestingMixin -> SovereignBaseAgent -> InfrastructureMixin -> PineconeVectorMixin -> RedisCacheMixin -> object
+    MRO: L4SubatomicTestingMixin -> SovereignBaseAgent -> infrastructure_mixin -> PineconeVectorMixin -> RedisCacheMixin -> object
 
     L4 Table Decision:
     - Basic Self-Testing: YES (state consistency, idempotency)

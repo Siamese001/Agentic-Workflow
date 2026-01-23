@@ -147,7 +147,7 @@ class TestLayerInference:
         layer_map = {
             "L0": "agentic_core/L0_maintenance/scripts/agent.py",
             "L1": "agentic_core/L1_cognition/thought_engine/agent.py",
-            "L2": "agentic_core/L2_execution/ToolRegistry/agent.py",
+            "L2": "agentic_core/L2_execution/tool_registry/agent.py",
             "L3": "agentic_core/L3_orchestration/workflow_engines/agent.py",
             "L4": "agentic_core/L4_state/ValidationContext/agent.py",
             "L5": "agentic_core/L5_safety/validators/agent.py",

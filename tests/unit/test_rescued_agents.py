@@ -461,7 +461,7 @@ def test_peer_intelligence_auditor():
         PROJECT_ROOT
         / "agentic_core"
         / "L2_execution"
-        / "ToolRegistry"
+        / "tool_registry"
         / "PeerIntelligenceAuditorAgent.py"
     )
     source = peer_file.read_text(encoding="utf-8")
@@ -517,7 +517,7 @@ def test_memory_leak_detector():
         PROJECT_ROOT
         / "agentic_core"
         / "L2_execution"
-        / "ToolRegistry"
+        / "tool_registry"
         / "MemoryLeakDetectorAgent.py"
     )
     source = leak_file.read_text(encoding="utf-8")
@@ -566,7 +566,7 @@ def test_import_healer():
     print("=" * 70)
 
     import_file = (
-        PROJECT_ROOT / "agentic_core" / "L2_execution" / "ToolRegistry" / "ImportHealerAgent.py"
+        PROJECT_ROOT / "agentic_core" / "L2_execution" / "tool_registry" / "ImportHealerAgent.py"
     )
     source = import_file.read_text(encoding="utf-8")
 

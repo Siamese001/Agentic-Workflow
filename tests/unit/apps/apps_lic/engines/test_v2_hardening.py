@@ -13,7 +13,7 @@ from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
-class TestV2Hardening:
+class test_v2_hardening:
     """
     Hardening test suite to challenge the Orchestrator's resilience.
     Mandatory: 100% Pass Rate.

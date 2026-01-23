@@ -31,7 +31,7 @@ MOCK_ENV = {
 }
 
 
-class TestPineconeRedisIntegration(unittest.TestCase):
+class test_pinecone_redis_integration(unittest.TestCase):
     """
     Robust runtime verification for Pinecone-Redis integration.
     Uses mocks to simulate Redis hits/misses and verify logic flow.
@@ -301,7 +301,7 @@ def run_tests():
     print("PINECONE-REDIS INTEGRATION TEST SUITE (Runtime Verification)")
     print("=" * 80)
 
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestPineconeRedisIntegration)
+    suite = unittest.TestLoader().loadTestsFromTestCase(test_pinecone_redis_integration)
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
 

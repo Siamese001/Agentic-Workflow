@@ -35,7 +35,7 @@ class L5SafetyBaseAgent(SovereignBaseAgent):
     """Base class for L5 Safety agents with healing capability.
 
     MRO HARDENING (Phase 21.1):
-    - SovereignBaseAgent: Root (includes InfrastructureMixin with Redis/Pinecone)
+    - SovereignBaseAgent: Root (includes infrastructure_mixin with Redis/Pinecone)
 
     MRO: RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
 

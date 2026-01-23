@@ -32,7 +32,7 @@ def test_register_discovered_tools_wires_new_adapters():
     client = MCPClient()
     policy = PolicyController()
     selector = MCPSelector(client, policy)
-    registry = ToolRegistry()
+    registry = tool_registry()
     selections = register_discovered_tools(registry, selector, "web_search")
     assert selections
     assert any(name.startswith("web_search") for name in registry.available())

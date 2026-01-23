@@ -5,7 +5,7 @@ Tests for the Sovereign Architecture Hardening Plan Phase 2 implementation.
 All tests must pass at 100% before Phase 2 is considered complete.
 
 TEST CASES:
-    A. The Big Switch: Verify SovereignBaseAgent uses InfrastructureMixin
+    A. The Big Switch: Verify SovereignBaseAgent uses infrastructure_mixin
     B. Strategy Injection: Verify UnifiedOrchestratorAgent calls strategy
     C. Decorator Sanitization: Verify @standard_heal normalizes output
     D. Crash Containment: Verify @standard_heal catches exceptions
@@ -25,18 +25,18 @@ class TestCaseA_TheBigSwitch:
     """
     Test Case A: The Big Switch
 
-    Verify that SovereignBaseAgent now inherits from InfrastructureMixin
+    Verify that SovereignBaseAgent now inherits from infrastructure_mixin
     and that _infra_initialized is True after instantiation.
     """
 
     def test_sovereign_base_agent_has_infra_mixin(self):
-        """Verify SovereignBaseAgent inherits from InfrastructureMixin."""
+        """Verify SovereignBaseAgent inherits from infrastructure_mixin."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
+        from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
 
         # Check inheritance
-        assert issubclass(SovereignBaseAgent, InfrastructureMixin), (
-            "SovereignBaseAgent must inherit from InfrastructureMixin"
+        assert issubclass(SovereignBaseAgent, infrastructure_mixin), (
+            "SovereignBaseAgent must inherit from infrastructure_mixin"
         )
 
     def test_sovereign_base_agent_infra_initialized(self):
@@ -55,7 +55,7 @@ class TestCaseA_TheBigSwitch:
         )
 
     def test_sovereign_base_agent_has_healer_metrics(self):
-        """Verify HealerMixin was properly initialized via InfrastructureMixin."""
+        """Verify HealerMixin was properly initialized via infrastructure_mixin."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         agent = SovereignBaseAgent(name="TestAgent")
@@ -76,19 +76,19 @@ class TestCaseA_TheBigSwitch:
         assert result is True, "verify_state() should return True"
 
     def test_sovereign_base_agent_mro_order(self):
-        """Verify MRO includes InfrastructureMixin before object."""
+        """Verify MRO includes infrastructure_mixin before object."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         mro = SovereignBaseAgent.__mro__
         mro_names = [cls.__name__ for cls in mro]
 
-        # InfrastructureMixin should be in MRO
-        assert "InfrastructureMixin" in mro_names, "InfrastructureMixin must be in MRO"
+        # infrastructure_mixin should be in MRO
+        assert "infrastructure_mixin" in mro_names, "infrastructure_mixin must be in MRO"
 
-        # InfrastructureMixin should come before object
-        infra_idx = mro_names.index("InfrastructureMixin")
+        # infrastructure_mixin should come before object
+        infra_idx = mro_names.index("infrastructure_mixin")
         object_idx = mro_names.index("object")
-        assert infra_idx < object_idx, "InfrastructureMixin must come before object in MRO"
+        assert infra_idx < object_idx, "infrastructure_mixin must come before object in MRO"
 
 
 class TestCaseB_StrategyInjection:

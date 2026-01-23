@@ -1,6 +1,6 @@
 """
 file: tests/maintenance/test_tool_registry.py
-description: Test cases for the ToolRegistry to verify tool safety and discovery.
+description: Test cases for the tool_registry to verify tool safety and discovery.
 """
 
 from pathlib import Path
@@ -18,11 +18,11 @@ def disable_path_shield():
 
 @pytest.fixture
 def tool_registry(disable_path_shield):
-    """Provides a fresh ToolRegistry instance for each test."""
-    from apps_shared.utils.tool_registry import ToolRegistry
+    """Provides a fresh tool_registry instance for each test."""
+    from apps_shared.utils.tool_registry import tool_registry
 
-    ToolRegistry.reset_instance()
-    return ToolRegistry.get_instance()
+    tool_registry.reset_instance()
+    return tool_registry.get_instance()
 
 
 class TestToolSafetyVerification:
@@ -73,7 +73,7 @@ class TestToolSafetyVerification:
 
         result = tool_registry.register_tool(
             tool_name="valid_tool",
-            tool_path="agentic_core/L2_execution/ToolRegistry/file_io_tools.py",
+            tool_path="agentic_core/L2_execution/tool_registry/file_io_tools.py",
             tool_func=valid_func,
             description="File I/O operations",
         )
@@ -112,7 +112,7 @@ class TestToolDiscovery:
     def test_discover_tools_pattern(self, tool_registry, disable_path_shield):
         """
         TC-005: Use SovereignIndex to discover tool files.
-        Expected: Should find tools in agentic_core/L2_execution/ToolRegistry/.
+        Expected: Should find tools in agentic_core/L2_execution/tool_registry/.
         """
         discovered = tool_registry.discover_tools("*_tools.py")
 
@@ -139,7 +139,7 @@ class TestToolRetrieval:
 
         tool_registry.register_tool(
             tool_name="my_tool",
-            tool_path="agentic_core/L2_execution/ToolRegistry/tools.py",
+            tool_path="agentic_core/L2_execution/tool_registry/tools.py",
             tool_func=my_tool,
         )
 
@@ -170,7 +170,7 @@ class TestToolRetrieval:
 
         tool_registry.register_tool("tool1", "agentic_core/utils/sovereign_index.py", tool1)
         tool_registry.register_tool(
-            "tool2", "agentic_core/L2_execution/ToolRegistry/tools.py", tool2
+            "tool2", "agentic_core/L2_execution/tool_registry/tools.py", tool2
         )
 
         tools = tool_registry.list_tools()
@@ -192,7 +192,7 @@ class TestToolUnregistration:
             pass
 
         tool_registry.register_tool(
-            "temp_tool", "agentic_core/L2_execution/ToolRegistry/tools.py", temp_tool
+            "temp_tool", "agentic_core/L2_execution/tool_registry/tools.py", temp_tool
         )
         assert "temp_tool" in tool_registry
 

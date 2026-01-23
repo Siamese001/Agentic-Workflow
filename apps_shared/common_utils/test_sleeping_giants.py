@@ -91,7 +91,7 @@ def test_memory_leak_detector():
     print("=" * 70)
 
     try:
-        from agentic_core.L2_execution.ToolRegistry.MemoryLeakDetectorAgent import (
+        from agentic_core.L2_execution.tool_registry.MemoryLeakDetectorAgent import (
             MemoryLeakDetectorAgent,
         )
 
@@ -125,7 +125,7 @@ def test_peer_intelligence_auditor():
     print("=" * 70)
 
     try:
-        from agentic_core.L2_execution.ToolRegistry.PeerIntelligenceAuditorAgent import (
+        from agentic_core.L2_execution.tool_registry.PeerIntelligenceAuditorAgent import (
             PeerIntelligenceAuditorAgent,
         )
 

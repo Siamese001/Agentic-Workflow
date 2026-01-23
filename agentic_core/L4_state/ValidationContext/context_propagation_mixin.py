@@ -17,7 +17,7 @@ class ContextPropagationMixin:
     Features:
     - Thread/Async-safe ContextVars
     - Automatic Trace/Span ID generation
-    - Integration with EventEmissionMixin
+    - Integration with event_emission_mixin
     """
 
     def __init__(self, **kwargs):

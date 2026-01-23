@@ -35,10 +35,10 @@ class TestRemediationLogic:
         """Verify that action-based scripts are correctly flagged for rename."""
         # Test PascalCase inputs that should match the verb pattern
         candidates = [
-            "FixAllAgenticImports",
+            "fix_all_agentic_imports",
             "RunHardenedJob",
             "UtilitiesFixAllViolations",
-            "AnalyzeDashboardColorBug",
+            "analyze_dashboard_color_bug",
         ]
         for c in candidates:
             assert VERB_PATTERN.match(c), f"Failed to match verb in {c}"

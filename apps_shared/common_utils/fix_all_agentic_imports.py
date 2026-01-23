@@ -20,11 +20,11 @@ def fix_file_imports(file_path: Path) -> bool:
             content: Any = f.read()
         original: Any = content
         mappings: Any = {
-            "from agentic_core.base import": "from agentic_core.L2_execution.ToolRegistry.base import",
-            "from agentic_core.CanonBaseAgent import": "from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import",
-            "from agentic_core.L2_execution.ToolRegistry.": "from agentic_core.L2_execution.ToolRegistry.",
-            "from agentic_core.L2_execution.P2_tools.": "from agentic_core.L2_execution.ToolRegistry.",
-            "from agentic_core.L2_execution.P3_engines.": "from agentic_core.L2_execution.ToolRegistry.",
+            "from agentic_core.base import": "from agentic_core.L2_execution.tool_registry.base import",
+            "from agentic_core.CanonBaseAgent import": "from agentic_core.L2_execution.tool_registry.CanonBaseAgent import",
+            "from agentic_core.L2_execution.tool_registry.": "from agentic_core.L2_execution.tool_registry.",
+            "from agentic_core.L2_execution.P2_tools.": "from agentic_core.L2_execution.tool_registry.",
+            "from agentic_core.L2_execution.P3_engines.": "from agentic_core.L2_execution.tool_registry.",
             "from agentic_core.L5_safety.P1_core.": "from agentic_core.L5_safety.guardrails.",
             "from agentic_core.L5_safety.policy.": "from agentic_core.L5_safety.guardrails.",
             "from agentic_core.L4_state.cache.": "from agentic_core.L4_state.validation_context.",
@@ -34,14 +34,14 @@ def fix_file_imports(file_path: Path) -> bool:
             "import agentic_core.L2_execution.tool_registry.": "import agentic_core.L2_execution.tool_registry.",
             "import agentic_core.L2_execution.P2_tools.": "import agentic_core.L2_execution.tool_registry.",
             "import agentic_core.L2_execution.P3_engines.": "import agentic_core.L2_execution.tool_registry.",
-            "from L2_execution.tool_registry.base import": "from agentic_core.L2_execution.ToolRegistry.base import",
-            "from L2_execution.tool_registry.CanonBaseAgent import": "from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import",
+            "from L2_execution.tool_registry.base import": "from agentic_core.L2_execution.tool_registry.base import",
+            "from L2_execution.tool_registry.CanonBaseAgent import": "from agentic_core.L2_execution.tool_registry.CanonBaseAgent import",
         }
         for old, new in mappings.items():
             content: Any = content.replace(old, new)
         content: Any = re.sub(
             "# \\[INCOMPLETE IMPORT\\] from agentic_core\\.\\.([^\\s]+) import (.+)",
-            "from agentic_core.L2_execution.ToolRegistry.\\1 import \\2",
+            "from agentic_core.L2_execution.tool_registry.\\1 import \\2",
             content,
         )
         content: Any = re.sub("from agentic_core\\.agentic_core\\.", "from agentic_core.", content)

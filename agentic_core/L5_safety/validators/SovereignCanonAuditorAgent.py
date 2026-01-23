@@ -44,7 +44,7 @@ class SovereignCanonAuditorAgent(SovereignBaseAgent):
             "agentic_core/L4_state/knowledge_graph/SovereignGraphClient.py",
             "agentic_core/L6_observability/deepwiki_client_sovereign.py",
             "agentic_core/L1_cognition/thought_engine/StrategicPlannerAgent.py",
-            "agentic_core/L2_execution/ToolRegistry/WebSearchTools.py",
+            "agentic_core/L2_execution/tool_registry/WebSearchTools.py",
         ]
 
     async def audit_core_components(self) -> dict[str, Any]:

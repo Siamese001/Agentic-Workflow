@@ -14,7 +14,7 @@ import pytest
 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
 
-class TestHierarchyAgentPhase2:
+class test_hierarchy_agent_phase2:
     @pytest.fixture
     def mock_project(self, tmp_path):
         """Setup project with apps and tests violations."""
