@@ -11,9 +11,10 @@ from __future__ import annotations
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class HOP4RoutingAgent(LICAgentBase):
+class HOP4RoutingAgent(SubatomicTestingMixin, LICAgentBase):
     """
     LIC Sovereign Navigator.
 
@@ -54,6 +55,7 @@ class HOP4RoutingAgent(LICAgentBase):
         if route_override:
             selected_route = route_override
             registry.add_trace("ROUTE_OVERRIDE_APPLIED", {"route": selected_route})
+            # Skepticism: Ensure overrides still respect Gate 6 safety
         elif connection_status == "CONNECTED":
             selected_route = "FOLLOW_UP"
         elif premium_available:

@@ -14,9 +14,10 @@ from typing import Any
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class HOP3SenderGroundingAgent(LICAgentBase):
+class HOP3SenderGroundingAgent(SubatomicTestingMixin, LICAgentBase):
     """
     LIC Sovereign Grounder.
 
@@ -40,9 +41,11 @@ class HOP3SenderGroundingAgent(LICAgentBase):
         try:
             config = self.config.sender_grounding_agent
             source_files = config.source_files
-        except Exception:
+            if not source_files:
+                raise ValueError("No source files defined in agent_specs")
+        except Exception as e:
             registry.add_trace("DATA_ERROR", {"msg": "Missing grounding config"})
-            raise RuntimeError("HOP-3 missing configuration targets")
+            raise RuntimeError("HOP-3 missing configuration targets") from e
 
         registry.add_trace("PHASE_STEP", {"action": "starting_grounding_extraction"})
 

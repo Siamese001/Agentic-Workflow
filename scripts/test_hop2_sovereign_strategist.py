@@ -19,8 +19,8 @@ sys.path.insert(0, str(project_root))
 import pytest
 from unittest.mock import MagicMock, patch
 from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 class TestHOP2SovereignStrategist:
@@ -157,8 +157,15 @@ class TestHOP2SovereignStrategist:
 
         agent = HOP2ResearchAgent()
         # Verify 100% Pass: System must halt on critical context gap
-        with pytest.raises(RuntimeError, match="Missing hop1_analysis"):
+        # LICAgentBase wraps errors with agent name
+        with pytest.raises(RuntimeError, match="HOP2ResearchAgent execution failed"):
             agent.run_phase(buffer, registry)
+        
+        # Verify the underlying error was about missing hop1_analysis
+        traces = registry.get_traces()
+        error_trace = next((t for t in traces if t.get("type") == "PHASE_ERROR"), None)
+        assert error_trace is not None, "Should have PHASE_ERROR trace"
+        assert "missing critical upstream context" in str(error_trace.get("details", {}))
 
     def test_c_level_missing_company_id_warning(self):
         """
@@ -176,7 +183,7 @@ class TestHOP2SovereignStrategist:
         # Verify: Warning trace should be logged
         traces = registry.get_traces()
         warning_found = any(
-            t.get("event_type") == "INPUT_WARNING" and "company_id" in str(t)
+            "INPUT_WARNING" in str(t) and "company_id" in str(t)
             for t in traces
         )
         assert warning_found, "Should log warning for C_LEVEL without company_id"
@@ -267,13 +274,13 @@ class TestHOP2SovereignStrategist:
         agent.run_phase(buffer, registry)
 
         traces = registry.get_traces()
-        trace_types = [t.get("event_type") for t in traces]
+        trace_types = [t.get("type") for t in traces]
 
-        # Verify: Critical trace events are present
-        assert "AGENT_START" in trace_types, "Missing AGENT_START trace"
+        # Verify: Critical trace events are present (LICAgentBase uses PHASE_* naming)
+        assert "PHASE_START" in trace_types, "Missing PHASE_START trace"
         assert "PHASE_STEP" in trace_types, "Missing PHASE_STEP trace"
         assert "RETRIEVAL_PLAN_COMPLETED" in trace_types, "Missing completion trace"
-        assert "AGENT_END" in trace_types, "Missing AGENT_END trace"
+        assert "PHASE_COMPLETE" in trace_types, "Missing PHASE_COMPLETE trace"
 
 
 def run_tests():

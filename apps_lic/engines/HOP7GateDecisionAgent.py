@@ -11,9 +11,10 @@ from __future__ import annotations
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class HOP7GateDecisionAgent(LICAgentBase):
+class HOP7GateDecisionAgent(SubatomicTestingMixin, LICAgentBase):
     """
     V2.5 Governor Agent.
 
@@ -43,6 +44,12 @@ class HOP7GateDecisionAgent(LICAgentBase):
             raise RuntimeError("HOP-7 requires HOP-6 report to proceed")
 
         registry.add_trace("PHASE_STEP", {"action": "evaluating_gate", "passed": report["passed"]})
+
+        # Defensive Stagnation Check
+        traces = registry.get_traces()
+        factual_retry_count = sum(1 for t in traces if t.get("type") == "FACTUAL_LOOP_TRIGGERED")
+        if factual_retry_count >= 2:
+            registry.add_trace("STAGNATION_DETECTED", {"count": factual_retry_count})
 
         # 2. Specialist Classification Logic (LIC v13.0 / K.7 Validator)
         decision = "PASS"

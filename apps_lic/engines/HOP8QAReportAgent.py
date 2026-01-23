@@ -13,8 +13,9 @@ from typing import Any, Dict, List
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
-class HOP8QAReportAgent(LICAgentBase):
+class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
     """
     V2 Implementation of HOP-8.
     
@@ -35,13 +36,13 @@ class HOP8QAReportAgent(LICAgentBase):
         """
         # 1. Aggregate All State
         states = {
-            "hop1": buffer.read("hop1_analysis"),
-            "hop2": buffer.read("hop2_research"),
-            "hop3": buffer.read("hop3_sender_grounding"),
-            "hop4": buffer.read("hop4_routing"),
-            "hop5": buffer.read("hop5_generation"),
-            "hop6": buffer.read("hop6_validation_report"),
-            "hop7": buffer.read("hop7_gate_decision")
+            "hop1": buffer.read("hop1_analysis") or {},
+            "hop2": buffer.read("hop2_research") or {},
+            "hop3": buffer.read("hop3_sender_grounding") or {},
+            "hop4": buffer.read("hop4_routing") or {},
+            "hop5": buffer.read("hop5_generation") or {},
+            "hop6": buffer.read("hop6_validation_report") or {},
+            "hop7": buffer.read("hop7_gate_decision") or {}
         }
 
         # 2. Calculate Scoring

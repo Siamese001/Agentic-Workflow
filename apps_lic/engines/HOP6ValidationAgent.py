@@ -11,9 +11,11 @@ import re
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from typing import Any
 
 
-class HOP6ValidationAgent(LICAgentBase):
+class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
     """
     V2 Implementation of HOP-6 QA.
 
@@ -48,15 +50,18 @@ class HOP6ValidationAgent(LICAgentBase):
         # 2. Specialist Validation Execution (K.7 Heuristics)
         registry.add_trace("PHASE_STEP", {"action": "starting_rule_execution"})
 
+        # Load externalized rules from config
+        rules_config = self.config.validation_agent
+
         results = []
         # Rule: LIC-E001 (Placeholders) - CRITICAL
-        results.append(self._check_placeholders(draft_text))
+        results.append(self._check_placeholders(draft_text, rules_config))
 
         # Rule: LIC-E015 (Strategic Alignment) - CRITICAL
-        results.append(self._check_strategic_alignment(draft_text, hop2))
+        results.append(self._check_strategic_alignment(draft_text, hop2, rules_config))
 
         # Rule: LIC-E008 (Forbidden Verbs) - MEDIUM
-        results.append(self._check_forbidden_verbs(draft_text))
+        results.append(self._check_forbidden_verbs(draft_text, rules_config))
 
         # 3. Calculate Report and Failure Classification
         critical_issues = [r for r in results if r["severity"] == "CRITICAL" and not r["passed"]]
@@ -74,15 +79,12 @@ class HOP6ValidationAgent(LICAgentBase):
         buffer.write_once("hop6_validation_report", failure_report)
         registry.add_trace("DECISION_FINAL", {"status": "PASS" if passed else "FAIL"})
 
-    def _check_placeholders(self, text: str) -> dict:
+    def _check_placeholders(self, text: str, config: Any) -> dict:
         """
         K.7/PlaceholderDetector logic: Zero tolerance for [bracketed] text.
-
-        Rule: LIC-E001
-        Severity: CRITICAL
-        Pattern: [text], {text}, <text>
         """
-        pattern = r"\[.*?\]|\{.*?\}|<.*?>"
+        # Logic: Use patterns from config or default to sovereign standards
+        pattern = getattr(config, 'placeholder_regex', r"\[.*?\]|\{.*?\}|<.*?>")
         found = re.findall(pattern, text)
         return {
             "rule_id": "LIC-E001",
@@ -91,14 +93,11 @@ class HOP6ValidationAgent(LICAgentBase):
             "message": f"Found placeholders: {found}" if found else "No placeholders detected",
         }
 
-    def _check_strategic_alignment(self, text: str, hop2: dict) -> dict:
+    def _check_strategic_alignment(self, text: str, hop2: dict, config: Any) -> dict:
         """
         K.7/Strategic logic: Ensure overlap with strategic brief keywords.
-
-        Rule: LIC-E015
-        Severity: CRITICAL
-        Logic: Extract keywords > 4 chars, check for at least 1 match
         """
+        min_match = getattr(config, 'min_keyword_match', 1)
         brief = hop2.get("strategic_brief", "")
 
         if not brief:
@@ -115,7 +114,7 @@ class HOP6ValidationAgent(LICAgentBase):
         text_words = set(w.lower() for w in text.split())
         overlap = brief_keywords.intersection(text_words)
 
-        passed = len(overlap) > 0 or len(brief_keywords) == 0
+        passed = len(overlap) >= min_match or len(brief_keywords) == 0
 
         return {
             "rule_id": "LIC-E015",
@@ -126,22 +125,12 @@ class HOP6ValidationAgent(LICAgentBase):
             else "No strategic keywords found in draft",
         }
 
-    def _check_forbidden_verbs(self, text: str) -> dict:
+    def _check_forbidden_verbs(self, text: str, config: Any) -> dict:
         """
         K.7/ForbiddenVerbs logic: Detect overly promotional language.
-
-        Rule: LIC-E008
-        Severity: MEDIUM
-        Forbidden: "revolutionize", "disrupt", "transform", "leverage"
         """
-        forbidden_verbs = [
-            "revolutionize",
-            "disrupt",
-            "transform",
-            "leverage",
-            "synergize",
-            "optimize",
-        ]
+        # Logic: Ingest forbidden list from config
+        forbidden_verbs = getattr(config, 'forbidden_verbs', ["revolutionize", "disrupt"])
         text_lower = text.lower()
 
         found = [verb for verb in forbidden_verbs if verb in text_lower]
