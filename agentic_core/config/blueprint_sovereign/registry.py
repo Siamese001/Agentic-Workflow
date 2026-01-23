@@ -123,7 +123,7 @@ HEALING_CONFIG: dict = {
 CORE_SUBFOLDER_MAP: dict = {
     "L0_maintenance": ["scripts", "logs", "benchmarks", "mixins"],
     "L1_cognition": ["thought_engine", "intent_analysis", "planning"],
-    "L2_execution": ["ToolRegistry", "action_handlers", "mcp", "tool_registry"],
+    "L2_execution": ["tool_registry", "action_handlers", "mcp", "tool_registry"],
     "L3_orchestration": [
         "workflow_engines",
         "fission_logic",
@@ -200,7 +200,7 @@ L4_APPROVED_FOLDERS: set = {
     "agentic_core/L5_safety/guardrails",
     "agentic_core/L5_safety/validators",
     "agentic_core/L5_safety/gravity",
-    "agentic_core/L2_execution/ToolRegistry",
+    "agentic_core/L2_execution/tool_registry",
     "agentic_core/L2_execution/mcp",
     "agentic_core/L4_state/ValidationContext",
     "agentic_core/schemas/models",
@@ -251,7 +251,7 @@ MCP_CAPABILITIES: dict = {
     "filesystem": {"enabled": True, "path": "agentic_core.L4_state.filesystem"},
     "figma": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
     "fetch": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
-    "SemanticCache": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
+    "semantic_cache": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
 }
 
 # ============================================================================
@@ -274,7 +274,7 @@ L2_TO_L1_MAP: dict = {
     "thought_engine": "L1_cognition",
     "intent_analysis": "L1_cognition",
     "planning": "L1_cognition",
-    "ToolRegistry": "L2_execution",
+    "tool_registry": "L2_execution",
     "action_handlers": "L2_execution",
     "mcp": "L2_execution",
     "workflow_engines": "L3_orchestration",

@@ -70,7 +70,7 @@ def test_new_genai_imports():
         "agentic_core/semantic_memory/embeddings/gemini_embedder.py",
         "agentic_core/L5_safety/guardrails/subatomic_engine.py",
         "agentic_core/L2_execution/mcp/inference_engine.py",
-        "agentic_core/L2_execution/ToolRegistry/L2ExecutionBaseAgent.py",
+        "agentic_core/L2_execution/tool_registry/L2ExecutionBaseAgent.py",
     ]
 
     new_pattern = re.compile(r"from\s+google\s+import\s+genai")

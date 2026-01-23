@@ -21,13 +21,13 @@ class CacheSufficiencyResult:
     reason: str = ""
 
 
-class SemanticCache:
+class semantic_cache:
     """Semantic cache for LLM responses."""
 
     def __init__(self):
         """Initialize semantic cache."""
         self._cache: dict[str, Any] = {}
-        Logger.debug("SemanticCache initialized")
+        Logger.debug("semantic_cache initialized")
 
     def get(self, key: str) -> Any | None:
         """Get cached value by key."""
@@ -181,7 +181,7 @@ class FewShotInjector:
 
 
 __all__ = [
-    "SemanticCache",
+    "semantic_cache",
     "CacheSufficiencyResult",
     "SelfRAGProcessor",
     "KnowledgeGap",

@@ -33,7 +33,7 @@ VALID_AGENT_BASES = {
     "L4StateBaseAgent",
     "L5SafetyBaseAgent",
     "L6ObservabilityBaseAgent",
-    "InfrastructureMixin",
+    "infrastructure_mixin",
     "L0MaintenanceBaseAgent",
 }
 
@@ -93,8 +93,8 @@ class ArchitectureDNAVisitor(ast.NodeVisitor):
         if layer_match:
             for base in bases:
                 if "Mixin" in base and base not in LAYER_AFFINITY_MAP.get(layer_match, []):
-                    # Allow InfrastructureMixin as global
-                    if base != "InfrastructureMixin":
+                    # Allow infrastructure_mixin as global
+                    if base != "infrastructure_mixin":
                         self.violations.append(
                             CodeViolation(
                                 self.file_path,

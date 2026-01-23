@@ -24,7 +24,7 @@ import sys
 from dataclasses import dataclass
 from typing import Any, Protocol
 
-from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 

@@ -24,7 +24,7 @@ def test_renamed_files_exist():
     required = [
         "agentic_core/L1_cognition/thought_engine/supreme_court.py",
         "agentic_core/L1_cognition/thought_engine/execution_types.py",
-        "agentic_core/L2_execution/ToolRegistry/subprocess_executor.py",
+        "agentic_core/L2_execution/tool_registry/subprocess_executor.py",
         "agentic_core/L4_state/ValidationContext/omni_context.py",
     ]
     for p in required:
@@ -36,7 +36,7 @@ def test_shims_exist():
     shims = [
         "agentic_core/L1_cognition/thought_engine/consensus.py",
         "agentic_core/L1_cognition/thought_engine/execution.py",
-        "agentic_core/L2_execution/ToolRegistry/execution.py",
+        "agentic_core/L2_execution/tool_registry/execution.py",
         "agentic_core/L4_state/ValidationContext/context.py",
     ]
     for p in shims:

@@ -34,7 +34,7 @@ warnings.warn(
 
 
 # TypeHintEnforcementAgent - Atomic Validator (Ungated Healing)
-# Territory: agentic_core/L2_execution/ToolRegistry
+# Territory: agentic_core/L2_execution/tool_registry
 # Canon Alignment: Enforces complete type hints for public functions/methods/variables
 # Surgery Scope: Single file — adds basic Any / inferred hints where Missing
 import ast

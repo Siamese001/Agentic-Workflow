@@ -82,7 +82,7 @@ class TracingMixin:
     - Circuit breaker for initialization failures
 
     ROOT INJECTION:
-    This mixin is injected at the InfrastructureMixin level,
+    This mixin is injected at the infrastructure_mixin level,
     ensuring all agents in the L0-L6 hierarchy have tracing.
 
     CIRCUIT BREAKER (Skeptical Challenge Response):
@@ -90,7 +90,7 @@ class TracingMixin:
     with tracing disabled. This prevents fleet-wide initialization failures.
 
     MRO Position:
-    ConcreteAgent -> LayerBase -> SovereignBaseAgent -> InfrastructureMixin -> TracingMixin -> ...
+    ConcreteAgent -> LayerBase -> SovereignBaseAgent -> infrastructure_mixin -> TracingMixin -> ...
     """
 
     # Class-level configuration

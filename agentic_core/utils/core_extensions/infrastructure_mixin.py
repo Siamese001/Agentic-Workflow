@@ -1,27 +1,27 @@
 from __future__ import annotations
 
 """
-InfrastructureMixin - Unified Gatekeeper for Agent Infrastructure
+infrastructure_mixin - Unified Gatekeeper for Agent Infrastructure
 
 L0 DNA FLATTENING (Jan 2026):
 This mixin consolidates all core agent capabilities into a single inheritance point:
 - HealerMixin (autonomous repair)
 - MCPHardenedMixin (MCP protocol safety)
 - SubatomicTestingMixin (self-testing)
-- InstructionalInjectionMixin (prompt injection protection - now L0 core trait)
+- instructional_injection_mixin (prompt injection protection - now L0 core trait)
 
 Ensures proper initialization order and provides state verification to catch "silent failure" bugs.
 
 USAGE:
 
-    class MyAgent(InfrastructureMixin):
+    class MyAgent(infrastructure_mixin):
         def __init__(self, project_root: Path):
             super().__init__()  # CRITICAL: Must call super().__init__()
             self.project_root = project_root
             self.verify_state()  # Optional: Verify initialization succeeded
 
 SSOT PRINCIPLE:
-    Agents should inherit from InfrastructureMixin instead of individual mixins.
+    Agents should inherit from infrastructure_mixin instead of individual mixins.
     This ensures consistent MRO and prevents initialization bugs.
 
 HARDENING:
@@ -44,7 +44,7 @@ from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVec
 Logger = logging.getLogger(__name__)
 
 
-class InfrastructureMixin(
+class infrastructure_mixin(
     PineconeVectorMixin,
     HealerMixin,
     MCPHardenedMixin,
@@ -58,12 +58,12 @@ class InfrastructureMixin(
     1. Healing capabilities (HealerMixin)
     2. MCP hardening (MCPHardenedMixin)
     3. Subatomic testing (SubatomicTestingMixin)
-    4. Prompt injection protection (InstructionalInjectionMixin)
+    4. Prompt injection protection (instructional_injection_mixin)
     5. Distributed tracing (TracingMixin) [INJECTED Jan 2026]
     6. State verification to catch initialization failures
 
     MRO Order (L0 DNA Flattening):
-        ConcreteAgent -> InfrastructureMixin -> HealerMixin -> MCPHardenedMixin -> SubatomicTestingMixin -> InstructionalInjectionMixin -> object
+        ConcreteAgent -> infrastructure_mixin -> HealerMixin -> MCPHardenedMixin -> SubatomicTestingMixin -> instructional_injection_mixin -> object
 
     Critical Requirements:
         - Subclasses MUST call super().__init__() in their __init__
@@ -103,7 +103,7 @@ class InfrastructureMixin(
             RuntimeError: If any initialization check fails
 
         Usage:
-            class MyAgent(InfrastructureMixin):
+            class MyAgent(infrastructure_mixin):
                 def __init__(self):
                     super().__init__()
                     self.verify_state()  # Ensure initialization succeeded
@@ -180,5 +180,5 @@ class InfrastructureMixin(
 
 
 __all__ = [
-    "InfrastructureMixin",
+    "infrastructure_mixin",
 ]

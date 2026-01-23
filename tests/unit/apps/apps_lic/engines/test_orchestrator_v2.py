@@ -69,7 +69,7 @@ def mock_config():
     return mock
 
 
-class TestOrchestratorV2:
+class test_orchestrator_v2:
     def test_linear_flow_no_failures(self, mock_config):
         """Verify HOPs 1-8 execute in sequence when no failures occur."""
         with patch(

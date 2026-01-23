@@ -35,7 +35,7 @@ def test_case_1_long_chain_propagation():
     
     try:
         from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
-        from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
         from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
         
         # Step 1: Create L3 agent (top of chain)
@@ -118,7 +118,7 @@ def test_case_2_multi_agent_cycle_persistence():
     
     try:
         from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
-        from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
         
         # Step 1: Create two agents that could call each other
         agent_a = L3OrchestrationBaseAgent()

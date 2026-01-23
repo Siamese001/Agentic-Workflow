@@ -12,8 +12,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.ToolRegistry.firecracker_manager_impl import FirecrackerManager
-from agentic_core.L2_execution.ToolRegistry.firecracker_manager_types import VMConfig
+from agentic_core.L2_execution.tool_registry.firecracker_manager_impl import FirecrackerManager
+from agentic_core.L2_execution.tool_registry.firecracker_manager_types import VMConfig
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

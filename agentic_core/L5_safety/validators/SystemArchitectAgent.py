@@ -21,7 +21,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 

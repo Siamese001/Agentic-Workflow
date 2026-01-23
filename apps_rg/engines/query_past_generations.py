@@ -1,5 +1,5 @@
 """
-QueryPastGenerations.py - Retrieval Module
+query_past_generations.py - Retrieval Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.190521
@@ -10,7 +10,7 @@ import logging
 Logger: Any = logging.getLogger(__name__)
 
 
-class QueryPastGenerations:
+class query_past_generations:
     """Retrieval engine for resume domain."""
 
     def __init__(self, config: dict[str, object] | None = None):
@@ -37,4 +37,4 @@ def retrieve(
     query: str, config: dict | None = None, **kwargs: dict[str, object]
 ) -> RetrievalResult:
     """Retrieve items."""
-    return QueryPastGenerations(config).retrieve(query, **kwargs)
+    return query_past_generations(config).retrieve(query, **kwargs)

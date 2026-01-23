@@ -12,7 +12,7 @@ from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
 from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
-class TestV25OrchestratorHardening:
+class test_v25_orchestrator_hardening:
     """
     Sovereign Orchestration Test Suite.
     MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf execution.

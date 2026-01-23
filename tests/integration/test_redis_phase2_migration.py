@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
 
-class TestRedisPhase2Migration(unittest.TestCase):
+class test_redis_phase2_migration(unittest.TestCase):
     """
     Test suite for Phase 2 migration: consolidating Redis operations.
     """
@@ -203,7 +203,7 @@ def run_tests():
     print("REDIS PHASE 2 MIGRATION TEST SUITE")
     print("=" * 80)
 
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestRedisPhase2Migration)
+    suite = unittest.TestLoader().loadTestsFromTestCase(test_redis_phase2_migration)
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
 

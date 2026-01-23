@@ -28,7 +28,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
-class TestObservabilityGauntlet(unittest.TestCase):
+class test_observability_gauntlet(unittest.TestCase):
     """Gauntlet test suite for observability hardening verification."""
 
     @classmethod
@@ -132,7 +132,7 @@ class TestObservabilityGauntlet(unittest.TestCase):
 
             # Critical zombie = core layer agent with healing but no proper base class
             if layer in core_layers and has_healing and not proper_base:
-                good_bases = {"SovereignBaseAgent", "InfrastructureMixin", "HealerMixin"}
+                good_bases = {"SovereignBaseAgent", "infrastructure_mixin", "HealerMixin"}
                 has_good_base = any(base in inheritance for base in good_bases)
 
                 if not has_good_base:
@@ -350,7 +350,7 @@ def run_gauntlet():
     suite = unittest.TestSuite()
 
     # Add gauntlet tests
-    suite.addTests(loader.loadTestsFromTestCase(TestObservabilityGauntlet))
+    suite.addTests(loader.loadTestsFromTestCase(test_observability_gauntlet))
     suite.addTests(loader.loadTestsFromTestCase(TestObservabilityAgentHardening))
 
     # Run with verbosity

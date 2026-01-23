@@ -272,7 +272,7 @@ class SovereignHealingEngine:
         if "HTTP" in message or "requests" in message.lower():
             new_content = new_content.replace(
                 "import requests",
-                "# Sovereign healing: Use get_fetch_client() from agentic_core.L2_execution.ToolRegistry.fetch_mcp_client",
+                "# Sovereign healing: Use get_fetch_client() from agentic_core.L2_execution.tool_registry.fetch_mcp_client",
             )
             new_content = new_content.replace(
                 "requests.get(", "# await get_fetch_client().get_clean_content("

@@ -23,7 +23,7 @@ from agentic_core.L6_observability.agents.RuntimeTelemetryAgent import RuntimeTe
 from agentic_core.L6_observability.L6ObservabilityBaseAgent import L6ObservabilityBaseAgent
 
 
-class TestRuntimeTelemetryAgent:
+class test_runtime_telemetry_agent:
     """Test Case 1: The "2x Gospel" Violation Detection."""
 
     def test_gospel_violation_detection(self):
@@ -400,7 +400,7 @@ def run_all_tests():
     # Test 1: RuntimeTelemetryAgent
     print("TEST CASE 1: RuntimeTelemetryAgent - 2x Gospel Violation")
     print("-" * 80)
-    test_rt = TestRuntimeTelemetryAgent()
+    test_rt = test_runtime_telemetry_agent()
     test_rt.test_gospel_violation_detection()
     test_rt.test_gospel_compliance()
     test_rt.test_benchmark_exception_handling()

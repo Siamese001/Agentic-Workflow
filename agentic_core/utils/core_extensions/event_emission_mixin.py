@@ -24,7 +24,7 @@ class SovereignEvent(BaseModel):
     trace_id: str | None = None
 
 
-class EventEmissionMixin:
+class event_emission_mixin:
     """
     Phase 2 Observability Infrastructure: Event Emission (Report 4.3).
 
@@ -160,7 +160,7 @@ class EventEmissionMixin:
 
             @wraps(func)
             async def wrapper(self, *args, **kwargs):
-                if not isinstance(self, EventEmissionMixin):
+                if not isinstance(self, event_emission_mixin):
                     return await func(self, *args, **kwargs)
 
                 self.emit_event(f"{event_prefix}.started", {"args": str(args)})

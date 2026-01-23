@@ -38,7 +38,7 @@ def test_case_1_signal_saturation_sweep():
         from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
             L3OrchestrationBaseAgent,
         )
-        from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
         from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
             L1CognitionBaseAgent,
         )
@@ -242,7 +242,7 @@ def test_case_3_depth_constraint_persistence():
         from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
             L3OrchestrationBaseAgent,
         )
-        from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
         from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
             L1CognitionBaseAgent,
         )

@@ -105,7 +105,7 @@ def get_territory_for_agent(agent: dict) -> str:
 
     # L2 Execution territories
     if "L2_execution" in path or layer == "L2":
-        if "/ToolRegistry" in path or "/tool_registry" in path or "/mcp" in path:
+        if "/tool_registry" in path or "/tool_registry" in path or "/mcp" in path:
             return "L2 Execution/Core"
         if "Base" in agent.get("class_name", ""):
             return "L2 Execution/Base Class"

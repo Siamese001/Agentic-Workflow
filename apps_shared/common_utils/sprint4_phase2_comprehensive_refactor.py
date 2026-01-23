@@ -108,7 +108,7 @@ def refactor_l1_cognition_files():
 
 def refactor_l2_execution_files():
     """Refactor L2 execution layer violations."""
-    l2_dir = REPO / AGENTIC_CORE_DIR / "L2_execution" / "ToolRegistry"
+    l2_dir = REPO / AGENTIC_CORE_DIR / "L2_execution" / "tool_registry"
     l2_tool_registry = REPO / AGENTIC_CORE_DIR / "L2_execution" / "tool_registry"
     files_modified = 0
 

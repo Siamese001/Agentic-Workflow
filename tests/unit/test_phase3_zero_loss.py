@@ -28,15 +28,15 @@ def test_tc9_mro_integrity():
     TC-9: MRO Integrity
 
     Verify that a sample L2 agent's __mro__ correctly follows the path:
-    Agent -> L2ExecutionBaseAgent -> SovereignBaseAgent -> InfrastructureMixin -> object
+    Agent -> L2ExecutionBaseAgent -> SovereignBaseAgent -> infrastructure_mixin -> object
     """
     print("\n" + "=" * 60)
     print("TC-9: MRO Integrity")
     print("=" * 60)
 
-    from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+    from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
+    from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
 
     # Get MRO
     mro = L2ExecutionBaseAgent.__mro__
@@ -45,7 +45,7 @@ def test_tc9_mro_integrity():
     print(f"L2ExecutionBaseAgent MRO: {mro_names}")
 
     # Verify key classes are in MRO in correct order
-    required_order = ["L2ExecutionBaseAgent", "SovereignBaseAgent", "InfrastructureMixin", "object"]
+    required_order = ["L2ExecutionBaseAgent", "SovereignBaseAgent", "infrastructure_mixin", "object"]
 
     # Find positions of required classes
     positions = {}
@@ -64,13 +64,13 @@ def test_tc9_mro_integrity():
             print(f"❌ FAIL: {current} should come before {next_cls} in MRO")
             return False
 
-    # Verify SovereignBaseAgent inherits from InfrastructureMixin
-    if not issubclass(SovereignBaseAgent, InfrastructureMixin):
-        print("❌ FAIL: SovereignBaseAgent should inherit from InfrastructureMixin")
+    # Verify SovereignBaseAgent inherits from infrastructure_mixin
+    if not issubclass(SovereignBaseAgent, infrastructure_mixin):
+        print("❌ FAIL: SovereignBaseAgent should inherit from infrastructure_mixin")
         return False
 
     print("✅ PASS: MRO follows correct inheritance path")
-    print("   L2ExecutionBaseAgent -> ... -> SovereignBaseAgent -> InfrastructureMixin -> object")
+    print("   L2ExecutionBaseAgent -> ... -> SovereignBaseAgent -> infrastructure_mixin -> object")
     return True
 
 
@@ -109,11 +109,11 @@ def test_tc10_inheritance_continuity():
             print(f"❌ FAIL: Agent should have {method} from HealerMixin")
             return False
 
-    # Verify InfrastructureMixin methods are accessible
+    # Verify infrastructure_mixin methods are accessible
     infra_methods = ["verify_state", "get_infrastructure_status"]
     for method in infra_methods:
         if not hasattr(agent, method):
-            print(f"❌ FAIL: Agent should have {method} from InfrastructureMixin")
+            print(f"❌ FAIL: Agent should have {method} from infrastructure_mixin")
             return False
 
     # Verify _infra_initialized flag is set
@@ -124,7 +124,7 @@ def test_tc10_inheritance_continuity():
     print("✅ PASS: Agents have access to all inherited methods")
     print("   heal_repository: ✓")
     print(f"   HealerMixin methods: {healer_methods}")
-    print(f"   InfrastructureMixin methods: {infra_methods}")
+    print(f"   infrastructure_mixin methods: {infra_methods}")
     print("   _infra_initialized: True")
     return True
 
@@ -140,7 +140,7 @@ def test_tc11_method_preservation():
     print("TC-11: Method Preservation")
     print("=" * 60)
 
-    from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+    from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
 
     # Methods that should be present (from Canon/ExecutionCanon bases)
     required_methods = [
@@ -193,7 +193,7 @@ def test_tc12_import_stability():
     canonical_bases = [
         ("L0MaintenanceBaseAgent", "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent"),
         ("L1CognitionBaseAgent", "agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent"),
-        ("L2ExecutionBaseAgent", "agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent"),
+        ("L2ExecutionBaseAgent", "agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent"),
         (
             "L3OrchestrationBaseAgent",
             "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent",

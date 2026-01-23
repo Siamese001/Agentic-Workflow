@@ -14,7 +14,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from apps_shared.utils.tool_registry import ToolRegistry
+from apps_shared.utils.tool_registry import tool_registry
 
 
 def dummy_tool():
@@ -28,14 +28,14 @@ def test_sovereign_territory_acceptance():
     print("TEST 1: Sovereign Territory Acceptance")
     print("=" * 60)
 
-    registry = ToolRegistry.get_instance()
-    ToolRegistry.reset_instance()
-    registry = ToolRegistry.get_instance()
+    registry = tool_registry.get_instance()
+    tool_registry.reset_instance()
+    registry = tool_registry.get_instance()
 
     # Valid paths that should be accepted
     valid_paths = [
-        "agentic_core/L2_execution/ToolRegistry/tools.py",
-        "agentic_core/L2_execution/ToolRegistry/mcp_tools.py",
+        "agentic_core/L2_execution/tool_registry/tools.py",
+        "agentic_core/L2_execution/tool_registry/mcp_tools.py",
         "agentic_core/utils/sovereign_index.py",
         "apps_shared/utils/tool_registry.py",
     ]
@@ -64,8 +64,8 @@ def test_archives_rejection():
     print("TEST 2: Archives Rejection")
     print("=" * 60)
 
-    ToolRegistry.reset_instance()
-    registry = ToolRegistry.get_instance()
+    tool_registry.reset_instance()
+    registry = tool_registry.get_instance()
 
     # Invalid paths that should be rejected
     invalid_paths = [
@@ -96,8 +96,8 @@ def test_bulk_registration():
     print("TEST 3: Bulk Registration from L2_execution")
     print("=" * 60)
 
-    ToolRegistry.reset_instance()
-    registry = ToolRegistry.get_instance()
+    tool_registry.reset_instance()
+    registry = tool_registry.get_instance()
 
     # Discover tool files
     discovered = registry.discover_tools("*_tools.py", PROJECT_ROOT)
@@ -132,13 +132,13 @@ def test_tool_retrieval():
     print("TEST 4: Tool Retrieval")
     print("=" * 60)
 
-    ToolRegistry.reset_instance()
-    registry = ToolRegistry.get_instance()
+    tool_registry.reset_instance()
+    registry = tool_registry.get_instance()
 
     # Register a tool
     registry.register_tool(
         tool_name="retrieval_test",
-        tool_path="agentic_core/L2_execution/ToolRegistry/tools.py",
+        tool_path="agentic_core/L2_execution/tool_registry/tools.py",
         tool_func=dummy_tool,
         description="Test retrieval",
     )

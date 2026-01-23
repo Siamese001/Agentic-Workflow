@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
-from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
+from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.utils.core_extensions.decorators import standard_heal

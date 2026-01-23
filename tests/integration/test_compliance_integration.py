@@ -12,7 +12,7 @@ from unittest.mock import patch
 from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
 
 
-class TestComplianceIntegration:
+class test_compliance_integration:
     """
     Integration tests ensuring the UnifiedOrchestrator correctly invokes
     the CredentialScannerAgent when running in COMPLIANCE mode.

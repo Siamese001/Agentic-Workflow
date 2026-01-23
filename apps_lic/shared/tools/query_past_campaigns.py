@@ -1,5 +1,5 @@
 """
-QueryPastCampaigns.py - Retrieval Module
+query_past_campaigns.py - Retrieval Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.034900
@@ -10,7 +10,7 @@ import logging
 Logger: Any = logging.getLogger(__name__)
 
 
-class QueryPastCampaigns:
+class query_past_campaigns:
     """Retrieval engine for outreach domain."""
 
     def __init__(self, config: dict[str, object] | None = None):
@@ -37,4 +37,4 @@ def retrieve(
     query: str, config: dict | None = None, **kwargs: dict[str, object]
 ) -> RetrievalResult:
     """Retrieve items."""
-    return QueryPastCampaigns(config).retrieve(query, **kwargs)
+    return query_past_campaigns(config).retrieve(query, **kwargs)

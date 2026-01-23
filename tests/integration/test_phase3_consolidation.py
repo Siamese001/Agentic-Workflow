@@ -1,14 +1,14 @@
 """
 Phase 3 Consolidation Test Suite
 
-Tests for validating the MCP Gateway and SemanticCache consolidation.
+Tests for validating the MCP Gateway and semantic_cache consolidation.
 
 Test Cases:
 - TC-MCP-001: Verify SovereignMCPGateway operation_stats
 - TC-MCP-002: Verify MCPOperationMixin delegates to gateway
 - TC-CACHE-001: Verify canonical SemanticCacheManager has Phase 3 marker
 - TC-CACHE-002: Verify L5 SemanticCacheManager raises ImportError
-- TC-CACHE-003: Verify SemanticCacheMixin delegates to L4
+- TC-CACHE-003: Verify semantic_cache_mixin delegates to L4
 - TC-MCP-006: Verify all legacy clients raise ImportError
 """
 
@@ -20,9 +20,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
 
-class TestPhase3Consolidation(unittest.TestCase):
+class test_phase3_consolidation(unittest.TestCase):
     """
-    Test suite for Phase 3 consolidation: MCP Gateway + SemanticCache unification.
+    Test suite for Phase 3 consolidation: MCP Gateway + semantic_cache unification.
     """
 
     def test_mcp_001_gateway_operation_stats(self):
@@ -166,10 +166,10 @@ class TestPhase3Consolidation(unittest.TestCase):
 
     def test_cache_003_mixin_delegates_to_l4(self):
         """
-        TC-CACHE-003: Verify SemanticCacheMixin delegates to L4.
+        TC-CACHE-003: Verify semantic_cache_mixin delegates to L4.
         """
         print("\n" + "=" * 60)
-        print("TC-CACHE-003: SemanticCacheMixin L4 Delegation")
+        print("TC-CACHE-003: semantic_cache_mixin L4 Delegation")
         print("=" * 60)
 
         source_file = (
@@ -197,7 +197,7 @@ class TestPhase3Consolidation(unittest.TestCase):
         self.assertTrue(has_semantic_learn, "Mixin must have semantic_learn")
         self.assertTrue(has_phase3_marker, "Must have PHASE 3 migration marker")
 
-        print("✅ SemanticCacheMixin correctly delegates to L4 canonical implementation")
+        print("✅ semantic_cache_mixin correctly delegates to L4 canonical implementation")
 
     def test_mcp_006_legacy_clients_archived(self):
         """
@@ -245,7 +245,7 @@ def run_tests():
     print("PHASE 3 CONSOLIDATION TEST SUITE")
     print("=" * 80)
 
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestPhase3Consolidation)
+    suite = unittest.TestLoader().loadTestsFromTestCase(test_phase3_consolidation)
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
 

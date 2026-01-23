@@ -246,7 +246,7 @@ class L3OrchestratorAgent:
     def test_valid_gravity_import(self):
         """L3 importing from L2 should NOT be flagged."""
         test_code = """
-from agentic_core.L2_execution.ToolRegistry.SomeTool import SomeTool
+from agentic_core.L2_execution.tool_registry.SomeTool import SomeTool
 from agentic_core.L1_cognition.SomeEngine import SomeEngine
 
 class L3OrchestratorAgent:
@@ -438,7 +438,7 @@ class TestLegacyFactoryWarnings:
         assert isinstance(agent, AppContentValidatorAgent)
 
 
-class TestRegistryMapping:
+class test_registry_mapping:
     """Test 8: Verify SubAtomicRegistryAgent mappings."""
 
     def test_phase2_validator_mapping_exists(self):

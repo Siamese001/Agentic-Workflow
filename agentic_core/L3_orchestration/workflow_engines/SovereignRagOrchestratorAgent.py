@@ -51,7 +51,7 @@ class SovereignRagOrchestratorAgent(SovereignBaseAgent, IRagProvider):
     def __init__(
         self,
         retriever: Any | None = None,
-        QueryPlanner: Any | None = None,
+        query_planner: Any | None = None,
         guardrail: Any | None = None,
         engine: Any | None = None,
     ) -> None:
@@ -60,7 +60,7 @@ class SovereignRagOrchestratorAgent(SovereignBaseAgent, IRagProvider):
 
         Args:
             retriever: Optional retriever instance
-            QueryPlanner: Optional query planner instance
+            query_planner: Optional query planner instance
             guardrail: Optional guardrail instance
             engine: Optional engine instance
         """
@@ -72,7 +72,7 @@ class SovereignRagOrchestratorAgent(SovereignBaseAgent, IRagProvider):
         self.threshold_adaptation_rate: float = 0.02
         self.performance_window: int = 50
         self.retriever: Any | None = retriever
-        self.QueryPlanner: Any | None = QueryPlanner
+        self.query_planner: Any | None = query_planner
         self.guardrail: Any | None = guardrail
         self.engine: Any | None = engine
         self.enable_red_team_critique: bool = False
@@ -150,9 +150,9 @@ class SovereignRagOrchestratorAgent(SovereignBaseAgent, IRagProvider):
         def _parse_critique(raw) -> Any:
             """Parse critique."""
             try:
-                from agentic_core.L1_cognition.thought_engine.QueryPlanner import QueryPlanner
+                from agentic_core.L1_cognition.thought_engine.query_planner import query_planner
 
-                planner_helper = QueryPlanner()
+                planner_helper = query_planner()
                 cleaned = planner_helper._clean_json_response(raw)
                 return json.loads(cleaned)
             except:
@@ -274,11 +274,11 @@ class SovereignRagOrchestratorAgent(SovereignBaseAgent, IRagProvider):
         current_query: Any = query
         all_documents: Any = []
         for hop in range(self.max_hops):
-            base_queries: Any = await self.QueryPlanner.decompose_query(current_query)
+            base_queries: Any = await self.query_planner.decompose_query(current_query)
             all_queries: Any = []
             async with asyncio.TaskGroup() as tg:
                 tasks: Any = [
-                    tg.create_task(self.QueryPlanner.multi_query_generation(bq))
+                    tg.create_task(self.query_planner.multi_query_generation(bq))
                     for bq in base_queries
                 ]
             for t in tasks:

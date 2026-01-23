@@ -54,7 +54,7 @@ def test_t02_signal_saturation():
     print("T-02: Signal Saturation Test")
     print("=" * 60)
     
-    agent_path = PROJECT_ROOT / "agentic_core/L2_execution/ToolRegistry/HistorianAgent.py"
+    agent_path = PROJECT_ROOT / "agentic_core/L2_execution/tool_registry/HistorianAgent.py"
     content = agent_path.read_text(encoding="utf-8")
     tree = ast.parse(content)
     
@@ -155,7 +155,7 @@ def test_strategic_planner_remediation():
     print("T-05: StrategicPlannerAgent Remediation Test")
     print("=" * 60)
     
-    agent_path = PROJECT_ROOT / "agentic_core/L2_execution/ToolRegistry/StrategicPlannerAgent.py"
+    agent_path = PROJECT_ROOT / "agentic_core/L2_execution/tool_registry/StrategicPlannerAgent.py"
     content = agent_path.read_text(encoding="utf-8")
     tree = ast.parse(content)
     

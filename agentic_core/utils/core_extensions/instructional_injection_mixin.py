@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-InstructionalInjectionMixin - Provides all 30 instructional injection patterns to agents.
+instructional_injection_mixin - Provides all 30 instructional injection patterns to agents.
 
 SOURCE: data/prompt_governance/prompt_injections/Instructional_Injection_Enhanced_v5.md
 
@@ -268,12 +268,12 @@ INSTRUCTIONAL_PATTERNS: dict[int, InstructionalPattern] = {
 }
 
 
-class InstructionalInjectionMixin:
+class instructional_injection_mixin:
     """
     Mixin providing all 30 instructional injection patterns to worker agents.
 
     Usage:
-        class MyAgent(InstructionalInjectionMixin, HealerMixin, ...):
+        class MyAgent(instructional_injection_mixin, HealerMixin, ...):
             def process(self, prompt):
                 # Inject safety patterns
                 prompt = self.inject_safety_layer(prompt)
@@ -432,6 +432,6 @@ class InstructionalInjectionMixin:
 
 
 # Convenience function for standalone use
-def get_instructional_injection_mixin() -> InstructionalInjectionMixin:
+def get_instructional_injection_mixin() -> instructional_injection_mixin:
     """Get an instance of the instructional injection mixin."""
-    return InstructionalInjectionMixin()
+    return instructional_injection_mixin()

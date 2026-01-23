@@ -1,19 +1,19 @@
 """
-Test Suite for InfrastructureMixin
+Test Suite for infrastructure_mixin
 
 Verifies the Method Resolution Order (MRO) and state aggregation
-of the consolidated InfrastructureMixin (Opportunity #4).
+of the consolidated infrastructure_mixin (Opportunity #4).
 """
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
+from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class ConcreteInfrastructureAgent(InfrastructureMixin):
+class ConcreteInfrastructureAgent(infrastructure_mixin):
     """
-    Concrete implementation of InfrastructureMixin for testing purposes.
+    Concrete implementation of infrastructure_mixin for testing purposes.
     """
 
     def __init__(self):
@@ -21,27 +21,27 @@ class ConcreteInfrastructureAgent(InfrastructureMixin):
         self.name = "TestInfrastructureAgent"
 
 
-class TestInfrastructureMixin:
+class test_infrastructure_mixin:
     """
     Verifies the Method Resolution Order (MRO) and state aggregation
-    of the consolidated InfrastructureMixin.
+    of the consolidated infrastructure_mixin.
     """
 
     def test_mro_resolution(self):
         """
-        Crucial: Verifies that InfrastructureMixin correctly inherits from
+        Crucial: Verifies that infrastructure_mixin correctly inherits from
         HealerMixin, MCPHardenedMixin, and SubatomicTestingMixin in the correct order.
         """
         mro = ConcreteInfrastructureAgent.__mro__
 
         # Verify presence
-        assert InfrastructureMixin in mro
+        assert infrastructure_mixin in mro
         assert HealerMixin in mro
         assert MCPHardenedMixin in mro
         assert SubatomicTestingMixin in mro
 
-        # Verify order (InfrastructureMixin should be before its parents)
-        infra_idx = mro.index(InfrastructureMixin)
+        # Verify order (infrastructure_mixin should be before its parents)
+        infra_idx = mro.index(infrastructure_mixin)
         assert mro.index(HealerMixin) > infra_idx
         assert mro.index(MCPHardenedMixin) > infra_idx
         assert mro.index(SubatomicTestingMixin) > infra_idx

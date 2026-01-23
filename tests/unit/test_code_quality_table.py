@@ -33,7 +33,7 @@ LEGACY_DASHBOARD_PATH = PROJECT_ROOT / REPORTS_DIR / "autonomy_dashboard.html"
 DASHBOARD_PATH = L6_DASHBOARD_PATH if L6_DASHBOARD_PATH.exists() else LEGACY_DASHBOARD_PATH
 
 
-class TestCodeQualityTable:
+class test_code_quality_table:
     """Test Code Quality table rendering and data accuracy."""
 
     def test_code_quality_grid_container_exists(self):

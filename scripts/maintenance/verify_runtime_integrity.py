@@ -5,7 +5,7 @@ Runtime Integrity Verifier - Phase 21
 Static analysis (ArchGuard) is not enough. We must prove that:
 1. The refactored agents can actually be imported (No circular dependencies).
 2. They can be instantiated (No missing mixin methods).
-3. The ToolRegistry dicts are valid.
+3. The tool_registry dicts are valid.
 
 Run this to confirm the system is truly production-ready.
 """
@@ -41,17 +41,17 @@ def test_instantiation():
 
     # 2. Test Tool Registry (The Dict Refactor)
     try:
-        print("[TEST] Initializing ToolRegistry...")
-        from agentic_core.L2_execution.ToolRegistry.registry import create_tool_registry
+        print("[TEST] Initializing tool_registry...")
+        from agentic_core.L2_execution.tool_registry.registry import create_tool_registry
 
         registry = create_tool_registry()
         tools = registry.get_function_declarations()
         assert isinstance(tools, list), "Tools must be a list"
         assert len(tools) > 0, "No tools registered"
         assert isinstance(tools[0], dict), "Tools must be pure dicts (Architecture requirement)"
-        print("   ✅ ToolRegistry OK (Pure Dicts confirmed)")
+        print("   ✅ tool_registry OK (Pure Dicts confirmed)")
     except Exception as e:
-        failures.append(f"ToolRegistry: {e}")
+        failures.append(f"tool_registry: {e}")
         traceback.print_exc()
 
     # 3. Test The Refactored Agents (Import Rewiring Check)

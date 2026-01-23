@@ -54,7 +54,7 @@ try:
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False
-from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
+from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.utils.core_extensions.decorators import standard_heal

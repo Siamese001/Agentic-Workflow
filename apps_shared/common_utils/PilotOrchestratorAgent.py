@@ -5,7 +5,7 @@
 
 
 class PilotOrchestrator(
-    RateLimitMixin, StateValidationMixin, EventEmissionMixin, ContextPropagationMixin
+    RateLimitMixin, StateValidationMixin, event_emission_mixin, ContextPropagationMixin
 ):
     """
     Pilot L3 Agent demonstrating the fully hardened stack.
@@ -24,7 +24,7 @@ class PilotOrchestrator(
     @ContextPropagationMixin.trace_context
     @StateValidationMixin.validate_state(pre=lambda s: s.is_ready())
     @RateLimitMixin.rate_limit("orchestrate")
-    @EventEmissionMixin.observe_execution("orchestration_flow")
+    @event_emission_mixin.observe_execution("orchestration_flow")
     async def run_pilot(self, goal: str, executor_agent):
         """Standardizes a delegation flow with full hardening."""
         self.emit_event("goal.received", {"goal": goal})

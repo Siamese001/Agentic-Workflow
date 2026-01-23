@@ -140,7 +140,7 @@ class TestAuditTrailMixin:
                 self.emitted_events = []
 
             async def emit_event(self, event_type, payload, severity="INFO"):
-                """Mock EventEmissionMixin method."""
+                """Mock event_emission_mixin method."""
                 self.emitted_events.append(
                     {
                         "type": event_type,

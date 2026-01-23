@@ -10,7 +10,7 @@ def test_dedupe_and_budget():
 
 def test_execute_uses_cache_when_fresh():
     store = ContentStore()
-    registry = ToolRegistry.default_with_builtins()
+    registry = tool_registry.default_with_builtins()
     plan = RetrievalPlan(["ACME revenue"], {"ttl_s": 3600, "company_id": "ACME"})
     plan.add({"tool": "web_search", "query": "ACME revenue"})
     plan.dedupe()

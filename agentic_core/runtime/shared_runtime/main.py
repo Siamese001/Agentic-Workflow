@@ -8,7 +8,7 @@ import asyncio
 import logging
 from typing import Any
 
-from agentic_core.runtime.P1_core.RuntimeBootstrapper import RuntimeBootstrapper
+from agentic_core.runtime.P1_core.runtime_bootstrapper import runtime_bootstrapper
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
@@ -24,7 +24,7 @@ async def main() -> Any:
         "mission_scope": "system_refactoring",
         "model_name": "gemini-2.0-flash",
     }
-    bootstrapper: Any = RuntimeBootstrapper(config)
+    bootstrapper: Any = runtime_bootstrapper(config)
     try:
         hop: Any = bootstrapper.assemble_hop(role="principal_architect")
         mission: Any = {

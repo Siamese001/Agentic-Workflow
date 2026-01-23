@@ -31,7 +31,7 @@ def get_project_root() -> Path:
 SSOT_AGENT_FOLDERS = [
     "agentic_core/L0_maintenance/scripts",
     "agentic_core/L1_cognition/thought_engine",
-    "agentic_core/L2_execution/ToolRegistry",
+    "agentic_core/L2_execution/tool_registry",
     "agentic_core/L3_orchestration/fission_logic",
     "agentic_core/L3_orchestration/workflow_engines",
     "agentic_core/L4_state/ValidationContext",
@@ -44,19 +44,19 @@ SSOT_AGENT_FOLDERS = [
 
 
 class TestInstructionalInjectionMixin:
-    """Test suite for InstructionalInjectionMixin."""
+    """Test suite for instructional_injection_mixin."""
 
     @pytest.fixture
     def project_root(self) -> Path:
         return get_project_root()
 
     def test_mixin_can_be_imported(self):
-        """Verify InstructionalInjectionMixin can be imported."""
+        """Verify instructional_injection_mixin can be imported."""
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
-            InstructionalInjectionMixin,
+            instructional_injection_mixin,
         )
 
-        assert InstructionalInjectionMixin is not None
+        assert instructional_injection_mixin is not None
 
     def test_mixin_has_30_patterns(self):
         """Verify all 30 patterns are defined."""
@@ -84,7 +84,7 @@ class TestInstructionalInjectionMixin:
     def test_mixin_has_inject_methods(self):
         """Verify mixin has all inject_*_layer methods."""
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
-            InstructionalInjectionMixin,
+            instructional_injection_mixin,
         )
 
         required_methods = [
@@ -101,42 +101,42 @@ class TestInstructionalInjectionMixin:
         ]
 
         for method in required_methods:
-            assert hasattr(InstructionalInjectionMixin, method), f"Missing method: {method}"
+            assert hasattr(instructional_injection_mixin, method), f"Missing method: {method}"
 
     def test_healer_mixin_inherits_injection(self):
-        """Verify HealerMixin inherits InstructionalInjectionMixin."""
+        """Verify HealerMixin inherits instructional_injection_mixin."""
         from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
-            InstructionalInjectionMixin,
+            instructional_injection_mixin,
         )
 
-        assert issubclass(HealerMixin, InstructionalInjectionMixin)
+        assert issubclass(HealerMixin, instructional_injection_mixin)
 
     def test_subatomic_testing_mixin_inherits_injection(self):
-        """Verify SubatomicTestingMixin inherits InstructionalInjectionMixin."""
+        """Verify SubatomicTestingMixin inherits instructional_injection_mixin."""
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
-            InstructionalInjectionMixin,
+            instructional_injection_mixin,
         )
         from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
-        assert issubclass(SubatomicTestingMixin, InstructionalInjectionMixin)
+        assert issubclass(SubatomicTestingMixin, instructional_injection_mixin)
 
     def test_mcp_hardened_mixin_inherits_injection(self):
-        """Verify MCPHardenedMixin inherits InstructionalInjectionMixin."""
+        """Verify MCPHardenedMixin inherits instructional_injection_mixin."""
         from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
-            InstructionalInjectionMixin,
+            instructional_injection_mixin,
         )
 
-        assert issubclass(MCPHardenedMixin, InstructionalInjectionMixin)
+        assert issubclass(MCPHardenedMixin, instructional_injection_mixin)
 
     def test_inject_safety_layer_works(self):
         """Verify inject_safety_layer actually injects patterns."""
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
-            InstructionalInjectionMixin,
+            instructional_injection_mixin,
         )
 
-        mixin = InstructionalInjectionMixin()
+        mixin = instructional_injection_mixin()
         original_prompt = "Do something"
         injected = mixin.inject_safety_layer(original_prompt)
 
@@ -148,10 +148,10 @@ class TestInstructionalInjectionMixin:
     def test_inject_output_layer_works(self):
         """Verify inject_output_layer actually injects patterns."""
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
-            InstructionalInjectionMixin,
+            instructional_injection_mixin,
         )
 
-        mixin = InstructionalInjectionMixin()
+        mixin = instructional_injection_mixin()
         original_prompt = "Generate output"
         injected = mixin.inject_output_layer(original_prompt, schema='{"type": "object"}')
 
@@ -163,10 +163,10 @@ class TestInstructionalInjectionMixin:
     def test_get_injection_summary(self):
         """Verify get_injection_summary returns correct structure."""
         from agentic_core.utils.core_extensions.instructional_injection_mixin import (
-            InstructionalInjectionMixin,
+            instructional_injection_mixin,
         )
 
-        mixin = InstructionalInjectionMixin()
+        mixin = instructional_injection_mixin()
         summary = mixin.get_injection_summary()
 
         assert "total_patterns" in summary

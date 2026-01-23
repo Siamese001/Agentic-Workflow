@@ -207,7 +207,7 @@ def test_case_4_mro_root_termination():
     Test Case 4: MRO Root Termination
 
     Objective: Verify SovereignBaseAgent correctly stops the super() chain to avoid
-    missing methods in InfrastructureMixin.
+    missing methods in infrastructure_mixin.
 
     Procedure:
     1. Call heal_repository on a SovereignBaseAgent instance directly.

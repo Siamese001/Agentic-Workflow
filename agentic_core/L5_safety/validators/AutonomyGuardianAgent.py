@@ -299,10 +299,10 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
                     inherits_sovereign_base = False
 
                     # Base classes that provide heal_repository via MRO
-                    # These all inherit from SovereignBaseAgent or InfrastructureMixin
+                    # These all inherit from SovereignBaseAgent or infrastructure_mixin
                     SOVEREIGN_BASE_CLASSES = {
                         "SovereignBaseAgent",
-                        "InfrastructureMixin",
+                        "infrastructure_mixin",
                         "L3OrchestrationBaseAgent",
                         "L4StateBaseAgent",
                         "L5SafetyBaseAgent",
@@ -325,7 +325,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
                                 ):
                                     inherits_sovereign_base = True
 
-                    # SovereignBaseAgent provides heal_repository via InfrastructureMixin -> HealerMixin
+                    # SovereignBaseAgent provides heal_repository via infrastructure_mixin -> HealerMixin
                     if inherits_sovereign_base:
                         has_heal_method = True
 

@@ -94,7 +94,7 @@ class InputProcessingStage(PipelineStage):
 
     def __init__(self):
         """Initialize input processing stage."""
-        self.semantic_cache = SemanticCache()
+        self.semantic_cache = semantic_cache()
         self.hyde_processor = HyDEProcessor()
 
     async def execute(self, envelope: SignalEnvelope) -> SignalEnvelope:
@@ -238,7 +238,7 @@ class ContextEnrichmentStage(PipelineStage):
         """Initialize context enrichment stage."""
         self.kg_injector = KnowledgeGraphInjector()
         self.rag_processor = SelfRAGProcessor()
-        self.semantic_cache = SemanticCache()
+        self.semantic_cache = semantic_cache()
 
     async def execute(self, envelope: SignalEnvelope) -> SignalEnvelope:
         """Enrich context.
@@ -384,7 +384,7 @@ class SignalAugmentationStage(PipelineStage):
         self.prompt_optimizer = PromptOptimizer()
         self.tone_model = ToneModel()
         self.shared_infra = get_shared_infrastructure()
-        self.semantic_cache = SemanticCache()
+        self.semantic_cache = semantic_cache()
 
     async def execute(self, envelope: SignalEnvelope) -> SignalEnvelope:
         """Augment signal.

@@ -11,7 +11,7 @@ import subprocess
 import time
 from typing import Any
 
-from agentic_core.L2_execution.ToolRegistry.firecracker_manager_types import (
+from agentic_core.L2_execution.tool_registry.firecracker_manager_types import (
     VMConfig,
     VMInstance,
     VMProvider,

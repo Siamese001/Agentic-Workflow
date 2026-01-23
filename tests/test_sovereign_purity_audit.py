@@ -11,7 +11,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
-class TestSovereignPurityAudit:
+class test_sovereign_purity_audit:
     """
     MANDATORY: 100% PASS REQUIREMENT for Windsurf Execution.
     Focus: Namespace isolation, Foundation renaming, Unknown elimination.

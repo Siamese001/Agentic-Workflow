@@ -46,11 +46,11 @@ try:
         ClaimAnalysis,
         QualityThresholds,
         SignalAssessment,
-        SignalEnhancer,
+        signal_enhancer,
         SignalQuality,
     )
 except ImportError:
-    SignalEnhancer = None
+    signal_enhancer = None
     SignalQuality = None
     SignalAssessment = None
     QualityThresholds = None
@@ -65,7 +65,7 @@ __all__ = [
     "ValidationCriterion",
     "ReflectionConfig",
     "MutationRequest",
-    "SignalEnhancer",
+    "signal_enhancer",
     "SignalQuality",
     "SignalAssessment",
     "QualityThresholds",

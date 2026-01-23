@@ -279,12 +279,12 @@ class TestCaseC_BaseAgentHygiene:
     Test Case C: Base Agent Hygiene
 
     Verify L2ExecutionBaseAgent inherits from SovereignBaseAgent
-    and thus has InfrastructureMixin capabilities.
+    and thus has infrastructure_mixin capabilities.
     """
 
     def test_l2_execution_base_inherits_sovereign(self):
         """Verify L2ExecutionBaseAgent is subclass of SovereignBaseAgent."""
-        from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         assert issubclass(L2ExecutionBaseAgent, SovereignBaseAgent), (
@@ -292,20 +292,20 @@ class TestCaseC_BaseAgentHygiene:
         )
 
     def test_l2_execution_base_has_infrastructure(self):
-        """Verify L2ExecutionBaseAgent has InfrastructureMixin in MRO."""
-        from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+        """Verify L2ExecutionBaseAgent has infrastructure_mixin in MRO."""
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
 
-        # Check MRO includes InfrastructureMixin (via SovereignBaseAgent)
+        # Check MRO includes infrastructure_mixin (via SovereignBaseAgent)
         mro_names = [cls.__name__ for cls in L2ExecutionBaseAgent.__mro__]
 
-        # InfrastructureMixin should be in MRO (inherited through SovereignBaseAgent)
-        assert "InfrastructureMixin" in mro_names or "SovereignBaseAgent" in mro_names, (
-            "L2ExecutionBaseAgent must have InfrastructureMixin in MRO (via SovereignBaseAgent)"
+        # infrastructure_mixin should be in MRO (inherited through SovereignBaseAgent)
+        assert "infrastructure_mixin" in mro_names or "SovereignBaseAgent" in mro_names, (
+            "L2ExecutionBaseAgent must have infrastructure_mixin in MRO (via SovereignBaseAgent)"
         )
 
     def test_l2_execution_base_mro_order(self):
         """Verify L2ExecutionBaseAgent has correct MRO order."""
-        from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
 
         mro_names = [cls.__name__ for cls in L2ExecutionBaseAgent.__mro__]
 
@@ -333,7 +333,7 @@ class TestDeletedFiles:
 
     def test_canon_base_agent_deleted(self):
         """Verify CanonBaseAgent.py has been deleted."""
-        canon_path = Path("agentic_core/L2_execution/ToolRegistry/CanonBaseAgent.py")
+        canon_path = Path("agentic_core/L2_execution/tool_registry/CanonBaseAgent.py")
 
         assert not canon_path.exists(), (
             f"CanonBaseAgent.py should be deleted but still exists at {canon_path}"
@@ -341,7 +341,7 @@ class TestDeletedFiles:
 
     def test_execution_canon_base_agent_deleted(self):
         """Verify ExecutionCanonBaseAgent.py has been deleted."""
-        exec_canon_path = Path("agentic_core/L2_execution/ToolRegistry/ExecutionCanonBaseAgent.py")
+        exec_canon_path = Path("agentic_core/L2_execution/tool_registry/ExecutionCanonBaseAgent.py")
 
         assert not exec_canon_path.exists(), (
             f"ExecutionCanonBaseAgent.py should be deleted but still exists at {exec_canon_path}"

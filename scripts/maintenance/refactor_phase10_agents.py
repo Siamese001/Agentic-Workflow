@@ -92,7 +92,7 @@ class AtomicBlackboard(SovereignBaseAgent):
         acquired_at = time.time()
         expires_at = acquired_at + self.lease_duration
 
-        # Use native Redis client from InfrastructureMixin
+        # Use native Redis client from infrastructure_mixin
         if hasattr(self, "redis_client") and self.redis_client:
             try:
                 # Use NX (Not Exists) for locking

@@ -34,7 +34,7 @@ CANONICAL_HYGIENE_PATH = "agentic_core.L5_safety.validators"
 # Deprecated Paths (Forbidden)
 DEPRECATED_PATHS = {
     "agentic_core.L5_safety.guardrails": UNIFIED_AGENTS,
-    "agentic_core.L2_execution.ToolRegistry": ["UnifiedModelRouterAgent"],
+    "agentic_core.L2_execution.tool_registry": ["UnifiedModelRouterAgent"],
     "apps_shared.base_agents": ["HygieneGuardianAgent"],
 }
 
@@ -180,14 +180,14 @@ class TestDirectoryIntegrity:
         )
 
     def test_toolregistry_contains_no_unified_model_router(self):
-        """Ensure ToolRegistry does not contain UnifiedModelRouterAgent."""
-        toolregistry_dir = PROJECT_ROOT / "agentic_core" / "L2_execution" / "ToolRegistry"
+        """Ensure tool_registry does not contain UnifiedModelRouterAgent."""
+        toolregistry_dir = PROJECT_ROOT / "agentic_core" / "L2_execution" / "tool_registry"
         if not toolregistry_dir.exists():
-            pytest.skip("ToolRegistry directory does not exist")
+            pytest.skip("tool_registry directory does not exist")
 
         router_file = toolregistry_dir / "UnifiedModelRouterAgent.py"
         assert not router_file.exists(), (
-            "UnifiedModelRouterAgent.py should not exist in ToolRegistry/ - "
+            "UnifiedModelRouterAgent.py should not exist in tool_registry/ - "
             "canonical location is L2_execution/unified/"
         )
 
@@ -305,7 +305,7 @@ class TestPotentialOverlapsVerification:
             "StrategicPlannerAgent.py": PROJECT_ROOT
             / "agentic_core"
             / "L2_execution"
-            / "ToolRegistry"
+            / "tool_registry"
             / "StrategicPlannerAgent.py",
         }
 

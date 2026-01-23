@@ -38,7 +38,7 @@ LAYER_BEST_PRACTICES = {
     },
     "L2_execution": {
         "default": "Safe, sandboxed tool interaction. All tools must be registered and validated.",
-        "ToolRegistry": "Single source of truth for all available tools. Each tool: schema + implementation + safety policy.",
+        "tool_registry": "Single source of truth for all available tools. Each tool: schema + implementation + safety policy.",
         "sandbox": "Isolated execution environment. No direct system access outside approved tools.",
     },
     "L3_orchestration": {

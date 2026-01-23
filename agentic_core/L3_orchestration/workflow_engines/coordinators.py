@@ -157,7 +157,7 @@ class MCPCoordinator(WorkflowCoordinator):
     - WorkflowMcpManagerAgent
     - MCPRouterSovereign
     - MCPRouter
-    - ToolVerification
+    - tool_verification
     """
 
     def __init__(self):

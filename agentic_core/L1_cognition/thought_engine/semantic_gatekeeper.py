@@ -9,8 +9,8 @@ import logging
 from typing import Any
 
 
-# NAMING FIXED: SemanticGatekeeper → SemanticGatekeeper
-class SemanticGatekeeper:
+# NAMING FIXED: semantic_gatekeeper → semantic_gatekeeper
+class semantic_gatekeeper:
     """
     L1 Cognition: The Intent Validator.
     Ensures the agent's internal reasoning stays within mission bounds.

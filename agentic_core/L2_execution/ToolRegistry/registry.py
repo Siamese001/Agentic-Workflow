@@ -9,7 +9,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from agentic_core.L2_execution.ToolRegistry.definitions import (
+from agentic_core.L2_execution.tool_registry.definitions import (
     CreateDirectoryArgs,
     DeleteFileArgs,
     ExecuteCommandArgs,
@@ -18,7 +18,7 @@ from agentic_core.L2_execution.ToolRegistry.definitions import (
     ReadFileArgs,
     WriteFileArgs,
 )
-from agentic_core.L2_execution.ToolRegistry.execution import execute_command
+from agentic_core.L2_execution.tool_registry.execution import execute_command
 from agentic_core.L5_safety.validators.filesystem import (
     create_directory,
     delete_file,
@@ -29,7 +29,7 @@ from agentic_core.L5_safety.validators.filesystem import (
 )
 
 
-class ToolRegistry:
+class tool_registry:
     """
     Registry for managing tools and generating schemas.
     """
@@ -96,10 +96,10 @@ class ToolRegistry:
 _global_registry = None
 
 
-def create_tool_registry() -> ToolRegistry:
+def create_tool_registry() -> tool_registry:
     global _global_registry
     if _global_registry is None:
-        _global_registry = ToolRegistry()
+        _global_registry = tool_registry()
     return _global_registry
 
 

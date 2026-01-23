@@ -29,7 +29,7 @@ RESTORED_AGENTS_MAP = [
 ]
 
 
-class TestRestorationIntegrity:
+class test_restoration_integrity:
     def test_terminal_colors_migration(self):
         """
         TC-001: Verifies terminal_colors is accessible in its new home.

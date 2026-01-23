@@ -47,7 +47,7 @@ def get_project_root() -> Path:
     return test_file.parent.parent.parent
 
 
-class TestArchiveApprovalRequired:
+class test_archive_approval_required:
     """Test suite for archive approval requirements."""
 
     @pytest.fixture

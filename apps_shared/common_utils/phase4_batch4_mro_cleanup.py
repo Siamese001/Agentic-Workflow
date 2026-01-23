@@ -3,7 +3,7 @@
 Phase 4 Batch 4: Base Class Cleanup (The MRO Fix)
 
 Remove redundant mixin inheritance from classes that inherit from SovereignBaseAgent.
-Since SovereignBaseAgent now includes InfrastructureMixin (which has HealerMixin,
+Since SovereignBaseAgent now includes infrastructure_mixin (which has HealerMixin,
 MCPHardenedMixin, SubatomicTestingMixin), these mixins are redundant when also
 inheriting from SovereignBaseAgent.
 

@@ -16,7 +16,7 @@ from agentic_core.L4_state.ValidationContext.context_propagation_mixin import (
     ContextPropagationMixin,
 )
 from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.event_emission_mixin import EventEmissionMixin
+from agentic_core.utils.core_extensions.event_emission_mixin import event_emission_mixin
 from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
 
 
@@ -25,7 +25,7 @@ class SovereignObservabilityAgent(
     SubatomicTestingMixin,
     MCPHardenedMixin,
     RedisCacheMixin,
-    EventEmissionMixin,
+    event_emission_mixin,
     ContextPropagationMixin,
 ):
     """

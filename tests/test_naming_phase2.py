@@ -21,7 +21,7 @@ class TestPhase2Heuristics:
     def test_expanded_verbs(self, disable_path_shield):
         """Ensure new verbs are caught."""
         cases = [
-            "AddTestCoverage.py", "CollectMetrics.py", "Phase4Batch1.py",
+            "add_test_coverage.py", "collect_metrics.py", "Phase4Batch1.py",
             "Sprint4Phase2.py", "GuardNoInlineModels.py"
         ]
         for c in cases:

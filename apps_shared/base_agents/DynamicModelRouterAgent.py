@@ -27,7 +27,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
+from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )

@@ -30,7 +30,7 @@ def get_project_root() -> Path:
     return test_file.parent.parent.parent
 
 
-class TestVoidViolationHandling:
+class test_void_violation_handling:
     """Test suite for void violation handling."""
 
     @pytest.fixture

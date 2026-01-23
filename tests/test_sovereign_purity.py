@@ -12,7 +12,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 
 
 @pytest.mark.usefixtures("disable_path_shield")
-class TestSovereignPurity:
+class test_sovereign_purity:
     """MANDATORY: 100% PASS REQUIRED. Validates Phase 1-3 Execution."""
 
     def test_unknown_count_is_zero(self, disable_path_shield):

@@ -12,7 +12,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
-class TestTerminalSweepCompliance:
+class test_terminal_sweep_compliance:
     """
     MANDATORY: 100% PASS REQUIREMENT for Windsurf Execution.
     Focus: Namespace Purity, Legacy Elimination, Specialist Upgrade Verification.

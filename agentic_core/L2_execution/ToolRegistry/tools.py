@@ -1,14 +1,14 @@
 """
-Tools module for L2 Execution ToolRegistry.
+Tools module for L2 Execution tool_registry.
 
 Provides common tool implementations.
 """
 
 from typing import Any
 
-from .base import BaseTool, ToolRegistry
+from .base import BaseTool, tool_registry
 
-__all__ = ["BaseTool", "ToolRegistry", "FunctionTool"]
+__all__ = ["BaseTool", "tool_registry", "FunctionTool"]
 
 
 class FunctionTool(BaseTool):

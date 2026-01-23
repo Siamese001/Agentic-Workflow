@@ -66,7 +66,7 @@ def test_3_l4_map_has_required_folders() -> Tuple[bool, str]:
         'workflow_engines',  # L3_orchestration/workflow_engines
         'thought_engine',    # L1_cognition/thought_engine
         'guardrails',        # L5_safety/guardrails
-        'ToolRegistry',      # L2_execution/ToolRegistry
+        'tool_registry',      # L2_execution/tool_registry
         'core_extensions',   # utils/core_extensions
     ]
 
@@ -329,18 +329,18 @@ def test_17_thought_engine_has_reasoning_subfolder() -> Tuple[bool, str]:
 
 
 def test_18_tool_registry_has_core_subfolder() -> Tuple[bool, str]:
-    """Test 18: Verify ToolRegistry L4 map includes core subfolder."""
+    """Test 18: Verify tool_registry L4 map includes core subfolder."""
     from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
 
-    tool_registry = L4_SUBFOLDER_MAP.get('ToolRegistry', {})
+    tool_registry = L4_SUBFOLDER_MAP.get('tool_registry', {})
 
     required_subfolders = ['core', 'tools', 'handlers']
     missing = [f for f in required_subfolders if f not in tool_registry]
 
     if missing:
-        return False, f"ToolRegistry missing subfolders: {missing}"
+        return False, f"tool_registry missing subfolders: {missing}"
 
-    return True, f"ToolRegistry has {len(tool_registry)} L4 subfolders defined"
+    return True, f"tool_registry has {len(tool_registry)} L4 subfolders defined"
 
 
 # ============================================================================
@@ -422,7 +422,7 @@ def run_all_tests():
         ("Test 15: No duplicate L4 definitions", test_15_no_duplicate_l4_definitions),
         ("Test 16: L4_APPROVED_FOLDERS is set", test_16_l4_approved_folders_is_set),
         ("Test 17: Thought engine has reasoning subfolder", test_17_thought_engine_has_reasoning_subfolder),
-        ("Test 18: ToolRegistry has core subfolder", test_18_tool_registry_has_core_subfolder),
+        ("Test 18: tool_registry has core subfolder", test_18_tool_registry_has_core_subfolder),
         ("Test 19: is_l4_approved helper works", test_19_is_l4_approved_helper_works),
         ("Test 20: Core extensions has mixins subfolder", test_20_core_extensions_has_mixins_subfolder),
     ]

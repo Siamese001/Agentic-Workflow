@@ -2,7 +2,7 @@
 Surgery Script - Phase 16 Deep Clean
 
 [PHASE 16]
-1. Decouples ToolRegistry from google.genai SDK (uses dicts instead).
+1. Decouples tool_registry from google.genai SDK (uses dicts instead).
 2. Refactors ReasoningMemory to use SovereignBaseAgent (Phase 9).
 3. Cleans MCPHardenedMixin of any direct redis dependencies.
 """
@@ -23,7 +23,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from agentic_core.L2_execution.ToolRegistry.definitions import (
+from agentic_core.L2_execution.tool_registry.definitions import (
     CreateDirectoryArgs,
     DeleteFileArgs,
     ExecuteCommandArgs,
@@ -32,7 +32,7 @@ from agentic_core.L2_execution.ToolRegistry.definitions import (
     ReadFileArgs,
     WriteFileArgs,
 )
-from agentic_core.L2_execution.ToolRegistry.execution import execute_command
+from agentic_core.L2_execution.tool_registry.execution import execute_command
 from agentic_core.L5_safety.validators.filesystem import (
     create_directory,
     delete_file,
@@ -42,7 +42,7 @@ from agentic_core.L5_safety.validators.filesystem import (
     write_file,
 )
 
-class ToolRegistry:
+class tool_registry:
     """
     Registry for managing tools and generating schemas.
     """
@@ -105,10 +105,10 @@ class ToolRegistry:
 
 _global_registry = None
 
-def create_tool_registry() -> ToolRegistry:
+def create_tool_registry() -> tool_registry:
     global _global_registry
     if _global_registry is None:
-        _global_registry = ToolRegistry()
+        _global_registry = tool_registry()
     return _global_registry
 
 def get_function_declarations() -> list[dict[str, Any]]:
@@ -267,7 +267,7 @@ class MCPHardenedMixin:
 def perform_surgery():
     print("--- STARTING PHASE 16 DEEP CLEAN ---")
 
-    tr_path = PROJECT_ROOT / "agentic_core/L2_execution/ToolRegistry/registry.py"
+    tr_path = PROJECT_ROOT / "agentic_core/L2_execution/tool_registry/registry.py"
     if tr_path.exists():
         with open(tr_path, "w", encoding="utf-8") as f:
             f.write(TOOL_REGISTRY_CONTENT)

@@ -12,7 +12,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
-class TestAcceleratedConsolidation:
+class test_accelerated_consolidation:
     """
     MANDATORY: 100% PASS REQUIREMENT for Windsurf Execution.
     Focus: Nomenclature Accuracy, Redundancy Removal, Mixin Verification.

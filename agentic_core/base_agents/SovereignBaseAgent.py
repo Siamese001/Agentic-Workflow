@@ -9,12 +9,12 @@ PHASE 9 MIGRATION (Jan 2026):
 - Resolves "Opt-In" drift by enforcing capabilities at the root.
 
 L0 DNA FLATTENING:
-InfrastructureMixin consolidates core capabilities (legacy).
+infrastructure_mixin consolidates core capabilities (legacy).
 New Mixins provide Gateway access (modern).
 
 MRO HARDENING:
 - This is the ROOT of the agent hierarchy
-- InfrastructureMixin is injected HERE so all agents get full infrastructure
+- infrastructure_mixin is injected HERE so all agents get full infrastructure
 - Layer bases add specialized mixins BEFORE SovereignBaseAgent
 - MRO Flow: Specialized -> Layer -> SovereignBaseAgent -> [Mixins] -> object
 """
@@ -23,7 +23,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.utils.core_extensions.infrastructure_mixin import InfrastructureMixin
+from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.config.config_mixin import ConfigMixin
@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class SovereignBaseAgent(
-    InfrastructureMixin,
+    infrastructure_mixin,
     ConfigMixin,
     LLMProviderMixin,
     EmbeddingMixin,
@@ -50,7 +50,7 @@ class SovereignBaseAgent(
     Inheritance Chain (Phase 21.1 - Hierarchy Normalization):
     1. RedisCacheMixin (Direct Redis access - cache_get, cache_set)
     2. PineconeVectorMixin (Direct Pinecone access - vector_search)
-    3. InfrastructureMixin (Legacy Safety/MCP)
+    3. infrastructure_mixin (Legacy Safety/MCP)
     4. ConfigMixin (Phase 6 - Typed Configuration)
     5. LLMProviderMixin (Phase 4 - SovereignLLMGateway)
     6. EmbeddingMixin (Phase 4 - EmbeddingSovereignAgent)
@@ -73,11 +73,11 @@ class SovereignBaseAgent(
         """
         Initialize sovereign agent with infrastructure.
 
-        Triggers InfrastructureMixin gatekeeper logic via super().__init__().
+        Triggers infrastructure_mixin gatekeeper logic via super().__init__().
 
         MRO AUDITOR: Sets _sovereign_initialized sentinel for propagation verification.
         """
-        # 1. Cooperative super() call - triggers InfrastructureMixin.__init__()
+        # 1. Cooperative super() call - triggers infrastructure_mixin.__init__()
         super().__init__()
 
         # 2. Set Sentinel for MRO Auditor - verifies initialization chain reached root

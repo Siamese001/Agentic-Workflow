@@ -90,7 +90,7 @@ def test_is_path_allowed():
         valid_paths = [
             "agentic_core/utils/sovereign_index.py",
             "agentic_core/utils/terminal_colors.py",
-            "agentic_core/L2_execution/ToolRegistry/L2ExecutionBaseAgent.py",
+            "agentic_core/L2_execution/tool_registry/L2ExecutionBaseAgent.py",
             "agentic_core/L5_safety/validators/LocationAgent.py",
             "agentic_core/config/blueprint_sovereign/structure_blueprint.py",
             "agentic_core/L3_orchestration/UnifiedOrchestratorAgent.py",

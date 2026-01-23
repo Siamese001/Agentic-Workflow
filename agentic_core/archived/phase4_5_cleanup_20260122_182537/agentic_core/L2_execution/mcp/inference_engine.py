@@ -24,7 +24,7 @@ from mistralai.async_client import MistralAsyncClient
 from together import Together
 
 from agentic_core.runtime.shared_runtime.semantic_cache import (
-    SemanticCache,
+    semantic_cache,
     SemanticCacheHit,
     create_semantic_cache,
 )
@@ -485,7 +485,7 @@ class InferenceEngine:
         self._client_cache: dict[Provider, Any] = {}
 
         # Initialize semantic cache for response caching
-        self.cache: SemanticCache = create_semantic_cache(
+        self.cache: semantic_cache = create_semantic_cache(
             ttl=3600, max_entries=10000, enable_semantic_matching=True, similarity_threshold=0.92
         )
 

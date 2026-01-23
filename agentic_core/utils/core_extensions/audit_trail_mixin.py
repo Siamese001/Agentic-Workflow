@@ -9,14 +9,14 @@ Optimized for performance: hashes locally, emits asynchronously.
 Key Design Decisions:
 1. Does NOT write to Redis directly - injects audit_proof into EventEmission payload
 2. Synchronous hash generation (fast enough for main thread)
-3. Async event emission via EventEmissionMixin dependency
+3. Async event emission via event_emission_mixin dependency
 4. Session salt for chain isolation between agent instances
 
 Hash Chain Structure:
     Current Hash = SHA256(Previous_Hash | Session_Salt | Action_Type | Payload | Timestamp)
 
 Usage:
-    class MyAgent(AuditTrailMixin, EventEmissionMixin, SovereignBaseAgent):
+    class MyAgent(AuditTrailMixin, event_emission_mixin, SovereignBaseAgent):
         async def execute_action(self, action):
             await self.emit_auditable_action("EXECUTE", {"action_id": action.id})
             result = await self._do_execute(action)
@@ -85,7 +85,7 @@ class AuditTrailMixin:
     """
     [PHASE 23] Provides cryptographic chain-of-custody for agent actions.
 
-    Must be mixed in with EventEmissionMixin for async event dispatch.
+    Must be mixed in with event_emission_mixin for async event dispatch.
 
     Hash Chain:
         Each action's hash includes the previous hash, creating an
@@ -202,7 +202,7 @@ class AuditTrailMixin:
         severity: str = "INFO",
     ) -> AuditProof:
         """
-        Generate proof and emit via EventEmissionMixin.
+        Generate proof and emit via event_emission_mixin.
 
         Args:
             action_type: Type of action (e.g., "FILE_MOVE", "HEAL_VIOLATION")
@@ -213,15 +213,15 @@ class AuditTrailMixin:
             AuditProof for caller verification
 
         Raises:
-            NotImplementedError: If EventEmissionMixin is not present
+            NotImplementedError: If event_emission_mixin is not present
         """
         # Generate proof synchronously (fast)
         proof = self._generate_audit_proof(action_type, payload)
 
-        # Check for EventEmissionMixin dependency
+        # Check for event_emission_mixin dependency
         if not hasattr(self, "emit_event"):
             raise NotImplementedError(
-                "AuditTrailMixin requires EventEmissionMixin. "
+                "AuditTrailMixin requires event_emission_mixin. "
                 "Ensure your class inherits from both mixins."
             )
 
@@ -236,7 +236,7 @@ class AuditTrailMixin:
             },
         }
 
-        # Emit via EventEmissionMixin (async, non-blocking)
+        # Emit via event_emission_mixin (async, non-blocking)
         await self.emit_event(
             event_type=f"AUDIT_{action_type}",
             payload=event_payload,

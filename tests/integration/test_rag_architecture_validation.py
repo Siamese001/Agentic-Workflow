@@ -142,7 +142,7 @@ class TestRAGArchitectureValidation:
             agent.retriever = mock_retriever
             agent.guardrail = mock_guardrail
 
-            # Mock QueryPlanner with async methods
+            # Mock query_planner with async methods
             mock_query_planner = Mock()
 
             async def mock_decompose_query(*args, **kwargs):
@@ -154,7 +154,7 @@ class TestRAGArchitectureValidation:
             mock_query_planner.decompose_query = mock_decompose_query
             mock_query_planner.multi_query_generation = mock_multi_query_generation
 
-            agent.QueryPlanner = mock_query_planner
+            agent.query_planner = mock_query_planner
 
             # Call retrieve (should use legacy path)
             query = RagQuery(query="test query", top_k=5)

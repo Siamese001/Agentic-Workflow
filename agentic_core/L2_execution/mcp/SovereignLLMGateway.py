@@ -262,7 +262,7 @@ class SovereignLLMGateway:
         if "generation_config" in kwargs:
             config_params.update(kwargs["generation_config"])
 
-        # [PHASE 21] Tool Adapter: Handle Pure Dicts from ToolRegistry
+        # [PHASE 21] Tool Adapter: Handle Pure Dicts from tool_registry
         call_kwargs = {}
         if "tools" in kwargs:
             call_kwargs["tools"] = kwargs["tools"]

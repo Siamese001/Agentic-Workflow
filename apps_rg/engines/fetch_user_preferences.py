@@ -1,5 +1,5 @@
 """
-FetchUserPreferences.py - Retrieval Module
+fetch_user_preferences.py - Retrieval Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.189148
@@ -10,7 +10,7 @@ import logging
 Logger: Any = logging.getLogger(__name__)
 
 
-class FetchUserPreferences:
+class fetch_user_preferences:
     """Retrieval engine for resume domain."""
 
     def __init__(self, config: dict[str, object] | None = None):
@@ -37,4 +37,4 @@ def retrieve(
     query: str, config: dict | None = None, **kwargs: dict[str, object]
 ) -> RetrievalResult:
     """Retrieve items."""
-    return FetchUserPreferences(config).retrieve(query, **kwargs)
+    return fetch_user_preferences(config).retrieve(query, **kwargs)

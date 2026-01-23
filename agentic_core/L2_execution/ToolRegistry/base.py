@@ -1,5 +1,5 @@
 """
-Base classes for L2 Execution ToolRegistry.
+Base classes for L2 Execution tool_registry.
 
 Provides foundational classes for tool registration and execution.
 """
@@ -35,7 +35,7 @@ class BaseTool:
         self._enabled = False
 
 
-class ToolRegistry:
+class tool_registry:
     """Registry for managing tools."""
 
     def __init__(self):
@@ -85,7 +85,7 @@ class BaseAgent:
 
     def __init__(self, name: str = "BaseAgent"):
         self.name = name
-        self.registry = ToolRegistry()
+        self.registry = tool_registry()
 
     def register_tool(self, tool: BaseTool) -> None:
         """Register a tool with this agent."""
@@ -98,6 +98,6 @@ class BaseAgent:
 
 # Aliases for backwards compatibility
 Tool = BaseTool
-Registry = ToolRegistry
+Registry = tool_registry
 
-__all__ = ["BaseTool", "ToolRegistry", "BaseAgent", "SubAtomicAgent", "Tool", "Registry"]
+__all__ = ["BaseTool", "tool_registry", "BaseAgent", "SubAtomicAgent", "Tool", "Registry"]

@@ -77,12 +77,12 @@ def _get_cognitive_node():
 """,
     },
     "BootstrapAgent.py": {
-        "old_import": "from agentic_core.L2_execution.ToolRegistry.Toolsmith",
+        "old_import": "from agentic_core.L2_execution.tool_registry.Toolsmith",
         "new_code": """
 def _get_toolsmith():
     \"\"\"Lazy load Toolsmith to avoid L0 → L2 dependency.\"\"\"
     import importlib
-    module = importlib.import_module('agentic_core.L2_execution.ToolRegistry.Toolsmith')
+    module = importlib.import_module('agentic_core.L2_execution.tool_registry.Toolsmith')
     return module.Toolsmith
 """,
     },

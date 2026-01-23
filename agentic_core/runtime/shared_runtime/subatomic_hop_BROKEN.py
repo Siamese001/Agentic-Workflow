@@ -69,7 +69,7 @@ class SubatomicHop:
             mcp_manager: MCPConnectionManager instance (injected)
             sandbox: DockerSandbox instance (injected)
             StructuredEngine: StructuredEngine instance (injected)
-            gatekeeper: SemanticGatekeeper instance (injected)
+            gatekeeper: semantic_gatekeeper instance (injected)
             telemetry: TelemetryRecorder instance (injected)
 
         Raises:
@@ -149,7 +149,7 @@ class SubatomicHop:
 
         if gatekeeper is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'gatekeeper' (SemanticGatekeeper) to be injected."
+                "SubatomicHop requires 'gatekeeper' (semantic_gatekeeper) to be injected."
             )
         self.gatekeeper = gatekeeper
 

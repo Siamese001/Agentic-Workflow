@@ -67,7 +67,7 @@ def test_inheritance_audit():
         "L1CognitionBaseAgent": PROJECT_ROOT
         / "agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py",
         "L2ExecutionBaseAgent": PROJECT_ROOT
-        / "agentic_core/L2_execution/ToolRegistry/L2ExecutionBaseAgent.py",
+        / "agentic_core/L2_execution/tool_registry/L2ExecutionBaseAgent.py",
         "L3OrchestrationBaseAgent": PROJECT_ROOT
         / "agentic_core/L3_orchestration/workflow_engines/L3OrchestrationBaseAgent.py",
         "L4StateBaseAgent": PROJECT_ROOT
