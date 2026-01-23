@@ -22,7 +22,7 @@ from .core.checkpoint_manager import CheckpointConfig, CheckpointManager, get_ch
 from .core.envelope import EnvelopeFactory, PipelineStageStatus, SignalEnvelope
 from .hyde_processor import HyDEProcessor
 from .prompt_optimizer import PromptOptimizer, optimize_prompt
-from .rag_components import KnowledgeGraphInjector, SelfRAGProcessor, SemanticCache
+from .rag_components import KnowledgeGraphInjector, SelfRAGProcessor, semantic_cache
 from .signal_infrastructure import DomainConfig, EngineType, get_shared_infrastructure
 from .signal_quality_pipeline import SignalQualityPipeline
 from .tone_model import ToneModel, adapt_tone

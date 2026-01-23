@@ -23,7 +23,7 @@ from groq import Groq
 from mistralai.async_client import MistralAsyncClient
 from together import Together
 
-from agentic_core.runtime.shared_runtime.SemanticCache import (
+from agentic_core.runtime.shared_runtime.semantic_cache import (
     SemanticCache,
     SemanticCacheHit,
     create_semantic_cache,
