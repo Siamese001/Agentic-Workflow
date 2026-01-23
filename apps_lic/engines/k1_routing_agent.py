@@ -11,8 +11,8 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
 
 logger = logging.getLogger(__name__)
 
@@ -48,8 +48,8 @@ class K1Output:
     metadata: dict[str, Any]
 
 
-class RoutingSpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
-    """V2.5 Sovereign Routing Specialist.
+class RoutingSpecialist(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+    """LIC Sovereign Routing Specialist.
     Merged logic from k1_router_agent stub.
 
     This agent executes the mandatory 7 Prompt Shell Entrance Gates:

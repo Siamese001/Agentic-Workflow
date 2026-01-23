@@ -1,5 +1,5 @@
 """
-Lead Quality Specialist - V2.5 Sovereign Agent for Lead Validation.
+Lead Quality Specialist - LIC Sovereign Agent for Lead Validation.
 
 Validates lead quality for outreach campaigns.
 Hardened for inclusion in HOP-1 / HOP-2 foundations.
@@ -9,16 +9,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 @dataclass
-class LeadQualitySpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class LeadQualitySpecialist(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
-    V2.5 Sovereign Lead Quality Specialist.
+    LIC Sovereign Lead Quality Specialist.
     Hardened for inclusion in HOP-1 / HOP-2 foundations.
 
     Validates:

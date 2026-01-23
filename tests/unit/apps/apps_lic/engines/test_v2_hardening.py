@@ -9,8 +9,8 @@ import pytest
 import json
 from unittest.mock import patch
 from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 class TestV2Hardening:

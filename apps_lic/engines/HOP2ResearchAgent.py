@@ -1,7 +1,7 @@
 """
 HOP-2: Research Agent (V2.5 Architecture).
 
-V2.5 Sovereign Strategist.
+LIC Sovereign Strategist.
 Implements K.3 Retrieval Planning and Evidence Artifact generation.
 """
 
@@ -11,10 +11,10 @@ import asyncio
 import hashlib
 from typing import Any
 
-# V2 Architecture Imports
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+# LIC Sovereign Architecture Imports
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Domain Imports
@@ -24,12 +24,12 @@ except ImportError:
     VectorMemoryStore = None  # Allow stub mode
 
 
-class HOP2ResearchAgent(SubatomicTestingMixin, V2AgentBase):
+class HOP2ResearchAgent(SubatomicTestingMixin, LICAgentBase):
     """
-    V2.5 Sovereign Strategist.
+    LIC Sovereign Strategist.
 
     Architecture:
-    - Base: V2AgentBase (Config, Tracing, Healing)
+    - Base: LICAgentBase (Config, Tracing, Healing)
     - Input: 'hop1_analysis' (from HOP-1), 'mission_input'
     - Logic: K.3 Retrieval Planning -> Evidence Artifact Generation
     - Output: 'hop2_research' with evidence_pack and strategic_brief
@@ -52,7 +52,7 @@ class HOP2ResearchAgent(SubatomicTestingMixin, V2AgentBase):
         self.memory_store = memory_store
         self.search_client = search_client
 
-        # Load specific configs from the V2 AgentSpecs singleton
+        # Load specific configs from the LIC AgentSpecs singleton
         self.vector_params = self.config.research_agent.vector_store_query_params
         self.fallback_params = self.config.research_agent.fallback_rag_params
 

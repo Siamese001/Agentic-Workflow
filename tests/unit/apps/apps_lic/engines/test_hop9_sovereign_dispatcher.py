@@ -7,8 +7,8 @@ MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf exec
 import pytest
 import hashlib
 from apps_lic.engines.HOP9IntegrationAgent import HOP9IntegrationAgent
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 class TestHOP9SovereignDispatcher:
@@ -36,7 +36,7 @@ class TestHOP9SovereignDispatcher:
         buffer.write_once("hop8_qa_report", {"report_path": "/logs/test.md"})
 
         agent = HOP9IntegrationAgent()
-        # V2AgentBase wraps exceptions in RuntimeError
+        # LICAgentBase wraps exceptions in RuntimeError
         with pytest.raises(RuntimeError):
             agent.run_phase(buffer, registry)
 
@@ -142,7 +142,7 @@ class TestHOP9SovereignDispatcher:
         # Missing hop4_routing and hop5_generation
 
         agent = HOP9IntegrationAgent()
-        # V2AgentBase wraps exceptions in RuntimeError with agent name
+        # LICAgentBase wraps exceptions in RuntimeError with agent name
         with pytest.raises(RuntimeError):
             agent.run_phase(buffer, registry)
 

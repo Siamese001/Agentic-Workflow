@@ -1,7 +1,7 @@
 """
 HOP-3: Sender Grounding Agent (V2.5 Architecture).
 
-V2.5 Sovereign Grounder.
+LIC Sovereign Grounder.
 Implements targeted whitelist extraction and achievement binding.
 """
 
@@ -11,17 +11,17 @@ import json
 from pathlib import Path
 from typing import Any
 
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
-class HOP3SenderGroundingAgent(V2AgentBase):
+class HOP3SenderGroundingAgent(LICAgentBase):
     """
-    V2.5 Sovereign Grounder.
+    LIC Sovereign Grounder.
 
     Architecture:
-    - Base: V2AgentBase
+    - Base: LICAgentBase
     - Input: Static JSON files (Resume, Knowledge Base) defined in Config.
     - Logic: Whitelist Extraction -> Achievement Binding -> Metric Mapping
     - Output: 'hop3_sender_grounding' with grounding_whitelists and metric_source_map

@@ -1,5 +1,5 @@
 """
-HOP-6: Validation Agent (V2 Architecture).
+HOP-6: Validation Agent (LIC Sovereign Architecture).
 
 Quality Assurance layer. Validates generated drafts against strict compliance rules.
 """
@@ -8,17 +8,17 @@ from __future__ import annotations
 
 import re
 
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
-class HOP6ValidationAgent(V2AgentBase):
+class HOP6ValidationAgent(LICAgentBase):
     """
     V2 Implementation of HOP-6 QA.
 
     Architecture:
-    - Base: V2AgentBase
+    - Base: LICAgentBase
     - Inputs: HOP-5 (Draft), HOP-2 (Context), HOP-3 (Grounding)
     - Logic: Rule-based validation engine (Regex, Keyword matching).
     - Output: 'hop6_validation_report'

@@ -18,8 +18,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
 
 # MCP Hardening
 
@@ -37,10 +37,10 @@ except ImportError:
 
 @dataclass
 class IntelligenceLibrarianSpecialist(
-    V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+    LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
 ):
     """
-    V2.5 Sovereign Intelligence Librarian Specialist.
+    LIC Sovereign Intelligence Librarian Specialist.
     Offline research agent that pre-computes intelligence (MCP Hardened)
 
     The Librarian runs asynchronously (e.g., nightly via cron) to:

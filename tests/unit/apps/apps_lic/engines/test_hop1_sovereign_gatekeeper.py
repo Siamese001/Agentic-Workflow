@@ -6,8 +6,8 @@ MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf exec
 
 import pytest
 from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 class TestHOP1SpecialistGatekeeper:
@@ -46,7 +46,7 @@ class TestHOP1SpecialistGatekeeper:
         buffer.write_once("mission_input", {"contact_name": "John Doe"})  # Missing title
 
         agent = HOP1ProfileAnalysisAgent()
-        # V2AgentBase wraps exceptions in RuntimeError
+        # LICAgentBase wraps exceptions in RuntimeError
         with pytest.raises(RuntimeError):
             agent.run_phase(buffer, registry)
 
@@ -196,7 +196,7 @@ class TestHOP1SpecialistGatekeeper:
         buffer.write_once("mission_input", {"contact_about": "Just a bio."})
 
         agent = HOP1ProfileAnalysisAgent()
-        with pytest.raises(RuntimeError):  # V2AgentBase wraps in RuntimeError
+        with pytest.raises(RuntimeError):  # LICAgentBase wraps in RuntimeError
             agent.run_phase(buffer, registry)
 
         assert any(t["type"] == "GATE_2_FAILED" for t in registry.get_traces())

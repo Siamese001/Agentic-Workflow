@@ -1,5 +1,5 @@
 """
-HOP-8: QA Report Agent (V2 Architecture).
+HOP-8: QA Report Agent (LIC Sovereign Architecture).
 
 Aggregates mission state into a persistent Markdown Audit Trail and calculates quality scores.
 """
@@ -10,11 +10,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
 
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
-class HOP8QAReportAgent(V2AgentBase):
+class HOP8QAReportAgent(LICAgentBase):
     """
     V2 Implementation of HOP-8.
     

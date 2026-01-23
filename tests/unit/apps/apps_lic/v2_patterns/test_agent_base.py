@@ -1,5 +1,5 @@
 """
-Unit tests for V2AgentBase.
+Unit tests for LICAgentBase.
 Verifies the Bridge Pattern enforces tracing, config loading, and error handling.
 """
 
@@ -8,13 +8,13 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from apps_lic.domain.config.schemas import AgentSpecs
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 # Concrete implementation for testing
-class ConcreteTestAgent(V2AgentBase):
+class ConcreteTestAgent(LICAgentBase):
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         # Simulate work: Read input, write output
         input_val = buffer.read("input_key")
@@ -22,13 +22,13 @@ class ConcreteTestAgent(V2AgentBase):
         registry.add_trace("DEBUG", {"msg": "processing_done"})
 
 
-class FailingTestAgent(V2AgentBase):
+class FailingTestAgent(LICAgentBase):
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         raise ValueError("Simulated failure")
 
 
-class TestV2AgentBase:
-    @patch("apps_lic.shared.foundation.agent_base.load_agent_specs")
+class TestLICAgentBase:
+    @patch("apps_lic.shared.core.agent_base.load_agent_specs")
     def test_initialization_loads_config(self, mock_load):
         """Test that __init__ automatically loads configuration."""
         mock_specs = MagicMock(spec=AgentSpecs)
@@ -40,7 +40,7 @@ class TestV2AgentBase:
         assert agent.toggles is not None
         mock_load.assert_called_once()
 
-    @patch("apps_lic.shared.foundation.agent_base.load_agent_specs")
+    @patch("apps_lic.shared.core.agent_base.load_agent_specs")
     def test_run_phase_success_flow(self, mock_load):
         """Test the standard execution flow: Start Trace -> Process -> End Trace."""
         # Setup
@@ -69,7 +69,7 @@ class TestV2AgentBase:
 
         assert traces[-1]["type"] == "PHASE_COMPLETE"
 
-    @patch("apps_lic.shared.foundation.agent_base.load_agent_specs")
+    @patch("apps_lic.shared.core.agent_base.load_agent_specs")
     def test_run_phase_error_handling(self, mock_load):
         """Test that exceptions are caught, traced, and re-raised."""
         agent = FailingTestAgent()

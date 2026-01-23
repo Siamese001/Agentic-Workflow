@@ -1,13 +1,13 @@
 """
-Unit tests for V2 Architecture Patterns.
+Unit tests for LIC Sovereign Architecture Patterns.
 Verifies immutability, tracing, and persistence logic.
 """
 
 import pytest
 
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.manifest_manager import ManifestManager
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.manifest_manager import ManifestManager
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 # Mocking Mixins if not available in test env,
 # but assuming they import correctly based on previous phases.

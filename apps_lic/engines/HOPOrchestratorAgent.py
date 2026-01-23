@@ -1,5 +1,5 @@
 """
-HOP Orchestrator (V2 Architecture).
+HOP Orchestrator (LIC Sovereign Architecture).
 
 Coordinates the execution of HOP agents 1-8.
 Handles retry loops and manages immutable state transitions.
@@ -12,13 +12,13 @@ from typing import Any
 
 from apps_lic.domain.config.loader import load_agent_specs
 from apps_lic.domain.config.schemas import AgentSpecs
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
-from apps_lic.shared.foundation.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
-from apps_lic.shared.foundation.agent_base import V2AgentBase
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
+from apps_lic.shared.core.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
+from apps_lic.shared.core.agent_base import LICAgentBase
 
 
-class HOPOrchestratorAgent(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class HOPOrchestratorAgent(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """
     V2 Orchestrator for LIC Outreach Pipeline.
 
@@ -31,13 +31,13 @@ class HOPOrchestratorAgent(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin,
         # Persistence: Trace lives in logs/missions/{mission_id}/trace.jsonl
         trace_path = Path(f"logs/missions/{mission_id}/trace.jsonl")
         self.registry = TraceRegistry(persistence_path=trace_path)
-        self.agents: dict[str, V2AgentBase] = {}
+        self.agents: dict[str, LICAgentBase] = {}
 
         # Global Safety Limits
         self.GLOBAL_STEP_LIMIT = 20  # Absolute max hops to prevent infinite loops
 
-    def register_agent(self, hop_id: str, agent: V2AgentBase) -> None:
-        """Registers a V2-compliant agent instance."""
+    def register_agent(self, hop_id: str, agent: LICAgentBase) -> None:
+        """Registers a LIC-compliant agent instance."""
         self.agents[hop_id] = agent
 
     def run_mission(self, mission_input: dict[str, Any]) -> dict[str, Any]:

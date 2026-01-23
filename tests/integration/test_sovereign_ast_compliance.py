@@ -17,7 +17,7 @@ class TestSovereignASTCompliance:
 
     def test_agent_inheritance_gate(self):
         """
-        Verify that functional intelligence units strictly inherit from V2AgentBase.
+        Verify that functional intelligence units strictly inherit from LICAgentBase.
         Prevents 'Dumb' scripts from posing as Sovereign Agents.
         """
         agent_path = Path("apps_lic/engines/HOP1ProfileAnalysisAgent.py")
@@ -27,11 +27,11 @@ class TestSovereignASTCompliance:
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 bases = [base.id for base in node.bases if isinstance(base, ast.Name)]
-                if "V2AgentBase" in bases:
+                if "LICAgentBase" in bases:
                     found_v2_base = True
                     break
 
-        assert found_v2_base, "HOP1ProfileAnalysisAgent must inherit from V2AgentBase"
+        assert found_v2_base, "HOP1ProfileAnalysisAgent must inherit from LICAgentBase"
 
     def test_enum_mismatch_detection(self):
         """
@@ -117,7 +117,7 @@ class TestSovereignASTCompliance:
 
     def test_v2_agent_base_presence(self):
         """
-        Verify all HOP agents inherit from V2AgentBase.
+        Verify all HOP agents inherit from LICAgentBase.
         MANDATORY: 100% Pass Requirement.
         """
         hop_agents = [
@@ -143,11 +143,11 @@ class TestSovereignASTCompliance:
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef):
                     bases = [base.id for base in node.bases if isinstance(base, ast.Name)]
-                    if "V2AgentBase" in bases:
+                    if "LICAgentBase" in bases:
                         found_v2_base = True
                         break
 
-            assert found_v2_base, f"{agent_path} must inherit from V2AgentBase"
+            assert found_v2_base, f"{agent_path} must inherit from LICAgentBase"
 
     def test_process_method_signature(self):
         """
@@ -241,7 +241,7 @@ class TestSovereignASTCompliance:
                 for mixin in ["SubatomicTestingMixin", "HealerMixin", "MCPHardenedMixin"]
             )
 
-            # V2AgentBase includes these, so check for V2AgentBase
-            has_v2_base = "V2AgentBase" in content
+            # LICAgentBase includes these, so check for LICAgentBase
+            has_v2_base = "LICAgentBase" in content
 
-            assert has_v2_base or has_mixins, f"{agent_path} should use V2AgentBase or mixins"
+            assert has_v2_base or has_mixins, f"{agent_path} should use LICAgentBase or mixins"

@@ -1,24 +1,24 @@
 """
 HOP-4: Routing Agent (V2.5 Architecture).
 
-V2.5 Sovereign Navigator.
+LIC Sovereign Navigator.
 Implements Gate 5 (Route Selection) and Gate 6 (Premium Mismatch).
 """
 
 from __future__ import annotations
 
 
-from apps_lic.shared.foundation.agent_base import V2AgentBase
-from apps_lic.shared.foundation.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.foundation.trace_registry import TraceRegistry
+from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
-class HOP4RoutingAgent(V2AgentBase):
+class HOP4RoutingAgent(LICAgentBase):
     """
-    V2.5 Sovereign Navigator.
+    LIC Sovereign Navigator.
 
     Architecture:
-    - Base: V2AgentBase
+    - Base: LICAgentBase
     - Input: 'mission_input', 'hop1_analysis'
     - Logic: Gate 5 (Route Selection) -> Gate 6 (Premium Mismatch)
     - Output: 'hop4_routing' (route, constraints, metadata)
