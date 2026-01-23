@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-Cache Invalidation Utilities for Healing Workflows
+cache Invalidation Utilities for Healing Workflows
 
 Provides decorators and helpers to invalidate cache after successful healing operations.
 This ensures stale cached data (like AST results, compliance checks) is purged
@@ -30,7 +30,7 @@ def heal_invalidate_cache(pattern: str = ""):
     Decorator to invalidate cache after successful heal operation.
 
     Args:
-        pattern: Cache key pattern to invalidate (e.g., "canon:*", "compliance:*")
+        pattern: cache key pattern to invalidate (e.g., "canon:*", "compliance:*")
                  Empty string invalidates all keys for the agent's prefix.
 
     Usage:
@@ -55,10 +55,10 @@ def heal_invalidate_cache(pattern: str = ""):
                 try:
                     invalidated = await self.cache_invalidate(pattern)
                     log.info(
-                        f"Cache invalidated for pattern '{pattern}' after heal ({invalidated} keys)"
+                        f"cache invalidated for pattern '{pattern}' after heal ({invalidated} keys)"
                     )
                 except Exception as e:
-                    log.debug(f"Cache invalidation failed: {e}")
+                    log.debug(f"cache invalidation failed: {e}")
 
             return result
 
@@ -103,7 +103,7 @@ def invalidate_on_file_change(file_path_arg: str = "file_path"):
                 file_name = str(file_path).split("/")[-1].split("\\")[-1]
                 try:
                     await self.cache_invalidate(file_name)
-                    log.debug(f"Cache invalidated for file: {file_name}")
+                    log.debug(f"cache invalidated for file: {file_name}")
                 except Exception as e:
                     log.debug(f"File cache invalidation failed: {e}")
 

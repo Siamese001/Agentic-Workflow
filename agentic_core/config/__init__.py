@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-Public API for Configuration - SSOT for constants and registry.
+Public API for configuration - SSOT for constants and registry.
 
 This module provides clean import paths for configuration constants,
 decoupling consumers from the internal folder structure.

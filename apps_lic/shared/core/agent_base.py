@@ -24,7 +24,7 @@ class LICAgentBase(MCPHardenedMixin, HealerMixin, ABC):
     Abstract base class for LIC Sovereign Architecture Agents.
 
     Responsibilities:
-    1. Auto-load Configuration & Toggles.
+    1. Auto-load configuration & Toggles.
     2. Enforce standard execution signature.
     3. Manage automatic tracing (Start/End/Error).
     4. Provide MCP hardening and Self-Healing capabilities.

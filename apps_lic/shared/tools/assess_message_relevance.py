@@ -1,5 +1,5 @@
 """
-AssessMessageRelevance.py - Scoring Module
+AssessMessageRelevance.py - scoring Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.065237

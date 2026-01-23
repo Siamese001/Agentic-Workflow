@@ -153,7 +153,7 @@ class PineconeVectorMixin(RedisCacheMixin):
         else:
             effective_top_k = min(broadness.value, self.MAX_QUERY_TOP_K)
 
-        # [PHASE 34] Redis Cache Check
+        # [PHASE 34] Redis cache Check
         cache_key = ""
         if use_cache:
             import hashlib
@@ -214,7 +214,7 @@ class PineconeVectorMixin(RedisCacheMixin):
                 if score_threshold is not None:
                     matches = [m for m in matches if m.get("score", 0) >= score_threshold]
 
-                # [PHASE 34] Cache Write
+                # [PHASE 34] cache Write
                 if use_cache and matches:
                     await self.cache_set(cache_key, matches, ttl=self._default_ttl)
 

@@ -484,7 +484,7 @@ class L4StateBaseAgent(L4SubatomicTestingMixin, SovereignBaseAgent):
     # Short-term memory buffer for recent interactions
     short_term_buffer: list[dict[str, Any]] = field(default_factory=list)
 
-    # Configuration
+    # configuration
     short_term_max_size: int = 50
     semantic_top_k: int = 5
 

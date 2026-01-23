@@ -50,7 +50,7 @@ class TaskComplexity(Enum):
 
 @dataclass
 class ModelConfig:
-    """Configuration for a model."""
+    """configuration for a model."""
 
     name: str
     provider: str
@@ -75,7 +75,7 @@ class RoutingDecision:
 
 @dataclass
 class RouterConfig:
-    """Configuration for the router."""
+    """configuration for the router."""
 
     enable_cost_optimization: bool = True
     enable_complexity_detection: bool = True

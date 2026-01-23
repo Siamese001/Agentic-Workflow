@@ -7,7 +7,7 @@ from typing import Any
 
 class batch_operation_mixin:
     """
-    Phase 2 Observability Infrastructure: Batch Operations (Report 4.6).
+    Phase 2 observability Infrastructure: Batch Operations (Report 4.6).
 
     Enables safe parallelization and batch execution for high-volume tasks.
     Features:

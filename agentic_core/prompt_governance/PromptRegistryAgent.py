@@ -91,7 +91,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
     def __init__(self) -> None:
         """Initialize the instance."""
         self.registry: dict[str, list[dict[str, Any]]] = {}
-        self._content_cache: dict[str, str] = {}  # Cache for content hashing
+        self._content_cache: dict[str, str] = {}  # cache for content hashing
         self.similarity_threshold = SIMILARITY_THRESHOLD
         self.embedding_model = EMBEDDING_MODEL
 

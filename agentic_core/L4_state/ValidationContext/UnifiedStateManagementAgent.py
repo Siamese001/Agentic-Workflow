@@ -120,7 +120,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
     name: str = "UnifiedStateManagementAgent"
     layer: str = "L4"
 
-    # Configuration
+    # configuration
     memory_root: Path = field(default_factory=lambda: Path(".canon_memory"))
     heartbeat_interval: int = 300  # 5 minutes
     retention_days: int = 7

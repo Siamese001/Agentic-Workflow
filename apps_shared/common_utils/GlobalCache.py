@@ -1,4 +1,4 @@
-"""Global Semantic Cache - Unified caching layer for all engines.
+"""Global Semantic cache - Unified caching layer for all engines.
 
 This module provides a unified caching layer shared between the Resume and
 Outreach engines, ensuring expensive operations are done once and reused
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class CacheEntry(BaseModel):
-    """Cache entry with metadata."""
+    """cache entry with metadata."""
 
     key_hash: str
     value: Any
@@ -62,7 +62,7 @@ class L1MemoryCache:
             key_hash: Hash of the key
 
         Returns:
-            Cache entry if found and not expired
+            cache entry if found and not expired
         """
         if key_hash in self.cache:
             entry = self.cache[key_hash]
@@ -88,7 +88,7 @@ class L1MemoryCache:
 
         Args:
             key_hash: Hash of the key
-            entry: Cache entry
+            entry: cache entry
         """
         # Remove existing if present
         if key_hash in self.cache:
@@ -147,7 +147,7 @@ class L2VectorStore:
         """Add entry to vector store.
 
         Args:
-            entry: Cache entry with embedding
+            entry: cache entry with embedding
         """
         if not entry.embedding:
             return
@@ -410,7 +410,7 @@ class GlobalCache:
         """Put value in cache.
 
         Args:
-            key: Cache key
+            key: cache key
             value: Value to cache
             text_for_embedding: Text for semantic indexing
             ttl: Time to live in seconds
@@ -591,7 +591,7 @@ def cache_get(key: str) -> Any | None:
     """Get value from global cache.
 
     Args:
-        key: Cache key
+        key: cache key
 
     Returns:
         Cached value
@@ -610,7 +610,7 @@ def cache_put(
     """Put value in global cache.
 
     Args:
-        key: Cache key
+        key: cache key
         value: Value to cache
         text_for_embedding: Text for semantic indexing
         ttl: Time to live

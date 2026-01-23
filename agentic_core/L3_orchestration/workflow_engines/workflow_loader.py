@@ -33,7 +33,7 @@ class WordCountConstraints:
 
 @dataclass
 class KNodeConfig:
-    """Configuration for a single K-node."""
+    """configuration for a single K-node."""
 
     description: str
     input_dependencies: list[str] = None

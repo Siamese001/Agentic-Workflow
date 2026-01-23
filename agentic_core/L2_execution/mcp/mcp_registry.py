@@ -28,7 +28,7 @@ class McpServerMode(str, Enum):
 
 
 class McpServerConfig(BaseModel):
-    """Configuration for a single MCP server integration."""
+    """configuration for a single MCP server integration."""
 
     name: str = Field(..., description="Unique MCP server identifier")
     target_layer: str = Field(..., description="Primary L0-L6 layer assignment")

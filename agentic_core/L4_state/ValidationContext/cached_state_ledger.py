@@ -3,7 +3,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
 """
-CachedStateLedger - Eternal L4 State with Redis Sovereign Cache
+CachedStateLedger - Eternal L4 State with Redis Sovereign cache
 """
 
 import json
@@ -54,7 +54,7 @@ class CachedStateLedger(SovereignBaseAgent):
 
             self.redis = redis.Redis(**connection_kwargs)
             self.redis.ping()
-            print("   [OK] CachedStateLedger: Redis Sovereign Cache ONLINE")
+            print("   [OK] CachedStateLedger: Redis Sovereign cache ONLINE")
         except Exception as e:
             print(f"   [!] Redis unavailable ({e}) → falling back to in-memory ledger")
             self.redis = None
@@ -73,7 +73,7 @@ class CachedStateLedger(SovereignBaseAgent):
         self.prefix_historian = f"l4_historian:{session_id}"
 
     def cache_validation_context(self, key: str, context: dict):
-        """Cache validation context for instant access"""
+        """cache validation context for instant access"""
         full_key = f"{self.prefix_context}:{key}"
         try:
             if self.redis:
@@ -162,8 +162,8 @@ class CachedStateLedger(SovereignBaseAgent):
         test_val = {"test": 42, "timestamp": time.time()}
         self.cache_validation_context(test_key, test_val)
         retrieved = self.get_cached_validation_context(test_key)
-        assert retrieved is not None, "Cache round-trip failed"
-        assert retrieved.get("test") == 42, "Cache data corruption"
+        assert retrieved is not None, "cache round-trip failed"
+        assert retrieved.get("test") == 42, "cache data corruption"
 
         # Test audit trail
         assert hasattr(self, "_successful_traces"), "Missing successful_traces"

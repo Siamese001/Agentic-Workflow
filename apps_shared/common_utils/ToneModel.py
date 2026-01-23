@@ -49,7 +49,7 @@ class StyleProfile(BaseModel):
 
 
 class GenerationConfig(BaseModel):
-    """Configuration for LLM generation based on tone profile."""
+    """configuration for LLM generation based on tone profile."""
 
     system_prompt_fragment: str = Field(..., description="Instruction to inject into prompts")
     temperature_setting: confloat(ge=0.1, le=1.0) = Field(..., description="LLM temperature")

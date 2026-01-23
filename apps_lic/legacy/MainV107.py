@@ -179,7 +179,7 @@ async def run_workflow_async(
         final_state = MainGraphState.from_dict(final_state_dict)
 
         cache_stats = context.cache_manager.get_stats()
-        logger.info(f"Cache performance: {cache_stats}")
+        logger.info(f"cache performance: {cache_stats}")
 
         cost_summary = context.cost_tracker.get_cost_summary(workflow_id)
         logger.info(f"Total workflow cost: ${cost_summary['total_workflow_cost']:.4f}")
@@ -260,7 +260,7 @@ def main():
     print(f"Workflow ID: {result.get('workflow_id')}")
     if result.get("status") == "SUCCESS":
         print(f"Total Cost: ${result.get('cost', 0.0):.4f}")
-        print(f"Cache Stats: {result.get('cache_stats')}")
+        print(f"cache Stats: {result.get('cache_stats')}")
     else:
         print(f"Error: {result.get('error')}")
     print("=" * 80)

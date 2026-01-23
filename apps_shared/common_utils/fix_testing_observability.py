@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fix Testing & Observability - Add SubatomicTestingMixin and logging to all agents.
+Fix Testing & observability - Add SubatomicTestingMixin and logging to all agents.
 
 This script:
 1. Loads all agents from agent_discovery_full.json

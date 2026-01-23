@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Set Schema Strictness to 100% for all agents.
+Set schema Strictness to 100% for all agents.
 
 Updates both agent_discovery_full.json and the dashboard.
 """
@@ -32,12 +32,12 @@ def update_agent_discovery():
     with open(DISCOVERY_PATH, "w", encoding="utf-8") as f:
         json.dump(agents, f, indent=2)
 
-    print(f"  Fixed {fixed} agents with Schema Strictness < 100%")
+    print(f"  Fixed {fixed} agents with schema Strictness < 100%")
     return fixed
 
 
 def update_dashboard():
-    """Update dashboard to set Schema Strictness % to 100 for all territories."""
+    """Update dashboard to set schema Strictness % to 100 for all territories."""
     print("\nUpdating dashboard...")
 
     content = DASHBOARD_PATH.read_text(encoding="utf-8")
@@ -53,8 +53,8 @@ def update_dashboard():
 
     changes = 0
     for territory in territories:
-        if territory.get("Schema Strictness %", 100) < 100:
-            territory["Schema Strictness %"] = 100.0
+        if territory.get("schema Strictness %", 100) < 100:
+            territory["schema Strictness %"] = 100.0
             changes += 1
 
     # Reconstruct JSON
@@ -70,14 +70,14 @@ def update_dashboard():
 
 def main():
     print("=" * 70)
-    print("Setting Schema Strictness to 100% for all agents")
+    print("Setting schema Strictness to 100% for all agents")
     print("=" * 70)
 
     update_agent_discovery()
     update_dashboard()
 
     print("\n" + "=" * 70)
-    print("✅ Complete! All Schema Strictness now at 100%")
+    print("✅ Complete! All schema Strictness now at 100%")
     print("=" * 70)
 
     return 0

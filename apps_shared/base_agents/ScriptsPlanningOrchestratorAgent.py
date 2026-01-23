@@ -45,7 +45,7 @@ class ScriptTask:
 
 @dataclass
 class ScriptsPlanningConfig:
-    """Configuration for scripts planning orchestrator."""
+    """configuration for scripts planning orchestrator."""
 
     max_concurrent_tasks: int = 5
     default_timeout: float = 300.0

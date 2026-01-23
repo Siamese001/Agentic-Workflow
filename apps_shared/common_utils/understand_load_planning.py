@@ -1,4 +1,4 @@
-"""Observability Request Understanding Load Planner - Plans data loading for observability request understanding.
+"""observability Request Understanding Load Planner - Plans data loading for observability request understanding.
 
 This planner manages the loading phase for understanding observability requests,
 including metric parsing, log analysis, and trace extraction.
@@ -100,7 +100,7 @@ class ObservabilityLoadPlan:
 
 @dataclass
 class ObservabilityLoadConfig:
-    """Configuration for observability load planning."""
+    """configuration for observability load planning."""
 
     enable_metrics: bool = True
     enable_logs: bool = True
@@ -208,7 +208,7 @@ class ObservabilityLoadPlanner:
             return result
 
         except Exception as e:
-            self.logger.error(f"Observability load planning failed: {str(e)}")
+            self.logger.error(f"observability load planning failed: {str(e)}")
             return ObservabilityLoadResult(
                 success=False,
                 errors=[str(e)],
@@ -221,7 +221,7 @@ class ObservabilityLoadPlanner:
     def _validate_request(self, request: dict[str, Any]) -> None:
         """Validate observability load planning request."""
         if not request:
-            raise ValueError("Observability load planning request cannot be empty")
+            raise ValueError("observability load planning request cannot be empty")
 
         if "plan_name" not in request:
             raise ValueError("Plan name is required in observability load planning request")

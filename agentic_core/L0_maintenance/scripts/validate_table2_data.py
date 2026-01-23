@@ -4,7 +4,7 @@ Table 2 (Code Quality) Data Validation
 =======================================
 
 Validates that Table 2 data is being generated and updated correctly.
-Table 2 shows code quality metrics: Typed %, Documented %, Schema Strictness, etc.
+Table 2 shows code quality metrics: Typed %, Documented %, schema Strictness, etc.
 
 Checks:
 1. Table 2 fields present in dashboard data
@@ -56,7 +56,7 @@ def main():
                 table2_fields = [
                     "Typed %",
                     "Documented %",
-                    "Schema Strictness %",
+                    "schema Strictness %",
                     "Proper Base %",
                     "Code Quality Score",
                 ]
@@ -131,7 +131,7 @@ def main():
         table2_field_names = [
             '"Typed %"',
             '"Documented %"',
-            '"Schema Strictness %"',
+            '"schema Strictness %"',
             '"Code Quality Score"',
         ]
 

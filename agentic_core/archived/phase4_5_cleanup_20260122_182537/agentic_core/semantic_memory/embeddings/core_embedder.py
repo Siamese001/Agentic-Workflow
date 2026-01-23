@@ -34,14 +34,14 @@ def get_embedding(
     # Normalize text (strip whitespace, replace newlines)
     normalized_text = text.strip().replace("\n", " ").replace("\r", " ")
 
-    # Cache key: hash of text + model + dimensions
+    # cache key: hash of text + model + dimensions
     cache_key = hashlib.sha256(f"{normalized_text}{model}{dimensions}".encode()).hexdigest()
 
-    # Cache hit
+    # cache hit
     if cache_key in _embedding_cache:
         return _embedding_cache[cache_key]
 
-    # Cache miss → API call
+    # cache miss → API call
     if not config.OPENAI_API_KEY:
         raise ValueError("OPENAI_API_KEY environment variable required for core embedder")
     client: Any = openai.OpenAI(api_key=config.OPENAI_API_KEY)
@@ -50,7 +50,7 @@ def get_embedding(
     )
     embedding = response.data[0].embedding
 
-    # Cache and return
+    # cache and return
     _embedding_cache[cache_key] = embedding
     return embedding
 

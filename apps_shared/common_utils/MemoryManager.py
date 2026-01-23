@@ -27,7 +27,7 @@ class PruningStrategy(Enum):
 
 @dataclass
 class MemoryLimits:
-    """Configuration for memory limits."""
+    """configuration for memory limits."""
 
     max_context_size: int = 10 * 1024 * 1024  # 10MB
     max_context_items: int = 1000

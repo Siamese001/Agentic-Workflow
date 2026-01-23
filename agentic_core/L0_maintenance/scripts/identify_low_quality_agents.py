@@ -62,7 +62,7 @@ def main():
     print(
         f"  Documented: {sum(a['documented_pct'] for a in agent_scores) / len(agent_scores):.1f}%"
     )
-    print(f"  Schema: {sum(a['schema_strictness'] for a in agent_scores) / len(agent_scores):.1f}%")
+    print(f"  schema: {sum(a['schema_strictness'] for a in agent_scores) / len(agent_scores):.1f}%")
 
     # Show batches of 5-6 agents
     print("\n" + "=" * 70)
@@ -77,7 +77,7 @@ def main():
             print(f"\n{agent['name']}")
             print(f"  Path: {agent['path']}")
             print(
-                f"  Typed: {agent['typed_pct']:.0f}% | Doc: {agent['documented_pct']:.0f}% | Schema: {agent['schema_strictness']:.0f}%"
+                f"  Typed: {agent['typed_pct']:.0f}% | Doc: {agent['documented_pct']:.0f}% | schema: {agent['schema_strictness']:.0f}%"
             )
             print(f"  Quality Score: {agent['quality_score']:.1f}%")
 

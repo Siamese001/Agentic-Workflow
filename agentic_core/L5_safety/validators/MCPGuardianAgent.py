@@ -62,7 +62,7 @@ class MCPGuardianAgent(SovereignBaseAgent):
         Args:
             operation: Name of the operation (e.g., 'redis_get')
             client_name: Name of the MCP client
-            config: Configuration dictionary for the call
+            config: configuration dictionary for the call
 
         Returns:
             True if compliant, False if violations found
@@ -170,7 +170,7 @@ class MCPGuardianAgent(SovereignBaseAgent):
         Check if configuration contains hardcoded credentials.
 
         Args:
-            config: Configuration dictionary
+            config: configuration dictionary
 
         Returns:
             True if hardcoded credentials found

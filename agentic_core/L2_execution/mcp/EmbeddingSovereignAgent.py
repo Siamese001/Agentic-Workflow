@@ -40,7 +40,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin):
 
     _instance: EmbeddingSovereignAgent | None = None
 
-    # [PHASE 6] Configuration now managed by SovereignConfigManager
+    # [PHASE 6] configuration now managed by SovereignConfigManager
 
     _cache_prefix: str = "emb"
     _default_ttl: int = 86400  # 24 hours
@@ -152,7 +152,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin):
             if expected_dim and len(embedding) != expected_dim:
                 Logger.warning(f"Dimension mismatch: got {len(embedding)}, expected {expected_dim}")
 
-            # Cache result
+            # cache result
             if use_cache:
                 try:
                     await self.cache_set(cache_key, embedding, ttl=self._default_ttl)

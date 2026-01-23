@@ -12,7 +12,7 @@ class MigrationError(Exception):
 
 class MigrationMixin:
     """
-    Phase 2 Observability Infrastructure: Migration Support (Report 4.5).
+    Phase 2 observability Infrastructure: Migration Support (Report 4.5).
 
     Provides version awareness and schema migration hooks for agents.
     Features:

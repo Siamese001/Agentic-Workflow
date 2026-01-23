@@ -36,7 +36,7 @@ class NonRetryableError(Exception):
 
 @dataclass
 class RetryConfig:
-    """Configuration for retry policy."""
+    """configuration for retry policy."""
 
     max_attempts: int = 3
     strategy: RetryStrategy = RetryStrategy.EXPONENTIAL_BACKOFF

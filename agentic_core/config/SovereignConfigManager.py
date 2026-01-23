@@ -1,5 +1,5 @@
 """
-SovereignConfigManager - Centralized Configuration Management
+SovereignConfigManager - Centralized configuration Management
 
 [PHASE 6 MIGRATION] Consolidates configuration for:
 - LLM defaults & API Keys (Phase 4)
@@ -20,7 +20,7 @@ Logger = logging.getLogger("SovereignConfig")
 @dataclass
 class SovereignConfigManager:
     """
-    Centralized Configuration Singleton.
+    Centralized configuration Singleton.
 
     Design:
     - Low-level utility (No dependencies on BaseAgent).

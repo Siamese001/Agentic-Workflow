@@ -202,7 +202,7 @@ class InputValidator:
             if validated_value not in rule.allowed_values:
                 raise InputValidationError(field, f"Value must be one of: {rule.allowed_values}")
 
-        # Schema validation
+        # schema validation
         if rule.schema:
             if rule.validation_type == ValidationType.JSON:
                 self._validate_json_schema(validated_value, rule.schema)
@@ -333,7 +333,7 @@ class InputValidator:
 
         Args:
             value: Dictionary value
-            schema: Schema definition
+            schema: schema definition
 
         Raises:
             InputValidationError: If validation fails
@@ -349,7 +349,7 @@ class InputValidator:
         """Get validation type from schema.
 
         Args:
-            schema: Schema definition
+            schema: schema definition
 
         Returns:
             Validation type

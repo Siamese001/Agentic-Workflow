@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 """
-⚛️ Dynamic Model Router - The Throttler
+⚛️ Dynamic Model router - The Throttler
 
 Complexity-based model selection to prevent "Enough Thinking" wall.
 Analyzes AST complexity before healing and routes to appropriate model.
@@ -14,7 +14,7 @@ Analyzes AST complexity before healing and routes to appropriate model.
 Mission: Stop "Retry Loop Death" by matching model power to Task
 Strategy: Right-Sized Intelligence for optimal token usage
 
-Models:
+models:
 - Gemini 2.5 Flash: Simple linting, syntax fixes (cheap, fast)
 - Gemini 2.5 Flash (extended): Medium complexity refactoring
 - Gemini 3.0 Deep Think: High-nesting refactoring, complex logic
@@ -116,7 +116,7 @@ class ComplexityProfile:
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     """
-    The Throttler - Dynamic Model Router
+    The Throttler - Dynamic Model router
 
     Analyzes file complexity before healing and routes to appropriate model.
     Prevents "Enough Thinking" wall by matching model power to Task complexity.
@@ -140,7 +140,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
 
     def __init__(self, ctx: Any) -> None:
         """
-        Initialize Dynamic Model Router.
+        Initialize Dynamic Model router.
 
         Args:
             ctx: ValidationContext
@@ -191,7 +191,7 @@ class DynamicModelRouterAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardened
 
         This is called before healing to determine optimal model.
         """
-        Logger.info("🎯 Dynamic Model Router: Analyzing complexity for routing...")
+        Logger.info("🎯 Dynamic Model router: Analyzing complexity for routing...")
 
         # Analyze all files in context
         for file_path in self.ctx.python_files:
@@ -494,7 +494,7 @@ _model_router = None
 
 
 def get_model_router(ctx: Any) -> DynamicModelRouterAgent:
-    """Get or create global Model Router instance."""
+    """Get or create global Model router instance."""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
 

@@ -1,6 +1,6 @@
 """LM-as-a-Judge Evaluator for Quality Assessment.
 
-Phase 2 - Pillar 10: Observability (Tracing & Judging)
+Phase 2 - Pillar 10: observability (Tracing & Judging)
 Uses LLM to evaluate agent outputs against quality criteria.
 """
 

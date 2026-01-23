@@ -14,7 +14,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 CSS_CONTENT = '''from __future__ import annotations
-"""CachedSafetyShield - Eternal L5 Safety Base with Sovereign Cache."""
+"""CachedSafetyShield - Eternal L5 Safety Base with Sovereign cache."""
 import hashlib
 import json
 from pathlib import Path

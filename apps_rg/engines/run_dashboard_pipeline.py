@@ -210,7 +210,7 @@ class DashboardPipeline:
 
         try:
             print(f"🌐 Opening {url}")
-            print("   (Cache-busting enabled - forces fresh load)")
+            print("   (cache-busting enabled - forces fresh load)")
             webbrowser.open(url)
             print("✅ Browser opened")
             print("\n⚠️  IMPORTANT: If tables don't appear, press Ctrl+Shift+R to hard refresh")

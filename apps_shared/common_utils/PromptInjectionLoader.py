@@ -290,7 +290,7 @@ class PromptInjectionLoader:
         # Limit to max injections
         matches = matches[: self.config.max_injections_per_hop]
 
-        # Cache result
+        # cache result
         if self.config.enable_caching:
             self.cache[cache_key] = matches
 
@@ -512,7 +512,7 @@ def get_injection_loader(**kwargs) -> PromptInjectionLoader:
     """Get or create global injection loader instance.
 
     Args:
-        **kwargs: Configuration arguments
+        **kwargs: configuration arguments
 
     Returns:
         PromptInjectionLoader instance

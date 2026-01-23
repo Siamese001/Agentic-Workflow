@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-SSOT for Sovereign Blueprint Configuration.
+SSOT for Sovereign Blueprint configuration.
 
 This package is the Single Source of Truth for:
 - DEFAULT_EXCLUDE_DIRS: Unified directory exclusion list

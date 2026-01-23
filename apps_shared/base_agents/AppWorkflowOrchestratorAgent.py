@@ -10,7 +10,7 @@ Phase 1 Consolidation: Merges functionality from:
 - Phase7OrchestratorAgent (Phase 7 resume)
 
 Features:
-- Configuration-driven state machine for phase transitions
+- configuration-driven state machine for phase transitions
 - Dependency gate validation between phases
 - Support for both LIC (outreach) and RG (resume) workflows
 - Phase-specific execution with validation
@@ -62,7 +62,7 @@ class WorkflowType(Enum):
 
 @dataclass
 class PhaseConfig:
-    """Configuration for a workflow phase."""
+    """configuration for a workflow phase."""
 
     phase: WorkflowPhase
     name: str
@@ -252,7 +252,7 @@ class AppWorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHarden
     - Phase4/6/7OrchestratorAgent
 
     Features:
-    - Configuration-driven state machine
+    - configuration-driven state machine
     - Dependency gate validation
     - Phase-specific execution
 

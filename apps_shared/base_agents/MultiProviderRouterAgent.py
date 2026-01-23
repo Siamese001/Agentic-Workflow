@@ -1,4 +1,4 @@
-"""Multi-Provider Router - Production Grade with Failover and Load Balancing
+"""Multi-Provider router - Production Grade with Failover and Load Balancing
 Routes requests across OpenAI, Anthropic, and Google Vertex with intelligent failover.
 """
 
@@ -34,7 +34,7 @@ class Provider(Enum):
 
 @dataclass
 class ProviderConfig:
-    """Configuration for a specific provider."""
+    """configuration for a specific provider."""
 
     provider: Provider
     enabled: bool = True
@@ -47,7 +47,7 @@ class ProviderConfig:
 
 @dataclass
 class RouterConfig:
-    """Configuration for the multi-provider router."""
+    """configuration for the multi-provider router."""
 
     providers: list[ProviderConfig] = field(default_factory=list)
     default_strategy: str = "priority"  # priority, round_robin, weighted, fastest

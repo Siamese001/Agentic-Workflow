@@ -1,5 +1,5 @@
 """
-EvaluateResumeEffectiveness.py - Scoring Module
+EvaluateResumeEffectiveness.py - scoring Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.223993

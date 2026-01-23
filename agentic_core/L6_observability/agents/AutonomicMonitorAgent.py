@@ -16,7 +16,7 @@ from typing import Any
 from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types import (
     AlertSeverity,
     HealthAlert,
-    HealthMetrics,
+    health_metrics,
     HealthStatus,
 )
 
@@ -59,7 +59,7 @@ class AutonomicMonitorAgent(SovereignBaseAgent):
         self.error_rate_threshold = error_rate_threshold
         self.response_time_threshold_ms = response_time_threshold_ms
         self.enable_logging = enable_logging
-        self._metrics_history: dict[str, list[HealthMetrics]] = {}
+        self._metrics_history: dict[str, list[health_metrics]] = {}
         self._alerts: list[HealthAlert] = []
         self._alert_callbacks: list[Callable[[HealthAlert], None]] = []
         if self.enable_logging:
@@ -72,7 +72,7 @@ class AutonomicMonitorAgent(SovereignBaseAgent):
                 },
             )
 
-    def record_metrics(self, metrics: HealthMetrics) -> None:
+    def record_metrics(self, metrics: health_metrics) -> None:
         """Record health metrics for an agent.
 
         Args:
@@ -118,7 +118,7 @@ class AutonomicMonitorAgent(SovereignBaseAgent):
             return HealthStatus.DEGRADED
         return HealthStatus.HEALTHY
 
-    def get_metrics(self, agent_id: str, limit: int = 10) -> list[HealthMetrics]:
+    def get_metrics(self, agent_id: str, limit: int = 10) -> list[health_metrics]:
         """Get recent metrics for an agent.
 
         Args:
@@ -126,7 +126,7 @@ class AutonomicMonitorAgent(SovereignBaseAgent):
             limit: Number of recent metrics to return
 
         Returns:
-            List of HealthMetrics
+            List of health_metrics
         """
         self._metrics_history.get(agent_id, [])
         return history[-limit:] if history else []
@@ -157,7 +157,7 @@ class AutonomicMonitorAgent(SovereignBaseAgent):
         """
         self._alert_callbacks.append(callback)
 
-    def _trigger_alert(self, metrics: HealthMetrics, status: HealthStatus) -> None:
+    def _trigger_alert(self, metrics: health_metrics, status: HealthStatus) -> None:
         """Trigger health alert.
 
         Args:
@@ -199,7 +199,7 @@ class AutonomicMonitorAgent(SovereignBaseAgent):
                 },
             )
 
-    def _generate_recommendations(self, metrics: HealthMetrics, status: HealthStatus) -> list[str]:
+    def _generate_recommendations(self, metrics: health_metrics, status: HealthStatus) -> list[str]:
         """Generate improvement recommendations.
 
         Args:

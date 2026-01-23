@@ -1,5 +1,5 @@
 """
-Static Analysis: Canonical Schema Compliance Checker for @standard_heal Methods
+Static Analysis: Canonical schema Compliance Checker for @standard_heal Methods
 
 This script scans all Python files for methods decorated with @standard_heal
 and validates that their return statements use canonical keys.

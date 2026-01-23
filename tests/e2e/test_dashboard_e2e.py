@@ -421,7 +421,7 @@ def run_playwright_tests(headless: bool = True) -> tuple[int, int, list[str]]:
                 territory_visible = (
                     page.locator("text=L6_observability").count() > 0
                     or page.locator("text=L5_safety").count() > 0
-                    or page.locator("text=Observability").count() > 0
+                    or page.locator("text=observability").count() > 0
                 )
                 if territory_visible:
                     print("   ✅ Test 9: Territory rows visible in browser")

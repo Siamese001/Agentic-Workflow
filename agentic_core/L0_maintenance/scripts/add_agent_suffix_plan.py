@@ -27,13 +27,13 @@ EXCLUDE_PATTERNS = [
     "Test",  # Test classes
     "Mixin",  # Utility mixins
     "Context",  # Data contexts
-    "Config",  # Configuration
+    "Config",  # configuration
     "Protocol",  # Interfaces
     "Exception",  # Errors
     "Error",  # Errors
     "Enum",  # Enums
     "Model",  # Data models
-    "Schema",  # Schemas
+    "schema",  # Schemas
     "Interface",  # Interfaces
     "Base",  # Base classes (already utility)
     "Abstract",  # Abstract classes
@@ -51,7 +51,7 @@ AGENT_PATTERNS = [
     "Guardian",
     "Sentinel",
     "Enforcer",
-    "Router",
+    "router",
     "Planner",
     "Analyzer",
     "Coordinator",

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""Data Layer Integration Example - Batch Embeddings + In-Memory Vector Cache.
+"""Data Layer Integration Example - Batch Embeddings + In-Memory Vector cache.
 
 Demonstrates how to use BatchEmbeddingService and InMemoryVectorCache together
 for 5-10x performance improvement in resume generation pipeline.
@@ -48,7 +48,7 @@ async def example_batch_embedding_workflow() -> Any:
 
 async def example_hot_cache_workflow() -> Any:
     """Example: Store and search vectors in hot cache."""
-    Logger.info("\n=== Hot Cache Example ===")
+    Logger.info("\n=== Hot cache Example ===")
     hot_cache: Any = create_memory_vector_cache(collection_name="resume_sections", max_memory_gb=8)
     documents: Any = [
         "Python expert with ML experience",
@@ -66,7 +66,7 @@ async def example_hot_cache_workflow() -> Any:
     await hot_cache.add_documents(
         documents=documents, metadatas=metadatas, ids=ids, embeddings=embeddings
     )
-    Logger.info(f"Cache now contains {hot_cache.get_count()} documents")
+    Logger.info(f"cache now contains {hot_cache.get_count()} documents")
     query_embedding: Any = mock_embedding_function(["Python developer"])[0].tolist()
     Logger.info("Searching hot cache...")
     results: Any = await hot_cache.search(
@@ -74,7 +74,7 @@ async def example_hot_cache_workflow() -> Any:
     )
     Logger.info(f"Search results: {results['documents'][0]}")
     stats: Any = hot_cache.get_stats()
-    Logger.info(f"Cache stats: {stats}")
+    Logger.info(f"cache stats: {stats}")
     return hot_cache
 
 

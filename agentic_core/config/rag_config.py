@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-Centralized RAG Configuration - SSOT for all RAG settings
+Centralized RAG configuration - SSOT for all RAG settings
 Replaces fragmented configs across L1, L3, apps_shared
 """
 import os
@@ -86,7 +86,7 @@ class SafetyConfig:
 @dataclass
 class SovereignRagConfig:
     """
-    Master RAG Configuration - SSOT for entire architecture.
+    Master RAG configuration - SSOT for entire architecture.
     Loaded from environment variables with sensible defaults.
     """
 

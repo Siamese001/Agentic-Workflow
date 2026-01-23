@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MCP Configuration Sync Script
+MCP configuration Sync Script
 
 Automatically syncs SOVEREIGN_MCP_REGISTRY from mcp_registry.py to Windsurf's mcp_config.json.
 This prevents configuration drift between the Python SSOT and the IDE configuration.

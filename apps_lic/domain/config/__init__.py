@@ -1,5 +1,5 @@
 """
-Configuration Domain for LIC.
+configuration Domain for LIC.
 Exposes type-safe configuration objects loaded from JSON.
 """
 

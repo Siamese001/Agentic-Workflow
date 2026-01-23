@@ -74,7 +74,7 @@ def test_user_doc_structure(content: str):
         ("Overview", "# Overview" in content or "## Overview" in content),
         ("Getting Started", "Getting Started" in content),
         ("Meta-Learning Activity", "Meta-Learning" in content),
-        ("Redis Cache Activity", "Redis" in content),
+        ("Redis cache Activity", "Redis" in content),
         ("Pinecone Vector Operations", "Pinecone" in content),
         ("Agent Execution Flow", "Execution" in content),
         ("Troubleshooting", "Troubleshooting" in content),
@@ -164,7 +164,7 @@ def test_dev_doc_structure(content: str):
         ("Architecture Overview", "Architecture" in content),
         ("Telemetry Callback Interface", "Callback" in content or "callback" in content),
         ("API Endpoints", "API Endpoints" in content or "Endpoints" in content),
-        ("Data Schemas", "Schema" in content or "schema" in content),
+        ("Data Schemas", "schema" in content or "schema" in content),
         ("Adding Custom Telemetry", "Custom" in content or "custom" in content),
         ("Extension Points", "Extension" in content),
         ("Best Practices", "Best Practices" in content or "Practices" in content),
@@ -201,10 +201,10 @@ def test_dev_doc_api_endpoints(content: str):
 
 def test_dev_doc_schemas(content: str):
     """Test 2.4: Developer documentation has data schemas."""
-    print("\n--- Test 2.4: Data Schema Documentation ---")
+    print("\n--- Test 2.4: Data schema Documentation ---")
 
     if not content:
-        record_test("Schema docs", False, "No content to check")
+        record_test("schema docs", False, "No content to check")
         return
 
     schemas = [
@@ -253,7 +253,7 @@ def test_dev_doc_code_examples(content: str):
 def test_deployment_scripts():
     """Test 3.1: Deployment scripts exist and are valid."""
     print("\n" + "=" * 70)
-    print("Section 3: Deployment Configuration Tests")
+    print("Section 3: Deployment configuration Tests")
     print("=" * 70)
     print("\n--- Test 3.1: Deployment Scripts ---")
 
@@ -304,7 +304,7 @@ def test_dashboard_files():
 
 def test_runtime_state_schema():
     """Test 3.4: Runtime state schema is correct."""
-    print("\n--- Test 3.4: Runtime State Schema ---")
+    print("\n--- Test 3.4: Runtime State schema ---")
 
     try:
         # ARCHIVED: canon_validator import removed # _runtime_state
@@ -465,7 +465,7 @@ def test_api_doc_accuracy():
 
 def test_response_schema_accuracy():
     """Test 5.2: API response schemas match documentation."""
-    print("\n--- Test 5.2: Response Schema Accuracy ---")
+    print("\n--- Test 5.2: Response schema Accuracy ---")
 
     try:
         client = TestClient(app)
@@ -517,7 +517,7 @@ def main():
     test_dev_doc_schemas(dev_content)
     test_dev_doc_code_examples(dev_content)
 
-    # Section 3: Deployment Configuration
+    # Section 3: Deployment configuration
     test_deployment_scripts()
     test_api_module()
     test_dashboard_files()

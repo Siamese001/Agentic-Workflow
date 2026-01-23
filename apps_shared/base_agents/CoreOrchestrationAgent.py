@@ -216,7 +216,7 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
                 return None
 
         result = self._cache[cache_key]
-        Logger.info(f"Cache hit for task {task.task_id}")
+        Logger.info(f"cache hit for task {task.task_id}")
         return Result(
             task_id=task.task_id,
             success=result.success,
@@ -347,7 +347,7 @@ class CoreOrchestrationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixi
         if not result.success:
             result = self._apply_fallback(task, result)
 
-        # Cache successful results
+        # cache successful results
         if result.success:
             self._store_cached_result(task, result)
 

@@ -522,7 +522,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         return True, "OK"
 
-    # AST Scoring utility methods (used by semantic alignment)
+    # AST scoring utility methods (used by semantic alignment)
     def _collect_ast_increments(
         self, tree: Any, territory_keywords: dict[str, Any]
     ) -> list[tuple[str, float]]:

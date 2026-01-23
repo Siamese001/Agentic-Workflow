@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SSOT Dashboard Test Suite - L6 Observability
+SSOT Dashboard Test Suite - L6 observability
 =============================================
 Comprehensive test suite for dashboard generation.
 Tests wireframe consistency across multiple data changes.
@@ -173,7 +173,7 @@ class DashboardTestSuite:
                 "Documented %",
                 "Metadata %",
                 "Proper Base %",
-                "Schema Strictness %",
+                "schema Strictness %",
                 "Complexity Health",
                 "Code Quality Score",
                 "Criticality",

@@ -83,7 +83,7 @@ class SignedException:
 
 @dataclass
 class EnforcementConfig:
-    """Configuration for code enforcement."""
+    """configuration for code enforcement."""
 
     enable_ssot_sync: bool = True
     enable_standards: bool = True

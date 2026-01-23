@@ -44,7 +44,7 @@ class semantic_cache:
             return CacheSufficiencyResult(
                 is_sufficient=True, cached_response=cached, confidence=1.0, reason="Exact cache hit"
             )
-        return CacheSufficiencyResult(is_sufficient=False, reason="Cache miss")
+        return CacheSufficiencyResult(is_sufficient=False, reason="cache miss")
 
 
 @dataclass

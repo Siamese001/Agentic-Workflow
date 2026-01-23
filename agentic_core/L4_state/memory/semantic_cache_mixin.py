@@ -1,5 +1,5 @@
 """
-semantic_cache_mixin - Unified Semantic Cache Access
+semantic_cache_mixin - Unified Semantic cache Access
 
 [PHASE 3 MIGRATION] Provides single interface to canonical SemanticCacheManager.
 """

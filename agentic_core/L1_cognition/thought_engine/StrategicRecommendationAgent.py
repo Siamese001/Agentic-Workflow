@@ -250,12 +250,12 @@ Output strict JSON:
                     }
                 )
 
-        # Observability observation
+        # observability observation
         if safe_val(total_row, "Observable %", 0) > 95:
             macro_observations.append(
                 {
                     "icon": "👁️",
-                    "title": "Excellent Observability",
+                    "title": "Excellent observability",
                     "text": f"{safe_val(total_row, 'Observable %', 0):.1f}% observability coverage. Production debugging is well-supported.",
                     "color": "#16a34a",
                 }

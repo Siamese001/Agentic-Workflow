@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Comprehensive Test Suite for L6 Observability Agents
+Comprehensive Test Suite for L6 observability Agents
 =====================================================
 
 Tests the skeptical analyst framework with strict validation:

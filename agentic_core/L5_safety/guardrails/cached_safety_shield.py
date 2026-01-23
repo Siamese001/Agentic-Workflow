@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""CachedSafetyShield - Eternal L5 Safety Base with Sovereign Cache."""
+"""CachedSafetyShield - Eternal L5 Safety Base with Sovereign cache."""
 import hashlib
 from pathlib import Path
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent

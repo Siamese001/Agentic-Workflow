@@ -1,4 +1,4 @@
-"""Execute Observability Execution - Observability execution adapter.
+"""Execute observability Execution - observability execution adapter.
 
 This module provides adapters for executing observability operations with
 proper monitoring, tracing, and metrics collection.
@@ -62,7 +62,7 @@ class ObservabilityResult:
 
 @dataclass
 class ObservabilityConfig:
-    """Configuration for observability operations."""
+    """configuration for observability operations."""
 
     default_timeout: float = 10.0
     enable_tracing: bool = True
@@ -96,7 +96,7 @@ class ObservabilityExecutionAdapter:
         """Execute observability operation.
 
         Args:
-            request: Observability operation request
+            request: observability operation request
 
         Returns:
             ObservabilityResult: Result with observability data
@@ -137,7 +137,7 @@ class ObservabilityExecutionAdapter:
             return result
 
         except Exception as e:
-            self.logger.error(f"Observability execution failed: {str(e)}")
+            self.logger.error(f"observability execution failed: {str(e)}")
             return self._create_error_result(request, str(e), start_time)
 
     def execute_batch(self, requests: list[ObservabilityRequest]) -> list[ObservabilityResult]:
@@ -420,7 +420,7 @@ def execute_observability_execution(
         execution_level: Level of execution detail
 
     Returns:
-        Dict: Observability result
+        Dict: observability result
     """
     adapter = create_observability_execution_adapter()
 

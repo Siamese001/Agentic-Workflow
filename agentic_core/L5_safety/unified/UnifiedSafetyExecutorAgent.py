@@ -75,7 +75,7 @@ class SafetyGate:
 
 @dataclass
 class ExecutorConfig:
-    """Configuration for safety executor."""
+    """configuration for safety executor."""
 
     enable_integrity_gates: bool = True
     enable_safety_checks: bool = True

@@ -1,4 +1,4 @@
-"""Perform Observability Operation - Observability operation execution adapter.
+"""Perform observability Operation - observability operation execution adapter.
 
 This module provides adapters for performing specific observability operations
 with proper error handling, context management, and result aggregation.
@@ -61,7 +61,7 @@ class OperationParameters:
 
 @dataclass
 class OperationConfig:
-    """Configuration for operation execution."""
+    """configuration for operation execution."""
 
     timeout: float = 30.0
     retry_attempts: int = 3
@@ -141,7 +141,7 @@ class ObservabilityOperationAdapter:
             # Execute operation with retry logic
             result = self._execute_with_retry(handler, context, parameters)
 
-            # Cache result if enabled and successful
+            # cache result if enabled and successful
             if self.config.enable_caching and result.success:
                 self._store_in_cache(context, parameters, result)
 

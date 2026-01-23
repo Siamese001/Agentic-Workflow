@@ -46,7 +46,7 @@ class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
             "hop7": buffer.read("hop7_gate_decision") or {},
         }
 
-        # 2. Calculate Scoring
+        # 2. Calculate scoring
         scores = self._calculate_scores(states)
         total_score = sum(scores.values())
 

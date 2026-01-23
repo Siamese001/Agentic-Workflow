@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-Sovereign Configuration SSOT
+Sovereign configuration SSOT
 Centralizes all environment variables, feature flags, and system constants.
 """
 import os
@@ -28,7 +28,7 @@ class SovereignConfig:
     PRIMARY_MODEL: str = "gpt-4o"
     REASONING_MODEL: str = "o1-preview"
 
-    # === Phase 4: Semantic Cache Thresholds ===
+    # === Phase 4: Semantic cache Thresholds ===
     SEMANTIC_SIMILARITY_THRESHOLD: float = 0.95
 
     # === Phase 4: Global Operational Constants ===

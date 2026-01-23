@@ -31,7 +31,7 @@ class VmProvider(Enum):
 
 @dataclass
 class VmConfig:
-    """Configuration for micro-VM."""
+    """configuration for micro-VM."""
 
     vm_id: str
     Provider: VMProvider = VMProvider.FIRECRACKER

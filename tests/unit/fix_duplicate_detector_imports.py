@@ -7,7 +7,7 @@ description: Finds and updates all references to DuplicateCodeDetectorAgent
 import os
 import re
 
-# --- Configuration ---
+# --- configuration ---
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
 OLD_IMPORT = r"from apps_lic\.engines\.DuplicateCodeDetectorAgent import DuplicateCodeDetectorAgent"
 NEW_IMPORT = "from apps_shared.utils.DuplicateCodeDetectorAgent import DuplicateCodeDetectorAgent"

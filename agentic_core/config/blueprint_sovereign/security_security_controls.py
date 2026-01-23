@@ -43,7 +43,7 @@ def validate_config(config: dict[str, str | int | bool]) -> bool:
     Validate module configuration.
 
     Args:
-        config: Configuration dictionary to validate
+        config: configuration dictionary to validate
 
     Returns:
         True if configuration is valid, False otherwise

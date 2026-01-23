@@ -180,7 +180,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
         self.max_fissions = HEALING_CONFIG.get("max_fissions_per_run", 3)
         self.max_fusions = HEALING_CONFIG.get("max_fusions_per_run", 20)
 
-        # Observability Linkage
+        # observability Linkage
         try:
             from agentic_core.L6_observability.metrics.MetricsAgent import (
                 metrics_agent as MetricsAgent,
@@ -1273,7 +1273,7 @@ class StructuralHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin
                 ]
             )
 
-            # Final Observability Dispatch
+            # Final observability Dispatch
             if self.telemetry:
                 self.telemetry.emit(
                     "healing.mission_completed", details={"total": results["total_actions"]}

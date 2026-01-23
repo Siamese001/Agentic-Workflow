@@ -25,7 +25,7 @@ from typing import Any
 # NAMING FIXED: Logger → Logger
 Logger = logging.getLogger(__name__)
 
-# Configuration
+# configuration
 # NAMING FIXED: BENCHMARK_HISTORY_SIZE → benchmark_history_size
 benchmark_history_size = 1000
 # NAMING FIXED: PERFORMANCE_DEGRADATION_THRESHOLD → PERFORMANCE_DEGRADATION_THRESHOLD

@@ -170,7 +170,7 @@ class SovereignCanonAuditorAgent(SovereignBaseAgent):
         mcp_results: Any = await self.verify_mcp_integration()
         insights: Any = []
         questions: Any = [
-            "Explain the role of the L3 Router in this codebase.",
+            "Explain the role of the L3 router in this codebase.",
             "How does the L5 Safety Shield protect MCP operations?",
             "What is the purpose of the dual-graph architecture?",
         ]
@@ -218,7 +218,7 @@ async def audit_core_components() -> Any:
         status: Any = "✅ FOUND" if exists else "❌ MISSING"
         print(f"{status}: {f}")
     insight: Any = await auditor.client.ask_question(
-        "Explain the role of the L3 Router in this codebase."
+        "Explain the role of the L3 router in this codebase."
     )
     print(f"\n--- Architectural Insight ---\n{insight}")
 

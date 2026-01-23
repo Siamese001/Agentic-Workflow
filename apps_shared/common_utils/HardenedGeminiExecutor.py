@@ -40,7 +40,7 @@ class CircuitBreakerOpenError(Exception):
 
 
 class HardenedGeminiConfig:
-    """Configuration for HardenedGeminiExecutor."""
+    """configuration for HardenedGeminiExecutor."""
 
     # Model context limits (tokens)
     MODEL_LIMITS = {

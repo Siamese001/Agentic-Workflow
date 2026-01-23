@@ -9,7 +9,7 @@ SovereignLLMGateway - Unified LLM Operations Gateway
 - Unified retry/fallback strategy
 - Provider health monitoring
 
-[PHASE 13 UPGRADE] Added support for generation_config overrides (Thinking Models).
+[PHASE 13 UPGRADE] Added support for generation_config overrides (Thinking models).
 [PHASE 21 HARDENING] Tool Adapter Layer (Dict -> SDK Type Casting).
 """
 

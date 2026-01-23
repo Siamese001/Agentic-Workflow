@@ -163,7 +163,7 @@ class TestSovereignLLMGateway:
 
         gateway = get_llm_gateway()
 
-        # [PHASE 6] Models now come from config
+        # [PHASE 6] models now come from config
         assert gateway.config.openai_model == "gpt-4o"
         assert gateway.config.anthropic_model == "claude-3-5-sonnet-20241022"
         assert gateway.config.google_model == "gemini-1.5-pro"
@@ -188,7 +188,7 @@ class TestEmbeddingSovereignAgent:
     @pytest.mark.asyncio
     async def test_tc_phase4_004_embed_cache(self):
         """
-        TC-PHASE4-004: Embedding Cache
+        TC-PHASE4-004: Embedding cache
 
         Procedure:
         1. Call get_embedding("test_content")

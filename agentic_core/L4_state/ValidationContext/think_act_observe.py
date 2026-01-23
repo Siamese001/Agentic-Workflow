@@ -14,7 +14,7 @@ Logger: Any = logging.getLogger(__name__)
 
 @dataclass
 class CycleConfig:
-    """Configuration for Think-Act-Observe cycle."""
+    """configuration for Think-Act-Observe cycle."""
 
     max_iterations: int = 10
     enable_react: bool = True

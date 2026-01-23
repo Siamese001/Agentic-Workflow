@@ -4,7 +4,7 @@ from dataclasses import field
 
 #!/usr/bin/env python3
 """
-Cache-First Hardening Report Generator
+cache-First Hardening Report Generator
 
 Identifies agents that need Redis/Pinecone cache-first logic hardening.
 Meta-Learning is core to agentic DNA - every LLM call and key operation
@@ -232,7 +232,7 @@ def generate_report(results: list[AgentAnalysis]) -> str:
             lines.append(f"   Has Redis Mixin: {'YES' if agent.has_redis_mixin else 'NO'}")
             lines.append(f"   Has Pinecone Mixin: {'YES' if agent.has_pinecone_mixin else 'NO'}")
             lines.append(f"   Has LLM Calls: {'YES' if agent.has_llm_calls else 'NO'}")
-            lines.append(f"   Has Cache Checks: {'YES' if agent.has_cache_checks else 'NO'}")
+            lines.append(f"   Has cache Checks: {'YES' if agent.has_cache_checks else 'NO'}")
             lines.append(f"   Has Semantic Lookup: {'YES' if agent.has_semantic_lookup else 'NO'}")
 
             if agent.methods_needing_hardening:
@@ -287,7 +287,7 @@ For each agent, implement the cache-first pattern:
    - Reuse previous fix if confidence > 0.9
 
 3. For heal_repository methods:
-   - Cache scan results with file hashes
+   - cache scan results with file hashes
    - Invalidate on file changes
    - Store successful fixes in Pinecone for pattern learning
 """)

@@ -93,7 +93,7 @@ def investigate_row_collapse():
     l6_rows = [r for r in territory_rows if "L6_Observability" in r.get("Territory", "")]
     l6_agents = sum(r.get("Total", 0) for r in l6_rows)
 
-    print("\n🔍 L6 Observability Rows:")
+    print("\n🔍 L6 observability Rows:")
     print(f"   Count: {len(l6_rows)}")
     print(f"   Total agents: {l6_agents}")
 
@@ -190,7 +190,7 @@ if __name__ == "__main__":
     print("\n✅ TOTAL Row Calculation:")
     print(f"   Status: {'CORRECT' if results['total_calculation_correct'] else 'INCORRECT'}")
     print(
-        f"   L6 Observability rows: {results['l6_rows']} territories, {results['l6_agents']} agents"
+        f"   L6 observability rows: {results['l6_rows']} territories, {results['l6_agents']} agents"
     )
     print("   These ARE included in TOTAL calculation (weighted by agent count)")
 

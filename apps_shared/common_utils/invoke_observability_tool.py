@@ -1,4 +1,4 @@
-"""Invoke Observability Tool - Tool invocation adapter for observability operations.
+"""Invoke observability Tool - Tool invocation adapter for observability operations.
 
 This module provides adapters for invoking observability tools with proper
 protocol handling, parameter validation, and response processing.
@@ -59,7 +59,7 @@ class InvocationRequest:
 
 @dataclass
 class InvocationConfig:
-    """Configuration for tool invocation."""
+    """configuration for tool invocation."""
 
     default_timeout: float = 30.0
     retry_attempts: int = 3
@@ -152,7 +152,7 @@ class ObservabilityToolInvoker:
             else:
                 raise ValueError(f"Unsupported invocation type: {request.invocation_type}")
 
-            # Cache response if enabled and successful
+            # cache response if enabled and successful
             if self.config.enable_caching and response.success:
                 self._store_in_cache(request, response)
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test Suite: Phase 4 Detector/Healer/Router/Executor Consolidation
+Test Suite: Phase 4 Detector/Healer/router/Executor Consolidation
 
 MANDATORY 100% PASS RATE REQUIRED
 
@@ -261,7 +261,7 @@ class TestIntegrityGateBlocking(unittest.TestCase):
 
 if __name__ == "__main__":
     print("=" * 70)
-    print("Phase 4 Detector/Healer/Router/Executor - MANDATORY 100% PASS")
+    print("Phase 4 Detector/Healer/router/Executor - MANDATORY 100% PASS")
     print("=" * 70)
     print()
 

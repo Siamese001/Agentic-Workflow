@@ -257,7 +257,7 @@ class TestDNASegregation:
             gov_result = governor.recall_experience("Prompt X")
             assert gov_result == {"result": "Governor Result"}
 
-            # Router recalls "Prompt X" - should miss (different namespace)
+            # router recalls "Prompt X" - should miss (different namespace)
             router_result = router.recall_experience("Prompt X")
             assert router_result is None
 

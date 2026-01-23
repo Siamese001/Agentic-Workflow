@@ -1,5 +1,5 @@
 """
-Pytest Configuration for Dashboard Tests
+Pytest configuration for Dashboard Tests
 ========================================
 
 Shared fixtures and configuration for all dashboard tests.

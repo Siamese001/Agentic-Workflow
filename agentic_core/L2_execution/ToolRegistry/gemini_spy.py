@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-L6 Observability: Gemini Spy
+L6 observability: Gemini Spy
 
 Monitors and logs Gemini API interactions for observability.
 """

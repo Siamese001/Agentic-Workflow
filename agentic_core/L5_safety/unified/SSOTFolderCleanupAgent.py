@@ -107,7 +107,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
             Logger.critical(f"FATAL: Failed to load SSOT config: {e}")
             # SAFETY INTERLOCK: Do not proceed with empty config
             raise RuntimeError(
-                "SSOT Configuration Load Failed - Aborting to prevent mass deletion."
+                "SSOT configuration Load Failed - Aborting to prevent mass deletion."
             )
 
     def _build_approved_paths(self) -> None:

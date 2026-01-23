@@ -1,7 +1,7 @@
 """
 Sovereign AST Compliance Test Suite (V2.5).
 
-Ensures that Windsurf's output accurately differentiates Agents from Models.
+Ensures that Windsurf's output accurately differentiates Agents from models.
 MANDATORY: 100% Pass Requirement for Windsurf Execution.
 """
 
@@ -11,7 +11,7 @@ from pathlib import Path
 
 class TestSovereignASTCompliance:
     """
-    Ensures that Windsurf's output accurately differentiates Agents from Models.
+    Ensures that Windsurf's output accurately differentiates Agents from models.
     MANDATORY: 100% Pass Requirement for Windsurf Execution.
     """
 

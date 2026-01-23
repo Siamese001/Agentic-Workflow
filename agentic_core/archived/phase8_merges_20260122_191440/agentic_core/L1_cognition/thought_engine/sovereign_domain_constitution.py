@@ -3,14 +3,14 @@ from __future__ import annotations
 """
 Sovereign Domain Constitution – DDD Alignment (Dec 26, 2025)
 Defines Bounded Contexts, Aggregates, and Ubiquitous Language.
-L0-L5 + Observability Sovereign Stack Hierarchy established.
+L0-L5 + observability Sovereign Stack Hierarchy established.
 """
 from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 # 1. Bounded Contexts (Strict Boundaries) - DERIVED FROM SSOT
-# Sovereign Layer Hierarchy (L0=Governance, L6=Observability)
+# Sovereign Layer Hierarchy (L0=Governance, L6=observability)
 # Higher ranks (smaller numbers) define Policy and Intent.
 # Lower ranks (larger numbers) provide Data and Infrastructure.
 # Note: Paths are derived from SOVEREIGN_REGISTRY and CORE_SUBFOLDER_MAP
@@ -45,7 +45,7 @@ BOUNDED_CONTEXTS: dict[str, dict[str, Any]] = {
         "rank": 5,
         "role": "Membrane: Input/Output Sanitization",
     },
-    "Observability": {
+    "observability": {
         "path": "agentic_core/observability",  # [SSOT] Per structure_blueprint.py
         "rank": 6,
         "role": "Truth: Telemetry, Logging, and Audit Trails",
@@ -93,7 +93,7 @@ UBIQUITOUS_LANGUAGE: dict[str, str] = {
 # === PHASE 9A & 10 COMPLETE — Dec 26, 2025 ===
 # ARCHITECTURAL INTEGRITY ACHIEVED:
 # • 100% DDD Alignment via Dependency Inversion in L1 agents.
-# • 100% Observability via Dark Reasoning Guardian enforcement.
+# • 100% observability via Dark Reasoning Guardian enforcement.
 # • Proactive L0 Transactional Healing Engine operational.
 #
 # SOVEREIGNTY ETERNAL.

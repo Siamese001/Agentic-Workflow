@@ -1,7 +1,7 @@
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
-"""L4 State: Sovereign Semantic Cache — Redis + Pinecone Hybrid Eternal
+"""L4 State: Sovereign Semantic cache — Redis + Pinecone Hybrid Eternal
 Redis L4 local cache for lightning recall + Pinecone eternal vector store.
 Full AST + metadata sovereignty with mission-isolation.
 """
@@ -43,7 +43,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
             Logger.info("[L4 REDIS] Sovereign MCP cache armed.")
         except Exception as e:
             Logger.critical(f"[L4 REDIS BREACH] MCP cache failed: {e}")
-            mcp_authority.record_breach(f"Redis MCP Cache Failure: {str(e)}")
+            mcp_authority.record_breach(f"Redis MCP cache Failure: {str(e)}")
             self.redis = None
 
     def _cache_key(self, file_path: str) -> str:

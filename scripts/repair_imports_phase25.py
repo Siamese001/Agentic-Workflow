@@ -27,7 +27,7 @@ def reconstruct_rename_map():
         "Add", "Collect", "Compare", "Coordinate", "Guard", "Deprecated", "Phase", "Sprint", "Track",
         "Search", "Retrieve", "Request", "Rank", "Match", "Migrate", "Understand", "Use", "Tool", "Titanium",
         "Test", "Signal", "Semantic", "Sandbox", "Runtime", "Restore", "Refine", "Query", "Orchestrate",
-        "Observability", "Metacognition", "Load", "Legacy", "Instructional", "Infrastructure",
+        "observability", "Metacognition", "Load", "Legacy", "Instructional", "Infrastructure",
         "Hardened", "Golden", "Functional", "Fix", "Fetch", "Execute", "Event", "Etl", "Check", "Brand", "Batch",
         "Atomic", "Archive", "Analyze"
     ]

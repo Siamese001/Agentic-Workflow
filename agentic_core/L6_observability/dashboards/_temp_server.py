@@ -48,7 +48,7 @@ class StaticFileApp:
                     [
                         ("Content-Type", mimetype),
                         ("Content-Length", str(len(data))),
-                        ("Cache-Control", "no-cache, no-store, must-revalidate"),
+                        ("cache-Control", "no-cache, no-store, must-revalidate"),
                         ("Pragma", "no-cache"),
                         ("Expires", "0"),
                     ],

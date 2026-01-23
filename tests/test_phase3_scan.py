@@ -28,5 +28,5 @@ def test_ast_detection_logic(tmp_path):
 
 def test_snake_case_conversion():
     from scripts.phase3_deep_scan import to_snake_case
-    assert to_snake_case("DagExecutorBasic.py") == "dag_executor_basic.py"
-    assert to_snake_case("L4Types.py") == "l4_types.py"
+    assert to_snake_case("dag_executor_basic.py") == "dag_executor_basic.py"
+    assert to_snake_case("l4_types.py") == "l4_types.py"

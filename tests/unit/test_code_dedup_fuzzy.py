@@ -36,7 +36,7 @@ def test_fuzzy_matching():
     # Initialize agent with new default threshold (0.98)
     agent = CodeDeduplicationAgent()
 
-    print(f"\nAgent Configuration:")
+    print(f"\nAgent configuration:")
     print(f"  Similarity Threshold: {agent.threshold:.0%}")
     print(f"  Minimum Lines: {agent.min_lines}")
     print(f"  Tree-sitter Available: {agent.ts_parser is not None}")

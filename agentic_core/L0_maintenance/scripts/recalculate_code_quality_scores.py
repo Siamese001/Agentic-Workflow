@@ -3,7 +3,7 @@
 Recalculate Code Quality Scores in Dashboard
 
 Updates the Code Quality Score formula from simple average (Typed + Documented) / 2
-to weighted composite: (Typed × 0.30) + (Documented × 0.30) + (Schema × 0.25) + (Canonical × 0.15)
+to weighted composite: (Typed × 0.30) + (Documented × 0.30) + (schema × 0.25) + (Canonical × 0.15)
 """
 
 import re
@@ -20,12 +20,12 @@ def calculate_code_quality_score(typed_pct, documented_pct, schema_pct, canonica
     """
     Calculate Code Quality Score using weighted formula.
 
-    Formula: (Typed × 0.30) + (Documented × 0.30) + (Schema × 0.25) + (Canonical × 0.15)
+    Formula: (Typed × 0.30) + (Documented × 0.30) + (schema × 0.25) + (Canonical × 0.15)
 
     Weights rationale:
     - Typed %: 30% - Critical for type safety and IDE support
     - Documented %: 30% - Essential for maintainability and onboarding
-    - Schema Strictness %: 25% - Important for data validation and contracts
+    - schema Strictness %: 25% - Important for data validation and contracts
     - Canonical Inheritance %: 15% - Architectural compliance, less critical than others
     """
     score = typed_pct * 0.30 + documented_pct * 0.30 + schema_pct * 0.25 + canonical_pct * 0.15
@@ -67,7 +67,7 @@ def update_code_quality_score(territory_text):
     # Extract values
     typed_match = re.search(r'"Typed %":\s*([\d.]+)', territory_text)
     documented_match = re.search(r'"Documented %":\s*([\d.]+)', territory_text)
-    schema_match = re.search(r'"Schema Strictness %":\s*([\d.]+)', territory_text)
+    schema_match = re.search(r'"schema Strictness %":\s*([\d.]+)', territory_text)
     canonical_match = re.search(r'"Canonical Inheritance %":\s*([\d.]+)', territory_text)
 
     if not all([typed_match, documented_match, schema_match, canonical_match]):

@@ -58,7 +58,7 @@ Your mandate is absolute: Every file and class name must conform exactly to the 
    - Mandatory role suffixes:
      - Agents: *_agent.py | Engines: *_engine.py | Managers: *_manager.py
      - Validators: *_validator.py | Guardrails: *_guardrail.py
-     - Models/Enums: *_models.py / *_enums.py | Tools: *_tool.py
+     - models/Enums: *_models.py / *_enums.py | Tools: *_tool.py
    - Forbidden: utils.py, helper.py, misc.py, base.py, temp.py.
    - Naming must reflect primary responsibility with high semantic signal.
 

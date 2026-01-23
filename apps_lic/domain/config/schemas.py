@@ -1,5 +1,5 @@
 """
-Configuration Schemas.
+configuration Schemas.
 
 Defines the Pydantic models for type-safe configuration loading.
 """
@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 
 
 class ArchetypeIndicator(BaseModel):
-    """Configuration for identifying specific user archetypes."""
+    """configuration for identifying specific user archetypes."""
 
     keywords: list[str]
     confidence: float = Field(..., ge=0.0, le=1.0)

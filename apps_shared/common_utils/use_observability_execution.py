@@ -1,4 +1,4 @@
-"""Use Observability Execution - Execution adapter for observability operations.
+"""Use observability Execution - Execution adapter for observability operations.
 
 This module provides adapters for executing observability operations with proper
 resource management, error handling, and result processing.
@@ -59,7 +59,7 @@ class ExecutionEnvironment:
 
 @dataclass
 class ExecutionConfig:
-    """Configuration for execution."""
+    """configuration for execution."""
 
     default_timeout: float = 30.0
     max_concurrent_executions: int = 10

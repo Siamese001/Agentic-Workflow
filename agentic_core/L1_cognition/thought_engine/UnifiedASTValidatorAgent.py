@@ -52,7 +52,7 @@ class UnifiedASTValidatorAgent(SovereignBaseAgent, CanonASTValidator):
         CanonASTValidator: AST traversal and violation reporting
     """
 
-    # Configuration constants
+    # configuration constants
     DANGEROUS_BUILTINS: set[str] = field(
         default_factory=lambda: {"compile", "__import__", "globals", "locals", "vars"}
     )

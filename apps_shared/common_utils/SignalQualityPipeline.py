@@ -323,7 +323,7 @@ class SignalQualityPipeline:
                 re.search(pattern, content, re.IGNORECASE) for pattern in self.metric_patterns
             )
 
-            # Scoring logic
+            # scoring logic
             if has_impact_words and has_metrics:
                 # High specificity: impact claims with supporting metrics
                 return 0.9

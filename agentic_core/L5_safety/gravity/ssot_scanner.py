@@ -61,7 +61,7 @@ class SSOTScanner:
         "L3_orchestration": "L3",
         "L4_state": "L4",
         "L5_safety": "L5",
-        "observability": "L3",  # Observability is L3 orchestration
+        "observability": "L3",  # observability is L3 orchestration
         "utils": "L2",  # Utils are L2 execution tools
         "schemas": "L2",  # Schemas are L2 execution support
         "patterns": "L2",  # Patterns are L2 execution support

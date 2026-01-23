@@ -23,7 +23,7 @@ import re
 import sys
 from pathlib import Path
 
-# Configuration
+# configuration
 MAX_ALLOWED_RGLOB = 260  # Phase 6: Temporary ceiling, target is 50
 
 # Files to exclude from the count (these are the utilities that wrap rglob)

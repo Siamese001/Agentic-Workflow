@@ -200,7 +200,7 @@ class TestCoverageGuardianAgent(SovereignBaseAgent):
         test_path = self.test_dir / test_name
 
         imports = [
-            "from hypothesis import given, strategies as st, assume, settings, HealthCheck, example",
+            "from hypothesis import given, strategies as st, assume, settings, health_check, example",
             "from datetime import datetime, timedelta",
             "import uuid",
             "import pathlib",
@@ -233,7 +233,7 @@ class TestCoverageGuardianAgent(SovereignBaseAgent):
             else:
                 strategies.append(f"{param}=st.text() | st.integers()")
 
-        header = "@settings(max_examples=500, deadline=None, suppress_health_check=[HealthCheck.too_slow])"
+        header = "@settings(max_examples=500, deadline=None, suppress_health_check=[health_check.too_slow])"
         decorator = "@given(" + ", ".join(strategies) + ")"
 
         common_templates = [

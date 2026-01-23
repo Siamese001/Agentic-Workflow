@@ -13,7 +13,7 @@ Usage:
 Exit Codes:
     0 - All checks passed, deployment approved
     1 - Tests failed, deployment BLOCKED
-    2 - Configuration error
+    2 - configuration error
 """
 
 import subprocess

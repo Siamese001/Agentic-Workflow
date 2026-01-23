@@ -128,7 +128,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
     name: str = "UnifiedCheckpointManagerAgent"
     layer: str = "L4"
 
-    # Configuration
+    # configuration
     mode: str = "ASYNC"  # SYNC, ASYNC, or AUTONOMOUS
     storage_path: Path = field(default_factory=lambda: Path(".canon_memory/checkpoints"))
     max_checkpoints: int = 50

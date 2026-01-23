@@ -1,5 +1,5 @@
 """
-NormalizeSkillScores.py - Scoring Module
+NormalizeSkillScores.py - scoring Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.225658

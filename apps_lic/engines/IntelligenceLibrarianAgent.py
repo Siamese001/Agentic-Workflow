@@ -32,7 +32,7 @@ except ImportError:
 
 # Embedding and vector store
 
-# Models (updated imports for new locations)
+# models (updated imports for new locations)
 
 
 @dataclass

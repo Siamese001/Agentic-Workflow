@@ -1,4 +1,4 @@
-"""Phase 17 Tests: Semantic Meta-Learning Cache.
+"""Phase 17 Tests: Semantic Meta-Learning cache.
 
 Tests for Redis exact matching, Pinecone semantic matching, and cache miss behavior.
 """
@@ -187,7 +187,7 @@ class TestPineconeSemanticMatch:
 
 
 class TestCacheMissBehavior:
-    """Phase 17 Tests: Cache miss and learning behavior."""
+    """Phase 17 Tests: cache miss and learning behavior."""
 
     def test_cache_miss_triggers_store(self, tmp_path):
         """[Phase 17] Verify cache miss leads to decision being stored."""
@@ -196,7 +196,7 @@ class TestCacheMissBehavior:
         )
 
         mock_redis = MagicMock()
-        mock_redis.get.return_value = None  # Cache miss
+        mock_redis.get.return_value = None  # cache miss
 
         with patch("redis.from_url", return_value=mock_redis):
             mock_redis.ping.return_value = True

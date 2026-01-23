@@ -4,7 +4,7 @@ Automated E2E Dashboard Verification with Playwright
 Fully automated browser-based verification that eliminates:
 - Manual hard refresh
 - Manual console inspection
-- Cache-related false alarms
+- cache-related false alarms
 
 This script:
 1. Kills existing servers

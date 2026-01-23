@@ -167,13 +167,13 @@ def audit_live_runtime():
        - Purpose: "At-a-glance system status. Green = nominal, Yellow = attention needed, Red = critical issue requiring immediate action."
 
     2. 📊 UNIFIED PERFORMANCE DASHBOARD (CONSOLIDATED)
-       - Tabbed interface: [Meta-Learning] [Redis Cache] [Pinecone Vectors] [Execution Flow]
+       - Tabbed interface: [Meta-Learning] [Redis cache] [Pinecone Vectors] [Execution Flow]
        - Each tab shows: Stats + Recent Operations + Performance Graph
-       - Purpose: "Deep-dive into subsystem performance. Compare metrics across tabs to identify bottlenecks. Target: Cache hit rate >80%, Query latency <100ms, Success rate >95%."
+       - Purpose: "Deep-dive into subsystem performance. Compare metrics across tabs to identify bottlenecks. Target: cache hit rate >80%, Query latency <100ms, Success rate >95%."
 
     3. 📜 SYSTEM EVENT STREAM (MERGED from 2 logs)
        - Single unified log with event type filtering
-       - Filters: [All] [Meta-Learning] [Cache] [Vector] [Execution] [Errors]
+       - Filters: [All] [Meta-Learning] [cache] [Vector] [Execution] [Errors]
        - Purpose: "Complete system event timeline. Filter by type to isolate subsystem behavior. Use for root cause analysis when health indicators show issues."
 
     4. 🧠 META-LEARNING INSIGHTS (ENHANCED)

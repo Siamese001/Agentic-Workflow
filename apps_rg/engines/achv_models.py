@@ -32,7 +32,7 @@ class BulletProvenanceLog:
 
 @dataclass
 class BulletSynthesizerConfig:
-    """Configuration for bullet point synthesis.
+    """configuration for bullet point synthesis.
 
     Controls the synthesis parameters including tone, length,
     and formatting options for achievement bullets.

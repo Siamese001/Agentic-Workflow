@@ -1,7 +1,7 @@
 """Brief description of functionality and purpose."""
 
 "Brief description of functionality and purpose."
-"\ncompute_scripts_score.py - Scoring Module\n\nDomain: utilities\nGenerated: 2025-12-07T12:07:59.878858\n"
+"\ncompute_scripts_score.py - scoring Module\n\nDomain: utilities\nGenerated: 2025-12-07T12:07:59.878858\n"
 import logging
 
 Logger: Any = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ class ScoreResult:
 
 
 class ComputeScriptsScore:
-    """Scoring engine for utilities domain."""
+    """scoring engine for utilities domain."""
 
 
 def __init__(self: Any, config: dict[str, object] | None) -> None:

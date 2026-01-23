@@ -517,7 +517,7 @@ class InferenceEngine:
         }
         cache_prompt = request.prompt
 
-        # Cache get - check for exact or semantic match
+        # cache get - check for exact or semantic match
         cache_result = self.cache.get(cache_prompt, context=cache_context)
         if isinstance(cache_result, SemanticCacheHit):
             cached_entry = cache_result.entry
@@ -596,7 +596,7 @@ class InferenceEngine:
                 context_updated=True,
             )
 
-            # Cache set (store full result)
+            # cache set (store full result)
             self.cache.set(
                 prompt=cache_prompt,
                 response=result,

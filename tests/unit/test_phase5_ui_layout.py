@@ -95,7 +95,7 @@ def test_phase5_1_html_structure():
     # Test section headers
     section_headers = [
         ("Meta-Learning Activity", "Meta-Learning section header"),
-        ("Redis Cache Activity", "Redis section header"),
+        ("Redis cache Activity", "Redis section header"),
         ("Pinecone Vector Operations", "Pinecone section header"),
         ("Agent Execution Flow", "Execution Flow section header"),
     ]
@@ -217,8 +217,8 @@ def test_phase5_4_css_completeness():
         (".redis-stats-grid", "Redis stats grid"),
         (".operation-log", "Operation log styling"),
         (".log-entry", "Log entry styling"),
-        (".cache-hit", "Cache hit styling"),
-        (".cache-miss", "Cache miss styling"),
+        (".cache-hit", "cache hit styling"),
+        (".cache-miss", "cache miss styling"),
         (".pinecone-stats-grid", "Pinecone stats grid"),
         (".query-results", "Query results styling"),
         (".execution-timeline", "Execution timeline styling"),

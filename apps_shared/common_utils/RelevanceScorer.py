@@ -57,7 +57,7 @@ class RelevanceScorer:
         """Initialize relevance scorer.
 
         Args:
-            method: Scoring method
+            method: scoring method
             keyword_weight: Weight for keyword overlap
             semantic_weight: Weight for semantic similarity
             recency_weight: Weight for recency
@@ -262,7 +262,7 @@ def create_relevance_scorer(
     """Factory function to create relevance scorer.
 
     Args:
-        method: Scoring method
+        method: scoring method
 
     Returns:
         RelevanceScorer instance

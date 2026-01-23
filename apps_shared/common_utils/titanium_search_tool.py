@@ -12,7 +12,7 @@ from .titanium_rag_pipeline import TitaniumRAGPipeline, create_titanium_pipeline
 
 logger = logging.getLogger(__name__)
 
-# Global singleton to preserve Cache/Lazy Models
+# Global singleton to preserve cache/Lazy models
 _TITANIUM_PIPELINE: TitaniumRAGPipeline | None = None
 _LEGACY_FALLBACK_ENABLED = True
 _INITIALIZATION_LOCK = asyncio.Lock()
@@ -43,7 +43,7 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
             logger.info("  - Phase 2 (Reasoning): Available")
             logger.info(
                 f"  - Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']}, "
-                f"Cache={component_info['phase_3_sota']['cache_available']}"
+                f"cache={component_info['phase_3_sota']['cache_available']}"
             )
 
             return _TITANIUM_PIPELINE

@@ -1,4 +1,4 @@
-"""Hardened Router with intelligent multi-provider fallback.
+"""Hardened router with intelligent multi-provider fallback.
 
 Implements waterfall routing logic that automatically fails over to backup
 providers when primary providers have circuit breakers open.

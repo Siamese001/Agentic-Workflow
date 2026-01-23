@@ -150,7 +150,7 @@ __all__ = [
     "MCPSecurityGuardrail",
     "MCPSecurityViolation",
     "MCPSecurityResult",
-    # Logging & Observability
+    # Logging & observability
     "LoggingObservabilityGuardrail",
     "LogLevel",
     "LogEntry",

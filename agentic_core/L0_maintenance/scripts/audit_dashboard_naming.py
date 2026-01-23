@@ -74,7 +74,7 @@ def audit_data_files():
         data = json.loads(json_content)
         if data:
             schema = list(data[0].keys())
-            print(f"   Schema ({len(schema)} columns):")
+            print(f"   schema ({len(schema)} columns):")
             for col in schema:
                 print(f"      - {col}")
             findings["dashboardData_schema"] = schema

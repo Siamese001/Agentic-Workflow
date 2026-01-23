@@ -76,7 +76,7 @@ TERRITORY_L5_GUARDRAILS_HYGIENE = "L5 Safety/Guardrails/Hygiene"  # Code hygiene
 TERRITORY_L5_RED_TEAMING = "L5 Safety/Red Teaming"
 TERRITORY_L5_GRAVITY = "L5 Safety/Gravity"
 
-# L6 Observability Territories
+# L6 observability Territories
 TERRITORY_L6_METRICS = "L6_Observability/Metrics"
 TERRITORY_L6_TELEMETRY = "L6_Observability/Telemetry"
 TERRITORY_L6_TRACING = "L6_Observability/Tracing"
@@ -229,7 +229,7 @@ def get_territory_from_path(
 CANONICAL_TERRITORY_ORDER = [
     # Sovereign Base Agent always first
     TERRITORY_SOVEREIGN_BASE,
-    # L6 Observability
+    # L6 observability
     TERRITORY_L6_BASE,
     TERRITORY_L6_METRICS,
     TERRITORY_L6_TELEMETRY,

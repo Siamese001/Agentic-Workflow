@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-Sovereign Guard: Block Inline Pydantic Models
+Sovereign Guard: Block Inline Pydantic models
 Enforces that all Pydantic models must live in core_contracts.py
 
 Usage: Called automatically by pre-commit hook

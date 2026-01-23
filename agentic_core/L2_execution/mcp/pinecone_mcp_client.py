@@ -28,7 +28,7 @@ class SovereignPineconeMcpClient(SovereignBaseAgent):
     - Search results cached with 1-hour TTL
     - Reduces MCP call overhead
 
-    All vector operations flow through the Sovereign MCP Router for:
+    All vector operations flow through the Sovereign MCP router for:
     - L5 safety validation
     - L3 orchestration coordination
     - L4 state persistence
@@ -64,7 +64,7 @@ class SovereignPineconeMcpClient(SovereignBaseAgent):
         try:
             await self.router.initialize()
             self.initialized = True
-            Logger.info("[L4 PINECONE MCP] Router initialized successfully")
+            Logger.info("[L4 PINECONE MCP] router initialized successfully")
         except Exception as e:
             Logger.error(f"[L4 PINECONE MCP] Initialization failed: {e}")
             raise
@@ -99,7 +99,7 @@ class SovereignPineconeMcpClient(SovereignBaseAgent):
         if not self.initialized:
             await self.initialize()
 
-        # [PHASE 34] Cache Check
+        # [PHASE 34] cache Check
         effective_ns = namespace or config.PINECONE_DEFAULT_NAMESPACE
         cache_key = ""
 
@@ -127,7 +127,7 @@ class SovereignPineconeMcpClient(SovereignBaseAgent):
                 },
             )
 
-            # [PHASE 34] Cache Write
+            # [PHASE 34] cache Write
             if use_cache and result.get("matches"):
                 await self.cache_set(cache_key, result, ttl=self._default_ttl)
 

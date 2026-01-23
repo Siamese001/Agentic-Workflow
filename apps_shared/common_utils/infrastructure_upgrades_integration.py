@@ -1,6 +1,6 @@
 """Infrastructure Upgrades Integration - Unified orchestration layer.
 
-This module integrates the Fact Ledger, Global Cache, and Brand Voice Enforcer
+This module integrates the Fact Ledger, Global cache, and Brand Voice Enforcer
 with the existing hardened infrastructure to provide enhanced consistency,
 performance, and brand compliance across all engines.
 """
@@ -101,7 +101,7 @@ class InfrastructureUpgradesOrchestrator:
         """Handle cache miss event.
 
         Args:
-            event: Cache miss event
+            event: cache miss event
         """
         try:
             # Log cache miss for analytics
@@ -109,7 +109,7 @@ class InfrastructureUpgradesOrchestrator:
             query = payload.get("query", "")
             cache_type = payload.get("cache_type", "unknown")
 
-            logger.debug(f"Cache miss for {cache_type}: {query[:50]}...")
+            logger.debug(f"cache miss for {cache_type}: {query[:50]}...")
 
             # Could trigger cache warming logic here
 
@@ -279,7 +279,7 @@ class InfrastructureUpgradesOrchestrator:
             if verify_facts:
                 fact_violations = await self._verify_content_facts(content, trace_id)
 
-            # Cache the result
+            # cache the result
             if use_cache:
                 cache_key = f"{task_type.value}:{prompt}"
                 self.global_cache.put(

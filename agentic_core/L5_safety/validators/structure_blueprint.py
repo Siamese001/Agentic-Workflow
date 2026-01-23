@@ -1120,7 +1120,7 @@ ALLOWED_DUPLICATE_FILENAMES: frozenset[str] = frozenset(
         "utils.py",
         "helpers.py",
         "common.py",
-        # Observability patterns (per-engine instrumentation)
+        # observability patterns (per-engine instrumentation)
         "observability.py",
         "metrics.py",
         "logging.py",
@@ -1460,7 +1460,7 @@ AST_PLACEMENT_SIGNALS: dict[str, dict[str, Any]] = {
         "weight": 8,
     },
     "agentic_core/L4_state/memory": {
-        "class_patterns": [".*Memory.*", ".*Cache.*", ".*Store.*"],
+        "class_patterns": [".*Memory.*", ".*cache.*", ".*Store.*"],
         "base_classes": ["MemoryStore", "CacheManager"],
         "function_patterns": ["store_.*", "retrieve_.*", "cache_.*"],
         "import_signals": ["pinecone", "redis", "memory"],
@@ -1526,7 +1526,7 @@ AST_PLACEMENT_SIGNALS: dict[str, dict[str, Any]] = {
         "keyword_signals": ["naming", "snake_case", "pascal_case", "case", "convention"],
         "weight": 7,
     },
-    # Observability placements
+    # observability placements
     "agentic_core/observability/metrics": {
         "class_patterns": [".*Metric.*", ".*Counter.*", ".*Gauge.*"],
         "base_classes": ["MetricCollector"],
@@ -1553,7 +1553,7 @@ AST_PLACEMENT_SIGNALS: dict[str, dict[str, Any]] = {
     },
     # Schemas placements
     "agentic_core/schemas/models": {
-        "class_patterns": [".*Model$", ".*Schema$", ".*DTO$"],
+        "class_patterns": [".*Model$", ".*schema$", ".*DTO$"],
         "base_classes": ["BaseModel", "pydantic.BaseModel"],
         "function_patterns": [],
         "import_signals": ["pydantic", "dataclasses"],

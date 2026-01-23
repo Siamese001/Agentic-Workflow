@@ -1,5 +1,5 @@
 """
-Outreach Engine Observability Module
+Outreach Engine observability Module
 
 Provides comprehensive observability:
 - Execution tracing

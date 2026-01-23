@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""In-Memory Vector Cache - Ultra-fast ChromaDB hot cache for 10-50x speedup.
+"""In-Memory Vector cache - Ultra-fast ChromaDB hot cache for 10-50x speedup.
 
 Provides ephemeral in-memory vector storage for frequently accessed collections.
 Optimized for 8GB hot cache allocation within 32GB WSL2 environment.

@@ -1,5 +1,5 @@
 """
-Configuration Loader.
+configuration Loader.
 
 Handles loading, parsing, and validating JSON configurations against Pydantic schemas.
 """
@@ -41,7 +41,7 @@ def load_agent_specs(force_reload: bool = False) -> AgentSpecs:
     config_path = get_config_path() / "agent_specs.json"
 
     if not config_path.exists():
-        raise FileNotFoundError(f"Configuration file not found: {config_path}")
+        raise FileNotFoundError(f"configuration file not found: {config_path}")
 
     try:
         with open(config_path, encoding="utf-8") as f:

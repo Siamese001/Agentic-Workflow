@@ -53,7 +53,7 @@ class TestCachePersistence:
 
     @pytest.mark.asyncio
     async def test_cache_persistence(self):
-        """REQUIRED: Cache hit on repeated task execution."""
+        """REQUIRED: cache hit on repeated task execution."""
         # Arrange
         agent = CoreOrchestrationAgent(cache_enabled=True, max_retries=1)
         task = Task(
@@ -78,7 +78,7 @@ class TestCachePersistence:
 
     @pytest.mark.asyncio
     async def test_cache_disabled(self):
-        """Cache should not be used when disabled."""
+        """cache should not be used when disabled."""
         # Arrange
         agent = CoreOrchestrationAgent(cache_enabled=False, max_retries=1)
         task = Task(
@@ -333,7 +333,7 @@ class TestLegacyFactoryMapping:
 
         # Assert agent is functional
         assert isinstance(agent, CoreOrchestrationAgent)
-        assert agent.cache_enabled, "Cache should be enabled for cached orchestrator"
+        assert agent.cache_enabled, "cache should be enabled for cached orchestrator"
 
     def test_legacy_self_recovering_factory(self):
         """SelfRecoveringOrchestratorAgent factory returns unified agent."""

@@ -93,12 +93,12 @@ class TestRAGArchitectureValidation:
     async def test_rag_004_bridge_fallback(self):
         """
         RAG-004: Bridge Fallback
-        Verify graceful degradation when TitaniumRagPipeline is unavailable.
+        Verify graceful degradation when titanium_rag_pipeline is unavailable.
         """
         from agentic_core.L3_orchestration.interfaces.IRagProvider import RagQuery
 
-        # Mock ImportError for TitaniumRagPipeline at import time
-        with patch.dict("sys.modules", {"apps_shared.common_utils.TitaniumRagPipeline": None}):
+        # Mock ImportError for titanium_rag_pipeline at import time
+        with patch.dict("sys.modules", {"apps_shared.common_utils.titanium_rag_pipeline": None}):
             # Force reimport to trigger ImportError
             import sys
 

@@ -45,7 +45,7 @@ Logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-# Phase 4: FileCache - Persistent File Discovery Cache
+# Phase 4: FileCache - Persistent File Discovery cache
 # =============================================================================
 
 
@@ -75,7 +75,7 @@ class FileCache:
 
         Args:
             cache_path: Path to the JSON cache file
-            expiry_seconds: Cache expiry time in seconds (default: 300)
+            expiry_seconds: cache expiry time in seconds (default: 300)
         """
         self.cache_path = Path(cache_path)
         self.expiry_seconds = expiry_seconds
@@ -111,7 +111,7 @@ class FileCache:
         is_valid = (time.time() - cache_time) < expiry
 
         if not is_valid:
-            Logger.debug(f"[FILE_CACHE] Cache expired (age: {time.time() - cache_time:.0f}s)")
+            Logger.debug(f"[FILE_CACHE] cache expired (age: {time.time() - cache_time:.0f}s)")
 
         return is_valid
 
@@ -156,11 +156,11 @@ class FileCache:
         if self.cache_path.exists():
             try:
                 self.cache_path.unlink()
-                Logger.debug("[FILE_CACHE] Cache file deleted")
+                Logger.debug("[FILE_CACHE] cache file deleted")
             except OSError as e:
                 Logger.warning(f"[FILE_CACHE] Failed to delete cache file: {e}")
 
-        Logger.debug("[FILE_CACHE] Cache invalidated")
+        Logger.debug("[FILE_CACHE] cache invalidated")
 
     def get_stats(self) -> dict[str, Any]:
         """
@@ -214,7 +214,7 @@ class FileCache:
 
 
 # =============================================================================
-# Global File Cache Instance
+# Global File cache Instance
 # =============================================================================
 
 _global_cache: FileCache | None = None
@@ -274,7 +274,7 @@ def get_python_files_cached(
         Logger.debug(f"[SSOT_DISCOVERY] Returning {len(files)} files from cache")
         return files
 
-    # Cache miss or forced refresh - do full scan
+    # cache miss or forced refresh - do full scan
     files = get_python_files(project_root, include_tests=include_tests)
 
     # Update cache
@@ -494,7 +494,7 @@ def get_cached_python_files(project_root: str) -> tuple:
 def invalidate_cache() -> None:
     """Clear the file discovery cache."""
     get_cached_python_files.cache_clear()
-    Logger.debug("[SSOT_DISCOVERY] Cache invalidated")
+    Logger.debug("[SSOT_DISCOVERY] cache invalidated")
 
 
 def compare_with_rglob(project_root: Path) -> dict[str, int]:

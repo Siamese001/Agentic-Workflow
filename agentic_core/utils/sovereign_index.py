@@ -178,13 +178,13 @@ class SovereignIndex:
         # Check cache first
         if pattern in self._cache:
             Logger.info(
-                f"[INDEX] Cache Hit: Pattern '{pattern}' -> {len(self._cache[pattern])} files (from cache)"
+                f"[INDEX] cache Hit: Pattern '{pattern}' -> {len(self._cache[pattern])} files (from cache)"
             )
             return self._cache[pattern].copy()
 
-        # Cache miss - need to scan
+        # cache miss - need to scan
         Logger.info(
-            f"[INDEX] Cache Miss: Pattern '{pattern}' -> scanning {len(self._all_files)} indexed files"
+            f"[INDEX] cache Miss: Pattern '{pattern}' -> scanning {len(self._all_files)} indexed files"
         )
 
         # Filter files by pattern
@@ -193,7 +193,7 @@ class SovereignIndex:
             if fnmatch.fnmatch(file_path.name, pattern):
                 matched.append(file_path)
 
-        # Cache the result
+        # cache the result
         self._cache[pattern] = matched
 
         Logger.info(
@@ -253,7 +253,7 @@ class SovereignIndex:
         """
         self._cache.clear()
         self._initialized = False
-        Logger.debug("[INDEX] Cache invalidated")
+        Logger.debug("[INDEX] cache invalidated")
 
     def force_refresh(self) -> int:
         """
@@ -268,7 +268,7 @@ class SovereignIndex:
         self._all_files.clear()
         self._initialized = False
         count = self._scan_filesystem()
-        Logger.info("[INDEX] Structural Purge Detected: Cache invalidated and rebuilt.")
+        Logger.info("[INDEX] Structural Purge Detected: cache invalidated and rebuilt.")
         return count
 
     def add_exclusion(self, dir_name: str) -> None:

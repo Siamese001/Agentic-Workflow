@@ -145,7 +145,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
             "L3_orchestration": "Orchestration",
             "L4_state": "State",
             "L5_safety": "Safety",
-            "L6_observability": "Observability",
+            "L6_observability": "observability",
         }
 
     async def analyze_violation_async(self, file_path: Path, violation_type: str, context: dict = None) -> DispositionDecision:

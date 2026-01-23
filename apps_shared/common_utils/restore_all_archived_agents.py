@@ -67,7 +67,7 @@ def infer_target_directory(agent_name: str, source_path: str) -> str | None:
     ):
         return TARGETS["L5"]
 
-    # L6 Observability agents
+    # L6 observability agents
     if any(x in name_lower for x in ["telemetry", "metrics", "tracing", "monitor", "observ"]):
         return TARGETS["L6"]
 

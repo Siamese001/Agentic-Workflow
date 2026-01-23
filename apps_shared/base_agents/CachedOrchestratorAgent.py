@@ -6,7 +6,7 @@
 
 #!/usr/bin/env python3
 """
-CachedOrchestratorAgent - Eternal L3 Orchestration with Redis Sovereign Cache
+CachedOrchestratorAgent - Eternal L3 Orchestration with Redis Sovereign cache
 """
 
 import hashlib
@@ -30,7 +30,7 @@ class CachedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMix
         self.redis_gateway = RedisSovereignAgent(project_root)
         self.redis = self.redis_gateway.get_client()
 
-        # Cache prefixes for L3 orchestration
+        # cache prefixes for L3 orchestration
         self.prefix_mission = f"l3_mission:{mission_id}"
         self.prefix_fission = f"l3_fission:{mission_id}"
         self.prefix_routing = f"l3_routing:{mission_id}"

@@ -345,7 +345,7 @@ def classify_file(analysis: FileAnalysis) -> tuple[str, str, str, str]:
         return (
             "SCHEMA_MODEL",
             "MIGRATE",
-            "Schema/model definition. Move to agentic_core/schemas/",
+            "schema/model definition. Move to agentic_core/schemas/",
             "LOW",
         )
 
@@ -361,7 +361,7 @@ def classify_file(analysis: FileAnalysis) -> tuple[str, str, str, str]:
         return ("MCP_COMPONENT", "MIGRATE", "MCP integration. Move to L2_execution/mcp/", "MEDIUM")
 
     if status == "MIGRATE_CONFIG":
-        return ("CONFIG_FILE", "MIGRATE", "Configuration. Move to agentic_core/config/", "LOW")
+        return ("CONFIG_FILE", "MIGRATE", "configuration. Move to agentic_core/config/", "LOW")
 
     if status == "CHECK_DUPLICATE":
         return (

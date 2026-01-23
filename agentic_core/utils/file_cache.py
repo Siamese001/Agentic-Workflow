@@ -238,7 +238,7 @@ class FileCache:
         with self._cache_lock:
             self._files = {}
             self._is_populated = False
-            Logger.debug("[FileCache] Cache invalidated")
+            Logger.debug("[FileCache] cache invalidated")
 
     def get_scan_count(self) -> int:
         """

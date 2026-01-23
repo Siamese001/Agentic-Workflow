@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class HardenedOpenAIConfig:
-    """Configuration for HardenedOpenAIExecutor."""
+    """configuration for HardenedOpenAIExecutor."""
 
     # Model context limits (tokens)
     MODEL_LIMITS = {

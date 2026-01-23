@@ -91,7 +91,7 @@ class CognitiveNodeRefactored:
             output = self.action.act(reasoned)
             self._record_metric("action", time.time() - start)
 
-        # Cache result
+        # cache result
         self.cache[cache_key] = output.copy()
 
         return output
@@ -147,7 +147,7 @@ class CognitiveNodeRefactored:
             output = await self.action.act_async(reasoned)
             self._record_metric("action", time.time() - start)
 
-        # Cache result
+        # cache result
         self.cache[cache_key] = output.copy()
 
         return output
@@ -161,7 +161,7 @@ class CognitiveNodeRefactored:
             context: Context
 
         Returns:
-            Cache key
+            cache key
         """
         input_str = str(sorted(raw_input.items()))
         context_str = str(sorted(context.items()))

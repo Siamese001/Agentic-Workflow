@@ -1,4 +1,4 @@
-"""Schema Store Querier - Queries and retrieves schemas from storage.
+"""schema Store Querier - Queries and retrieves schemas from storage.
 
 This module provides schema querying capabilities for schema operations,
 including lookup, filtering, versioning, and metadata retrieval.
@@ -90,7 +90,7 @@ class SchemaQueryResult:
 
 @dataclass
 class SchemaStoreConfig:
-    """Configuration for schema store."""
+    """configuration for schema store."""
 
     storage_path: str = "data/schema_store"
     max_entries_per_query: int = 1000
@@ -116,7 +116,7 @@ class SchemaStoreQuerier:
         """Query schemas based on criteria.
 
         Args:
-            query: Schema query configuration
+            query: schema query configuration
 
         Returns:
             SchemaQueryResult: Query results with schemas and metadata
@@ -163,13 +163,13 @@ class SchemaStoreQuerier:
             )
 
             self.logger.info(
-                f"Schema query completed: {len(entries)} results (total: {total_count})"
+                f"schema query completed: {len(entries)} results (total: {total_count})"
             )
 
             return result
 
         except Exception as e:
-            self.logger.error(f"Schema query failed: {str(e)}")
+            self.logger.error(f"schema query failed: {str(e)}")
             return SchemaQueryResult(
                 entries=[], total_count=0, query=query, metadata={"error": str(e)}
             )
@@ -181,7 +181,7 @@ class SchemaStoreQuerier:
             schema_id: ID of schema to retrieve
 
         Returns:
-            SchemaEntry: Schema if found, None otherwise
+            SchemaEntry: schema if found, None otherwise
         """
         return self._schema_cache.get(schema_id)
 
@@ -189,11 +189,11 @@ class SchemaStoreQuerier:
         """Get schema by name and optionally version.
 
         Args:
-            name: Schema name
+            name: schema name
             version: Optional version (latest if not specified)
 
         Returns:
-            SchemaEntry: Schema if found, None otherwise
+            SchemaEntry: schema if found, None otherwise
         """
         if name not in self._name_index:
             return None
@@ -217,7 +217,7 @@ class SchemaStoreQuerier:
         """Get all versions of a schema.
 
         Args:
-            name: Schema name
+            name: schema name
 
         Returns:
             List[SchemaMetadata]: Metadata for all versions
@@ -237,7 +237,7 @@ class SchemaStoreQuerier:
         """Add a schema to the store.
 
         Args:
-            entry: Schema entry to add
+            entry: schema entry to add
 
         Returns:
             bool: True if schema was added successfully
@@ -247,7 +247,7 @@ class SchemaStoreQuerier:
 
             # Check if already exists
             if schema_id in self._schema_cache:
-                self.logger.warning(f"Schema {schema_id} already exists, updating")
+                self.logger.warning(f"schema {schema_id} already exists, updating")
 
             # Add to cache
             self._schema_cache[schema_id] = entry

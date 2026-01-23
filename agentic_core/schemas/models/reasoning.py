@@ -64,7 +64,7 @@ class AgentThoughtProcess(BaseModel):
 
 
 class CodeGenerationResult(BaseModel):
-    """Schema for code generation tasks."""
+    """schema for code generation tasks."""
 
     reasoning: str = Field(..., description="Why this code solves the problem")
     code: str = Field(..., description="The generated Python code")
@@ -76,7 +76,7 @@ class CodeGenerationResult(BaseModel):
 
 
 class ResearchResult(BaseModel):
-    """Schema for research tasks."""
+    """schema for research tasks."""
 
     query_understanding: str = Field(..., description="How you interpreted the research question")
     sources: list[dict[str, str]] = Field(

@@ -1,5 +1,5 @@
 """
-Observability Gauntlet Test Suite - 100% Pass Required.
+observability Gauntlet Test Suite - 100% Pass Required.
 
 This test suite validates the "Zombie" and "Dark Matter" risk mitigations
 for the observability hardening implementation.

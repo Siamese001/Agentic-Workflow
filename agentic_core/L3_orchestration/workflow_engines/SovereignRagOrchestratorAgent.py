@@ -86,7 +86,7 @@ class SovereignRagOrchestratorAgent(SovereignBaseAgent, IRagProvider):
         """Initialize Titanium RAG Pipeline for SOTA features with strict lazy-loading."""
         try:
             # Lazy import to avoid circular dependency L3 -> Apps Shared
-            from apps_shared.common_utils.TitaniumRagPipeline import TitaniumRAGPipeline
+            from apps_shared.common_utils.titanium_rag_pipeline import TitaniumRAGPipeline
 
             self.titanium_pipeline = TitaniumRAGPipeline(
                 enable_compression=True,

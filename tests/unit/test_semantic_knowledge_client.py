@@ -206,7 +206,7 @@ def test_documentation_search():
 def test_config_search():
     """Test searching for configurations."""
     print("\n" + "=" * 60)
-    print("TEST 9: Configuration Search")
+    print("TEST 9: configuration Search")
     print("=" * 60)
 
     client = SemanticKnowledgeClient()
@@ -296,7 +296,7 @@ def main():
         ("API Contract Search", test_api_contract_search),
         ("Healing Pattern Search", test_healing_pattern_search),
         ("Documentation Search", test_documentation_search),
-        ("Configuration Search", test_config_search),
+        ("configuration Search", test_config_search),
         ("Search All Namespaces", test_search_all),
         ("Filtered Search", test_filter_search),
     ]

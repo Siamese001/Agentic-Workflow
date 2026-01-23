@@ -5,7 +5,7 @@ This test suite ensures no legacy functionality is dropped during the Phase 4
 performance hardening work. All 4 test cases must pass 100%.
 
 Test Cases:
-- TC-13: Cache Accuracy - Invalidate removes deleted files from cache
+- TC-13: cache Accuracy - Invalidate removes deleted files from cache
 - TC-14: Exclusion Integrity - No backup files in cached results
 - TC-15: Performance Delta - Cached version >90% faster than rglob
 - TC-16: Refactor Parity - ssot_discovery returns same files as rglob
@@ -27,13 +27,13 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 def test_tc13_cache_accuracy():
     """
-    TC-13: Cache Accuracy
+    TC-13: cache Accuracy
 
     Verify that deleting a file and calling invalidate() results in the
     file being removed from the get_python_files() output.
     """
     print("\n" + "=" * 60)
-    print("TC-13: Cache Accuracy")
+    print("TC-13: cache Accuracy")
     print("=" * 60)
 
     from agentic_core.utils.ssot_discovery import FileCache, get_python_files
@@ -73,7 +73,7 @@ def test_tc13_cache_accuracy():
 
         # Verify cache is invalid
         if cache.is_valid():
-            print("❌ FAIL: Cache should be invalid after invalidate()")
+            print("❌ FAIL: cache should be invalid after invalidate()")
             return False
 
         # Re-scan and update cache
@@ -93,7 +93,7 @@ def test_tc13_cache_accuracy():
             return False
 
         print(f"   After delete + invalidate: {len(cached_after)} files")
-        print("✅ PASS: Cache correctly reflects file deletion after invalidate()")
+        print("✅ PASS: cache correctly reflects file deletion after invalidate()")
         return True
 
 
@@ -290,7 +290,7 @@ def main():
     print(f"Project Root: {PROJECT_ROOT}")
 
     tests = [
-        ("TC-13: Cache Accuracy", test_tc13_cache_accuracy),
+        ("TC-13: cache Accuracy", test_tc13_cache_accuracy),
         ("TC-14: Exclusion Integrity", test_tc14_exclusion_integrity),
         ("TC-15: Performance Delta", test_tc15_performance_delta),
         ("TC-16: Refactor Parity", test_tc16_refactor_parity),

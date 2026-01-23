@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""Redis Cache Client Factory.
+"""Redis cache Client Factory.
 
 Provides unified access to Redis for caching, session management,
 and pub/sub with automatic configuration.
@@ -18,7 +18,7 @@ Logger: Any = logging.getLogger(__name__)
 
 @dataclass
 class RedisConfig:
-    """Configuration for Redis client."""
+    """configuration for Redis client."""
 
     HOST: str = "localhost"
     PORT: int = 6379
@@ -99,7 +99,7 @@ def cache_set(
 
     Args:
         client: Redis client
-        key: Cache key
+        key: cache key
         value: Value to cache
         ttl: Optional time-to-live in seconds
         serialize: Whether to JSON serialize the value
@@ -124,7 +124,7 @@ def cache_get(client: Any, key: str, DESERIALIZE: bool = True) -> Any | None:
 
     Args:
         client: Redis client
-        key: Cache key
+        key: cache key
         deserialize: Whether to JSON deserialize the value
 
     Returns:
@@ -150,7 +150,7 @@ def cache_delete(client: Any, key: str) -> bool:
 
     Args:
         client: Redis client
-        key: Cache key
+        key: cache key
 
     Returns:
         True if key was deleted
@@ -167,7 +167,7 @@ def cache_exists(client: Any, key: str) -> bool:
 
     Args:
         client: Redis client
-        key: Cache key
+        key: cache key
 
     Returns:
         True if key exists

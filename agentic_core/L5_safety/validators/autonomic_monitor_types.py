@@ -29,7 +29,7 @@ class AlertSeverity(Enum):
 
 
 @dataclass
-class HealthMetrics:
+class health_metrics:
     """Health metrics for an agent."""
 
     agent_id: str
@@ -61,7 +61,7 @@ class HealthAlert:
     agent_id: str
     Severity: AlertSeverity
     message: str
-    metrics: HealthMetrics
+    metrics: health_metrics
     recommended_actions: list[str] = field(default_factory=list)
     timestamp: float = field(default_factory=time.time)
 

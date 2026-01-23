@@ -9,11 +9,11 @@ from dataclasses import dataclass
 """
 RUNTIME TELEMETRY AGENT
 -----------------------
-L6 Observability Agent designed to monitor the performance of Sovereign Seals.
+L6 observability Agent designed to monitor the performance of Sovereign Seals.
 It tracks the latency introduced by ImportLockAgent and DynamicSeal patterns.
 
 CANONICAL PATH: agentic_core/L6_observability/RuntimeTelemetryAgent.py
-VIOLATION JUSTIFICATION: None. Strictly L6 Observability.
+VIOLATION JUSTIFICATION: None. Strictly L6 observability.
 """
 
 import logging

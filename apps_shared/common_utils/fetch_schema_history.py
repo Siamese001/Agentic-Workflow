@@ -1,4 +1,4 @@
-"""Schema History Fetcher - Fetches and manages schema history.
+"""schema History Fetcher - Fetches and manages schema history.
 
 This module provides schema history fetching and management capabilities,
 including version tracking, change history, and evolution analysis.
@@ -82,7 +82,7 @@ class SchemaEvolutionSummary:
 
 @dataclass
 class SchemaHistoryConfig:
-    """Configuration for schema history management."""
+    """configuration for schema history management."""
 
     storage_path: str = "data/schema_history"
     max_records_per_schema: int = 1000
@@ -163,7 +163,7 @@ class SchemaHistoryFetcher:
             )
 
             self.logger.info(
-                f"Schema history fetched: {len(paginated_records)} records (total: {total_count})"
+                f"schema history fetched: {len(paginated_records)} records (total: {total_count})"
             )
 
             return result

@@ -18,7 +18,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 )
 
 # 1. Bounded Contexts (Strict Boundaries)
-# Sovereign Layer Hierarchy (L0=Governance, L6=Observability)
+# Sovereign Layer Hierarchy (L0=Governance, L6=observability)
 # Higher ranks (smaller numbers) define Policy and Intent.
 # Lower ranks (larger numbers) provide Data and Infrastructure.
 BOUNDED_CONTEXTS: dict[str, dict[str, Any]] = {

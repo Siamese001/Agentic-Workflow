@@ -51,13 +51,13 @@ class test_terminal_sweep_compliance:
 
         # V107 files should be in legacy, not engines
         assert not (engines_path / "MainV107.py").exists(), "MainV107.py should be in legacy/"
-        assert not (engines_path / "CoreV107.py").exists(), "CoreV107.py should be in legacy/"
-        assert not (engines_path / "AgentToolsV107.py").exists(), (
-            "AgentToolsV107.py should be in legacy/"
+        assert not (engines_path / "core_v107.py").exists(), "core_v107.py should be in legacy/"
+        assert not (engines_path / "agent_tools_v107.py").exists(), (
+            "agent_tools_v107.py should be in legacy/"
         )
 
         # V12 files should be in legacy
-        assert not (engines_path / "UtilsLicV12.py").exists(), "UtilsLicV12.py should be in legacy/"
+        assert not (engines_path / "utils_lic_v12.py").exists(), "utils_lic_v12.py should be in legacy/"
 
         # Refactored files should be in legacy
         assert not (engines_path / "OutreachEngineRefactored.py").exists(), (

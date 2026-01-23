@@ -97,7 +97,7 @@ if sys.platform.startswith("win"):
 _mission_executed = False
 
 # ----------------------------------------------------------------------
-# RUNTIME STATE MANAGEMENT - For Dashboard Live Observability
+# RUNTIME STATE MANAGEMENT - For Dashboard Live observability
 # ----------------------------------------------------------------------
 import json as _json
 
@@ -280,8 +280,8 @@ AGENT_LAYERS = {
     "DocumentationAgent": "L1 – Cognition & Intelligence",
     # L4 State & Memory (Phase 5 Activation)
     "CheckpointManagerAgent": "L4 – State & Memory",
-    # L6 Observability & Metrics (Phase 5 Activation)
-    "PerformanceAnalystAgent": "L6 – Observability & Metrics",
+    # L6 observability & Metrics (Phase 5 Activation)
+    "PerformanceAnalystAgent": "L6 – observability & Metrics",
     # L0 Maintenance (Future Activation)
     "BootstrapAgent": "L0 – Maintenance & Infrastructure",
     "FilesystemSSOTReconcilerAgent": "L0 – Maintenance & Infrastructure",

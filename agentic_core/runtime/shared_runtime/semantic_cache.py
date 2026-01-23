@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-"""Semantic Cache for LLM response caching.
+"""Semantic cache for LLM response caching.
 
 Phase 1 - Pillar 11: Cost & Optimization (Semantic Caching)
 Enhanced with embedding-based semantic similarity matching.
@@ -72,7 +72,7 @@ class SemanticCacheHit:
 
 @dataclass
 class CacheMiss:
-    """Cache miss result."""
+    """cache miss result."""
 
     prompt: str
     reason: str = "not_found"

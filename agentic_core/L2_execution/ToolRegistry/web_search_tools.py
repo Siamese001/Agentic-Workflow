@@ -19,14 +19,14 @@ Logger: Any = logging.getLogger("ActionRegistry.WebSearch")
 class WebSearchTools:
     """
     Standardized toolset for external intelligence.
-    Routes all traffic through L3 Sovereign Router.
+    Routes all traffic through L3 Sovereign router.
     Tool ID Prefix: ACT-001
     """
 
     def __init__(self):
         """Initialize with sovereign MCP router — L5 shielded"""
         self.router = SovereignMCPRouter(role="web_research")
-        Logger.info("[L2 WEB SEARCH] Initialized with Sovereign MCP Router")
+        Logger.info("[L2 WEB SEARCH] Initialized with Sovereign MCP router")
 
     async def search_web(self, query: str) -> str:
         """

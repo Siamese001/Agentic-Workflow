@@ -19,7 +19,7 @@ def test_redis_cache_method():
     project_root = Path(__file__).parent.parent
     guardian = get_autonomy_guardian(project_root)
 
-    print("\n[TEST 1] Redis Cache Method")
+    print("\n[TEST 1] Redis cache Method")
     print("-" * 60)
 
     if hasattr(guardian, "_cache_result"):

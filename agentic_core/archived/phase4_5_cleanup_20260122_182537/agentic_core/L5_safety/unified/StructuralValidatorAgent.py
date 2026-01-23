@@ -206,7 +206,7 @@ class StructureReport:
 
 @dataclass
 class StructureConfig:
-    """Configuration for structure validation."""
+    """configuration for structure validation."""
 
     check_gravity: bool = True
     check_duplicates: bool = True

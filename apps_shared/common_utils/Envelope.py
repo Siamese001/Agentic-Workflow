@@ -1,6 +1,6 @@
-"""Signal Envelope - Type-safe data flow through the pipeline.
+"""Signal envelope - Type-safe data flow through the pipeline.
 
-This module implements the Envelope Pattern to ensure type safety,
+This module implements the envelope Pattern to ensure type safety,
 auditability, and error isolation throughout the unified signal pipeline.
 """
 

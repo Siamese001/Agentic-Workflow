@@ -13,15 +13,15 @@ from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
-⚛️ Schema Evolver - The Structural Guard
+⚛️ schema Evolver - The Structural Guard
 
-Monitors Pydantic models and database schemas to prevent Schema Drift.
+Monitors Pydantic models and database schemas to prevent schema Drift.
 Runs forward-propagation checks when SystemArchitect proposes structural changes.
 
 Mission: Eliminate "Breaking Change" bottleneck in multi-stage pipelines
 Strategy: Automated data contract management with transformation mappings
 
-Prevents: Type Sprawl, Schema Drift, Breaking Changes between HOP stages
+Prevents: Type Sprawl, schema Drift, Breaking Changes between HOP stages
 Enables: Independent stage deployment with consistent data contracts
 """
 import ast
@@ -87,12 +87,12 @@ class SchemaRegistry:
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class SchemaEvolverAgent(SovereignBaseAgent, SubAtomicAgent):
     """
-    The Structural Guard - Schema Evolution Agent
+    The Structural Guard - schema Evolution Agent
     Monitors all Pydantic definitions and database schemas.
     Runs forward-propagation checks to prevent breaking changes.
 
     Capabilities:
-    1. Schema Discovery - Find all Pydantic models and DB schemas
+    1. schema Discovery - Find all Pydantic models and DB schemas
     2. Dependency Tracking - Map which files use which schemas
     3. Change Detection - Identify proposed schema modifications
     4. Impact Analysis - Forward-propagate changes to find breaks
@@ -106,7 +106,7 @@ class SchemaEvolverAgent(SovereignBaseAgent, SubAtomicAgent):
 
     def __init__(self, ctx: Any) -> None:
         """
-        Initialize Schema Evolver.
+        Initialize schema Evolver.
 
         Args:
             ctx: ValidationContext
@@ -121,7 +121,7 @@ class SchemaEvolverAgent(SovereignBaseAgent, SubAtomicAgent):
 
         Discovers schemas, tracks dependencies, and analyzes changes.
         """
-        Logger.info("🛡️  Schema Evolver: Monitoring data contracts...")
+        Logger.info("🛡️  schema Evolver: Monitoring data contracts...")
         self._discover_schemas()
         self._track_dependencies()
         if hasattr(self.ctx, "pending_schema_changes"):
@@ -165,7 +165,7 @@ class SchemaEvolverAgent(SovereignBaseAgent, SubAtomicAgent):
                     else False
                     for base in node.bases
                 )
-                if is_pydantic or "Schema" in node.name or "Model" in node.name:
+                if is_pydantic or "schema" in node.name or "Model" in node.name:
                     schema = self._extract_schema_definition(node, file_path, is_pydantic)
                     self.registry.schemas[schema.name] = schema
 
@@ -293,7 +293,7 @@ class SchemaEvolverAgent(SovereignBaseAgent, SubAtomicAgent):
         Logger.info()
         Logger.info("🛡️  SCHEMA CHANGE IMPACT ANALYSIS")
         Logger.info(f"{'=' * 80}")
-        Logger.info(f"Schema: {change.schema_name}")
+        Logger.info(f"schema: {change.schema_name}")
         Logger.info(f"Change: {change.change_type} - {change.field_name}")
         Logger.info(f"File: {change.file_path}")
         Logger.info("")
@@ -367,7 +367,7 @@ class SchemaEvolverAgent(SovereignBaseAgent, SubAtomicAgent):
             f"Total Schemas: {len(self.registry.schemas)}",
             f"Total Dependencies: {sum(len(deps) for deps in self.registry.dependencies.values())}",
             "",
-            "Schema Usage:",
+            "schema Usage:",
         ]
         usage_counts: Any = [(name, len(deps)) for name, deps in self.registry.dependencies.items()]
         usage_counts.sort(key=lambda x: x[1], reverse=True)
@@ -384,7 +384,7 @@ class SchemaEvolverAgent(SovereignBaseAgent, SubAtomicAgent):
         _call_path: set | None = None,
     ) -> dict[str, int]:
         """
-        Schema Evolution Healing - Discovers and validates Pydantic/DB schemas.
+        schema Evolution Healing - Discovers and validates Pydantic/DB schemas.
 
         WIRED CAPABILITIES:
         - _discover_schemas(): Parse codebase for schema definitions.
@@ -403,7 +403,7 @@ class SchemaEvolverAgent(SovereignBaseAgent, SubAtomicAgent):
             return metrics
 
         try:
-            # 1. Update Schema Registry
+            # 1. Update schema Registry
             self._discover_schemas()
             metrics["fixed"] = metrics.get("fixed", 0) + len(self.registry.schemas)
 
@@ -415,7 +415,7 @@ class SchemaEvolverAgent(SovereignBaseAgent, SubAtomicAgent):
             Logger.info(report)
 
         except Exception as e:
-            Logger.error(f"Schema healing failed: {e}")
+            Logger.error(f"schema healing failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1
 
         return metrics
@@ -425,7 +425,7 @@ _schema_evolver = None
 
 
 def get_schema_evolver(ctx: Any) -> SchemaEvolver:
-    """Get or create global Schema Evolver instance."""
+    """Get or create global schema Evolver instance."""
     global _schema_evolver
     if _schema_evolver is None:
         _schema_evolver = SchemaEvolver(ctx)

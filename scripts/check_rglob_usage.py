@@ -19,7 +19,7 @@ Phase: 4.1 - Scaled Refactoring & CI Enforcement
 import re
 import sys
 
-# Configuration
+# configuration
 MAX_ALLOWED_RGLOB = 260  # Phase 6: Temporary ceiling, target is 50
 
 # Files to exclude from the count (these are the utilities that wrap rglob)

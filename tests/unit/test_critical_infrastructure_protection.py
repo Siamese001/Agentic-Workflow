@@ -70,7 +70,7 @@ CRITICAL_INFRASTRUCTURE_FILES = [
     "agentic_core/L5_safety/validators/structure_blueprint.py",
     # Orchestration
     "agentic_core/L3_orchestration/unified_orchestrator.py",
-    # Configuration - structure_blueprint is in L5_safety/validators (canonical)
+    # configuration - structure_blueprint is in L5_safety/validators (canonical)
 ]
 
 

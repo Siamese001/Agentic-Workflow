@@ -239,7 +239,7 @@ INSTRUCTIONAL_PATTERNS: dict[int, InstructionalPattern] = {
     ),
     27: InstructionalPattern(
         id=27,
-        name="Schema Enforcement & Examples",
+        name="schema Enforcement & Examples",
         layer=InjectionLayer.OUTPUT,
         description="Supply minimal schema and one valid illustrative example.",
         template="[SCHEMA] Output must match: {schema}. Example: {example}",
@@ -253,7 +253,7 @@ INSTRUCTIONAL_PATTERNS: dict[int, InstructionalPattern] = {
     ),
     29: InstructionalPattern(
         id=29,
-        name="Error Envelope Normalization",
+        name="Error envelope Normalization",
         layer=InjectionLayer.OUTPUT,
         description="Standardize failures into simple, structured error objects.",
         template='[ERROR FORMAT] On failure: {{"error": true, "code": "...", "message": "..."}}',

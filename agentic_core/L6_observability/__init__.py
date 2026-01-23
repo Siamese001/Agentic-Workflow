@@ -1,5 +1,5 @@
 """
-L6 Observability
+L6 observability
 ================
 Monitoring, benchmarking, and observability components.
 """

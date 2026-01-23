@@ -6,7 +6,7 @@ Tests the 5 detailed test cases for:
 1. Stability Gate: Execution Failure
 2. Stability Gate: Dry-Run Safety
 3. SSOT Key Extraction
-4. Observability Duration
+4. observability Duration
 5. Critical Error Transparency
 """
 
@@ -152,13 +152,13 @@ def test_3_ssot_key_extraction():
 
 def test_4_observability_duration():
     """
-    Test Case 4: Observability Duration
+    Test Case 4: observability Duration
 
     Verify that both individual mission_log entries and the final summary
     report accurate execution times in seconds.
     """
     print("\n" + "=" * 60)
-    print("TEST 4: Observability Duration")
+    print("TEST 4: observability Duration")
     print("=" * 60)
 
     orchestrator = CoreOrchestrationAgent(PROJECT_ROOT)
@@ -268,7 +268,7 @@ def run_all_tests():
         ("Test 1: Stability Gate - Execution Failure", test_1_stability_gate_execution_failure),
         ("Test 2: Stability Gate - Dry-Run Safety", test_2_stability_gate_dry_run_safety),
         ("Test 3: SSOT Key Extraction", test_3_ssot_key_extraction),
-        ("Test 4: Observability Duration", test_4_observability_duration),
+        ("Test 4: observability Duration", test_4_observability_duration),
         ("Test 5: Critical Error Transparency", test_5_critical_error_transparency),
     ]
 

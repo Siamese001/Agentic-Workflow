@@ -22,7 +22,7 @@ SovereignLLMGateway - Unified LLM Operations Gateway
 - Unified retry/fallback strategy
 - Provider health monitoring
 
-[PHASE 13 UPGRADE] Added support for generation_config overrides (Thinking Models).
+[PHASE 13 UPGRADE] Added support for generation_config overrides (Thinking models).
 """
 
 from __future__ import annotations
@@ -285,7 +285,7 @@ def upgrade_gateway():
         f.write(FULL_GATEWAY_CONTENT)
 
     print(f"[SUCCESS] Upgraded Gateway at {GATEWAY_PATH}")
-    print("[INFO] Added generation_config support for Thinking Models")
+    print("[INFO] Added generation_config support for Thinking models")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-ULTRA-HARDENED Redis Cache Mixin
+ULTRA-HARDENED Redis cache Mixin
 
 Features:
 - Feature flag control (USE_REDIS_CACHE)
@@ -37,7 +37,7 @@ log = logging.getLogger(__name__)
 
 class RedisCacheMixin:
     """
-    ULTRA-HARDENED Redis Cache Mixin
+    ULTRA-HARDENED Redis cache Mixin
 
     Provides automatic caching with graceful degradation to local dict.
     All operations are safe - failures never crash the agent.
@@ -124,7 +124,7 @@ class RedisCacheMixin:
                 if CACHE_METRICS_ENABLED:
                     metrics.record("redis_get", hit=value is not None, latency_ms=latency)
                 if value is not None:
-                    log.debug(f"Cache HIT (Redis): {key[:50]}...")
+                    log.debug(f"cache HIT (Redis): {key[:50]}...")
                     return value
             except Exception as e:
                 if CACHE_METRICS_ENABLED:
@@ -144,9 +144,9 @@ class RedisCacheMixin:
             metrics.record("local_get", hit=value is not None, latency_ms=latency)
 
         if value is not None:
-            log.debug(f"Cache HIT (local): {key[:50]}...")
+            log.debug(f"cache HIT (local): {key[:50]}...")
         else:
-            log.debug(f"Cache MISS: {key[:50]}...")
+            log.debug(f"cache MISS: {key[:50]}...")
 
         return value
 
@@ -175,7 +175,7 @@ class RedisCacheMixin:
                 latency = (time.time() - start) * 1000
                 if CACHE_METRICS_ENABLED:
                     metrics.record("redis_set", hit=True, latency_ms=latency)
-                log.debug(f"Cache SET (Redis): {key[:50]}... TTL={ttl}s")
+                log.debug(f"cache SET (Redis): {key[:50]}... TTL={ttl}s")
                 return
             except Exception as e:
                 log.debug(f"Redis set suppressed error (local fallback used): {str(e)[:80]}")
@@ -186,7 +186,7 @@ class RedisCacheMixin:
         latency = (time.time() - start) * 1000
         if CACHE_METRICS_ENABLED:
             metrics.record("local_set", hit=True, latency_ms=latency)
-        log.debug(f"Cache SET (local): {key[:50]}...")
+        log.debug(f"cache SET (local): {key[:50]}...")
 
     async def cache_delete(self, key: str) -> None:
         """Delete a specific cached key."""
@@ -235,7 +235,7 @@ class RedisCacheMixin:
             del self._local_cache[k]
             deleted += 1
 
-        log.info(f"Cache invalidated {deleted} keys matching '{key_pattern}'")
+        log.info(f"cache invalidated {deleted} keys matching '{key_pattern}'")
         return deleted
 
     def cache_stats(self) -> dict:

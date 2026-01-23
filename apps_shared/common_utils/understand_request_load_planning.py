@@ -96,7 +96,7 @@ class ConfigLoadPlan:
 
 @dataclass
 class ConfigLoadConfig:
-    """Configuration for config load planning."""
+    """configuration for config load planning."""
 
     enable_validation: bool = True
     enable_type_checking: bool = True

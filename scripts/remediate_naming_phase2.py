@@ -34,7 +34,7 @@ VERB_PATTERN = re.compile(
     r"^(Add|Collect|Compare|Coordinate|Guard|Deprecated|Phase|Sprint|Track|"
     r"Search|Retrieve|Request|Rank|Match|Migrate|Understand|Use|Tool|Titanium|"
     r"Test|Signal|Semantic|Sandbox|Runtime|Restore|Refine|Query|P[0-9]|Orchestrate|"
-    r"Observability|Metacognition|Load|Legacy|Instructional|Infrastructure|"
+    r"observability|Metacognition|Load|Legacy|Instructional|Infrastructure|"
     r"Hardened|Golden|Functional|Fix|Fetch|Execute|Event|Etl|Check|Brand|Batch|"
     r"Atomic|Archive|Analyze)(?=[A-Z0-9])"
 )
@@ -42,8 +42,8 @@ VERB_PATTERN = re.compile(
 # Expanded Protection: partial matches allowed
 PROTECTED_SUBSTRINGS = (
     "Agent", "Orchestrator", "Validator", "Factory", "Registry", "Engine", 
-    "Model", "Schema", "Config", "Exception", "Client", "Service", "Manager",
-    "Router", "Fusion", "Pipeline", "Wrapper", "Adapter", "Context", "Architect"
+    "Model", "schema", "Config", "Exception", "Client", "Service", "Manager",
+    "router", "Fusion", "Pipeline", "Wrapper", "Adapter", "Context", "Architect"
 )
 
 def to_snake_case(name: str) -> str:

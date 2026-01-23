@@ -51,7 +51,7 @@ class SovereignBaseAgent(
     1. RedisCacheMixin (Direct Redis access - cache_get, cache_set)
     2. PineconeVectorMixin (Direct Pinecone access - vector_search)
     3. infrastructure_mixin (Legacy Safety/MCP)
-    4. ConfigMixin (Phase 6 - Typed Configuration)
+    4. ConfigMixin (Phase 6 - Typed configuration)
     5. LLMProviderMixin (Phase 4 - SovereignLLMGateway)
     6. EmbeddingMixin (Phase 4 - EmbeddingSovereignAgent)
     7. HealingStrategyMixin (Phase 5 - HealingOrchestrator)

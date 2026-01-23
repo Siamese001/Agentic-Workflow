@@ -67,12 +67,12 @@ class TieredBatchProcessor:
         self.stats = {
             "tier1_auto": 0,  # High-confidence heuristics
             "tier2_llm": 0,  # LLM calls
-            "tier2_cached": 0,  # Cache hits
+            "tier2_cached": 0,  # cache hits
             "skipped": 0,  # Already processed
             "errors": 0,
         }
 
-        # Phase 17: Semantic Cache Manager (lazy-loaded)
+        # Phase 17: Semantic cache Manager (lazy-loaded)
         self._semantic_cache = None
 
         Logger.info(f"[TIERED] Initialized with threshold: {heuristic_threshold:.0%}")
@@ -143,7 +143,7 @@ class TieredBatchProcessor:
             content = self.agent._read_file_safe(Path(file_path))
             return cache.get_cached_decision(content, violation_type)
         except Exception as e:
-            Logger.debug(f"[TIERED] Cache check failed: {e}")
+            Logger.debug(f"[TIERED] cache check failed: {e}")
 
         return None
 
@@ -168,7 +168,7 @@ class TieredBatchProcessor:
                 content = self.agent._read_file_safe(Path(file_path))
                 cache.cache_decision(content, violation_type, decision)
         except Exception as e:
-            Logger.debug(f"[TIERED] Cache store failed: {e}")
+            Logger.debug(f"[TIERED] cache store failed: {e}")
 
     def process_batch(self, violations: list[Any]) -> dict[str, Any]:
         """
@@ -257,7 +257,7 @@ class TieredBatchProcessor:
         Logger.info("=" * 60)
         Logger.info(f"[TIERED] Tier 1 (Heuristics): {self.stats['tier1_auto']}")
         Logger.info(f"[TIERED] Tier 2 (LLM Calls): {self.stats['tier2_llm']}")
-        Logger.info(f"[TIERED] Tier 2 (Cache Hits): {self.stats['tier2_cached']}")
+        Logger.info(f"[TIERED] Tier 2 (cache Hits): {self.stats['tier2_cached']}")
         Logger.info(f"[TIERED] Skipped (Cached): {self.stats['skipped']}")
         Logger.info(f"[TIERED] Errors: {self.stats['errors']}")
         Logger.info(f"[TIERED] Total Processed: {len(self.results)}")
@@ -302,7 +302,7 @@ class TieredBatchProcessor:
                 self.results[file_path_str] = result
                 self.stats["tier2_llm"] += 1
 
-                # Cache the result
+                # cache the result
                 self._store_semantic_cache(file_path_str, v_type, result)
 
                 Logger.info(f"    -> {decision.action} ({decision.confidence:.0%})")

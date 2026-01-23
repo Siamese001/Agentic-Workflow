@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-Tool Arguments Schema
+Tool Arguments schema
 ====================
 Defines the Pydantic models for all tool-calling arguments within the
 Sovereign system. These models enforce strict path validation and

@@ -7,7 +7,7 @@ Tests that the deduplication agent can detect and handle duplicates in:
 - YAML files
 - Markdown files
 - Text files
-- Configuration files
+- configuration files
 
 MANDATORY: 100% pass rate required
 """

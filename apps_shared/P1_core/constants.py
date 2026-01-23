@@ -47,7 +47,7 @@ EXCLUDED_DIRS = {
     "tmp",
     "temp",
     ".tmp",
-    # Data & Cache
+    # Data & cache
     ".cache",
     "cache",
     "data",
@@ -68,7 +68,7 @@ EXCLUDED_FILES = {
     "test_*.py",
     "*_test.py",
     "conftest.py",
-    # Cache & Data files
+    # cache & Data files
     "*.pyc",
     "*.pyo",
     "*.pyd",

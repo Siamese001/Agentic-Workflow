@@ -36,7 +36,7 @@ default_timeout: Any = 60.0
 
 @dataclass
 class ProviderConfig:
-    """Configuration for LLM Provider."""
+    """configuration for LLM Provider."""
 
     _max_retries: int = DEFAULT_MAX_RETRIES
     _timeout: float = DEFAULT_TIMEOUT

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Static Analysis: Canonical Schema Compliance Checker for @standard_heal Methods
+Static Analysis: Canonical schema Compliance Checker for @standard_heal Methods
 
 This script scans all Python files for methods decorated with @standard_heal
 and validates that their return statements use canonical keys.
@@ -174,7 +174,7 @@ def main():
         files_checked += 1
 
     print(f"\n{'=' * 60}")
-    print("@standard_heal Schema Compliance Check")
+    print("@standard_heal schema Compliance Check")
     print(f"{'=' * 60}")
     print(f"Files scanned: {files_checked}")
     print(f"Violations found: {len(all_violations)}")

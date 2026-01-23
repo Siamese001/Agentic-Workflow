@@ -42,7 +42,7 @@ async def test_titanium_search_tool():
 
     # Test cache clear
     await clear_cache()
-    print("Cache cleared successfully")
+    print("cache cleared successfully")
 
     print("✓ Titanium search tool tests passed")
 

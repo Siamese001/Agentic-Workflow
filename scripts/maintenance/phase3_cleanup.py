@@ -1,12 +1,12 @@
 """
 Phase 3 Cleanup Utility
-Moves legacy MCP and Cache files to agentic_core/archived/ to enforce Gateway patterns.
+Moves legacy MCP and cache files to agentic_core/archived/ to enforce Gateway patterns.
 """
 
 import shutil
 from pathlib import Path
 
-# Configuration
+# configuration
 BASE_DIR = Path(__file__).resolve().parents[2]
 ARCHIVE_DIR = BASE_DIR / "archives"
 MCP_DIR = BASE_DIR / "agentic_core" / "L2_execution" / "mcp"

@@ -1,5 +1,5 @@
 """
-Blueprint Sovereign Constants - SSOT for Configuration Constants
+Blueprint Sovereign Constants - SSOT for configuration Constants
 
 This module provides centralized configuration constants used across the codebase.
 All feature flags, default values, and configuration constants should be defined here.
@@ -10,7 +10,7 @@ SSOT Location: agentic_core/config/blueprint_sovereign/constants.py
 import os
 
 # =============================================================================
-# Redis Cache Configuration
+# Redis cache configuration
 # =============================================================================
 
 # Feature flag to enable/disable Redis caching
@@ -24,7 +24,7 @@ CACHE_METRICS_ENABLED: bool = os.getenv("CACHE_METRICS_ENABLED", "false").lower(
 
 
 # =============================================================================
-# File Discovery Configuration
+# File Discovery configuration
 # =============================================================================
 
 # Default directories to exclude from file discovery
@@ -53,7 +53,7 @@ DEFAULT_EXCLUDE_DIRS: frozenset[str] = frozenset(
 
 
 # =============================================================================
-# Agent Configuration
+# Agent configuration
 # =============================================================================
 
 # Default timeout for agent operations (in seconds)
@@ -64,7 +64,7 @@ MISSION_TIMEOUT_SECONDS: int = int(os.getenv("MISSION_TIMEOUT_SECONDS", "3600"))
 
 
 # =============================================================================
-# Healing Configuration
+# Healing configuration
 # =============================================================================
 
 # Maximum healing attempts per file per violation type

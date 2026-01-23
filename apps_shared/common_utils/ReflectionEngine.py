@@ -47,7 +47,7 @@ class ValidationCriterion(BaseModel):
 
 
 class ReflectionConfig(BaseModel):
-    """Configuration for the Reflection Engine."""
+    """configuration for the Reflection Engine."""
 
     use_fast_model: bool = True
     max_critique_loops: int = Field(default=3, ge=1, le=10)
@@ -114,7 +114,7 @@ class ReflectionEngine:
             ),
         }
 
-        # Cache for regex patterns
+        # cache for regex patterns
         self._regex_cache = {} if self.config.enable_regex_cache else None
 
         # Statistics
@@ -454,7 +454,7 @@ def get_reflection_engine(**kwargs) -> ReflectionEngine:
     """Get or create global ReflectionEngine instance.
 
     Args:
-        **kwargs: Configuration arguments
+        **kwargs: configuration arguments
 
     Returns:
         ReflectionEngine instance

@@ -40,7 +40,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
     def discover_capable_agents(self, Task: str, min_confidence: float = 0.85) -> list[dict]:
         """
         Discover agents/methods capable of Task via hybrid registry search.
-        Cache-first — Redis hit -> instant discovery.
+        cache-first — Redis hit -> instant discovery.
         """
         cache_key: Any = f"handshake_discover:{hashlib.sha256((Task + str(min_confidence)).encode()).hexdigest()}"
         if self.redis:

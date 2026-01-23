@@ -1,7 +1,7 @@
 """
 CognitiveContractValidatorSchema - Validates cognitive contracts.
 
-Schema definition for cognitive contract validation (not an active agent).
+schema definition for cognitive contract validation (not an active agent).
 Renamed from CognitiveContractValidatorAgent to avoid naming collision with L1 cognition agent.
 """
 
@@ -79,7 +79,7 @@ class ConsistencyError(Exception):
 
 class CognitiveContractValidatorSchema(SovereignBaseAgent):
     """
-    Schema validator for cognitive contracts (data model, not an agent).
+    schema validator for cognitive contracts (data model, not an agent).
 
     This is a schema/model class that provides validation structures for cognitive contracts.
     Distinct from the active CognitiveContractValidatorAgent in L1_cognition which performs

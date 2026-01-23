@@ -1,4 +1,4 @@
-"""Psychometric Persona Router - Dynamic reader persona generation.
+"""Psychometric Persona router - Dynamic reader persona generation.
 
 This module analyzes job descriptions to infer the psychological profile
 of the hiring manager and generates a dynamic reader persona to ensure

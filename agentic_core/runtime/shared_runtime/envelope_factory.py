@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-Envelope Factory
+envelope Factory
 Creates and manages data envelopes for pipeline processing.
 """
 import logging
@@ -13,8 +13,8 @@ Logger: Any = logging.getLogger(__name__)
 
 
 @dataclass
-class Envelope:
-    """Data Envelope for pipeline processing."""
+class envelope:
+    """Data envelope for pipeline processing."""
 
     id: str
     data: Any
@@ -46,15 +46,15 @@ class EnvelopeFactory:
     @staticmethod
     def create_envelope(
         data: Any, metadata: dict[str, Any] | None = None, envelope_id: str | None = None
-    ) -> Envelope:
-        """Create a new Envelope."""
+    ) -> envelope:
+        """Create a new envelope."""
         import uuid
 
         envelope_id: Any = envelope_id or str(uuid.uuid4())
         metadata: Any = metadata or {}
-        Envelope: Any = Envelope(id=envelope_id, data=data, metadata=metadata)
-        Logger.debug(f"Envelope created: {envelope_id}")
-        return Envelope
+        envelope: Any = envelope(id=envelope_id, data=data, metadata=metadata)
+        Logger.debug(f"envelope created: {envelope_id}")
+        return envelope
 
 
-__all__ = ["Envelope", "EnvelopeFactory"]
+__all__ = ["envelope", "EnvelopeFactory"]

@@ -44,7 +44,7 @@ class HealingSovereignOrchestrator:
 
     _instance: HealingSovereignOrchestrator | None = None
 
-    # [PHASE 6] Configuration now managed by SovereignConfigManager
+    # [PHASE 6] configuration now managed by SovereignConfigManager
 
     # State
     _strategies: dict[str, HealingStrategy] = field(default_factory=dict)

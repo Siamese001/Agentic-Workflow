@@ -144,7 +144,7 @@ class TestPilot(ResumeAgent):
     Runs validation tests on the generated resume.
 
     Executes:
-    - Schema validation
+    - schema validation
     - Content validation
     - Integration checks
     """
@@ -160,7 +160,7 @@ class TestPilot(ResumeAgent):
 
         test_results = []
 
-        # Test 1: Schema validation
+        # Test 1: schema validation
         schema_result = self._test_schema(resume)
         test_results.append(("schema", schema_result))
 

@@ -105,7 +105,7 @@ GUIDANCE_EXAMPLES: dict[str, str] = {
     "agentic_core/L3_orchestration/fission": "Logic that splits large files into smaller modules or manages atomic code shifts.",
     "agentic_core/L4_state/memory": "Interfaces for persistent vector storage (Pinecone) used for long-term meta-learning.",
     "apps_shared/utils/validation": "Shared Pydantic models or regex patterns used across multiple app domains.",
-    "apps_rg/agents/rankers": "Scoring logic specifically for resume-to-JD matching (Domain-specific).",
+    "apps_rg/agents/rankers": "scoring logic specifically for resume-to-JD matching (Domain-specific).",
     "config/agents/prompts": "System instructions and persona definitions used to initialize LLM sessions.",
     "scripts/operations/integrity": "Utilities that check for structural drift or 'Span of Two' violations.",
 }

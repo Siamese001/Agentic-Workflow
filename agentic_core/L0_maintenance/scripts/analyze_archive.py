@@ -3,7 +3,7 @@
 
 from pathlib import Path
 
-# Configuration
+# configuration
 RESUME_KEYWORDS = {"resume", "cv", "ats", "job", "skill", "experience", "bullet", "section"}
 OUTREACH_KEYWORDS = {
     "outreach",

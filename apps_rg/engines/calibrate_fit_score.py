@@ -1,5 +1,5 @@
 """
-CalibrateFitScore.py - Scoring Module
+CalibrateFitScore.py - scoring Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.224825

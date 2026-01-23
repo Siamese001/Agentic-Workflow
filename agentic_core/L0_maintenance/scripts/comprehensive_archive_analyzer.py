@@ -465,7 +465,7 @@ def main():
 
     # MEDIUM PRIORITY
     report.append("\n" + "=" * 80)
-    report.append("MEDIUM PRIORITY RESTORATIONS (Unique Utilities/Models)")
+    report.append("MEDIUM PRIORITY RESTORATIONS (Unique Utilities/models)")
     report.append("=" * 80)
     report.append(f"\nTotal: {len(restore_medium)} files")
 

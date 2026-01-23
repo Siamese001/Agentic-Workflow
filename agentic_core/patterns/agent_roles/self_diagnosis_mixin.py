@@ -8,7 +8,7 @@ Purpose:
   Detects:
     - Missing mandatory components
     - Component health_check failures
-    - Configuration drift
+    - configuration drift
   Critical for ComplianceOrchestratorAgent, HealingOrchestratorAgent, and future SovereignOrchestrator.
 
 Constitutional Alignment:

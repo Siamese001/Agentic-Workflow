@@ -202,7 +202,7 @@ def main():
                         "Healer",
                         "Oracle",
                         "Curator",
-                        "Router",
+                        "router",
                         "Orchestrator",
                         "Conductor",
                     )

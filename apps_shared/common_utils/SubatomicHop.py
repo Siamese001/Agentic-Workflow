@@ -66,7 +66,7 @@ class MutationRequired(Exception):
 
 @dataclass
 class SubatomicHopConfig:
-    """Configuration for a Subatomic Hop."""
+    """configuration for a Subatomic Hop."""
 
     hop_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     retry_policy: RetryPolicy = field(default_factory=RetryPolicy)

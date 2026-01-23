@@ -38,13 +38,13 @@ class SovereignReport:
         # Enforce SSOT for known dimensions – prevents drift
         KNOWN_DIMENSIONS = [
             "Structural SSOT",
-            "Schema SSOT",
+            "schema SSOT",
             "Prompt SSOT",
             "Config SSOT",
             "DDD Alignment",
             "Atomic Fission",
             "Zero-Trust Membrane",
-            "Observability Footprint",
+            "observability Footprint",
             "Healing Resilience",
         ]
 

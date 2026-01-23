@@ -45,7 +45,7 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
     ADAPTER: Legacy Interface -> New MCP Client.
     Maintains backward compatibility for 'add_texts' and 'similarity_search'.
 
-    Phase 13C: All operations now flow through L3 MCP Router with L5 shielding.
+    Phase 13C: All operations now flow through L3 MCP router with L5 shielding.
     """
 
     def __init__(self, index_name: str | None = None, namespace: str | None = None) -> None:

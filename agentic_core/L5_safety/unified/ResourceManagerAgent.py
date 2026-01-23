@@ -88,7 +88,7 @@ class ResourceBudget:
 
 @dataclass
 class ResourceConfig:
-    """Configuration for resource management."""
+    """configuration for resource management."""
 
     enable_hard_caps: bool = True
     enable_proactive_allocation: bool = True

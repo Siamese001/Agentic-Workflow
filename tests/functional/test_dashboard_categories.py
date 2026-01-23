@@ -136,7 +136,7 @@ class TestAgentCategorization(unittest.TestCase):
             )
 
     def test_observability_category(self):
-        """Test agents matching Observability & Monitoring category."""
+        """Test agents matching observability & Monitoring category."""
         test_agents = [
             "MonitorAgent",
             "MonitoringAgent",
@@ -151,8 +151,8 @@ class TestAgentCategorization(unittest.TestCase):
             cat = self._categorize(agent)
             self.assertEqual(
                 cat,
-                "Observability & Monitoring",
-                f"{agent} should be in Observability & Monitoring, got {cat}",
+                "observability & Monitoring",
+                f"{agent} should be in observability & Monitoring, got {cat}",
             )
 
     def test_testing_category(self):
@@ -320,7 +320,7 @@ class TestAgentCategorization(unittest.TestCase):
                 "patterns": [
                     r"Orchestrator",
                     r"Orchestration",
-                    r"Router",
+                    r"router",
                     r"Route",
                     r"Routing",
                     r"Conductor",
@@ -331,7 +331,7 @@ class TestAgentCategorization(unittest.TestCase):
                 "exclude": [r"Validator", r"Healer"],
             },
             {
-                "name": "Observability & Monitoring",
+                "name": "observability & Monitoring",
                 "patterns": [
                     r"Monitor",
                     r"Monitoring",

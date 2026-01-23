@@ -1,6 +1,6 @@
 """
 file: agentic_core/scripts/L6_observability/generate_dashboard.py
-description: Regenerated with L6 Observability moved above L5 Safety in the territory order while maintaining Base Agent nomenclature.
+description: Regenerated with L6 observability moved above L5 Safety in the territory order while maintaining Base Agent nomenclature.
 """
 
 import io
@@ -29,11 +29,11 @@ if sys.platform == "win32":
 TERRITORY_ORDER = [
     "Base/Root",  # SovereignBaseAgent
     "Base/Mixins",  # HealerMixin, MCPHardenMixin
-    "L6 Observability/Base Agent",
-    "L6 Observability/Metrics",
-    "L6 Observability/Tracing",
-    "L6 Observability/Compliance",
-    "L6 Observability/Infrastructure",
+    "L6 observability/Base Agent",
+    "L6 observability/Metrics",
+    "L6 observability/Tracing",
+    "L6 observability/Compliance",
+    "L6 observability/Infrastructure",
     "L5 Safety/Base Agent",
     "L5 Safety/Validators",
     "L5 Safety/Guardrails",
@@ -79,7 +79,7 @@ REQUIRED_FIELDS = [
     "Documented %",
     "Metadata %",
     "Canonical Inheritance %",
-    "Schema Strictness %",
+    "schema Strictness %",
     "Complexity Health",
     "Code Quality Score",
     "Criticality",
@@ -243,23 +243,23 @@ class DashboardGenerator:
                 else:
                     territory = "L0 Maintenance/Core"
             elif "L6_observability" in path or "L6_Observability" in path or layer.startswith("L6"):
-                # L6 Observability subcategories - CHECK BASEAGENT FIRST!
+                # L6 observability subcategories - CHECK BASEAGENT FIRST!
                 if (
                     "BaseAgent" in class_name
                     or "base_agent" in path.lower()
                     or "base_class" in path.lower()
                 ):
-                    territory = "L6 Observability/Base Agent"
+                    territory = "L6 observability/Base Agent"
                 elif "/metrics" in path or "Metric" in class_name:
-                    territory = "L6 Observability/Metrics"
+                    territory = "L6 observability/Metrics"
                 elif "/telemetry" in path or "Telemetry" in class_name:
-                    territory = "L6 Observability/Infrastructure"
+                    territory = "L6 observability/Infrastructure"
                 elif "/tracing" in path or "Tracing" in class_name or "Trace" in class_name:
-                    territory = "L6 Observability/Tracing"
+                    territory = "L6 observability/Tracing"
                 elif "/compliance" in path or "Compliance" in class_name:
-                    territory = "L6 Observability/Compliance"
+                    territory = "L6 observability/Compliance"
                 else:
-                    territory = "L6 Observability/Metrics"  # Default L6
+                    territory = "L6 observability/Metrics"  # Default L6
             elif layer == "Base" or "SovereignBaseAgent" in class_name or "Mixin" in class_name:
                 # Base Layer Splitting: Root vs Mixins
                 if "Mixin" in class_name or "mixins" in path.lower():
@@ -339,7 +339,7 @@ class DashboardGenerator:
         # - 30% Heal Capability (core of autonomy)
         # - 10% Invocation (proves healing works)
         # - 25% Test Coverage (defense against regression)
-        # - 20% Observability (prevents Ghost Agents)
+        # - 20% observability (prevents Ghost Agents)
         # - 15% Complexity Health (technical debt indicator)
         base_health = round(
             (heal_cap_pct * 0.30)
@@ -405,7 +405,7 @@ class DashboardGenerator:
             "L2": 60,  # Execution - Task workers
             "L1": 50,  # Cognition - AI reasoning
             "L0": 40,  # Maintenance - Supporting tools
-            "L6": 30,  # Observability - Monitoring
+            "L6": 30,  # observability - Monitoring
         }
 
         for layer, score in LAYER_WEIGHTS.items():
@@ -440,7 +440,7 @@ class DashboardGenerator:
                 "metadata_pct"
             ],  # PHASE 3 FIX: Real data from 'has_metadata' field
             "Canonical Inheritance %": metrics["proper_base_pct"],
-            "Schema Strictness %": metrics[
+            "schema Strictness %": metrics[
                 "schema_pct"
             ],  # PHASE 1 FIX: Real data from 'schema_strictness' field
             "Complexity Health": metrics["complexity_health"],
@@ -480,7 +480,7 @@ class DashboardGenerator:
         avg_loc = round(
             sum(r["Avg LOC"] * r["Total"] for r in rows) / total_agents, 1
         )  # PHASE 1 FIX
-        schema_pct = weighted_avg("Schema Strictness %")  # PHASE 1 FIX
+        schema_pct = weighted_avg("schema Strictness %")  # PHASE 1 FIX
         metadata_pct = weighted_avg("Metadata %")  # PHASE 3 FIX
         used_pct = weighted_avg("Used %")  # PHASE 3 FIX
         avg_criticality = round(
@@ -523,7 +523,7 @@ class DashboardGenerator:
             "Documented %": doc_pct,
             "Metadata %": metadata_pct,  # PHASE 3 FIX: Real data
             "Canonical Inheritance %": proper_base_pct,
-            "Schema Strictness %": schema_pct,  # PHASE 1 FIX: Real data
+            "schema Strictness %": schema_pct,  # PHASE 1 FIX: Real data
             "Complexity Health": complexity_health,
             "Code Quality Score": code_quality,
             "Criticality": avg_criticality,  # PHASE 2 FIX: Weighted average from territories
@@ -623,7 +623,7 @@ class DashboardGenerator:
                 abs_path = str(self.project_root / agent.get("path", ""))
                 rel_path = agent.get("path", "")
 
-                # Observability summary
+                # observability summary
                 obs = agent.get("observability", {})
                 obs_summary = f"Logging: {'✓' if obs.get('logging') else '✗'} | Metrics: {'✓' if obs.get('metrics') else '✗'} | Tracing: {'✓' if obs.get('tracing') else '✗'}"
 
@@ -690,8 +690,8 @@ class DashboardGenerator:
         rows = []
         priority = 1
         for territory_name in TERRITORY_ORDER:
-            # Updated to match new "L6 Observability" spacing
-            is_infrastructure = "L6 Observability" in territory_name
+            # Updated to match new "L6 observability" spacing
+            is_infrastructure = "L6 observability" in territory_name
 
             if territory_name in territories and len(territories[territory_name]) > 0:
                 # Territory has agents - compute real metrics

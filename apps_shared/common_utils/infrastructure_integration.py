@@ -1,7 +1,7 @@
 """Infrastructure Integration - Unified orchestration layer.
 
 This module provides the integration layer that connects the Event Bus,
-Provenance Tracker, and Model Router with the existing hardened
+Provenance Tracker, and Model router with the existing hardened
 infrastructure, ensuring all components work together seamlessly.
 """
 

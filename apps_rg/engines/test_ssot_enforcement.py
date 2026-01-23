@@ -46,7 +46,7 @@ SSOT_COLUMN_MAPPINGS = {
     "Complexity Health": "COL_COMPLEXITY_HEALTH",
     "Typed %": "COL_TYPED",
     "Documented %": "COL_DOCUMENTED",
-    "Schema Strictness %": "COL_SCHEMA_STRICTNESS",
+    "schema Strictness %": "COL_SCHEMA_STRICTNESS",
     "Canonical Inheritance %": "COL_CANONICAL_INHERITANCE",
     "Code Quality Score": "COL_CODE_QUALITY",
     "Health": "COL_HEALTH",
@@ -64,7 +64,7 @@ JS_FORBIDDEN_STRINGS = [
     "Complexity Health %",
     "Typed %",
     "Documented %",
-    "Schema Strictness %",
+    "schema Strictness %",
     "Canonical Inheritance %",
 ]
 
