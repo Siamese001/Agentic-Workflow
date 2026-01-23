@@ -39,7 +39,7 @@ class TraceRegistry(MCPHardenedMixin):
         """Load traces from JSONL file (one JSON object per line)."""
         if self.persistence_path and self.persistence_path.exists():
             try:
-                with self.persistence_path.open('r', encoding='utf-8') as f:
+                with self.persistence_path.open("r", encoding="utf-8") as f:
                     for line in f:
                         if line.strip():
                             self._traces.append(json.loads(line))
@@ -53,13 +53,13 @@ class TraceRegistry(MCPHardenedMixin):
             # Ensure parent directory exists
             self.persistence_path.parent.mkdir(parents=True, exist_ok=True)
             # Create empty file
-            with self.persistence_path.open('w', encoding='utf-8') as f:
+            with self.persistence_path.open("w", encoding="utf-8") as f:
                 pass  # Just create empty file
 
     def _append_to_disk(self, trace: dict[str, Any]) -> None:
         """Append a single trace to JSONL file for crash resilience."""
         if self.persistence_path:
-            with self.persistence_path.open('a', encoding='utf-8') as f:
+            with self.persistence_path.open("a", encoding="utf-8") as f:
                 f.write(json.dumps(trace) + "\n")
 
     def add_trace(self, event_type: str, details: dict[str, Any]) -> None:

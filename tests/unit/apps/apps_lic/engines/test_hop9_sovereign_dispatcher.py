@@ -3,6 +3,7 @@ HOP-9 Sovereign Dispatcher Test Suite.
 
 MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf execution.
 """
+
 import pytest
 import hashlib
 from apps_lic.engines.HOP9IntegrationAgent import HOP9IntegrationAgent
@@ -25,17 +26,20 @@ class TestHOP9SovereignDispatcher:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("mission_input", {"recipient_id": "user_123"})
         buffer.write_once("hop4_routing", {"route": "INMAIL"})
-        buffer.write_once("hop5_generation", {
-            "selected_draft": {"text": "Original Text", "checksum": "incorrect_hash"},
-            "meta": {"archetype": "EXECUTIVE"}
-        })
+        buffer.write_once(
+            "hop5_generation",
+            {
+                "selected_draft": {"text": "Original Text", "checksum": "incorrect_hash"},
+                "meta": {"archetype": "EXECUTIVE"},
+            },
+        )
         buffer.write_once("hop8_qa_report", {"report_path": "/logs/test.md"})
-        
+
         agent = HOP9IntegrationAgent()
         # V2AgentBase wraps exceptions in RuntimeError
         with pytest.raises(RuntimeError):
             agent.run_phase(buffer, registry)
-        
+
         assert registry.count("INTEGRITY_FAILURE") == 1
 
     def test_delivery_payload_formatting(self):
@@ -46,15 +50,15 @@ class TestHOP9SovereignDispatcher:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("mission_input", {"recipient_id": "user_456"})
         buffer.write_once("hop4_routing", {"route": "CONNECTION_REQ"})
-        buffer.write_once("hop5_generation", {
-            "selected_draft": {"text": "Final Draft text..."},
-            "meta": {"archetype": "SENIOR_TA"}
-        })
+        buffer.write_once(
+            "hop5_generation",
+            {"selected_draft": {"text": "Final Draft text..."}, "meta": {"archetype": "SENIOR_TA"}},
+        )
         buffer.write_once("hop8_qa_report", {"report_path": "/logs/final.md"})
 
         agent = HOP9IntegrationAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop9_integration")
         payload = result["payload"]
         assert payload["delivery_route"] == "CONNECTION_REQ"
@@ -70,15 +74,15 @@ class TestHOP9SovereignDispatcher:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("mission_input", {"recipient_id": "vip_789"})
         buffer.write_once("hop4_routing", {"route": "INMAIL"})
-        buffer.write_once("hop5_generation", {
-            "selected_draft": {"text": "Strategic Outreach..."},
-            "meta": {"archetype": "C_LEVEL"}
-        })
+        buffer.write_once(
+            "hop5_generation",
+            {"selected_draft": {"text": "Strategic Outreach..."}, "meta": {"archetype": "C_LEVEL"}},
+        )
         buffer.write_once("hop8_qa_report", {"report_path": "/logs/vip.md"})
 
         agent = HOP9IntegrationAgent()
         agent.run_phase(buffer, registry)
-        
+
         payload = buffer.read("hop9_integration")["payload"]
         assert payload["priority"] == "HIGH"
 
@@ -90,18 +94,18 @@ class TestHOP9SovereignDispatcher:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("mission_input", {"recipient_id": "test_user"})
         buffer.write_once("hop4_routing", {"route": "FOLLOW_UP"})
-        buffer.write_once("hop5_generation", {
-            "selected_draft": {"text": "Test message content"},
-            "meta": {"archetype": "MANAGER"}
-        })
+        buffer.write_once(
+            "hop5_generation",
+            {"selected_draft": {"text": "Test message content"}, "meta": {"archetype": "MANAGER"}},
+        )
         buffer.write_once("hop8_qa_report", {"report_path": "/logs/test.md"})
 
         agent = HOP9IntegrationAgent()
         agent.run_phase(buffer, registry)
-        
+
         traces = [t["type"] for t in registry.get_traces()]
         assert "MISSION_COMPLETED" in traces
-        
+
         # Find the MISSION_COMPLETED trace and verify its content
         mission_traces = [t for t in registry.get_traces() if t["type"] == "MISSION_COMPLETED"]
         assert len(mission_traces) == 1
@@ -114,18 +118,18 @@ class TestHOP9SovereignDispatcher:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         test_text = "Test message for checksum"
         expected_checksum = hashlib.sha256(test_text.encode()).hexdigest()
-        
+
         buffer.write_once("mission_input", {"recipient_id": "checksum_test"})
         buffer.write_once("hop4_routing", {"route": "INMAIL"})
-        buffer.write_once("hop5_generation", {
-            "selected_draft": {"text": test_text},
-            "meta": {"archetype": "EXECUTIVE"}
-        })
+        buffer.write_once(
+            "hop5_generation",
+            {"selected_draft": {"text": test_text}, "meta": {"archetype": "EXECUTIVE"}},
+        )
         buffer.write_once("hop8_qa_report", {"report_path": "/logs/checksum.md"})
 
         agent = HOP9IntegrationAgent()
         agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop9_integration")
         assert result["checksum"] == expected_checksum
 
@@ -136,12 +140,12 @@ class TestHOP9SovereignDispatcher:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("mission_input", {"recipient_id": "incomplete"})
         # Missing hop4_routing and hop5_generation
-        
+
         agent = HOP9IntegrationAgent()
         # V2AgentBase wraps exceptions in RuntimeError with agent name
         with pytest.raises(RuntimeError):
             agent.run_phase(buffer, registry)
-        
+
         # Verify DATA_ERROR trace was logged
         traces = [t["type"] for t in registry.get_traces()]
         assert "DATA_ERROR" in traces
@@ -153,14 +157,17 @@ class TestHOP9SovereignDispatcher:
         buffer, registry = ImmutableStagingBuffer(), TraceRegistry()
         buffer.write_once("mission_input", {"recipient_id": "regular_user"})
         buffer.write_once("hop4_routing", {"route": "CONNECTION_REQ"})
-        buffer.write_once("hop5_generation", {
-            "selected_draft": {"text": "Regular outreach message"},
-            "meta": {"archetype": "RECRUITER"}
-        })
+        buffer.write_once(
+            "hop5_generation",
+            {
+                "selected_draft": {"text": "Regular outreach message"},
+                "meta": {"archetype": "RECRUITER"},
+            },
+        )
         buffer.write_once("hop8_qa_report", {"report_path": "/logs/regular.md"})
 
         agent = HOP9IntegrationAgent()
         agent.run_phase(buffer, registry)
-        
+
         payload = buffer.read("hop9_integration")["payload"]
         assert payload["priority"] == "NORMAL"

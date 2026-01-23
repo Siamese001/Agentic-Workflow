@@ -4,6 +4,7 @@ Test suite for Accelerated Consolidation.
 MANDATORY: 100% PASS REQUIREMENT for Windsurf Execution.
 Focus: Nomenclature Accuracy, Redundancy Removal, Mixin Verification.
 """
+
 import pytest
 from pathlib import Path
 
@@ -22,7 +23,7 @@ class TestAcceleratedConsolidation:
         # Check domain model rename
         assert not (REPO_ROOT / "apps_lic" / "domain" / "FailureClassifierAgent.py").exists()
         assert (REPO_ROOT / "apps_lic" / "domain" / "failure_types.py").exists()
-        
+
         # Check governance rename
         assert not (REPO_ROOT / "apps_lic" / "engines" / "governance_shield_agent.py").exists()
         assert (REPO_ROOT / "apps_lic" / "engines" / "governance_shield_types.py").exists()
@@ -35,7 +36,7 @@ class TestAcceleratedConsolidation:
         """Verify that consolidated agents correctly inherit the Sovereign Base."""
         from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
         from apps_lic.engines.k1_routing_agent import RoutingSpecialist
-        
+
         # Verify 100% Pass: Mixins must be present for healing and testing
         assert hasattr(HOPOrchestratorAgent, "heal_repository")
         assert hasattr(RoutingSpecialist, "_run_self_tests")

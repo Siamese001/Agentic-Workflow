@@ -4,6 +4,7 @@ HOP-7 Governor Logic Test Suite.
 Tests for Phase 17: V2.5 Governor with FACTUAL/CREATIVE Classification.
 Requirement: 100% Pass Rate for Back-Hop Routing.
 """
+
 import pytest
 from apps_lic.engines.HOP7GateDecisionAgent import HOP7GateDecisionAgent
 from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
@@ -20,21 +21,24 @@ class TestHOP7GovernorLogic:
         """Verify LIC-E015 (Strategic Alignment) triggers RETRY_HOP2."""
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
-        buffer.write_once("hop6_validation_report", {
-            "passed": False,
-            "validation_results": [
-                {"rule_id": "LIC-E015", "passed": False, "severity": "CRITICAL"}
-            ]
-        })
+
+        buffer.write_once(
+            "hop6_validation_report",
+            {
+                "passed": False,
+                "validation_results": [
+                    {"rule_id": "LIC-E015", "passed": False, "severity": "CRITICAL"}
+                ],
+            },
+        )
 
         agent = HOP7GateDecisionAgent()
         agent.run_phase(buffer, registry)
-        
+
         decision = buffer.read("hop7_gate_decision")
         assert decision["action"] == "RETRY_HOP2", "LIC-E015 should trigger RETRY_HOP2"
         assert decision["decision"] == "FAIL_FACTUAL"
-        
+
         # Verify trace logging
         traces = [t["type"] for t in registry.get_traces()]
         assert "FACTUAL_LOOP_TRIGGERED" in traces
@@ -43,21 +47,24 @@ class TestHOP7GovernorLogic:
         """Verify LIC-E001 (Placeholders) triggers RETRY_HOP5."""
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
-        buffer.write_once("hop6_validation_report", {
-            "passed": False,
-            "validation_results": [
-                {"rule_id": "LIC-E001", "passed": False, "severity": "CRITICAL"}
-            ]
-        })
+
+        buffer.write_once(
+            "hop6_validation_report",
+            {
+                "passed": False,
+                "validation_results": [
+                    {"rule_id": "LIC-E001", "passed": False, "severity": "CRITICAL"}
+                ],
+            },
+        )
 
         agent = HOP7GateDecisionAgent()
         agent.run_phase(buffer, registry)
-        
+
         decision = buffer.read("hop7_gate_decision")
         assert decision["action"] == "RETRY_HOP5", "LIC-E001 should trigger RETRY_HOP5"
         assert decision["decision"] == "FAIL_CREATIVE"
-        
+
         # Verify trace logging
         traces = [t["type"] for t in registry.get_traces()]
         assert "CREATIVE_LOOP_TRIGGERED" in traces
@@ -66,15 +73,12 @@ class TestHOP7GovernorLogic:
         """Verify passing validation triggers PROCEED."""
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
-        buffer.write_once("hop6_validation_report", {
-            "passed": True,
-            "validation_results": []
-        })
+
+        buffer.write_once("hop6_validation_report", {"passed": True, "validation_results": []})
 
         agent = HOP7GateDecisionAgent()
         agent.run_phase(buffer, registry)
-        
+
         decision = buffer.read("hop7_gate_decision")
         assert decision["action"] == "PROCEED", "Clean validation should trigger PROCEED"
         assert decision["decision"] == "PASS"
@@ -84,12 +88,12 @@ class TestHOP7GovernorLogic:
         """Verify Governor raises error if validation report is missing."""
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
+
         agent = HOP7GateDecisionAgent()
-        
+
         with pytest.raises(RuntimeError):
             agent.run_phase(buffer, registry)
-        
+
         # Verify error trace was logged (V2AgentBase logs PHASE_ERROR)
         traces = [t["type"] for t in registry.get_traces()]
         assert "PHASE_ERROR" in traces or "DATA_ERROR" in traces
@@ -98,18 +102,21 @@ class TestHOP7GovernorLogic:
         """Verify FACTUAL failures take precedence over CREATIVE when both present."""
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
-        buffer.write_once("hop6_validation_report", {
-            "passed": False,
-            "validation_results": [
-                {"rule_id": "LIC-E001", "passed": False, "severity": "CRITICAL"},  # Creative
-                {"rule_id": "LIC-E015", "passed": False, "severity": "CRITICAL"}   # Factual
-            ]
-        })
+
+        buffer.write_once(
+            "hop6_validation_report",
+            {
+                "passed": False,
+                "validation_results": [
+                    {"rule_id": "LIC-E001", "passed": False, "severity": "CRITICAL"},  # Creative
+                    {"rule_id": "LIC-E015", "passed": False, "severity": "CRITICAL"},  # Factual
+                ],
+            },
+        )
 
         agent = HOP7GateDecisionAgent()
         agent.run_phase(buffer, registry)
-        
+
         decision = buffer.read("hop7_gate_decision")
         # FACTUAL should take precedence
         assert decision["action"] == "RETRY_HOP2"
@@ -119,17 +126,20 @@ class TestHOP7GovernorLogic:
         """Verify LIC-E008 (Forbidden Verbs) triggers RETRY_HOP5."""
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
-        buffer.write_once("hop6_validation_report", {
-            "passed": False,
-            "validation_results": [
-                {"rule_id": "LIC-E008", "passed": False, "severity": "MEDIUM"}
-            ]
-        })
+
+        buffer.write_once(
+            "hop6_validation_report",
+            {
+                "passed": False,
+                "validation_results": [
+                    {"rule_id": "LIC-E008", "passed": False, "severity": "MEDIUM"}
+                ],
+            },
+        )
 
         agent = HOP7GateDecisionAgent()
         agent.run_phase(buffer, registry)
-        
+
         decision = buffer.read("hop7_gate_decision")
         assert decision["action"] == "RETRY_HOP5"
         assert decision["decision"] == "FAIL_CREATIVE"
@@ -138,17 +148,20 @@ class TestHOP7GovernorLogic:
         """Verify decision reason includes the failing rule ID."""
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
-        buffer.write_once("hop6_validation_report", {
-            "passed": False,
-            "validation_results": [
-                {"rule_id": "LIC-E015", "passed": False, "severity": "CRITICAL"}
-            ]
-        })
+
+        buffer.write_once(
+            "hop6_validation_report",
+            {
+                "passed": False,
+                "validation_results": [
+                    {"rule_id": "LIC-E015", "passed": False, "severity": "CRITICAL"}
+                ],
+            },
+        )
 
         agent = HOP7GateDecisionAgent()
         agent.run_phase(buffer, registry)
-        
+
         decision = buffer.read("hop7_gate_decision")
         assert "LIC-E015" in decision["reason"]
 
@@ -156,19 +169,22 @@ class TestHOP7GovernorLogic:
         """Verify complete trace logging flow."""
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
-        buffer.write_once("hop6_validation_report", {
-            "passed": False,
-            "validation_results": [
-                {"rule_id": "LIC-E001", "passed": False, "severity": "CRITICAL"}
-            ]
-        })
+
+        buffer.write_once(
+            "hop6_validation_report",
+            {
+                "passed": False,
+                "validation_results": [
+                    {"rule_id": "LIC-E001", "passed": False, "severity": "CRITICAL"}
+                ],
+            },
+        )
 
         agent = HOP7GateDecisionAgent()
         agent.run_phase(buffer, registry)
-        
+
         traces = [t["type"] for t in registry.get_traces()]
-        
+
         assert "PHASE_START" in traces
         assert "PHASE_STEP" in traces
         assert "CREATIVE_LOOP_TRIGGERED" in traces
@@ -178,18 +194,21 @@ class TestHOP7GovernorLogic:
         """Verify first factual failure is used for routing."""
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
-        buffer.write_once("hop6_validation_report", {
-            "passed": False,
-            "validation_results": [
-                {"rule_id": "LIC-E015", "passed": False, "severity": "CRITICAL"},
-                {"rule_id": "STRATEGIC_ALIGNMENT", "passed": False, "severity": "CRITICAL"}
-            ]
-        })
+
+        buffer.write_once(
+            "hop6_validation_report",
+            {
+                "passed": False,
+                "validation_results": [
+                    {"rule_id": "LIC-E015", "passed": False, "severity": "CRITICAL"},
+                    {"rule_id": "STRATEGIC_ALIGNMENT", "passed": False, "severity": "CRITICAL"},
+                ],
+            },
+        )
 
         agent = HOP7GateDecisionAgent()
         agent.run_phase(buffer, registry)
-        
+
         decision = buffer.read("hop7_gate_decision")
         assert decision["action"] == "RETRY_HOP2"
         assert "LIC-E015" in decision["reason"]
@@ -198,22 +217,19 @@ class TestHOP7GovernorLogic:
         """Verify decision output has correct structure."""
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
-        buffer.write_once("hop6_validation_report", {
-            "passed": True,
-            "validation_results": []
-        })
+
+        buffer.write_once("hop6_validation_report", {"passed": True, "validation_results": []})
 
         agent = HOP7GateDecisionAgent()
         agent.run_phase(buffer, registry)
-        
+
         decision = buffer.read("hop7_gate_decision")
-        
+
         # Verify required fields
         assert "decision" in decision
         assert "action" in decision
         assert "reason" in decision
-        
+
         # Verify values
         assert decision["decision"] == "PASS"
         assert decision["action"] == "PROCEED"
@@ -223,18 +239,21 @@ class TestHOP7GovernorLogic:
         """Verify classification is driven by config factual_failure_rules."""
         buffer = ImmutableStagingBuffer()
         registry = TraceRegistry()
-        
+
         # STRATEGIC_ALIGNMENT is in factual_failure_rules config
-        buffer.write_once("hop6_validation_report", {
-            "passed": False,
-            "validation_results": [
-                {"rule_id": "STRATEGIC_ALIGNMENT", "passed": False, "severity": "CRITICAL"}
-            ]
-        })
+        buffer.write_once(
+            "hop6_validation_report",
+            {
+                "passed": False,
+                "validation_results": [
+                    {"rule_id": "STRATEGIC_ALIGNMENT", "passed": False, "severity": "CRITICAL"}
+                ],
+            },
+        )
 
         agent = HOP7GateDecisionAgent()
         agent.run_phase(buffer, registry)
-        
+
         decision = buffer.read("hop7_gate_decision")
         assert decision["action"] == "RETRY_HOP2"
         assert decision["decision"] == "FAIL_FACTUAL"

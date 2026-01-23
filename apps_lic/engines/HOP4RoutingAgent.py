@@ -7,7 +7,6 @@ Implements Gate 5 (Route Selection) and Gate 6 (Premium Mismatch).
 
 from __future__ import annotations
 
-from typing import Dict, Any, Optional
 
 from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
 from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
@@ -47,11 +46,11 @@ class HOP4RoutingAgent(V2AgentBase):
         connection_status = mission_input.get("connection_status", "NOT_CONNECTED")
 
         registry.add_trace("PHASE_STEP", {"action": "executing_gate_5_selection"})
-        
+
         # 2. Gate 5: Route Selection Logic
         # Prioritize Override -> Connection Status -> Premium Availability
         selected_route = "CONNECTION_REQ"
-        
+
         if route_override:
             selected_route = route_override
             registry.add_trace("ROUTE_OVERRIDE_APPLIED", {"route": selected_route})
@@ -63,20 +62,22 @@ class HOP4RoutingAgent(V2AgentBase):
         # 3. Gate 6: Premium Routing Mismatch Detection (CRITICAL)
         if selected_route == "INMAIL" and not premium_available:
             registry.add_trace("GATE_6_FAILED", {"reason": "premium_unavailable_for_inmail"})
-            raise ValueError("GATE_6_BLOCKED: INMAIL route selected but Premium InMail not available")
+            raise ValueError(
+                "GATE_6_BLOCKED: INMAIL route selected but Premium InMail not available"
+            )
 
         # 4. Fetch Route Constraints from Specs
         config = self.config.routing_agent
         route_config = None
-        
+
         # Map selected route to config key
         route_key_map = {
             "CONNECTION_REQ": "CONNECTION_REQUEST",
             "FOLLOW_UP": "DIRECT_MESSAGE",
-            "INMAIL": "INMAIL"
+            "INMAIL": "INMAIL",
         }
         config_key = route_key_map.get(selected_route, selected_route)
-        
+
         if config_key in config.routing_rules:
             route_config = config.routing_rules[config_key]
             constraints = route_config.constraints.model_dump()
@@ -93,10 +94,7 @@ class HOP4RoutingAgent(V2AgentBase):
         output_data = {
             "route": selected_route,
             "constraints": constraints,
-            "metadata": {
-                "premium_validated": True,
-                "archetype_aligned": archetype
-            }
+            "metadata": {"premium_validated": True, "archetype_aligned": archetype},
         }
 
         buffer.write_once("hop4_routing", output_data)

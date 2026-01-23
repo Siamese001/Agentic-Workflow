@@ -4,6 +4,7 @@ This agent implements the mandatory 7 Prompt Shell Entrance Gates, classifies
 the recipient archetype using CXO precedence rules, and selects the correct
 route (INMAIL vs CONNECTION_REQ) with premium routing validation.
 """
+
 from __future__ import annotations
 
 import logging
@@ -12,8 +13,6 @@ from typing import Any
 
 from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
 from apps_lic.shared.v2_patterns.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
-from apps_lic.shared.v2_patterns.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.v2_patterns.trace_registry import TraceRegistry
 
 logger = logging.getLogger(__name__)
 

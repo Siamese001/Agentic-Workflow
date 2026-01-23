@@ -4,10 +4,10 @@ Lead Quality Specialist - V2.5 Sovereign Agent for Lead Validation.
 Validates lead quality for outreach campaigns.
 Hardened for inclusion in HOP-1 / HOP-2 foundations.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
 from apps_lic.shared.v2_patterns.agent_base import V2AgentBase
 from apps_lic.shared.v2_patterns.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
@@ -37,7 +37,7 @@ class LeadQualitySpecialist(V2AgentBase, SubatomicTestingMixin, MCPHardenedMixin
         - Suspicious email domains
         """
         registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
-        
+
         mission_input = buffer.read("mission_input") or {}
         leads = mission_input.get("leads", [])
 
