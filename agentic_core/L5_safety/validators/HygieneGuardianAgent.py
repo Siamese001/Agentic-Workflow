@@ -21,13 +21,17 @@ import os
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, List, Dict
+from typing import Any, List, Dict, Optional
 
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 # --- SOVEREIGN GUARDRAILS ---
 MAX_FILENAME_WORDS = 5  # Enforcement for semantic conciseness
+MAX_TEST_FILENAME_WORDS = 8  # Allow more descriptive names for tests
+
+# Common noisy words to target for removal suggestions first
+REDUNDANT_TERMS = {'implementation', 'management', 'service', 'script', 'scripts', 'utility', 'utilities'}
 
 
 @dataclass
@@ -104,8 +108,10 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         # Naming convention rules
         self.rules = {
             "MAX_FILENAME_WORDS": MAX_FILENAME_WORDS,
+            "MAX_TEST_FILENAME_WORDS": MAX_TEST_FILENAME_WORDS,
             "FORBIDDEN_PATTERNS": ["temp_", "test_v2", "final_final"],
-            "CASE_CONVENTION": "snake_case_for_scripts"
+            "CASE_CONVENTION": "snake_case_for_scripts",
+            "REDUNDANT_TERMS": REDUNDANT_TERMS
         }
 
     def _is_empty_file(self, file_path: Path) -> bool:
@@ -457,8 +463,12 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         """
         print(f"[*] Hygiene Guardian: Scanning {self.project_root} for naming violations...")
         self.naming_violations = []
+        ignored_dirs = {'.git', '__pycache__', 'venv', 'node_modules', '.idea', '.vscode', 'archives'}
         
-        for root, _, files in os.walk(self.project_root):
+        for root, dirs, files in os.walk(self.project_root):
+            # Prune ignored directories in-place to prevent traversal
+            dirs[:] = [d for d in dirs if d not in ignored_dirs]
+            
             for f in files:
                 if not f.endswith(".py") or f.startswith("__"):
                     continue
@@ -471,29 +481,50 @@ class HygieneGuardianAgent(SovereignBaseAgent):
     def _check_filename_length(self, path: Path):
         """
         Checks for 'Semantic Bloat' where filenames exceed the word limit.
+        Enhanced with CamelCase splitting and mixed delimiter handling.
         Example Violation: logic_synthesis_pick_best_refinement_refine_scripts_ranking.py
         """
-        stem = path.stem
-        words = stem.split('_')
+        base_name = path.stem
+        ext = path.suffix
         
-        if len(words) > self.rules["MAX_FILENAME_WORDS"]:
+        # Advanced splitting: underscores, hyphens, and CamelCase lookaheads
+        # 1. Replace hyphens with underscores
+        clean_name = base_name.replace('-', '_')
+        # 2. Insert underscore before uppercase letters (CamelCase handling)
+        clean_name = re.sub(r'(?<!^)(?=[A-Z])', '_', clean_name)
+        
+        words = [w for w in clean_name.split('_') if w]  # Filter empty strings
+        word_count = len(words)
+        
+        # Context-aware limit
+        is_test = base_name.startswith('test_') or base_name.endswith('_test')
+        limit = self.rules["MAX_TEST_FILENAME_WORDS"] if is_test else self.rules["MAX_FILENAME_WORDS"]
+        
+        if word_count > limit:
             violation = {
                 "file": str(path.relative_to(self.project_root)),
-                "rule": "MAX_FILENAME_WORDS",
-                "current_count": len(words),
-                "limit": self.rules["MAX_FILENAME_WORDS"],
-                "suggestion": self._generate_concise_suggestion(words)
+                "rule": "MAX_TEST_FILENAME_WORDS" if is_test else "MAX_FILENAME_WORDS",
+                "current_count": word_count,
+                "limit": limit,
+                "suggestion": self._generate_concise_suggestion(words, ext)
             }
             self.naming_violations.append(violation)
-            print(f"  [VIOLATION] {path.name}: {len(words)} words exceeds limit of {MAX_FILENAME_WORDS}")
+            print(f"  [VIOLATION] {path.name}: {word_count} words exceeds limit of {limit}")
 
-    def _generate_concise_suggestion(self, words: List[str]) -> str:
-        """Proposes a concise alternative using semantic anchors."""
-        if len(words) > 3:
-            # Keep first two and last two words for semantic anchor preservation
-            suggested = f"{words[0]}_{words[1]}_{words[-2]}_{words[-1]}".lower()
-            return suggested
-        return "_".join(words).lower()
+    def _generate_concise_suggestion(self, words: List[str], ext: str) -> str:
+        """Proposes a concise alternative using semantic anchors and redundant term removal."""
+        # Strategy 1: Remove known redundant terms
+        filtered = [w for w in words if w.lower() not in self.rules["REDUNDANT_TERMS"]]
+        
+        # If still too long, fallback to anchor strategy
+        if len(filtered) > self.rules["MAX_FILENAME_WORDS"]:
+            # Keep 2 start, 1 middle context, 1 end
+            # This preserves "subject_verb_object" structure
+            mid = len(filtered) // 2
+            concise = filtered[:2] + [filtered[mid]] + filtered[-1:]
+            return "_".join(concise).lower() + ext
+            
+        return "_".join(filtered).lower() + ext
 
         # Return using canonical keys that @standard_heal decorator recognizes
         # See LEGACY_KEY_MAPPINGS in decorators.py for mappings
