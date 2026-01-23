@@ -17,13 +17,17 @@ Territory: agentic_core/L5_safety/validators/
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import re
+import os
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, List, Dict
 
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.decorators import standard_heal
+
+# --- SOVEREIGN GUARDRAILS ---
+MAX_FILENAME_WORDS = 5  # Enforcement for semantic conciseness
 
 
 @dataclass
@@ -92,9 +96,17 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         self.dry_run = dry_run
         self.violations: list[HygieneViolation] = []
         self.agent_name = self.__class__.__name__
+        self.naming_violations: List[Dict] = []
 
         # Initialize ArchivalGatekeeper for safe file operations
         self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
+        
+        # Naming convention rules
+        self.rules = {
+            "MAX_FILENAME_WORDS": MAX_FILENAME_WORDS,
+            "FORBIDDEN_PATTERNS": ["temp_", "test_v2", "final_final"],
+            "CASE_CONVENTION": "snake_case_for_scripts"
+        }
 
     def _is_empty_file(self, file_path: Path) -> bool:
         """Check if file is empty or contains only whitespace."""
@@ -437,6 +449,51 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         if not self.dry_run:
             fixed_count = self._fix_violations()
             print(f"\n   [FIXED] {fixed_count} violations auto-fixed")
+    
+    def audit_naming_conventions(self) -> List[Dict]:
+        """
+        Performs a deep audit of the repository's naming conventions,
+        enforcing word-count limits and semantic density.
+        """
+        print(f"[*] Hygiene Guardian: Scanning {self.project_root} for naming violations...")
+        self.naming_violations = []
+        
+        for root, _, files in os.walk(self.project_root):
+            for f in files:
+                if not f.endswith(".py") or f.startswith("__"):
+                    continue
+                
+                path = Path(root) / f
+                self._check_filename_length(path)
+        
+        return self.naming_violations
+
+    def _check_filename_length(self, path: Path):
+        """
+        Checks for 'Semantic Bloat' where filenames exceed the word limit.
+        Example Violation: logic_synthesis_pick_best_refinement_refine_scripts_ranking.py
+        """
+        stem = path.stem
+        words = stem.split('_')
+        
+        if len(words) > self.rules["MAX_FILENAME_WORDS"]:
+            violation = {
+                "file": str(path.relative_to(self.project_root)),
+                "rule": "MAX_FILENAME_WORDS",
+                "current_count": len(words),
+                "limit": self.rules["MAX_FILENAME_WORDS"],
+                "suggestion": self._generate_concise_suggestion(words)
+            }
+            self.naming_violations.append(violation)
+            print(f"  [VIOLATION] {path.name}: {len(words)} words exceeds limit of {MAX_FILENAME_WORDS}")
+
+    def _generate_concise_suggestion(self, words: List[str]) -> str:
+        """Proposes a concise alternative using semantic anchors."""
+        if len(words) > 3:
+            # Keep first two and last two words for semantic anchor preservation
+            suggested = f"{words[0]}_{words[1]}_{words[-2]}_{words[-1]}".lower()
+            return suggested
+        return "_".join(words).lower()
 
         # Return using canonical keys that @standard_heal decorator recognizes
         # See LEGACY_KEY_MAPPINGS in decorators.py for mappings
