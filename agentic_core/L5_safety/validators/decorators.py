@@ -47,7 +47,6 @@ HEAL_RESULT_SCHEMA = {
 }
 
 
-
 def _warn_non_canonical_keys(result: dict[str, Any], agent_name: str) -> None:
     """
     Emit warnings for non-canonical keys in heal_repository return values.
@@ -58,8 +57,16 @@ def _warn_non_canonical_keys(result: dict[str, Any], agent_name: str) -> None:
         return
 
     # Define canonical keys for validation
-    canonical_keys = {"violations_found", "violations_fixed", "errors", "skipped", "status", "execution_time_ms", "error_message"}
-    
+    canonical_keys = {
+        "violations_found",
+        "violations_fixed",
+        "errors",
+        "skipped",
+        "status",
+        "execution_time_ms",
+        "error_message",
+    }
+
     for key in result:
         if key not in canonical_keys:
             Logger.warning(

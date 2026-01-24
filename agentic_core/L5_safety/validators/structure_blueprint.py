@@ -3204,14 +3204,12 @@ CANON_VALIDATION_REGISTRY: dict[int, dict[str, Any]] = {
     4: {"method": "check_key_04_no_empty_except_blocks", "layer": "L5", "criticality": "MEDIUM"},
     5: {"method": "check_key_05_no_bare_except", "layer": "L5", "criticality": "MEDIUM"},
     6: {"method": "check_key_06_no_eval_exec", "layer": "L5", "criticality": "CRITICAL"},
-
     # DEPENDENCIES (Formerly DependencySentinelAgent)
     7: {"method": "check_key_07_no_star_imports", "layer": "L2", "criticality": "MEDIUM"},
     8: {"method": "check_key_08_no_relative_imports", "layer": "L2", "criticality": "MEDIUM"},
     14: {"method": "check_key_14_no_duplicate_imports", "layer": "L2", "criticality": "LOW"},
     44: {"method": "check_key_44_no_circular_imports", "layer": "L2", "criticality": "HIGH"},
     45: {"method": "check_key_45_no_unused_imports", "layer": "L2", "criticality": "LOW"},
-
     # CODE HYGIENE (Formerly CodeJanitor)
     10: {"method": "check_key_10_no_long_lines", "layer": "L2", "criticality": "LOW"},
     11: {"method": "check_key_11_no_trailing_whitespace", "layer": "L2", "criticality": "LOW"},
@@ -3219,11 +3217,9 @@ CANON_VALIDATION_REGISTRY: dict[int, dict[str, Any]] = {
     13: {"method": "check_key_13_no_tabs", "layer": "L2", "criticality": "LOW"},
     15: {"method": "check_key_15_no_magic_numbers", "layer": "L2", "criticality": "LOW"},
     16: {"method": "check_key_16_no_deep_nesting", "layer": "L2", "criticality": "MEDIUM"},
-
     # BUDGET & COMPLEXITY (Formerly BudgetAgent)
     17: {"method": "check_key_17_no_large_functions", "layer": "L1", "criticality": "MEDIUM"},
     19: {"method": "check_key_19_no_complex_functions", "layer": "L1", "criticality": "MEDIUM"},
-
     # STRUCTURE (Formerly StructuralEngineerAgent)
     18: {"method": "check_key_18_no_many_parameters", "layer": "L2", "criticality": "MEDIUM"},
     20: {"method": "check_key_20_no_large_classes", "layer": "L2", "criticality": "MEDIUM"},
@@ -3231,15 +3227,12 @@ CANON_VALIDATION_REGISTRY: dict[int, dict[str, Any]] = {
     42: {"method": "check_key_42_no_large_files", "layer": "L2", "criticality": "MEDIUM"},
     43: {"method": "check_key_43_class_density", "layer": "L2", "criticality": "LOW"},
     46: {"method": "check_key_46_no_duplicate_code", "layer": "L2", "criticality": "MEDIUM"},
-
     # DOCUMENTATION (Formerly DocumentationAgent)
     21: {"method": "check_key_21_no_missing_docstrings", "layer": "L5", "criticality": "LOW"},
-
     # TYPING (Formerly TypeMechanicAgent)
     22: {"method": "check_key_22_no_missing_type_hints", "layer": "L5", "criticality": "HIGH"},
     23: {"method": "check_key_23_no_unreachable_code", "layer": "L5", "criticality": "MEDIUM"},
     24: {"method": "check_key_24_no_unused_variables", "layer": "L5", "criticality": "LOW"},
-
     # PATTERNS (Formerly UnifiedCodeEnforcerAgent)
     26: {"method": "check_key_26_no_mutable_defaults", "layer": "L5", "criticality": "HIGH"},
     27: {"method": "check_key_27_prefer_str_join", "layer": "L5", "criticality": "LOW"},
@@ -3254,7 +3247,6 @@ CANON_VALIDATION_REGISTRY: dict[int, dict[str, Any]] = {
     37: {"method": "check_key_37_no_redundant_self", "layer": "L5", "criticality": "LOW"},
     38: {"method": "check_key_38_prefer_comprehensions", "layer": "L5", "criticality": "LOW"},
     39: {"method": "check_key_39_no_useless_return", "layer": "L5", "criticality": "LOW"},
-
     # ARCHITECTURE (Formerly SystemArchitect / NamingAgent)
     40: {"method": "check_key_40_no_metaclasses", "layer": "L5", "criticality": "MEDIUM"},
     41: {"method": "check_key_41_scoped_nesting", "layer": "L5", "criticality": "MEDIUM"},

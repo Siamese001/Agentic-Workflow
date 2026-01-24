@@ -170,25 +170,38 @@ class UnifiedOrchestratorAgent(SovereignBaseAgent):
 
         # [DNA GATE] Perform Pre-Flight Audit
         try:
-            from agentic_core.L5_safety.validators.CanonDependencySentinelAgent import CanonDependencySentinelAgent
+            from agentic_core.L5_safety.validators.CanonDependencySentinelAgent import (
+                CanonDependencySentinelAgent,
+            )
+
             sentinel = CanonDependencySentinelAgent()
             audit_results = sentinel.heal_repository(dry_run=True, execute=False)
-            
+
             # Check for FATAL status or critical violations
             is_fatal = audit_results.get("status") == "FATAL"
             scan_results = sentinel.scan_architecture()
             all_violations = scan_results.get("violations", [])
-            
+
             # Critical violations that block execution (INIT_BYPASS and DNA_SEVERED are blocking)
             blocking_types = ("INIT_BYPASS", "DNA_SEVERED")
-            critical_violations = [v for v in all_violations if v.severity == "CRITICAL" or v.violation_type in blocking_types]
-            
+            critical_violations = [
+                v
+                for v in all_violations
+                if v.severity == "CRITICAL" or v.violation_type in blocking_types
+            ]
+
             if is_fatal or critical_violations:
                 # Log each critical violation
                 for v in critical_violations[:10]:  # Limit to first 10
-                    self.logger.critical(f"  VIOLATION: {v.violation_type} in {v.file_path}:{v.line_number}")
-                
-                abort_reason = "Naked super() or fatal syntax" if is_fatal else f"{len(critical_violations)} critical DNA violations"
+                    self.logger.critical(
+                        f"  VIOLATION: {v.violation_type} in {v.file_path}:{v.line_number}"
+                    )
+
+                abort_reason = (
+                    "Naked super() or fatal syntax"
+                    if is_fatal
+                    else f"{len(critical_violations)} critical DNA violations"
+                )
                 self.logger.critical(f"[STOP] Mission Aborted: {abort_reason}.")
                 return MissionResult(
                     success=False,
@@ -202,10 +215,16 @@ class UnifiedOrchestratorAgent(SovereignBaseAgent):
                     phase=ExecutionPhase.VALIDATION,
                     status="ABORTED",
                     message=f"{abort_reason} detected in repository.",
-                    metadata={"mode": self.mode.value, "gate": "DNA_SENTINEL", "critical_violations": len(critical_violations)}
+                    metadata={
+                        "mode": self.mode.value,
+                        "gate": "DNA_SENTINEL",
+                        "critical_violations": len(critical_violations),
+                    },
                 )
         except ImportError:
-            self.logger.warning("[GATE] CanonDependencySentinelAgent not found. Proceeding with caution.")
+            self.logger.warning(
+                "[GATE] CanonDependencySentinelAgent not found. Proceeding with caution."
+            )
 
         agent_results: list[AgentResult] = []
         total_violations_found = 0
@@ -215,17 +234,21 @@ class UnifiedOrchestratorAgent(SovereignBaseAgent):
         for agent_name in agents:
             # [PHASE 33m] Pre-Flight Import Validation
             if not self._validate_agent_import(agent_name):
-                self.logger.critical(f"[GATE] CRITICAL_IMPORT_FAILURE: {agent_name} is unimportable")
-                agent_results.append(AgentResult(
-                    agent_name=agent_name,
-                    success=False,
-                    errors=1,
-                    status="CRITICAL_IMPORT_FAILURE",
-                    message=f"Agent {agent_name} failed pre-flight import validation"
-                ))
+                self.logger.critical(
+                    f"[GATE] CRITICAL_IMPORT_FAILURE: {agent_name} is unimportable"
+                )
+                agent_results.append(
+                    AgentResult(
+                        agent_name=agent_name,
+                        success=False,
+                        errors=1,
+                        status="CRITICAL_IMPORT_FAILURE",
+                        message=f"Agent {agent_name} failed pre-flight import validation",
+                    )
+                )
                 total_errors += 1
                 continue
-                
+
             # Crash containment for individual agent runs
             try:
                 result = self.run_agent(agent_name, dry_run=dry_run, context=context)
@@ -470,50 +493,53 @@ class UnifiedOrchestratorAgent(SovereignBaseAgent):
     def _validate_agent_import(self, agent_name: str) -> bool:
         """
         [PHASE 33m] Pre-Flight Import Validation.
-        
+
         Performs a subprocess check to verify the agent module is importable
         before attempting to run it. This prevents runtime crashes from
         missing dependencies, syntax errors, or circular imports.
-        
+
         Args:
             agent_name: Name of the agent to validate
-            
+
         Returns:
             True if agent is importable, False otherwise
         """
         import subprocess
         import sys
-        
+
         # Try to find the module path for this agent
         try:
             from agentic_core.L5_safety.validators.ssot_discovery import get_agent_files
+
             agent_files = get_agent_files(self.project_root)
-            
+
             # Find matching agent file
             agent_file = next((f for f in agent_files if f.stem == agent_name), None)
             if not agent_file:
                 # Agent not found in discovery - skip validation (may be dynamically loaded)
                 return True
-                
+
             # Convert file path to module path
             rel_path = agent_file.relative_to(self.project_root)
-            module_path = str(rel_path.with_suffix('')).replace('/', '.').replace('\\', '.')
-            
+            module_path = str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
+
             # Perform subprocess import check
             result = subprocess.run(
                 [sys.executable, "-c", f"import {module_path}"],
                 capture_output=True,
                 text=True,
                 timeout=10,
-                cwd=str(self.project_root)
+                cwd=str(self.project_root),
             )
-            
+
             if result.returncode != 0:
-                self.logger.error(f"[GATE] Import validation failed for {agent_name}: {result.stderr.strip()[:200]}")
+                self.logger.error(
+                    f"[GATE] Import validation failed for {agent_name}: {result.stderr.strip()[:200]}"
+                )
                 return False
-                
+
             return True
-            
+
         except Exception as e:
             self.logger.warning(f"[GATE] Pre-flight check skipped for {agent_name}: {e}")
             return True  # Allow to proceed if validation itself fails

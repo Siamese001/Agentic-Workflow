@@ -2,6 +2,7 @@
 
 Tests for singleton enforcement, instinctive bypass, DNA segregation, and lobotomy resilience.
 """
+
 from __future__ import annotations
 
 import os
@@ -484,7 +485,9 @@ class TestCircuitBreaker:
         with patch("redis.from_url") as mock_redis:
             mock_redis.return_value.ping.side_effect = Exception("Connection refused")
 
-            with patch.object(SemanticCacheManager, 'get_instance', side_effect=Exception("Hive Mind down")):
+            with patch.object(
+                SemanticCacheManager, "get_instance", side_effect=Exception("Hive Mind down")
+            ):
                 agent = TestAgent()
 
         # Circuit breaker should be active
@@ -1283,8 +1286,9 @@ class TestMetaLearningKGIntegration:
                 # Force KG to be unavailable
                 with patch(
                     "agentic_core.utils.core_extensions.knowledge_graph_bridge.KnowledgeGraphBridge.get_instance",
-                    side_effect=Exception("MCP unavailable")
+                    side_effect=Exception("MCP unavailable"),
                 ):
+
                     class TestAgent(MetaLearningMixin):
                         pass
 

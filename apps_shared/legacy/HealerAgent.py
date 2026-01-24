@@ -22,14 +22,11 @@ import logging
 import os
 import sys
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any
 
 from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 from agentic_core.base_agents.healer_mixin import HealerMixin
-
-
-from agentic_core.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
 
 @dataclass
