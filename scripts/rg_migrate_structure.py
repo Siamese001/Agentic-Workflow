@@ -11,12 +11,10 @@ import os
 import re
 import logging
 from pathlib import Path
-from typing import Dict, List, Set
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - [MIGRATE] - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - [MIGRATE] - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -31,19 +29,20 @@ DIRS = {
     "tools": APPS_RG_DIR / "shared/tools",
     "types": APPS_RG_DIR / "domain/types",
     "legacy": APPS_RG_DIR / "legacy",
-    "quarantine": APPS_RG_DIR / "legacy/quarantine_broken"
+    "quarantine": APPS_RG_DIR / "legacy/quarantine_broken",
 }
+
 
 class MigrationExecutor:
     def __init__(self, dry_run: bool = False):
         self.dry_run = dry_run
         self.manifest = self._load_manifest()
-        self.moved_files: Dict[str, str] = {}  # old_name -> new_full_path
+        self.moved_files: dict[str, str] = {}  # old_name -> new_full_path
 
-    def _load_manifest(self) -> Dict:
+    def _load_manifest(self) -> dict:
         if not MANIFEST_PATH.exists():
             raise FileNotFoundError(f"Manifest not found at {MANIFEST_PATH}")
-        with open(MANIFEST_PATH, 'r') as f:
+        with open(MANIFEST_PATH) as f:
             return json.load(f)
 
     def _ensure_dirs(self):
@@ -62,7 +61,7 @@ class MigrationExecutor:
     def _move_file(self, src_rel: str, dest_dir: Path, new_name: str = None) -> bool:
         """Move a file safely from relative path (e.g., apps_rg/engines/file.py)."""
         # Handle path normalization
-        src_clean = src_rel.replace('\\', '/')
+        src_clean = src_rel.replace("\\", "/")
         src_path = BASE_DIR / src_clean
 
         if not src_path.exists():
@@ -117,7 +116,9 @@ class MigrationExecutor:
         """Leave Unknowns in Engines but Log them (Passive Review)."""
         # Per review: Do not move unknowns blindly. Just log them.
         unknowns = self.manifest.get("actions", {}).get("unknown_require_manual_review", [])
-        logger.info(f"PENDING REVIEW: {len(unknowns)} files remain in engines/ for manual classification.")
+        logger.info(
+            f"PENDING REVIEW: {len(unknowns)} files remain in engines/ for manual classification."
+        )
 
     def patch_imports(self):
         """Scan apps_rg/engines/ and update imports for moved tools/types."""
@@ -153,10 +154,10 @@ class MigrationExecutor:
                 if file.endswith(".py"):
                     path = Path(root) / file
                     try:
-                        content = path.read_text(encoding='utf-8')
+                        content = path.read_text(encoding="utf-8")
                         if regex.search(content):
                             new_content = regex.sub(replacement, content)
-                            path.write_text(new_content, encoding='utf-8')
+                            path.write_text(new_content, encoding="utf-8")
                             logger.info(f"Patched imports in {path.name}")
                     except Exception as e:
                         logger.error(f"Failed to patch {path.name}: {e}")
@@ -167,10 +168,10 @@ class MigrationExecutor:
                 if file.endswith(".py"):
                     path = Path(root) / file
                     try:
-                        content = path.read_text(encoding='utf-8')
+                        content = path.read_text(encoding="utf-8")
                         if old in content:
                             new_content = content.replace(old, new)
-                            path.write_text(new_content, encoding='utf-8')
+                            path.write_text(new_content, encoding="utf-8")
                             logger.info(f"Replaced '{old}' in {path.name}")
                     except Exception as e:
                         logger.error(f"Failed to patch {path.name}: {e}")
@@ -185,6 +186,7 @@ class MigrationExecutor:
         self.process_unknowns()
         self.patch_imports()
         logger.info("=== MIGRATION COMPLETE ===")
+
 
 if __name__ == "__main__":
     # Safety: Run immediately

@@ -19,12 +19,13 @@ logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).resolve().parent.parent
 PLAN_PATH = BASE_DIR / "apps_rg/RG_ARCHIVE_RECOVERY_PLAN.json"
 
+
 def inject_archives():
     if not PLAN_PATH.exists():
         logger.error(f"Recovery plan not found: {PLAN_PATH}")
         return
 
-    with open(PLAN_PATH, 'r') as f:
+    with open(PLAN_PATH) as f:
         plan = json.load(f)
 
     success_count = 0
@@ -34,12 +35,12 @@ def inject_archives():
 
     for item in plan:
         # Source is absolute from the audit
-        src = Path(item['path'])
-        
+        src = Path(item["path"])
+
         # Target is relative in JSON, make absolute
         # JSON path: "apps_rg/engines/..."
         # Fix path separators for current OS
-        target_rel = item['target_destination'].replace('/', os.sep).replace('\\', os.sep)
+        target_rel = item["target_destination"].replace("/", os.sep).replace("\\", os.sep)
         dest = BASE_DIR / target_rel
 
         if not src.exists():
@@ -58,7 +59,7 @@ def inject_archives():
 
             # Copy file (preserve metadata)
             shutil.copy2(src, dest)
-            
+
             logger.info(f"INJECTED: {src.name} -> {dest.relative_to(BASE_DIR)}")
             success_count += 1
 
@@ -70,6 +71,7 @@ def inject_archives():
     logger.info(f"Successful: {success_count}")
     logger.info(f"Failed/Skipped: {error_count}")
     logger.info("Run validation tests immediately.")
+
 
 if __name__ == "__main__":
     inject_archives()

@@ -26,7 +26,7 @@ MRO SAFETY ENHANCEMENT (Jan 2026):
 """
 import logging
 import re
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.decorators import standard_heal
@@ -118,10 +118,10 @@ class L5SafetyBaseAgent(SovereignBaseAgent):
     def validate(
         self,
         input_text: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None,
+        _call_path: set[str] | None = None,
     ) -> ValidationResult:
         """L5-specific: Multi-stage validation pipeline with cascading checks.
 
@@ -356,7 +356,7 @@ class L5SafetyBaseAgent(SovereignBaseAgent):
         return result
 
     def _check_policy_violation(
-        self, text: str, policies: List[Dict[str, Any]], result: ValidationResult
+        self, text: str, policies: list[dict[str, Any]], result: ValidationResult
     ) -> ValidationResult:
         """Check against custom policy rules.
 

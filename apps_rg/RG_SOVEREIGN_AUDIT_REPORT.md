@@ -1,8 +1,8 @@
 # 🛡️ RG SOVEREIGN STRUCTURAL AUDIT REPORT
 
-**Version:** 2.5-RG  
-**Audit Date:** 2026-01-23  
-**Auditor:** Principal AI Systems Auditor (AST-Enforced)  
+**Version:** 2.5-RG
+**Audit Date:** 2026-01-23
+**Auditor:** Principal AI Systems Auditor (AST-Enforced)
 **Target Directory:** `apps_rg/`
 
 ---
@@ -318,18 +318,18 @@ The following 21 files are **confirmed True Sovereign Agents** with proper state
 
 1. **Priority 1 - Fix Syntax Errors** (10 files)
    - These files cannot be properly classified until syntax is fixed
-   
+
 2. **Priority 2 - Archive Legacy** (3 files)
    - Move `test_*.py` files to `apps_rg/legacy/`
-   
+
 3. **Priority 3 - Migrate Types** (16 files)
    - Create `apps_rg/domain/types/` directory
    - Move and rename Enum/BaseModel files
-   
+
 4. **Priority 4 - Migrate Tools** (18 files)
    - Create `apps_rg/shared/tools/` directory
    - Move stateless utility files
-   
+
 5. **Priority 5 - Manual Review** (13 files)
    - Review "unknown" files for proper classification
    - Add stateful methods or reclassify as tools
@@ -445,6 +445,6 @@ apps_rg/engines/request_retrieve_resume_history.py
 
 ---
 
-**Report Generated:** 2026-01-23  
-**Next Phase:** Phase 2 - Automated Migration Execution  
+**Report Generated:** 2026-01-23
+**Next Phase:** Phase 2 - Automated Migration Execution
 **Blocking Issues:** 10 files with syntax errors must be fixed before migration

@@ -5,7 +5,7 @@ Following Batch 3 specifications
 """
 
 from __future__ import annotations
-from typing import Any, Dict, Optional
+from typing import Any
 import time
 import logging
 
@@ -24,7 +24,7 @@ class ServiceInvokerEngine(BaseRGEngine):
         super().__init__(ctx, node_id="SERVICE.INVOKER")
         # self.timeout from config lookup
 
-    async def execute(self, action: str, params: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, action: str, params: dict[str, Any]) -> dict[str, Any]:
         """
         Execute a remote generation action with telemetry.
         """
@@ -39,25 +39,20 @@ class ServiceInvokerEngine(BaseRGEngine):
                 raise ValueError("Missing prompt for service invocation")
 
             response = await self.call_llm(prompt)
-            
+
             duration_ms = (time.time() - start_time) * 1000
-            
+
             if not response:
                 self.record_fail(f"Service {action} returned empty response")
                 return {"success": False, "error": "Empty response"}
 
-            self.record_pass(
-                f"Service {action} completed", 
-                data={"duration_ms": duration_ms}
-            )
-            
-            return {
-                "success": True,
-                "output": response,
-                "duration_ms": duration_ms
-            }
+            self.record_pass(f"Service {action} completed", data={"duration_ms": duration_ms})
+
+            return {"success": True, "output": response, "duration_ms": duration_ms}
 
         except Exception as e:
             Logger.error(f"Service Invocation Failure: {e}")
-            self.record_fail(str(e), signal="SERVICE_TIMEOUT" if "timeout" in str(e).lower() else None)
+            self.record_fail(
+                str(e), signal="SERVICE_TIMEOUT" if "timeout" in str(e).lower() else None
+            )
             return {"success": False, "error": str(e)}

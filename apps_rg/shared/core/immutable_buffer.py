@@ -14,7 +14,7 @@ import copy
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, Set, Optional, TypeVar
+from typing import Any, TypeVar
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
@@ -26,6 +26,7 @@ T = TypeVar("T")
 @dataclass(frozen=True)
 class StateTransaction:
     """Immutable record of a state change."""
+
     key: str
     timestamp: float
     source_agent: str
@@ -38,7 +39,7 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
     """
     Sovereign State Container.
     Enforces Write-Once-Read-Many (WORM) with Deep Copy isolation.
-    
+
     RG-Specific Keys:
     - mission_input: Initial job description and resume data
     - hop0_validation: JD validation results
@@ -51,8 +52,8 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
     - hop7_qa_report: Final QA report
     """
 
-    _buffer: Dict[str, Any] = field(default_factory=dict)
-    _locked_keys: Set[str] = field(default_factory=set)
+    _buffer: dict[str, Any] = field(default_factory=dict)
+    _locked_keys: set[str] = field(default_factory=set)
     _history: list[StateTransaction] = field(default_factory=list)
     _cycle_id: str = "INIT"
 
@@ -61,10 +62,10 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
         # Initialize MCP and Healer mixins
         MCPHardenedMixin.__init__(self)
         HealerMixin.__init__(self)
-    
+
     def _mcp_audit(self, action: str, details: dict = None) -> None:
         """Safe MCP audit call - falls back to no-op if mixin not fully initialized."""
-        if hasattr(super(), '_mcp_audit'):
+        if hasattr(super(), "_mcp_audit"):
             super()._mcp_audit(action, details or {})
         # Silent no-op if mixin not available
 
@@ -72,7 +73,7 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
         """
         Commit data to the buffer.
         CRITICAL: Stores a deep copy to prevent external mutation.
-        
+
         Args:
             key: The identifier for the data.
             value: The data to store.
@@ -90,21 +91,27 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
             snapshot = copy.deepcopy(value)
         except TypeError:
             # Fallback for non-pickleable objects (e.g., connections), store as-is but warn
-            Logger.warning(f"[{source_agent}] Object for '{key}' is not deep-copyable. Storing reference.")
+            Logger.warning(
+                f"[{source_agent}] Object for '{key}' is not deep-copyable. Storing reference."
+            )
             snapshot = value
 
         self._buffer[key] = snapshot
         self._locked_keys.add(key)
-        
+
         # Transaction Log
-        self._history.append(StateTransaction(
-            key=key,
-            timestamp=datetime.utcnow().timestamp(),
-            source_agent=source_agent,
-            value_hash=hash(str(snapshot)) if isinstance(snapshot, (str, int, float, tuple)) else 0,
-            cycle_id=self._cycle_id
-        ))
-        
+        self._history.append(
+            StateTransaction(
+                key=key,
+                timestamp=datetime.utcnow().timestamp(),
+                source_agent=source_agent,
+                value_hash=hash(str(snapshot))
+                if isinstance(snapshot, (str, int, float, tuple))
+                else 0,
+                cycle_id=self._cycle_id,
+            )
+        )
+
         self._mcp_audit("buffer_write", {"key": key, "agent": source_agent})
 
     def write_once(self, key: str, value: Any) -> None:
@@ -128,7 +135,7 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
         """
         if key not in self._buffer:
             return default
-            
+
         data = self._buffer[key]
         try:
             return copy.deepcopy(data)

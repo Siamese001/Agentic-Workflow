@@ -4,7 +4,7 @@ Refactored from EvaluateResumeEffectiveness.py
 """
 
 from __future__ import annotations
-from typing import Any, Dict
+from typing import Any
 import logging
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
@@ -20,44 +20,40 @@ class EffectivenessScorer(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="QUALITY.EFFECTIVENESS")
 
-    async def execute(self, resume_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, resume_data: dict[str, Any]) -> dict[str, Any]:
         """
         Calculate effectiveness score.
         """
         self._mcp_audit("effectiveness_scoring")
-        
+
         score = 0.0
-        metrics = {
-            "quantified_achievements": 0,
-            "leadership_indicators": 0,
-            "technical_depth": 0
-        }
-        
+        metrics = {"quantified_achievements": 0, "leadership_indicators": 0, "technical_depth": 0}
+
         # Analyze experience sections
         for section in resume_data.get("experience_sections", []):
             for bullet in section.get("bullets", []):
                 text = bullet.get("bullet_text", "")
-                
+
                 # Count quantified achievements
                 if bullet.get("quantified_metrics"):
                     metrics["quantified_achievements"] += 1
                     score += 0.2
-                
+
                 # Leadership indicators
                 if any(word in text.lower() for word in ["led", "managed", "directed"]):
                     metrics["leadership_indicators"] += 1
                     score += 0.15
-                
+
                 # Technical depth
                 if any(word in text.lower() for word in ["architected", "engineered", "designed"]):
                     metrics["technical_depth"] += 1
                     score += 0.1
-        
+
         result = {
             "effectiveness_score": min(score, 1.0),
             "metrics": metrics,
-            "rating": "high" if score >= 0.8 else "medium" if score >= 0.5 else "low"
+            "rating": "high" if score >= 0.8 else "medium" if score >= 0.5 else "low",
         }
-        
+
         self.record_pass(f"Effectiveness score: {result['effectiveness_score']:.2f}", data=result)
         return result

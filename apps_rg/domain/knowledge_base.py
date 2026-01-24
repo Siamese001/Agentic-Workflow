@@ -7,14 +7,13 @@ This module serves as the immutable 'brain' of the Resume Generation system.
 VIOLATION: NO MAGIC STRINGS. ALL PROMPTS/CONFIGS MUST BE ACCESSED VIA THIS REGISTRY.
 """
 
-from typing import Dict, List, Optional
 from pydantic import BaseModel, Field, field_validator
 
 
 class PromptTemplate(BaseModel):
     id: str
     template: str
-    required_vars: List[str]
+    required_vars: list[str]
 
     @field_validator("template")
     @classmethod
@@ -27,9 +26,9 @@ class PromptTemplate(BaseModel):
 
 class ThresholdConfig(BaseModel):
     rag_recency_weight: float = Field(..., ge=0.0, le=1.0)
-    cot_min_paths: Optional[int] = Field(None, ge=1)
-    min_tot_depth: Optional[int] = Field(None, ge=1)
-    qa_thresholds: Dict[str, str] = Field(default_factory=dict)
+    cot_min_paths: int | None = Field(None, ge=1)
+    min_tot_depth: int | None = Field(None, ge=1)
+    qa_thresholds: dict[str, str] = Field(default_factory=dict)
 
 
 class KNodeDefinition(BaseModel):
@@ -41,10 +40,11 @@ class KNodeDefinition(BaseModel):
 
 class SovereignKnowledge(BaseModel):
     """The frozen state of the extracted JSON logic."""
+
     version: str = "v33.2"
-    prompts: Dict[str, PromptTemplate]
-    nodes: Dict[str, KNodeDefinition]
-    global_rules: Dict[str, str]
+    prompts: dict[str, PromptTemplate]
+    nodes: dict[str, KNodeDefinition]
+    global_rules: dict[str, str]
 
 
 # =============================================================================
@@ -57,31 +57,29 @@ FROZEN_SNAPSHOT = SovereignKnowledge(
         "input_acquisition_jd": PromptTemplate(
             id="3.context.input_acquisition_gate.prompts[0].prompt_text",
             template="Please provide the Job Description URL. If the URL is unavailable or fails, paste the full JD text.",
-            required_vars=[]
+            required_vars=[],
         ),
         "input_acquisition_resume": PromptTemplate(
             id="3.context.input_acquisition_gate.prompts[1].prompt_text",
             template="How would you like to provide the base resumes?\n1. Provide a single GitHub repository URL (recommended).\n2. Upload each file individually.",
-            required_vars=[]
+            required_vars=[],
         ),
         "input_acquisition_github": PromptTemplate(
             id="3.context.input_acquisition_gate.conditional_logic.if.then.prompts[0].prompt_text",
             template="Please provide the GitHub repository URL.",
-            required_vars=[]
+            required_vars=[],
         ),
-        
         # --- TEMPLATE ACQUISITION PROMPTS ---
         "template_acquisition_reasoning": PromptTemplate(
             id="3.context.l_series_configuration.implementation.template_acquisition_gate.prompts[0].prompt_text",
             template="Please upload the consolidated reasoning template file (Reasoning_Transformer_Template_L1.1.md).",
-            required_vars=[]
+            required_vars=[],
         ),
         "template_acquisition_data": PromptTemplate(
             id="3.context.l_series_configuration.implementation.template_acquisition_gate.prompts[1].prompt_text",
             template="Please upload the raw data source (Transformer_Output_v40.md).",
-            required_vars=[]
+            required_vars=[],
         ),
-        
         # --- K.1 PROMPTS ---
         "k1_hyde_generation": PromptTemplate(
             id="4.reasoning.K.1_company_job_title_extraction.hyde_enrichment",
@@ -98,47 +96,42 @@ Generate a comprehensive 400-word job description including:
 5. Required experience level and background
 
 Base this on typical {job_title} roles at {company_type} companies.""",
-            required_vars=["company_name", "job_title", "sparse_jd", "company_type"]
+            required_vars=["company_name", "job_title", "sparse_jd", "company_type"],
         ),
-        
         # --- VALIDATION PROMPTS ---
         "validation_fail_namedropping": PromptTemplate(
             id="4.reasoning.validation_functions.validate_no_company_namedropping",
             template="Rewrite in capability-focused style; remove previous employer names; focus on what was accomplished, not where. MUST use third-person implied voice (e.g., 'Established' instead of 'I established').",
-            required_vars=[]
+            required_vars=[],
         ),
         "validation_fail_target_products": PromptTemplate(
             id="4.reasoning.validation_functions.validate_no_target_products_in_past_roles",
             template="Replace [TARGET_COMPANY]/[TARGET_PRODUCTS] with generic tech terms: 'cloud data platform','advanced analytics','enterprise data infrastructure','AI/ML platforms'",
-            required_vars=[]
+            required_vars=[],
         ),
-        
         # --- INTER-NODE PROMPTS ---
         "inter_node_pause": PromptTemplate(
             id="4.reasoning.implementation.inter_node_pause_gate.prompt_text",
             template="Press Enter or type 'Y' to continue to the next node.",
-            required_vars=[]
+            required_vars=[],
         ),
-        
         # --- HYDE SHORT PROMPT ---
         "k6_hypothetical_short": PromptTemplate(
             id="6.conditions.templates.hyde_prompt_short.prompt",
             template="Given the job title and any sparse JD bullets, write a 300-400 word hypothetical expanded job description that includes likely responsibilities, skills, and metrics. Keep factual inventiveness plausible and flag hypothetical statements in metadata.",
-            required_vars=[]
+            required_vars=[],
         ),
-        
         # --- TOGGLE SCHEMA PROMPTS ---
         "toggle_schema_fallback": PromptTemplate(
             id="3.context.toggle_schema_acquisition_gate.execution_logic[1].if_false.prompts[0].prompt_text",
             template="🟡 WARNING: `Reasoning_Toggles_Summary_Enforced_Format.json v2.0` was not found in the repository. Please upload the file manually.",
-            required_vars=[]
+            required_vars=[],
         ),
-        
         # --- FILENAME GENERATION ---
         "filename_template": PromptTemplate(
             id="5.output.filename_generation.filename_template",
             template="{sender_profile.username}_{artifact_type}_YYYY-MM-DD_vX.X.json",
-            required_vars=["sender_profile.username", "artifact_type"]
+            required_vars=["sender_profile.username", "artifact_type"],
         ),
     },
     nodes={
@@ -155,9 +148,9 @@ Base this on typical {job_title} roles at {company_type} companies.""",
                     "title_present": "Required",
                     "valid_url": "Valid URL format",
                     "req_number": "≤8 chars",
-                    "confidence": ">=0.95"
-                }
-            )
+                    "confidence": ">=0.95",
+                },
+            ),
         ),
         "K.2": KNodeDefinition(
             id="K.2",
@@ -171,9 +164,9 @@ Base this on typical {job_title} roles at {company_type} companies.""",
                     "category_valid": "Valid taxonomy",
                     "subcategory_aligned": "Consistent with category",
                     "self_consistency": ">=3/5 agreement",
-                    "confidence": ">=0.90"
-                }
-            )
+                    "confidence": ">=0.90",
+                },
+            ),
         ),
         "K.2.5": KNodeDefinition(
             id="K.2.5",
@@ -188,9 +181,9 @@ Base this on typical {job_title} roles at {company_type} companies.""",
                     "table_stakes": ">=5 keywords",
                     "differentiators": ">=3 keywords",
                     "positioning_strategy": "Clear guidance for K.4/K.5",
-                    "confidence": ">=0.85"
-                }
-            )
+                    "confidence": ">=0.85",
+                },
+            ),
         ),
         "K.3": KNodeDefinition(
             id="K.3",
@@ -204,9 +197,9 @@ Base this on typical {job_title} roles at {company_type} companies.""",
                     "role_from_catalog": "Exact catalog match",
                     "single_role": "No secondary role",
                     "jd_alignment": ">=0.85 semantic match",
-                    "confidence": ">=0.90"
-                }
-            )
+                    "confidence": ">=0.90",
+                },
+            ),
         ),
         "K.4": KNodeDefinition(
             id="K.4",
@@ -218,9 +211,9 @@ Base this on typical {job_title} roles at {company_type} companies.""",
                 min_tot_depth=2,
                 qa_thresholds={
                     "format": "Must contain exactly 2 '|' characters",
-                    "constraint": "Strategic positioning - NOT tactical execution"
-                }
-            )
+                    "constraint": "Strategic positioning - NOT tactical execution",
+                },
+            ),
         ),
         "K.5": KNodeDefinition(
             id="K.5",
@@ -230,11 +223,8 @@ Base this on typical {job_title} roles at {company_type} companies.""",
                 rag_recency_weight=0.25,
                 cot_min_paths=2,
                 min_tot_depth=2,
-                qa_thresholds={
-                    "token_count": "110-130 tokens",
-                    "max_retries": "3"
-                }
-            )
+                qa_thresholds={"token_count": "110-130 tokens", "max_retries": "3"},
+            ),
         ),
         "K.6": KNodeDefinition(
             id="K.6",
@@ -244,10 +234,8 @@ Base this on typical {job_title} roles at {company_type} companies.""",
                 rag_recency_weight=0.25,
                 cot_min_paths=2,
                 min_tot_depth=2,
-                qa_thresholds={
-                    "intro_presence": "Field must not be null or empty"
-                }
-            )
+                qa_thresholds={"intro_presence": "Field must not be null or empty"},
+            ),
         ),
         "K.7": KNodeDefinition(
             id="K.7",
@@ -257,10 +245,8 @@ Base this on typical {job_title} roles at {company_type} companies.""",
                 rag_recency_weight=0.25,
                 cot_min_paths=2,
                 min_tot_depth=2,
-                qa_thresholds={
-                    "intro_presence": "Field must not be null or empty"
-                }
-            )
+                qa_thresholds={"intro_presence": "Field must not be null or empty"},
+            ),
         ),
         "K.8": KNodeDefinition(
             id="K.8",
@@ -273,9 +259,9 @@ Base this on typical {job_title} roles at {company_type} companies.""",
                 qa_thresholds={
                     "section_count": "Exactly 3",
                     "bullet_count": "Exactly 2 per section",
-                    "intro_presence": "All 3 intro fields must not be null or empty"
-                }
-            )
+                    "intro_presence": "All 3 intro fields must not be null or empty",
+                },
+            ),
         ),
         "K.9": KNodeDefinition(
             id="K.9",
@@ -299,9 +285,9 @@ Base this on typical {job_title} roles at {company_type} companies.""",
                     "dedup_k7": "<0.60 cosine",
                     "ascii_hygiene": "Clean",
                     "overall_score": ">=0.88",
-                    "no_target_products": "Generic platform terms only"
-                }
-            )
+                    "no_target_products": "Generic platform terms only",
+                },
+            ),
         ),
         "K.10": KNodeDefinition(
             id="K.10",
@@ -320,9 +306,9 @@ Base this on typical {job_title} roles at {company_type} companies.""",
                     "authenticity": "Unique to this company",
                     "proof_points": ">=2 quantified achievements",
                     "ascii_hygiene": "Clean",
-                    "confidence": ">=0.85"
-                }
-            )
+                    "confidence": ">=0.85",
+                },
+            ),
         ),
         "K.11": KNodeDefinition(
             id="K.11",
@@ -335,9 +321,9 @@ Base this on typical {job_title} roles at {company_type} companies.""",
                 qa_thresholds={
                     "keyword_count": "10-15 keywords",
                     "ats_relevance": "Top 10 JD keywords included",
-                    "coverage_balance": "Mix of technical, soft, and domain skills"
-                }
-            )
+                    "coverage_balance": "Mix of technical, soft, and domain skills",
+                },
+            ),
         ),
         # Engine-specific configurations
         "ORCHESTRATOR_L3": KNodeDefinition(
@@ -345,121 +331,88 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             name="L3 Orchestrator",
             purpose="Coordinates the 50-engine fleet",
             config=ThresholdConfig(
-                rag_recency_weight=0.25,
-                cot_min_paths=None,
-                min_tot_depth=None,
-                qa_thresholds={}
-            )
+                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+            ),
         ),
         "HOP.1.CLERK": KNodeDefinition(
             id="HOP.1.CLERK",
             name="Clerk Extraction",
             purpose="Structural data extraction",
             config=ThresholdConfig(
-                rag_recency_weight=0.25,
-                cot_min_paths=None,
-                min_tot_depth=None,
-                qa_thresholds={}
-            )
+                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+            ),
         ),
         "HOP.2.ENRICH": KNodeDefinition(
             id="HOP.2.ENRICH",
             name="Data Enrichment",
             purpose="Verb canonicalization and enrichment",
             config=ThresholdConfig(
-                rag_recency_weight=0.25,
-                cot_min_paths=None,
-                min_tot_depth=None,
-                qa_thresholds={}
-            )
+                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+            ),
         ),
         "SERVICE.INVOKER": KNodeDefinition(
             id="SERVICE.INVOKER",
             name="Service Invoker",
             purpose="LLM service invocation",
             config=ThresholdConfig(
-                rag_recency_weight=0.25,
-                cot_min_paths=None,
-                min_tot_depth=None,
-                qa_thresholds={}
-            )
+                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+            ),
         ),
         "REFINE.WEIGHTS": KNodeDefinition(
             id="REFINE.WEIGHTS",
             name="Weight Adjustment",
             purpose="Dynamic section weighting",
             config=ThresholdConfig(
-                rag_recency_weight=0.25,
-                cot_min_paths=None,
-                min_tot_depth=None,
-                qa_thresholds={}
-            )
+                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+            ),
         ),
         "REFINE.OPTIMIZER": KNodeDefinition(
             id="REFINE.OPTIMIZER",
             name="Content Optimizer",
             purpose="Bullet ordering optimization",
             config=ThresholdConfig(
-                rag_recency_weight=0.25,
-                cot_min_paths=None,
-                min_tot_depth=None,
-                qa_thresholds={}
-            )
+                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+            ),
         ),
         "REFINE.RANKER": KNodeDefinition(
             id="REFINE.RANKER",
             name="Section Ranker",
             purpose="Section ordering by role type",
             config=ThresholdConfig(
-                rag_recency_weight=0.25,
-                cot_min_paths=None,
-                min_tot_depth=None,
-                qa_thresholds={}
-            )
+                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+            ),
         ),
         "REFINE.TEMPLATE": KNodeDefinition(
             id="REFINE.TEMPLATE",
             name="Template Optimizer",
             purpose="Template selection",
             config=ThresholdConfig(
-                rag_recency_weight=0.25,
-                cot_min_paths=None,
-                min_tot_depth=None,
-                qa_thresholds={}
-            )
+                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+            ),
         ),
         "SAFETY.VOID": KNodeDefinition(
             id="SAFETY.VOID",
             name="Void Compliance",
             purpose="Architecture enforcement",
             config=ThresholdConfig(
-                rag_recency_weight=0.25,
-                cot_min_paths=None,
-                min_tot_depth=None,
-                qa_thresholds={}
-            )
+                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+            ),
         ),
         "SAFETY.ATS": KNodeDefinition(
             id="SAFETY.ATS",
             name="ATS Compatibility",
             purpose="ATS parsing validation",
             config=ThresholdConfig(
-                rag_recency_weight=0.25,
-                cot_min_paths=None,
-                min_tot_depth=None,
-                qa_thresholds={}
-            )
+                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+            ),
         ),
         "SAFETY.HALLUCINATION": KNodeDefinition(
             id="SAFETY.HALLUCINATION",
             name="Hallucination Detector",
             purpose="Claim verification",
             config=ThresholdConfig(
-                rag_recency_weight=0.25,
-                cot_min_paths=None,
-                min_tot_depth=None,
-                qa_thresholds={}
-            )
+                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+            ),
         ),
     },
     global_rules={
@@ -471,7 +424,6 @@ Base this on typical {job_title} roles at {company_type} companies.""",
         "VG_SOURCE_CONFLICT_CHECK": "Source conflict resolution gate",
         "VG_COMP_BULLET_RATIO": "Competency bullet ratio validation",
         "VG_SCHEMA_001": "All generated field names MUST exist in App_Schema_v4.json's defined fields",
-        
         # State Machine Guards
         "GUARD_BASE_FILES": "all_base_files_provided",
         "GUARD_CONTEXT_VALIDATED": "source_context_validated_and_conflict_free",
@@ -481,20 +433,17 @@ Base this on typical {job_title} roles at {company_type} companies.""",
         "GUARD_SUBMISSION_Y": "submission_confirmed_Y",
         "GUARD_SUBMISSION_N": "submission_confirmed_N",
         "GUARD_TRACKER_OUTPUT": "tracker_output_generated",
-        
         # Execution Rules
         "SECTION_5_GATE": "Section 5 CANNOT begin until K.1-K.11 complete with PASS status",
         "POST_PROCESSING": "Final output contains no K.1, K.2, etc. in body text",
         "RESUME_HEADER": "Resume name appears on line 4, headline on line 6, no K.4 prefix in final output",
-        
         # L-Series Rules
         "L_SERIES_LENGTH": "Total output ≤ 120% of template file character count",
         "L_SERIES_VALIDATION": "Must have valid L-Series selection if detailed_reasoning == 'Yes'",
-        
         # Mode Recognition
         "K6_MODE_CHECK": "Recognize phase transition from strategic (K.5) to tactical detail (K.6-K.7)",
         "K7_MODE_CHECK": "Maintain tactical detail mode consistency between K.6 and K.7",
-    }
+    },
 )
 
 
@@ -531,11 +480,11 @@ def get_global_rule(rule_id: str) -> str:
     return FROZEN_SNAPSHOT.global_rules[rule_id]
 
 
-def list_all_nodes() -> List[str]:
+def list_all_nodes() -> list[str]:
     """Return list of all K-Node IDs."""
     return list(FROZEN_SNAPSHOT.nodes.keys())
 
 
-def list_all_prompts() -> List[str]:
+def list_all_prompts() -> list[str]:
     """Return list of all prompt IDs."""
     return list(FROZEN_SNAPSHOT.prompts.keys())

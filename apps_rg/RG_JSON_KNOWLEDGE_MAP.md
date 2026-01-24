@@ -659,4 +659,3 @@ Given the job title and any sparse JD bullets, write a 300-400 word hypothetical
 ├── 6.conditions/ (6 keys)
 ├── 7.post_submission/ (1 keys)
 ```
-

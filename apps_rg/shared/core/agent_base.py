@@ -29,7 +29,7 @@ class RGAgentBase(MCPHardenedMixin, HealerMixin, ABC):
     2. Enforce standard execution signature.
     3. Manage automatic tracing (Start/End/Error).
     4. Provide MCP hardening and Self-Healing capabilities.
-    
+
     Aligned with LIC LICAgentBase pattern.
     """
 
@@ -61,7 +61,7 @@ class RGAgentBase(MCPHardenedMixin, HealerMixin, ABC):
 
         try:
             registry.add_trace("PHASE_START", {"agent": agent_name})
-            
+
             # Run async _process in sync context
             asyncio.run(self._process(buffer, registry))
 
@@ -71,7 +71,9 @@ class RGAgentBase(MCPHardenedMixin, HealerMixin, ABC):
             registry.add_trace("PHASE_ERROR", {"agent": agent_name, "error": str(e)})
             raise RuntimeError(f"{agent_name} execution failed") from e
 
-    async def run_phase_async(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
+    async def run_phase_async(
+        self, buffer: ImmutableStagingBuffer, registry: TraceRegistry
+    ) -> None:
         """
         Public entry point for the agent phase (async version).
         Wraps the core logic with Tracing and Error Handling.
@@ -110,21 +112,21 @@ class RGAgentBase(MCPHardenedMixin, HealerMixin, ABC):
     async def call_llm(self, prompt: str, system_message: str | None = None) -> str | None:
         """
         Hardened LLM invocation with budget tracking.
-        
+
         Args:
             prompt: The prompt to send to the LLM.
             system_message: Optional system message.
-            
+
         Returns:
             LLM response or None if unavailable/budget exhausted.
         """
         if not self.llm:
             return None
-            
+
         try:
-            if hasattr(self.llm, 'generate'):
+            if hasattr(self.llm, "generate"):
                 return await self.llm.generate(prompt, system_message=system_message)
-            elif hasattr(self.llm, 'analyze'):
+            elif hasattr(self.llm, "analyze"):
                 return self.llm.analyze(prompt, {})
             return None
         except Exception:
