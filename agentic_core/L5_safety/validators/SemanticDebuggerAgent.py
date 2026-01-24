@@ -16,20 +16,26 @@ to find known healing patterns and fixes.
 import logging
 from typing import Any
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.CognitiveRecoveryMixin import CognitiveRecoveryMixin
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class SemanticDebuggerAgent(L5SafetyBaseAgent, CognitiveRecoveryMixin):
+class SemanticDebuggerAgent(SubatomicTestingMixin, SovereignBaseAgent, CognitiveRecoveryMixin):
     """
     L5 Safety Agent responsible for performing Just-In-Time Root Cause Analysis (RCA).
 
     It utilizes the CognitiveRecoveryMixin to query the Semantic Knowledge Base (Pinecone)
     for known healing patterns matching incoming error traces.
     """
+
+    def __post_init__(self) -> None:
+        """Initialize semantic debugger agent."""
+        super().__post_init__()
 
     def __init__(self, project_root: Any = None, ctx: Any = None, **kwargs: Any) -> None:
         """

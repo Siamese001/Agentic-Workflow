@@ -27,7 +27,7 @@ from typing import Any
 Logger = logging.getLogger(__name__)
 
 
-class SSOTFolderCleanupAgent(SovereignBaseAgent):
+class SSOTFolderCleanupAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     [PHASE 24] Automated SSOT Folder Cleanup Agent.
 
@@ -154,6 +154,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         """Lazy-load ArchivalGatekeeper."""
         if self._archival_gatekeeper is None:
             from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
             self._archival_gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
         return self._archival_gatekeeper

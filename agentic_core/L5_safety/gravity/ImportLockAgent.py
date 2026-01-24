@@ -48,7 +48,7 @@ class SovereigntyError(ImportError):
 
 
 @dataclass
-class ImportLockAgent(SovereignBaseAgent, MetaPathFinder):
+class ImportLockAgent(SubatomicTestingMixin, SovereignBaseAgent, MetaPathFinder):
     """
     The Runtime Execution Guard.
 
@@ -384,6 +384,7 @@ def main() -> Any:
         try:
             # This would violate if run from L0
             # from agentic_core.L5_safety.guardrails import something
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
             print("Test import blocked successfully!")
         except SovereigntyError as e:
             print(f"✅ Violation caught: {e}")

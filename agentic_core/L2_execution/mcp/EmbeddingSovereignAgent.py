@@ -11,14 +11,18 @@ EmbeddingSovereignAgent - Unified Embedding Gateway
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Any, Literal
+from typing import Any, Literal, TYPE_CHECKING
 import time
 import logging
 import os
 import hashlib
 
+if TYPE_CHECKING:
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 from agentic_core.base_agents.redis_cache_mixin import RedisCacheMixin
 from agentic_core.config.SovereignConfigManager import get_sovereign_config
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -26,7 +30,7 @@ EmbeddingProvider = Literal["gemini", "openai"]
 
 
 @dataclass
-class EmbeddingSovereignAgent(RedisCacheMixin):
+class EmbeddingSovereignAgent(SubatomicTestingMixin, "SovereignBaseAgent", RedisCacheMixin):
     """
     Unified Embedding Gateway with Redis caching.
 
@@ -57,7 +61,11 @@ class EmbeddingSovereignAgent(RedisCacheMixin):
 
     audit_log: list[dict[str, Any]] = field(default_factory=list)
 
-    def __new__(cls):
+    def __post_init__(self) -> None:
+        """Initialize the EmbeddingSovereignAgent."""
+        super().__post_init__()
+
+    def __new__(cls, *args, **kwargs):
         """Singleton constructor."""
         if cls._instance is None:
             cls._instance = super().__new__(cls)

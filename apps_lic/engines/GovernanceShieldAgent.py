@@ -9,6 +9,7 @@ import logging
 import re
 
 from apps_lic.domain.governance_shield_types import (
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
     IndustrySensitivity,
     RiskProfile,
     SafetyProtocol,
@@ -17,7 +18,7 @@ from apps_lic.domain.governance_shield_types import (
 logger = logging.getLogger(__name__)
 
 
-class GovernanceShieldAgent:
+class GovernanceShieldAgent(SubatomicTestingMixin):
     """Audits and upgrades content for risk maturity."""
 
     def __init__(self):

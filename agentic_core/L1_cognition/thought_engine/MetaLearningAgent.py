@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.utils.sovereign_index import SovereignIndex
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Type alias for telemetry callback
 TelemetryCallback = Callable[[str, dict[str, Any]], None]
@@ -33,7 +34,7 @@ class Experience:
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
 
-class MetaLearningAgent(SovereignBaseAgent):
+class MetaLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Learns success/failure patterns across execution cycles to optimize
     thinking strategy selection.

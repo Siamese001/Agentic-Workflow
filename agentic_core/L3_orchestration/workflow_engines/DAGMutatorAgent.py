@@ -204,7 +204,7 @@ class DAGConfig(BaseModel):
     mutation_history_size: int = Field(default=1000, ge=100)
 
 
-class DAGMutatorAgent(SovereignBaseAgent):
+class DAGMutatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Handles the actual graph mutations."""
 
     def __init__(self, config: DAGConfig) -> None:
@@ -553,6 +553,7 @@ class DAGMutatorAgent(SovereignBaseAgent):
 
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Global instance
 _dag_manager: DAGManagerAgent | None = None

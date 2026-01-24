@@ -59,9 +59,10 @@ class BiasResult:
 
 
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class BiasAuditorAgent(SovereignBaseAgent):
+class BiasAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Lightweight Bias Detection for Content Quality.
 
     Simple pattern-based bias detection for risk mitigation

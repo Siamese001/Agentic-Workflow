@@ -15,15 +15,15 @@ Enforces function size and cyclomatic complexity limits.
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
-from agentic_core.base_agents.healer_mixin import HealerMixin
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # Sovereign Agent for token budget tracking and complexity management
 @dataclass
-class BudgetAgent(SubAtomicAgent, HealerMixin):
+class BudgetAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Budget enforcement agent for code complexity management.
 

@@ -84,6 +84,7 @@ from agent_stacks_v10_7 import (
 
 # v10.7: Import from new tools file
 from agent_tools_v10_7 import (
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
     QAAdversarialReviewerTool,
     QABiasDetectorTool,
     QAClaimValidatorTool,
@@ -242,7 +243,7 @@ def load_dynamic_tools(context: WorkflowContext, debug_mode: bool) -> dict[str, 
 # ============================================================================
 
 
-class QAConductorAgent(BaseAgent):
+class QAConductorAgent(SubatomicTestingMixin, BaseAgent):
     """v10.7: ReAct QA Conductor with dynamic/UI tooling and cognitive modes."""
 
     def __init__(self, context: "WorkflowContext", debug_mode: bool = False):

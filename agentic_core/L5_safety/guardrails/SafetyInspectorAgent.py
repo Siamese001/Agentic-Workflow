@@ -175,7 +175,7 @@ class ConstitutionalOverseer:
 
 
 @dataclass
-class SafetyInspectorAgent(SovereignBaseAgent):
+class SafetyInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     L5 Safety Inspector with Socratic Judge for false positive mitigation.
 
@@ -314,6 +314,7 @@ class SafetyInspectorAgent(SovereignBaseAgent):
         """
         try:
             from agentic_core.L2_execution.mcp.llm_router_mcp_client import get_llm_router_client
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
             llm_router = get_llm_router_client()
             with open(file_path, encoding="utf-8") as f:

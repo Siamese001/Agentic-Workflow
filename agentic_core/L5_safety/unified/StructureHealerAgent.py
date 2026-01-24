@@ -4,6 +4,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from dataclasses import field
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 #!/usr/bin/env python3
 """
@@ -71,7 +72,7 @@ class StructureHealerConfig:
     agent_suffix: str = "Agent"
 
 
-class StructureHealerAgent(SovereignBaseAgent):
+class StructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified structure healer for gravity, hierarchy, naming, and territory.
 

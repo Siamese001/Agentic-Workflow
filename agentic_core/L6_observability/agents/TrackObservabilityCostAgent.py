@@ -30,10 +30,11 @@ class OperationResult:
 
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class TrackObservabilityCostAgent(SovereignBaseAgent):
+class TrackObservabilityCostAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """function class for standard domain."""
 
     def __init__(self, config: dict[str, object] | None = None) -> None:

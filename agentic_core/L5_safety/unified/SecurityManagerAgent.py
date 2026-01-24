@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from dataclasses import field
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 SecurityManagerAgent - Vaulted Security Management
@@ -104,7 +105,7 @@ class secure_checkpoint:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
-class SecurityManagerAgent(SovereignBaseAgent):
+class SecurityManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Vaulted security manager with permission-based access control.
 

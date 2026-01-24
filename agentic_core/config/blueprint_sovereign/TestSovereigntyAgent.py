@@ -33,6 +33,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 )
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.utils.security import safe_execute
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class SovereignSeverity(Enum):
@@ -45,7 +46,7 @@ class SovereignSeverity(Enum):
 
 
 @dataclass
-class TestSovereigntyAgent(SovereignBaseAgent, CanonBaseAgent):
+class TestSovereigntyAgent(SubatomicTestingMixin, SovereignBaseAgent, CanonBaseAgent):
     """L5 specialist — advanced sovereign testing."""
 
     def __init__(

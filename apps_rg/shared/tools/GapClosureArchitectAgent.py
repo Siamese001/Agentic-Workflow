@@ -11,6 +11,7 @@ Location: apps_rg/engines/ (Application Logic - Resume Generator)
 """
 
 import logging
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class CompetenciesOutput:
     _metadata: dict[str, Any]
 
 
-class GapClosureArchitectAgent:
+class GapClosureArchitectAgent(SubatomicTestingMixin):
     """Gap Closure Architect agent for leadership competencies.
 
     This agent generates competencies with strict constraints:

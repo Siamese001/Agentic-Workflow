@@ -14,13 +14,14 @@ from dataclasses import dataclass
 import datetime
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 @dataclass
-class CartographerAgent(SovereignBaseAgent, SubAtomicAgent):
+class CartographerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
     """
     ROLE: Memory & Embedding. Maps the codebase into semantic space.
     """

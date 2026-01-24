@@ -43,7 +43,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class MetricsAgent(SovereignBaseAgent):
+class MetricsAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     MetricsAgent: Sovereign quantitative state and alert governor.
     Thread-safe, in-memory Metric store with alerting rule generation.
@@ -128,6 +128,7 @@ class MetricsAgent(SovereignBaseAgent):
         """
         try:
             from agentic_core.config.blueprint_sovereign.SovereignEnv import get_redis_connection
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
             # Reuse established connection logic from SSOT
             r = get_redis_connection()

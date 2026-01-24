@@ -68,7 +68,7 @@ def reset_orchestrator() -> None:
 
 
 # Deprecated class aliases for backward compatibility
-class SSOTOrchestratorAgent:
+class SSOTOrchestratorAgent(SubatomicTestingMixin):
     """
     DEPRECATED: Use UnifiedOrchestratorAgent instead.
 
@@ -113,6 +113,7 @@ class ConsolidatedOrchestratorAgent:
         warnings.warn(
             "ConsolidatedOrchestratorAgent is deprecated. Use UnifiedOrchestratorAgent instead. "
             "Import via: from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent",
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
             DeprecationWarning,
             stacklevel=2,
         )

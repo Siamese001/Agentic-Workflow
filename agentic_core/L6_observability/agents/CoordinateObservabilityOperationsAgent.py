@@ -19,6 +19,7 @@ from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -53,7 +54,7 @@ class OrchestrationResult:
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class CoordinateObservabilityOperationsAgent(SovereignBaseAgent):
+class CoordinateObservabilityOperationsAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Orchestrator for operations domain."""
 
     def __init__(self, config: dict[str, object] | None = None) -> None:

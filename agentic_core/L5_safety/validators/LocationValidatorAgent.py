@@ -22,7 +22,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass
-class LocationValidatorAgent(SovereignBaseAgent):
+class LocationValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Pure validation agent for territorial compliance.
 
@@ -618,6 +618,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         Phase 4.1 Upgrade: Universal root scanning using SOVEREIGN_REGISTRY.
         """
         from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
         violations = []
         compliant_files = 0

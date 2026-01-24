@@ -27,10 +27,11 @@ from agentic_core.base_agents.decorators import standard_heal
 
 # NAMING FIXED: SovereignRedisOrchestratorAgent → SovereignRedisOrchestratorAgent
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class SovereignRedisOrchestratorAgent(SovereignBaseAgent):
+class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Brief description of functionality and purpose."""
 
     def __init__(self) -> None:

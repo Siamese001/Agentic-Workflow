@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 UnifiedStructureHealerAgent - Structure Healing & Repair
@@ -70,7 +71,7 @@ class StructureHealerConfig:
     agent_suffix: str = "Agent"
 
 
-class UnifiedStructureHealerAgent(SovereignBaseAgent):
+class UnifiedStructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified structure healer for gravity, hierarchy, naming, and territory.
 

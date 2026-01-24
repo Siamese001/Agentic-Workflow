@@ -56,7 +56,7 @@ LAYER_DIRS: set[str] = set(SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfo
 
 
 @dataclass
-class ArchitectureGovernorAgent(SovereignBaseAgent):
+class ArchitectureGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     [L5 GOVERNOR] Universal Architecture Pattern Enforcement
 
@@ -1028,6 +1028,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         # Step 2: Initialize Batch Processor
         from agentic_core.L5_safety.cognition.CognitiveBatchProcessor import (
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
             CognitiveBatchProcessor,
         )
 

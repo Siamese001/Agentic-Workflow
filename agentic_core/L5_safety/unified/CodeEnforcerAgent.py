@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from dataclasses import field
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 CodeEnforcerAgent - Code Sovereignty Enforcement
@@ -96,7 +97,7 @@ class EnforcementConfig:
     protected_layers: set[str] = field(default_factory=lambda: {"L5", "L6"})
 
 
-class CodeEnforcerAgent(SovereignBaseAgent):
+class CodeEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified code enforcement with sovereignty protection.
 

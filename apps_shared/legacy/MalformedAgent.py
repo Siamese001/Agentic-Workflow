@@ -14,6 +14,7 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 PROJECT_ROOT = Path(__file__).parent.parent
 AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
@@ -54,7 +55,7 @@ class ClassMethod:
 
 
 @dataclass
-class MalformedAgent:
+class MalformedAgent(SubatomicTestingMixin):
     """Represents an agent file with structural issues."""
 
     file_path: Path

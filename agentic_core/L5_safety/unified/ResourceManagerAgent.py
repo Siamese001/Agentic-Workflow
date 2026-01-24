@@ -21,6 +21,7 @@ from dataclasses import field
 import logging
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 import threading
 from datetime import datetime
 
@@ -98,7 +99,7 @@ class ResourceConfig:
     fallback_strategies: list[str] = field(default_factory=lambda: ["queue", "throttle", "reject"])
 
 
-class ResourceManagerAgent(SovereignBaseAgent):
+class ResourceManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Thread-safe unified resource manager.
 

@@ -18,6 +18,7 @@ import asyncio
 import json
 import logging
 from datetime import datetime
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Import our production SDKs
 # Assuming these are defined elsewhere or are placeholders
@@ -184,7 +185,7 @@ class WorkflowContext:
     metadata: dict[str, object]
 
 
-class TalentIntelligenceAgent:
+class TalentIntelligenceAgent(SubatomicTestingMixin):
     """Production agent for talent intelligence operations"""
 
     def __init__(self):

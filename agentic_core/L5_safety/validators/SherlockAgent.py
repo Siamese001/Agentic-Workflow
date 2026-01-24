@@ -36,7 +36,7 @@ from agentic_core.base_agents.decorators import standard_heal
 
 
 @dataclass
-class SherlockAgent(SovereignBaseAgent, SubAtomicAgent):
+class SherlockAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
     """
     ROLE: Root Cause Analysis. Triggered when TestPilot fails.
     Analyzes cross-file dependencies and fixes interaction bugs.
@@ -154,3 +154,4 @@ Return ONLY the python code for {primary}.
 
 # Legacy classes removed 2026-01-06 - use standalone TestPilotAgent.py and ToolsmithAgent.py
 # from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin

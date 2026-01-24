@@ -68,11 +68,11 @@ class tool_template:
     CLASS_TEMPLATE: Any = '\nclass {name}:\n    """\n    {description}\n    """\n\n    def __init__(self{init_params}) -> None:\n        """Initialize the {name} tool."""\n{init_body}\n    async def execute{method_params} -> {return_type}:\n        """\n        Execute the tool.\n\n        Args:\n{method_param_docs}\n        Returns:\n            {return_description}\n        """\n        # Implementation\n        {method_implementation}\n'
 
 
-from agentic_core.bases import L2Agent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
-class ToolsmithAgent(L2Agent):
+class ToolsmithAgent(SovereignBaseAgent):
     """
     Creates and manages tools dynamically.
     Features:
@@ -82,8 +82,9 @@ class ToolsmithAgent(L2Agent):
     - Provides tool templates
     """
 
-    def __init__(self) -> None:
+    def __post_init__(self) -> None:
         """Initialize the ToolsmithAgent."""
+        super().__post_init__()
         self.tools: dict[str, GeneratedTool] = {}
         self.templates: dict[str, str] = {}
         self.categories = {

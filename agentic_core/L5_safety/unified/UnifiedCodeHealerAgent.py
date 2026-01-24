@@ -28,6 +28,7 @@ from datetime import datetime
 from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -69,7 +70,7 @@ class HealerConfig:
     backup_dir: Path | None = None
 
 
-class UnifiedCodeHealerAgent(SovereignBaseAgent):
+class UnifiedCodeHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified code healer for canon, imports, and structure.
 

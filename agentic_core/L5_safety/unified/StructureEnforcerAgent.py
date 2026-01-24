@@ -2,6 +2,7 @@ from typing import Any
 from pathlib import Path
 from dataclasses import dataclass
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 #!/usr/bin/env python3
 """
@@ -83,7 +84,7 @@ class StructureConfig:
     min_docstring_length: int = 10
 
 
-class StructureEnforcerAgent(SovereignBaseAgent):
+class StructureEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified structure enforcement with gravity and naming.
 

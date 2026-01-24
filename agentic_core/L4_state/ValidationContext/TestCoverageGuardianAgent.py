@@ -36,7 +36,7 @@ from agentic_core.utils.security import safe_execute
 
 
 @dataclass
-class TestCoverageGuardianAgent(SovereignBaseAgent):
+class TestCoverageGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Ultimate verification agent: Enforces comprehensive test coverage with branch, mutation, and property testing.
     - Coverage: line + branch
@@ -267,6 +267,7 @@ class TestCoverageGuardianAgent(SovereignBaseAgent):
         target_layers = ["L4_state", "L3_orchestration", "L2_execution"]
         # Phase 6.5: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
         for py_file in get_python_files(self.project_root / AGENTIC_CORE_DIR):
             if not any(layer in str(py_file) for layer in target_layers):

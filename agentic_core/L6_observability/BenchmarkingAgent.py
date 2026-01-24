@@ -142,10 +142,11 @@ class BenchmarkSuite:
 
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # NAMING FIXED: BenchmarkingAgent → BenchmarkingAgent
-class BenchmarkingAgent(SovereignBaseAgent):
+class BenchmarkingAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Measures and tracks performance metrics.
 
