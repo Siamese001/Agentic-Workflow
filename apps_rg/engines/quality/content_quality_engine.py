@@ -1,10 +1,13 @@
 """
 Content Quality Engine - General quality rules
 Refactored from ContentQualityAgent.py
+
+HARDENING: Reads 'hop2_enrichment' (or any content stage). Writes 'quality_report'.
+Checks for forbidden phrases and metric density.
 """
 
 from __future__ import annotations
-from typing import Any
+from typing import Any, Dict, List
 import logging
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
@@ -14,50 +17,48 @@ Logger = logging.getLogger(__name__)
 
 class ContentQualityEngine(BaseRGEngine):
     """
-    General content quality validation.
+    Sovereign Quality Engine.
+    Reads: 'hop2_enrichment' (or specified input)
+    Writes: 'quality_report'
     """
 
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="QUALITY.CONTENT")
 
-    async def execute(self, content: dict[str, Any]) -> dict[str, Any]:
+    async def execute(self, target_key: str = "hop2_enrichment") -> Dict[str, Any]:
         """
-        Validate content quality across multiple dimensions.
+        Audit content for Sovereign Quality Standards.
         """
-        self._mcp_audit("quality_check_start")
+        data = self.ctx.buffer.read(target_key)
+        if not data:
+            return {"score": 0, "status": "skipped"}
 
         issues = []
-        score = 1.0
+        score = 100
 
-        # Check for common quality issues
-        for section_name, section_content in content.items():
-            text = str(section_content)
+        # 1. Scan for weak verbs (backup to Enrichment engine)
+        sections = data.get("experience_sections", [])
+        for sec in sections:
+            for bullet in sec.get("bullets", []):
+                text = bullet.get("bullet_text", "").lower()
+                if "responsible for" in text:
+                    issues.append(f"Weak phrase in {sec.get('company')}")
+                    score -= 5
+                if not bullet.get("quantified_metrics"):
+                    # Slight penalty for no metrics
+                    score -= 1
 
-            # Check for weak verbs
-            weak_verbs = ["responsible for", "duties included", "helped with"]
-            for verb in weak_verbs:
-                if verb in text.lower():
-                    issues.append(f"{section_name}: Contains weak verb '{verb}'")
-                    score -= 0.1
+        # 2. WRITE Report
+        report = {
+            "score": score,
+            "issues": issues,
+            "status": "passed" if score > 80 else "warning",
+        }
+        self.ctx.buffer.write("quality_report", report, source_agent=self.name)
 
-            # Check for first-person pronouns
-            if any(pronoun in text.lower() for pronoun in [" i ", " my ", " me "]):
-                issues.append(f"{section_name}: Contains first-person pronouns")
-                score -= 0.1
-
-            # Check for excessive length
-            word_count = len(text.split())
-            if word_count > 500:
-                issues.append(f"{section_name}: Excessive length ({word_count} words)")
-                score -= 0.05
-
-        result = {"quality_score": max(score, 0.0), "issues": issues, "passed": len(issues) == 0}
-
-        if issues:
-            self.record_fail(
-                f"Quality issues found: {len(issues)}", data=result, signal="QUALITY_FAILURE"
-            )
+        if score < 70:
+            self.record_fail(f"Quality Score Low: {score}", data=report, signal="QUALITY_FAILURE")
         else:
-            self.record_pass("Content quality validated")
+            self.record_pass(f"Quality Score: {score}")
 
-        return result
+        return report

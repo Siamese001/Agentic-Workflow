@@ -94,8 +94,8 @@ class TraceRegistry(MCPHardenedMixin):
         trace.error = error
         trace.tokens_used = tokens
 
-        if self.persistence_path and status == "FAILURE":
-            self._persist_failure(trace)
+        if self.persistence_path:
+            self._persist_trace(trace)
 
     def add_trace(self, event_type: str, details: dict[str, Any]) -> None:
         """
@@ -184,17 +184,24 @@ class TraceRegistry(MCPHardenedMixin):
             "duration_ms": t.duration_ms,
         }
 
-    def _persist_failure(self, trace: AgentTrace) -> None:
-        """Write failure details to disk."""
+    def _persist_trace(self, trace: AgentTrace) -> None:
+        """Write trace details to disk."""
         try:
             if self.persistence_path:
                 entry = {
                     "timestamp": datetime.utcnow().isoformat(),
                     "agent": trace.agent_name,
+                    "action": trace.action,
+                    "status": trace.status,
                     "error": trace.error,
                     "duration": trace.duration_ms,
+                    "tokens_used": trace.tokens_used,
                 }
                 with open(self.persistence_path, "a") as f:
                     f.write(json.dumps(entry) + "\n")
         except Exception as e:
             Logger.error(f"Failed to persist trace: {e}")
+
+    def _persist_failure(self, trace: AgentTrace) -> None:
+        """Write failure details to disk (legacy method)."""
+        self._persist_trace(trace)

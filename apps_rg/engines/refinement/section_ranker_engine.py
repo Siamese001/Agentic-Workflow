@@ -2,10 +2,13 @@
 Section Ranker Engine - Dynamic section ordering based on Role Archetype
 Refactored from RankResumeSections.py
 Following Batch 5 specifications
+
+HARDENING: Reads 'optimized_content'. Applies strategies from 'self.config' (Frozen Knowledge).
+Writes 'ranked_content'.
 """
 
 from __future__ import annotations
-from typing import Any
+from typing import Any, Dict, List
 import logging
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
@@ -16,12 +19,13 @@ Logger = logging.getLogger(__name__)
 class SectionRankerEngine(BaseRGEngine):
     """
     Sovereign Refinement Engine.
-    Reorders high-level resume sections based on Role Archetype.
+    Reads: 'optimized_content'
+    Writes: 'ranked_content'
     """
 
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="REFINE.RANKER")
-        # Default ranking strategies moved to Knowledge Base config
+        # Hydrate default strategies from config or fallback
         self.strategies = {
             "technical": ["contact", "skills", "experience", "projects", "education"],
             "executive": ["contact", "summary", "experience", "education", "skills"],
@@ -31,52 +35,61 @@ class SectionRankerEngine(BaseRGEngine):
 
         # Try to load from config if available
         if self.config and hasattr(self.config, "config"):
-            config_strategies = self.config.config.qa_thresholds.get("ranking_strategies")
-            if config_strategies:
-                self.strategies = config_strategies
+            try:
+                config_strategies = self.config.config.qa_thresholds.get(
+                    "ranking_strategies"
+                )
+                if config_strategies:
+                    self.strategies = config_strategies
+            except (AttributeError, KeyError):
+                pass
 
-    async def execute(
-        self, resume_data: dict[str, Any], role_type: str = "default"
-    ) -> dict[str, Any]:
+    async def execute(self) -> Dict[str, Any]:
         """
-        Reconstruct the resume dictionary with sections in optimal order.
+        Reorder sections based on Role Archetype.
         """
-        self._mcp_audit("section_ranking_start", {"role_type": role_type})
+        # 1. READ
+        content = self.ctx.buffer.read("optimized_content")
+        if not content:
+            # Fallback to enrichment if optimization skipped
+            content = self.ctx.buffer.read("hop2_enrichment")
 
-        # 1. Determine Strategy
+        if not content:
+            self.record_fail("Missing content to rank", signal="DATA_MISSING")
+            raise ValueError("Buffer missing content")
+
+        mission = self.ctx.buffer.read("mission_input") or {}
+        role_type = mission.get("role_type", "default")
+
+        # 2. LOGIC
         target_order = self.strategies.get(role_type, self.strategies["default"])
 
-        # 2. Identify Missing Sections (Gap Analysis)
-        present_keys = set(resume_data.keys())
-        missing_required = [k for k in target_order if k not in present_keys]
+        # Ensure content is a dict with string keys
+        if not isinstance(content, dict):
+            self.record_fail("Content is not a dictionary", signal="DATA_MISSING")
+            raise ValueError("Content must be a dictionary")
 
-        if missing_required:
-            self.record_pass(
-                f"Resume missing standard sections for {role_type}",
-                data={"missing": missing_required},
-            )
-            # We do not fail here; we rank what we have.
+        ranked_resume = {}
+        # Map old section names to new structure
+        section_mapping = {
+            "experience": "experience_sections",
+            "education": "education",
+            "skills": "skills",
+        }
 
-        # 3. Construct Ordered Output
-        ordered_resume = {}
-
-        # First: Append sections in the target order
+        # Append known sections in order
         for section in target_order:
-            if section in resume_data:
-                ordered_resume[section] = resume_data[section]
+            mapped_key = section_mapping.get(section, section)
+            if mapped_key in content:
+                ranked_resume[section] = content[mapped_key]
 
-        # Second: Append any remaining sections (orphans) at the bottom
-        for section in resume_data:
-            if section not in ordered_resume:
-                ordered_resume[section] = resume_data[section]
+        # Append orphans
+        for section in content:
+            if isinstance(section, str) and section not in [v for v in section_mapping.values()]:
+                ranked_resume[section] = content[section]
 
-        # 4. Telemetry
-        rank_change = list(ordered_resume.keys()) != list(resume_data.keys())
-        if rank_change:
-            self.record_pass(
-                "Sections reordered for impact", data={"new_order": list(ordered_resume.keys())}
-            )
-        else:
-            self.record_pass("Existing section order retained")
+        # 3. WRITE
+        self.ctx.buffer.write("ranked_content", ranked_resume, source_agent=self.name)
 
-        return ordered_resume
+        self.record_pass(f"Sections ranked for {role_type}")
+        return ranked_resume
