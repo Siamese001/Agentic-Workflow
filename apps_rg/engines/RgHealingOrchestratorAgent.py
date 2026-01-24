@@ -10,7 +10,7 @@ Orchestrates the complete self-healing process for resume generation.
 from __future__ import annotations
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from apps_rg.shared.core.agent_base import RGAgentBase
 
@@ -32,14 +32,15 @@ class RgHealingOrchestratorAgent(RGAgentBase):
 
     max_cycles: int = 5
     enable_reflection: bool = True
-    cycle_results: List[Dict[str, Any]] = field(default_factory=list)
-    
+    cycle_results: list[dict[str, Any]] = field(default_factory=list)
+
     def __post_init__(self) -> None:
         """Initialize healing orchestrator."""
         super().__post_init__()
         # Initialize context if needed
-        if not hasattr(self, 'ctx') or self.ctx is None:
+        if not hasattr(self, "ctx") or self.ctx is None:
             from .context import ResumeEngineContext
+
             self.ctx = ResumeEngineContext()
 
     async def run(self) -> HealingResult:

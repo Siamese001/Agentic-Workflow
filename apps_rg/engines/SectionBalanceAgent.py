@@ -7,8 +7,8 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from __future__ import annotations
 import json
-from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from dataclasses import dataclass
+from typing import Any
 
 from apps_rg.shared.core.agent_base import RGAgentBase
 
@@ -57,7 +57,7 @@ class SectionBalanceAgent(RGAgentBase):
             self.record_fail("No resume to check")
             return
 
-        issues: List[str] = []
+        issues: list[str] = []
 
         # Check required sections
         for section in self.REQUIRED_SECTIONS:
@@ -108,6 +108,6 @@ class SectionBalanceAgent(RGAgentBase):
 
     def heal_repository(
         self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Invoke healing chain via super()."""
         return super().heal_repository()

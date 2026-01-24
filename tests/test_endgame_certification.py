@@ -4,13 +4,11 @@ tests/test_endgame_certification.py - Phase 24 Endgame Certification
 MANDATORY: 100% PASS REQUIREMENT.
 The Final Exam: Verifies Integrity, Telemetry, and Convergence.
 """
+
 import pytest
 import json
 import logging
-import tempfile
-import time
 from pathlib import Path
-from dataclasses import is_dataclass
 import sys
 
 # Ensure path visibility
@@ -29,20 +27,20 @@ class TestEndgameCertification:
         """
         from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier
         from agentic_core.domain.exceptions import ConfigurationError
-        
+
         core_path = Path("agentic_core/base_agents")
         dirty_file = core_path / "malicious_script.tmp"
-        
+
         try:
             # 1. Plant Evidence
             dirty_file.write_text("print('hacked')")
-            
+
             # 2. Verify Lock Trigger
             with pytest.raises(ConfigurationError) as excinfo:
                 CoreIntegrityVerifier.verify_core_integrity()
-            
+
             assert "Integrity Breach" in str(excinfo.value)
-            
+
         finally:
             # Cleanup to restore system integrity
             if dirty_file.exists():
@@ -53,12 +51,12 @@ class TestEndgameCertification:
         Verify that booting an agent writes structured JSON to the logs.
         """
         from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
-        
+
         caplog.set_level(logging.INFO)
-        
+
         # Boot Agent
         agent = CampaignPlannerAgent()
-        
+
         # Check Logs
         found_boot_signal = False
         for record in caplog.records:
@@ -74,7 +72,7 @@ class TestEndgameCertification:
                         break
                 except json.JSONDecodeError:
                     continue
-                
+
         assert found_boot_signal, "Agent failed to emit Black Box Boot Signal!"
 
     def test_full_system_convergence(self):
@@ -85,18 +83,20 @@ class TestEndgameCertification:
         from apps_rg.shared.core.agent_base import RGAgentBase
         from apps_lic.shared.core.agent_base import LICAgentBase
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        
+
         # Check Method Resolution Order
         rg_mro = RGAgentBase.mro()
         lic_mro = LICAgentBase.mro()
-        
+
         # Find the index of SovereignBaseAgent in both
         rg_idx = rg_mro.index(SovereignBaseAgent)
         lic_idx = lic_mro.index(SovereignBaseAgent)
-        
+
         # Verify Identity
-        assert rg_mro[rg_idx] is lic_mro[lic_idx], "CRITICAL: Domains are using different Core copies!"
-        
+        assert rg_mro[rg_idx] is lic_mro[lic_idx], (
+            "CRITICAL: Domains are using different Core copies!"
+        )
+
         # Verify both have AuditTrailMixin
         assert AuditTrailMixin in rg_mro, "RG domain missing AuditTrailMixin"
         assert AuditTrailMixin in lic_mro, "LIC domain missing AuditTrailMixin"
@@ -107,7 +107,7 @@ class TestEndgameCertification:
         """
         # Test basic certificate generation
         cert_path = Path(__file__).parent.parent / "SOVEREIGN_SYSTEM_CERTIFICATE.md"
-        
+
         lines = [
             "# SOVEREIGN SYSTEM CERTIFICATE (V2.5)",
             "**Status:** CERTIFIED PRODUCTION READY",
@@ -118,16 +118,16 @@ class TestEndgameCertification:
             "- Black Box Telemetry: ACTIVE",
             "- SovereignBaseAgent: ENFORCED",
         ]
-        
+
         # Write certificate
-        cert_path.write_text("\n".join(lines), encoding='utf-8')
-        
+        cert_path.write_text("\n".join(lines), encoding="utf-8")
+
         # Verify it exists and has content
         assert cert_path.exists(), "Certificate file was not created"
-        content = cert_path.read_text(encoding='utf-8')
+        content = cert_path.read_text(encoding="utf-8")
         assert "SOVEREIGN SYSTEM CERTIFICATE" in content
         assert "CERTIFIED PRODUCTION READY" in content
-        
+
         # Cleanup
         if cert_path.exists():
             cert_path.unlink()
@@ -137,15 +137,15 @@ class TestEndgameCertification:
         Verify that heal_repository events are properly logged to Black Box.
         """
         from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
-        
+
         caplog.set_level(logging.INFO)
-        
+
         # Boot agent and trigger a heal event
         agent = HOP1ProfileAnalysisAgent()
-        
+
         # Simulate a heal event
         agent.log_heal_event(violations_found=2, violations_fixed=1, execution_time_ms=150.5)
-        
+
         # Check for heal event in logs
         found_heal_signal = False
         for record in caplog.records:
@@ -161,7 +161,7 @@ class TestEndgameCertification:
                         break
                 except json.JSONDecodeError:
                     continue
-        
+
         assert found_heal_signal, "Agent failed to emit Black Box Heal Signal!"
 
     def test_validation_event_telemetry(self, caplog):
@@ -169,19 +169,19 @@ class TestEndgameCertification:
         Verify that validator events are properly logged to Black Box.
         """
         from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
-        
+
         caplog.set_level(logging.INFO)
-        
+
         # Boot agent and trigger a validation event
         agent = HOP2ResearchAgent()
-        
+
         # Simulate a validation event
         agent.log_validation_event(
-            validator_name="StructureValidator", 
-            result=True, 
-            details={"check": "folder_structure", "files_checked": 25}
+            validator_name="StructureValidator",
+            result=True,
+            details={"check": "folder_structure", "files_checked": 25},
         )
-        
+
         # Check for validation event in logs
         found_validation_signal = False
         for record in caplog.records:
@@ -197,7 +197,7 @@ class TestEndgameCertification:
                         break
                 except json.JSONDecodeError:
                     continue
-        
+
         assert found_validation_signal, "Agent failed to emit Black Box Validation Signal!"
 
     def test_multi_agent_simulation(self):
@@ -208,33 +208,33 @@ class TestEndgameCertification:
         from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
         from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
         from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier
-        
+
         # 1. Verify Integrity Lock is working
         assert CoreIntegrityVerifier.verify_core_integrity()
-        
+
         # 2. Boot both agents simultaneously
         rg_agent = CampaignPlannerAgent()
         lic_agent = HOP1ProfileAnalysisAgent()
-        
+
         # 3. Verify both agents have different session IDs
         assert rg_agent._session_id != lic_agent._session_id
-        
+
         # 4. Verify both agents have audit enabled
         assert rg_agent._audit_enabled == True
         assert lic_agent._audit_enabled == True
-        
+
         # 5. Trigger heal events on both agents
         rg_agent.log_heal_event(violations_found=1, violations_fixed=1, execution_time_ms=100.0)
         lic_agent.log_heal_event(violations_found=3, violations_fixed=2, execution_time_ms=200.0)
-        
+
         # 6. Verify audit chains are independent
         rg_stats = rg_agent.get_audit_chain_stats()
         lic_stats = lic_agent.get_audit_chain_stats()
-        
+
         assert rg_stats.chain_id != lic_stats.chain_id
         assert rg_stats.total_actions > 0
         assert lic_stats.total_actions > 0
-        
+
         # 7. Final integrity check
         assert CoreIntegrityVerifier.verify_core_integrity()
 
@@ -243,27 +243,26 @@ class TestEndgameCertification:
         Verify the emergency shutdown protocol works when integrity is compromised.
         """
         from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier, SovereignLockError
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        
+
         # Create a temporary malicious file
         core_path = Path("agentic_core/base_agents")
         malicious_file = core_path / "emergency_test.tmp"
-        
+
         try:
             # Plant malicious file
             malicious_file.write_text("malicious code")
-            
+
             # Verify lock detects the breach
             with pytest.raises(SovereignLockError) as excinfo:
                 CoreIntegrityVerifier.verify_core_integrity()
-            
+
             assert "CORE INTEGRITY COMPROMISED" in str(excinfo.value)
-            
+
         finally:
             # Cleanup
             if malicious_file.exists():
                 malicious_file.unlink()
-        
+
         # Verify normal operation resumes after cleanup
         assert CoreIntegrityVerifier.verify_core_integrity()
 

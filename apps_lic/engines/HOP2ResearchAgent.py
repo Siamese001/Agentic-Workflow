@@ -10,7 +10,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 # LIC Sovereign Architecture Imports
 from apps_lic.shared.core.agent_base import LICAgentBase
@@ -36,11 +36,11 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
     - Logic: K.3 Retrieval Planning -> Evidence Artifact Generation
     - Output: 'hop2_research' with evidence_pack and strategic_brief
     """
-    
+
     # Optional dependencies for dataclass
-    memory_store: Optional[Any] = field(default=None)
-    search_client: Optional[Any] = field(default=None)
-    llm_client: Optional[Any] = field(default=None)
+    memory_store: Any | None = field(default=None)
+    search_client: Any | None = field(default=None)
+    llm_client: Any | None = field(default=None)
 
     def __post_init__(self) -> None:
         """

@@ -8,8 +8,8 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 import json
 import re
-from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from dataclasses import dataclass
+from typing import Any
 
 from apps_rg.shared.core.agent_base import RGAgentBase
 
@@ -67,7 +67,7 @@ class ATSCompatibilityAgent(RGAgentBase):
             self.add_signal("ATS_FAILURE")
             return
 
-        issues: List[str] = []
+        issues: list[str] = []
 
         # Check for ATS-unfriendly patterns (use ensure_ascii=False to preserve unicode)
         full_content: str = json.dumps(resume, ensure_ascii=False)
@@ -109,7 +109,7 @@ class ATSCompatibilityAgent(RGAgentBase):
             self.record_pass("ATS compatible")
             self.remove_signal("ATS_FAILURE")
 
-    def _calculate_keyword_score(self, resume: Dict[str, Any], job_desc: str) -> float:
+    def _calculate_keyword_score(self, resume: dict[str, Any], job_desc: str) -> float:
         """
         Calculate keyword match score between resume and job description.
 
@@ -165,7 +165,7 @@ class ATSCompatibilityAgent(RGAgentBase):
 
     def heal_repository(
         self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

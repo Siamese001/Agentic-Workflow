@@ -6,8 +6,8 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from dataclasses import dataclass
+from typing import Any
 
 from apps_rg.shared.core.agent_base import RGAgentBase
 
@@ -42,7 +42,7 @@ class RgReflectionAgent(RGAgentBase):
         self.log("Reflecting on execution...")
 
         # Gather insights
-        insights: Dict[str, Any] = {
+        insights: dict[str, Any] = {
             "cycle": self.ctx.current_cycle,
             "signals_at_end": list(self.ctx.signals),
             "failed_agents": list(self.ctx.get_failed_results().keys()),

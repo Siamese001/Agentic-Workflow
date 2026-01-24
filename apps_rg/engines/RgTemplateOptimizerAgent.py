@@ -6,8 +6,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from dataclasses import dataclass
 
 from apps_rg.shared.core.agent_base import RGAgentBase
 

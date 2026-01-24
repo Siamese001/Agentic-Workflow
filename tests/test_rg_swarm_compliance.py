@@ -20,7 +20,6 @@ import pkgutil
 import sys
 from dataclasses import is_dataclass
 from pathlib import Path
-from typing import Any, List, Set
 
 import pytest
 
@@ -28,7 +27,6 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from apps_rg.shared.core.agent_base import RGAgentBase
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 class TestRGSwarmCompliance:
@@ -38,10 +36,10 @@ class TestRGSwarmCompliance:
     """
 
     @pytest.fixture
-    def engine_agents(self) -> List[tuple[str, type]]:
+    def engine_agents(self) -> list[tuple[str, type]]:
         """
         Discover all agent classes in apps_rg/engines.
-        
+
         Returns:
             List of (class_name, class_type) tuples for all agents
         """
@@ -73,7 +71,7 @@ class TestRGSwarmCompliance:
 
         return agents
 
-    def test_all_engines_are_sovereign(self, engine_agents: List[tuple[str, type]]) -> None:
+    def test_all_engines_are_sovereign(self, engine_agents: list[tuple[str, type]]) -> None:
         """
         The 'No Legacy Left Behind' Test.
         Validates that EVERY agent inherits from RGAgentBase.
@@ -91,7 +89,7 @@ class TestRGSwarmCompliance:
         if failures:
             pytest.fail("\n".join(failures))
 
-    def test_all_engines_are_dataclasses(self, engine_agents: List[tuple[str, type]]) -> None:
+    def test_all_engines_are_dataclasses(self, engine_agents: list[tuple[str, type]]) -> None:
         """
         Validates that all agents are dataclasses.
         """
@@ -104,7 +102,7 @@ class TestRGSwarmCompliance:
         if failures:
             pytest.fail("\n".join(failures))
 
-    def test_mro_hardening(self, engine_agents: List[tuple[str, type]]) -> None:
+    def test_mro_hardening(self, engine_agents: list[tuple[str, type]]) -> None:
         """
         Validates MRO hardening - SovereignBaseAgent must be in the chain.
         """
@@ -116,8 +114,7 @@ class TestRGSwarmCompliance:
             # CHECK: SovereignBaseAgent must be in MRO
             if "SovereignBaseAgent" not in mro_names:
                 failures.append(
-                    f"❌ {cls_name} MRO does not include SovereignBaseAgent! "
-                    f"MRO: {mro_names}"
+                    f"❌ {cls_name} MRO does not include SovereignBaseAgent! MRO: {mro_names}"
                 )
 
         if failures:
@@ -166,7 +163,7 @@ class TestRGSwarmCompliance:
         if violations:
             pytest.fail("\n".join(violations))
 
-    def test_swarm_boot(self, engine_agents: List[tuple[str, type]]) -> None:
+    def test_swarm_boot(self, engine_agents: list[tuple[str, type]]) -> None:
         """
         Attempt to initialize every agent found.
         Ensures __post_init__ logic is sound and security boot completes.
@@ -183,8 +180,7 @@ class TestRGSwarmCompliance:
                 if hasattr(agent, "_initialized"):
                     if not agent._initialized:
                         failures.append(
-                            f"❌ {cls_name} failed security boot! "
-                            f"_initialized={agent._initialized}"
+                            f"❌ {cls_name} failed security boot! _initialized={agent._initialized}"
                         )
                 else:
                     # RGAgentBase inherits from SovereignBaseAgent which should have _initialized
@@ -206,7 +202,7 @@ class TestRGSwarmCompliance:
         if failures:
             pytest.fail("\n".join(failures))
 
-    def test_type_hints_present(self, engine_agents: List[tuple[str, type]]) -> None:
+    def test_type_hints_present(self, engine_agents: list[tuple[str, type]]) -> None:
         """
         Validates that agents have type hints on their methods.
         Checks for __post_init__ and execute methods.
@@ -216,18 +212,16 @@ class TestRGSwarmCompliance:
         for cls_name, cls in engine_agents:
             # Check __post_init__ if present
             if hasattr(cls, "__post_init__"):
-                method = getattr(cls, "__post_init__")
+                method = cls.__post_init__
                 sig = inspect.signature(method)
 
                 # Should have return type hint
                 if sig.return_annotation == inspect.Signature.empty:
-                    failures.append(
-                        f"⚠️ {cls_name}.__post_init__ missing return type hint"
-                    )
+                    failures.append(f"⚠️ {cls_name}.__post_init__ missing return type hint")
 
             # Check execute if present
             if hasattr(cls, "execute"):
-                method = getattr(cls, "execute")
+                method = cls.execute
                 sig = inspect.signature(method)
 
                 # Should have return type hint
@@ -238,7 +232,7 @@ class TestRGSwarmCompliance:
         if failures:
             print("\n".join(failures))
 
-    def test_heal_repository_signature(self, engine_agents: List[tuple[str, type]]) -> None:
+    def test_heal_repository_signature(self, engine_agents: list[tuple[str, type]]) -> None:
         """
         Validates that heal_repository methods have standard signature.
         """
@@ -246,7 +240,7 @@ class TestRGSwarmCompliance:
 
         for cls_name, cls in engine_agents:
             if hasattr(cls, "heal_repository"):
-                method = getattr(cls, "heal_repository")
+                method = cls.heal_repository
                 sig = inspect.signature(method)
 
                 # Check for standard parameters
@@ -254,14 +248,10 @@ class TestRGSwarmCompliance:
 
                 # Should have at least: self, dry_run, execute
                 if "dry_run" not in params:
-                    failures.append(
-                        f"⚠️ {cls_name}.heal_repository missing 'dry_run' parameter"
-                    )
+                    failures.append(f"⚠️ {cls_name}.heal_repository missing 'dry_run' parameter")
 
                 if "execute" not in params:
-                    failures.append(
-                        f"⚠️ {cls_name}.heal_repository missing 'execute' parameter"
-                    )
+                    failures.append(f"⚠️ {cls_name}.heal_repository missing 'execute' parameter")
 
         # This is a warning test
         if failures:
@@ -288,14 +278,12 @@ class TestRGSwarmCompliance:
 
             for legacy_import in legacy_imports:
                 if legacy_import in content:
-                    violations.append(
-                        f"❌ {f.name}: Legacy import detected:\n   {legacy_import}"
-                    )
+                    violations.append(f"❌ {f.name}: Legacy import detected:\n   {legacy_import}")
 
         if violations:
             pytest.fail("\n".join(violations))
 
-    def test_agent_count(self, engine_agents: List[tuple[str, type]]) -> None:
+    def test_agent_count(self, engine_agents: list[tuple[str, type]]) -> None:
         """
         Validates that we found a reasonable number of agents.
         This is a sanity check to ensure the discovery mechanism works.
@@ -304,8 +292,7 @@ class TestRGSwarmCompliance:
 
         # We should have at least 10 agents after migration
         assert agent_count >= 10, (
-            f"Expected at least 10 agents, found {agent_count}. "
-            f"Discovery mechanism may be broken."
+            f"Expected at least 10 agents, found {agent_count}. Discovery mechanism may be broken."
         )
 
         print(f"\n✅ Discovered {agent_count} agents in apps_rg/engines")

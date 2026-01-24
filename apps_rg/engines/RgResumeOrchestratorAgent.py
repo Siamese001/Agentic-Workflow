@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from typing import Any
 
 """Brief description of functionality and purpose."""
 
@@ -37,10 +37,10 @@ _logger = logging.getLogger(__name__)
 class RgResumeOrchestratorAgent(RGAgentBase):
     """Orchestrate the multi-hop resume generation workflow."""
 
-    master_resume: Dict[str, Any] = field(default_factory=dict)
+    master_resume: dict[str, Any] = field(default_factory=dict)
     test_mode: bool = False
-    hop_checkpoints: List[Dict[str, Any]] = field(default_factory=list)
-    
+    hop_checkpoints: list[dict[str, Any]] = field(default_factory=list)
+
     def __post_init__(self) -> None:
         """Initialize the orchestrator."""
         super().__post_init__()
