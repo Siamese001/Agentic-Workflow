@@ -10,10 +10,10 @@ CONSOLIDATED VERSION: Reduced redundancy while preserving all information.
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, Final, List
+from typing import Any, Final
 
 # CANONICAL BLUEPRINT: Enforces V2.5 Structure
-CANON_VALIDATION_REGISTRY: Final[Dict[str, List[str]]] = {
+CANON_VALIDATION_REGISTRY: Final[dict[str, list[str]]] = {
     "required_dirs": [
         "agentic_core",
         "agentic_core/base_agents",
@@ -25,14 +25,14 @@ CANON_VALIDATION_REGISTRY: Final[Dict[str, List[str]]] = {
         "apps_rg/shared/core",
     ],
     "forbidden_patterns": [
-        "apps_shared/base_agents", # EVICTED
-        "agentic_core/utils/core_extensions", # EVICTED
+        "apps_shared/base_agents",  # EVICTED
+        "agentic_core/utils/core_extensions",  # EVICTED
     ],
     "mandatory_files": [
         "agentic_core/domain/exceptions.py",
         "apps_lic/shared/core/agent_base.py",
         "apps_rg/shared/core/agent_base.py",
-    ]
+    ],
 }
 
 SOVEREIGN_REGISTRY: Any = {

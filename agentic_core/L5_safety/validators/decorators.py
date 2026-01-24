@@ -203,7 +203,7 @@ def standard_heal(func: F) -> F:
     1. Input Normalization: Ensures dry_run and execute args exist with safe defaults
     2. Output Normalization: Converts legacy dicts to canonical HealResult schema
     3. Error Containment: Catches crashes and returns valid HealResult with status='ERROR'
-    
+
     UPDATED: Supports Phase 20 HealerMixin signature (depth, _call_path).
 
     Usage:
@@ -239,8 +239,15 @@ def standard_heal(func: F) -> F:
             )
 
             # Call the actual method with Phase 20 signature
-            result = func(self, *args, dry_run=dry_run, execute=execute, 
-                         depth=depth, _call_path=_call_path, **remaining_kwargs)
+            result = func(
+                self,
+                *args,
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth,
+                _call_path=_call_path,
+                **remaining_kwargs,
+            )
 
             # Output normalization (pass agent_name for warning messages)
             execution_time_ms = (time.time() - start_time) * 1000
@@ -282,7 +289,7 @@ def standard_heal_async(func: F) -> F:
     Async version of @standard_heal decorator.
 
     Provides the same standardization for async heal_repository methods.
-    
+
     UPDATED: Supports Phase 20 HealerMixin signature (depth, _call_path).
 
     Usage:
@@ -312,8 +319,15 @@ def standard_heal_async(func: F) -> F:
             )
 
             # Call the actual async method with Phase 20 signature
-            result = await func(self, *args, dry_run=dry_run, execute=execute, 
-                               depth=depth, _call_path=_call_path, **remaining_kwargs)
+            result = await func(
+                self,
+                *args,
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth,
+                _call_path=_call_path,
+                **remaining_kwargs,
+            )
 
             # Output normalization (pass agent_name for warning messages)
             execution_time_ms = (time.time() - start_time) * 1000

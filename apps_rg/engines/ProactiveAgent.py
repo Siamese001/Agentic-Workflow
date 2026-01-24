@@ -6,8 +6,8 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from dataclasses import dataclass
+from typing import Any
 
 from apps_rg.shared.core.agent_base import RGAgentBase
 
@@ -23,7 +23,7 @@ class ProactiveAgent(RGAgentBase):
         super().__post_init__()
         # Initialize components after base initialization
         self.name = "ProactiveAgent"
-        
+
         # Note: Context and scheduler components need to be provided externally
         # or initialized when the full resume engine context is available
         # These are commented out to allow agent instantiation for testing
@@ -95,7 +95,7 @@ class ProactiveAgent(RGAgentBase):
 
     def heal_repository(
         self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Invoke healing chain via super().
 

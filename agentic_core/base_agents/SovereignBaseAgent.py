@@ -20,7 +20,6 @@ MRO HARDENING:
 """
 
 import logging
-import sys
 from dataclasses import dataclass, field
 from typing import Any
 from pathlib import Path
@@ -71,7 +70,7 @@ class SovereignBaseAgent(
         except AttributeError:
             # Some mixins don't have __post_init__, that's okay
             pass
-        
+
         # 1. THE IMMUTABLE LOCK CHECK
         # If this fails, the agent refuses to exist.
         try:
@@ -79,17 +78,15 @@ class SovereignBaseAgent(
         except Exception as e:
             # Panic mode: Log fatal error and die
             emergency_shutdown(f"CORE INTEGRITY COMPROMISED. TERMINATING AGENT. {e}")
-        
+
         # 2. Security Validation
         self._security_hardening_validation()
-        
+
         # 3. Telemetry Signal
-        self.log_sovereign_event("BOOT", {
-            "status": "initialized", 
-            "mode": "hardened",
-            "integrity_verified": True
-        })
-        
+        self.log_sovereign_event(
+            "BOOT", {"status": "initialized", "mode": "hardened", "integrity_verified": True}
+        )
+
         self._initialized = True
 
     def _security_hardening_validation(self) -> None:

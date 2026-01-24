@@ -17,7 +17,7 @@ Key Design Decisions:
 Black Box Format:
 {
     "timestamp": "2026-01-24T14:57:00.000Z",
-    "agent_id": "CampaignPlannerAgent", 
+    "agent_id": "CampaignPlannerAgent",
     "domain": "apps_rg",
     "session": "20260124-145700",
     "action": "BOOT",
@@ -46,7 +46,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 Logger = logging.getLogger("SovereignBlackBox")
 
@@ -99,7 +99,7 @@ class AuditChainStats:
 class AuditTrailMixin:
     """
     [PHASE 24] Provides cryptographic chain-of-custody + Black Box structured logging.
-    
+
     Must be mixed in with event_emission_mixin for async event dispatch.
 
     Hash Chain:
@@ -155,10 +155,12 @@ class AuditTrailMixin:
             f"chain_id={self._audit_session_salt[:8]}..."
         )
 
-    def log_sovereign_event(self, action: str, details: Dict[str, Any], level: str = "INFO") -> None:
+    def log_sovereign_event(
+        self, action: str, details: dict[str, Any], level: str = "INFO"
+    ) -> None:
         """
         Write an immutable record to the structured Black Box log.
-        
+
         Args:
             action: The action being performed (e.g., "BOOT", "HEAL", "VALIDATE")
             details: Additional context data for the event
@@ -174,12 +176,12 @@ class AuditTrailMixin:
             "session": self._session_id,
             "action": action.upper(),
             "details": details,
-            "integrity_status": "VERIFIED"  # Assumes Lock passed
+            "integrity_status": "VERIFIED",  # Assumes Lock passed
         }
 
         # Structuring as JSON line for machine ingestion
-        log_entry = json.dumps(payload, separators=(',', ':'))
-        
+        log_entry = json.dumps(payload, separators=(",", ":"))
+
         if level == "ERROR":
             Logger.error(log_entry)
         elif level == "WARNING":
@@ -187,36 +189,42 @@ class AuditTrailMixin:
         else:
             Logger.info(log_entry)
 
-    def log_heal_event(self, violations_found: int, violations_fixed: int, execution_time_ms: float) -> None:
+    def log_heal_event(
+        self, violations_found: int, violations_fixed: int, execution_time_ms: float
+    ) -> None:
         """
         Specialized logging for heal_repository events.
-        
+
         Args:
             violations_found: Number of violations detected
             violations_fixed: Number of violations successfully fixed
             execution_time_ms: Time taken to execute healing
         """
-        self.log_sovereign_event("HEAL", {
-            "violations_found": violations_found,
-            "violations_fixed": violations_fixed,
-            "execution_time_ms": execution_time_ms,
-            "heal_status": "COMPLETED"
-        })
+        self.log_sovereign_event(
+            "HEAL",
+            {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "execution_time_ms": execution_time_ms,
+                "heal_status": "COMPLETED",
+            },
+        )
 
-    def log_validation_event(self, validator_name: str, result: bool, details: Dict[str, Any]) -> None:
+    def log_validation_event(
+        self, validator_name: str, result: bool, details: dict[str, Any]
+    ) -> None:
         """
         Specialized logging for validator events.
-        
+
         Args:
             validator_name: Name of the validator that ran
             result: Whether validation passed
             details: Additional validation context
         """
-        self.log_sovereign_event("VALIDATE", {
-            "validator": validator_name,
-            "result": "PASS" if result else "FAIL",
-            **details
-        })
+        self.log_sovereign_event(
+            "VALIDATE",
+            {"validator": validator_name, "result": "PASS" if result else "FAIL", **details},
+        )
 
     def disable_audit(self) -> None:
         """Disable audit logging (for testing only)."""

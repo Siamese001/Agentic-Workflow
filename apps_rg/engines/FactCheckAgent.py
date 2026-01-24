@@ -6,8 +6,8 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Any, Dict, Set
+from dataclasses import dataclass
+from typing import Any
 
 from apps_rg.shared.core.agent_base import RGAgentBase
 
@@ -57,13 +57,13 @@ class FactCheckAgent(RGAgentBase):
         issues: List[str] = []
 
         # Check skills against profile (case-insensitive)
-        resume_skills: Set[str] = self._extract_skills(resume)
-        profile_skills: Set[str] = {
+        resume_skills: set[str] = self._extract_skills(resume)
+        profile_skills: set[str] = {
             self._normalize(s) for s in profile.get("skills", []) if isinstance(s, str)
         }
 
         if profile_skills and resume_skills:
-            unverified_skills: Set[str] = resume_skills - profile_skills
+            unverified_skills: set[str] = resume_skills - profile_skills
             # Only flag if majority of skills are unverified
             if unverified_skills and len(unverified_skills) > len(resume_skills) * 0.5:
                 issues.append(f"Unverified skills: {list(unverified_skills)[:5]}")
@@ -74,10 +74,10 @@ class FactCheckAgent(RGAgentBase):
             profile_exp = profile.get("work_history", [])
 
             if isinstance(resume_exp, list) and isinstance(profile_exp, list):
-                resume_companies: Set[str] = {
+                resume_companies: set[str] = {
                     self._normalize(e.get("company", "")) for e in resume_exp if isinstance(e, dict)
                 }
-                profile_companies: Set[str] = {
+                profile_companies: set[str] = {
                     self._normalize(e.get("company", ""))
                     for e in profile_exp
                     if isinstance(e, dict)
@@ -95,7 +95,7 @@ class FactCheckAgent(RGAgentBase):
             self.record_pass("All claims verified")
             self.remove_signal("HALLUCINATION_DETECTED")
 
-    def _extract_skills(self, resume: Dict[str, Any]) -> Set[str]:
+    def _extract_skills(self, resume: dict[str, Any]) -> set[str]:
         """
         Extract skills from resume.
 
@@ -105,7 +105,7 @@ class FactCheckAgent(RGAgentBase):
         Returns:
             Set of normalized skill names
         """
-        skills: Set[str] = set()
+        skills: set[str] = set()
 
         if "skills" in resume:
             skill_data = resume["skills"]
@@ -128,6 +128,6 @@ class FactCheckAgent(RGAgentBase):
 
     def heal_repository(
         self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Invoke healing chain via super()."""
         return super().heal_repository()

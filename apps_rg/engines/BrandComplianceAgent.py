@@ -9,8 +9,8 @@ Ensures brand voice and professional tone in resume content.
 
 from __future__ import annotations
 import json
-from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from dataclasses import dataclass
+from typing import Any
 
 from apps_rg.shared.core.agent_base import RGAgentBase
 
@@ -84,8 +84,8 @@ class BrandComplianceAgent(RGAgentBase):
             self.add_signal("BRAND_VIOLATION")
             return
 
-        issues: List[str] = []
-        suggestions: List[str] = []
+        issues: list[str] = []
+        suggestions: list[str] = []
 
         for section_name, content in resume.items():
             if section_name.startswith("_"):
@@ -134,7 +134,7 @@ class BrandComplianceAgent(RGAgentBase):
 
     def heal_repository(
         self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

@@ -31,19 +31,18 @@ __all__ = [
     "FactCheckAgent",
     "SectionBalanceAgent",
     "TestPilot",
-    
     # Strategy & Planning
     "CampaignPlannerAgent",
     "ContentStrategyAgent",
     "RgStrategicPlannerAgent",
     "RgTemplateOptimizerAgent",
-    
     # Orchestration & Healing
     "RgHealingOrchestratorAgent",
     "RgReflectionAgent",
     "RgResumeOrchestratorAgent",
     "ProactiveAgent",
 ]
+
 
 # Stub for backward compatibility
 class AsyncOpenAI:  # pragma: no cover - stub for tests

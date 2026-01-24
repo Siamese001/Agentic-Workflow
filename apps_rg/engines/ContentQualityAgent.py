@@ -16,8 +16,8 @@ This module contains all specialized agents for autonomous resume generation:
 from __future__ import annotations
 import json
 import re
-from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from dataclasses import dataclass
+from typing import Any
 
 from apps_rg.shared.core.agent_base import RGAgentBase
 
@@ -74,7 +74,7 @@ class ContentQualityAgent(RGAgentBase):
             self.add_signal("QUALITY_FAILURE")
             return
 
-        issues: List[str] = []
+        issues: list[str] = []
 
         # Check each section
         for section_name, content in resume.items():
@@ -129,7 +129,7 @@ class ContentQualityAgent(RGAgentBase):
 
     def heal_repository(
         self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
