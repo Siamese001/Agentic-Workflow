@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.file_cache import FileCache
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ class CredentialMatch:
 
 
 @dataclass
-class CredentialScannerAgent(L5SafetyBaseAgent):
+class CredentialScannerAgent(SovereignBaseAgent):
     """
     L5 Safety Agent for detecting hardcoded credentials.
 

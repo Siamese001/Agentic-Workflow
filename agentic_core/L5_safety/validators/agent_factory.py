@@ -8,7 +8,7 @@ from __future__ import annotations
 # TODO: GRAVITY VIOLATION AUTO-HEALED
 # Downstream imports removed — move shared logic to apps_shared or sovereign utils
 # Original violation: GRAVITY VIOLATION: Upstream 'agentic_core' imports downstream roots: ['apps_shared']. Move shared logic to apps_shared or sovereign utils.
-# Removed: apps_shared.base_agents.canon_base_agent_interface
+# Removed: apps_shared.base_agents.canon_base_agent_interface (moved to agentic_core.utils.core_extensions)
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -29,7 +29,7 @@ Phase 11: Configurable Implementation Factory
 from typing import Any
 
 try:
-    from agentic_core.L2_execution.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 except ImportError:
     L2ExecutionBaseAgent = None
 MockL2ExecutionBaseAgent = None  # Stub

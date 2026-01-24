@@ -23,7 +23,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
+from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.config.config_mixin import ConfigMixin

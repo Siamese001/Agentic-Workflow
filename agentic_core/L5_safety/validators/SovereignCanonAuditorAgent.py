@@ -20,7 +20,7 @@ import logging
 from typing import Any
 
 from agentic_core.L6_observability.deepwiki_client_sovereign import SovereignDeepWikiClient
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

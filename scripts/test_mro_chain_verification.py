@@ -60,7 +60,7 @@ def test_healer_mixin_init_chain():
     print("\n[TEST 2] HealerMixin __init__ Chain...")
 
     try:
-        from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+        from agentic_core.base_agents.healer_mixin import HealerMixin
 
         # Track init calls
         init_calls = []
@@ -135,7 +135,7 @@ def test_infrastructure_mixin_init_chain():
     print("\n[TEST 4] infrastructure_mixin __init__ Chain...")
 
     try:
-        from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
+        from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 
         # Track init calls
         init_calls = []

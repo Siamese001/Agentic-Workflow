@@ -30,7 +30,7 @@ from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 
 @dataclass

@@ -48,7 +48,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 

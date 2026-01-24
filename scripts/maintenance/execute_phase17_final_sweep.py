@@ -157,9 +157,9 @@ from typing import Any
 
 from dotenv import load_dotenv
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.base_agents.redis_cache_mixin import RedisCacheMixin
+from agentic_core.base_agents.timeout_decorator import timeout
 
 load_dotenv()
 

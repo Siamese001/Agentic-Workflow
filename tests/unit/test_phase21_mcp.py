@@ -383,7 +383,7 @@ class TestMetaLearningMixinPhase21:
     def reset_singletons(self):
         """Reset all singletons before each test."""
         from agentic_core.L4_state.memory.GraphMemoryBridge import GraphMemoryBridge
-        from agentic_core.utils.core_extensions.meta_learning_mixin import MetaLearningMixin
+        from agentic_core.base_agents.meta_learning_mixin import MetaLearningMixin
 
         MetaLearningMixin.reset_lobotomy()
         MetaLearningMixin.reset_kg()
@@ -400,7 +400,7 @@ class TestMetaLearningMixinPhase21:
 
     def test_meta_learning_mixin_has_graph_bridge_methods(self):
         """Test that MetaLearningMixin has Phase 21 methods."""
-        from agentic_core.utils.core_extensions.meta_learning_mixin import MetaLearningMixin
+        from agentic_core.base_agents.meta_learning_mixin import MetaLearningMixin
 
         # Verify Phase 21 methods exist
         assert hasattr(MetaLearningMixin, "_ensure_graph_bridge_connection")
@@ -412,7 +412,7 @@ class TestMetaLearningMixinPhase21:
 
     def test_learn_with_feedback_creates_relation_on_promotion(self):
         """Test that learn_with_feedback creates MASTERED_TASK relation when promoted."""
-        from agentic_core.utils.core_extensions.meta_learning_mixin import MetaLearningMixin
+        from agentic_core.base_agents.meta_learning_mixin import MetaLearningMixin
 
         # Create a test class that uses the mixin
         class TestAgent(MetaLearningMixin):
@@ -455,7 +455,7 @@ class TestMetaLearningMixinPhase21:
 
     def test_learn_with_feedback_no_relation_below_threshold(self):
         """Test that learn_with_feedback doesn't create relation below threshold."""
-        from agentic_core.utils.core_extensions.meta_learning_mixin import MetaLearningMixin
+        from agentic_core.base_agents.meta_learning_mixin import MetaLearningMixin
 
         class TestAgent(MetaLearningMixin):
             def __init__(self):

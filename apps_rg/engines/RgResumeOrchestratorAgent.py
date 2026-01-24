@@ -11,7 +11,7 @@ import logging
 
 """Brief description of functionality and purpose."""
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 _logger = logging.getLogger(__name__)
 
@@ -28,11 +28,11 @@ _logger = logging.getLogger(__name__)
 from shared.configuration.config import ContentConstraintsConfig
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.healer_mixin import HealerMixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # NAMING FIXED: RgResumeOrchestratorAgent → RgResumeOrchestratorAgent

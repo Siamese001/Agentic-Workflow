@@ -16,9 +16,9 @@ to find known healing patterns and fixes.
 import logging
 from typing import Any
 
-from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent
-from agentic_core.utils.core_extensions.CognitiveRecoveryMixin import CognitiveRecoveryMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.CognitiveRecoveryMixin import CognitiveRecoveryMixin
+from agentic_core.base_agents.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 

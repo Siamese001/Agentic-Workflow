@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 try:
@@ -31,7 +31,7 @@ except ImportError:
 
 
 try:
-    from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+    from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 except ImportError:
 
     class SubatomicTestingMixin:

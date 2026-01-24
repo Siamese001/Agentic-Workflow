@@ -45,7 +45,7 @@ NEURAL_CONTENT = '''from __future__ import annotations
 """NeuralAutoImmuneAgent - Sovereign Self-Defense."""
 from dataclasses import dataclass
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 class SubatomicTestingMixin: pass
 class AutonomyMixin: pass
@@ -67,7 +67,7 @@ DIPLOMAT_CONTENT = '''from __future__ import annotations
 """Dependency Diplomat - Graph Optimizer."""
 from dataclasses import dataclass
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 @dataclass
 class DependencyDiplomatAgent(SovereignBaseAgent):

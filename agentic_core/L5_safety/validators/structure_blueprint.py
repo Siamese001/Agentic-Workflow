@@ -99,7 +99,7 @@ SOVEREIGN_REGISTRY: Any = {
 # === VARIABLE DEPTH SUBFOLDERS (Flexible Depth - Option A) ===
 # These subfolders are exempt from strict depth enforcement.
 # Files at depth 2 are allowed in these folders to support:
-# - Base agents at layer root (e.g., L6ObservabilityBaseAgent.py)
+# - Base agents at layer root (e.g., SovereignBaseAgent.py)
 # - Unified orchestrators (e.g., unified_orchestrator.py)
 # - Core utilities (e.g., sovereign_index.py)
 VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
@@ -3186,3 +3186,79 @@ semantic_l2_registry: Any = {
     },
 }
 SEMANTIC_L2_REGISTRY: Any = semantic_l2_registry
+
+# =============================================================================
+# SOVEREIGN CANON REGISTRY (SSOT)
+# =============================================================================
+# The "Constitution" of Validation Rules.
+# Defines WHAT is enforced (Keys 0-50), not WHO enforces it.
+# Extracted from legacy CanonBaseAgent.py (2026-01-24)
+# =============================================================================
+
+CANON_VALIDATION_REGISTRY: dict[int, dict[str, Any]] = {
+    # SAFETY (Ported from SafetyInspectorAgent)
+    0: {"method": "check_key_00_no_hardcoded_secrets", "layer": "L5", "criticality": "HIGH"},
+    1: {"method": "check_key_01_no_todo_fixme", "layer": "L5", "criticality": "MEDIUM"},
+    2: {"method": "check_key_02_no_print_statements", "layer": "L5", "criticality": "LOW"},
+    3: {"method": "check_key_03_no_debugger_statements", "layer": "L5", "criticality": "HIGH"},
+    4: {"method": "check_key_04_no_empty_except_blocks", "layer": "L5", "criticality": "MEDIUM"},
+    5: {"method": "check_key_05_no_bare_except", "layer": "L5", "criticality": "MEDIUM"},
+    6: {"method": "check_key_06_no_eval_exec", "layer": "L5", "criticality": "CRITICAL"},
+
+    # DEPENDENCIES (Formerly DependencySentinelAgent)
+    7: {"method": "check_key_07_no_star_imports", "layer": "L2", "criticality": "MEDIUM"},
+    8: {"method": "check_key_08_no_relative_imports", "layer": "L2", "criticality": "MEDIUM"},
+    14: {"method": "check_key_14_no_duplicate_imports", "layer": "L2", "criticality": "LOW"},
+    44: {"method": "check_key_44_no_circular_imports", "layer": "L2", "criticality": "HIGH"},
+    45: {"method": "check_key_45_no_unused_imports", "layer": "L2", "criticality": "LOW"},
+
+    # CODE HYGIENE (Formerly CodeJanitor)
+    10: {"method": "check_key_10_no_long_lines", "layer": "L2", "criticality": "LOW"},
+    11: {"method": "check_key_11_no_trailing_whitespace", "layer": "L2", "criticality": "LOW"},
+    12: {"method": "check_key_12_no_missing_newline", "layer": "L2", "criticality": "LOW"},
+    13: {"method": "check_key_13_no_tabs", "layer": "L2", "criticality": "LOW"},
+    15: {"method": "check_key_15_no_magic_numbers", "layer": "L2", "criticality": "LOW"},
+    16: {"method": "check_key_16_no_deep_nesting", "layer": "L2", "criticality": "MEDIUM"},
+
+    # BUDGET & COMPLEXITY (Formerly BudgetAgent)
+    17: {"method": "check_key_17_no_large_functions", "layer": "L1", "criticality": "MEDIUM"},
+    19: {"method": "check_key_19_no_complex_functions", "layer": "L1", "criticality": "MEDIUM"},
+
+    # STRUCTURE (Formerly StructuralEngineerAgent)
+    18: {"method": "check_key_18_no_many_parameters", "layer": "L2", "criticality": "MEDIUM"},
+    20: {"method": "check_key_20_no_large_classes", "layer": "L2", "criticality": "MEDIUM"},
+    25: {"method": "check_key_25_no_global_variables", "layer": "L2", "criticality": "HIGH"},
+    42: {"method": "check_key_42_no_large_files", "layer": "L2", "criticality": "MEDIUM"},
+    43: {"method": "check_key_43_class_density", "layer": "L2", "criticality": "LOW"},
+    46: {"method": "check_key_46_no_duplicate_code", "layer": "L2", "criticality": "MEDIUM"},
+
+    # DOCUMENTATION (Formerly DocumentationAgent)
+    21: {"method": "check_key_21_no_missing_docstrings", "layer": "L5", "criticality": "LOW"},
+
+    # TYPING (Formerly TypeMechanicAgent)
+    22: {"method": "check_key_22_no_missing_type_hints", "layer": "L5", "criticality": "HIGH"},
+    23: {"method": "check_key_23_no_unreachable_code", "layer": "L5", "criticality": "MEDIUM"},
+    24: {"method": "check_key_24_no_unused_variables", "layer": "L5", "criticality": "LOW"},
+
+    # PATTERNS (Formerly UnifiedCodeEnforcerAgent)
+    26: {"method": "check_key_26_no_mutable_defaults", "layer": "L5", "criticality": "HIGH"},
+    27: {"method": "check_key_27_prefer_str_join", "layer": "L5", "criticality": "LOW"},
+    28: {"method": "check_key_28_no_bare_except", "layer": "L5", "criticality": "MEDIUM"},
+    29: {"method": "check_key_29_no_assert_in_prod", "layer": "L5", "criticality": "HIGH"},
+    30: {"method": "check_key_30_prefer_fstrings", "layer": "L5", "criticality": "LOW"},
+    31: {"method": "check_key_31_no_complex_comprehensions", "layer": "L5", "criticality": "LOW"},
+    32: {"method": "check_key_32_no_dict_keys_check", "layer": "L5", "criticality": "LOW"},
+    33: {"method": "check_key_33_no_float_equality", "layer": "L5", "criticality": "MEDIUM"},
+    34: {"method": "check_key_34_use_is_for_none", "layer": "L5", "criticality": "MEDIUM"},
+    36: {"method": "check_key_36_no_shadowed_builtins", "layer": "L5", "criticality": "HIGH"},
+    37: {"method": "check_key_37_no_redundant_self", "layer": "L5", "criticality": "LOW"},
+    38: {"method": "check_key_38_prefer_comprehensions", "layer": "L5", "criticality": "LOW"},
+    39: {"method": "check_key_39_no_useless_return", "layer": "L5", "criticality": "LOW"},
+
+    # ARCHITECTURE (Formerly SystemArchitect / NamingAgent)
+    40: {"method": "check_key_40_no_metaclasses", "layer": "L5", "criticality": "MEDIUM"},
+    41: {"method": "check_key_41_scoped_nesting", "layer": "L5", "criticality": "MEDIUM"},
+    47: {"method": "check_key_47_naming_conventions", "layer": "L5", "criticality": "LOW"},
+    49: {"method": "check_key_49_directory_depth", "layer": "L5", "criticality": "LOW"},
+    50: {"method": "check_key_50_law_of_void", "layer": "L5", "criticality": "LOW"},
+}

@@ -28,7 +28,7 @@ class TestLifecycleMixin:
     @pytest.fixture
     def lifecycle_component(self):
         """Create a test component with LifecycleMixin."""
-        from agentic_core.utils.core_extensions.lifecycle_mixin import (
+        from agentic_core.base_agents.lifecycle_mixin import (
             LifecycleMixin,
         )
 
@@ -52,7 +52,7 @@ class TestLifecycleMixin:
     @pytest.mark.asyncio
     async def test_lifecycle_states(self, lifecycle_component):
         """Test that lifecycle states transition correctly."""
-        from agentic_core.utils.core_extensions.lifecycle_mixin import LifecycleState
+        from agentic_core.base_agents.lifecycle_mixin import LifecycleState
 
         # Initial state
         assert lifecycle_component.lifecycle_state == LifecycleState.CREATED
@@ -73,7 +73,7 @@ class TestLifecycleMixin:
     @pytest.mark.asyncio
     async def test_require_ready_raises_before_startup(self, lifecycle_component):
         """Test that require_ready raises if not started."""
-        from agentic_core.utils.core_extensions.lifecycle_mixin import LifecycleError
+        from agentic_core.base_agents.lifecycle_mixin import LifecycleError
 
         with pytest.raises(LifecycleError):
             lifecycle_component.require_ready()
@@ -132,7 +132,7 @@ class TestAuditTrailMixin:
     @pytest.fixture
     def audit_component(self):
         """Create a test component with AuditTrailMixin."""
-        from agentic_core.utils.core_extensions.audit_trail_mixin import AuditTrailMixin
+        from agentic_core.base_agents.audit_trail_mixin import AuditTrailMixin
 
         class TestComponent(AuditTrailMixin):
             def __init__(self):
@@ -236,7 +236,7 @@ class TestAuditTrailMixin:
 
     def test_chain_integrity_detects_tampering(self, audit_component):
         """Test that chain integrity verification detects tampering."""
-        from agentic_core.utils.core_extensions.audit_trail_mixin import AuditProof
+        from agentic_core.base_agents.audit_trail_mixin import AuditProof
 
         # Generate valid proofs
         proofs = []
@@ -281,7 +281,7 @@ class TestCapabilityDiscoveryMixin:
     @pytest.fixture
     def capability_component(self):
         """Create a test component with CapabilityDiscoveryMixin."""
-        from agentic_core.utils.core_extensions.capability_discovery_mixin import (
+        from agentic_core.base_agents.capability_discovery_mixin import (
             CapabilityDiscoveryMixin,
         )
 
@@ -307,7 +307,7 @@ class TestCapabilityDiscoveryMixin:
 
     def test_agent_id_generation(self):
         """Test that agent_id is generated if not provided."""
-        from agentic_core.utils.core_extensions.capability_discovery_mixin import (
+        from agentic_core.base_agents.capability_discovery_mixin import (
             CapabilityDiscoveryMixin,
         )
 
@@ -353,7 +353,7 @@ class TestHealerMixinGranularBudget:
     @pytest.fixture
     def healer_component(self):
         """Create a test component with HealerMixin."""
-        from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+        from agentic_core.base_agents.healer_mixin import HealerMixin
 
         class TestHealer(HealerMixin):
             def __init__(self):
@@ -441,7 +441,7 @@ class TestPhase23Integration:
 
     def test_lifecycle_mixin_import(self):
         """Test that LifecycleMixin can be imported."""
-        from agentic_core.utils.core_extensions.lifecycle_mixin import (
+        from agentic_core.base_agents.lifecycle_mixin import (
             LifecycleError,
             LifecycleMixin,
             LifecycleState,
@@ -453,7 +453,7 @@ class TestPhase23Integration:
 
     def test_audit_trail_mixin_import(self):
         """Test that AuditTrailMixin can be imported."""
-        from agentic_core.utils.core_extensions.audit_trail_mixin import (
+        from agentic_core.base_agents.audit_trail_mixin import (
             AuditChainStats,
             AuditProof,
             AuditTrailMixin,
@@ -465,7 +465,7 @@ class TestPhase23Integration:
 
     def test_capability_discovery_mixin_import(self):
         """Test that CapabilityDiscoveryMixin can be imported."""
-        from agentic_core.utils.core_extensions.capability_discovery_mixin import (
+        from agentic_core.base_agents.capability_discovery_mixin import (
             CapabilityDiscoveryMixin,
         )
 
@@ -473,7 +473,7 @@ class TestPhase23Integration:
 
     def test_healer_mixin_has_granular_budget(self):
         """Test that HealerMixin has Phase 23 granular budget methods."""
-        from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+        from agentic_core.base_agents.healer_mixin import HealerMixin
 
         assert hasattr(HealerMixin, "_max_healing_per_violation_type_per_file")
         assert hasattr(HealerMixin, "reset_granular_budget_for_file")

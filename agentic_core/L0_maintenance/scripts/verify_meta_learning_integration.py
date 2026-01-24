@@ -108,8 +108,8 @@ def verify_mixin_inheritance():
     print("\n[TEST 4] Mixin Inheritance")
     print("-" * 60)
 
-    from agentic_core.utils.core_extensions.pinecone_vector_mixin import PineconeVectorMixin
-    from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+    from agentic_core.base_agents.pinecone_vector_mixin import PineconeVectorMixin
+    from agentic_core.base_agents.redis_cache_mixin import RedisCacheMixin
 
     is_redis = isinstance(guardian, RedisCacheMixin)
     is_pinecone = isinstance(guardian, PineconeVectorMixin)

@@ -35,9 +35,9 @@ MIGRATION_MAP: dict[str, str] = {
     r"from agentic_core\.L5_safety\.unified\.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent": "from agentic_core.unified import UnifiedStructureEnforcerAgent",
     r"from agentic_core\.L5_safety\.unified\.UnifiedResourceManagerAgent import UnifiedResourceManagerAgent": "from agentic_core.unified import UnifiedResourceManagerAgent",
     # HealerMixin -> SSOT location
-    r"from agentic_core\.L5_safety\.validators\.healer_mixin import": "from agentic_core.utils.core_extensions.healer_mixin import",
-    r"from agentic_core\.L5_safety\.guardrails\.healer_mixin import": "from agentic_core.utils.core_extensions.healer_mixin import",
-    r"from agentic_core\.common\.healing\.healer_mixin import": "from agentic_core.utils.core_extensions.healer_mixin import",
+    r"from agentic_core\.L5_safety\.validators\.healer_mixin import": "from agentic_core.base_agents.healer_mixin import",
+    r"from agentic_core\.L5_safety\.guardrails\.healer_mixin import": "from agentic_core.base_agents.healer_mixin import",
+    r"from agentic_core\.common\.healing\.healer_mixin import": "from agentic_core.base_agents.healer_mixin import",
 }
 
 # Files to skip during migration

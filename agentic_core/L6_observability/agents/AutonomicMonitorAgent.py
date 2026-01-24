@@ -25,7 +25,7 @@ from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types impo
 Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 
 
 @dataclass

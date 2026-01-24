@@ -70,7 +70,7 @@ class HistorianAgent(SovereignBaseAgent):
     def record_event(self, agent: str, status: str, details: str) -> Any:
         """Execute record_event operation."""
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-        entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n"
+        entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\nfrom agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.base_agents.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n"
 
         # Atomic append - Note: Consider migrating to async file I/O for high-scale environments
         try:

@@ -12,7 +12,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.base_agents.healer_mixin import HealerMixin
 from apps_rg.domain.config.loader import load_rg_specs
 from apps_rg.domain.config.schemas import RGAgentSpecs
 from apps_rg.shared.reasoning.toggles import ReasoningToggles

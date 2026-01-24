@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30

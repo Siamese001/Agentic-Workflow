@@ -22,9 +22,9 @@ from re import Pattern
 from typing import Any
 
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
-from .L5SafetyBaseAgent import L5SafetyBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 def track_metrics(name: str):
@@ -43,7 +43,7 @@ def track_metrics(name: str):
     return decorator
 
 
-class PIISanitizerAgent(L5SafetyBaseAgent):
+class PIISanitizerAgent(SovereignBaseAgent):
     """L5 Safety agent that performs local PII detection using regex heuristics.
 
     This agent detects and redacts common PII patterns including emails,

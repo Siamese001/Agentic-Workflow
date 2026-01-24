@@ -66,7 +66,7 @@ except ImportError:
         pass
 
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 LOGGER = Logger  # Alias for compatibility

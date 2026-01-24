@@ -84,10 +84,10 @@ except ImportError:
         pass
 
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 try:
-    from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+    from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 except ImportError:
 
     class SubatomicTestingMixin:

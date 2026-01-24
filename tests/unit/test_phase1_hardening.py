@@ -101,7 +101,7 @@ class test_infrastructure_mixin:
 
     def test_proper_initialization(self):
         """Proper initialization sets _infra_initialized flag."""
-        from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
+        from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 
         class ProperAgent(infrastructure_mixin):
             def __init__(self):
@@ -114,7 +114,7 @@ class test_infrastructure_mixin:
 
     def test_broken_chain_no_super_init(self):
         """Test Case A: Forgetting super().__init__() causes verify_state to raise."""
-        from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
+        from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 
         class BrokenAgent(infrastructure_mixin):
             def __init__(self):
@@ -135,7 +135,7 @@ class test_infrastructure_mixin:
 
     def test_get_infrastructure_status(self):
         """get_infrastructure_status returns correct status."""
-        from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
+        from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 
         class StatusAgent(infrastructure_mixin):
             def __init__(self):
@@ -150,7 +150,7 @@ class test_infrastructure_mixin:
 
     def test_reset_infrastructure(self):
         """reset_infrastructure clears the initialized flag."""
-        from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
+        from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 
         class ResetAgent(infrastructure_mixin):
             def __init__(self):

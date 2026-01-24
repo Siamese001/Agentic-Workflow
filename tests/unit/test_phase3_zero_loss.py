@@ -36,7 +36,7 @@ def test_tc9_mro_integrity():
 
     from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
+    from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 
     # Get MRO
     mro = L2ExecutionBaseAgent.__mro__

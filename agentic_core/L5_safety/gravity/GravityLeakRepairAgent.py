@@ -38,7 +38,7 @@ from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.base_agents.healer_mixin import HealerMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
@@ -140,7 +140,7 @@ class GravityLeakRepairAgent(
 
                 # Suggest utils path
                 if "mixins" in module_path:
-                    return f"from agentic_core.utils.core_extensions.subatomic_testing_mixin import {imported_items}"
+                    return f"from agentic_core.base_agents.subatomic_testing_mixin import {imported_items}"
                 else:
                     return f"from agentic_core.utils import {imported_items}"
 

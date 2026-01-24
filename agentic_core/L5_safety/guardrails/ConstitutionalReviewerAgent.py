@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 """Constitutional Reviewer Agent - Performs final constitutional review of the output."""
 
@@ -14,11 +14,11 @@ import json
 
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
-from .L5SafetyBaseAgent import L5SafetyBaseAgent  # NEW: Import canonical L5 base class
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent  # NEW: Import canonical L5 base class
 
 # ------------------------------------------------------------------
 # REMOVED: Local stub BaseAgent definition (technical debt)
-# Reason: L5SafetyBaseAgent provides real logging (log_info, log_warning,
+# Reason: SovereignBaseAgent provides real logging (log_info, log_warning,
 #         log_error) and standardized initialization.
 # ------------------------------------------------------------------
 

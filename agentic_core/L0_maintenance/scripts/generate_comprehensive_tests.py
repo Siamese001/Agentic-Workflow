@@ -126,7 +126,7 @@ def generate_layer_tests():
 
     generator = TestGenerator(PROJECT_ROOT / "tests" / "unit" / "layer_bases")
 
-    # L0MaintenanceBaseAgent
+    # L0SovereignBaseAgent
     try:
         from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import (
             L0MaintenanceBaseAgent,
@@ -145,9 +145,9 @@ def generate_layer_tests():
     except Exception as e:
         print(f"⚠️  Could not generate L0MaintenanceBaseAgent tests: {e}")
 
-    # L5SafetyBaseAgent
+    # SovereignBaseAgent
     try:
-        from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         tests = generator.generate_agent_tests(
             L5SafetyBaseAgent, "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent"
@@ -155,7 +155,7 @@ def generate_layer_tests():
         generator.write_test_file(
             "safety_base_agent",
             tests,
-            ["from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent"],
+            ["from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent"],
         )
     except Exception as e:
         print(f"⚠️  Could not generate L5SafetyBaseAgent tests: {e}")

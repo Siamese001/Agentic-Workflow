@@ -5,7 +5,7 @@ UnifiedOrchestratorAgent - Central Nervous System for Agentic Workflow
 
 Architecture: Strategy Pattern
 - Instead of hardcoding 10+ sub-agents, we delegate to domain-specific Strategies.
-- Inherits from L3OrchestrationBaseAgent for standard logging/state management.
+- Inherits from SovereignBaseAgent for standard logging/state management.
 - Implements IOrchestratorAgent protocol for type-safe orchestration.
 
 SSOT PRINCIPLE:
@@ -30,9 +30,7 @@ from agentic_core.L3_orchestration.interfaces import (
     ExecutionPhase,
     MissionResult,
 )
-from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
-    L3OrchestrationBaseAgent,
-)
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # [PHASE 2] SSOT Discovery Integration
 from agentic_core.utils.ssot_discovery import get_agent_files
@@ -51,13 +49,13 @@ class OrchestratorMode(str, Enum):
     UNIFIED = "unified"
 
 
-class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
+class UnifiedOrchestratorAgent(SovereignBaseAgent):
     """
     The Central Nervous System for Agentic Workflow.
 
     Architecture: Strategy Pattern
     - Instead of hardcoding 10+ sub-agents, we delegate to domain-specific Strategies.
-    - Inherits from L3OrchestrationBaseAgent for standard logging/state management.
+    - Inherits from SovereignBaseAgent for standard logging/state management.
     - Implements IOrchestratorAgent protocol for type-safe orchestration.
 
     Phase 2: Supports mode-based behavior switching:

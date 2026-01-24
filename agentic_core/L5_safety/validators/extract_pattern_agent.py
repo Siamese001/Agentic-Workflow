@@ -53,14 +53,14 @@ import ast
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+from agentic_core.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.base_agents.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -126,7 +126,7 @@ def update_source_file(source_file: Path):
     # Find where to insert (after other imports)
     insert_idx = 0
     for i, line in enumerate(lines):
-        if line.strip().startswith("from apps_shared.base_agents"):
+        if line.strip().startswith("from agentic_core.base_agents"):
             insert_idx = i + 1
             break
 

@@ -54,7 +54,7 @@ from tqdm import tqdm  # Best-in-class progress with colors & stats
 
 # NamingAgent bridge for future-proof uniqueness (post-2025-12-31 consolidation)
 try:
-    from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
+    from agentic_core.base_agents.NamingAgent import get_naming_agent
 
     NAMING_AGENT_AVAILABLE = True
 except ImportError:
@@ -85,7 +85,7 @@ except ImportError:
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 # Archives directory constant for exclusion
 ARCHIVES_DIR = "archives"

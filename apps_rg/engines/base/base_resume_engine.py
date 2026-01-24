@@ -14,7 +14,7 @@ try:
     from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 except ImportError:
     try:
-        from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
+        from agentic_core.base_agents.mcp_hardened_mixin import MCPHardenedMixin
     except ImportError:
 
         class MCPHardenedMixin:
@@ -26,7 +26,7 @@ except ImportError:
 
 
 try:
-    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+    from agentic_core.base_agents.healer_mixin import HealerMixin
 except ImportError:
 
     class HealerMixin:

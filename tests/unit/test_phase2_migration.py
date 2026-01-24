@@ -32,7 +32,7 @@ class TestCaseA_TheBigSwitch:
     def test_sovereign_base_agent_has_infra_mixin(self):
         """Verify SovereignBaseAgent inherits from infrastructure_mixin."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
+        from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 
         # Check inheritance
         assert issubclass(SovereignBaseAgent, infrastructure_mixin), (

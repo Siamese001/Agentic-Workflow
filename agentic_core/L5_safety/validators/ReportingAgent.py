@@ -34,7 +34,7 @@ from typing import Any
 from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,  # Comprehensive exclusion set (.git, venv, __pycache__, etc.)
 )
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.utils.ssot_discovery import get_python_files
 
 # Additional reporting-specific exclusions (stubs, backups)
@@ -55,7 +55,7 @@ try:
 except ImportError:  # MetricsAgent not implemented yet or optional
     METRICS_AGENT_AVAILABLE = False
 
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
@@ -162,7 +162,7 @@ class ReportingAgent(SovereignBaseAgent):
                     _walk_directory(item, prefix + extension, depth + 1)
 
         _walk_directory(start_path, depth=1)
-        return "\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(
+        return "\nfrom agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(
             tree_lines
         )
 

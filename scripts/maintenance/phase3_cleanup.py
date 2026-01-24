@@ -1,6 +1,6 @@
 """
 Phase 3 Cleanup Utility
-Moves legacy MCP and cache files to agentic_core/archived/ to enforce Gateway patterns.
+Moves legacy MCP and cache files to archives/agentic_core_archived/ to enforce Gateway patterns.
 """
 
 import shutil

@@ -6,9 +6,9 @@ of the consolidated infrastructure_mixin (Opportunity #4).
 """
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.healer_mixin import HealerMixin
+from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class ConcreteInfrastructureAgent(infrastructure_mixin):

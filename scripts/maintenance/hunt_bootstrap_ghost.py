@@ -31,7 +31,7 @@ def hunt_bootstrap():
                 print(f"[GHOST FOUND] {found_path}")
                 found_any = True
 
-                archive_dir = PROJECT_ROOT / "agentic_core/archived"
+                archive_dir = PROJECT_ROOT / "archives/agentic_core_archived"
                 archive_dir.mkdir(exist_ok=True)
                 dest = archive_dir / f"ghost_bootstrap_{os.urandom(4).hex()}.py"
                 try:

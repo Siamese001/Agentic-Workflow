@@ -1189,7 +1189,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
     # LAYER 0: BASE AGENT IDENTIFICATION (Highest Priority)
     # =========================================================================
     # Identify base agents FIRST before any exclusion logic
-    # This ensures L0MaintenanceBaseAgent-L6Agent and *BaseAgent classes are always discoverable
+    # This ensures L0SovereignBaseAgent-L6Agent and *BaseAgent classes are always discoverable
     is_l_series_base = name in {
         "L0MaintenanceBaseAgent",
         "L1CognitionBaseAgent",
@@ -1218,7 +1218,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
         return False
 
     # 1c. Non-agent base classes (Protocol, ABC, etc.)
-    # EXCEPTION: Base agents (L0MaintenanceBaseAgent-L6Agent, *BaseAgent) can inherit from ABC
+    # EXCEPTION: Base agents (L0SovereignBaseAgent-L6Agent, *BaseAgent) can inherit from ABC
     non_agent_bases = {
         "Protocol",
         "ABC",
@@ -1230,7 +1230,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
         "TestCase",
     }
     if bases & non_agent_bases:
-        # Allow base agents to inherit from ABC (e.g., L6ObservabilityBaseAgent)
+        # Allow base agents to inherit from ABC (e.g., SovereignBaseAgent)
         if not is_base_agent:
             log.debug(
                 f"TRACE: {name} excluded - inherits from non-agent base {bases & non_agent_bases}"
@@ -1309,7 +1309,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
         "SovereignBaseAgent",
     }
 
-    # Allow L-series (L0MaintenanceBaseAgent, etc) and *BaseAgent classes to pass through even if in agent_bases
+    # Allow L-series (L0SovereignBaseAgent, etc) and *BaseAgent classes to pass through even if in agent_bases
     if name in agent_bases and not is_base_agent:
         log.debug(f"TRACE: {name} excluded - strictly a base class without discovery flag")
         return False
@@ -1701,13 +1701,13 @@ def main():
             # They are abstract but must be discovered as agents so they can be placed in
             # dedicated "Base Class" territories for consistent compliance tracking.
             # Current layer-specific bases:
-            #   - L0: L0MaintenanceBaseAgent
-            #   - L1: L1CognitionBaseAgent (or L1CognitionBaseAgent)
-            #   - L2: L2ExecutionBaseAgent (or ExecutionCanonBaseAgent)
-            #   - L3: L3OrchestrationBaseAgent
-            #   - L4: L4StateBaseAgent
-            #   - L5: L5SafetyBaseAgent
-            #   - L6: L6ObservabilityBaseAgent
+            #   - L0: L0SovereignBaseAgent
+            #   - L1: SovereignBaseAgent (or SovereignBaseAgent)
+            #   - L2: SovereignBaseAgent (or ExecutionCanonBaseAgent)
+            #   - L3: SovereignBaseAgent
+            #   - L4: SovereignBaseAgent
+            #   - L5: SovereignBaseAgent
+            #   - L6: SovereignBaseAgent
             skip_names = {
                 "SubAtomicAgent",
                 "CanonBaseAgent",
@@ -1715,7 +1715,7 @@ def main():
                 "IActionPlane",
                 "ValidationProtocol",
                 "Protocol",
-                # NOTE: ABC removed - L6ObservabilityBaseAgent inherits from ABC
+                # NOTE: ABC removed - SovereignBaseAgent inherits from ABC
                 # Phase 3.2: Test fixtures (not production agents)
                 "TestContentQualityAgent",
                 "TestLeadQualityAgent",
@@ -1808,7 +1808,7 @@ def main():
             # Determine territory (layer + subdirectory)
             # CRITICAL FIX: Base classes get dedicated "Base Class" sub-territory
             # Phase 3.2: Only canonical *BaseAgent classes are base classes, not L-series alternatives
-            # L0MaintenanceBaseAgent and L1CognitionBaseAgent are exceptions (they are canonical for their layers)
+            # L0SovereignBaseAgent and SovereignBaseAgent are exceptions (they are canonical for their layers)
             is_base_class = node.name.endswith("BaseAgent") or node.name in {
                 "L0MaintenanceBaseAgent",
                 "L1CognitionBaseAgent",

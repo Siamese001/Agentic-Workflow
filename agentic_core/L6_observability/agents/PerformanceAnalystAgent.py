@@ -22,7 +22,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
-# ARCHIVED: L6ObservabilityBaseAgent import removed
+# ARCHIVED: SovereignBaseAgent import removed
 L6ObservabilityBaseAgent = object  # Stub for archived import
 AgentPerformanceMetrics = None
 CritiqueReport = None
@@ -36,7 +36,7 @@ def get_performance_analyst(project_root: Path) -> "PerformanceAnalystAgent":
 
 
 @dataclass
-class PerformanceAnalystAgent(L6ObservabilityBaseAgent):
+class PerformanceAnalystAgent(SovereignBaseAgent):
     """
     The Performance Critic - Skeptical analyst for agent performance.
 

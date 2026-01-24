@@ -122,7 +122,7 @@ class TestInstinctiveBypass:
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
         )
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -165,7 +165,7 @@ class TestInstinctiveBypass:
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
         )
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -214,7 +214,7 @@ class TestDNASegregation:
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
         )
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -272,7 +272,7 @@ class TestDNASegregation:
 
     def test_namespace_derived_from_class_name(self):
         """[Phase 20] Verify namespace is derived from class name."""
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -333,7 +333,7 @@ class TestLobotomyResilience:
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
         )
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -408,7 +408,7 @@ class TestContextHashing:
 
     def test_context_hash_consistency(self):
         """[Phase 20] Verify context hash is consistent."""
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -432,7 +432,7 @@ class TestContextHashing:
 
     def test_context_hash_includes_namespace(self):
         """[Phase 20] Verify context hash includes namespace for segregation."""
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -469,7 +469,7 @@ class TestCircuitBreaker:
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
         )
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -496,7 +496,7 @@ class TestCircuitBreaker:
 
     def test_circuit_breaker_bypasses_memory_calls(self):
         """[Phase 20] Verify lobotomized state bypasses all memory operations."""
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -527,7 +527,7 @@ class TestCircuitBreaker:
 
     def test_reset_lobotomy(self):
         """[Phase 20] Verify reset_lobotomy clears circuit breaker state."""
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -547,7 +547,7 @@ class TestSerializationGuard:
 
     def test_non_dict_result_wrapped(self):
         """[Phase 20] Verify non-dict results are wrapped for storage."""
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -580,7 +580,7 @@ class TestSerializationGuard:
 
     def test_learning_failure_does_not_crash(self):
         """[Phase 20] Verify learning failure doesn't crash the agent."""
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -907,7 +907,7 @@ class TestKnowledgeGraphBridge:
 
     def test_kg_bridge_singleton(self):
         """[Phase 20+] Verify KnowledgeGraphBridge is a singleton."""
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
 
@@ -922,7 +922,7 @@ class TestKnowledgeGraphBridge:
 
     def test_kg_bridge_register_agent(self):
         """[Phase 20+] Verify agent registration creates entity."""
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
 
@@ -938,7 +938,7 @@ class TestKnowledgeGraphBridge:
 
     def test_kg_bridge_create_relation(self):
         """[Phase 20+] Verify relation creation."""
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
 
@@ -958,7 +958,7 @@ class TestKnowledgeGraphBridge:
 
     def test_kg_bridge_add_observation(self):
         """[Phase 20+] Verify observation addition."""
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
 
@@ -977,7 +977,7 @@ class TestKnowledgeGraphBridge:
 
     def test_kg_bridge_reflect_on_success(self):
         """[Phase 20+] Verify reflection on successful execution."""
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             ExecutionTrace,
             KnowledgeGraphBridge,
         )
@@ -1001,7 +1001,7 @@ class TestKnowledgeGraphBridge:
 
     def test_kg_bridge_reflect_on_failure(self):
         """[Phase 20+] Verify reflection on failed execution."""
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             ExecutionTrace,
             KnowledgeGraphBridge,
         )
@@ -1027,7 +1027,7 @@ class TestKnowledgeGraphBridge:
 
     def test_kg_bridge_record_agent_interaction(self):
         """[Phase 20+] Verify agent interaction recording."""
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
 
@@ -1061,7 +1061,7 @@ class TestKnowledgeGraphBridge:
 
     def test_kg_bridge_establish_inheritance(self):
         """[Phase 20+] Verify rule inheritance establishment."""
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
 
@@ -1080,7 +1080,7 @@ class TestKnowledgeGraphBridge:
 
     def test_kg_bridge_mark_incompatibility(self):
         """[Phase 20+] Verify incompatibility marking."""
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
 
@@ -1108,10 +1108,10 @@ class TestMetaLearningKGIntegration:
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
         )
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -1155,10 +1155,10 @@ class TestMetaLearningKGIntegration:
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
         )
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -1208,10 +1208,10 @@ class TestMetaLearningKGIntegration:
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
         )
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
@@ -1259,10 +1259,10 @@ class TestMetaLearningKGIntegration:
         from agentic_core.L4_state.memory.SemanticCacheManager import (
             SemanticCacheManager,
         )
-        from agentic_core.utils.core_extensions.knowledge_graph_bridge import (
+        from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
-        from agentic_core.utils.core_extensions.meta_learning_mixin import (
+        from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
 
