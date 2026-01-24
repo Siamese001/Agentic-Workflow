@@ -29,7 +29,7 @@ class L2ExecutionBaseAgent(SovereignBaseAgent):
     Inherits Redis and Pinecone capabilities directly from SovereignBaseAgent.
     """
 
-    ctx: Any
+    ctx: Any = field(default=None)
     enable_gemini: bool = True
     _cache_prefix: str = "l2_execution"
     _namespace: str = "l2_tools"
