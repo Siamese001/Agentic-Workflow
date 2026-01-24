@@ -8,7 +8,7 @@ Writes 'ranked_content'.
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List
+from typing import Any
 import logging
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
@@ -36,15 +36,13 @@ class SectionRankerEngine(BaseRGEngine):
         # Try to load from config if available
         if self.config and hasattr(self.config, "config"):
             try:
-                config_strategies = self.config.config.qa_thresholds.get(
-                    "ranking_strategies"
-                )
+                config_strategies = self.config.config.qa_thresholds.get("ranking_strategies")
                 if config_strategies:
                     self.strategies = config_strategies
             except (AttributeError, KeyError):
                 pass
 
-    async def execute(self) -> Dict[str, Any]:
+    async def execute(self) -> dict[str, Any]:
         """
         Reorder sections based on Role Archetype.
         """

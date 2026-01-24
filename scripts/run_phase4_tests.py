@@ -30,12 +30,11 @@ def run_tests():
     # Test 1: K9 Requires Upstream Data
     print("\n[TEST 1] test_k9_requires_upstream_data")
     try:
+
         async def run_test():
             ctx = SovereignContext()
             # Write only mission, missing enrichment
-            ctx.buffer.write(
-                "mission_input", {"job_description_keywords": ["python"]}, "SETUP"
-            )
+            ctx.buffer.write("mission_input", {"job_description_keywords": ["python"]}, "SETUP")
 
             engine = GapClosureEngine(ctx)
             try:
@@ -60,11 +59,10 @@ def run_tests():
     # Test 2: K9 Writes to Buffer
     print("\n[TEST 2] test_k9_writes_to_buffer")
     try:
+
         async def run_test():
             ctx = SovereignContext()
-            ctx.buffer.write(
-                "mission_input", {"job_description_keywords": ["python"]}, "SETUP"
-            )
+            ctx.buffer.write("mission_input", {"job_description_keywords": ["python"]}, "SETUP")
             ctx.buffer.write("hop2_enrichment", {"skills": []}, "SETUP")
 
             engine = GapClosureEngine(ctx)
@@ -91,6 +89,7 @@ def run_tests():
     # Test 3: Weight Adjustment Reads Signals
     print("\n[TEST 3] test_weight_adjustment_reads_signals")
     try:
+
         async def run_test():
             ctx = SovereignContext()
             ctx.add_signal("ATS_FAILURE")
@@ -118,6 +117,7 @@ def run_tests():
     # Test 4: Optimizer Uses Weights
     print("\n[TEST 4] test_optimizer_uses_weights")
     try:
+
         async def run_test():
             ctx = SovereignContext()
             # Mock data
@@ -151,6 +151,7 @@ def run_tests():
     # Test 5: Optimizer Handles Missing Data Gracefully
     print("\n[TEST 5] test_optimizer_handles_missing_data")
     try:
+
         async def run_test():
             ctx = SovereignContext()
             # Don't write hop2_enrichment
@@ -177,6 +178,7 @@ def run_tests():
     # Test 6: Weight Adjustment with Multiple Signals
     print("\n[TEST 6] test_weight_adjustment_multiple_signals")
     try:
+
         async def run_test():
             ctx = SovereignContext()
             ctx.add_signal("ATS_FAILURE")

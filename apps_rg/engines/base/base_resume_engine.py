@@ -44,7 +44,7 @@ except ImportError:
     class SubatomicTestingMixin:
         def __init__(self, *args, **kwargs):
             pass
-        
+
         def run_subatomic_test(self, test_name: str, test_func):
             """Fallback subatomic test method."""
             try:
@@ -86,7 +86,7 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
 
         # Auto-load configuration like LIC
         self.rg_specs = load_rg_specs()
-        
+
         # Initialize reasoning toggles
         self.toggles = get_toggles()
 

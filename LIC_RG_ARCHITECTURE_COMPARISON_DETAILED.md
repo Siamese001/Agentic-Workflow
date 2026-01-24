@@ -29,15 +29,15 @@ while iteration < self.MAX_RETRY_ITERATIONS:
     iteration += 1
     # Execute HOP5 (Generation)
     self._execute_hop("HOP5", buffer)
-    
+
     # Execute HOP6 (Validation)
     self._execute_hop("HOP6", buffer)
-    
+
     # Check if validation passed
     validation_report = buffer.read("validation_report")
     if validation_report.get("status") == "PASS":
         break
-    
+
     # If failed, retry from HOP2 with adjusted parameters
     if iteration < self.MAX_RETRY_ITERATIONS:
         self.registry.add_trace("RETRY_CYCLE", {"iteration": iteration})
@@ -123,15 +123,15 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
  Sovereign Base Engine for Resume Generation
 -Refactored from ResumeAgent.py following LIC methodology
 +Refactored from ResumeAgent.py following LIC methodology with full parity
- 
+
  HARDENING: Updates the Base Class to require SovereignContext and enforce Span Tracing.
  """
- 
+
  from __future__ import annotations
  from abc import ABC, abstractmethod
  from typing import Any
  import logging
- 
+
 +from pathlib import Path
 +from apps_rg.domain.config.loader import load_agent_specs
 +from apps_rg.domain.config.schemas import AgentSpecs
@@ -141,7 +141,7 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
      from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
  except ImportError:
      # Fallback imports...
- 
+
 +try:
 +    from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 +except ImportError:
@@ -151,15 +151,15 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
 +
  from apps_rg.domain.knowledge_base import get_node_config, get_prompt
  from apps_rg.engines.base.sovereign_context import SovereignContext
- 
- 
+
+
 -class BaseRGEngine(MCPHardenedMixin, HealerMixin):
 +class BaseRGEngine(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
      """
      Sovereign Base Engine for all RG operations.
      Enforces standard execution patterns and telemetry.
      """
- 
+
      def __init__(self, ctx: Any, node_id: str = None) -> None:
          super().__init__()
          self.ctx = ctx
@@ -180,19 +180,19 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
  Resume Orchestrator Engine - L3 Manager handling HOP transitions
  Refactored from orchestrate_resume.py + RgResumeOrchestratorAgent.py
  Following Batch 1 specifications
- 
+
 -HARDENING: Extends the workflow to include Generation (K9), Refinement (Optimizer/Ranker),
 +HARDENING: Extends the workflow to include Generation (K9), Refinement (Optimizer/Ranker),
  and Safety (ATS). It defines the full Sovereign Pipeline with cyclic retry logic.
  """
- 
+
  from __future__ import annotations
  from typing import Any, Dict, List, Optional
  from dataclasses import dataclass, field
  import logging
 +from pathlib import Path
 +import json
- 
+
  from apps_rg.engines.base.base_resume_engine import BaseRGEngine
  # Import ALL Hardened Engines
  from apps_rg.engines.hops.hop1_clerk_engine import ClerkExtractionEngine
@@ -202,40 +202,40 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
  from apps_rg.engines.refinement.section_ranker_engine import SectionRankerEngine
  from apps_rg.engines.safety.ats_compatibility_engine import ATSCompatibilityEngine
 +from apps_rg.engines.quality.content_quality_engine import ContentQualityEngine
- 
+
  Logger = logging.getLogger(__name__)
- 
- 
+
+
  @dataclass
  class HopCheckpoint:
      hop_id: str
      status: str
      metrics: Dict[str, Any] = field(default_factory=dict)
- 
- 
+
+
  class ResumeOrchestratorEngine(BaseRGEngine):
      """
      L3 Orchestrator (Final).
 -    Drives the full Sovereign Pipeline: Prep -> Gen -> Refine -> Verify.
 +    Drives the full Sovereign Pipeline: Prep -> Gen -> Refine -> Verify with cyclic retry.
      """
- 
+
      def __init__(self, ctx: Any, mission_id: str = "default") -> None:
          super().__init__(ctx, node_id="ORCHESTRATOR_L3")
          self.hop_checkpoints: List[HopCheckpoint] = []
 +        self.mission_id = mission_id
-+        
++
 +        # Hardened Global Safety Limits (from LIC)
 +        self.GLOBAL_STEP_LIMIT = 20
 +        self.MAX_RETRY_ITERATIONS = 5
-+        
++
 +        # Persistent trace registry like LIC
 +        trace_path = Path(f"logs/missions/{mission_id}/trace.jsonl")
 +        self.ctx.trace = TraceRegistry(persistence_path=trace_path)
- 
+
      async def execute(self, job_description: str) -> Dict[str, Any]:
          self._mcp_audit("workflow_start")
- 
+
          # 1. GENESIS (HOP-0)
          mission_input = {
              "job_description": job_description,
@@ -246,10 +246,10 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
              self.ctx.buffer.write("mission_input", mission_input, source_agent=self.name)
          except PermissionError:
              pass  # Idempotent
- 
+
          try:
 +            step_count = 0
-+            
++
              # 2. DATA PREP (HOP 1 & 2) - Linear Phase
 +            for hop_engine, hop_id in [
 +                (ClerkExtractionEngine, "HOP-1"),
@@ -275,18 +275,18 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
 +            iteration = 0
 +            while iteration < self.MAX_RETRY_ITERATIONS:
 +                iteration += 1
-+                
++
 +                # Run Quality Check
 +                quality_engine = ContentQualityEngine(self.ctx)
 +                await quality_engine.run()
 +                quality_report = self.ctx.buffer.read("quality_report")
-+                
++
 +                # Run ATS Check
 +                await self._run_engine(ATSCompatibilityEngine, "HOP-5-ATS")
 +                ats_report = self.ctx.buffer.read("ats_report")
-+                
++
 +                # Check if both passed
-+                if (quality_report.get("status") == "passed" and 
++                if (quality_report.get("status") == "passed" and
 +                    ats_report.get("valid", False)):
 +                    self.ctx.trace.add_trace("VALIDATION_PASSED", {
 +                        "iteration": iteration,
@@ -294,7 +294,7 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
 +                        "ats_valid": ats_report.get("valid")
 +                    })
 +                    break
-+                
++
 +                # If failed and we have retries left, adjust and retry from HOP-2
 +                if iteration < self.MAX_RETRY_ITERATIONS:
 +                    self.ctx.trace.add_trace("RETRY_CYCLE", {
@@ -302,13 +302,13 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
 +                        "quality_issues": quality_report.get("issues", []),
 +                        "ats_issues": ats_report.get("issues", [])
 +                    })
-+                    
++
 +                    # Adjust mission input with feedback
 +                    mission_input["retry_iteration"] = iteration
 +                    mission_input["quality_feedback"] = quality_report.get("issues", [])
 +                    mission_input["ats_feedback"] = ats_report.get("issues", [])
 +                    self.ctx.buffer.write("mission_input", mission_input, source_agent="ORCHESTRATOR_RETRY")
-+                    
++
 +                    # Retry from enrichment with adjusted parameters
 +                    await self._run_engine(DataEnrichmentEngine, "HOP-2-RETRY")
 +                    # Continue with generation again
@@ -319,13 +319,13 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
 +            # 5. FINAL VERDICT
 +            final_ats = self.ctx.buffer.read("ats_report", {"valid": False})
 +            final_quality = self.ctx.buffer.read("quality_report", {"score": 0})
-+            
++
 +            status = "SUCCESS"
 +            if not final_ats.get("valid", False):
 +                status = "WARNING"
 +            if final_quality.get("score", 0) < 70:
 +                status = "WARNING"
- 
+
              return {
                  "status": status,
                  "checkpoints": [c.hop_id for c in self.hop_checkpoints],
@@ -347,17 +347,17 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
 -Tracks execution spans and provides observability.
 +Tracks execution spans with persistent storage (LIC parity).
  """
- 
+
  from __future__ import annotations
  from typing import Any, Dict, List, Optional
 +from pathlib import Path
 +import json
 +from datetime import datetime
 +import logging
- 
+
  Logger = logging.getLogger(__name__)
- 
- 
+
+
  @dataclass
  class Span:
      """Represents a single execution span."""
@@ -368,14 +368,14 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
      end_time: Optional[float] = None
      metadata: Dict[str, Any] = field(default_factory=dict)
      status: str = "ACTIVE"
- 
- 
+
+
  class TraceRegistry:
      """
 -    Registry for managing execution traces.
 +    Registry for managing execution traces with persistent storage.
      """
- 
+
 -    def __init__(self):
 +    def __init__(self, persistence_path: Optional[Path] = None):
          self.spans: List[Span] = []
@@ -429,7 +429,7 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
 +            except Exception as e:
 +                Logger.error(f"Failed to persist trace: {e}")
      ```
- 
+
 ### 4. Configuration System
 
 ```diff
@@ -467,7 +467,7 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
 +        else:
 +            # Default configuration
 +            _config_cache["agent_specs"] = AgentSpecs()
-+    
++
 +    return _config_cache["agent_specs"]
 +
 +def reload_config():
@@ -497,7 +497,7 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
 +    Controls reasoning behavior and feature flags.
 +    Mirrors LIC implementation.
 +    """
-+    
++
 +    def __init__(self):
 +        # Default toggles - can be overridden by config
 +        self.toggles: Dict[str, bool] = {
@@ -507,11 +507,11 @@ class HOPOrchestratorAgent(SubatomicTestingMixin):
 +            "enable_retry_logic": True,
 +            "enable_persistent_tracing": True,
 +        }
-+    
++
 +    def get(self, key: str, default: bool = False) -> bool:
 +        """Get toggle value."""
 +        return self.toggles.get(key, default)
-+    
++
 +    def set(self, key: str, value: bool) -> None:
 +        """Set toggle value."""
 +        self.toggles[key] = value
@@ -536,14 +536,14 @@ async def test_cyclic_retry_on_quality_failure():
     ctx.master_resume = {
         "experience": [{"company": "TestCorp", "bullets": ["Responsible for tasks"]}]
     }
-    
+
     orch = ResumeOrchestratorEngine(ctx, mission_id="test_retry")
     result = await orch.execute("Senior Engineer")
-    
+
     # Should have attempted retries
     assert result["retry_iterations"] > 0, "No retries attempted on quality failure"
     assert result["status"] in ["SUCCESS", "WARNING"], "Invalid final status"
-    
+
     # Check trace contains retry cycles
     summary = ctx.trace.get_summary()
     assert any("RETRY_CYCLE" in str(span) for span in summary["spans"]), "No retry cycle in trace"
@@ -554,12 +554,12 @@ async def test_max_retry_limit_enforcement():
     ctx = SovereignContext()
     # Force quality to always fail
     ctx.master_resume = {"experience": [{"bullets": ["Bad content"] * 100}]}
-    
+
     orch = ResumeOrchestratorEngine(ctx, mission_id="test_max_retry")
     orch.MAX_RETRY_ITERATIONS = 2  # Override for testing
-    
+
     result = await orch.execute("Test Job")
-    
+
     # Should not exceed max retries
     assert result["retry_iterations"] <= orch.MAX_RETRY_ITERATIONS
     assert result["status"] == "WARNING", "Should end in WARNING after max retries"
@@ -578,30 +578,30 @@ def test_trace_persistence():
     """Test that traces are persisted to file."""
     trace_path = Path("test_trace.jsonl")
     registry = TraceRegistry(persistence_path=trace_path)
-    
+
     # Create a span
     registry.start_span("test_operation", "test_node")
     registry.end_span("test_operation", {"result": "success"})
-    
+
     # Check file was created
     assert trace_path.exists(), "Trace file not created"
-    
+
     # Load and verify content
     with open(trace_path, 'r') as f:
         lines = f.readlines()
         assert len(lines) > 0, "No traces written to file"
-        
+
         trace_data = json.loads(lines[0])
         assert trace_data["operation"] == "test_operation"
         assert trace_data["status"] == "CLOSED"
-    
+
     # Cleanup
     trace_path.unlink()
 
 def test_trace_loading():
     """Test that existing traces are loaded on initialization."""
     trace_path = Path("test_trace_load.jsonl")
-    
+
     # Create pre-existing trace file
     with open(trace_path, 'w') as f:
         f.write(json.dumps({
@@ -611,13 +611,13 @@ def test_trace_loading():
             "end_time": 1234567891,
             "status": "CLOSED"
         }) + '\n')
-    
+
     # Initialize registry (should load existing traces)
     registry = TraceRegistry(persistence_path=trace_path)
-    
+
     assert len(registry.closed_spans) == 1, "Existing trace not loaded"
     assert registry.closed_spans[0].operation == "pre_existing"
-    
+
     # Cleanup
     trace_path.unlink()
 ```
@@ -636,22 +636,22 @@ def test_config_auto_loading():
     # Create test config file
     config_path = Path("apps_rg/domain/config/rg_agent_specs.json")
     config_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     test_config = {
         "llm_model": "test-model",
         "max_tokens": 2000,
         "temperature": 0.7
     }
-    
+
     with open(config_path, 'w') as f:
         json.dump(test_config, f)
-    
+
     # Load config
     specs = load_agent_specs()
-    
+
     assert specs.llm_model == "test-model"
     assert specs.max_tokens == 2000
-    
+
     # Cleanup
     config_path.unlink()
     reload_config()
@@ -660,7 +660,7 @@ def test_config_singleton():
     """Test that config uses singleton pattern."""
     specs1 = load_agent_specs()
     specs2 = load_agent_specs()
-    
+
     # Should be the same object (singleton)
     assert specs1 is specs2
 ```
@@ -693,25 +693,25 @@ async def test_full_lic_parity_workflow():
         "education": [{"degree": "BS CS", "school": "State University"}],
         "skills": ["Python", "JavaScript", "AWS"]
     }
-    
+
     orch = ResumeOrchestratorEngine(ctx, mission_id="parity_test")
     result = await orch.execute("Senior Software Engineer with cloud experience")
-    
+
     # Verify all LIC-equivalent features are present
     assert "status" in result, "Missing status field"
     assert "checkpoints" in result, "Missing checkpoints"
     assert "retry_iterations" in result, "Missing retry tracking"
     assert "final_quality_score" in result, "Missing quality score"
     assert "ats_valid" in result, "Missing ATS validation"
-    
+
     # Verify cyclic logic was available
     assert hasattr(orch, 'MAX_RETRY_ITERATIONS'), "Missing retry limit"
     assert hasattr(orch, 'GLOBAL_STEP_LIMIT'), "Missing step limit"
-    
+
     # Verify persistent tracing
     trace_file = Path(f"logs/missions/parity_test/trace.jsonl")
     assert trace_file.exists(), "Trace file not created"
-    
+
     # Verify trace content
     with open(trace_file, 'r') as f:
         traces = [json.loads(line) for line in f if line.strip()]
@@ -723,10 +723,10 @@ async def test_subatomic_testing_integration():
     """Test that SubatomicTestingMixin is integrated."""
     ctx = SovereignContext()
     orch = ResumeOrchestratorEngine(ctx, mission_id="subatomic_test")
-    
+
     # Verify mixin is present
     assert hasattr(orch, 'run_subatomic_test'), "Missing SubatomicTestingMixin"
-    
+
     # Run a subatomic test
     test_result = orch.run_subatomic_test("buffer_integrity", lambda: True)
     assert test_result is not None, "Subatomic test failed"
@@ -784,7 +784,7 @@ LIC-RG ARCHITECTURE PARITY TESTS
 ================================================================================
 
 1. Testing Configuration Parity... ✅ PASSED
-2. Testing Reasoning Toggles Parity... ✅ PASSED  
+2. Testing Reasoning Toggles Parity... ✅ PASSED
 3. Testing Trace Registry Parity... ✅ PASSED
 4. Testing Base Engine Parity... ✅ PASSED
 5. Testing Orchestrator Parity... ✅ PASSED

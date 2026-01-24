@@ -31,6 +31,7 @@ def run_tests():
     # Test 1: Ranker Reorders Content
     print("\n[TEST 1] test_ranker_reorders_content")
     try:
+
         async def run_test():
             ctx = SovereignContext()
             # Mock data - use dict with keys that match strategy order
@@ -72,6 +73,7 @@ def run_tests():
     # Test 2: ATS Signals Failure
     print("\n[TEST 2] test_ats_signals_failure")
     try:
+
         async def run_test():
             ctx = SovereignContext()
             ctx.buffer.write("ranked_content", {"summary": "<table>bad</table>"}, "SETUP")
@@ -100,6 +102,7 @@ def run_tests():
     # Test 3: Template Optimizer Reads JD
     print("\n[TEST 3] test_template_optimizer_reads_jd")
     try:
+
         async def run_test():
             ctx = SovereignContext()
             ctx.buffer.write("mission_input", {"job_description": "Senior Manager role"}, "SETUP")
@@ -127,6 +130,7 @@ def run_tests():
     # Test 4: ATS Passes Clean Content
     print("\n[TEST 4] test_ats_passes_clean_content")
     try:
+
         async def run_test():
             ctx = SovereignContext()
             ctx.buffer.write("ranked_content", {"summary": "Clean text content"}, "SETUP")
@@ -154,6 +158,7 @@ def run_tests():
     # Test 5: Void Compliance Writes Report
     print("\n[TEST 5] test_void_compliance_writes_report")
     try:
+
         async def run_test():
             ctx = SovereignContext()
 
@@ -181,6 +186,7 @@ def run_tests():
     # Test 6: Ranker Falls Back to Enrichment
     print("\n[TEST 6] test_ranker_fallback_to_enrichment")
     try:
+
         async def run_test():
             ctx = SovereignContext()
             # Don't write optimized_content, only hop2_enrichment

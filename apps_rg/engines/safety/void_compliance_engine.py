@@ -8,9 +8,8 @@ Writes 'compliance_audit'.
 """
 
 from __future__ import annotations
-from typing import Any, Dict
+from typing import Any
 import logging
-import ast
 from pathlib import Path
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
@@ -29,7 +28,7 @@ class VoidComplianceEngine(BaseRGEngine):
         super().__init__(ctx, node_id="SAFETY.VOID")
         self.root_path = Path("apps_rg")
 
-    async def execute(self) -> Dict[str, Any]:
+    async def execute(self) -> dict[str, Any]:
         """
         Scan architecture for forbidden legacy imports.
         """
@@ -51,9 +50,7 @@ class VoidComplianceEngine(BaseRGEngine):
         self.ctx.buffer.write("compliance_audit", report, source_agent=self.name)
 
         if violations:
-            self.record_fail(
-                f"VOID POLICE: {len(violations)} legacy files detected", data=report
-            )
+            self.record_fail(f"VOID POLICE: {len(violations)} legacy files detected", data=report)
             # In strict mode, we might signal critical failure
             self.ctx.add_signal("SYSTEM_CRITICAL")
         else:

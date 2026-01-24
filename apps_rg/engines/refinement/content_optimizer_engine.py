@@ -8,7 +8,7 @@ HARDENING: Reads 'hop2_enrichment' (or generation output). Reorders content base
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List
+from typing import Any
 import logging
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
@@ -26,7 +26,7 @@ class ContentOptimizerEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="REFINE.OPTIMIZER")
 
-    async def execute(self) -> List[Dict[str, Any]]:
+    async def execute(self) -> list[dict[str, Any]]:
         """
         Reorder resume content based on impact scoring and weights.
         """
@@ -59,14 +59,12 @@ class ContentOptimizerEngine(BaseRGEngine):
             "education": data.get("education", []),
             "skills": data.get("skills", []),
         }
-        self.ctx.buffer.write(
-            "optimized_content", optimized_dict, source_agent=self.name
-        )
+        self.ctx.buffer.write("optimized_content", optimized_dict, source_agent=self.name)
 
         self.record_pass("Content optimization complete")
         return optimized_sections
 
-    def _calculate_impact_score(self, bullet: Dict, weights: Dict) -> float:
+    def _calculate_impact_score(self, bullet: dict, weights: dict) -> float:
         score = 0.0
         if bullet.get("quantified_metrics"):
             score += 0.5

@@ -31,7 +31,7 @@ async def test_orchestrator_full_chain():
     ctx.master_resume = {
         "experience": [{"company": "A", "bullets": ["Managed $1M budget"]}],
         "education": [],
-        "skills": []
+        "skills": [],
     }
 
     orch = ResumeOrchestratorEngine(ctx)
@@ -57,9 +57,11 @@ async def test_orchestrator_full_chain():
 async def test_quality_feedback_loop():
     """Verify Quality engine writes report."""
     ctx = SovereignContext()
-    ctx.buffer.write("hop2_enrichment", {
-        "experience_sections": [{"bullets": [{"bullet_text": "Responsible for nothing"}]}]
-    }, "SETUP")
+    ctx.buffer.write(
+        "hop2_enrichment",
+        {"experience_sections": [{"bullets": [{"bullet_text": "Responsible for nothing"}]}]},
+        "SETUP",
+    )
 
     engine = ContentQualityEngine(ctx)
     await engine.execute()

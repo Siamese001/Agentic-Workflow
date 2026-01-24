@@ -107,7 +107,9 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
                 source_agent=source_agent,
                 value_hash=hash(str(snapshot))
                 if isinstance(snapshot, (str, int, float, tuple, frozenset))
-                else hash(str(snapshot)) if isinstance(snapshot, dict) else 0,
+                else hash(str(snapshot))
+                if isinstance(snapshot, dict)
+                else 0,
                 cycle_id=self._cycle_id,
             )
         )

@@ -8,7 +8,7 @@ Writes 'ats_report'. Triggers 'ATS_FAILURE'.
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List
+from typing import Any
 import logging
 import re
 import json
@@ -34,7 +34,7 @@ class ATSCompatibilityEngine(BaseRGEngine):
             (r"[│┃]", "Box Characters"),
         ]
 
-    async def execute(self) -> Dict[str, Any]:
+    async def execute(self) -> dict[str, Any]:
         """
         Validate final content against ATS parsing rules.
         """
@@ -64,9 +64,7 @@ class ATSCompatibilityEngine(BaseRGEngine):
 
         # 4. SIGNAL
         if issues:
-            self.record_fail(
-                f"ATS Issues Found: {len(issues)}", data=report, signal="ATS_FAILURE"
-            )
+            self.record_fail(f"ATS Issues Found: {len(issues)}", data=report, signal="ATS_FAILURE")
         else:
             self.record_pass("ATS Check Passed")
 
