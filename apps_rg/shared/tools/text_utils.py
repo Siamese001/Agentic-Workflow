@@ -1,8 +1,9 @@
 """
 apps_rg/shared/tools/text_utils.py - Stateless Text Utilities
 """
-from typing import List
+
 import re
+
 
 def sanitize_campaign_text(text: str) -> str:
     """
@@ -12,8 +13,9 @@ def sanitize_campaign_text(text: str) -> str:
     if not text:
         return ""
     # Basic sanitization logic
-    return re.sub(r'[^\w\s-]', '', text).strip()
+    return re.sub(r"[^\w\s-]", "", text).strip()
 
-def extract_keywords(text: str, max_words: int = 5) -> List[str]:
+
+def extract_keywords(text: str, max_words: int = 5) -> list[str]:
     """Extract top keywords from text blob."""
     return text.split()[:max_words]
