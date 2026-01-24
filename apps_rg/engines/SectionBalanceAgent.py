@@ -5,9 +5,16 @@ Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 
+from __future__ import annotations
+import json
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
+
+from apps_rg.shared.core.agent_base import RGAgentBase
+
 
 @dataclass
-class SectionBalanceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
+class SectionBalanceAgent(RGAgentBase):
     """
     Ensures proper section balance and prioritization.
 
@@ -26,6 +33,10 @@ class SectionBalanceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
         "skills": 0.40,  # Max 40% of total
         "education": 0.30,  # Max 30% of total
     }
+
+    def __post_init__(self) -> None:
+        """Initialize section balance agent."""
+        super().__post_init__()
 
     async def execute(self) -> None:
         """
@@ -46,7 +57,7 @@ class SectionBalanceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             self.record_fail("No resume to check")
             return
 
-        issues = []
+        issues: List[str] = []
 
         # Check required sections
         for section in self.REQUIRED_SECTIONS:
@@ -95,6 +106,8 @@ class SectionBalanceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             return json.dumps(content)
         return str(content)
 
-    def heal_repository(self) -> dict:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
+    ) -> Dict[str, Any]:
         """Invoke healing chain via super()."""
         return super().heal_repository()

@@ -7,11 +7,16 @@ Extracted: 2026-01-06 (Surgical Extraction)
 Ensures brand voice and professional tone in resume content.
 """
 
+from __future__ import annotations
 import json
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
+
+from apps_rg.shared.core.agent_base import RGAgentBase
 
 
 @dataclass
-class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
+class BrandComplianceAgent(RGAgentBase):
     """
     Ensures brand voice and professional tone.
 
@@ -55,6 +60,10 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
         "built",
     ]
 
+    def __post_init__(self) -> None:
+        """Initialize brand compliance agent."""
+        super().__post_init__()
+
     async def execute(self) -> None:
         """
         Execute brand compliance check.
@@ -75,8 +84,8 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
             self.add_signal("BRAND_VIOLATION")
             return
 
-        issues = []
-        suggestions = []
+        issues: List[str] = []
+        suggestions: List[str] = []
 
         for section_name, content in resume.items():
             if section_name.startswith("_"):
@@ -125,7 +134,7 @@ class BrandComplianceAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin)
 
     def heal_repository(
         self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

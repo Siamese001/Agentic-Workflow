@@ -5,9 +5,15 @@ Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 
+from __future__ import annotations
+from dataclasses import dataclass, field
+from typing import Any, Dict, Set
+
+from apps_rg.shared.core.agent_base import RGAgentBase
+
 
 @dataclass
-class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
+class FactCheckAgent(RGAgentBase):
     """
     Verifies claims against user profile.
 
@@ -16,6 +22,10 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     - No hallucinated skills or experiences
     - Dates consistency
     """
+
+    def __post_init__(self) -> None:
+        """Initialize fact check agent."""
+        super().__post_init__()
 
     async def execute(self) -> None:
         """
@@ -44,16 +54,16 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             self.record_pass("Fact-check skipped (no profile)")
             return
 
-        issues: list = []
+        issues: List[str] = []
 
         # Check skills against profile (case-insensitive)
-        resume_skills: set = self._extract_skills(resume)
-        profile_skills: set = {
+        resume_skills: Set[str] = self._extract_skills(resume)
+        profile_skills: Set[str] = {
             self._normalize(s) for s in profile.get("skills", []) if isinstance(s, str)
         }
 
         if profile_skills and resume_skills:
-            unverified_skills: set = resume_skills - profile_skills
+            unverified_skills: Set[str] = resume_skills - profile_skills
             # Only flag if majority of skills are unverified
             if unverified_skills and len(unverified_skills) > len(resume_skills) * 0.5:
                 issues.append(f"Unverified skills: {list(unverified_skills)[:5]}")
@@ -64,10 +74,10 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             profile_exp = profile.get("work_history", [])
 
             if isinstance(resume_exp, list) and isinstance(profile_exp, list):
-                resume_companies: set = {
+                resume_companies: Set[str] = {
                     self._normalize(e.get("company", "")) for e in resume_exp if isinstance(e, dict)
                 }
-                profile_companies: set = {
+                profile_companies: Set[str] = {
                     self._normalize(e.get("company", ""))
                     for e in profile_exp
                     if isinstance(e, dict)
@@ -85,7 +95,7 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             self.record_pass("All claims verified")
             self.remove_signal("HALLUCINATION_DETECTED")
 
-    def _extract_skills(self, resume: Dict) -> set:
+    def _extract_skills(self, resume: Dict[str, Any]) -> Set[str]:
         """
         Extract skills from resume.
 
@@ -95,7 +105,7 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
         Returns:
             Set of normalized skill names
         """
-        skills: set = set()
+        skills: Set[str] = set()
 
         if "skills" in resume:
             skill_data = resume["skills"]
@@ -116,6 +126,8 @@ class FactCheckAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
         """Normalize text for comparison."""
         return text.lower().strip()
 
-    def heal_repository(self) -> dict:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
+    ) -> Dict[str, Any]:
         """Invoke healing chain via super()."""
         return super().heal_repository()

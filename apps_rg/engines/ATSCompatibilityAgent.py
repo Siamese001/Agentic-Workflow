@@ -5,12 +5,17 @@ Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 
+from __future__ import annotations
 import json
 import re
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
+
+from apps_rg.shared.core.agent_base import RGAgentBase
 
 
 @dataclass
-class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ResumeAgent):
+class ATSCompatibilityAgent(RGAgentBase):
     """
     Validates ATS (Applicant Tracking System) compatibility.
 
@@ -36,6 +41,10 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
         r"<img",  # Images
     ]
 
+    def __post_init__(self) -> None:
+        """Initialize ATS compatibility agent."""
+        super().__post_init__()
+
     async def execute(self) -> None:
         """
         Execute ATS compatibility check.
@@ -58,7 +67,7 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
             self.add_signal("ATS_FAILURE")
             return
 
-        issues: list = []
+        issues: List[str] = []
 
         # Check for ATS-unfriendly patterns (use ensure_ascii=False to preserve unicode)
         full_content: str = json.dumps(resume, ensure_ascii=False)
@@ -100,7 +109,7 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
             self.record_pass("ATS compatible")
             self.remove_signal("ATS_FAILURE")
 
-    def _calculate_keyword_score(self, resume: dict[str, any], job_desc: str) -> float:
+    def _calculate_keyword_score(self, resume: Dict[str, Any], job_desc: str) -> float:
         """
         Calculate keyword match score between resume and job description.
 
@@ -155,8 +164,8 @@ class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
         return matches / len(job_words)
 
     def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, int]:
+        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
+    ) -> Dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

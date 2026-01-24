@@ -6,12 +6,16 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
 
 """Brief description of functionality and purpose."""
 
 """Brief description of functionality and purpose."""
 
 from agentic_core.base_agents.timeout_decorator import timeout
+
+from apps_rg.shared.core.agent_base import RGAgentBase
 
 _logger = logging.getLogger(__name__)
 
@@ -24,27 +28,24 @@ _logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Pure orchestration of resume generation using shared atoms."""
 
-
-from shared.configuration.config import ContentConstraintsConfig
-
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.base_agents.decorators import standard_heal
-
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.base_agents.healer_mixin import HealerMixin
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+# Note: ContentConstraintsConfig import commented out - needs proper path
+# from shared.configuration.config import ContentConstraintsConfig
 
 
 # NAMING FIXED: RgResumeOrchestratorAgent → RgResumeOrchestratorAgent
-class RgResumeOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
+@dataclass
+class RgResumeOrchestratorAgent(RGAgentBase):
     """Orchestrate the multi-hop resume generation workflow."""
 
-    def __init__(self, master_resume: dict = None, test_mode: bool = False) -> None:
+    master_resume: Dict[str, Any] = field(default_factory=dict)
+    test_mode: bool = False
+    hop_checkpoints: List[Dict[str, Any]] = field(default_factory=list)
+    
+    def __post_init__(self) -> None:
         """Initialize the orchestrator."""
-        self.master_resume = master_resume
-        self.test_mode = test_mode
-        self.hop_checkpoints: list = []
-        self.constraints = ContentConstraintsConfig() if master_resume else None
+        super().__post_init__()
+        # Note: ContentConstraintsConfig needs proper import path
+        self.constraints = None  # ContentConstraintsConfig() if self.master_resume else None
         self.jd_enforcer = None
 
     def run(self, JobDescription: str) -> dict[str, object]:
@@ -81,7 +82,6 @@ class RgResumeOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerM
         self.hop_checkpoints.append({"hop_id": hop_id, "status": status})
 
     @timeout(300)
-    @standard_heal
     def heal_repository(
         self,
         dry_run: bool = True,

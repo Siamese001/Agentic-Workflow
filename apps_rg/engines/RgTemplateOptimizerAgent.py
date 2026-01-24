@@ -5,9 +5,15 @@ Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 
+from __future__ import annotations
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
+
+from apps_rg.shared.core.agent_base import RGAgentBase
+
 
 @dataclass
-class RgTemplateOptimizerAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
+class RgTemplateOptimizerAgent(RGAgentBase):
     """
     Optimizes template selection based on job description.
 
@@ -23,6 +29,10 @@ class RgTemplateOptimizerAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMi
         "creative": ["portfolio_linked", "visual_friendly"],
         "entry_level": ["education_first", "skills_prominent"],
     }
+
+    def __post_init__(self) -> None:
+        """Initialize template optimizer agent."""
+        super().__post_init__()
 
     async def execute(self) -> None:
         self.log("Optimizing template selection...")
