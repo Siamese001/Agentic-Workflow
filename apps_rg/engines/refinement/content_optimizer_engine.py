@@ -2,10 +2,13 @@
 Content Optimizer Engine - Reorders bullet points for maximum impact
 Refactored from optimize_content_order.py
 Following Batch 4 specifications
+
+HARDENING: Reads 'hop2_enrichment' (or generation output). Reorders content based on
+'adjusted_weights' from Buffer. Writes 'optimized_content'.
 """
 
 from __future__ import annotations
-from typing import Any
+from typing import Any, Dict, List
 import logging
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
@@ -16,54 +19,57 @@ Logger = logging.getLogger(__name__)
 class ContentOptimizerEngine(BaseRGEngine):
     """
     Sovereign Refinement Engine.
-    Reorders bullet points to maximize impact (Quantification-First).
+    Reads: 'hop2_enrichment', 'adjusted_weights'
+    Writes: 'optimized_content'
     """
 
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="REFINE.OPTIMIZER")
 
-    async def execute(self, sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    async def execute(self) -> List[Dict[str, Any]]:
         """
-        Optimize bullet ordering across all experience sections.
+        Reorder resume content based on impact scoring and weights.
         """
-        self._mcp_audit("content_optimization_start")
+        # 1. READ from Buffer
+        data = self.ctx.buffer.read("hop2_enrichment")
+        weights = self.ctx.buffer.read("adjusted_weights", default={})
 
+        if not data:
+            self.record_fail("Missing content to optimize", signal="DATA_MISSING")
+            return []
+
+        sections = data.get("experience_sections", [])
+
+        # 2. LOGIC: Score and Sort
         optimized_sections = []
         for section in sections:
             bullets = section.get("bullets", [])
-            if not bullets:
-                optimized_sections.append(section)
-                continue
-
-            # 1. Sort by Metric Presence (Ported from optimize_content_order.py)
-            # Achievements with '$' or '%' take priority
+            # Sort by impact score
             optimized_bullets = sorted(
-                bullets, key=lambda b: self._calculate_impact_score(b), reverse=True
+                bullets,
+                key=lambda b: self._calculate_impact_score(b, weights),
+                reverse=True,
             )
-
             section["bullets"] = optimized_bullets
             optimized_sections.append(section)
 
-        self.record_pass("Content order optimized for maximum impact")
+        # 3. WRITE to Buffer - Convert list to dict for section ranker
+        optimized_dict = {
+            "experience_sections": optimized_sections,
+            "education": data.get("education", []),
+            "skills": data.get("skills", []),
+        }
+        self.ctx.buffer.write(
+            "optimized_content", optimized_dict, source_agent=self.name
+        )
+
+        self.record_pass("Content optimization complete")
         return optimized_sections
 
-    def _calculate_impact_score(self, bullet: dict[str, Any]) -> float:
-        """
-        Heuristic scoring for bullet impact.
-        Base: 0.0
-        +0.5 if quantified metrics exist
-        +0.3 if canonical power verbs are present
-        """
+    def _calculate_impact_score(self, bullet: Dict, weights: Dict) -> float:
         score = 0.0
-        text = bullet.get("bullet_text", "").lower()
-
-        # Check for metrics (extracted in HOP-1)
         if bullet.get("quantified_metrics"):
             score += 0.5
-
-        # Check for Power Verbs (from knowledge_base.py)
-        power_verbs = ["led", "managed", "developed", "achieved", "drove"]
-        if any(v in text for v in power_verbs):
-            score += 0.3
-
+        # Apply section weight boost if applicable
+        score *= weights.get("experience", 1.0)
         return score

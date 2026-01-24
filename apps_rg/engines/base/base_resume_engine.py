@@ -44,9 +44,19 @@ except ImportError:
     class SubatomicTestingMixin:
         def __init__(self, *args, **kwargs):
             pass
+        
+        def run_subatomic_test(self, test_name: str, test_func):
+            """Fallback subatomic test method."""
+            try:
+                result = test_func()
+                return {"test": test_name, "result": result, "status": "passed"}
+            except Exception as e:
+                return {"test": test_name, "error": str(e), "status": "failed"}
 
 
 from apps_rg.domain.knowledge_base import get_node_config, get_prompt
+from apps_rg.domain.config.loader import load_rg_specs
+from apps_rg.shared.reasoning.toggles import get_toggles
 from apps_rg.engines.base.sovereign_context import SovereignContext
 
 Logger = logging.getLogger(__name__)
@@ -73,6 +83,12 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
         self.ctx = ctx
         self.node_id = node_id
         self.name = self.__class__.__name__
+
+        # Auto-load configuration like LIC
+        self.rg_specs = load_rg_specs()
+        
+        # Initialize reasoning toggles
+        self.toggles = get_toggles()
 
         # Knowledge Hydration (LIC Standard: No Magic Strings)
         self.config = None

@@ -147,3 +147,9 @@ class SovereignConfigLoader:
     def reset(cls) -> None:
         """Reset the cached topology (useful for testing)."""
         cls._topology = None
+
+
+def reload_config() -> None:
+    """Force reload of configuration from disk."""
+    global _RG_SPECS_CACHE
+    _RG_SPECS_CACHE = None
