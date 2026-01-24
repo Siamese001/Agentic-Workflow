@@ -7,7 +7,7 @@ HARDENING: Reads 'ctx.signals' directly (Event-Driven). Reads/Writes 'weight_con
 """
 
 from __future__ import annotations
-from typing import Any, Dict
+from typing import Any
 import logging
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
@@ -25,7 +25,7 @@ class WeightAdjustmentEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="REFINE.WEIGHTS")
 
-    async def execute(self) -> Dict[str, float]:
+    async def execute(self) -> dict[str, float]:
         """
         Calculate section weights based on active signals.
         """
@@ -46,7 +46,7 @@ class WeightAdjustmentEngine(BaseRGEngine):
 
         return adjustments
 
-    def _calculate_adjustments(self, signals: set[str]) -> Dict[str, float]:
+    def _calculate_adjustments(self, signals: set[str]) -> dict[str, float]:
         adjustments = {"default": 1.0}
         if "ATS_FAILURE" in signals:
             adjustments["skills"] = 1.25

@@ -9,7 +9,6 @@ Objective: Prove Data Flow integrity from HOP-0 to HOP-5.
 
 import asyncio
 import logging
-import json
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -26,12 +25,12 @@ from apps_rg.engines.orchestration.resume_orchestrator_engine import ResumeOrche
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)]
+    handlers=[logging.StreamHandler(sys.stdout)],
 )
 Logger = logging.getLogger("LIVE_FIRE")
 
 MOCK_JD = """
-Senior Python Engineer. 
+Senior Python Engineer.
 Must have experience with AI agents, immutable state management, and orchestration.
 Leadership skills required. Budget management of at least $1M.
 """
@@ -44,13 +43,14 @@ MOCK_RESUME = {
             "title": "Software Engineer",
             "bullets": [
                 "Responsible for maintaining legacy codebases.",  # Trap: Weak Verb
-                "Managed a budget of $500k and reduced costs by 20%." # Trap: Metric Extraction
-            ]
+                "Managed a budget of $500k and reduced costs by 20%.",  # Trap: Metric Extraction
+            ],
         }
     ],
     "education": [{"degree": "BS CS", "school": "State U"}],
-    "skills": ["Python", "Java", "SQL"]
+    "skills": ["Python", "Java", "SQL"],
 }
+
 
 async def main():
     Logger.info("🔥 INITIATING SOVEREIGN LIVE FIRE EXERCISE...")
@@ -60,28 +60,28 @@ async def main():
     ctx = SovereignContext()
     # Inject Master Resume (simulate DB load)
     ctx.master_resume = MOCK_RESUME
-    
+
     # 2. Boot Orchestrator
     Logger.info("⚡ Booting L3 Orchestrator...")
     orchestrator = ResumeOrchestratorEngine(ctx)
-    
+
     # 3. Execute Full Cycle
     try:
         result = await orchestrator.run(MOCK_JD)
-        
+
         Logger.info("-" * 50)
         Logger.info(f"🏁 MISSION COMPLETE in {(datetime.now() - start_time).total_seconds():.2f}s")
         Logger.info(f"STATUS: {result.get('status')}")
         Logger.info(f"CHECKPOINTS: {result.get('checkpoints')}")
-        
+
         # 4. Deep Inspection of Buffer
         Logger.info("-" * 50)
         Logger.info("🔍 DEEP BUFFER INSPECTION:")
-        
+
         # Check HOP-1 Extraction
         hop1 = ctx.buffer.read("hop1_extraction")
         if hop1:
-            metrics = hop1['experience_sections'][0]['bullets'][0].get('quantified_metrics', [])
+            metrics = hop1["experience_sections"][0]["bullets"][0].get("quantified_metrics", [])
             Logger.info(f"✅ HOP-1 Metrics Extracted: {metrics}")
         else:
             Logger.error("❌ HOP-1 FAILED: No extraction data.")
@@ -93,7 +93,7 @@ async def main():
             Logger.info("✅ HOP-2 Enrichment found.")
         else:
             Logger.error("❌ HOP-2 FAILED.")
-            
+
         # Check HOP-3 Generation
         k9 = ctx.buffer.read("k9_competencies")
         Logger.info(f"✅ HOP-3 K9 Competencies: {len(k9) if k9 else 0}/6")
@@ -111,11 +111,14 @@ async def main():
 
         # 5. Telemetry Audit
         summary = ctx.trace.get_summary()
-        Logger.info(f"📊 TELEMETRY: {summary['total_spans']} Spans Recorded. Failures: {summary['failures']}")
+        Logger.info(
+            f"📊 TELEMETRY: {summary['total_spans']} Spans Recorded. Failures: {summary['failures']}"
+        )
 
     except Exception as e:
         Logger.critical(f"❌ SYSTEM CRASH: {e}", exc_info=True)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

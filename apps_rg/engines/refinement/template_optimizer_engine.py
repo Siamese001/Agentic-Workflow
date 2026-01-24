@@ -7,7 +7,7 @@ HARDENING: Reads 'mission_input' (JD). Selects visual strategy. Writes 'template
 """
 
 from __future__ import annotations
-from typing import Any, Dict
+from typing import Any
 import logging
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
@@ -25,7 +25,7 @@ class TemplateOptimizerEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="REFINE.TEMPLATE")
 
-    async def execute(self) -> Dict[str, Any]:
+    async def execute(self) -> dict[str, Any]:
         """
         Select presentation template based on JD analysis.
         """

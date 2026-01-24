@@ -23,15 +23,16 @@ async def test_full_system_lifecycle_happy_path():
     ctx = SovereignContext()
     ctx.master_resume = {
         "experience": [{"company": "TestCorp", "bullets": ["Managed $1M budget"]}],
-        "education": [], "skills": ["Python"]
+        "education": [],
+        "skills": ["Python"],
     }
-    
+
     orch = ResumeOrchestratorEngine(ctx)
     result = await orch.run("Senior Engineer Job Description")
-    
+
     # Verification
     assert result["status"] in ["SUCCESS", "WARNING"], "Orchestrator failed to produce valid status"
-    
+
     # Verify HOP Sequence
     checkpoints = result["checkpoints"]
     expected_hops = ["HOP-1", "HOP-2", "HOP-3-K9", "HOP-4-RANK", "HOP-5-ATS"]
@@ -52,15 +53,15 @@ async def test_resilience_to_garbage_input():
     """
     ctx = SovereignContext()
     ctx.master_resume = {}  # EMPTY RESUME
-    
+
     orch = ResumeOrchestratorEngine(ctx)
-    
+
     # Should not raise exception, but return failure/warning status
     try:
         result = await orch.run("Job")
     except Exception:
         assert False, "Orchestrator crashed on empty input instead of handling gracefully"
-    
+
     # Verify graceful handling - SUCCESS is acceptable if no crash occurred
     summary = ctx.trace.get_summary()
     failures = summary.get("failures", 0)
@@ -77,15 +78,15 @@ async def test_buffer_cryptography_and_lineage():
     """
     ctx = SovereignContext()
     ctx.master_resume = {"experience": []}
-    
+
     orch = ResumeOrchestratorEngine(ctx)
     await orch.run("Job")
-    
+
     history = ctx.buffer.get_history()
-    
+
     # Verify Specific Attributions
     writers = {tx.key: tx.source_agent for tx in history}
-    
+
     assert writers.get("hop1_extraction") == "ClerkExtractionEngine"
     assert writers.get("hop2_enrichment") == "DataEnrichmentEngine"
     assert writers.get("ranked_content") == "SectionRankerEngine"
@@ -99,15 +100,19 @@ async def test_telemetry_fidelity_check():
     """
     ctx = SovereignContext()
     ctx.master_resume = {"experience": []}
-    
+
     orch = ResumeOrchestratorEngine(ctx)
     await orch.run("Job")
-    
+
     summary = ctx.trace.get_summary()
-    
+
     # We expect at least 6 spans (Orch + 5 HOPs)
-    assert summary["total_spans"] >= 6, f"Telemetry gap detected. Only found {summary['total_spans']} spans."
-    assert summary["completed"] == summary["total_spans"], "Orphaned spans detected (did not close)."
+    assert summary["total_spans"] >= 6, (
+        f"Telemetry gap detected. Only found {summary['total_spans']} spans."
+    )
+    assert summary["completed"] == summary["total_spans"], (
+        "Orphaned spans detected (did not close)."
+    )
     print("✅ test_telemetry_fidelity_check PASSED")
 
 
@@ -116,17 +121,17 @@ async def main():
     print("=" * 70)
     print("GRAND UNIFICATION TESTS")
     print("=" * 70)
-    
+
     passed = 0
     failed = 0
-    
+
     tests = [
         test_full_system_lifecycle_happy_path,
         test_resilience_to_garbage_input,
         test_buffer_cryptography_and_lineage,
         test_telemetry_fidelity_check,
     ]
-    
+
     for test in tests:
         try:
             await test()
@@ -134,11 +139,11 @@ async def main():
         except Exception as e:
             print(f"❌ {test.__name__} FAILED: {e}")
             failed += 1
-    
+
     print("\n" + "=" * 70)
     print(f"RESULTS: {passed} passed, {failed} failed")
     print("=" * 70)
-    
+
     if failed == 0:
         print("\n🎉 ALL GRAND UNIFICATION TESTS PASSED!")
         return 0

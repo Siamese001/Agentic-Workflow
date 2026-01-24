@@ -8,7 +8,7 @@ Writes 'k9_competencies'. Enforces the "Exactly 6" rule via SovereignContext val
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List
+from typing import Any
 from dataclasses import dataclass
 import logging
 
@@ -34,7 +34,7 @@ class GapClosureEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="K.9")
 
-    async def execute(self) -> List[Dict[str, Any]]:
+    async def execute(self) -> list[dict[str, Any]]:
         """
         Generate gap-closing competencies based on enriched profile and JD.
         """
@@ -43,14 +43,10 @@ class GapClosureEngine(BaseRGEngine):
         mission = self.ctx.buffer.read("mission_input")
 
         if not enrichment or not mission:
-            self.record_fail(
-                "Missing dependencies for K9 Generation", signal="DATA_MISSING"
-            )
+            self.record_fail("Missing dependencies for K9 Generation", signal="DATA_MISSING")
             raise ValueError("Buffer missing hop2_enrichment or mission_input")
 
-        jd_keywords = mission.get(
-            "job_description_keywords", []
-        )  # Assuming extracted in HOP0/1
+        jd_keywords = mission.get("job_description_keywords", [])  # Assuming extracted in HOP0/1
         candidate_skills = self._extract_skills(enrichment)
 
         self._mcp_audit("k9_generation_start")
@@ -84,15 +80,15 @@ class GapClosureEngine(BaseRGEngine):
         self.record_pass("K9 Generation Complete", data={"count": 6})
         return output
 
-    def _extract_skills(self, data: Dict) -> List[str]:
+    def _extract_skills(self, data: dict) -> list[str]:
         # Helper to flatten skills from enrichment data
         return data.get("skills", [])
 
-    def _mock_generation(self, gaps: List[str]) -> List[CompetencyItem]:
+    def _mock_generation(self, gaps: list[str]) -> list[CompetencyItem]:
         # Stub for LLM generation
         return [CompetencyItem("Skill", "Desc", 25) for _ in range(6)]
 
-    def _validate_word_counts(self, items: List[CompetencyItem]) -> List[str]:
+    def _validate_word_counts(self, items: list[CompetencyItem]) -> list[str]:
         issues = []
         for item in items:
             if not (22 <= item.word_count <= 28):

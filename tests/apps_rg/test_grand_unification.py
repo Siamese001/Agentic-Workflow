@@ -20,6 +20,7 @@ from apps_rg.engines.orchestration.resume_orchestrator_engine import ResumeOrche
 
 # 🛡️ MANDATORY: 100% Test Pass Rate Required for Deployment
 
+
 @pytest.mark.asyncio
 async def test_full_system_lifecycle_happy_path():
     """
@@ -29,15 +30,16 @@ async def test_full_system_lifecycle_happy_path():
     ctx = SovereignContext()
     ctx.master_resume = {
         "experience": [{"company": "TestCorp", "bullets": ["Managed $1M budget"]}],
-        "education": [], "skills": ["Python"]
+        "education": [],
+        "skills": ["Python"],
     }
-    
+
     orch = ResumeOrchestratorEngine(ctx)
     result = await orch.run("Senior Engineer Job Description")
-    
+
     # Verification
     assert result["status"] in ["SUCCESS", "WARNING"], "Orchestrator failed to produce valid status"
-    
+
     # Verify HOP Sequence
     checkpoints = result["checkpoints"]
     expected_hops = ["HOP-1", "HOP-2", "HOP-3-K9", "HOP-4-RANK", "HOP-5-ATS"]
@@ -57,10 +59,10 @@ async def test_resilience_to_garbage_input():
     Verifies that the system handles malformed data without crashing (Graceful Degradation).
     """
     ctx = SovereignContext()
-    ctx.master_resume = {} # EMPTY RESUME
-    
+    ctx.master_resume = {}  # EMPTY RESUME
+
     orch = ResumeOrchestratorEngine(ctx)
-    
+
     # Should not raise exception, but return failure/warning status
     try:
         result = await orch.run("Job")
@@ -68,7 +70,7 @@ async def test_resilience_to_garbage_input():
         # We expect it to eventually fail or return partial
     except Exception:
         pytest.fail("Orchestrator crashed on empty input instead of handling gracefully")
-    
+
     # Verify Signal was fired
     # We expect DATA_MISSING or similar
     # (Checking signals set logic requires tracing context updates)
@@ -83,15 +85,15 @@ async def test_buffer_cryptography_and_lineage():
     """
     ctx = SovereignContext()
     ctx.master_resume = {"experience": []}
-    
+
     orch = ResumeOrchestratorEngine(ctx)
     await orch.run("Job")
-    
+
     history = ctx.buffer.get_history()
-    
+
     # Verify Specific Attributions
     writers = {tx.key: tx.source_agent for tx in history}
-    
+
     assert writers.get("hop1_extraction") == "ClerkExtractionEngine"
     assert writers.get("hop2_enrichment") == "DataEnrichmentEngine"
     assert writers.get("ranked_content") == "SectionRankerEngine"
@@ -105,15 +107,19 @@ async def test_telemetry_fidelity_check():
     """
     ctx = SovereignContext()
     ctx.master_resume = {"experience": []}
-    
+
     orch = ResumeOrchestratorEngine(ctx)
     await orch.run("Job")
-    
+
     summary = ctx.trace.get_summary()
-    
+
     # We expect at least 6 spans (Orch + 5 HOPs)
-    assert summary["total_spans"] >= 6, f"Telemetry gap detected. Only found {summary['total_spans']} spans."
-    assert summary["completed"] == summary["total_spans"], "Orphaned spans detected (did not close)."
+    assert summary["total_spans"] >= 6, (
+        f"Telemetry gap detected. Only found {summary['total_spans']} spans."
+    )
+    assert summary["completed"] == summary["total_spans"], (
+        "Orphaned spans detected (did not close)."
+    )
 
 
 if __name__ == "__main__":

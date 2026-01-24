@@ -7,7 +7,7 @@ Checks for forbidden phrases and metric density.
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List
+from typing import Any
 import logging
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
@@ -25,7 +25,7 @@ class ContentQualityEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="QUALITY.CONTENT")
 
-    async def execute(self, target_key: str = "hop2_enrichment") -> Dict[str, Any]:
+    async def execute(self, target_key: str = "hop2_enrichment") -> dict[str, Any]:
         """
         Audit content for Sovereign Quality Standards.
         """
