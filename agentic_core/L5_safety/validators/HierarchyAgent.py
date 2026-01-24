@@ -53,7 +53,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class HierarchyAgent(SovereignBaseAgent):
+class HierarchyAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified Hierarchy Management Agent
 
@@ -1333,6 +1333,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
         # Phase 6.5: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
         # Iterate through all files in root folder
         all_files = list(get_python_files(root_folder)) + list(

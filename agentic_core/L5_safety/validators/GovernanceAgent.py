@@ -270,7 +270,7 @@ class DependencyGraph:
 
 
 # NAMING CANON COMPLIANCE — renamed to GovernanceAgent for discovery and sovereignty — 2025-12-30
-class GovernanceAgent(SovereignBaseAgent):
+class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Enforces architectural governance laws and constraints.
 
@@ -379,6 +379,7 @@ class GovernanceAgent(SovereignBaseAgent):
         if self._import_agent is None:
             try:
                 # GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
                 _mod = importlib.import_module("agentic_core.L5_safety.gravity.ImportAgent")
                 ImportAgent = _mod.ImportAgent
                 self._import_agent = ImportAgent(self.root_dir)

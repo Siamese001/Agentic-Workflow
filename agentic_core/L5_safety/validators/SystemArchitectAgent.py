@@ -27,7 +27,7 @@ from agentic_core.base_agents.timeout_decorator import timeout
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
-class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
+class SystemArchitectAgent(SubatomicTestingMixin, SovereignBaseAgent, CanonBaseAgent):
     """
     System Architect validates core architecture and import dependencies.
 
@@ -156,6 +156,7 @@ class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
             depth: Any = len(rel_path.parts) - 1
             root_folder: Any = rel_path.parts[0] if rel_path.parts else None
             from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
             if root_folder in SOVEREIGN_REGISTRY:
                 required_depth: Any = SOVEREIGN_REGISTRY[root_folder]["depth"]

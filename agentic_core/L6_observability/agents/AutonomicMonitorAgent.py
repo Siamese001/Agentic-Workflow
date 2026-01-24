@@ -26,10 +26,11 @@ Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class AutonomicMonitorAgent(SovereignBaseAgent):
+class AutonomicMonitorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Autonomic immune system for agent health monitoring.
 
     Features:

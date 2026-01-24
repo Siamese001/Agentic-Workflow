@@ -296,6 +296,7 @@ SCRIPTS_PLACEMENT_RULES: dict[str, dict[str, Any]] = {
 
 CORE_SUBFOLDER_MAP: Any = {
     "base_agents": [],
+    "domain": [],
     "L0_maintenance": ["scripts", "logs", "benchmarks", "mixins"],
     "L1_cognition": ["thought_engine", "intent_analysis", "planning"],
     "L2_execution": ["tool_registry", "action_handlers", "mcp", "tool_registry", "unified"],

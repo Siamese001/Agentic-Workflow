@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 UnifiedSecurityManagerAgent - Vaulted Security Management
@@ -100,7 +101,7 @@ class secure_checkpoint:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
-class UnifiedSecurityManagerAgent(SovereignBaseAgent):
+class UnifiedSecurityManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Vaulted security manager with permission-based access control.
 

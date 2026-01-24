@@ -3,6 +3,7 @@
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 # This boosts alignment detection — review and integrate appropriately
 
 from dataclasses import dataclass
@@ -16,7 +17,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 @dataclass
-class UiValidationAgent(SovereignBaseAgent, SubAtomicAgent):
+class UiValidationAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
     """
     ROLE: UI Pattern Validator. Uses Figma MCP to validate UI components and design patterns.
     """

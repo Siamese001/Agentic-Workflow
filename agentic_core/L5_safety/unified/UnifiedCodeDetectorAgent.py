@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 UnifiedCodeDetectorAgent - Code Quality Detection
@@ -79,7 +80,7 @@ class DetectorConfig:
     ignore_patterns: list[str] = field(default_factory=lambda: ["test_", "_test.py"])
 
 
-class UnifiedCodeDetectorAgent(SovereignBaseAgent):
+class UnifiedCodeDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified code quality detector.
 

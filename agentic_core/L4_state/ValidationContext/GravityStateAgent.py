@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -55,7 +56,7 @@ class HealingRecord:
     line_number: int | None = None
 
 
-class GravityStateAgent(SovereignBaseAgent):
+class GravityStateAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     [L4 STATE] Tracks gravity healing operations and prevents re-flagging.
 

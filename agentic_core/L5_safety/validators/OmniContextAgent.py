@@ -18,10 +18,11 @@ Extracted: 2026-01-06 (Surgical Extraction)
 import asyncio
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class OmniContextAgent(SovereignBaseAgent, SubAtomicAgent):
+class OmniContextAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
     """
     ROLE: Wisdom & Semantic Retrieval. Provides context-aware answers.
     """

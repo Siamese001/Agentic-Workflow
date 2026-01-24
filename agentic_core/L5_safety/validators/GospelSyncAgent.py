@@ -23,10 +23,11 @@ from typing import Any
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.utils.ssot_discovery import get_python_files
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class GospelSyncAgent(L0MaintenanceBaseAgent):
+class GospelSyncAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     """
     THE SSOT GUARDIAN
     Ensures the 'World as it Is' (Filesystem) matches the 'World as it Should Be' (Blueprint).

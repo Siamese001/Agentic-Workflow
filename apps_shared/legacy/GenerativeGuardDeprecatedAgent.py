@@ -23,13 +23,14 @@ MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.base_agents.healer_mixin import HealerMixin
 from agentic_core.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 EXCLUDED_DIRS = {"__pycache__", ".git", "node_modules", "venv", ".venv"}
 
 
 # Legacy class removed - use GenerativeGuardAgent instead
 @dataclass
-class GenerativeGuardDeprecatedAgent(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
+class GenerativeGuardDeprecatedAgent(SubatomicTestingMixin, HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
     """
     KEYS: 45 (Dead Code/Runaway Generation)
     ROLE: The Watchdog. Identifies and deletes recursively-generated files.

@@ -2043,6 +2043,11 @@ def check_compliance_gate(agents: list[dict], parse_errors: list[str]) -> int:
     log.info("PHASE 3.3: COMPLIANCE GATE")
     log.info("=" * 80)
 
+    # Enhanced validation with zero-agent detection
+    if len(agents) == 0:
+        log.error("Discovery returned zero agents. Potential import failure.")
+        sys.exit(1)
+
     issues = []
 
     # Check 1: Duplicate agent names
@@ -2069,16 +2074,10 @@ def check_compliance_gate(agents: list[dict], parse_errors: list[str]) -> int:
         for layer in list(unknown_layers)[:5]:
             log.warning(f"  - {layer}")
 
-    # Check 3: Orphaned agents (no proper base class)
+    # Check 3: Orphaned agents (no proper base class) - Updated for SSOT
     proper_bases = {
-        "SovereignBaseAgent",
-        "L0MaintenanceBaseAgent",
-        "L1CognitionBaseAgent",
-        "L2ExecutionBaseAgent",
-        "L3OrchestrationBaseAgent",
-        "L4StateBaseAgent",
-        "L5SafetyBaseAgent",
-        "L6ObservabilityBaseAgent",
+        "SovereignBaseAgent",  # SSOT - All agents should inherit from this
+        "L0MaintenanceBaseAgent",  # Legacy support
     }
 
     orphans = []
@@ -2099,10 +2098,14 @@ def check_compliance_gate(agents: list[dict], parse_errors: list[str]) -> int:
     if len(parse_errors) > 10:
         issues.append(f"Excessive parse errors: {len(parse_errors)}")
 
-    # Report compliance status
+    # Report compliance status with hard exit on critical failures
     log.info("=" * 80)
     if issues:
-        log.warning(f"❌ COMPLIANCE FAILURE: {len(issues)} issue categories detected")
+        log.error(f"Compliance Violation Detected in L-Architecture: {issues}")
+        # Calculate weighted compliance score: 
+        # $C = 1 - \frac{V}{A}$ where $V$ is violations and $A$ is total agents.
+        score = 1 - (len(issues) / len(agents))
+        log.info(f"Final Compliance Score: {score:.4f}")
         for issue in issues:
             log.warning(f"  - {issue}")
         log.info("=" * 80)

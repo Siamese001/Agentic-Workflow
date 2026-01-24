@@ -72,6 +72,7 @@ import hashlib
 import json
 import re
 from datetime import datetime, timedelta
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # ============================================================================
 # ENUMS & CONSTANTS
@@ -1375,7 +1376,7 @@ class ASCIIEnforcer:
 # ============================================================================
 
 
-class ProfileAnalysisAgent:
+class ProfileAnalysisAgent(SubatomicTestingMixin):
     """
     NEW v11.6: Hardened archetype classification with 4-archetype standard
     Implements deterministic classification logic from v10.22

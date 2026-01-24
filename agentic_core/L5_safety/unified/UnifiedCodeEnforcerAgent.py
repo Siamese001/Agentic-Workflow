@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 UnifiedCodeEnforcerAgent - Code Sovereignty Enforcement
@@ -95,7 +96,7 @@ class EnforcementConfig:
     protected_layers: set[str] = field(default_factory=lambda: {"L5", "L6"})
 
 
-class UnifiedCodeEnforcerAgent(SovereignBaseAgent):
+class UnifiedCodeEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified code enforcement with sovereignty protection.
 

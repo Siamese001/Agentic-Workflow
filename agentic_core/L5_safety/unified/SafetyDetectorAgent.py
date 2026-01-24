@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from dataclasses import field
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 SafetyDetectorAgent - Safety & Security Detection
@@ -75,7 +76,7 @@ class SafetyConfig:
     block_high_severity: bool = True
 
 
-class SafetyDetectorAgent(SovereignBaseAgent):
+class SafetyDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified safety and security detector.
 

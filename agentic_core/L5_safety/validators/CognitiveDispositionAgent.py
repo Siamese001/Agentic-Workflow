@@ -11,6 +11,7 @@ import json
 import logging
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ class DispositionDecision:
     confidence: float = 0.0
 
 
-class CognitiveDispositionAgent(SovereignBaseAgent):
+class CognitiveDispositionAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """AI-Powered Architectural Triage Agent via Sovereign Gateway."""
 
     def __init__(self, project_root: Path | None = None, confidence_threshold: float = 0.8):

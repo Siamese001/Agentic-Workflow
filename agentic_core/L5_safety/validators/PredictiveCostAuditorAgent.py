@@ -29,6 +29,7 @@ from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -78,7 +79,7 @@ class CostReport:
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
+class PredictiveCostAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
     """
     The Efficiency Guard - Predictive Cost Auditor
 

@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.unified_validator import UnifiedSSOTValidator
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -37,7 +38,7 @@ class SealResult:
     error: str | None = None
 
 
-class DynamicSealAgent(SovereignBaseAgent):
+class DynamicSealAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Sovereign Agent responsible for surgical refactoring of upward dependencies.
 

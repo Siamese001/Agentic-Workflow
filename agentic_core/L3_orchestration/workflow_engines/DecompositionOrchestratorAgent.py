@@ -20,6 +20,7 @@ from dataclasses import field
 import json
 import uuid
 from datetime import datetime
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -50,7 +51,7 @@ class MissionPlan:
 
 
 @dataclass
-class DecompositionOrchestratorAgent(SovereignBaseAgent):
+class DecompositionOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Multi-Agent Task Decomposition Engine.
 

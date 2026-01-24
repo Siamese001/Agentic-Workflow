@@ -18,6 +18,7 @@ from datetime import datetime
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class DiagnosticReport:
     metrics: dict[str, object] = field(default_factory=dict)
 
 
-class DagRuntimeInspectorAgent(SovereignBaseAgent):
+class DagRuntimeInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Diagnostics engine for inspection domain."""
 
     @standard_heal

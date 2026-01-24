@@ -52,6 +52,7 @@ def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
     """Bridge to LocationAgent."""
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
         return LocationAgent(root).validate_file_location(path)
     except ImportError:
@@ -60,7 +61,7 @@ def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
 
 # NAMING FIXED: PromptRegistry → PromptRegistryAgent
 @dataclass
-class PromptRegistryAgent(SovereignBaseAgent):
+class PromptRegistryAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Sovereign registry for all prompt templates and meta-prompts.
 

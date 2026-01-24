@@ -85,7 +85,7 @@ class SchemaRegistry:
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class SchemaEvolverAgent(SovereignBaseAgent, SubAtomicAgent):
+class SchemaEvolverAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
     """
     The Structural Guard - schema Evolution Agent
     Monitors all Pydantic definitions and database schemas.
@@ -141,6 +141,7 @@ class SchemaEvolverAgent(SovereignBaseAgent, SubAtomicAgent):
                 continue
             # Absolute Zero: Use ssot_discovery instead of rglob
             from agentic_core.utils.ssot_discovery import get_python_files
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
             for py_file in get_python_files(schema_path):
                 self._scan_file_for_schemas(str(py_file))

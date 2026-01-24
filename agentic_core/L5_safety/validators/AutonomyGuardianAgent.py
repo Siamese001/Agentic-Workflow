@@ -30,7 +30,7 @@ from agentic_core.base_agents.timeout_decorator import timeout
 log = logging.getLogger(__name__)
 
 
-class AutonomyGuardianAgent(SovereignBaseAgent):
+class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Sovereign guardian for agent autonomy enforcement.
 
@@ -282,6 +282,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
                 agentic_core_dir = self.project_root / "agentic_core"
                 # Phase 6.7: Use ssot_discovery instead of rglob
                 from agentic_core.utils.ssot_discovery import get_agent_files
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
                 agent_paths = list(get_agent_files(agentic_core_dir))
 

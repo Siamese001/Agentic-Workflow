@@ -30,11 +30,12 @@ from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgen
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
-class StructuralEngineerAgent(SovereignBaseAgent, CanonBaseAgent):
+class StructuralEngineerAgent(SubatomicTestingMixin, SovereignBaseAgent, CanonBaseAgent):
     """
     Structural Engineer validates code structure and organization.
 

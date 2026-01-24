@@ -32,6 +32,7 @@ from agentic_core.L2_execution.tool_registry.IntegrityGateExecutorAgent import (
 )
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class PeerIntelligenceResult:
@@ -97,7 +98,7 @@ class ValidationResult:
 
 
 @dataclass
-class PeerIntelligenceAuditorAgent(SovereignBaseAgent):
+class PeerIntelligenceAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     K.2.5 - Multi-Hop RAG Analysis Agent
 

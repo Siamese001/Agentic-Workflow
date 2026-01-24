@@ -40,7 +40,7 @@ def get_sovereign_rag_orchestrator() -> SovereignRagOrchestratorAgent:
 
 
 @dataclass
-class SovereignRagOrchestratorAgent(SovereignBaseAgent, IRagProvider):
+class SovereignRagOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent, IRagProvider):
     """
     Sovereign RAG Orchestrator - L3 Self-Optimizing RAG System.
 
@@ -151,6 +151,7 @@ class SovereignRagOrchestratorAgent(SovereignBaseAgent, IRagProvider):
             """Parse critique."""
             try:
                 from agentic_core.L1_cognition.thought_engine.query_planner import query_planner
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
                 planner_helper = query_planner()
                 cleaned = planner_helper._clean_json_response(raw)

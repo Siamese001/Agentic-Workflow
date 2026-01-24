@@ -202,7 +202,7 @@ from agentic_core.L5_safety.validators.L5Agent import L5Agent
     purpose="Enforces territory/file placement rules",
     territory="templates",
 )
-class LocationAgent(SovereignBaseAgent, L5Agent):
+class LocationAgent(SubatomicTestingMixin, SovereignBaseAgent, L5Agent):
     r"""
     Autonomous agent responsible for territorial integrity.
     Run independently or as first stage in compliance orchestrator.
@@ -1421,6 +1421,7 @@ class LocationAgent(SovereignBaseAgent, L5Agent):
     ) -> None:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
         healer = LocationHealerAgent(project_root=self.project_root)
         return healer._set_naming_final_status(report, heal_actions, semantic_issues)

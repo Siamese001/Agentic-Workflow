@@ -24,9 +24,13 @@ sys.path.insert(0, str(PROJECT_ROOT))
 # Test results tracker
 RESULTS = {
     "test_1_signal_saturation": {"status": "PENDING", "details": []},
-    "test_2_terminal_independence": {"status": "PENDING", "details": []},
+    "test_2_terminal": {"status": "PENDING", "details": []},
     "test_3_depth_cycle": {"status": "PENDING", "details": []},
-    "test_4_mro_integrity": {"status": "PENDING", "details": []},
+    "test_4_mro": {"status": "PENDING", "details": []},
+    "test_5_async_deadlock": {"status": "PENDING", "details": []},
+    "test_6_shared_state": {"status": "PENDING", "details": []},
+    "test_7_max_depth_hard": {"status": "PENDING", "details": []},
+    "test_8_mro_shadowing": {"status": "PENDING", "details": []},
 }
 
 
@@ -127,7 +131,7 @@ def test_2_terminal_independence():
     print("TEST 2: Terminal Independence (Gatekeeper Bypass)")
     print("=" * 80)
 
-    result = RESULTS["test_2_terminal_independence"]
+    result = RESULTS["test_2_terminal"]
 
     try:
         # Set environment variable
@@ -236,27 +240,34 @@ def test_3_depth_constraint_cycle():
                 _call_path: set = None,
                 **kwargs,
             ) -> dict:
-                """Override to add cycle detection."""
+                """Override to add cycle detection with an active recursion guard."""
                 if _call_path is None:
                     _call_path = set()
 
-                agent_name = self.__class__.__name__
-                if agent_name in _call_path:
-                    return {"errors": 1, "cycle_detected": True}
+                # GUARD 1: Depth Hardening
                 if depth > max_depth:
-                    return {"errors": 1, "depth_limited": True}
+                    return {"errors": 1, "depth_limited": True, "final_depth": depth}
 
+                # GUARD 2: Cycle Detection
+                agent_name = self.name  # Use instantiated name
+                if agent_name in _call_path:
+                    return {"errors": 1, "cycle_detected": True, "path": list(_call_path)}
+
+                # Add to path BEFORE the super call
                 _call_path.add(agent_name)
+                
                 try:
+                    # Increment depth to ensure progress
                     return super().heal_repository(
                         dry_run=dry_run,
                         execute=execute,
-                        depth=depth,
+                        depth=depth + 1,  # MUST increment to avoid infinite L0 loop
                         max_depth=max_depth,
                         _call_path=_call_path,
                         **kwargs,
                     )
                 finally:
+                    # Ensure we don't pollute the path for subsequent sibling tests
                     _call_path.discard(agent_name)
 
         cycle_agent = CycleTestAgent()
@@ -286,7 +297,9 @@ def test_3_depth_constraint_cycle():
             result["details"].append("✅ _call_path correctly cleaned up in finally block")
             print(f"\n✅ _call_path cleanup verified: {fresh_path}")
         else:
-            result["details"].append(f"⚠️ _call_path not cleaned: {fresh_path}")
+            result["details"].append(f"❌ FAIL: _call_path leakage detected: {fresh_path}")
+            result["status"] = "FAIL"
+            return result
 
         result["status"] = "PASS"
         result["details"].append("✅ PASS: Depth and cycle constraints working correctly")
@@ -314,7 +327,7 @@ def test_4_mro_integrity():
     print("TEST 4: MRO Integrity Check")
     print("=" * 80)
 
-    result = RESULTS["test_4_mro_integrity"]
+    result = RESULTS["test_4_mro"]
 
     try:
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -381,17 +394,20 @@ def test_4_mro_integrity():
 
 
 def run_all_tests():
-    """Run all verification tests and generate report."""
-    print("\n" + "=" * 80)
+    """Run all tests and return overall status."""
+    print("=" * 80)
     print("GOVERNANCE HARDENING VERIFICATION SUITE")
     print("=" * 80)
-    print(f"Project Root: {PROJECT_ROOT}")
 
     # Run all tests
     test_1_signal_saturation_sweep()
     test_2_terminal_independence()
     test_3_depth_constraint_cycle()
     test_4_mro_integrity()
+    test_5_asynchronous_deadlock_prevention()
+    test_6_shared_state_corruption()
+    test_7_maximum_depth_termination_hard()
+    test_8_mro_shadowing_compliance()
 
     # Generate summary
     print("\n" + "=" * 80)
@@ -429,6 +445,352 @@ def run_all_tests():
     else:
         print("\n⚠️ TESTS INCOMPLETE - REVIEW REQUIRED")
         return 1
+
+
+def test_5_asynchronous_deadlock_prevention():
+    """
+    Test 5: Ensure cycle detection doesn't block the event loop under load.
+    """
+    print("\n" + "=" * 80)
+    print("TEST 5: Asynchronous Deadlock Prevention")
+    print("=" * 80)
+    
+    result = RESULTS["test_5_async_deadlock"]
+    
+    try:
+        import asyncio
+        from agentic_core.L5_safety.validators.context import ValidationContext
+        
+        @dataclass
+        class AsyncCycleTestAgent(SovereignBaseAgent):
+            def __post_init__(self):
+                super().__post_init__()
+                self.name = "AsyncCycleTestAgent"
+
+            def heal_repository(
+                self,
+                dry_run: bool = True,
+                execute: bool = False,
+                depth: int = 0,
+                max_depth: int = 3,
+                _call_path: set = None,
+                **kwargs,
+            ) -> dict:
+                """Async-safe cycle detection."""
+                if _call_path is None:
+                    _call_path = set()
+
+                if depth > max_depth:
+                    return {"errors": 1, "depth_limited": True, "final_depth": depth}
+
+                agent_name = self.name
+                if agent_name in _call_path:
+                    return {"errors": 1, "cycle_detected": True, "path": list(_call_path)}
+
+                _call_path.add(agent_name)
+                try:
+                    return super().heal_repository(
+                        dry_run=dry_run,
+                        execute=execute,
+                        depth=depth + 1,
+                        max_depth=max_depth,
+                        _call_path=_call_path,
+                        **kwargs,
+                    )
+                finally:
+                    _call_path.discard(agent_name)
+
+        async def run_async_test():
+            ctx = ValidationContext()
+            agent = AsyncCycleTestAgent(ctx=ctx)
+            
+            # Simulate high-frequency call volume
+            tasks = [agent.heal_repository(depth=0, max_depth=10, _call_path=set()) for _ in range(50)]
+            
+            start_time = asyncio.get_event_loop().time()
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            end_time = asyncio.get_event_loop().time()
+            
+            execution_time = end_time - start_time
+            
+            result["details"].append(f"✅ Execution time: {execution_time:.2f}s for 50 concurrent calls")
+            result["details"].append(f"✅ All tasks completed: {len(results)} results")
+            
+            if execution_time < 2.0:
+                result["details"].append("✅ Event loop starvation prevented")
+            else:
+                result["details"].append("❌ Event loop starvation detected (too slow)")
+                result["status"] = "FAIL"
+                return result
+                
+            if all(isinstance(r, dict) for r in results):
+                result["details"].append("✅ All tasks returned valid dictionaries")
+            else:
+                result["details"].append("❌ Some tasks failed with unhandled exceptions")
+                result["status"] = "FAIL"
+                return result
+                
+            return result
+
+        # Run the async test
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            result = loop.run_until_complete(run_async_test())
+        finally:
+            loop.close()
+            
+        if result["status"] != "FAIL":
+            result["status"] = "PASS"
+            result["details"].append("✅ PASS: Asynchronous deadlock prevention working")
+            
+    except Exception as e:
+        result["status"] = "ERROR"
+        result["details"].append(f"❌ ERROR: {e}")
+        print(f"\n❌ ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        
+    return result
+
+
+def test_6_shared_state_corruption():
+    """
+    Test 6: Verify that concurrent agents don't corrupt a shared _call_path if passed by reference.
+    """
+    print("\n" + "=" * 80)
+    print("TEST 6: Shared State Corruption Prevention")
+    print("=" * 80)
+    
+    result = RESULTS["test_6_shared_state"]
+    
+    try:
+        from agentic_core.L5_safety.validators.context import ValidationContext
+        
+        @dataclass
+        class SharedStateTestAgent(SovereignBaseAgent):
+            def __post_init__(self):
+                super().__post_init__()
+                self.name = "SharedStateTestAgent"
+
+            def heal_repository(
+                self,
+                dry_run: bool = True,
+                execute: bool = False,
+                depth: int = 0,
+                max_depth: int = 3,
+                _call_path: set = None,
+                **kwargs,
+            ) -> dict:
+                """Shared state safe cycle detection."""
+                if _call_path is None:
+                    _call_path = set()
+
+                if depth > max_depth:
+                    return {"errors": 1, "depth_limited": True, "final_depth": depth}
+
+                agent_name = self.name
+                if agent_name in _call_path:
+                    return {"errors": 1, "cycle_detected": True, "path": list(_call_path)}
+
+                _call_path.add(agent_name)
+                try:
+                    return super().heal_repository(
+                        dry_run=dry_run,
+                        execute=execute,
+                        depth=depth + 1,
+                        max_depth=max_depth,
+                        _call_path=_call_path,
+                        **kwargs,
+                    )
+                finally:
+                    _call_path.discard(agent_name)
+
+        ctx = ValidationContext()
+        agent = SharedStateTestAgent(ctx=ctx)
+        
+        # Test with shared path containing external state
+        shared_path = {"ForeignAgent"}
+        original_shared = shared_path.copy()
+        
+        heal_result = agent.heal_repository(depth=0, max_depth=3, _call_path=shared_path)
+        
+        result["details"].append(f"✅ Original shared path: {original_shared}")
+        result["details"].append(f"✅ Final shared path: {shared_path}")
+        result["details"].append(f"✅ Heal result: {heal_result}")
+        
+        # Verify cleanup
+        if "SharedStateTestAgent" not in shared_path:
+            result["details"].append("✅ Agent properly cleaned up from shared path")
+        else:
+            result["details"].append("❌ Agent failed to clean up from shared path")
+            result["status"] = "FAIL"
+            return result
+            
+        # Verify external state preserved
+        if "ForeignAgent" in shared_path:
+            result["details"].append("✅ External state preserved in shared path")
+        else:
+            result["details"].append("❌ External state corrupted in shared path")
+            result["status"] = "FAIL"
+            return result
+            
+        result["status"] = "PASS"
+        result["details"].append("✅ PASS: Shared state corruption prevented")
+        
+    except Exception as e:
+        result["status"] = "ERROR"
+        result["details"].append(f"❌ ERROR: {e}")
+        print(f"\n❌ ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        
+    return result
+
+
+def test_7_maximum_depth_termination_hard():
+    """
+    Test 7: Force a failure at exactly max_depth + 1.
+    """
+    print("\n" + "=" * 80)
+    print("TEST 7: Maximum Depth Termination (Hard)")
+    print("=" * 80)
+    
+    result = RESULTS["test_7_max_depth_hard"]
+    
+    try:
+        from agentic_core.L5_safety.validators.context import ValidationContext
+        
+        @dataclass
+        class MaxDepthTestAgent(SovereignBaseAgent):
+            def __post_init__(self):
+                super().__post_init__()
+                self.name = "MaxDepthTestAgent"
+
+            def heal_repository(
+                self,
+                dry_run: bool = True,
+                execute: bool = False,
+                depth: int = 0,
+                max_depth: int = 3,
+                _call_path: set = None,
+                **kwargs,
+            ) -> dict:
+                """Strict depth termination."""
+                if _call_path is None:
+                    _call_path = set()
+
+                if depth > max_depth:
+                    return {"errors": 1, "depth_limited": True, "final_depth": depth}
+
+                agent_name = self.name
+                if agent_name in _call_path:
+                    return {"errors": 1, "cycle_detected": True, "path": list(_call_path)}
+
+                _call_path.add(agent_name)
+                try:
+                    return super().heal_repository(
+                        dry_run=dry_run,
+                        execute=execute,
+                        depth=depth + 1,
+                        max_depth=max_depth,
+                        _call_path=_call_path,
+                        **kwargs,
+                    )
+                finally:
+                    _call_path.discard(agent_name)
+
+        ctx = ValidationContext()
+        agent = MaxDepthTestAgent(ctx=ctx)
+        
+        # Test exactly at max_depth + 1
+        result["details"].append("🔧 Testing depth termination at max_depth + 1 (depth=5, max_depth=5)...")
+        heal_result = agent.heal_repository(depth=5, max_depth=5)
+        
+        result["details"].append(f"✅ Heal result: {heal_result}")
+        
+        if heal_result.get("depth_limited") is True:
+            result["details"].append("✅ Correctly terminated at max_depth + 1")
+        else:
+            result["details"].append(f"❌ Failed to terminate at max_depth + 1. Result: {heal_result}")
+            result["status"] = "FAIL"
+            return result
+            
+        # Verify final depth is reported correctly
+        if heal_result.get("final_depth") == 5:
+            result["details"].append("✅ Final depth reported correctly")
+        else:
+            result["details"].append(f"❌ Final depth incorrect: {heal_result.get('final_depth')}")
+            result["status"] = "FAIL"
+            return result
+            
+        result["status"] = "PASS"
+        result["details"].append("✅ PASS: Maximum depth termination working")
+        
+    except Exception as e:
+        result["status"] = "ERROR"
+        result["details"].append(f"❌ ERROR: {e}")
+        print(f"\n❌ ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        
+    return result
+
+
+def test_8_mro_shadowing_compliance():
+    """
+    Test 8: Ensure no base class shadows the 'heal_repository' signature without **kwargs.
+    """
+    print("\n" + "=" * 80)
+    print("TEST 8: MRO Shadowing Compliance")
+    print("=" * 80)
+    
+    result = RESULTS["test_8_mro_shadowing"]
+    
+    try:
+        import inspect
+        
+        # Check SovereignBaseAgent signature
+        sig = inspect.signature(SovereignBaseAgent.heal_repository)
+        result["details"].append(f"✅ SovereignBaseAgent.heal_repository signature: {sig}")
+        
+        if "kwargs" in sig.parameters:
+            result["details"].append("✅ SovereignBaseAgent has **kwargs parameter")
+        else:
+            result["details"].append("❌ SovereignBaseAgent missing **kwargs parameter")
+            result["status"] = "FAIL"
+            return result
+            
+        # Verify MRO doesn't shadow the method incorrectly
+        mro = SovereignBaseAgent.__mro__
+        result["details"].append(f"✅ MRO: {[cls.__name__ for cls in mro]}")
+        
+        # Check each class in MRO for heal_repository method
+        shadowing_classes = []
+        for cls in mro[1:]:  # Skip SovereignBaseAgent itself
+            if hasattr(cls, 'heal_repository'):
+                cls_sig = inspect.signature(cls.heal_repository)
+                if "kwargs" not in cls_sig.parameters:
+                    shadowing_classes.append(cls.__name__)
+        
+        if shadowing_classes:
+            result["details"].append(f"❌ Classes shadowing heal_repository without **kwargs: {shadowing_classes}")
+            result["status"] = "FAIL"
+            return result
+        else:
+            result["details"].append("✅ No classes shadow heal_repository without **kwargs")
+            
+        result["status"] = "PASS"
+        result["details"].append("✅ PASS: MRO shadowing compliance verified")
+        
+    except Exception as e:
+        result["status"] = "ERROR"
+        result["details"].append(f"❌ ERROR: {e}")
+        print(f"\n❌ ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        
+    return result
 
 
 if __name__ == "__main__":

@@ -18,6 +18,7 @@ import logging
 import re
 import warnings
 from datetime import datetime
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -132,7 +133,7 @@ DEFAULT_SPAM_PATTERNS = [
 
 
 @dataclass
-class AppContentValidatorAgent:
+class AppContentValidatorAgent(SubatomicTestingMixin):
     """
     Unified content validation for outreach messages.
 

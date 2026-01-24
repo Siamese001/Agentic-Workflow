@@ -18,10 +18,11 @@ Extracted: 2026-01-06 (Surgical Extraction)
 import asyncio
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class StrategistAgent(SovereignBaseAgent, SubAtomicAgent):
+class StrategistAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
     """
     ROLE: Proactive Architecture. Identifies code smells and proposes refactors.
     """

@@ -22,6 +22,7 @@ except ImportError:
     FileSystemEventHandler = object
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # Mock/Placeholder for internal timeout decorator if not available
@@ -37,7 +38,7 @@ AGENTIC_CORE_DIR = os.environ.get("AGENTIC_CORE_DIR", ".")
 
 
 @dataclass
-class TerritoryChangeHandlerAgent(SovereignBaseAgent, FileSystemEventHandler):
+class TerritoryChangeHandlerAgent(SubatomicTestingMixin, SovereignBaseAgent, FileSystemEventHandler):
     """
     L5 Safety Agent: Watches for territory changes with debouncing.
     Informs the AutonomousRagDaemon when re-indexing is required.

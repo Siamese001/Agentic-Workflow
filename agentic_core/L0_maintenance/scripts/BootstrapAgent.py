@@ -8,10 +8,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
-class BootstrapAgent(L0MaintenanceBaseAgent):
+class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     """
     Autonomous boot integrity agent - Phase 21.1 Normalized.
     Inherits from L0MaintenanceBaseAgent which inherits from SovereignBaseAgent.

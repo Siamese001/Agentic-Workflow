@@ -27,12 +27,13 @@ from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
 
 @dataclass
-class GitSafetyHandlerAgent(SovereignBaseAgent):
+class GitSafetyHandlerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     L5 Safety Layer: Uses GitKraken MCP to manage rollback points
     and hardened commits for Atomic Fission events.

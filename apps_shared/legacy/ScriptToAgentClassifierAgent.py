@@ -39,9 +39,10 @@ from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveE
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class ScriptToAgentClassifierAgent(
+class ScriptToAgentClassifierAgent(SubatomicTestingMixin, 
     L0MaintenanceBaseAgent,
     AutonomyMixin,
     AdaptiveExecutionMixin,

@@ -22,6 +22,7 @@ from data.sdks_mcps.client_wrappers.anthropic_client import (
 )
 from data.sdks_mcps.client_wrappers.openai_client import OpenAIClient, OpenAIConfig
 from data.sdks_mcps.client_wrappers.vertex_client import VertexClient, VertexConfig
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class Provider(Enum):
@@ -57,7 +58,7 @@ class RouterConfig:
     circuit_breaker_threshold: int = 5  # failures before circuit opens
 
 
-class MultiProviderRouterAgent(MCPHardenedMixin):
+class MultiProviderRouterAgent(SubatomicTestingMixin, MCPHardenedMixin):
     """Production router with intelligent provider selection and failover."""
 
     def __init__(self, config: RouterConfig | None = None) -> None:

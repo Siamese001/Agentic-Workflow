@@ -14,11 +14,12 @@ import ast
 from typing import Any
 
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # Sovereign Agent for type enforcement and precision engineering
 @dataclass
-class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
+class TypeMechanicAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
     """
     Type Mechanic Agent - Type hints and code quality enforcement.
 

@@ -32,7 +32,7 @@ Logger: Any = logging.getLogger(__name__)
 
 
 @dataclass
-class MCPGuardianAgent(SovereignBaseAgent):
+class MCPGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     L5 Safety Guardian for MCP integration compliance.
 
@@ -202,6 +202,7 @@ class MCPGuardianAgent(SovereignBaseAgent):
 
         try:
             from agentic_core.L6_observability.telemetry.sovereign_events import emit_event
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
             emit_event(
                 "MCP_GUARDIAN_CRITIQUE",
