@@ -147,8 +147,6 @@ def generate_layer_tests():
 
     # SovereignBaseAgent
     try:
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
         tests = generator.generate_agent_tests(
             L5SafetyBaseAgent, "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent"
         )

@@ -125,7 +125,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
             for file_path in new_files:
                 content = Path(file_path).read_text(encoding="utf-8", errors="ignore")
                 emb = await self.get_embedding(content)
-                path_str = str(file_path).replace('/', '_').replace('\\', '_')
+                path_str = str(file_path).replace("/", "_").replace("\\", "_")
                 vec_id = f"vec_{path_str}"
                 self.index.upsert(
                     vectors=[(vec_id, emb, {"file_path": file_path, "parent": monolith_path})]

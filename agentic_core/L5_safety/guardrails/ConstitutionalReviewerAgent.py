@@ -14,7 +14,6 @@ import json
 
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent  # NEW: Import canonical L5 base class
 
 # ------------------------------------------------------------------
 # REMOVED: Local stub BaseAgent definition (technical debt)

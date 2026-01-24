@@ -45,7 +45,12 @@ def test_tc9_mro_integrity():
     print(f"L2ExecutionBaseAgent MRO: {mro_names}")
 
     # Verify key classes are in MRO in correct order
-    required_order = ["L2ExecutionBaseAgent", "SovereignBaseAgent", "infrastructure_mixin", "object"]
+    required_order = [
+        "L2ExecutionBaseAgent",
+        "SovereignBaseAgent",
+        "infrastructure_mixin",
+        "object",
+    ]
 
     # Find positions of required classes
     positions = {}

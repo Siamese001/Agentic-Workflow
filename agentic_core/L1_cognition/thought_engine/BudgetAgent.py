@@ -11,7 +11,6 @@ Enforces function size and cyclomatic complexity limits.
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
 from typing import Any
@@ -39,7 +38,7 @@ class BudgetAgent(SubAtomicAgent, HealerMixin):
         ctx: ValidationContext for accessing python_files and reporting.
         name: Agent name for logging and reporting.
     """
-    
+
     def __init__(self, context: Any = None, name: str = None, **kwargs: Any):
         """Initialize BudgetAgent with context and optional name."""
         self.ctx = context
@@ -81,5 +80,3 @@ class BudgetAgent(SubAtomicAgent, HealerMixin):
 
         passed, details = self.validate_canon_key(19, self.ctx)
         self.ctx.report(self.name, 19, passed, details)
-
-    

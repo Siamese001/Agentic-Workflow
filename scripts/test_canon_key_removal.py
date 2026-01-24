@@ -39,22 +39,66 @@ class TestCanonKeyRemoval:
 
             # Check key 0 exists and has correct method
             assert 0 in CANON_VALIDATION_REGISTRY, "Key 0 missing from registry"
-            assert (
-                CANON_VALIDATION_REGISTRY[0]["method"]
-                == "check_key_00_no_hardcoded_secrets"
-            ), "Key 0 method mismatch"
+            assert CANON_VALIDATION_REGISTRY[0]["method"] == "check_key_00_no_hardcoded_secrets", (
+                "Key 0 method mismatch"
+            )
 
             # Check key 6 has CRITICAL criticality
             assert 6 in CANON_VALIDATION_REGISTRY, "Key 6 missing from registry"
-            assert (
-                CANON_VALIDATION_REGISTRY[6]["criticality"] == "CRITICAL"
-            ), "Key 6 criticality mismatch"
+            assert CANON_VALIDATION_REGISTRY[6]["criticality"] == "CRITICAL", (
+                "Key 6 criticality mismatch"
+            )
 
             # Check we have all expected keys
             expected_keys = {
-                0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-                20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 36, 37,
-                38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46,
+                47,
+                49,
+                50,
             }
             actual_keys = set(CANON_VALIDATION_REGISTRY.keys())
             missing = expected_keys - actual_keys
@@ -139,15 +183,11 @@ class TestCanonKeyRemoval:
         """Verify CanonBaseAgent is hollowed out."""
         try:
             target_file = (
-                PROJECT_ROOT
-                / "agentic_core"
-                / "L5_safety"
-                / "validators"
-                / "CanonBaseAgent.py"
+                PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "CanonBaseAgent.py"
             )
             assert target_file.exists(), f"CanonBaseAgent.py not found at {target_file}"
 
-            with open(target_file, "r", encoding="utf-8") as f:
+            with open(target_file, encoding="utf-8") as f:
                 content = f.read()
 
             # Check for deprecation notice
@@ -172,14 +212,10 @@ class TestCanonKeyRemoval:
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef) and node.name == "CanonBaseAgent":
                     # Should only have docstring and pass
-                    non_trivial = [
-                        n
-                        for n in node.body
-                        if not isinstance(n, (ast.Pass, ast.Expr))
-                    ]
-                    assert (
-                        len(non_trivial) == 0
-                    ), f"CanonBaseAgent should be hollow, found: {non_trivial}"
+                    non_trivial = [n for n in node.body if not isinstance(n, (ast.Pass, ast.Expr))]
+                    assert len(non_trivial) == 0, (
+                        f"CanonBaseAgent should be hollow, found: {non_trivial}"
+                    )
 
             self.passed += 1
             print("✅ test_verify_canon_base_agent_is_hollow PASSED")
@@ -199,18 +235,15 @@ class TestCanonKeyRemoval:
                 / "agent_autonomy_law.jinja"
             )
             if path.exists():
-                with open(path, "r", encoding="utf-8") as f:
+                with open(path, encoding="utf-8") as f:
                     content = f.read()
 
                 # Should not have old "CANON KEY 51" reference
-                assert (
-                    "CANON KEY 51" not in content
-                ), "Template should not reference 'CANON KEY 51'"
+                assert "CANON KEY 51" not in content, "Template should not reference 'CANON KEY 51'"
 
                 # Should have new Sovereign Validation reference
                 assert (
-                    "Sovereign Validation" in content
-                    or "CANON_VALIDATION_REGISTRY" in content
+                    "Sovereign Validation" in content or "CANON_VALIDATION_REGISTRY" in content
                 ), "Template should reference Sovereign Validation"
 
             self.passed += 1
@@ -240,9 +273,7 @@ class TestCanonKeyRemoval:
                 if not hasattr(agent, method_name):
                     missing_methods.append(f"Key {key_id}: {method_name}")
 
-            assert (
-                len(missing_methods) == 0
-            ), f"Missing methods in HealerMixin: {missing_methods}"
+            assert len(missing_methods) == 0, f"Missing methods in HealerMixin: {missing_methods}"
 
             self.passed += 1
             print("✅ test_healer_mixin_has_all_stub_methods PASSED")

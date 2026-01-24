@@ -32,9 +32,9 @@ class TestPhase1_5_CognitiveMigration:
         try:
             from agentic_core.L1_cognition.thought_engine.BudgetAgent import BudgetAgent
             from agentic_core.base_agents.healer_mixin import HealerMixin
-            
+
             assert issubclass(BudgetAgent, HealerMixin), "BudgetAgent must inherit HealerMixin"
-            
+
             self.passed += 1
             print("✅ test_budget_agent_inherits_mixin PASSED")
         except Exception as e:
@@ -47,19 +47,31 @@ class TestPhase1_5_CognitiveMigration:
         try:
             from agentic_core.L1_cognition.thought_engine.BudgetAgent import BudgetAgent
             from agentic_core.base_agents.healer_mixin import HealerMixin
-            
+
             # Check Mixin has the logic
-            assert hasattr(HealerMixin, "check_key_17_no_large_functions"), "HealerMixin missing check_key_17_no_large_functions"
-            assert hasattr(HealerMixin, "check_key_19_no_complex_functions"), "HealerMixin missing check_key_19_no_complex_functions"
-            
+            assert hasattr(HealerMixin, "check_key_17_no_large_functions"), (
+                "HealerMixin missing check_key_17_no_large_functions"
+            )
+            assert hasattr(HealerMixin, "check_key_19_no_complex_functions"), (
+                "HealerMixin missing check_key_19_no_complex_functions"
+            )
+
             # Check BudgetAgent does NOT override (no local definitions)
-            assert "check_key_17_no_large_functions" not in BudgetAgent.__dict__, "BudgetAgent should not define check_key_17_no_large_functions locally"
-            assert "check_key_19_no_complex_functions" not in BudgetAgent.__dict__, "BudgetAgent should not define check_key_19_no_complex_functions locally"
-            
+            assert "check_key_17_no_large_functions" not in BudgetAgent.__dict__, (
+                "BudgetAgent should not define check_key_17_no_large_functions locally"
+            )
+            assert "check_key_19_no_complex_functions" not in BudgetAgent.__dict__, (
+                "BudgetAgent should not define check_key_19_no_complex_functions locally"
+            )
+
             # Check BudgetAgent doesn't have helper methods either
-            assert "_parse_file_safe" not in BudgetAgent.__dict__, "BudgetAgent should not have _parse_file_safe"
-            assert "_calculate_complexity" not in BudgetAgent.__dict__, "BudgetAgent should not have _calculate_complexity"
-            
+            assert "_parse_file_safe" not in BudgetAgent.__dict__, (
+                "BudgetAgent should not have _parse_file_safe"
+            )
+            assert "_calculate_complexity" not in BudgetAgent.__dict__, (
+                "BudgetAgent should not have _calculate_complexity"
+            )
+
             self.passed += 1
             print("✅ test_logic_moved_to_mixin PASSED")
         except Exception as e:
@@ -71,23 +83,25 @@ class TestPhase1_5_CognitiveMigration:
         """BudgetAgent.execute() must call SSOT router."""
         try:
             from agentic_core.L1_cognition.thought_engine.BudgetAgent import BudgetAgent
-            
+
             # Create mock context with python_files
             mock_ctx = MagicMock()
             mock_ctx.python_files = ["test_file.py"]
-            
-            with patch("agentic_core.base_agents.healer_mixin.HealerMixin.validate_canon_key") as mock_validate:
+
+            with patch(
+                "agentic_core.base_agents.healer_mixin.HealerMixin.validate_canon_key"
+            ) as mock_validate:
                 mock_validate.return_value = (True, [])
-                
+
                 agent = BudgetAgent(context=mock_ctx)
                 agent.execute()
-                
+
                 # Verify calls to Key 17 and 19
                 called_keys = [args[0] for args, _ in mock_validate.call_args_list]
                 assert 17 in called_keys, "BudgetAgent should call validate_canon_key(17)"
                 assert 19 in called_keys, "BudgetAgent should call validate_canon_key(19)"
                 assert len(called_keys) == 2, f"Expected 2 calls, got {len(called_keys)}"
-            
+
             self.passed += 1
             print("✅ test_budget_delegates_to_registry PASSED")
         except Exception as e:
@@ -99,14 +113,14 @@ class TestPhase1_5_CognitiveMigration:
         """Verify the migrated logic in HealerMixin actually works."""
         try:
             from agentic_core.base_agents.healer_mixin import HealerMixin
-            
+
             # Create a mock agent with HealerMixin
             class MockAgent(HealerMixin):
                 def __init__(self):
                     self.logger = MagicMock()
-            
+
             agent = MockAgent()
-            
+
             # Test Key 17 (Large Functions)
             large_function_code = '''def large_function():
     """A very large function."""
@@ -167,14 +181,15 @@ class TestPhase1_5_CognitiveMigration:
     x = 55
     return x
 '''
-            
+
             # Create temporary file for testing
             import tempfile
             import os
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
                 f.write(large_function_code)
                 temp_file = f.name
-            
+
             try:
                 # Test with low limit to trigger violation
                 os.environ["MAX_FUNCTION_LINES"] = "30"
@@ -182,14 +197,16 @@ class TestPhase1_5_CognitiveMigration:
                 passed, violations = agent.check_key_17_no_large_functions(ctx)
                 assert passed is False, "Key 17 should detect large function"
                 assert len(violations) > 0, "Key 17 should report violations"
-                assert "too large" in violations[0], "Violation message should mention function size"
+                assert "too large" in violations[0], (
+                    "Violation message should mention function size"
+                )
             finally:
                 os.unlink(temp_file)
                 if "MAX_FUNCTION_LINES" in os.environ:
                     del os.environ["MAX_FUNCTION_LINES"]
-            
+
             # Test Key 19 (Complex Functions)
-            complex_function_code = '''def complex_function(x):
+            complex_function_code = """def complex_function(x):
     if x > 0:
         if x > 10:
             if x > 100:
@@ -206,12 +223,12 @@ class TestPhase1_5_CognitiveMigration:
             return x * 6
     else:
         return x * 7
-'''
-            
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+"""
+
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
                 f.write(complex_function_code)
                 temp_file = f.name
-            
+
             try:
                 # Test with low complexity limit
                 os.environ["MAX_CYCLOMATIC_COMPLEXITY"] = "5"
@@ -224,7 +241,7 @@ class TestPhase1_5_CognitiveMigration:
                 os.unlink(temp_file)
                 if "MAX_CYCLOMATIC_COMPLEXITY" in os.environ:
                     del os.environ["MAX_CYCLOMATIC_COMPLEXITY"]
-            
+
             self.passed += 1
             print("✅ test_mixin_logic_functionality PASSED")
         except Exception as e:
@@ -236,21 +253,27 @@ class TestPhase1_5_CognitiveMigration:
         """Verify BudgetAgent no longer has AST-related imports."""
         try:
             # Read the BudgetAgent file
-            budget_file = PROJECT_ROOT / "agentic_core" / "L1_cognition" / "thought_engine" / "BudgetAgent.py"
-            with open(budget_file, "r", encoding="utf-8") as f:
+            budget_file = (
+                PROJECT_ROOT / "agentic_core" / "L1_cognition" / "thought_engine" / "BudgetAgent.py"
+            )
+            with open(budget_file, encoding="utf-8") as f:
                 content = f.read()
-            
+
             # Should not import ast or os anymore
             assert "import ast" not in content, "BudgetAgent should not import ast"
             assert "import os" not in content, "BudgetAgent should not import os"
-            
+
             # Parse AST and verify no AST-related methods
             tree = ast.parse(content)
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
                     # Should not have AST parsing functions
-                    assert node.name not in ["_parse_file_safe", "_get_function_line_count", "_calculate_complexity"], f"BudgetAgent should not have {node.name}"
-            
+                    assert node.name not in [
+                        "_parse_file_safe",
+                        "_get_function_line_count",
+                        "_calculate_complexity",
+                    ], f"BudgetAgent should not have {node.name}"
+
             self.passed += 1
             print("✅ test_budget_agent_cleaned_up PASSED")
         except Exception as e:
@@ -261,15 +284,21 @@ class TestPhase1_5_CognitiveMigration:
     def test_registry_still_intact(self):
         """Ensure Phase 1 registry is still intact after Phase 1.5."""
         try:
-            from agentic_core.L5_safety.validators.structure_blueprint import CANON_VALIDATION_REGISTRY
-            
+            from agentic_core.L5_safety.validators.structure_blueprint import (
+                CANON_VALIDATION_REGISTRY,
+            )
+
             # Keys 17 and 19 should still point to correct methods
             assert 17 in CANON_VALIDATION_REGISTRY, "Key 17 missing from registry"
-            assert CANON_VALIDATION_REGISTRY[17]["method"] == "check_key_17_no_large_functions", "Key 17 method mismatch"
-            
+            assert CANON_VALIDATION_REGISTRY[17]["method"] == "check_key_17_no_large_functions", (
+                "Key 17 method mismatch"
+            )
+
             assert 19 in CANON_VALIDATION_REGISTRY, "Key 19 missing from registry"
-            assert CANON_VALIDATION_REGISTRY[19]["method"] == "check_key_19_no_complex_functions", "Key 19 method mismatch"
-            
+            assert CANON_VALIDATION_REGISTRY[19]["method"] == "check_key_19_no_complex_functions", (
+                "Key 19 method mismatch"
+            )
+
             self.passed += 1
             print("✅ test_registry_still_intact PASSED")
         except Exception as e:
