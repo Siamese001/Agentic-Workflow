@@ -163,7 +163,7 @@ except ImportError:
         return decorator
 
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation

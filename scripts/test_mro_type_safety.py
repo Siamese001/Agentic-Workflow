@@ -300,7 +300,7 @@ def test_healer_mixin_heal_result_type():
     """
     print("\n[TEST 8] HealerMixin HealResult Type...")
 
-    from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+    from agentic_core.base_agents.healer_mixin import HealerMixin
 
     try:
 

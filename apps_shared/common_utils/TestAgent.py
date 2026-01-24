@@ -285,7 +285,7 @@ def test_attribute_collision():
     try:
         import inspect
 
-        from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+        from agentic_core.base_agents.healer_mixin import HealerMixin
 
         source = inspect.getsource(HealerMixin.__init__)
 

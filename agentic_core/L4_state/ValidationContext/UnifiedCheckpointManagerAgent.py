@@ -36,7 +36,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L4_state.ValidationContext.L4StateBaseAgent import L4StateBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
@@ -106,7 +106,7 @@ def timeout(seconds: int) -> Callable:
 
 
 @dataclass
-class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
+class UnifiedCheckpointManagerAgent(SovereignBaseAgent):
     """
     Unified L4 Checkpoint Guardian.
 
@@ -118,7 +118,7 @@ class UnifiedCheckpointManagerAgent(L4StateBaseAgent):
         - ASYNC: Non-blocking background saves
         - AUTONOMOUS: Mirroring, drift detection, and auto-recovery
 
-    Inherits from L4StateBaseAgent which provides:
+    Inherits from SovereignBaseAgent which provides:
         - HealerMixin: heal_repository() for self-repair
         - MCPHardenedMixin: Hardened MCP with retry/timeout
         - RedisCacheMixin: Short-term caching

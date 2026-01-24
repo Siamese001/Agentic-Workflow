@@ -17,7 +17,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 import asyncio
 
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 
 
 @dataclass

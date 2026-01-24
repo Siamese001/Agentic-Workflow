@@ -29,7 +29,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # L0DelegationTestingMixin - archived, use stub for backward compatibility
 try:
-    from agentic_core.utils.core_extensions.l0_delegation_testing_mixin import (
+    from agentic_core.base_agents.l0_delegation_testing_mixin import (
         L0DelegationTestingMixin,
     )
 except ImportError:

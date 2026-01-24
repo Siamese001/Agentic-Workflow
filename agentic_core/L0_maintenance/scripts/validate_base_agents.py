@@ -48,7 +48,7 @@ def find_base_agents() -> dict[str, list[dict]]:
 
         # Identify base agents
         # 1. Has "BaseAgent" in name
-        # 2. Or matches canonical pattern (L0MaintenanceBaseAgent, L1CognitionBaseAgent, etc.)
+        # 2. Or matches canonical pattern (L0SovereignBaseAgent, SovereignBaseAgent, etc.)
         # 3. Or in base_class directory
         is_base_agent = (
             "BaseAgent" in class_name

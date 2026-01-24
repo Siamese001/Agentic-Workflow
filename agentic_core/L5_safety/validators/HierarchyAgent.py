@@ -45,7 +45,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     VARIABLE_DEPTH_SUBFOLDERS,
 )
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 # [MISSION AUDIT] Standardized logging for L4 Ledger consumption
 logging.basicConfig(level=logging.INFO)

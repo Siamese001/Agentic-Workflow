@@ -31,7 +31,7 @@ SSOT PRINCIPLE:
 
 from typing import Any, Protocol, runtime_checkable
 
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 
 
 @runtime_checkable

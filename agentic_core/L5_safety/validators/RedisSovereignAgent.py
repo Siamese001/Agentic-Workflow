@@ -21,8 +21,8 @@ import redis
 from redis.connection import ConnectionPool
 
 from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.timeout_decorator import timeout
 
 
 # NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent

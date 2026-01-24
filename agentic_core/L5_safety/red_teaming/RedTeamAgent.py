@@ -21,7 +21,7 @@ from agentic_core.prompt_governance.rendering.SovereignPromptRenderer import (
 from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 # Template content loading for registry
 TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"

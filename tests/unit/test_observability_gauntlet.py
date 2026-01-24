@@ -181,7 +181,7 @@ class test_observability_gauntlet(unittest.TestCase):
 
         SUCCESS CRITERIA: No MemoryError or Timeout
         """
-        from agentic_core.utils.core_extensions.tracing_mixin import TracingMixin
+        from agentic_core.base_agents.tracing_mixin import TracingMixin
 
         class TestAgent(TracingMixin):
             """Test agent for load testing."""

@@ -15,7 +15,7 @@ from typing import Any
 from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 

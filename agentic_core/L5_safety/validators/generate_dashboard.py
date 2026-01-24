@@ -217,7 +217,7 @@ class DashboardGenerator:
                 else:
                     territory = "L2 Execution/Core"
             elif layer.startswith("L1"):
-                # L1 Cognition subcategories - CHECK BASE FIRST (includes L1CognitionBaseAgent)
+                # L1 Cognition subcategories - CHECK BASE FIRST (includes SovereignBaseAgent)
                 if (
                     "BaseAgent" in class_name
                     or class_name == "L1CognitionBaseAgent"
@@ -230,7 +230,7 @@ class DashboardGenerator:
                 else:
                     territory = "L1 Cognition/Core"
             elif layer.startswith("L0"):
-                # L0 Maintenance subcategories - CHECK BASE FIRST (includes L0MaintenanceBaseAgent)
+                # L0 Maintenance subcategories - CHECK BASE FIRST (includes L0SovereignBaseAgent)
                 if (
                     "BaseAgent" in class_name
                     or class_name == "L0MaintenanceBaseAgent"

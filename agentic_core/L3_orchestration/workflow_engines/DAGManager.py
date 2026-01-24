@@ -15,7 +15,7 @@ Renamed: 2026-01-22 (Utility Renaming - Not an Agent)
 
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 
 
 class DAGManager(

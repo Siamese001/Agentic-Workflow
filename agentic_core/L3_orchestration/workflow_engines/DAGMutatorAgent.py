@@ -22,8 +22,8 @@ from typing import TYPE_CHECKING, Any
 import networkx as nx
 from pydantic import BaseModel, Field, validator
 
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.timeout_decorator import timeout
 
 if TYPE_CHECKING:
     pass
@@ -552,7 +552,7 @@ class DAGMutatorAgent(SovereignBaseAgent):
         return metrics
 
 
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 
 # Global instance
 _dag_manager: DAGManagerAgent | None = None

@@ -23,7 +23,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.core_extensions.unified_validator import UnifiedSSOTValidator
+from agentic_core.base_agents.unified_validator import UnifiedSSOTValidator
 
 
 @dataclass

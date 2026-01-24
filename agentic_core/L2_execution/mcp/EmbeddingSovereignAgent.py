@@ -17,7 +17,7 @@ import logging
 import os
 import hashlib
 
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.base_agents.redis_cache_mixin import RedisCacheMixin
 from agentic_core.config.SovereignConfigManager import get_sovereign_config
 
 Logger = logging.getLogger(__name__)

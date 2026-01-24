@@ -37,7 +37,7 @@ from pathlib import Path
 from threading import Lock
 from typing import Any, List, Tuple
 
-from agentic_core.utils.core_extensions.timeout_decorator import List, Tuple, timeout
+from agentic_core.base_agents.timeout_decorator import List, Tuple, timeout
 
 Logger = logging.getLogger(__name__)
 

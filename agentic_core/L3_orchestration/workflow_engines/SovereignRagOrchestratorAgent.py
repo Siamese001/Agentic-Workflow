@@ -17,7 +17,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.core_extensions.decorators import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.L3_orchestration.interfaces.IRagProvider import (
     IRagProvider,
     RagQuery,
@@ -26,7 +26,7 @@ from agentic_core.L3_orchestration.interfaces.IRagProvider import (
 )
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 
 def get_sovereign_rag_orchestrator() -> SovereignRagOrchestratorAgent:

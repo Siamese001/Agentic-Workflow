@@ -21,7 +21,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 

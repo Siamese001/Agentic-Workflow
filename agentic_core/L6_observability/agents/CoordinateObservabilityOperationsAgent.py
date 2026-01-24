@@ -17,8 +17,8 @@ import logging
 import time
 from typing import Any
 
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 

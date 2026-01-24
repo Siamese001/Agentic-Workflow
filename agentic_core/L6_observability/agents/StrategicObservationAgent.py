@@ -8,11 +8,11 @@ from datetime import datetime
 from typing import Any
 
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.L6_observability.L6ObservabilityBaseAgent import L6ObservabilityBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass
-class StrategicObservationAgent(L6ObservabilityBaseAgent):
+class StrategicObservationAgent(SovereignBaseAgent):
     """
     StrategicObservationAgent (L6)
 

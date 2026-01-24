@@ -9,7 +9,7 @@ when the underlying code changes.
 
 Usage:
 
-    class HealerAgent(L2ExecutionBaseAgent):
+    class HealerAgent(SovereignBaseAgent):
         @heal_invalidate_cache("canon:*")  # Invalidate AST caches after heal
         async def heal_repository(self) -> dict:
             # Healing logic...

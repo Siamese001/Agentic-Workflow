@@ -46,30 +46,6 @@ HEAL_RESULT_SCHEMA = {
     "error_message": None,
 }
 
-# Legacy key mappings to canonical keys
-LEGACY_KEY_MAPPINGS = {
-    # violations_found mappings
-    "violations": "violations_found",
-    "issues": "violations_found",
-    "problems": "violations_found",
-    "findings": "violations_found",
-    "count": "violations_found",
-    # violations_fixed mappings
-    "fixed": "violations_fixed",
-    "repaired": "violations_fixed",
-    "healed": "violations_fixed",
-    "resolved": "violations_fixed",
-    "renamed": "violations_fixed",  # Common legacy key
-    "moved": "violations_fixed",
-    "deleted": "violations_fixed",
-    "created": "violations_fixed",
-    # errors mappings
-    "error_count": "errors",
-    "failures": "errors",
-    # skipped mappings
-    "skip_count": "skipped",
-    "ignored": "skipped",
-}
 
 
 def _warn_non_canonical_keys(result: dict[str, Any], agent_name: str) -> None:
@@ -81,11 +57,14 @@ def _warn_non_canonical_keys(result: dict[str, Any], agent_name: str) -> None:
     if not isinstance(result, dict):
         return
 
-    for legacy_key, canonical_key in LEGACY_KEY_MAPPINGS.items():
-        if legacy_key in result and canonical_key not in result:
+    # Define canonical keys for validation
+    canonical_keys = {"violations_found", "violations_fixed", "errors", "skipped", "status", "execution_time_ms", "error_message"}
+    
+    for key in result:
+        if key not in canonical_keys:
             Logger.warning(
-                f"[standard_heal] {agent_name}: Non-canonical key '{legacy_key}' detected. "
-                f"Consider using '{canonical_key}' instead for better schema compliance. "
+                f"[standard_heal] {agent_name}: Non-canonical key '{key}' detected. "
+                f"Consider using canonical keys for better schema compliance. "
                 f"See: agentic_core/L5_safety/validators/decorators.py"
             )
 
@@ -144,14 +123,7 @@ def _normalize_heal_result(
 
     # Handle dict result
     if isinstance(result, dict):
-        # First, map legacy keys to canonical keys
-        for legacy_key, canonical_key in LEGACY_KEY_MAPPINGS.items():
-            if legacy_key in result and canonical_key not in result:
-                value = result[legacy_key]
-                if isinstance(value, int | float):
-                    normalized[canonical_key] = int(value)
-
-        # Then, copy canonical keys directly
+        # Copy canonical keys directly
         for key in HEAL_RESULT_SCHEMA.keys():
             if key in result:
                 normalized[key] = result[key]

@@ -50,7 +50,7 @@ class MissionPlan:
 
 
 @dataclass
-class DecompositionOrchestratorAgent(L3OrchestrationBaseAgent):
+class DecompositionOrchestratorAgent(SovereignBaseAgent):
     """
     Multi-Agent Task Decomposition Engine.
 

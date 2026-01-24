@@ -28,8 +28,8 @@ class SovereignDependencyError(Exception):
     pass
 
 
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.timeout_decorator import timeout
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30

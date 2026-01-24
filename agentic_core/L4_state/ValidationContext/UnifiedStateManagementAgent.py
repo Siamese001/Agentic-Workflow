@@ -33,7 +33,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L4_state.ValidationContext.L4StateBaseAgent import L4StateBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.utils.ssot_discovery import get_data_files
 
@@ -96,7 +96,7 @@ class IntegrityReport:
 
 
 @dataclass
-class UnifiedStateManagementAgent(L4StateBaseAgent):
+class UnifiedStateManagementAgent(SovereignBaseAgent):
     """
     Unified L4 State Controller.
 
@@ -110,7 +110,7 @@ class UnifiedStateManagementAgent(L4StateBaseAgent):
     - Resource synchronization with registry agents
     - Automatic cleanup with configurable retention
 
-    Inherits from L4StateBaseAgent which provides:
+    Inherits from SovereignBaseAgent which provides:
         - HealerMixin: heal_repository() for self-repair
         - MCPHardenedMixin: Hardened MCP with retry/timeout
         - RedisCacheMixin: Short-term caching

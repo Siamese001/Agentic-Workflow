@@ -9,15 +9,15 @@ import random
 from typing import Any
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.utils.core_extensions.subatomic_testing_mixin import (
+from agentic_core.base_agents.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
 from agentic_core.L4_state.ValidationContext.context_propagation_mixin import (
     ContextPropagationMixin,
 )
-from agentic_core.utils.core_extensions.decorators import standard_heal
-from agentic_core.utils.core_extensions.event_emission_mixin import event_emission_mixin
-from agentic_core.utils.core_extensions.redis_cache_mixin import RedisCacheMixin
+from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.event_emission_mixin import event_emission_mixin
+from agentic_core.base_agents.redis_cache_mixin import RedisCacheMixin
 
 
 class SovereignObservabilityAgent(

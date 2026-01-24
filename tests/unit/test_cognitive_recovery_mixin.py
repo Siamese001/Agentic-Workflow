@@ -7,7 +7,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.utils.core_extensions.CognitiveRecoveryMixin import CognitiveRecoveryMixin
+from agentic_core.base_agents.CognitiveRecoveryMixin import CognitiveRecoveryMixin
 
 
 class TestAgent(CognitiveRecoveryMixin):

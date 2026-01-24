@@ -385,7 +385,7 @@ agentic_core/L4_state/memory/
 ├── SemanticCacheManager.py        # [KEEP] Canonical implementation
 └── semantic_cache_mixin.py        # [NEW] Mixin for easy access
 
-agentic_core/archived/
+archives/agentic_core_archived/
 ├── L5_guardrails_SemanticCacheManager.py  # Archived stub
 └── L5_cognition_SemanticCacheManager.py   # Archived stub
 ```
