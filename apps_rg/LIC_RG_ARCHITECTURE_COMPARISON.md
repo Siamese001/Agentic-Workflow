@@ -1,6 +1,6 @@
 # LIC vs RG Architecture Comparison & Alignment Plan
 
-**Generated:** 2026-01-24  
+**Generated:** 2026-01-24
 **Purpose:** Detailed comparison of `apps_lic` and `apps_rg` architectures with implementation plan to align RG with LIC patterns.
 
 ---

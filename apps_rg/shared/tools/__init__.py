@@ -7,17 +7,18 @@ import json
 import logging
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any, Callable, Dict
+from typing import Any, Dict
+from collections.abc import Callable
 
 logger = logging.getLogger("mcp")
 
 _ROOT = Path(__file__).resolve().parent.parent
-_TOOL_CACHE: Dict[str, Any] = {}
-_SCHEMA_CACHE: Dict[str, Any] = {}
-_AGENT_CACHE: Dict[str, Any] = {}
-_CONTEXT_STATE: Dict[str, Any] = {}
+_TOOL_CACHE: dict[str, Any] = {}
+_SCHEMA_CACHE: dict[str, Any] = {}
+_AGENT_CACHE: dict[str, Any] = {}
+_CONTEXT_STATE: dict[str, Any] = {}
 
-_AGENT_SPECS: Dict[str, tuple[str, str]] = {
+_AGENT_SPECS: dict[str, tuple[str, str]] = {
     "SafetyGuardStack": ("stacks_v10_7", "PromptInjectionDetectorAgent"),
     "StrategyStack": ("stacks_v10_7", "ToTStrategistAgent"),
     "RAGStack": ("stacks_v10_7", "RAG_SearchAgent"),
@@ -66,13 +67,15 @@ def get_agent(agent_id: str) -> Any:
     try:
         agent_cls = getattr(module, attr)
     except AttributeError as exc:  # pragma: no cover - misconfiguration guard
-        raise KeyError(f"Module '{module_name}' does not expose '{attr}' for agent '{agent_id}'") from exc
+        raise KeyError(
+            f"Module '{module_name}' does not expose '{attr}' for agent '{agent_id}'"
+        ) from exc
 
     _AGENT_CACHE[agent_id] = agent_cls
     return agent_cls
 
 
-def get_schema(schema_name: str) -> Dict[str, Any]:
+def get_schema(schema_name: str) -> dict[str, Any]:
     """Load and cache schemas declared in the manifest."""
 
     if schema_name not in _SCHEMA_CACHE:
@@ -80,7 +83,7 @@ def get_schema(schema_name: str) -> Dict[str, Any]:
         if not schema_path.is_absolute():
             schema_path = _ROOT / schema_path
         try:
-            with open(schema_path, "r", encoding="utf-8") as handle:
+            with open(schema_path, encoding="utf-8") as handle:
                 _SCHEMA_CACHE[schema_name] = json.load(handle)
         except FileNotFoundError as exc:  # pragma: no cover - defensive fallback
             raise FileNotFoundError(f"Schema '{schema_name}' not found at {schema_path}") from exc
@@ -96,7 +99,7 @@ def sync_context(context: Any, *, scope: str = "default") -> None:
         logger.debug("Failed to sync context for scope '%s': %s", scope, exc)
 
 
-def emit_event(payload: Dict[str, Any]) -> None:
+def emit_event(payload: dict[str, Any]) -> None:
     """Broadcast telemetry events to the MCP runtime."""
 
     logger.info("[MCP] %s", json.dumps(payload, default=str))

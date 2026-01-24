@@ -8,4 +8,4 @@ from apps_rg.engines.hops.hop2_enrichment_engine import DataEnrichmentEngine
 # Legacy alias for backward compatibility
 EnrichmentEngine = DataEnrichmentEngine
 
-__all__ = ['ClerkExtractionEngine', 'DataEnrichmentEngine', 'EnrichmentEngine']
+__all__ = ["ClerkExtractionEngine", "DataEnrichmentEngine", "EnrichmentEngine"]

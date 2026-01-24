@@ -18,15 +18,15 @@ def run_tests():
     print("=" * 70)
     print("PHASE 2 CONFIGURATION & BASE INTEGRATION TESTS")
     print("=" * 70)
-    
+
     from apps_rg.domain.config.schemas import OrchestrationTopology, AgentSpec
     from apps_rg.domain.config.loader import SovereignConfigLoader
     from apps_rg.engines.base.sovereign_context import SovereignContext
     from apps_rg.engines.base.base_resume_engine import BaseRGEngine
-    
+
     passed = 0
     failed = 0
-    
+
     # Test 1: Schema Validation Success
     print("\n[TEST 1] test_schema_validation_success")
     try:
@@ -37,9 +37,9 @@ def run_tests():
                     "name": "AGENT_A",
                     "module_path": "path.to.module",
                     "inputs": [],
-                    "outputs": []
+                    "outputs": [],
                 }
-            }
+            },
         }
         topology = OrchestrationTopology(**data)
         assert topology.phases["PHASE1"] == ["AGENT_A"]
@@ -48,14 +48,11 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 2: Schema Validation Missing Agent
     print("\n[TEST 2] test_schema_validation_missing_agent")
     try:
-        data = {
-            "phases": {"PHASE1": ["GHOST_AGENT"]},
-            "agents": {}
-        }
+        data = {"phases": {"PHASE1": ["GHOST_AGENT"]}, "agents": {}}
         try:
             OrchestrationTopology(**data)
             print("  ❌ FAILED: Expected ValueError")
@@ -66,7 +63,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 3: Agent Spec Defaults
     print("\n[TEST 3] test_agent_spec_defaults")
     try:
@@ -80,7 +77,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 4: Context Integration
     print("\n[TEST 4] test_context_integration")
     try:
@@ -94,7 +91,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 5: Context Record Result
     print("\n[TEST 5] test_context_record_result")
     try:
@@ -107,7 +104,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 6: Context Mission ID
     print("\n[TEST 6] test_context_mission_id")
     try:
@@ -118,7 +115,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 7: Sovereign Loader Default Scaffold
     print("\n[TEST 7] test_sovereign_loader_default_scaffold")
     try:
@@ -132,54 +129,56 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 8: Base Engine Telemetry Wrapper (async)
     print("\n[TEST 8] test_base_engine_telemetry_wrapper")
     try:
+
         async def run_test():
             ctx = SovereignContext()
-            
+
             class TestEngine(BaseRGEngine):
                 async def execute(self):
                     return "DONE"
-                    
+
             engine = TestEngine(ctx)
             result = await engine.run()
-            
+
             assert result == "DONE"
             summary = ctx.trace.get_summary()
             assert summary["total_spans"] == 1
             assert summary["completed"] == 1
-        
+
         asyncio.run(run_test())
         print("  ✅ PASSED")
         passed += 1
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 9: Base Engine Failure Tracking (async)
     print("\n[TEST 9] test_base_engine_failure_tracking")
     try:
+
         async def run_test():
             ctx = SovereignContext()
-            
+
             class FailingEngine(BaseRGEngine):
                 async def execute(self):
                     raise ValueError("Intentional failure")
-                    
+
             engine = FailingEngine(ctx)
-            
+
             try:
                 await engine.run()
                 return False  # Should have raised
             except ValueError:
                 pass
-            
+
             summary = ctx.trace.get_summary()
             assert summary["failures"] == 1
             return True
-        
+
         result = asyncio.run(run_test())
         if result:
             print("  ✅ PASSED")
@@ -190,14 +189,11 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 10: Topology Version
     print("\n[TEST 10] test_topology_version")
     try:
-        data = {
-            "phases": {"P1": ["A1"]},
-            "agents": {"A1": {"name": "A1", "module_path": "test"}}
-        }
+        data = {"phases": {"P1": ["A1"]}, "agents": {"A1": {"name": "A1", "module_path": "test"}}}
         topology = OrchestrationTopology(**data)
         assert topology.version == "2.5.0"
         print("  ✅ PASSED")
@@ -205,12 +201,12 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Summary
     print("\n" + "=" * 70)
     print(f"RESULTS: {passed} passed, {failed} failed")
     print("=" * 70)
-    
+
     if failed == 0:
         print("\n🎉 ALL TESTS PASSED - Phase 2 Configuration & Base Integration is HARDENED")
         return 0

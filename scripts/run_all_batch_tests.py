@@ -10,19 +10,20 @@ from pathlib import Path
 # Add apps_rg to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+
 def run_test_suite(test_file: str) -> tuple[bool, str]:
     """Run a single test suite and return success status."""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Running: {test_file}")
-    print('='*60)
-    
+    print("=" * 60)
+
     result = subprocess.run(
         [sys.executable, "-m", "pytest", test_file, "-v", "--tb=short"],
         capture_output=True,
         text=True,
-        cwd=Path(__file__).parent.parent
+        cwd=Path(__file__).parent.parent,
     )
-    
+
     return result.returncode == 0, result.stdout + result.stderr
 
 
@@ -34,35 +35,35 @@ def main():
         "tests/apps_rg/test_batch_3_generation.py",
         "tests/apps_rg/test_batch_4_refinement_part1.py",
         "tests/apps_rg/test_batch_5_refinement_part2.py",
-        "tests/apps_rg/test_batch_6_safety.py"
+        "tests/apps_rg/test_batch_6_safety.py",
     ]
-    
+
     results = {}
-    
+
     for test_suite in test_suites:
         success, output = run_test_suite(test_suite)
         results[test_suite] = success
-        
+
         if not success:
             print(f"\n❌ FAILED: {test_suite}")
             print(output[-1000:])  # Last 1000 chars
         else:
             print(f"\n✅ PASSED: {test_suite}")
-    
+
     # Summary
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("FINAL SUMMARY")
-    print("="*60)
-    
+    print("=" * 60)
+
     passed = sum(1 for v in results.values() if v)
     total = len(results)
-    
+
     for suite, success in results.items():
         status = "✅ PASS" if success else "❌ FAIL"
         print(f"{status} - {Path(suite).name}")
-    
-    print(f"\nTotal: {passed}/{total} passed ({100*passed/total:.0f}%)")
-    
+
+    print(f"\nTotal: {passed}/{total} passed ({100 * passed / total:.0f}%)")
+
     if passed == total:
         print("\n🎉 ALL BATCH TESTS PASSED!")
         return 0

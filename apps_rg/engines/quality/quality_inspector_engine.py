@@ -4,7 +4,7 @@ Refactored from InspectResumeQuality.py
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List
+from typing import Any
 import logging
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
@@ -20,40 +20,44 @@ class QualityInspectorEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="QUALITY.INSPECTOR")
 
-    async def execute(self, resume_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, resume_data: dict[str, Any]) -> dict[str, Any]:
         """
         Perform deep quality inspection.
         """
         self._mcp_audit("inspection_start")
-        
+
         inspection_results = {
             "grammar_issues": [],
             "formatting_issues": [],
             "content_issues": [],
-            "overall_quality": "pass"
+            "overall_quality": "pass",
         }
-        
+
         # Check grammar patterns
         for section in resume_data.values():
             text = str(section)
-            
+
             # Check for double spaces
             if "  " in text:
                 inspection_results["formatting_issues"].append("Double spaces detected")
-            
+
             # Check for inconsistent capitalization
             if text and text[0].islower():
                 inspection_results["formatting_issues"].append("Section starts with lowercase")
-        
+
         # Determine overall quality
-        total_issues = (len(inspection_results["grammar_issues"]) + 
-                       len(inspection_results["formatting_issues"]) + 
-                       len(inspection_results["content_issues"]))
-        
+        total_issues = (
+            len(inspection_results["grammar_issues"])
+            + len(inspection_results["formatting_issues"])
+            + len(inspection_results["content_issues"])
+        )
+
         if total_issues > 5:
             inspection_results["overall_quality"] = "fail"
-            self.record_fail(f"Quality inspection failed: {total_issues} issues", data=inspection_results)
+            self.record_fail(
+                f"Quality inspection failed: {total_issues} issues", data=inspection_results
+            )
         else:
             self.record_pass(f"Quality inspection passed: {total_issues} minor issues")
-        
+
         return inspection_results

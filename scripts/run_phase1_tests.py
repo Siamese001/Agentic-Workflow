@@ -19,13 +19,13 @@ def run_tests():
     print("=" * 70)
     print("PHASE 1 CORE INFRASTRUCTURE TESTS")
     print("=" * 70)
-    
+
     from apps_rg.shared.core.immutable_buffer import ImmutableStagingBuffer
     from apps_rg.shared.core.trace_registry import TraceRegistry
-    
+
     passed = 0
     failed = 0
-    
+
     # Test 1: Buffer Ghost Mutation Prevention
     print("\n[TEST 1] test_buffer_ghost_mutation_prevention")
     try:
@@ -36,14 +36,16 @@ def run_tests():
         leaked_ref["access_level"] = "hacker"
         leaked_ref["nested"]["param"] = 999
         safe_data = buffer.read("config")
-        assert safe_data["access_level"] == "admin", f"Expected 'admin', got '{safe_data['access_level']}'"
+        assert safe_data["access_level"] == "admin", (
+            f"Expected 'admin', got '{safe_data['access_level']}'"
+        )
         assert safe_data["nested"]["param"] == 1, f"Expected 1, got {safe_data['nested']['param']}"
         print("  ✅ PASSED")
         passed += 1
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 2: Buffer Write Once Locking
     print("\n[TEST 2] test_buffer_write_once_locking")
     try:
@@ -59,7 +61,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 3: Buffer Transaction History
     print("\n[TEST 3] test_buffer_transaction_history")
     try:
@@ -79,7 +81,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 4: Buffer Read Default
     print("\n[TEST 4] test_buffer_read_default")
     try:
@@ -91,7 +93,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 5: Buffer Snapshot Isolation
     print("\n[TEST 5] test_buffer_snapshot_isolation")
     try:
@@ -105,7 +107,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 6: Trace Span Lifecycle
     print("\n[TEST 6] test_trace_span_lifecycle")
     try:
@@ -115,13 +117,15 @@ def run_tests():
         registry.end_span(span, status="SUCCESS")
         summary = registry.get_summary()
         assert summary["total_spans"] == 1, f"Expected 1 span, got {summary['total_spans']}"
-        assert summary["avg_latency_ms"] > 0, f"Expected latency > 0, got {summary['avg_latency_ms']}"
+        assert summary["avg_latency_ms"] > 0, (
+            f"Expected latency > 0, got {summary['avg_latency_ms']}"
+        )
         print("  ✅ PASSED")
         passed += 1
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 7: Trace Span Failure Tracking
     print("\n[TEST 7] test_trace_span_failure_tracking")
     try:
@@ -136,7 +140,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 8: Trace Token Tracking
     print("\n[TEST 8] test_trace_token_tracking")
     try:
@@ -150,7 +154,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 9: Trace Legacy API
     print("\n[TEST 9] test_trace_legacy_api")
     try:
@@ -164,7 +168,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 10: Trace Count By Type
     print("\n[TEST 10] test_trace_count_by_type")
     try:
@@ -179,7 +183,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 11: Trace Get Latest
     print("\n[TEST 11] test_trace_get_latest")
     try:
@@ -194,7 +198,7 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Test 12: Buffer Write Once Legacy API
     print("\n[TEST 12] test_buffer_write_once_legacy_api")
     try:
@@ -207,12 +211,12 @@ def run_tests():
     except Exception as e:
         print(f"  ❌ FAILED: {e}")
         failed += 1
-    
+
     # Summary
     print("\n" + "=" * 70)
     print(f"RESULTS: {passed} passed, {failed} failed")
     print("=" * 70)
-    
+
     if failed == 0:
         print("\n🎉 ALL TESTS PASSED - Phase 1 Core Infrastructure is HARDENED")
         return 0

@@ -43,21 +43,13 @@ class ReasoningToggles(BaseModel):
 def get_toggles(env: str = None) -> ReasoningToggles:
     """Factory to load toggles based on environment."""
     environment = env or os.getenv("RG_ENV", "prod")
-    
+
     if environment == "dev":
         # Dev Mode: More expensive reasoning, loose constraints
-        return ReasoningToggles(
-            tot_branches=5,
-            min_tot_depth=3,
-            strict_mode=False
-        )
+        return ReasoningToggles(tot_branches=5, min_tot_depth=3, strict_mode=False)
     elif environment == "test":
         # Test Mode: Deterministic, fast
-        return ReasoningToggles(
-            use_cot=False,
-            use_reflexion=False,
-            tot_branches=1
-        )
-    
+        return ReasoningToggles(use_cot=False, use_reflexion=False, tot_branches=1)
+
     # Prod Mode: Default
     return ReasoningToggles()

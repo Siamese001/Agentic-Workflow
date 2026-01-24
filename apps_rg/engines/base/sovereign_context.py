@@ -10,7 +10,7 @@ HARDENING: Replaces the legacy 'ctx' dictionary with a type-safe container.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from apps_rg.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_rg.shared.core.trace_registry import TraceRegistry
@@ -23,17 +23,18 @@ class SovereignContext:
     The Single Source of Truth for runtime execution.
     Passed to every engine. Replaces the legacy 'ctx' dictionary.
     """
+
     buffer: ImmutableStagingBuffer = field(default_factory=ImmutableStagingBuffer)
     trace: TraceRegistry = field(default_factory=TraceRegistry)
     toggles: ReasoningToggles = field(default_factory=get_toggles)
-    
+
     # Mission tracking
     mission_id: str = "default"
-    
+
     # Legacy Compatibility (to prevent breaking batch 1-6 immediately)
     # These map old calls to new infra transparently
     signals: set = field(default_factory=set)
-    
+
     def add_signal(self, signal: str) -> None:
         """Add a signal to the context and log it."""
         self.signals.add(signal)
@@ -42,12 +43,10 @@ class SovereignContext:
     def record_result(self, agent: str, passed: bool, details: str, data: Any = None) -> None:
         """Legacy adapter for record_result."""
         status = "SUCCESS" if passed else "FAILURE"
-        self.trace.add_trace(f"agent_{status.lower()}", {
-            "agent": agent,
-            "passed": passed,
-            "details": details
-        })
-        
+        self.trace.add_trace(
+            f"agent_{status.lower()}", {"agent": agent, "passed": passed, "details": details}
+        )
+
         # Writing result to buffer is safer
         if data:
             try:
@@ -58,11 +57,11 @@ class SovereignContext:
     def get_signal_count(self) -> int:
         """Return the number of signals fired."""
         return len(self.signals)
-    
+
     def has_signal(self, signal: str) -> bool:
         """Check if a specific signal has been fired."""
         return signal in self.signals
-    
+
     def clear_signals(self) -> None:
         """Clear all signals (use with caution)."""
         self.signals.clear()

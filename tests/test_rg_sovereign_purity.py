@@ -41,7 +41,9 @@ def test_no_agents_in_tools():
     for filename in _listdir(TOOLS_DIR):
         if filename in exceptions or not filename.endswith(".py"):
             continue
-        assert "Agent" not in filename, f"Tool {filename} violates naming convention (contains 'Agent')"
+        assert "Agent" not in filename, (
+            f"Tool {filename} violates naming convention (contains 'Agent')"
+        )
 
 
 @pytest.mark.usefixtures("disable_path_shield")
@@ -68,9 +70,13 @@ def test_broken_files_quarantined():
 
     for sample_broken in sample_broken_files:
         # Should NOT be in engines
-        assert not _exists(ENGINES_DIR / sample_broken), f"Broken file {sample_broken} was not moved from engines/"
+        assert not _exists(ENGINES_DIR / sample_broken), (
+            f"Broken file {sample_broken} was not moved from engines/"
+        )
         # Should be in quarantine
-        assert _exists(QUARANTINE_DIR / sample_broken), f"Broken file {sample_broken} not found in quarantine"
+        assert _exists(QUARANTINE_DIR / sample_broken), (
+            f"Broken file {sample_broken} not found in quarantine"
+        )
 
 
 @pytest.mark.usefixtures("disable_path_shield")
@@ -86,7 +92,9 @@ def test_types_migrated_with_correct_names():
         "persona_router_types.py",
     ]
     for expected in expected_types:
-        assert _exists(TYPES_DIR / expected), f"Expected type file {expected} not found in domain/types/"
+        assert _exists(TYPES_DIR / expected), (
+            f"Expected type file {expected} not found in domain/types/"
+        )
 
 
 @pytest.mark.usefixtures("disable_path_shield")
@@ -100,7 +108,9 @@ def test_tools_migrated():
         "resume_planner.py",
     ]
     for expected in expected_tools:
-        assert _exists(TOOLS_DIR / expected), f"Expected tool file {expected} not found in shared/tools/"
+        assert _exists(TOOLS_DIR / expected), (
+            f"Expected tool file {expected} not found in shared/tools/"
+        )
 
 
 @pytest.mark.usefixtures("disable_path_shield")
@@ -108,7 +118,9 @@ def test_legacy_archived():
     """Verify legacy test files were archived."""
     expected_legacy = ["test_dashboard.py", "test_large_node.py", "test_ssot_enforcement.py"]
     for expected in expected_legacy:
-        assert _exists(LEGACY_DIR / expected), f"Expected legacy file {expected} not found in legacy/"
+        assert _exists(LEGACY_DIR / expected), (
+            f"Expected legacy file {expected} not found in legacy/"
+        )
 
 
 @pytest.mark.usefixtures("disable_path_shield")
@@ -124,8 +136,10 @@ def test_imports_patched():
             continue
         filepath = ENGINES_DIR / filename
         try:
-            with open(str(filepath), 'r', encoding='utf-8') as f:
+            with open(str(filepath), encoding="utf-8") as f:
                 content = f.read()
-            assert not re.search(regex_old_tools, content), f"File {filename} still has old tool imports"
+            assert not re.search(regex_old_tools, content), (
+                f"File {filename} still has old tool imports"
+            )
         except Exception:
             pass  # Skip files that can't be read

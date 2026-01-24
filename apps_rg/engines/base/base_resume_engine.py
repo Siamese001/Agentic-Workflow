@@ -7,7 +7,7 @@ HARDENING: Updates the Base Class to require SovereignContext and enforce Span T
 
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional, TYPE_CHECKING
+from typing import Any
 import logging
 
 try:
@@ -16,27 +16,35 @@ except ImportError:
     try:
         from agentic_core.utils.core_extensions.mcp_hardened_mixin import MCPHardenedMixin
     except ImportError:
+
         class MCPHardenedMixin:
             def __init__(self, *args, **kwargs):
                 pass
+
             def _mcp_audit(self, *args, **kwargs):
                 pass
+
 
 try:
     from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 except ImportError:
+
     class HealerMixin:
         def __init__(self, *args, **kwargs):
             pass
+
         def heal_repository(self, *args, **kwargs):
-            return {'violations_found': 0, 'violations_fixed': 0, 'errors': 0, 'skipped': 0}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
+
 
 try:
     from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 except ImportError:
+
     class SubatomicTestingMixin:
         def __init__(self, *args, **kwargs):
             pass
+
 
 from apps_rg.domain.knowledge_base import get_node_config, get_prompt
 from apps_rg.engines.base.sovereign_context import SovereignContext
@@ -53,10 +61,10 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
     3. Immutable State Access
     """
 
-    def __init__(self, ctx: SovereignContext, node_id: Optional[str] = None) -> None:
+    def __init__(self, ctx: SovereignContext, node_id: str | None = None) -> None:
         """
         Initialize the engine with SovereignContext and optional knowledge hydration.
-        
+
         Args:
             ctx: The SovereignContext containing buffer, trace, and toggles.
             node_id: The K-Node or Engine ID to pull from the Frozen Knowledge Map.
@@ -65,7 +73,7 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
         self.ctx = ctx
         self.node_id = node_id
         self.name = self.__class__.__name__
-        
+
         # Knowledge Hydration (LIC Standard: No Magic Strings)
         self.config = None
         self.thresholds = {}
@@ -82,7 +90,7 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
     @abstractmethod
     async def execute(self, *args, **kwargs) -> Any:
         """
-        Primary execution logic. 
+        Primary execution logic.
         Must be implemented by all sub-engines.
         """
         pass
@@ -95,9 +103,9 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
         span_id = self.ctx.trace.start_span(
             trace_id=getattr(self.ctx, "mission_id", "default"),
             agent_name=self.name,
-            action="execute"
+            action="execute",
         )
-        
+
         try:
             result = await self.execute(*args, **kwargs)
             self.ctx.trace.end_span(span_id, status="SUCCESS")
@@ -113,19 +121,21 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
         """Retrieve an immutable prompt from the Sovereign Knowledge Base."""
         return get_prompt(prompt_id)
 
-    def record_pass(self, message: str, data: Optional[Dict] = None) -> None:
+    def record_pass(self, message: str, data: dict | None = None) -> None:
         """Standardized result recording for orchestrator visibility."""
         self._mcp_audit("logic_pass", {"msg": message})
         self.ctx.record_result(self.name, passed=True, details=message, data=data)
 
-    def record_fail(self, message: str, data: Optional[Dict] = None, signal: Optional[str] = None) -> None:
+    def record_fail(
+        self, message: str, data: dict | None = None, signal: str | None = None
+    ) -> None:
         """Standardized failure recording with optional signal propagation."""
         self._mcp_audit("logic_fail", {"msg": message, "signal": signal})
         self.ctx.record_result(self.name, passed=False, details=message, data=data)
         if signal:
             self.ctx.add_signal(signal)
 
-    async def call_llm(self, prompt: str, system_message: Optional[str] = None) -> Optional[str]:
+    async def call_llm(self, prompt: str, system_message: str | None = None) -> str | None:
         """
         Hardened LLM invocation with budget tracking and timeout protection.
         Mock LLM call for infrastructure phase.

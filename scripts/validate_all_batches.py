@@ -24,7 +24,6 @@ from apps_rg.engines.refinement.section_ranker_engine import SectionRankerEngine
 from apps_rg.engines.refinement.template_optimizer_engine import TemplateOptimizerEngine
 from apps_rg.engines.safety.void_compliance_engine import VoidComplianceEngine
 from apps_rg.engines.safety.ats_compatibility_engine import ATSCompatibilityEngine
-from apps_rg.domain.knowledge_base import FROZEN_SNAPSHOT
 
 
 def mock_ctx():
@@ -39,20 +38,21 @@ def mock_ctx():
 
 async def test_batch_1():
     """Test Batch 1: Foundation & Command."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BATCH 1: Foundation & Command")
-    print("="*60)
-    
+    print("=" * 60)
+
     tests_passed = 0
     tests_total = 0
-    
+
     # Test 1: Base engine config hydration
     tests_total += 1
     try:
+
         class TestEngine(BaseRGEngine):
-            async def execute(self): 
+            async def execute(self):
                 pass
-        
+
         engine = TestEngine(mock_ctx(), node_id="K.9")
         assert engine.config.id == "K.9"
         assert "count" in engine.thresholds
@@ -60,7 +60,7 @@ async def test_batch_1():
         tests_passed += 1
     except Exception as e:
         print(f"❌ Base engine config hydration: {e}")
-    
+
     # Test 2: Orchestrator HOP tracking
     tests_total += 1
     try:
@@ -74,7 +74,7 @@ async def test_batch_1():
         tests_passed += 1
     except Exception as e:
         print(f"❌ Orchestrator HOP tracking: {e}")
-    
+
     # Test 3: Frozen prompt access
     tests_total += 1
     try:
@@ -85,19 +85,19 @@ async def test_batch_1():
         tests_passed += 1
     except Exception as e:
         print(f"❌ Frozen prompt access: {e}")
-    
+
     return tests_passed, tests_total
 
 
 async def test_batch_2():
     """Test Batch 2: HOP Domain."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BATCH 2: HOP Domain")
-    print("="*60)
-    
+    print("=" * 60)
+
     tests_passed = 0
     tests_total = 0
-    
+
     # Test 1: Clerk metrics extraction
     tests_total += 1
     try:
@@ -110,7 +110,7 @@ async def test_batch_2():
         tests_passed += 1
     except Exception as e:
         print(f"❌ Clerk metrics extraction: {e}")
-    
+
     # Test 2: Enrichment forbidden verbs
     tests_total += 1
     try:
@@ -121,19 +121,19 @@ async def test_batch_2():
         tests_passed += 1
     except Exception as e:
         print(f"❌ Enrichment forbidden verb detection: {e}")
-    
+
     return tests_passed, tests_total
 
 
 async def test_batch_3():
     """Test Batch 3: Generation Domain."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BATCH 3: Generation Domain")
-    print("="*60)
-    
+    print("=" * 60)
+
     tests_passed = 0
     tests_total = 0
-    
+
     # Test 1: K9 word count validation
     tests_total += 1
     try:
@@ -148,7 +148,7 @@ async def test_batch_3():
         tests_passed += 1
     except Exception as e:
         print(f"❌ K9 word count validation: {e}")
-    
+
     # Test 2: Service invoker telemetry
     tests_total += 1
     try:
@@ -161,19 +161,19 @@ async def test_batch_3():
         tests_passed += 1
     except Exception as e:
         print(f"❌ Service invoker telemetry: {e}")
-    
+
     return tests_passed, tests_total
 
 
 async def test_batch_4():
     """Test Batch 4: Refinement Part 1."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BATCH 4: Refinement Part 1")
-    print("="*60)
-    
+    print("=" * 60)
+
     tests_passed = 0
     tests_total = 0
-    
+
     # Test 1: Weight adjustment with signals
     tests_total += 1
     try:
@@ -187,7 +187,7 @@ async def test_batch_4():
         tests_passed += 1
     except Exception as e:
         print(f"❌ Weight adjustment with signals: {e}")
-    
+
     # Test 2: Content optimizer impact scoring
     tests_total += 1
     try:
@@ -203,25 +203,28 @@ async def test_batch_4():
         tests_passed += 1
     except Exception as e:
         print(f"❌ Content optimizer impact scoring: {e}")
-    
+
     return tests_passed, tests_total
 
 
 async def test_batch_5():
     """Test Batch 5: Refinement Part 2."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BATCH 5: Refinement Part 2")
-    print("="*60)
-    
+    print("=" * 60)
+
     tests_passed = 0
     tests_total = 0
-    
+
     # Test 1: Section ranker ordering
     tests_total += 1
     try:
         ctx = mock_ctx()
         engine = SectionRankerEngine(ctx)
-        engine.strategies = {"technical": ["skills", "experience", "education"], "default": ["experience", "education", "skills"]}
+        engine.strategies = {
+            "technical": ["skills", "experience", "education"],
+            "default": ["experience", "education", "skills"],
+        }
         resume = {"education": "BS", "experience": "Dev", "skills": "Python"}
         ordered = await engine.execute(resume, role_type="technical")
         keys = list(ordered.keys())
@@ -230,47 +233,46 @@ async def test_batch_5():
         tests_passed += 1
     except Exception as e:
         print(f"❌ Section ranker ordering: {e}")
-    
+
     # Test 2: Template optimizer detection
     tests_total += 1
     try:
         ctx = mock_ctx()
         engine = TemplateOptimizerEngine(ctx)
         # Use more explicit executive keywords
-        job_type = engine._detect_job_type("Looking for a Vice President to lead the division as Chief Strategy Officer")
+        job_type = engine._detect_job_type(
+            "Looking for a Vice President to lead the division as Chief Strategy Officer"
+        )
         assert job_type == "executive", f"Expected 'executive' but got '{job_type}'"
         print("✅ Template optimizer detection")
         tests_passed += 1
     except Exception as e:
         print(f"❌ Template optimizer detection: {e}")
-    
+
     return tests_passed, tests_total
 
 
 async def test_batch_6():
     """Test Batch 6: Safety Domain."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BATCH 6: Safety Domain")
-    print("="*60)
-    
+    print("=" * 60)
+
     tests_passed = 0
     tests_total = 0
-    
+
     # Test 1: ATS clean pass
     tests_total += 1
     try:
         engine = ATSCompatibilityEngine(mock_ctx())
-        clean_resume = {
-            "experience": [{"company": "A"}],
-            "education": "University"
-        }
+        clean_resume = {"experience": [{"company": "A"}], "education": "University"}
         result = await engine.execute(clean_resume)
         assert result["compatible"] is True
         print("✅ ATS clean pass")
         tests_passed += 1
     except Exception as e:
         print(f"❌ ATS clean pass: {e}")
-    
+
     # Test 2: Void compliance forbidden check
     tests_total += 1
     try:
@@ -281,37 +283,39 @@ async def test_batch_6():
         tests_passed += 1
     except Exception as e:
         print(f"❌ Void compliance forbidden check: {e}")
-    
+
     return tests_passed, tests_total
 
 
 async def main():
     """Run all batch tests."""
     print("\n🛡️ SOVEREIGN V2.5 - 6-BATCH VALIDATION")
-    
+
     all_results = []
-    
+
     all_results.append(await test_batch_1())
     all_results.append(await test_batch_2())
     all_results.append(await test_batch_3())
     all_results.append(await test_batch_4())
     all_results.append(await test_batch_5())
     all_results.append(await test_batch_6())
-    
+
     # Summary
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("FINAL SUMMARY")
-    print("="*60)
-    
+    print("=" * 60)
+
     total_passed = sum(r[0] for r in all_results)
     total_tests = sum(r[1] for r in all_results)
-    
+
     for i, (passed, total) in enumerate(all_results, 1):
         status = "✅" if passed == total else "⚠️"
         print(f"{status} Batch {i}: {passed}/{total} passed")
-    
-    print(f"\nOverall: {total_passed}/{total_tests} tests passed ({100*total_passed/total_tests:.0f}%)")
-    
+
+    print(
+        f"\nOverall: {total_passed}/{total_tests} tests passed ({100 * total_passed / total_tests:.0f}%)"
+    )
+
     if total_passed == total_tests:
         print("\n🎉 ALL BATCH TESTS PASSED!")
         return 0

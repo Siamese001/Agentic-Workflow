@@ -32,9 +32,9 @@ def test_schema_validation_success():
                 "name": "AGENT_A",
                 "module_path": "path.to.module",
                 "inputs": [],
-                "outputs": []
+                "outputs": [],
             }
-        }
+        },
     }
     topology = OrchestrationTopology(**data)
     assert topology.phases["PHASE1"] == ["AGENT_A"]
@@ -42,10 +42,7 @@ def test_schema_validation_success():
 
 def test_schema_validation_missing_agent():
     """Ensure topology fails if phase references unknown agent."""
-    data = {
-        "phases": {"PHASE1": ["GHOST_AGENT"]},
-        "agents": {}
-    }
+    data = {"phases": {"PHASE1": ["GHOST_AGENT"]}, "agents": {}}
     with pytest.raises(ValueError):
         OrchestrationTopology(**data)
 
@@ -64,7 +61,7 @@ def test_context_integration():
     ctx = SovereignContext()
     assert ctx.buffer is not None
     assert ctx.trace is not None
-    
+
     # Test Legacy Adapter
     ctx.add_signal("TEST_SIGNAL")
     assert "TEST_SIGNAL" in ctx.signals
@@ -74,7 +71,7 @@ def test_context_record_result():
     """Verify record_result creates trace entries."""
     ctx = SovereignContext()
     ctx.record_result("TestAgent", True, "Test passed", {"data": 123})
-    
+
     traces = ctx.trace.get_traces()
     assert len(traces) >= 1
 
@@ -89,7 +86,7 @@ def test_sovereign_loader_default_scaffold():
     """Verify loader returns default scaffold when file missing."""
     SovereignConfigLoader.reset()
     topology = SovereignConfigLoader._get_default_scaffold()
-    
+
     assert "HOP1" in topology.phases
     assert "HOP1_CLERK" in topology.agents
     assert topology.agents["HOP1_CLERK"].module_path.startswith("apps_rg")
@@ -99,14 +96,14 @@ def test_sovereign_loader_default_scaffold():
 async def test_base_engine_telemetry_wrapper():
     """Verify engine.run() automatically creates trace spans."""
     ctx = SovereignContext()
-    
+
     class TestEngine(BaseRGEngine):
         async def execute(self):
             return "DONE"
-            
+
     engine = TestEngine(ctx)
     result = await engine.run()
-    
+
     assert result == "DONE"
     summary = ctx.trace.get_summary()
     assert summary["total_spans"] == 1
@@ -117,26 +114,23 @@ async def test_base_engine_telemetry_wrapper():
 async def test_base_engine_failure_tracking():
     """Verify engine.run() tracks failures correctly."""
     ctx = SovereignContext()
-    
+
     class FailingEngine(BaseRGEngine):
         async def execute(self):
             raise ValueError("Intentional failure")
-            
+
     engine = FailingEngine(ctx)
-    
+
     with pytest.raises(ValueError):
         await engine.run()
-    
+
     summary = ctx.trace.get_summary()
     assert summary["failures"] == 1
 
 
 def test_topology_version():
     """Verify topology has version field."""
-    data = {
-        "phases": {"P1": ["A1"]},
-        "agents": {"A1": {"name": "A1", "module_path": "test"}}
-    }
+    data = {"phases": {"P1": ["A1"]}, "agents": {"A1": {"name": "A1", "module_path": "test"}}}
     topology = OrchestrationTopology(**data)
     assert topology.version == "2.5.0"
 

@@ -20,10 +20,10 @@ async def test_weight_adjustment_ats_signal():
     ctx = MagicMock()
     ctx.signals = {"ATS_FAILURE"}
     engine = WeightAdjustmentEngine(ctx)
-    
+
     data = {"skills": "Python, Java", "education": "BS CS"}
     result = await engine.execute(data)
-    
+
     assert result["skills"]["applied_weight"] == 1.25
     assert result["education"]["applied_weight"] == 1.0
 
@@ -33,16 +33,16 @@ async def test_content_optimizer_impact_sorting():
     """EDGE CASE: Ensure quantified bullets are ranked higher than generic ones."""
     ctx = MagicMock()
     engine = ContentOptimizerEngine(ctx)
-    
+
     bullets = [
         {"bullet_text": "Managed a team.", "quantified_metrics": []},
         {"bullet_text": "Increased sales by 50%.", "quantified_metrics": ["50%"]},
-        {"bullet_text": "Led a project.", "quantified_metrics": []}
+        {"bullet_text": "Led a project.", "quantified_metrics": []},
     ]
-    
+
     section = {"bullets": bullets}
     optimized = await engine.execute([section])
-    
+
     # "Increased sales" should be at index 0
     assert "50%" in optimized[0]["bullets"][0]["bullet_text"]
     # "Led" (power verb) should be at index 1
@@ -55,7 +55,7 @@ async def test_weight_engine_no_signal_neutrality():
     ctx = MagicMock()
     ctx.signals = set()
     engine = WeightAdjustmentEngine(ctx)
-    
+
     data = {"experience": "..."}
     result = await engine.execute(data)
     assert result["experience"]["applied_weight"] == 1.0
@@ -67,10 +67,10 @@ async def test_weight_adjustment_quality_signal():
     ctx = MagicMock()
     ctx.signals = {"QUALITY_FAILURE"}
     engine = WeightAdjustmentEngine(ctx)
-    
+
     data = {"experience": "Work history", "skills": "Tech skills"}
     result = await engine.execute(data)
-    
+
     assert result["experience"]["applied_weight"] == 1.30
 
 
@@ -79,11 +79,11 @@ async def test_content_optimizer_power_verb_scoring():
     """Verify power verbs increase impact score."""
     ctx = MagicMock()
     engine = ContentOptimizerEngine(ctx)
-    
+
     bullet_with_power = {"bullet_text": "Led strategic initiatives", "quantified_metrics": []}
     bullet_generic = {"bullet_text": "Worked on projects", "quantified_metrics": []}
-    
+
     score_power = engine._calculate_impact_score(bullet_with_power)
     score_generic = engine._calculate_impact_score(bullet_generic)
-    
+
     assert score_power > score_generic

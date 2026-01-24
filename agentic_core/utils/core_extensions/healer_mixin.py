@@ -38,7 +38,7 @@ import logging
 import time
 from ast import parse, unparse
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Optional, Set, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 
 # Lazy import to break circular dependency
 if TYPE_CHECKING:
@@ -417,7 +417,7 @@ class HealerMixin(instructional_injection_mixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None,
+        _call_path: set[str] | None = None,
         **kwargs,  # Essential for dynamic orchestrator calls
     ) -> HealResult:
         """

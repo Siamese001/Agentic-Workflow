@@ -21,7 +21,7 @@ MRO HARDENING:
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, Set
+from typing import Any
 
 from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
 
@@ -76,8 +76,8 @@ class SovereignBaseAgent(
 
     # Defensive: Pre-declare state containers to prevent Mixin AttributeErrors
     # These are initialized as dataclass fields so they exist BEFORE __post_init__
-    _state: Dict[str, Any] = field(default_factory=dict)
-    _call_path: Set[str] = field(default_factory=set)
+    _state: dict[str, Any] = field(default_factory=dict)
+    _call_path: set[str] = field(default_factory=set)
 
     def __post_init__(self) -> None:
         """

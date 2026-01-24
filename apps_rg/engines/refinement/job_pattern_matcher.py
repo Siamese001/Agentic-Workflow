@@ -4,7 +4,7 @@ Refactored from match_job_patterns.py
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List
+from typing import Any
 import logging
 import re
 
@@ -21,45 +21,45 @@ class JobPatternMatcher(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="REFINE.PATTERN_MATCHER")
 
-    async def execute(self, job_description: str) -> Dict[str, Any]:
+    async def execute(self, job_description: str) -> dict[str, Any]:
         """
         Extract patterns from job description.
         """
         self._mcp_audit("pattern_matching_start")
-        
+
         patterns = {
             "technical_skills": self._extract_technical_skills(job_description),
             "soft_skills": self._extract_soft_skills(job_description),
             "experience_level": self._extract_experience_level(job_description),
-            "certifications": self._extract_certifications(job_description)
+            "certifications": self._extract_certifications(job_description),
         }
-        
+
         self.record_pass("Pattern matching complete", data=patterns)
         return patterns
-    
-    def _extract_technical_skills(self, text: str) -> List[str]:
+
+    def _extract_technical_skills(self, text: str) -> list[str]:
         """Extract technical skill mentions."""
         tech_patterns = [
-            r'\b(Python|Java|JavaScript|C\+\+|Go|Rust)\b',
-            r'\b(AWS|Azure|GCP|Docker|Kubernetes)\b',
-            r'\b(SQL|NoSQL|PostgreSQL|MongoDB)\b'
+            r"\b(Python|Java|JavaScript|C\+\+|Go|Rust)\b",
+            r"\b(AWS|Azure|GCP|Docker|Kubernetes)\b",
+            r"\b(SQL|NoSQL|PostgreSQL|MongoDB)\b",
         ]
-        
+
         skills = []
         for pattern in tech_patterns:
             skills.extend(re.findall(pattern, text, re.IGNORECASE))
-        
+
         return list(set(skills))
-    
-    def _extract_soft_skills(self, text: str) -> List[str]:
+
+    def _extract_soft_skills(self, text: str) -> list[str]:
         """Extract soft skill mentions."""
         soft_keywords = ["leadership", "communication", "collaboration", "problem-solving"]
         return [kw for kw in soft_keywords if kw in text.lower()]
-    
+
     def _extract_experience_level(self, text: str) -> str:
         """Determine required experience level."""
-        if re.search(r'\b(\d+)\+?\s*years?\b', text):
-            match = re.search(r'\b(\d+)\+?\s*years?\b', text)
+        if re.search(r"\b(\d+)\+?\s*years?\b", text):
+            match = re.search(r"\b(\d+)\+?\s*years?\b", text)
             years = int(match.group(1))
             if years >= 10:
                 return "senior"
@@ -68,15 +68,13 @@ class JobPatternMatcher(BaseRGEngine):
             else:
                 return "junior"
         return "unknown"
-    
-    def _extract_certifications(self, text: str) -> List[str]:
+
+    def _extract_certifications(self, text: str) -> list[str]:
         """Extract certification mentions."""
-        cert_patterns = [
-            r'\b(AWS Certified|Azure Certified|PMP|CISSP)\b'
-        ]
-        
+        cert_patterns = [r"\b(AWS Certified|Azure Certified|PMP|CISSP)\b"]
+
         certs = []
         for pattern in cert_patterns:
             certs.extend(re.findall(pattern, text, re.IGNORECASE))
-        
+
         return list(set(certs))
