@@ -10,7 +10,30 @@ CONSOLIDATED VERSION: Reduced redundancy while preserving all information.
 import os
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Final, List
+
+# CANONICAL BLUEPRINT: Enforces V2.5 Structure
+CANON_VALIDATION_REGISTRY: Final[Dict[str, List[str]]] = {
+    "required_dirs": [
+        "agentic_core",
+        "agentic_core/base_agents",
+        "agentic_core/domain",
+        "agentic_core/L5_safety",
+        "apps_lic/engines",
+        "apps_lic/shared/core",
+        "apps_rg/engines",
+        "apps_rg/shared/core",
+    ],
+    "forbidden_patterns": [
+        "apps_shared/base_agents", # EVICTED
+        "agentic_core/utils/core_extensions", # EVICTED
+    ],
+    "mandatory_files": [
+        "agentic_core/domain/exceptions.py",
+        "apps_lic/shared/core/agent_base.py",
+        "apps_rg/shared/core/agent_base.py",
+    ]
+}
 
 SOVEREIGN_REGISTRY: Any = {
     "agentic_core": {
@@ -3196,7 +3219,7 @@ SEMANTIC_L2_REGISTRY: Any = semantic_l2_registry
 # Extracted from legacy CanonBaseAgent.py (2026-01-24)
 # =============================================================================
 
-CANON_VALIDATION_REGISTRY: dict[int, dict[str, Any]] = {
+SAFETY_VALIDATION_REGISTRY: dict[int, dict[str, Any]] = {
     # SAFETY (Ported from SafetyInspectorAgent)
     0: {"method": "check_key_00_no_hardcoded_secrets", "layer": "L5", "criticality": "HIGH"},
     1: {"method": "check_key_01_no_todo_fixme", "layer": "L5", "criticality": "MEDIUM"},

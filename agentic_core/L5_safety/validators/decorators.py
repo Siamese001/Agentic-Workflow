@@ -203,11 +203,13 @@ def standard_heal(func: F) -> F:
     1. Input Normalization: Ensures dry_run and execute args exist with safe defaults
     2. Output Normalization: Converts legacy dicts to canonical HealResult schema
     3. Error Containment: Catches crashes and returns valid HealResult with status='ERROR'
+    
+    UPDATED: Supports Phase 20 HealerMixin signature (depth, _call_path).
 
     Usage:
         class MyAgent:
             @standard_heal
-            def heal_repository(self, dry_run=True, execute=False, **kwargs):
+            def heal_repository(self, dry_run=True, execute=False, depth=0, _call_path=None, **kwargs):
                 # Your healing logic
                 return {"renamed": 5}  # Will be normalized to {"violations_fixed": 5, ...}
 
@@ -227,13 +229,18 @@ def standard_heal(func: F) -> F:
             # Input normalization
             dry_run, execute, remaining_kwargs = _normalize_heal_inputs(kwargs)
 
+            # Extract Phase 20 signature parameters with defaults
+            depth = remaining_kwargs.pop("depth", 0)
+            _call_path = remaining_kwargs.pop("_call_path", None)
+
             Logger.debug(
                 f"[standard_heal] {agent_name}.{func.__name__} "
-                f"(dry_run={dry_run}, execute={execute})"
+                f"(dry_run={dry_run}, execute={execute}, depth={depth})"
             )
 
-            # Call the actual method
-            result = func(self, *args, dry_run=dry_run, execute=execute, **remaining_kwargs)
+            # Call the actual method with Phase 20 signature
+            result = func(self, *args, dry_run=dry_run, execute=execute, 
+                         depth=depth, _call_path=_call_path, **remaining_kwargs)
 
             # Output normalization (pass agent_name for warning messages)
             execution_time_ms = (time.time() - start_time) * 1000
@@ -275,11 +282,13 @@ def standard_heal_async(func: F) -> F:
     Async version of @standard_heal decorator.
 
     Provides the same standardization for async heal_repository methods.
+    
+    UPDATED: Supports Phase 20 HealerMixin signature (depth, _call_path).
 
     Usage:
         class MyAgent:
             @standard_heal_async
-            async def heal_repository(self, dry_run=True, execute=False, **kwargs):
+            async def heal_repository(self, dry_run=True, execute=False, depth=0, _call_path=None, **kwargs):
                 # Your async healing logic
                 return {"renamed": 5}
     """
@@ -293,13 +302,18 @@ def standard_heal_async(func: F) -> F:
             # Input normalization
             dry_run, execute, remaining_kwargs = _normalize_heal_inputs(kwargs)
 
+            # Extract Phase 20 signature parameters with defaults
+            depth = remaining_kwargs.pop("depth", 0)
+            _call_path = remaining_kwargs.pop("_call_path", None)
+
             Logger.debug(
                 f"[standard_heal_async] {agent_name}.{func.__name__} "
-                f"(dry_run={dry_run}, execute={execute})"
+                f"(dry_run={dry_run}, execute={execute}, depth={depth})"
             )
 
-            # Call the actual async method
-            result = await func(self, *args, dry_run=dry_run, execute=execute, **remaining_kwargs)
+            # Call the actual async method with Phase 20 signature
+            result = await func(self, *args, dry_run=dry_run, execute=execute, 
+                               depth=depth, _call_path=_call_path, **remaining_kwargs)
 
             # Output normalization (pass agent_name for warning messages)
             execution_time_ms = (time.time() - start_time) * 1000

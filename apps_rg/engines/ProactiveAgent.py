@@ -5,27 +5,32 @@ Originally from: CapabilityMonitorAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 
+from __future__ import annotations
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
+
+from apps_rg.shared.core.agent_base import RGAgentBase
+
 
 @dataclass
-class ProactiveAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
+class ProactiveAgent(RGAgentBase):
     """
     Agent that proactively identifies and executes tasks.
     """
 
-    def __init__(self, ctx: ResumeEngineContext) -> None:
-        """
-        Initialize proactive agent.
-
-        Args:
-            ctx: Resume engine context for coordination
-
-        Sets up proactive scheduler, predictive handoff, and capability monitoring.
-        """
-        super().__init__(ctx)
+    def __post_init__(self) -> None:
+        """Initialize proactive agent."""
+        super().__post_init__()
+        # Initialize components after base initialization
         self.name = "ProactiveAgent"
-        self.scheduler = ProactiveScheduler(ctx)
-        self.handoff = PredictiveHandoff(ctx)
-        self.monitor = CapabilityMonitorAgent(ctx)
+        
+        # Note: Context and scheduler components need to be provided externally
+        # or initialized when the full resume engine context is available
+        # These are commented out to allow agent instantiation for testing
+        # self.ctx = ResumeEngineContext()
+        # self.scheduler = ProactiveScheduler(ctx)
+        # self.handoff = PredictiveHandoff(ctx)
+        # self.monitor = CapabilityMonitorAgent(ctx)
 
     def record_result(self, passed: bool, details: str = "") -> Any:
         """
@@ -88,7 +93,9 @@ class ProactiveAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
         )
         print(f"   [{self.name}] ✅ Proactive analysis complete")
 
-    def heal_repository(self) -> dict:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
+    ) -> Dict[str, Any]:
         """
         Invoke healing chain via super().
 

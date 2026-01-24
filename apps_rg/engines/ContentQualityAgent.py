@@ -13,12 +13,17 @@ This module contains all specialized agents for autonomous resume generation:
 - RgReflectionAgent: Learns from execution
 """
 
+from __future__ import annotations
 import json
 import re
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
+
+from apps_rg.shared.core.agent_base import RGAgentBase
 
 
 @dataclass
-class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
+class ContentQualityAgent(RGAgentBase):
     """
     Validates resume content quality.
 
@@ -69,7 +74,7 @@ class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
             self.add_signal("QUALITY_FAILURE")
             return
 
-        issues: list = []
+        issues: List[str] = []
 
         # Check each section
         for section_name, content in resume.items():
@@ -123,8 +128,8 @@ class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
         return str(content)
 
     def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, int]:
+        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
+    ) -> Dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -139,7 +144,7 @@ class ContentQualityAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
         return super().heal_repository()
 
 
-class TestPilot(ResumeAgent):
+class TestPilot(RGAgentBase):
     """
     Runs validation tests on the generated resume.
 
@@ -148,6 +153,10 @@ class TestPilot(ResumeAgent):
     - Content validation
     - Integration checks
     """
+
+    def __post_init__(self) -> None:
+        """Initialize test pilot agent."""
+        super().__post_init__()
 
     async def execute(self) -> None:
         self.log("Running validation tests...")

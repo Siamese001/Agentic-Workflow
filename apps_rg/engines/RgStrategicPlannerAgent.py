@@ -5,9 +5,15 @@ Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 
+from __future__ import annotations
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
+
+from apps_rg.shared.core.agent_base import RGAgentBase
+
 
 @dataclass
-class RgStrategicPlannerAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
+class RgStrategicPlannerAgent(RGAgentBase):
     """
     Plans execution strategy based on signals and state.
 
@@ -17,6 +23,10 @@ class RgStrategicPlannerAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMix
     - Modified sections
     - Blast radius
     """
+
+    def __post_init__(self) -> None:
+        """Initialize strategic planner agent."""
+        super().__post_init__()
 
     async def execute(self) -> None:
         self.log("Formulating strategic plan...")

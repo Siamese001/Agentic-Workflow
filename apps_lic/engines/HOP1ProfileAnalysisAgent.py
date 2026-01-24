@@ -7,6 +7,7 @@ Implements mandatory LIC 7 Entrance Gates and CXO Precedence Rules.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
 from apps_lic.shared.core.agent_base import LICAgentBase
@@ -15,7 +16,8 @@ from apps_lic.shared.core.trace_registry import TraceRegistry
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class HOP1ProfileAnalysisAgent(SubatomicTestingMixin, LICAgentBase):
+@dataclass
+class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
     """
     LIC Sovereign Gatekeeper.
 
@@ -25,6 +27,12 @@ class HOP1ProfileAnalysisAgent(SubatomicTestingMixin, LICAgentBase):
     - Logic: Gate Validation -> CXO Precedence -> Heuristic Classification
     - Output: 'hop1_analysis' (Dict) to ImmutableStagingBuffer
     """
+
+    def __post_init__(self) -> None:
+        """
+        Initialize after dataclass construction.
+        """
+        super().__post_init__()
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """

@@ -1,90 +1,39 @@
 """
-LIC Agent Base Class.
-
-Defines the standard interface for all LIC Sovereign Architecture agents.
-Enforces configuration loading, immutable state interaction, and automatic tracing.
+apps_lic/shared/core/agent_base.py - LIC Sovereign Bridge
 """
-
 from __future__ import annotations
+from dataclasses import dataclass, field
+from typing import Any, Dict, Final, Optional
+from pathlib import Path
 
-from abc import ABC, abstractmethod
-from typing import Any
-
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+# CORE SOCKETING: Align with Phase 20 Hardened Standards
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.healer_mixin import HealerMixin
-from apps_lic.domain.config.loader import load_agent_specs
-from apps_lic.domain.config.schemas import AgentSpecs
-from apps_lic.shared.reasoning.toggles import ReasoningToggles
-from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.trace_registry import TraceRegistry
 
-
-class LICAgentBase(MCPHardenedMixin, HealerMixin, ABC):
+@dataclass
+class LICAgentBase(SovereignBaseAgent, HealerMixin):
     """
-    Abstract base class for LIC Sovereign Architecture Agents.
-
-    Responsibilities:
-    1. Auto-load configuration & Toggles.
-    2. Enforce standard execution signature.
-    3. Manage automatic tracing (Start/End/Error).
-    4. Provide MCP hardening and Self-Healing capabilities.
+    LICAgentBase: Sovereign Foundation for 'Local Intelligence' (LIC).
+    RETROFITTED: Aligned with Phase 20 Hardened Core (@dataclass compliant).
     """
+    # Domain-specific LIC configuration
+    domain_root: Path = field(default_factory=lambda: Path("apps_lic"))
+    _lic_version: Final[str] = "2.5.0-hardened"
 
-    def __init__(self, llm_client: Any | None = None) -> None:
+    def __post_init__(self) -> None:
         """
-        Initialize base components.
-
-        Args:
-            llm_client: Optional LLM provider. If None, agent runs in Heuristic-Only mode.
+        Initialize LIC capabilities after Core hardening.
         """
-        super().__init__()
-        # Auto-load configuration singleton
-        self.config: AgentSpecs = load_agent_specs()
-        # Initialize default reasoning toggles
-        self.toggles: ReasoningToggles = ReasoningToggles()
-        self.llm = llm_client
-
-    def run_phase(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
-        """
-        Public entry point for the agent phase.
-        Wraps the core logic with Tracing and Error Handling.
-
-        Args:
-            buffer: The shared immutable state.
-            registry: The audit log for execution tracing.
-
-        Raises:
-            RuntimeError: If the agent fails after healing attempts.
-        """
-        agent_name = self.__class__.__name__
-
-        try:
-            # 1. Start Trace
-            registry.add_trace("PHASE_START", {"agent": agent_name})
-
-            # 2. Execute Core Logic (Abstract)
-            self._process(buffer, registry)
-
-            # 3. End Trace
-            registry.add_trace("PHASE_COMPLETE", {"agent": agent_name})
-
-        except Exception as e:
-            # 4. Error Trace & Healing
-            registry.add_trace("PHASE_ERROR", {"agent": agent_name, "error": str(e)})
-
-            # Attempt standard healing via mixin (simulated here if mixin usage varies)
-            # In a real scenario, handle_error might retry _process
-            raise RuntimeError(f"{agent_name} execution failed") from e
-
-    @abstractmethod
-    def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
-        """
-        Core logic implementation.
-
-        Must be implemented by subclasses.
-
-        Args:
-            buffer: Read/Write access to the immutable buffer.
-            registry: Registry for adding granular debug traces.
-        """
-        pass
+        # CRITICAL: Trigger Core Security Validation
+        super().__post_init__()
+        
+        # LIC Domain Integrity Check
+        if not self.domain_root.exists():
+            self.domain_root.mkdir(parents=True, exist_ok=True)
+            
+    def get_lic_context(self) -> Dict[str, Any]:
+        return {
+            "domain": "apps_lic",
+            "version": self._lic_version,
+            "capabilities": self.get_sovereign_capabilities()
+        }

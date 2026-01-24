@@ -7,7 +7,7 @@ Handles persistence of workflow state to disk/storage.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -21,7 +21,7 @@ class ManifestManager(MCPHardenedMixin, HealerMixin):
     Manages loading and saving of workflow manifests (checkpoints).
     """
 
-    base_path: str | Path
+    base_path: str | Path = field(default_factory=lambda: Path("./manifests"))
 
     def __post_init__(self) -> None:
         super().__init__()

@@ -5,9 +5,15 @@ Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 
+from __future__ import annotations
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
+
+from apps_rg.shared.core.agent_base import RGAgentBase
+
 
 @dataclass
-class RgReflectionAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
+class RgReflectionAgent(RGAgentBase):
     """
     Learns from execution and records insights.
 
@@ -16,6 +22,10 @@ class RgReflectionAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
     - What failed
     - Patterns to remember
     """
+
+    def __post_init__(self) -> None:
+        """Initialize reflection agent."""
+        super().__post_init__()
 
     async def execute(self) -> None:
         """
@@ -32,7 +42,7 @@ class RgReflectionAgent(SubatomicTestingMixin, ResumeAgent, MCPHardenedMixin):
         self.log("Reflecting on execution...")
 
         # Gather insights
-        insights: dict = {
+        insights: Dict[str, Any] = {
             "cycle": self.ctx.current_cycle,
             "signals_at_end": list(self.ctx.signals),
             "failed_agents": list(self.ctx.get_failed_results().keys()),

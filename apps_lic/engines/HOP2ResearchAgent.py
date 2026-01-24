@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
-from typing import Any
+from dataclasses import dataclass, field
+from typing import Any, Optional
 
 # LIC Sovereign Architecture Imports
 from apps_lic.shared.core.agent_base import LICAgentBase
@@ -24,7 +25,8 @@ except ImportError:
     VectorMemoryStore = None  # Allow stub mode
 
 
-class HOP2ResearchAgent(SubatomicTestingMixin, LICAgentBase):
+@dataclass
+class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
     """
     LIC Sovereign Strategist.
 
@@ -34,23 +36,22 @@ class HOP2ResearchAgent(SubatomicTestingMixin, LICAgentBase):
     - Logic: K.3 Retrieval Planning -> Evidence Artifact Generation
     - Output: 'hop2_research' with evidence_pack and strategic_brief
     """
+    
+    # Optional dependencies for dataclass
+    memory_store: Optional[Any] = field(default=None)
+    search_client: Optional[Any] = field(default=None)
+    llm_client: Optional[Any] = field(default=None)
 
-    def __init__(
-        self, memory_store: Any = None, search_client: Any = None, llm_client: Any = None
-    ) -> None:
+    def __post_init__(self) -> None:
         """
-        Initialize with dependencies.
-
-        Args:
-            memory_store: Vector DB connection for fast-path knowledge (optional).
-            search_client: Tool for slow-path RAG (Google Search/Perplexity).
-            llm_client: Optional LLM for synthesis/reasoning.
+        Initialize after dataclass construction.
         """
         # Initialize V2 base (loads config, toggles, etc.)
-        super().__init__(llm_client=llm_client)
+        super().__post_init__()
 
-        self.memory_store = memory_store
-        self.search_client = search_client
+        # Store dependencies (already set by dataclass)
+        # self.memory_store = memory_store  # Already set by dataclass
+        # self.search_client = search_client  # Already set by dataclass
 
         # Load specific configs from the LIC AgentSpecs singleton
         self.vector_params = self.config.research_agent.vector_store_query_params

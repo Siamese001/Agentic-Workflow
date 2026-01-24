@@ -20,6 +20,7 @@ MRO HARDENING:
 """
 
 import logging
+import sys
 from dataclasses import dataclass, field
 from typing import Any
 from pathlib import Path
@@ -27,7 +28,9 @@ from pathlib import Path
 from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 from agentic_core.L5_safety.validators.validator_mixin import ValidatorMixin
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.audit_trail_mixin import AuditTrailMixin
 from agentic_core.domain.exceptions import SovereignError, ConfigurationError
+from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier, emergency_shutdown
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.config.config_mixin import ConfigMixin
@@ -47,6 +50,7 @@ class SovereignBaseAgent(
     EmbeddingMixin,
     HealingStrategyMixin,
     ValidatorMixin,
+    AuditTrailMixin,  # ADDED: Black Box telemetry
 ):
     """
     Sovereign Single Source of Truth (SSOT) Root.
@@ -58,10 +62,34 @@ class SovereignBaseAgent(
     _security_validator: Any = field(default=None, init=False)
 
     def __post_init__(self) -> None:
-        """Initialize sovereign capabilities with hardening."""
+        """
+        Initialize sovereign capabilities with Hardening AND Integrity Lock.
+        """
         # Initialize infrastructure first (calls super().__init__() internally)
-        super().__init__()
+        try:
+            super().__post_init__()
+        except AttributeError:
+            # Some mixins don't have __post_init__, that's okay
+            pass
+        
+        # 1. THE IMMUTABLE LOCK CHECK
+        # If this fails, the agent refuses to exist.
+        try:
+            CoreIntegrityVerifier.verify_core_integrity()
+        except Exception as e:
+            # Panic mode: Log fatal error and die
+            emergency_shutdown(f"CORE INTEGRITY COMPROMISED. TERMINATING AGENT. {e}")
+        
+        # 2. Security Validation
         self._security_hardening_validation()
+        
+        # 3. Telemetry Signal
+        self.log_sovereign_event("BOOT", {
+            "status": "initialized", 
+            "mode": "hardened",
+            "integrity_verified": True
+        })
+        
         self._initialized = True
 
     def _security_hardening_validation(self) -> None:

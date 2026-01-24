@@ -7,11 +7,16 @@ Extracted: 2026-01-06 (Surgical Extraction)
 Orchestrates the complete self-healing process for resume generation.
 """
 
+from __future__ import annotations
 import time
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+
+from apps_rg.shared.core.agent_base import RGAgentBase
 
 
 @dataclass
-class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class RgHealingOrchestratorAgent(RGAgentBase):
     """
     Orchestrates the complete self-healing process for resume generation.
 
@@ -25,26 +30,17 @@ class RgHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesti
         cycle_results: List of results from each healing cycle
     """
 
-    def __init__(
-        self,
-        ctx: ResumeEngineContext,
-        max_cycles: int = 5,
-        enable_reflection: bool = True,
-    ) -> None:
-        """
-        Initialize the healing orchestrator.
-
-        Args:
-            ctx: Resume engine context
-            max_cycles: Maximum healing cycles (default: 5)
-            enable_reflection: Enable post-healing reflection (default: True)
-        """
-        super().__init__()
-        self.ctx = ctx
-        self._mcp_audit("init")
-        self.max_cycles: int = max_cycles
-        self.enable_reflection: bool = enable_reflection
-        self.cycle_results: list[CycleResult] = []
+    max_cycles: int = 5
+    enable_reflection: bool = True
+    cycle_results: List[Dict[str, Any]] = field(default_factory=list)
+    
+    def __post_init__(self) -> None:
+        """Initialize healing orchestrator."""
+        super().__post_init__()
+        # Initialize context if needed
+        if not hasattr(self, 'ctx') or self.ctx is None:
+            from .context import ResumeEngineContext
+            self.ctx = ResumeEngineContext()
 
     async def run(self) -> HealingResult:
         """
