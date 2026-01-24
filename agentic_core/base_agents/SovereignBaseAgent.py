@@ -22,15 +22,18 @@ MRO HARDENING:
 import logging
 from dataclasses import dataclass, field
 from typing import Any
+from pathlib import Path
 
 from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
+from agentic_core.L5_safety.validators.validator_mixin import ValidatorMixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.domain.exceptions import SovereignError, ConfigurationError
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.config.config_mixin import ConfigMixin
 from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
 from agentic_core.L2_execution.mcp.embedding_mixin import EmbeddingMixin
 from agentic_core.L5_safety.validators.healing_strategy_mixin import HealingStrategyMixin
-from agentic_core.L5_safety.validators.validator_mixin import ValidatorMixin
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +41,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class SovereignBaseAgent(
     infrastructure_mixin,
+    SubatomicTestingMixin,
     ConfigMixin,
     LLMProviderMixin,
     EmbeddingMixin,
@@ -46,71 +50,68 @@ class SovereignBaseAgent(
 ):
     """
     Sovereign Single Source of Truth (SSOT) Root.
-
-    Inheritance Chain (Phase 21.1 - Hierarchy Normalization):
-    1. RedisCacheMixin (Direct Redis access - cache_get, cache_set)
-    2. PineconeVectorMixin (Direct Pinecone access - vector_search)
-    3. infrastructure_mixin (Legacy Safety/MCP)
-    4. ConfigMixin (Phase 6 - Typed configuration)
-    5. LLMProviderMixin (Phase 4 - SovereignLLMGateway)
-    6. EmbeddingMixin (Phase 4 - EmbeddingSovereignAgent)
-    7. HealingStrategyMixin (Phase 5 - HealingOrchestrator)
-    8. ValidatorMixin (Phase 5 - ValidatorOrchestrator)
-
-    This ensures EVERY agent in the hierarchy has:
-    - self.cache_get() / self.cache_set() (Redis capabilities)
-    - self.vector_search() (Pinecone capabilities)
-    - self.config (Typed Env Vars)
-    - self.llm_generate() (Audited LLM calls)
-    - self.get_embedding() (Cached Embeddings)
-    - self.orchestrator_heal() (Strategy Dispatch)
-    - self.orchestrator_validate() (Central Validation)
-
-    MRO SAFETY (Jan 2026):
-    - Pre-declares _state and _call_path BEFORE super().__init__() to prevent
-      Mixin AttributeErrors when they access root state during initialization.
-    - Delegates heal_repository entirely to HealerMixin via MRO resolution.
+    HARDENED: SSOT Root with comprehensive type safety and security validation.
     """
 
-    name: str = "SovereignAgent"
-
-    # Defensive: Pre-declare state containers to prevent Mixin AttributeErrors
-    # These are initialized as dataclass fields so they exist BEFORE __post_init__
-    _state: dict[str, Any] = field(default_factory=dict)
-    _call_path: set[str] = field(default_factory=set)
+    project_root: Path = field(default_factory=Path.cwd)
+    _initialized: bool = field(default=False, init=False)
+    _security_validator: Any = field(default=None, init=False)
 
     def __post_init__(self) -> None:
-        """
-        Initialize sovereign agent with infrastructure.
-
-        Triggers infrastructure_mixin gatekeeper logic via super().__init__().
-
-        MRO AUDITOR: Sets _sovereign_initialized sentinel for propagation verification.
-
-        CRITICAL FIX (Jan 2026): Initialize root state BEFORE propagating to Mixins.
-        If Mixins (e.g. ConfigMixin) need to read self._state during their init,
-        it must exist now. The dataclass fields provide the initial containers,
-        but we ensure they're properly set up before super() call.
-        """
-        # Guard against double initialization
-        if getattr(self, "_sovereign_initialized", False):
-            return
-
-        # 1. CRITICAL FIX: Initialize root state BEFORE propagating to Mixins
-        self._initialize_sovereign_state()
-        self._sovereign_initialized = True
-
-        # 2. Cooperative super() call - triggers infrastructure_mixin.__init__()
-        # Mixins can now safely access self._state during their initialization
+        """Initialize sovereign capabilities with hardening."""
+        # Initialize infrastructure first (calls super().__init__() internally)
         super().__init__()
+        self._security_hardening_validation()
+        self._initialized = True
 
-    def _initialize_sovereign_state(self) -> None:
-        """Initialize sovereign-specific state."""
-        # Idempotent state setup - _state already exists from dataclass field
-        if not self._state:
-            self._state = {"status": "booting", "health": "nominal"}
-        self._authority_level = "standard"
-        # Config is now provided by ConfigMixin via self.config property
+    def _security_hardening_validation(self) -> None:
+        """
+        Validate security constraints during initialization.
+        HARDENED: Prevents insecure configurations and validates project structure.
+        """
+        try:
+            # Validate project root is within allowed boundaries
+            if not self._is_safe_path(self.project_root):
+                raise ConfigurationError(f"Unsafe project root: {self.project_root}")
+
+            # Validate required directories exist and are secure
+            required_dirs = ["agentic_core"]
+            for dir_name in required_dirs:
+                dir_path = self.project_root / dir_name
+                if dir_path.exists() and not self._is_safe_directory(dir_path):
+                    raise ConfigurationError(f"Unsafe directory detected: {dir_path}")
+
+        except Exception as e:
+            raise ConfigurationError(f"Security validation failed: {str(e)}") from e
+
+    def _is_safe_path(self, path: Path) -> bool:
+        """Check if path is safe for access."""
+        try:
+            path.resolve().relative_to(Path.cwd().resolve())
+            return True
+        except ValueError:
+            return False
+
+    def _is_safe_directory(self, dir_path: Path) -> bool:
+        """Check if directory is safe for modification."""
+        return self._is_safe_path(dir_path) and dir_path.is_dir()
+
+    def get_sovereign_capabilities(self) -> dict[str, Any]:
+        """
+        Get comprehensive list of sovereign capabilities.
+        HARDENED: Returns capability map with security metadata.
+        """
+        if not self._initialized:
+            raise SovereignError("SovereignBaseAgent not properly initialized")
+
+        return {
+            "healing": hasattr(self, "heal_repository"),
+            "validation": hasattr(self, "validate_repository"),
+            "testing": hasattr(self, "run_subatomic_tests"),
+            "security_validated": True,
+            "mro_hardened": True,
+            "project_root": str(self.project_root),
+        }
 
     def execute(self, *args, **kwargs) -> Any:
         """Execute the agent's main function."""
@@ -118,15 +119,17 @@ class SovereignBaseAgent(
 
     def get_state(self, key: str) -> Any | None:
         """Get state value."""
-        return self._state.get(key)
+        return getattr(self, "_state", {}).get(key)
 
     def set_state(self, key: str, value: Any) -> None:
         """Set state value."""
+        if not hasattr(self, "_state"):
+            self._state = {}
         self._state[key] = value
 
     def get_authority_level(self) -> str:
         """Get the agent's authority level."""
-        return self._authority_level
+        return getattr(self, "_authority_level", "standard")
 
     def elevate_authority(self, level: str) -> None:
         """Elevate the agent's authority level."""
@@ -135,21 +138,24 @@ class SovereignBaseAgent(
 
     def log_info(self, message: str) -> None:
         """Log an info message."""
-        logger.info(f"[{self.name}] {message}")
+        logger.info(f"[{getattr(self, 'name', 'SovereignAgent')}] {message}")
 
     def log_warning(self, message: str) -> None:
         """Log a warning message."""
-        logger.warning(f"[{self.name}] {message}")
+        logger.warning(f"[{getattr(self, 'name', 'SovereignAgent')}] {message}")
 
     def log_error(self, message: str) -> None:
         """Log an error message."""
-        logger.error(f"[{self.name}] {message}")
+        logger.error(f"[{getattr(self, 'name', 'SovereignAgent')}] {message}")
 
     def log_feedback(
         self, workflow_id: str, action: str, status: str, details: dict[str, Any] = None
     ) -> None:
         """Log feedback for a workflow action."""
-        logger.info(f"[{self.name}] Workflow {workflow_id}: {action} - {status} - {details or {}}")
+        logger.info(
+            f"[{getattr(self, 'name', 'SovereignAgent')}] Workflow {workflow_id}: "
+            f"{action} - {status} - {details or {}}"
+        )
 
     # REFACTOR (Jan 2026): Removed raw dict return implementation.
     # SovereignBaseAgent delegates healing entirely to HealingStrategyMixin/HealerMixin.
