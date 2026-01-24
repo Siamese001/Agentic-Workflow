@@ -18,14 +18,20 @@ MRO HARDENING:
 - Inheritance order: Infra Mixins -> SovereignBaseAgent (includes MCP)
 - MCPHardenedMixin is now in SovereignBaseAgent - DO NOT add it here
 - MRO: RedisCacheMixin -> PineconeVectorMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
+
+MRO SAFETY ENHANCEMENT (Jan 2026):
+- Leverages _state and _call_path from SovereignBaseAgent dataclass fields
+- Returns ValidationResult for type safety and LSP compliance
+- Implements depth control to prevent validation loops
 """
 import logging
 import re
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.decorators import standard_heal
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.results import ValidationResult
 
 Logger = logging.getLogger(__name__)
 
@@ -109,59 +115,92 @@ class L5SafetyBaseAgent(SovereignBaseAgent):
     # L5-SPECIFIC LAYER METHODS: Safety/Validation
     # =========================================================================
 
-    def validate(self, input_text: str, context: dict[str, Any] = None) -> dict[str, Any]:
+    def validate(
+        self,
+        input_text: str,
+        context: Optional[Dict[str, Any]] = None,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None,
+    ) -> ValidationResult:
         """L5-specific: Multi-stage validation pipeline with cascading checks.
+
+        MRO SAFETY ENHANCEMENT (Jan 2026):
+        - Returns ValidationResult for type safety and LSP compliance
+        - Uses _state container for caching intermediate results
+        - Uses _call_path to prevent recursive validation loops
+        - Implements depth control to prevent infinite recursion
 
         Args:
             input_text: The text to validate
             context: Optional context for policy-aware validation
+            depth: Current recursion depth for cycle detection
+            max_depth: Maximum recursion depth allowed
+            _call_path: Set of agent names already in call chain (cycle detection)
 
         Returns:
-            Dict with 'passed', 'checks', and 'failures' if any
+            ValidationResult with standardized validation summary
         """
         context = context or {}
-        checks = []
-        failures = []
 
-        # Check 1: Toxicity detection
-        toxicity_result = self._check_toxicity(input_text)
-        checks.append(toxicity_result)
-        if not toxicity_result["passed"]:
-            failures.append(toxicity_result)
+        # Initialize call path from root state if not provided
+        if _call_path is None:
+            _call_path = self._call_path.copy() if hasattr(self, "_call_path") else set()
 
-        # Check 2: PII detection
-        pii_result = self._check_pii(input_text)
-        checks.append(pii_result)
-        if not pii_result["passed"]:
-            failures.append(pii_result)
+        current_agent = self.__class__.__name__
 
-        # Check 3: Jailbreak probe detection
-        jailbreak_result = self._check_jailbreak(input_text)
-        checks.append(jailbreak_result)
-        if not jailbreak_result["passed"]:
-            failures.append(jailbreak_result)
+        # Cycle detection
+        if current_agent in _call_path:
+            self.log_warning(f"[VALIDATE] Cycle detected: {current_agent} re-entered")
+            return ValidationResult(
+                is_safe=False,
+                violations=["validation_cycle"],
+                error=f"Validation loop detected at {current_agent}",
+            )
 
-        # Check 4: Policy violation (context-aware)
-        if context.get("policies"):
-            policy_result = self._check_policy_violation(input_text, context["policies"])
-            checks.append(policy_result)
-            if not policy_result["passed"]:
-                failures.append(policy_result)
+        # Depth limiting
+        if depth > max_depth:
+            self.log_warning(f"[VALIDATE] Max depth {max_depth} exceeded for {current_agent}")
+            return ValidationResult(
+                is_safe=False,
+                violations=["depth_exceeded"],
+                error=f"Validation depth limit exceeded at {current_agent}",
+                depth_exceeded=True,
+            )
 
-        # Aggregate result
-        passed = len(failures) == 0
+        # Add to call path
+        _call_path.add(current_agent)
 
-        if not passed:
-            self.log_warning(f"Validation failed: {len(failures)} checks failed")
-            super().heal_repository(**kwargs)
+        try:
+            # Initialize result object
+            result = ValidationResult(
+                is_safe=True,
+                violations=[],
+                checks_performed=[],
+            )
 
-        return {
-            "passed": passed,
-            "checks": checks,
-            "failures": failures,
-            "check_count": len(checks),
-            "failure_count": len(failures),
-        }
+            # Execute validation stages with root-state awareness
+            result = self._check_toxicity(input_text, result)
+            result = self._check_pii(input_text, result)
+            result = self._check_jailbreak(input_text, result)
+
+            # Check 4: Policy violation (context-aware)
+            if context.get("policies"):
+                result = self._check_policy_violation(input_text, context["policies"], result)
+
+            # Cache validation outcome in root state for downstream layers
+            self._state["last_validation_safe"] = result["is_safe"]
+            self._state["last_validation_violations"] = result.get("violations", [])
+
+            if not result["is_safe"]:
+                self.log_warning(
+                    f"Validation failed: {len(result.get('violations', []))} violations detected"
+                )
+
+            return result
+
+        finally:
+            _call_path.discard(current_agent)
 
     def redact(self, output_text: str, redact_types: list[str] = None) -> str:
         """L5-specific: PII and sensitive data masking.
@@ -217,70 +256,143 @@ class L5SafetyBaseAgent(SovereignBaseAgent):
             "was_modified": sanitized != output,
         }
 
-    def _check_toxicity(self, text: str) -> dict[str, Any]:
-        """Check for toxic/harmful content."""
+    def _check_toxicity(self, text: str, result: ValidationResult) -> ValidationResult:
+        """Check for toxic/harmful content.
+
+        Args:
+            text: Text to check for toxicity
+            result: ValidationResult object to update
+
+        Returns:
+            Updated ValidationResult with toxicity check results
+        """
         matches = []
         for pattern in self.TOXICITY_PATTERNS:
             found = re.findall(pattern, text, flags=re.IGNORECASE)
             if found:
                 matches.extend(found)
 
-        return {
-            "check": "toxicity",
-            "passed": len(matches) == 0,
-            "matches": matches[:5] if matches else [],
-            "message": f"Found {len(matches)} toxic patterns"
-            if matches
-            else "No toxicity detected",
-        }
+        if matches:
+            result["is_safe"] = False
+            if "violations" not in result:
+                result["violations"] = []
+            result["violations"].append("toxicity")
+            self.log_warning(f"Toxicity detected: {len(matches)} toxic patterns found")
 
-    def _check_pii(self, text: str) -> dict[str, Any]:
-        """Check for PII in text."""
+        if "checks_performed" not in result:
+            result["checks_performed"] = []
+        result["checks_performed"].append("toxicity")
+
+        # Cache in state for observability
+        self._state["last_toxicity_check"] = {"matches": len(matches), "safe": len(matches) == 0}
+
+        return result
+
+    def _check_pii(self, text: str, result: ValidationResult) -> ValidationResult:
+        """Check for PII in text.
+
+        Args:
+            text: Text to check for PII
+            result: ValidationResult object to update
+
+        Returns:
+            Updated ValidationResult with PII check results
+        """
         found_pii = {}
         for pii_type, pattern in self.PII_PATTERNS.items():
             matches = re.findall(pattern, text, flags=re.IGNORECASE)
             if matches:
                 found_pii[pii_type] = len(matches)
 
-        return {
-            "check": "pii_detection",
-            "passed": len(found_pii) == 0,
-            "found_types": found_pii,
-            "message": f"Found PII: {list(found_pii.keys())}" if found_pii else "No PII detected",
-        }
+        if found_pii:
+            result["is_safe"] = False
+            if "violations" not in result:
+                result["violations"] = []
+            result["violations"].append("pii_detected")
+            self.log_warning(f"PII detected: {list(found_pii.keys())}")
 
-    def _check_jailbreak(self, text: str) -> dict[str, Any]:
-        """Check for jailbreak/prompt injection attempts."""
+            # Auto-redact PII and store in result
+            result["redacted_text"] = self.redact(text)
+
+        if "checks_performed" not in result:
+            result["checks_performed"] = []
+        result["checks_performed"].append("pii_detection")
+
+        # Cache in state for observability
+        self._state["last_pii_check"] = {"found_types": found_pii, "safe": len(found_pii) == 0}
+
+        return result
+
+    def _check_jailbreak(self, text: str, result: ValidationResult) -> ValidationResult:
+        """Check for jailbreak/prompt injection attempts.
+
+        Args:
+            text: Text to check for jailbreak attempts
+            result: ValidationResult object to update
+
+        Returns:
+            Updated ValidationResult with jailbreak check results
+        """
         matches = []
         for pattern in self.JAILBREAK_PATTERNS:
             found = re.findall(pattern, text, flags=re.IGNORECASE)
             if found:
                 matches.extend(found)
 
-        return {
-            "check": "jailbreak_probe",
-            "passed": len(matches) == 0,
-            "matches": matches[:3] if matches else [],
-            "message": f"Detected {len(matches)} jailbreak attempts"
-            if matches
-            else "No jailbreak detected",
-        }
+        if matches:
+            result["is_safe"] = False
+            if "violations" not in result:
+                result["violations"] = []
+            result["violations"].append("jailbreak_attempt")
+            self.log_warning(f"Jailbreak attempt detected: {len(matches)} patterns found")
 
-    def _check_policy_violation(self, text: str, policies: list[dict]) -> dict[str, Any]:
-        """Check against custom policy rules."""
-        violations = []
+        if "checks_performed" not in result:
+            result["checks_performed"] = []
+        result["checks_performed"].append("jailbreak_probe")
+
+        # Cache in state for observability
+        self._state["last_jailbreak_check"] = {"matches": len(matches), "safe": len(matches) == 0}
+
+        return result
+
+    def _check_policy_violation(
+        self, text: str, policies: List[Dict[str, Any]], result: ValidationResult
+    ) -> ValidationResult:
+        """Check against custom policy rules.
+
+        Args:
+            text: Text to check for policy violations
+            policies: List of policy dictionaries with 'rule' and 'name' keys
+            result: ValidationResult object to update
+
+        Returns:
+            Updated ValidationResult with policy check results
+        """
+        policy_violations = []
 
         for policy in policies:
             rule = policy.get("rule", "")
             if rule and re.search(rule, text, flags=re.IGNORECASE):
-                violations.append(policy.get("name", "unnamed_policy"))
+                policy_violations.append(policy.get("name", "unnamed_policy"))
 
-        return {
-            "check": "policy_violation",
-            "passed": len(violations) == 0,
-            "violations": violations,
-            "message": f"Policy violations: {violations}" if violations else "No policy violations",
+        if policy_violations:
+            result["is_safe"] = False
+            if "violations" not in result:
+                result["violations"] = []
+            result["violations"].append("policy_violation")
+            self.log_warning(f"Policy violations: {policy_violations}")
+
+        if "checks_performed" not in result:
+            result["checks_performed"] = []
+        result["checks_performed"].append("policy_violation")
+
+        # Cache in state for observability
+        self._state["last_policy_check"] = {
+            "violations": policy_violations,
+            "safe": len(policy_violations) == 0,
         }
+
+        return result
 
     @timeout(300)
     @standard_heal

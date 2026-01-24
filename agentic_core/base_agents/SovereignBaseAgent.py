@@ -20,8 +20,8 @@ MRO HARDENING:
 """
 
 import logging
-from dataclasses import dataclass
-from typing import Any
+from dataclasses import dataclass, field
+from typing import Any, Dict, Optional, Set
 
 from agentic_core.utils.core_extensions.infrastructure_mixin import infrastructure_mixin
 
@@ -65,9 +65,19 @@ class SovereignBaseAgent(
     - self.get_embedding() (Cached Embeddings)
     - self.orchestrator_heal() (Strategy Dispatch)
     - self.orchestrator_validate() (Central Validation)
+
+    MRO SAFETY (Jan 2026):
+    - Pre-declares _state and _call_path BEFORE super().__init__() to prevent
+      Mixin AttributeErrors when they access root state during initialization.
+    - Delegates heal_repository entirely to HealerMixin via MRO resolution.
     """
 
     name: str = "SovereignAgent"
+
+    # Defensive: Pre-declare state containers to prevent Mixin AttributeErrors
+    # These are initialized as dataclass fields so they exist BEFORE __post_init__
+    _state: Dict[str, Any] = field(default_factory=dict)
+    _call_path: Set[str] = field(default_factory=set)
 
     def __post_init__(self) -> None:
         """
@@ -76,19 +86,29 @@ class SovereignBaseAgent(
         Triggers infrastructure_mixin gatekeeper logic via super().__init__().
 
         MRO AUDITOR: Sets _sovereign_initialized sentinel for propagation verification.
-        """
-        # 1. Cooperative super() call - triggers infrastructure_mixin.__init__()
-        super().__init__()
 
-        # 2. Set Sentinel for MRO Auditor - verifies initialization chain reached root
+        CRITICAL FIX (Jan 2026): Initialize root state BEFORE propagating to Mixins.
+        If Mixins (e.g. ConfigMixin) need to read self._state during their init,
+        it must exist now. The dataclass fields provide the initial containers,
+        but we ensure they're properly set up before super() call.
+        """
+        # Guard against double initialization
+        if getattr(self, "_sovereign_initialized", False):
+            return
+
+        # 1. CRITICAL FIX: Initialize root state BEFORE propagating to Mixins
+        self._initialize_sovereign_state()
         self._sovereign_initialized = True
 
-        # 3. Core sovereign initialization logic
-        self._initialize_sovereign_state()
+        # 2. Cooperative super() call - triggers infrastructure_mixin.__init__()
+        # Mixins can now safely access self._state during their initialization
+        super().__init__()
 
-    def _initialize_sovereign_state(self) -> Any:
+    def _initialize_sovereign_state(self) -> None:
         """Initialize sovereign-specific state."""
-        self._state: dict[str, Any] = {}
+        # Idempotent state setup - _state already exists from dataclass field
+        if not self._state:
+            self._state = {"status": "booting", "health": "nominal"}
         self._authority_level = "standard"
         # Config is now provided by ConfigMixin via self.config property
 
@@ -131,28 +151,14 @@ class SovereignBaseAgent(
         """Log feedback for a workflow action."""
         logger.info(f"[{self.name}] Workflow {workflow_id}: {action} - {status} - {details or {}}")
 
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set | None = None,
-        **kwargs,
-    ) -> dict[str, int]:
-        """
-        Base heal_repository implementation - ROOT termination point.
-
-        MRO HARDENING: This is the END of the heal_repository chain.
-        Subclasses should call super().heal_repository(**kwargs) which eventually
-        reaches here and terminates cleanly.
-
-        Args:
-            **kwargs: Absorbs any additional keyword arguments from subclasses
-        """
-        # TERMINATION POINT: We absorb signals here to prevent MRO overflow into
-        # InfrastructureMixins that lack healing logic.
-        return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1}
+    # REFACTOR (Jan 2026): Removed raw dict return implementation.
+    # SovereignBaseAgent delegates healing entirely to HealingStrategyMixin/HealerMixin.
+    # Overriding it here with a "termination point" that returns a dict
+    # broke the Liskov Substitution Principle against HealerMixin's HealResult.
+    #
+    # The proper termination logic now resides in HealerMixin.heal_repository()
+    # which handles depth limiting, cycle detection, and returns HealResult.
+    # Removing this shadowing method allows proper MRO resolution to HealerMixin.
 
 
 __all__ = ["SovereignBaseAgent"]
