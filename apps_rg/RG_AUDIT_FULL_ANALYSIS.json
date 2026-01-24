@@ -1,0 +1,2173 @@
+{
+  "summary": {
+    "total_files": 81,
+    "engines": 21,
+    "tools": 18,
+    "types": 16,
+    "legacy": 3,
+    "unknown": 23,
+    "sovereign_alignment_score": 25.9
+  },
+  "external_violations": [],
+  "files": [
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\achv_models.py",
+      "relative_path": "apps_rg\\engines\\achv_models.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "ProvenancePattern",
+        "BulletProvenanceLog",
+        "BulletSynthesizerConfig",
+        "BulletSynthesizerResult"
+      ],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\adjust_section_weights.py",
+      "relative_path": "apps_rg\\engines\\adjust_section_weights.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "AdjustSectionWeights"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "refine"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\apply_clerk_extraction.py",
+      "relative_path": "apps_rg\\engines\\apply_clerk_extraction.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "ClerkExtractor"
+      ],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "re"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\apply_data_enrichment.py",
+      "relative_path": "apps_rg\\engines\\apply_data_enrichment.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "DataEnricher"
+      ],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\assess_cognition_relevance.py",
+      "relative_path": "apps_rg\\engines\\assess_cognition_relevance.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "AssessContentRelevance"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\ATSCompatibilityAgent.py",
+      "relative_path": "apps_rg\\engines\\ATSCompatibilityAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute, heal_repository",
+      "classes": [
+        "ATSCompatibilityAgent"
+      ],
+      "stateful_methods": [
+        "execute",
+        "heal_repository"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "HealerMixin",
+        "MCPHardenedMixin",
+        "SubatomicTestingMixin",
+        "ResumeAgent"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "json",
+        "re"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\BrandComplianceAgent.py",
+      "relative_path": "apps_rg\\engines\\BrandComplianceAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute, heal_repository",
+      "classes": [
+        "BrandComplianceAgent"
+      ],
+      "stateful_methods": [
+        "execute",
+        "heal_repository"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "SubatomicTestingMixin",
+        "ResumeAgent",
+        "MCPHardenedMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "json"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\build_search_filters.py",
+      "relative_path": "apps_rg\\engines\\build_search_filters.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "BuildSearchFilters"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "__init__",
+        "format",
+        "_transform",
+        "FormatData"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\BulletAgent.py",
+      "relative_path": "apps_rg\\engines\\BulletAgent.py",
+      "classification": "error",
+      "reason": "Parse error: unexpected indent (<unknown>, line 7)",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\calibrate_fit_score.py",
+      "relative_path": "apps_rg\\engines\\calibrate_fit_score.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "CalibrateFitScore"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\CapabilityMonitorAgent.py",
+      "relative_path": "apps_rg\\engines\\CapabilityMonitorAgent.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "TaskPriority",
+        "HandoffReason",
+        "ProactiveTask",
+        "HandoffRequest",
+        "CapabilityProfile",
+        "ProactiveScheduler",
+        "PredictiveHandoff",
+        "CapabilityMonitorAgent"
+      ],
+      "stateful_methods": [
+        "heal_repository"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "Enum",
+        "Enum",
+        "MCPHardenedMixin",
+        "HealerMixin",
+        "SubatomicTestingMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "datetime",
+        "context"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\check_hallucination.py",
+      "relative_path": "apps_rg\\engines\\check_hallucination.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "HallucinationDetector"
+      ],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\compute_skill_similarity.py",
+      "relative_path": "apps_rg\\engines\\compute_skill_similarity.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "ComputeSkillSimilarity"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "__init__",
+        "process"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\compute_word_count.py",
+      "relative_path": "apps_rg\\engines\\compute_word_count.py",
+      "classification": "tool",
+      "reason": "Contains only standalone functions (no classes)",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [
+        "count_words_ms_word_style",
+        "count_words_in_list_ms_word_style",
+        "count_sentences"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging",
+        "re"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\ContentQualityAgent.py",
+      "relative_path": "apps_rg\\engines\\ContentQualityAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute, heal_repository, execute",
+      "classes": [
+        "ContentQualityAgent",
+        "TestPilot"
+      ],
+      "stateful_methods": [
+        "execute",
+        "heal_repository",
+        "execute"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "SubatomicTestingMixin",
+        "ResumeAgent",
+        "MCPHardenedMixin",
+        "ResumeAgent"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "json",
+        "re"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\ConvergenceDetectorAgent.py",
+      "relative_path": "apps_rg\\engines\\ConvergenceDetectorAgent.py",
+      "classification": "error",
+      "reason": "Parse error: unexpected indent (<unknown>, line 12)",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\create_experience_bullets.py",
+      "relative_path": "apps_rg\\engines\\create_experience_bullets.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute",
+      "classes": [
+        "CreateExperienceBullets"
+      ],
+      "stateful_methods": [
+        "execute"
+      ],
+      "functions": [
+        "execute"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging",
+        "time"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\diagnose_generation_issues.py",
+      "relative_path": "apps_rg\\engines\\diagnose_generation_issues.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "DiagnoseGenerationIssues"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "__init__",
+        "diagnose",
+        "diagnose"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\diff_generator.py",
+      "relative_path": "apps_rg\\engines\\diff_generator.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "DiffFormat",
+        "DiffGeneratorArgs",
+        "DiffResult",
+        "PatchResult"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "generate_unified_diff",
+        "generate_context_diff",
+        "generate_html_diff",
+        "generate_ndiff",
+        "apply_patch",
+        "validate_patch",
+        "_calculate_diff_stats",
+        "_parse_unified_diff",
+        "_apply_hunk",
+        "_reverse_hunk",
+        "generate_diff",
+        "quick_diff",
+        "quick_html_diff",
+        "diff_stats"
+      ],
+      "inherits_from": [
+        "str",
+        "Enum",
+        "BaseModel"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "difflib"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\DispatchResumeTools.py",
+      "relative_path": "apps_rg\\engines\\DispatchResumeTools.py",
+      "classification": "error",
+      "reason": "Parse error: unindent does not match any outer indentation level (<unknown>, line 20)",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\DispatchResumeToolsAgent.py",
+      "relative_path": "apps_rg\\engines\\DispatchResumeToolsAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute, heal_repository",
+      "classes": [
+        "DispatchResumeToolsAgent"
+      ],
+      "stateful_methods": [
+        "execute",
+        "heal_repository"
+      ],
+      "functions": [
+        "execute"
+      ],
+      "inherits_from": [
+        "HealerMixin",
+        "MCPHardenedMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "__future__",
+        "logging",
+        "dataclasses",
+        "time",
+        "typing",
+        "agentic_core.L2_execution.mcp.mcp_hardened_mixin_1",
+        "agentic_core.utils.core_extensions.healer_mixin",
+        "titanium_rag_pipeline"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\DraftingAgent.py",
+      "relative_path": "apps_rg\\engines\\DraftingAgent.py",
+      "classification": "error",
+      "reason": "Parse error: unexpected indent (<unknown>, line 5)",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\enhancement_integration.py",
+      "relative_path": "apps_rg\\engines\\enhancement_integration.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "ResumeEnhancementOrchestrator"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "get_resume_enhancement_orchestrator",
+        "enhance_resume"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging",
+        "re",
+        "asyncio",
+        "uuid"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\EvaluateResumeEffectiveness.py",
+      "relative_path": "apps_rg\\engines\\EvaluateResumeEffectiveness.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "EvaluateResumeEffectiveness"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "compute_score"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\evaluate_writing_quality.py",
+      "relative_path": "apps_rg\\engines\\evaluate_writing_quality.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "EvaluateWritingQuality"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\EvidenceInjector.py",
+      "relative_path": "apps_rg\\engines\\EvidenceInjector.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "EvidenceType",
+        "EvidenceItem",
+        "EvidenceInjector"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "get_evidence_injector",
+        "inject_evidence_links",
+        "create_sample_library"
+      ],
+      "inherits_from": [
+        "str",
+        "Enum",
+        "BaseModel"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "json",
+        "logging",
+        "re",
+        "yaml"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\execute_message_generation.py",
+      "relative_path": "apps_rg\\engines\\execute_message_generation.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute",
+      "classes": [
+        "execute_message_generation"
+      ],
+      "stateful_methods": [
+        "execute"
+      ],
+      "functions": [
+        "execute"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging",
+        "time"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\execute_resume_generation.py",
+      "relative_path": "apps_rg\\engines\\execute_resume_generation.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute",
+      "classes": [
+        "LocalWorkflowLoader",
+        "execute_resume_generation"
+      ],
+      "stateful_methods": [
+        "execute"
+      ],
+      "functions": [
+        "create_local_workflow_loader",
+        "execute"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging",
+        "time"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\FactCheckAgent.py",
+      "relative_path": "apps_rg\\engines\\FactCheckAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute, heal_repository",
+      "classes": [
+        "FactCheckAgent"
+      ],
+      "stateful_methods": [
+        "execute",
+        "heal_repository"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "SubatomicTestingMixin",
+        "ResumeAgent",
+        "MCPHardenedMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\fetch_user_preferences.py",
+      "relative_path": "apps_rg\\engines\\fetch_user_preferences.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "fetch_user_preferences"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "retrieve"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\GapClosureArchitectAgent.py",
+      "relative_path": "apps_rg\\engines\\GapClosureArchitectAgent.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "CompetencyItem",
+        "CompetenciesOutput",
+        "GapClosureArchitectAgent"
+      ],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\HardenedOrchestrator.py",
+      "relative_path": "apps_rg\\engines\\HardenedOrchestrator.py",
+      "classification": "error",
+      "reason": "Parse error: unexpected indent (<unknown>, line 17)",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\information_prepare_resume_context.py",
+      "relative_path": "apps_rg\\engines\\information_prepare_resume_context.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "PrepareResumeContext"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "FormatData"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\InspectResumeQuality.py",
+      "relative_path": "apps_rg\\engines\\InspectResumeQuality.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "InspectResumeQuality"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "diagnose"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\InvokeGenerationService.py",
+      "relative_path": "apps_rg\\engines\\InvokeGenerationService.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute",
+      "classes": [
+        "InvokeGenerationService"
+      ],
+      "stateful_methods": [
+        "execute"
+      ],
+      "functions": [
+        "execute"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging",
+        "time"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\k25_research_agent.py",
+      "relative_path": "apps_rg\\engines\\k25_research_agent.py",
+      "classification": "error",
+      "reason": "Parse error: unexpected indent (<unknown>, line 3)",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\kx_nodes_outreach_types.py",
+      "relative_path": "apps_rg\\engines\\kx_nodes_outreach_types.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "OutreachKNodeType",
+        "ReasoningStrategy",
+        "RagConfig",
+        "DecodingParams",
+        "OutreachKNode"
+      ],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [
+        "str",
+        "Enum",
+        "str",
+        "Enum"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\kx_nodes_resume_types.py",
+      "relative_path": "apps_rg\\engines\\kx_nodes_resume_types.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "ResumeKNodeType",
+        "ReasoningStrategy",
+        "RagConfig",
+        "DecodingParams",
+        "ResumeKNode"
+      ],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [
+        "str",
+        "Enum",
+        "str",
+        "Enum"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\match_job_patterns.py",
+      "relative_path": "apps_rg\\engines\\match_job_patterns.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "match_job_patterns"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "__init__",
+        "process"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\normalize_skill_scores.py",
+      "relative_path": "apps_rg\\engines\\normalize_skill_scores.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "NormalizeSkillScores"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\optimization_strategies.py",
+      "relative_path": "apps_rg\\engines\\optimization_strategies.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "ConfidenceMetrics",
+        "EarlyStoppingStrategy",
+        "ConfidenceEstimator",
+        "PathPruningStrategy",
+        "OptimizedReasoningEngine"
+      ],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\optimize_content_order.py",
+      "relative_path": "apps_rg\\engines\\optimize_content_order.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "OptimizeContentOrder"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "refine"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\orchestrate_resume.py",
+      "relative_path": "apps_rg\\engines\\orchestrate_resume.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: run",
+      "classes": [
+        "ResumeOrchestrator"
+      ],
+      "stateful_methods": [
+        "run"
+      ],
+      "functions": [
+        "orchestrate_resume"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\orchestrate_workflow.py",
+      "relative_path": "apps_rg\\engines\\orchestrate_workflow.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "HopStatus",
+        "GateDecision",
+        "HopInput",
+        "HopOutput",
+        "RetryPolicy",
+        "HopSpec",
+        "WorkflowSpec",
+        "Artifact",
+        "HopCheckpoint",
+        "ValidationResult",
+        "WorkflowSpecError",
+        "HopExecutionError",
+        "DAGBuilder",
+        "RGWorkflowOrchestrator"
+      ],
+      "stateful_methods": [
+        "validate",
+        "execute_hop",
+        "execute_workflow"
+      ],
+      "functions": [
+        "hash_file",
+        "create_orchestrator",
+        "load_workflow_spec"
+      ],
+      "inherits_from": [
+        "Enum",
+        "Enum",
+        "Exception",
+        "Exception"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "hashlib",
+        "json",
+        "logging",
+        "uuid",
+        "datetime"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\order_skills_by_relevance.py",
+      "relative_path": "apps_rg\\engines\\order_skills_by_relevance.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "OrderSkillsByRelevance"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "__init__",
+        "process",
+        "_execute",
+        "process"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\PersonaRouter.py",
+      "relative_path": "apps_rg\\engines\\PersonaRouter.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "ArchetypeBase",
+        "PsychometricProfile",
+        "ReaderPersona",
+        "PersonaRouter"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "get_persona_router",
+        "analyze_job_description"
+      ],
+      "inherits_from": [
+        "str",
+        "Enum",
+        "BaseModel",
+        "BaseModel"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\prioritize_achievements.py",
+      "relative_path": "apps_rg\\engines\\prioritize_achievements.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "PrioritizeAchievements"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "__init__",
+        "process",
+        "_execute",
+        "process"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\ProactiveAgent.py",
+      "relative_path": "apps_rg\\engines\\ProactiveAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute, heal_repository",
+      "classes": [
+        "ProactiveAgent"
+      ],
+      "stateful_methods": [
+        "execute",
+        "heal_repository"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "SubatomicTestingMixin",
+        "ResumeAgent",
+        "MCPHardenedMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\query_past_generations.py",
+      "relative_path": "apps_rg\\engines\\query_past_generations.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "query_past_generations"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "retrieve"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\RankResumeSections.py",
+      "relative_path": "apps_rg\\engines\\RankResumeSections.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: process",
+      "classes": [
+        "RankResumeSections"
+      ],
+      "stateful_methods": [
+        "process"
+      ],
+      "functions": [
+        "process"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\RefineResumeRanking.py",
+      "relative_path": "apps_rg\\engines\\RefineResumeRanking.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "RefineResumeRanking"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "refine"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\request_retrieve_resume_history.py",
+      "relative_path": "apps_rg\\engines\\request_retrieve_resume_history.py",
+      "classification": "unknown",
+      "reason": "Class without recognized stateful methods",
+      "classes": [
+        "RetrieveResumeHistory"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "retrieve"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\ResumeAgent.py",
+      "relative_path": "apps_rg\\engines\\ResumeAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute, heal_repository",
+      "classes": [
+        "ResumeAgent"
+      ],
+      "stateful_methods": [
+        "execute",
+        "heal_repository"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "MCPHardenedMixin",
+        "HealerMixin",
+        "SubatomicTestingMixin",
+        "ABC"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "__future__",
+        "asyncio",
+        "abc",
+        "typing",
+        "agentic_core.L0_maintenance.mixins.subatomic_testing_mixin",
+        "agentic_core.L5_safety.guardrails.mcp_hardened_mixin",
+        "agentic_core.schemas.models.anomaly_report",
+        "agentic_core.utils.core_extensions.healer_mixin",
+        "agentic_core.utils.core_extensions.timeout_decorator",
+        "context"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\ResumeGenerator.py",
+      "relative_path": "apps_rg\\engines\\ResumeGenerator.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: generate",
+      "classes": [
+        "ResumeGenerator"
+      ],
+      "stateful_methods": [
+        "generate"
+      ],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging",
+        "typing",
+        "runtime.shared.multi_provider_clients",
+        "google.generativeai"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\ResumeLearningAgent.py",
+      "relative_path": "apps_rg\\engines\\ResumeLearningAgent.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "ConfidenceLevel",
+        "LearningExample",
+        "ConfidenceResult",
+        "Instruction",
+        "MemoryState",
+        "LearningLoop",
+        "ConfidenceScorer",
+        "InstructionInjector",
+        "MemoryPersistence",
+        "ResumeLearningAgent"
+      ],
+      "stateful_methods": [
+        "heal_repository"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "Enum",
+        "MCPHardenedMixin",
+        "HealerMixin",
+        "SubatomicTestingMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "__future__",
+        "asyncio",
+        "hashlib",
+        "json",
+        "time",
+        "collections.abc",
+        "dataclasses",
+        "datetime",
+        "enum",
+        "pathlib",
+        "typing",
+        "agentic_core.L0_maintenance.mixins.subatomic_testing_mixin",
+        "agentic_core.L5_safety.guardrails.mcp_hardened_mixin",
+        "agentic_core.utils.core_extensions.healer_mixin",
+        "context"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\resume_orchestration_config.py",
+      "relative_path": "apps_rg\\engines\\resume_orchestration_config.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "RAGType",
+        "ClaimVerificationMode",
+        "ValidationSeverity",
+        "WordCountConstraint",
+        "CharCountConstraint",
+        "ReasoningConfig",
+        "ProvenanceRule",
+        "ValidationGate"
+      ],
+      "stateful_methods": [
+        "validate",
+        "validate"
+      ],
+      "functions": [
+        "get_word_count_constraint",
+        "get_char_count_constraint",
+        "get_reasoning_config",
+        "get_validation_gates"
+      ],
+      "inherits_from": [
+        "str",
+        "Enum",
+        "str",
+        "Enum",
+        "str",
+        "Enum"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\resume_planner.py",
+      "relative_path": "apps_rg\\engines\\resume_planner.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "ResumeAnalysisPlan",
+        "ResumeSectionConfig",
+        "ResumeProcessingPlan",
+        "RGPlanner"
+      ],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\RgHealingOrchestratorAgent.py",
+      "relative_path": "apps_rg\\engines\\RgHealingOrchestratorAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: run, heal_repository",
+      "classes": [
+        "RgHealingOrchestratorAgent"
+      ],
+      "stateful_methods": [
+        "run",
+        "heal_repository"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "MCPHardenedMixin",
+        "HealerMixin",
+        "L3SubatomicTestingMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "time"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\RgReflectionAgent.py",
+      "relative_path": "apps_rg\\engines\\RgReflectionAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute, heal_repository",
+      "classes": [
+        "RgReflectionAgent"
+      ],
+      "stateful_methods": [
+        "execute",
+        "heal_repository"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "SubatomicTestingMixin",
+        "ResumeAgent",
+        "MCPHardenedMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\RgResumeOrchestratorAgent.py",
+      "relative_path": "apps_rg\\engines\\RgResumeOrchestratorAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: run, heal_repository",
+      "classes": [
+        "RgResumeOrchestratorAgent"
+      ],
+      "stateful_methods": [
+        "run",
+        "heal_repository"
+      ],
+      "functions": [
+        "orchestrate_resume"
+      ],
+      "inherits_from": [
+        "MCPHardenedMixin",
+        "SubatomicTestingMixin",
+        "HealerMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "__future__",
+        "logging",
+        "agentic_core.utils.core_extensions.timeout_decorator",
+        "shared.configuration.config",
+        "agentic_core.L5_safety.guardrails.mcp_hardened_mixin",
+        "agentic_core.utils.core_extensions.decorators",
+        "agentic_core.utils.core_extensions.healer_mixin",
+        "agentic_core.utils.core_extensions.subatomic_testing_mixin"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\RgStrategicPlannerAgent.py",
+      "relative_path": "apps_rg\\engines\\RgStrategicPlannerAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute, heal_repository",
+      "classes": [
+        "RgStrategicPlannerAgent"
+      ],
+      "stateful_methods": [
+        "execute",
+        "heal_repository"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "SubatomicTestingMixin",
+        "ResumeAgent",
+        "MCPHardenedMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\RgTemplateOptimizerAgent.py",
+      "relative_path": "apps_rg\\engines\\RgTemplateOptimizerAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute, heal_repository",
+      "classes": [
+        "RgTemplateOptimizerAgent"
+      ],
+      "stateful_methods": [
+        "execute",
+        "heal_repository"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "SubatomicTestingMixin",
+        "ResumeAgent",
+        "MCPHardenedMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\rg_contact_research_executor.py",
+      "relative_path": "apps_rg\\engines\\rg_contact_research_executor.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute_safety",
+      "classes": [
+        "SafetyExecutor"
+      ],
+      "stateful_methods": [
+        "execute_safety"
+      ],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\rg_creative_brief.py",
+      "relative_path": "apps_rg\\engines\\rg_creative_brief.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "VoiceType",
+        "ProvenanceStrategy",
+        "WordCountConstraint",
+        "CharCountConstraint",
+        "StructureConstraint",
+        "HeadlineBrief",
+        "ExecutiveSummaryBrief",
+        "ExperienceBulletsBrief",
+        "LeadershipCompetenciesBrief",
+        "CoverLetterBrief",
+        "OptimizedSkillsBrief",
+        "RGCreativeBrief",
+        "CreativeBriefValidator"
+      ],
+      "stateful_methods": [
+        "validate",
+        "validate"
+      ],
+      "functions": [
+        "create_creative_brief",
+        "create_brief_validator",
+        "get_headline_brief",
+        "get_executive_summary_brief",
+        "get_experience_bullets_brief"
+      ],
+      "inherits_from": [
+        "Enum",
+        "Enum"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\rg_provenance_tracker.py",
+      "relative_path": "apps_rg\\engines\\rg_provenance_tracker.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "ProvenanceType",
+        "BulletCategory",
+        "ProvenanceSource",
+        "BulletProvenance",
+        "ProvenanceMap",
+        "ProvenanceTracker",
+        "BulletSelector"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "parse_provenance_pattern",
+        "create_provenance_tracker",
+        "create_bullet_selector",
+        "create_provenance_source"
+      ],
+      "inherits_from": [
+        "Enum",
+        "Enum"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "hashlib",
+        "datetime"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\rg_validation_gates.py",
+      "relative_path": "apps_rg\\engines\\rg_validation_gates.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "GateDecision",
+        "GateSeverity",
+        "GateResult",
+        "ValidationGate",
+        "RGValidationGates"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "create_validation_gates",
+        "run_gate"
+      ],
+      "inherits_from": [
+        "Enum",
+        "Enum"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\run_dashboard_pipeline.py",
+      "relative_path": "apps_rg\\engines\\run_dashboard_pipeline.py",
+      "classification": "error",
+      "reason": "Parse error: unexpected indent (<unknown>, line 24)",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\SectionBalanceAgent.py",
+      "relative_path": "apps_rg\\engines\\SectionBalanceAgent.py",
+      "classification": "engine",
+      "reason": "Class with stateful methods: execute, heal_repository",
+      "classes": [
+        "SectionBalanceAgent"
+      ],
+      "stateful_methods": [
+        "execute",
+        "heal_repository"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "SubatomicTestingMixin",
+        "ResumeAgent",
+        "MCPHardenedMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\section_scope_integrator_engine.py",
+      "relative_path": "apps_rg\\engines\\section_scope_integrator_engine.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "ValidationResult",
+        "AdaptiveRecoveryLoop",
+        "SectionIntegratorConfig",
+        "SectionIntegratorResult",
+        "SectionScopeIntegrator"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "create_section_scope_integrator"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging",
+        "re"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\security_utilities.py",
+      "relative_path": "apps_rg\\engines\\security_utilities.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "SecurityStatus",
+        "SecurityResult",
+        "PromptFirewall",
+        "FactChecker"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "get_prompt_firewall",
+        "get_fact_checker",
+        "scan_for_injection",
+        "validate_facts"
+      ],
+      "inherits_from": [
+        "Enum"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "json",
+        "logging",
+        "re"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\SignalRouterAgent.py",
+      "relative_path": "apps_rg\\engines\\SignalRouterAgent.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "HealingStrategy",
+        "CycleResult",
+        "HealingResult",
+        "SignalRouterAgent",
+        "AgentFactory",
+        "HealingCycle",
+        "AutomaticRollback"
+      ],
+      "stateful_methods": [
+        "heal_repository",
+        "heal_repository",
+        "execute",
+        "execute_rollback"
+      ],
+      "functions": [
+        "run_self_healing_mission"
+      ],
+      "inherits_from": [
+        "Enum",
+        "MCPHardenedMixin",
+        "HealerMixin",
+        "MCPHardenedMixin",
+        "HealerMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "datetime",
+        "agents",
+        "time"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\StrictDocEnforcerAgent.py",
+      "relative_path": "apps_rg\\engines\\StrictDocEnforcerAgent.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "DependencyStatus",
+        "DocComplianceLevel",
+        "PromptRisk",
+        "DependencyIssue",
+        "DocViolation",
+        "PromptIssue",
+        "CostPrediction",
+        "DependencyArbiter",
+        "StrictDocEnforcerAgent",
+        "DashboardGenerator",
+        "PromptGovernor",
+        "PredictiveBudgetManager"
+      ],
+      "stateful_methods": [
+        "heal_repository",
+        "generate"
+      ],
+      "functions": [],
+      "inherits_from": [
+        "Enum",
+        "Enum",
+        "Enum",
+        "MCPHardenedMixin",
+        "HealerMixin"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "__future__",
+        "ast",
+        "hashlib",
+        "re",
+        "subprocess",
+        "sys",
+        "dataclasses",
+        "datetime",
+        "enum",
+        "pathlib",
+        "typing",
+        "agentic_core.L5_safety.guardrails.mcp_hardened_mixin",
+        "agentic_core.utils.core_extensions.healer_mixin",
+        "context"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\SubatomicOrchestrator.py",
+      "relative_path": "apps_rg\\engines\\SubatomicOrchestrator.py",
+      "classification": "types",
+      "reason": "Inherits from Enum - passive data type",
+      "classes": [
+        "WorkflowType",
+        "WorkflowBlueprint",
+        "SubatomicOrchestrator"
+      ],
+      "stateful_methods": [
+        "execute_graph"
+      ],
+      "functions": [
+        "get_orchestrator",
+        "execute_resume_workflow",
+        "execute_message_workflow"
+      ],
+      "inherits_from": [
+        "Enum"
+      ],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "asyncio",
+        "logging",
+        "dataclasses",
+        "datetime",
+        "enum",
+        "typing",
+        "networkx",
+        "runtime.core.dynamic_dag_manager",
+        "runtime.core.SubatomicHop",
+        "runtime.registry.agent_capabilities"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\TestSsotRglobElimination.py",
+      "relative_path": "apps_rg\\engines\\TestSsotRglobElimination.py",
+      "classification": "error",
+      "reason": "Parse error: unindent does not match any outer indentation level (<unknown>, line 57)",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\test_dashboard.py",
+      "relative_path": "apps_rg\\engines\\test_dashboard.py",
+      "classification": "legacy",
+      "reason": "Filename matches legacy pattern: test_",
+      "classes": [
+        "DashboardTestSuite"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "main"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "json",
+        "re",
+        "sys",
+        "pathlib",
+        "generate_dashboard",
+        "agentic_core.L5_safety.validators.structure_blueprint"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\test_large_node.py",
+      "relative_path": "apps_rg\\engines\\test_large_node.py",
+      "classification": "legacy",
+      "reason": "Filename matches legacy pattern: test_",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [
+        "dummy_function_0",
+        "dummy_function_1",
+        "dummy_function_2",
+        "dummy_function_3",
+        "dummy_function_4",
+        "dummy_function_5",
+        "dummy_function_6",
+        "dummy_function_7",
+        "dummy_function_8",
+        "dummy_function_9",
+        "dummy_function_10",
+        "dummy_function_11",
+        "dummy_function_12",
+        "dummy_function_13",
+        "dummy_function_14",
+        "dummy_function_15",
+        "dummy_function_16",
+        "dummy_function_17",
+        "dummy_function_18",
+        "dummy_function_19",
+        "dummy_function_20",
+        "dummy_function_21",
+        "dummy_function_22",
+        "dummy_function_23",
+        "dummy_function_24",
+        "dummy_function_25",
+        "dummy_function_26",
+        "dummy_function_27",
+        "dummy_function_28",
+        "dummy_function_29",
+        "dummy_function_30",
+        "dummy_function_31",
+        "dummy_function_32",
+        "dummy_function_33",
+        "dummy_function_34",
+        "dummy_function_35",
+        "dummy_function_36",
+        "dummy_function_37",
+        "dummy_function_38",
+        "dummy_function_39",
+        "dummy_function_40",
+        "dummy_function_41",
+        "dummy_function_42",
+        "dummy_function_43",
+        "dummy_function_44",
+        "dummy_function_45",
+        "dummy_function_46",
+        "dummy_function_47",
+        "dummy_function_48",
+        "dummy_function_49",
+        "dummy_function_50",
+        "dummy_function_51",
+        "dummy_function_52",
+        "dummy_function_53",
+        "dummy_function_54",
+        "dummy_function_55",
+        "dummy_function_56",
+        "dummy_function_57",
+        "dummy_function_58",
+        "dummy_function_59",
+        "dummy_function_60",
+        "dummy_function_61",
+        "dummy_function_62",
+        "dummy_function_63",
+        "dummy_function_64",
+        "dummy_function_65",
+        "dummy_function_66",
+        "dummy_function_67",
+        "dummy_function_68",
+        "dummy_function_69",
+        "dummy_function_70",
+        "dummy_function_71",
+        "dummy_function_72",
+        "dummy_function_73",
+        "dummy_function_74",
+        "dummy_function_75",
+        "dummy_function_76",
+        "dummy_function_77",
+        "dummy_function_78",
+        "dummy_function_79",
+        "dummy_function_80",
+        "dummy_function_81",
+        "dummy_function_82",
+        "dummy_function_83",
+        "dummy_function_84",
+        "dummy_function_85",
+        "dummy_function_86",
+        "dummy_function_87",
+        "dummy_function_88",
+        "dummy_function_89",
+        "dummy_function_90",
+        "dummy_function_91",
+        "dummy_function_92",
+        "dummy_function_93",
+        "dummy_function_94",
+        "dummy_function_95",
+        "dummy_function_96",
+        "dummy_function_97",
+        "dummy_function_98",
+        "dummy_function_99",
+        "dummy_function_100",
+        "dummy_function_101",
+        "dummy_function_102",
+        "dummy_function_103",
+        "dummy_function_104",
+        "dummy_function_105",
+        "dummy_function_106",
+        "dummy_function_107",
+        "dummy_function_108",
+        "dummy_function_109",
+        "dummy_function_110",
+        "dummy_function_111",
+        "dummy_function_112",
+        "dummy_function_113",
+        "dummy_function_114",
+        "dummy_function_115",
+        "dummy_function_116",
+        "dummy_function_117",
+        "dummy_function_118",
+        "dummy_function_119",
+        "dummy_function_120",
+        "dummy_function_121",
+        "dummy_function_122",
+        "dummy_function_123",
+        "dummy_function_124",
+        "dummy_function_125",
+        "dummy_function_126",
+        "dummy_function_127",
+        "dummy_function_128",
+        "dummy_function_129",
+        "dummy_function_130",
+        "dummy_function_131",
+        "dummy_function_132",
+        "dummy_function_133",
+        "dummy_function_134",
+        "dummy_function_135",
+        "dummy_function_136",
+        "dummy_function_137",
+        "dummy_function_138",
+        "dummy_function_139",
+        "dummy_function_140",
+        "dummy_function_141",
+        "dummy_function_142",
+        "dummy_function_143",
+        "dummy_function_144",
+        "dummy_function_145",
+        "dummy_function_146",
+        "dummy_function_147",
+        "dummy_function_148",
+        "dummy_function_149",
+        "dummy_function_150",
+        "dummy_function_151",
+        "dummy_function_152",
+        "dummy_function_153",
+        "dummy_function_154",
+        "dummy_function_155",
+        "dummy_function_156",
+        "dummy_function_157",
+        "dummy_function_158",
+        "dummy_function_159",
+        "dummy_function_160",
+        "dummy_function_161",
+        "dummy_function_162",
+        "dummy_function_163",
+        "dummy_function_164",
+        "dummy_function_165",
+        "dummy_function_166",
+        "dummy_function_167",
+        "dummy_function_168",
+        "dummy_function_169",
+        "dummy_function_170",
+        "dummy_function_171",
+        "dummy_function_172",
+        "dummy_function_173",
+        "dummy_function_174",
+        "dummy_function_175",
+        "dummy_function_176",
+        "dummy_function_177",
+        "dummy_function_178",
+        "dummy_function_179",
+        "dummy_function_180",
+        "dummy_function_181",
+        "dummy_function_182",
+        "dummy_function_183",
+        "dummy_function_184",
+        "dummy_function_185",
+        "dummy_function_186",
+        "dummy_function_187",
+        "dummy_function_188",
+        "dummy_function_189",
+        "dummy_function_190",
+        "dummy_function_191",
+        "dummy_function_192",
+        "dummy_function_193",
+        "dummy_function_194",
+        "dummy_function_195",
+        "dummy_function_196",
+        "dummy_function_197",
+        "dummy_function_198",
+        "dummy_function_199",
+        "dummy_function_200",
+        "dummy_function_201",
+        "dummy_function_202",
+        "dummy_function_203",
+        "dummy_function_204",
+        "dummy_function_205",
+        "dummy_function_206",
+        "dummy_function_207",
+        "dummy_function_208",
+        "dummy_function_209",
+        "dummy_function_210",
+        "dummy_function_211",
+        "dummy_function_212",
+        "dummy_function_213",
+        "dummy_function_214",
+        "dummy_function_215",
+        "dummy_function_216",
+        "dummy_function_217",
+        "dummy_function_218",
+        "dummy_function_219",
+        "dummy_function_220",
+        "dummy_function_221",
+        "dummy_function_222",
+        "dummy_function_223",
+        "dummy_function_224",
+        "dummy_function_225",
+        "dummy_function_226",
+        "dummy_function_227",
+        "dummy_function_228",
+        "dummy_function_229",
+        "dummy_function_230",
+        "dummy_function_231",
+        "dummy_function_232",
+        "dummy_function_233",
+        "dummy_function_234",
+        "dummy_function_235",
+        "dummy_function_236",
+        "dummy_function_237",
+        "dummy_function_238",
+        "dummy_function_239",
+        "dummy_function_240",
+        "dummy_function_241",
+        "dummy_function_242",
+        "dummy_function_243",
+        "dummy_function_244",
+        "dummy_function_245",
+        "dummy_function_246",
+        "dummy_function_247",
+        "dummy_function_248",
+        "dummy_function_249",
+        "dummy_function_250"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\test_ssot_enforcement.py",
+      "relative_path": "apps_rg\\engines\\test_ssot_enforcement.py",
+      "classification": "legacy",
+      "reason": "Filename matches legacy pattern: test_",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [
+        "check_ssot_imports",
+        "check_hardcoded_strings",
+        "check_calculation_duplication",
+        "test_file_ssot_compliance",
+        "test_no_hardcoded_columns_in_js",
+        "test_ssot_generation_integrity",
+        "test_generator_weight_validation",
+        "main"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "ast",
+        "re",
+        "sys",
+        "pathlib",
+        "agentic_core.L5_safety.validators.structure_blueprint",
+        "yaml",
+        "yaml"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\TitaniumAwareAgent.py",
+      "relative_path": "apps_rg\\engines\\TitaniumAwareAgent.py",
+      "classification": "error",
+      "reason": "Parse error: unexpected indent (<unknown>, line 10)",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\UtilitiesOrganizeAllFiles.py",
+      "relative_path": "apps_rg\\engines\\UtilitiesOrganizeAllFiles.py",
+      "classification": "error",
+      "reason": "Parse error: unexpected indent (<unknown>, line 11)",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": []
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\void_compliance.py",
+      "relative_path": "apps_rg\\engines\\void_compliance.py",
+      "classification": "tool",
+      "reason": "Contains only standalone functions (no classes)",
+      "classes": [],
+      "stateful_methods": [],
+      "functions": [
+        "validate_file_naming",
+        "get_placement_guidance",
+        "check_span_of_two_violation",
+        "validate_import_conventions",
+        "validate_file_location",
+        "get_applicable_keys_for_file",
+        "enforce_void_compliance",
+        "get_folder_scope_summary",
+        "generate_ascii_tree",
+        "check_span_of_two_violations",
+        "validate_canonical_hierarchy",
+        "check_import_waterfall_violations",
+        "validate_sovereign_roots"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "__future__",
+        "ast",
+        "logging",
+        "os",
+        "re",
+        "pathlib",
+        "agentic_core.L5_safety.validators.structure_blueprint",
+        "agentic_core.utils.ssot_discovery"
+      ]
+    },
+    {
+      "path": "c:\\Git\\Agentic-Workflow\\apps_rg\\engines\\weight_experience_match.py",
+      "relative_path": "apps_rg\\engines\\weight_experience_match.py",
+      "classification": "tool",
+      "reason": "Class contains only @staticmethod/@classmethod",
+      "classes": [
+        "WeightExperienceMatch"
+      ],
+      "stateful_methods": [],
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "inherits_from": [],
+      "dependency_count": 0,
+      "imported_by": [],
+      "imports": [
+        "logging"
+      ]
+    }
+  ]
+}

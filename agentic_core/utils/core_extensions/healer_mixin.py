@@ -38,7 +38,7 @@ import logging
 import time
 from ast import parse, unparse
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, Any, Optional, Set, TypedDict
 
 # Lazy import to break circular dependency
 if TYPE_CHECKING:
@@ -417,7 +417,7 @@ class HealerMixin(instructional_injection_mixin):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: set[str] | None = None,
+        _call_path: Optional[Set[str]] = None,
         **kwargs,  # Essential for dynamic orchestrator calls
     ) -> HealResult:
         """
@@ -426,6 +426,10 @@ class HealerMixin(instructional_injection_mixin):
         This is the foundational heal_repository that all agents inherit.
         Subclasses should call super().heal_repository(**kwargs) FIRST to ensure
         the shared healing chain (diagnostics, rollback, MCP hardening) runs.
+
+        CRITICAL: Base Case / Termination Logic
+        If we are too deep, or if this mixin is the last in the chain capable of healing,
+        we return a neutral result rather than calling super() which might hit object().
 
         Args:
             dry_run: If True, only report violations without fixing
@@ -440,22 +444,32 @@ class HealerMixin(instructional_injection_mixin):
         """
         agent_name = self.__class__.__name__
 
+        # CRITICAL: Base Case / Termination Logic
+        # If we are too deep, return a neutral result rather than calling super()
+        # which might hit object() and cause AttributeError
+        if depth > max_depth:
+            Logger.warning(f"[HEAL_REPOSITORY] Max depth {max_depth} exceeded for {agent_name}")
+            return HealResult(
+                violations_found=0,
+                violations_fixed=0,
+                status="SKIPPED",
+                errors=0,
+                skipped=1,
+            )
+
         # Initialize call path for cycle detection
         if _call_path is None:
             _call_path = set()
 
-        # Cycle detection
+        # Cycle detection with detailed error reporting
         if agent_name in _call_path:
-            Logger.warning(f"[HEAL_REPOSITORY] Cycle detected: {agent_name}")
-            return self._normalize_result(
-                {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "status": "SKIPPED"}
-            )
-
-        # Depth limiting
-        if depth > max_depth:
-            Logger.warning(f"[HEAL_REPOSITORY] Max depth {max_depth} exceeded for {agent_name}")
-            return self._normalize_result(
-                {"violations": 0, "fixed": 0, "errors": 0, "skipped": 1, "status": "SKIPPED"}
+            Logger.warning(f"[HEAL_REPOSITORY] Cycle detected: {agent_name} re-entered")
+            return HealResult(
+                violations_found=0,
+                violations_fixed=0,
+                status="SKIPPED",
+                errors=0,
+                skipped=1,
             )
 
         # Check if healing is enabled
