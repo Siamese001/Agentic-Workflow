@@ -1,6 +1,6 @@
-"""Hardened OpenAI Executor - Military-Grade Reliability.
+"""Hardened Anthropic Executor - Military-Grade Reliability.
 
-Provides robust execution for OpenAI API with:
+Provides robust execution for Anthropic Claude API with:
 - Circuit breaker for fault tolerance
 - Exponential backoff retry logic
 - Pre-flight token budget validation
@@ -14,37 +14,29 @@ import logging
 import os
 from dataclasses import dataclass
 
-from runtime.shared.agent_executor import AgentMessage, AgentResponse
-from shared.resilience.mixin import HardeningMixin
-from shared.resilience.telemetry import SystemTelemetry
+from apps_shared.common_utils.AgentExecutor import AgentMessage, AgentResponse
+from agentic_core.base_agents.resilience_mixin import HardeningMixin, TokenLimitError
+from agentic_core.base_agents.telemetry import SystemTelemetry
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class HardenedOpenAIConfig:
-    """configuration for HardenedOpenAIExecutor."""
+class HardenedAnthropicConfig:
+    """configuration for HardenedAnthropicExecutor."""
 
     # Model context limits (tokens)
     MODEL_LIMITS = {
-        "gpt-4": 8192,
-        "gpt-4-32k": 32768,
-        "gpt-4-0613": 8192,
-        "gpt-4-32k-0613": 32768,
-        "gpt-4-turbo": 128000,
-        "gpt-4-turbo-2024-04-09": 128000,
-        "gpt-4o": 128000,
-        "gpt-4o-2024-08-06": 128000,
-        "gpt-4o-mini": 128000,
-        "gpt-3.5-turbo": 4096,
-        "gpt-3.5-turbo-16k": 16384,
-        "gpt-3.5-turbo-0613": 4096,
-        "gpt-3.5-turbo-16k-0613": 16384,
+        "claude-3-5-sonnet-20241022": 200000,
+        "claude-3-5-haiku-20241022": 200000,
+        "claude-3-opus-20240229": 200000,
+        "claude-3-sonnet-20240229": 200000,
+        "claude-3-haiku-20240307": 200000,
     }
 
     def __init__(
         self,
-        model: str = "gpt-4o-2024-08-06",
+        model: str = "claude-3-5-sonnet-20241022",
         temperature: float = 0.7,
         max_tokens: int = 4096,
         timeout_s: int = 60,
@@ -63,63 +55,65 @@ class HardenedOpenAIConfig:
     @property
     def max_context_tokens(self) -> int:
         """Get maximum context tokens for the model."""
-        return self.MODEL_LIMITS.get(self.model, 4096)
+        return self.MODEL_LIMITS.get(self.model, 200000)
 
 
-class HardenedOpenAIExecutor(HardeningMixin):
-    """Military-grade executor for OpenAI API.
+class HardenedAnthropicExecutor(HardeningMixin):
+    """Military-grade executor for Anthropic Claude API.
 
-    Wraps the OpenAI client with circuit breaking, retries,
+    Wraps the Anthropic client with circuit breaking, retries,
     token validation, and structured telemetry.
     """
 
     def __init__(
         self,
-        config: HardenedOpenAIConfig | None = None,
+        config: HardenedAnthropicConfig | None = None,
         telemetry: SystemTelemetry | None = None,
     ):
-        """Initialize hardened OpenAI executor.
+        """Initialize hardened Anthropic executor.
 
         Args:
             config: Optional configuration
             telemetry: Optional telemetry instance
         """
-        self.config = config or HardenedOpenAIConfig()
+        self.config = config or HardenedAnthropicConfig()
 
         # Initialize hardening mixin
         super().__init__(
-            component_name="openai_executor",
+            component_name="anthropic_executor",
             failure_threshold=self.config.failure_threshold,
             reset_timeout_s=self.config.reset_timeout_s,
             max_retries=self.config.max_retries,
             telemetry=telemetry,
         )
 
-        # Initialize OpenAI client
+        # Initialize Anthropic client
         self._client = None
         self._setup_client()
 
     def _setup_client(self) -> None:
-        """Setup OpenAI client."""
+        """Setup Anthropic client."""
         try:
-            import openai
+            import anthropic
         except ImportError as exc:
             raise ImportError(
-                "OpenAI package not installed. Install with: pip install openai"
+                "Anthropic package not installed. Install with: pip install anthropic"
             ) from exc
 
-        api_key = os.getenv("OPENAI_API_KEY")
+        api_key = os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
-            raise RuntimeError("OPENAI_API_KEY environment variable must be set")
+            raise RuntimeError("ANTHROPIC_API_KEY environment variable must be set")
 
-        self._client = openai.OpenAI(
+        self._client = anthropic.Anthropic(
             api_key=api_key,
             timeout=self.config.timeout_s,
-            max_retries=0,  # We handle retries ourselves
         )
 
     def _validate_token_budget(self, prompt: str) -> None:
         """Validate token budget before API call.
+
+        Anthropic doesn't provide official tokenization, so we use
+        a conservative estimate based on character count.
 
         Args:
             prompt: Input prompt text
@@ -127,37 +121,40 @@ class HardenedOpenAIExecutor(HardeningMixin):
         Raises:
             TokenLimitError: If prompt exceeds model limits
         """
-        self.validate_token_budget_tiktoken(
-            prompt=prompt,
-            model=self.config.model,
-            max_tokens=self.config.max_context_tokens - self.config.max_tokens,
-        )
+        # Conservative estimate: ~4 chars per token for Claude
+        estimated_tokens = len(prompt) // 4
+
+        # Reserve space for max_tokens in response
+        available_tokens = self.config.max_context_tokens - self.config.max_tokens
+
+        if estimated_tokens > available_tokens:
+            raise TokenLimitError(
+                f"Prompt estimated at {estimated_tokens} tokens exceeds available budget "
+                f"({available_tokens} tokens for {self.config.model})"
+            )
 
     def _build_messages(
         self,
         messages: list[AgentMessage],
         system_prompt: str | None = None,
-    ) -> list[dict[str, str]]:
-        """Build OpenAI message format.
+    ) -> tuple[list[dict[str, str]], str | None]:
+        """Build Anthropic message format.
 
         Args:
             messages: Agent messages
             system_prompt: Optional system prompt
 
         Returns:
-            Formatted messages for OpenAI API
+            Tuple of (messages, system_prompt) for Anthropic API
         """
-        openai_messages = []
-
-        # Add system prompt if provided
-        if system_prompt:
-            openai_messages.append({"role": "system", "content": system_prompt})
+        # Anthropic uses system_prompt parameter separately
+        anthropic_messages = []
 
         # Add user/assistant messages
         for msg in messages:
-            openai_messages.append({"role": msg.role, "content": msg.content})
+            anthropic_messages.append({"role": msg.role, "content": msg.content})
 
-        return openai_messages
+        return anthropic_messages, system_prompt
 
     async def run_llm(
         self,
@@ -168,7 +165,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         system_prompt: str | None = None,
         messages: list[AgentMessage] | None = None,
     ) -> str:
-        """Run OpenAI completion with hardening.
+        """Run Anthropic completion with hardening.
 
         Args:
             prompt: Input prompt (used if messages not provided)
@@ -182,38 +179,38 @@ class HardenedOpenAIExecutor(HardeningMixin):
         """
         # Use messages or build single message from prompt
         if messages:
-            openai_messages = self._build_messages(messages, system_prompt)
+            anthropic_messages, sys_prompt = self._build_messages(messages, system_prompt)
             combined_prompt = "\n".join(msg.content for msg in messages)
         else:
-            openai_messages = []
-            if system_prompt:
-                openai_messages.append({"role": "system", "content": system_prompt})
-            openai_messages.append({"role": "user", "content": prompt})
+            anthropic_messages = [{"role": "user", "content": prompt}]
+            sys_prompt = system_prompt
             combined_prompt = prompt
 
         # Define async operation
         async def _completion():
-            response = self._client.chat.completions.create(
+            response = self._client.messages.create(
                 model=self.config.model,
-                messages=openai_messages,
+                messages=anthropic_messages,
                 temperature=temperature or self.config.temperature,
                 max_tokens=max_tokens or self.config.max_tokens,
+                system=sys_prompt,
             )
 
             # Extract content
-            if response.choices:
-                return response.choices[0].message.content or ""
+            if response.content:
+                return response.content[0].text
             return ""
 
         # Execute with hardening
         return await self.execute_hardened(
-            operation="chat_completion",
+            operation="messages_create",
             fn=_completion,
             validate_token_budget=lambda: self._validate_token_budget(combined_prompt),
             metadata={
                 "model": self.config.model,
                 "temperature": temperature or self.config.temperature,
                 "max_tokens": max_tokens or self.config.max_tokens,
+                "has_system_prompt": bool(sys_prompt),
             },
         )
 
@@ -226,7 +223,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         system_prompt: str | None = None,
         messages: list[AgentMessage] | None = None,
     ) -> AgentResponse:
-        """Run OpenAI completion with full response metadata.
+        """Run Anthropic completion with full response metadata.
 
         Args:
             prompt: Input prompt (used if messages not provided)
@@ -240,34 +237,34 @@ class HardenedOpenAIExecutor(HardeningMixin):
         """
         # Use messages or build single message from prompt
         if messages:
-            openai_messages = self._build_messages(messages, system_prompt)
+            anthropic_messages, sys_prompt = self._build_messages(messages, system_prompt)
             combined_prompt = "\n".join(msg.content for msg in messages)
         else:
-            openai_messages = []
-            if system_prompt:
-                openai_messages.append({"role": "system", "content": system_prompt})
-            openai_messages.append({"role": "user", "content": prompt})
+            anthropic_messages = [{"role": "user", "content": prompt}]
+            sys_prompt = system_prompt
             combined_prompt = prompt
 
         # Define async operation with response capture
         async def _completion():
-            response = self._client.chat.completions.create(
+            response = self._client.messages.create(
                 model=self.config.model,
-                messages=openai_messages,
+                messages=anthropic_messages,
                 temperature=temperature or self.config.temperature,
                 max_tokens=max_tokens or self.config.max_tokens,
+                system=sys_prompt,
             )
             return response
 
         # Execute with hardening
         raw_response = await self.execute_hardened(
-            operation="chat_completion",
+            operation="messages_create",
             fn=_completion,
             validate_token_budget=lambda: self._validate_token_budget(combined_prompt),
             metadata={
                 "model": self.config.model,
                 "temperature": temperature or self.config.temperature,
                 "max_tokens": max_tokens or self.config.max_tokens,
+                "has_system_prompt": bool(sys_prompt),
             },
         )
 
@@ -275,22 +272,21 @@ class HardenedOpenAIExecutor(HardeningMixin):
         content = ""
         usage = None
 
-        if raw_response.choices:
-            choice = raw_response.choices[0]
-            content = choice.message.content or ""
+        if raw_response.content:
+            content = raw_response.content[0].text
 
         if hasattr(raw_response, "usage"):
             usage = {
-                "prompt_tokens": raw_response.usage.prompt_tokens,
-                "completion_tokens": raw_response.usage.completion_tokens,
-                "total_tokens": raw_response.usage.total_tokens,
+                "prompt_tokens": raw_response.usage.input_tokens,
+                "completion_tokens": raw_response.usage.output_tokens,
+                "total_tokens": raw_response.usage.input_tokens + raw_response.usage.output_tokens,
             }
 
         return AgentResponse(
             content=content,
             model=self.config.model,
             usage=usage,
-            finish_reason=raw_response.choices[0].finish_reason if raw_response.choices else None,
+            finish_reason=raw_response.stop_reason if raw_response else None,
         )
 
     def run_llm_sync(
@@ -347,18 +343,18 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
 
 # Factory function for backward compatibility
-def create_hardened_openai_executor(
-    model: str = "gpt-4o-2024-08-06", temperature: float = 0.7, **kwargs
-) -> HardenedOpenAIExecutor:
-    """Create a hardened OpenAI executor.
+def create_hardened_anthropic_executor(
+    model: str = "claude-3-5-sonnet-20241022", temperature: float = 0.7, **kwargs
+) -> HardenedAnthropicExecutor:
+    """Create a hardened Anthropic executor.
 
     Args:
-        model: OpenAI model name
+        model: Anthropic model name
         temperature: Sampling temperature
         **kwargs: Additional configuration parameters
 
     Returns:
-        HardenedOpenAIExecutor instance
+        HardenedAnthropicExecutor instance
     """
-    config = HardenedOpenAIConfig(model=model, temperature=temperature, **kwargs)
-    return HardenedOpenAIExecutor(config)
+    config = HardenedAnthropicConfig(model=model, temperature=temperature, **kwargs)
+    return HardenedAnthropicExecutor(config)

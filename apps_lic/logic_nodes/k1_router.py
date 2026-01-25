@@ -1,32 +1,15 @@
-"""K.1 Routing Agent - Archetype Classification and Route Selection.
-
-This agent implements the mandatory 7 Prompt Shell Entrance Gates, classifies
-the recipient archetype using CXO precedence rules, and selects the correct
-route (INMAIL vs CONNECTION_REQ) with premium routing validation.
+"""[SSOT] Logic Node for K1 Routing.
+Moved from engines/k1_routing_agent.py to comply with Blueprint Depth-2 Structure.
+This is a deterministic utility, NOT an autonomous agent.
 """
 
 from __future__ import annotations
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 import logging
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 logger = logging.getLogger(__name__)
-
-
-# STUBS: Legacy mixins (use LICAgentBase instead)
-class MCPHardenedMixin:
-    """Legacy mixin - use LICAgentBase instead."""
-
-    pass
-
-
-class HealerMixin:
-    """Legacy mixin - use LICAgentBase instead."""
-
-    pass
 
 
 @dataclass
@@ -52,7 +35,7 @@ class RouteSelectionResult:
 
 @dataclass
 class K1Output:
-    """K.1 routing agent output."""
+    """K.1 routing node output."""
 
     archetype: ArchetypeClassificationResult
     route: RouteSelectionResult
@@ -60,37 +43,40 @@ class K1Output:
     metadata: dict[str, Any]
 
 
-@dataclass
-class RoutingSpecialist(SovereignBaseAgent):
-    """LIC Sovereign Routing Specialist.
-    Merged logic from k1_router_agent stub.
-
-    This agent executes the mandatory 7 Prompt Shell Entrance Gates:
-    1. Lifecycle determination (NEW vs EXISTING)
-    2. Contact block validation (Name, Title, About)
-    3A. Premium InMail availability check
-    3B. Route override check
-    4. Archetype classification with CXO precedence
-    5. Route selection validation
-    6. Premium routing mismatch detection
-    7. Final gate approval
+class K1Router:
     """
+    Handles state transitions and routing logic for the Profile Analysis workflow.
+    
+    This is a deterministic logic node that implements the 7 Prompt Shell Entrance Gates,
+    archetype classification with CXO precedence, and route selection with premium
+    routing validation. It is NOT an autonomous agent.
+    """
+    
+    def __init__(self, config: Dict[str, Any] = None):
+        self.config = config or {}
+        
+        # Default configuration
+        self.archetype_tokens: Dict[str, List[str]] = self.config.get(
+            "archetype_tokens",
+            {
+                "C_LEVEL": ["CEO", "CTO", "CFO", "CIO", "COO", "PRESIDENT", "DIRECTOR"],
+                "EXECUTIVE": ["VP", "VICE PRESIDENT", "SENIOR", "LEAD", "HEAD", "MANAGER"],
+                "SENIOR_TA": ["SENIOR", "PRINCIPAL", "STAFF", "ENGINEER", "DEVELOPER"],
+                "RECRUITER": ["RECRUITER", "TALENT", "HR", "SOURCING"],
+            }
+        )
+        self.cxo_precedence_tokens: List[str] = self.config.get(
+            "cxo_precedence_tokens",
+            ["CEO", "CTO", "CFO", "CIO", "COO", "PRESIDENT", "FOUNDER", "CHIEF"]
+        )
+        self.route_configs: Dict[str, Any] = self.config.get("route_configs", {})
 
-    # Sovereign Configuration
-    archetype_tokens: Dict[str, List[str]] = field(default_factory=dict)
-    cxo_precedence_tokens: List[str] = field(default_factory=list)
-    route_configs: Dict[str, Any] = field(default_factory=dict)
-
-    def __post_init__(self) -> None:
-        """Initialize Sovereign Capabilities."""
-        super().__post_init__()
-        logger.info("K.1 Routing Agent initialized with CXO precedence rule")
-
-    async def execute(self, context: dict[str, Any]) -> K1Output:
-        """Execute K.1 routing and classification.
-
+    def __call__(self, state: Dict[str, Any]) -> K1Output:
+        """
+        Executes routing logic using functor pattern for graph compatibility.
+        
         Args:
-            context: Execution context with:
+            state (dict): The current workflow state containing:
                 - linkedin_url: str
                 - contact_name: str
                 - contact_title: str
@@ -98,6 +84,40 @@ class RoutingSpecialist(SovereignBaseAgent):
                 - lifecycle: str (NEW or EXISTING)
                 - premium_available: bool
                 - route_override: Optional[str]
+            
+        Returns:
+            K1Output: Complete routing output with archetype and route
+            
+        Raises:
+            ValueError: If routing state is empty or validation fails
+        """
+        if not state:
+            raise ValueError("Routing state cannot be empty")
+            
+        return self.execute_routing(state)
+
+    def determine_next_hop(self, state: Dict[str, Any]) -> str:
+        """
+        Determines the next hop identifier for workflow routing.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            str: Next hop identifier
+        """
+        if not state:
+            raise ValueError("Routing state cannot be empty")
+            
+        # Basic routing logic - can be extended based on state
+        result = self.execute_routing(state)
+        return f"route_{result.route.lower()}"
+
+    def execute_routing(self, context: dict[str, Any]) -> K1Output:
+        """Execute K.1 routing and classification.
+
+        Args:
+            context: Execution context with routing parameters
 
         Returns:
             K1Output with archetype and route
@@ -173,7 +193,7 @@ class RoutingSpecialist(SovereignBaseAgent):
             route=route_result,
             entrance_gates_passed=entrance_gates_passed,
             metadata={
-                "k_node_id": self.k_node_id,
+                "router_id": "K1Router",
                 "lifecycle": lifecycle,
                 "contact_name": contact_name,
                 "contact_title": contact_title,

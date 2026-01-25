@@ -23,6 +23,12 @@ from .RgStrategicPlannerAgent import RgStrategicPlannerAgent
 from .RgTemplateOptimizerAgent import RgTemplateOptimizerAgent
 from .SectionBalanceAgent import SectionBalanceAgent
 
+# Core Engine Components
+from .Router import HardenedRouter as Router
+from .HardenedAnthropicExecutor import HardenedAnthropicExecutor
+from .strategist_biowriter import StrategistBioWriter
+from .schema import RouterConfig, RouteResult, ProviderType, RouteConfig, RoutingTier
+
 __all__ = [
     # Content Quality & Validation
     "ATSCompatibilityAgent",
@@ -41,6 +47,15 @@ __all__ = [
     "RgReflectionAgent",
     "RgResumeOrchestratorAgent",
     "ProactiveAgent",
+    # Core Engine Components
+    "Router",
+    "HardenedAnthropicExecutor",
+    "StrategistBioWriter",
+    "RouterConfig",
+    "RouteResult",
+    "ProviderType",
+    "RouteConfig",
+    "RoutingTier",
 ]
 
 

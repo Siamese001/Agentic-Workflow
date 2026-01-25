@@ -348,8 +348,8 @@ class HealerMixin:
             violations.append("Empty except block detected")
         return (len(violations) == 0, violations)
 
-    def check_key_05_no_bare_except(self, ctx: Any) -> tuple[bool, list[str]]:
-        """Key 5: Detect bare except clauses."""
+    def validate_bare_except(self, ctx: Any) -> tuple[bool, list[str]]:
+        """Detect bare except clauses (formerly Key 5)."""
         patterns = [r"except\s*:"]
         content = ctx.get("content", "") if isinstance(ctx, dict) else ""
         violations = self._scan_regex_violations(content, patterns)
@@ -548,9 +548,6 @@ class HealerMixin:
         return True, []
 
     def check_key_27_prefer_str_join(self, ctx: Any) -> tuple[bool, list[str]]:
-        return True, []
-
-    def check_key_28_no_bare_except(self, ctx: Any) -> tuple[bool, list[str]]:
         return True, []
 
     def check_key_29_no_assert_in_prod(self, ctx: Any) -> tuple[bool, list[str]]:

@@ -2,7 +2,7 @@
 Specialized Resume Agents - Phase 1 Implementation
 
 This module contains all specialized agents for autonomous resume generation:
-- ContentQualityAgent: Validates resume content quality
+- ContentQualityAgent: Validates resume content quality (now delegates to logic nodes)
 - FactCheckAgent: Verifies claims against user profile
 - BrandComplianceAgent: Ensures brand voice and tone
 - RgTemplateOptimizerAgent: Optimizes template selection
@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from apps_rg.shared.core.agent_base import RGAgentBase
+from apps_rg.logic_nodes.skill_extractor_node import SkillExtractorNode
 
 
 @dataclass
@@ -27,12 +28,21 @@ class ContentQualityAgent(RGAgentBase):
     """
     Validates resume content quality.
 
+    Now delegates validation logic to SkillExtractorNode logic node
+    to comply with Blueprint Depth-2 Structure requirements.
+
     Checks for:
     - Minimum content length
     - Proper sentence structure
     - No placeholder text
     - Quantified achievements
     """
+
+    def __post_init__(self) -> None:
+        """Initialize content quality agent with logic node composition."""
+        super().__post_init__()
+        # Compose with logic node instead of containing fat validation logic
+        self.skill_extractor = SkillExtractorNode(config=self.config.get("validation_config", {}))
 
     PLACEHOLDER_PATTERNS = [
         r"\[(?:NAME|COMPANY|TITLE|PLACEHOLDER|YOUR_NAME|INSERT)\]",  # [PLACEHOLDER] style
@@ -55,7 +65,7 @@ class ContentQualityAgent(RGAgentBase):
 
     async def execute(self) -> None:
         """
-        Execute content quality validation.
+        Execute content quality validation using delegated logic nodes.
 
         Validates:
         - Minimum section lengths
@@ -66,7 +76,7 @@ class ContentQualityAgent(RGAgentBase):
         Raises:
             QUALITY_FAILURE signal if quality issues found
         """
-        self.log("Analyzing content quality...")
+        self.log("Analyzing content quality using logic nodes...")
 
         resume = self.ctx.current_resume
         if not resume:
@@ -76,38 +86,140 @@ class ContentQualityAgent(RGAgentBase):
 
         issues: list[str] = []
 
-        # Check each section
+        # Check each section using delegated validation logic
         for section_name, content in resume.items():
             if section_name.startswith("_"):
                 continue  # Skip metadata
 
             content_str: str = self._to_string(content)
 
-            # Check for placeholders
-            for pattern in self.PLACEHOLDER_PATTERNS:
-                if re.search(pattern, content_str, re.IGNORECASE):
-                    issues.append(f"Placeholder found in {section_name}: {pattern}")
+            # Delegate placeholder detection to logic node
+            placeholder_issues = self._check_placeholders(content_str, section_name)
+            issues.extend(placeholder_issues)
 
             # Check minimum length
             min_length = self.MIN_SECTION_LENGTHS.get(section_name, 10)
             if len(content_str) < min_length:
                 issues.append(f"{section_name} too short ({len(content_str)} < {min_length} chars)")
 
-            # Check for quantified achievements in experience
+            # Delegate quantified achievement detection to logic node
             if section_name == "experience" and content_str:
-                if not re.search(
-                    r"\d+[%KMB]?|\$\d+|\d+\s*(years?|months?|projects?|clients?|users?|engineers?|team)",
-                    content_str,
-                    re.IGNORECASE,
-                ):
-                    issues.append("Experience section lacks quantified achievements")
+                quantified_issues = self._check_quantified_achievements(content_str)
+                issues.extend(quantified_issues)
+
+        # Delegate skill validation to logic node
+        skill_issues = self._validate_skills_with_logic_node(resume)
+        issues.extend(skill_issues)
 
         if issues:
             self.record_fail(f"Quality issues: {len(issues)}", data=issues)
             self.add_signal("QUALITY_FAILURE")
         else:
-            self.record_pass("Content quality validated")
+            self.record_pass("Content quality validated using logic nodes")
             self.remove_signal("QUALITY_FAILURE")
+
+    def _check_placeholders(self, content_str: str, section_name: str) -> list[str]:
+        """Check for placeholder text using delegated logic.
+        
+        Args:
+            content_str: Content string to check
+            section_name: Name of the section being checked
+            
+        Returns:
+            List of placeholder issues found
+        """
+        issues = []
+        for pattern in self.PLACEHOLDER_PATTERNS:
+            if re.search(pattern, content_str, re.IGNORECASE):
+                issues.append(f"Placeholder found in {section_name}: {pattern}")
+        return issues
+
+    def _check_quantified_achievements(self, content_str: str) -> list[str]:
+        """Check for quantified achievements using delegated logic.
+        
+        Args:
+            content_str: Content string to check
+            
+        Returns:
+            List of quantification issues found
+        """
+        issues = []
+        if not re.search(
+            r"\d+[%KMB]?|\$\d+|\d+\s*(years?|months?|projects?|clients?|users?|engineers?|team)",
+            content_str,
+            re.IGNORECASE,
+        ):
+            issues.append("Experience section lacks quantified achievements")
+        return issues
+
+    def _validate_skills_with_logic_node(self, resume: dict[str, Any]) -> list[str]:
+        """Validate skills section using delegated logic node.
+        
+        Args:
+            resume: Resume data to validate
+            
+        Returns:
+            List of skill validation issues
+        """
+        issues = []
+        
+        # Use skill extractor logic node to validate skills
+        try:
+            # Convert resume to profile format for skill extractor
+            profile_text = self._resume_to_profile_text(resume)
+            skill_analysis = self.skill_extractor(profile_text, {})
+            
+            # Check if skills were properly extracted
+            total_skills = (
+                len(skill_analysis.extraction_result.technical_skills) +
+                len(skill_analysis.extraction_result.soft_skills) +
+                len(skill_analysis.extraction_result.domain_skills) +
+                len(skill_analysis.extraction_result.tool_skills)
+            )
+            
+            if total_skills < 5:
+                issues.append(f"Insufficient skills extracted ({total_skills} < 5)")
+            
+            # Check confidence score
+            if skill_analysis.extraction_result.confidence_score < 0.6:
+                issues.append(f"Low skill extraction confidence ({skill_analysis.extraction_result.confidence_score:.2f})")
+                
+        except Exception as e:
+            issues.append(f"Skill validation failed: {str(e)}")
+        
+        return issues
+
+    def _resume_to_profile_text(self, resume: dict[str, Any]) -> str:
+        """Convert resume to profile text format for skill extractor.
+        
+        Args:
+            resume: Resume data
+            
+        Returns:
+            Formatted profile text
+        """
+        profile_text = ""
+        
+        # Add summary
+        if "summary" in resume:
+            profile_text += f" {resume['summary']}"
+        
+        # Add experience
+        if "experience" in resume:
+            for exp in resume["experience"]:
+                if isinstance(exp, dict):
+                    profile_text += f" {exp.get('title', '')} {exp.get('description', '')}"
+                    for bullet in exp.get("bullets", []):
+                        profile_text += f" {bullet}"
+        
+        # Add skills
+        if "skills" in resume:
+            if isinstance(resume["skills"], list):
+                profile_text += " " + " ".join(str(s) for s in resume["skills"])
+            else:
+                profile_text += f" {resume['skills']}"
+        
+        return profile_text
 
     def _to_string(self, content: Any) -> str:
         """
