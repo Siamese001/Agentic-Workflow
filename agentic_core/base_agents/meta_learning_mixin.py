@@ -1,4 +1,5 @@
 from __future__ import annotations
+import asyncio
 
 """
 [PHASE 20+/21] Meta-Learning Mixin - The DNA of Collective Intelligence.
@@ -40,8 +41,10 @@ from typing import Any
 
 Logger = logging.getLogger(__name__)
 
+from agentic_core.base_agents.base_meta_learner import BaseMetaLearner
 
-class MetaLearningMixin:
+
+class MetaLearningMixin(BaseMetaLearner):
     """
     Mixin that provides collective intelligence capabilities to agents.
 
@@ -273,27 +276,31 @@ class MetaLearningMixin:
             Logger.warning(f"[{self._namespace}] Recall error: {e}")
             return None
 
-    def learn_experience(self, context: str, result: dict[str, Any]) -> None:
+    async def learn_experience(self, context: str, result: dict[str, Any]) -> None:
         """
-        Teach the Hive Mind the result of the current action.
-
-        Includes serialization guard to protect primary workflow from
-        learning failures (e.g., non-serializable results).
-
-        Args:
-            context: The context string
-            result: The result to store for future recall
+        [PHASE 25] NOW ASYNC: Uses fire-and-forget pattern.
         """
-        # Circuit breaker check
         if MetaLearningMixin._lobotomized or MetaLearningMixin._memory is None:
             return
 
+        # [PHASE 25] Async Fire-and-Forget Pattern
         try:
-            MetaLearningMixin._memory.learn(context, self._namespace, result)
-            Logger.debug(f"[{self._namespace}] Experience committed to Hive Mind.")
+            # Validate serialization BEFORE spawning background task
+            import json
+
+            _ = json.dumps(result)
+
+            asyncio.create_task(self._async_learn_experience(context, result))
+            Logger.debug(f"[{self._namespace}] Experience queued (async).")
         except Exception as e:
-            # Never crash the agent because learning failed
-            Logger.warning(f"[{self._namespace}] Failed to learn (serialization/connection): {e}")
+            Logger.warning(f"[{self._namespace}] Failed to queue learning: {e}")
+
+    async def _async_learn_experience(self, context: str, result: dict[str, Any]) -> None:
+        """Background task for async learning."""
+        try:
+            await MetaLearningMixin._memory.learn_async(context, self._namespace, result)
+        except Exception as e:
+            Logger.warning(f"[{self._namespace}] Async learn failed: {e}")
 
     def recall_or_execute(
         self,
@@ -348,7 +355,8 @@ class MetaLearningMixin:
                 if not isinstance(result, dict):
                     payload = {"result": result, "_wrapped": True}
 
-                self.learn_experience(context, payload)
+                # Create async task for learning (fire-and-forget)
+                asyncio.create_task(self.learn_experience(context, payload))
         except Exception as e:
             # Never crash the agent because learning failed
             Logger.warning(f"[{self._namespace}] DNA WRITE ERROR: Could not learn experience: {e}")

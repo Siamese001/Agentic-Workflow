@@ -14,6 +14,7 @@ Features:
 
 
 import hashlib
+import json
 import logging
 import time
 from typing import Any
@@ -35,7 +36,39 @@ def get_cache_metrics():
 log = logging.getLogger(__name__)
 
 
+class CircuitBreaker:
+    """[PHASE 25] Circuit Breaker for Redis connections."""
+
+    def __init__(self, failure_threshold: int = 5, timeout_seconds: int = 60):
+        self.failure_threshold = failure_threshold
+        self.timeout_seconds = timeout_seconds
+        self.failure_count = 0
+        self.last_failure_time = 0
+        self.state = "CLOSED"
+
+    def record_failure(self) -> None:
+        self.failure_count += 1
+        self.last_failure_time = time.time()
+        if self.failure_count >= self.failure_threshold:
+            self.state = "OPEN"
+
+    def record_success(self) -> None:
+        self.failure_count = 0
+        self.state = "CLOSED"
+
+    def can_execute(self) -> bool:
+        if self.state == "CLOSED":
+            return True
+        if time.time() - self.last_failure_time > self.timeout_seconds:
+            self.state = "HALF_OPEN"
+            return True
+        return False
+
+
 class RedisCacheMixin:
+    """ULTRA-HARDENED Redis cache Mixin"""
+
+    _circuit_breaker = CircuitBreaker()
     """
     ULTRA-HARDENED Redis cache Mixin
 
@@ -117,6 +150,10 @@ class RedisCacheMixin:
         metrics = get_cache_metrics()
 
         # Try Redis first
+        if not self._circuit_breaker.can_execute():
+            log.debug("Circuit breaker OPEN - using local cache")
+            return self._local_cache.get(full_key)
+
         if self.redis:
             try:
                 value = await self.redis.get(full_key)
@@ -125,8 +162,10 @@ class RedisCacheMixin:
                     metrics.record("redis_get", hit=value is not None, latency_ms=latency)
                 if value is not None:
                     log.debug(f"cache HIT (Redis): {key[:50]}...")
+                    self._circuit_breaker.record_success()
                     return value
             except Exception as e:
+                self._circuit_breaker.record_failure()
                 if CACHE_METRICS_ENABLED:
                     metrics.record_error("redis_get")
                 log.debug(f"Redis get failed ({e}) - checking local fallback")
@@ -153,14 +192,18 @@ class RedisCacheMixin:
     async def cache_set(self, key: str, value: Any, ttl: int | None = None) -> None:
         """
         Set cached value with automatic fallback.
-
-        Always stores locally. Attempts Redis if available.
-        Never raises on failure.
         """
         full_key = self._make_key(key)
         ttl = ttl or self._default_ttl
         start = time.time()
         metrics = get_cache_metrics()
+
+        # [PHASE 25] Serialization Safety Check
+        try:
+            _ = json.dumps(value)
+        except (TypeError, ValueError):
+            log.warning(f"cache SET BLOCKED: Non-serializable value for {key}")
+            return  # Fail-open
 
         # Always store locally first
         self._local_cache[full_key] = {
@@ -169,6 +212,9 @@ class RedisCacheMixin:
         }
 
         # Try Redis
+        if not self._circuit_breaker.can_execute():
+            return
+
         if self.redis:
             try:
                 await self.redis.set(full_key, value, ex=ttl)
@@ -176,8 +222,10 @@ class RedisCacheMixin:
                 if CACHE_METRICS_ENABLED:
                     metrics.record("redis_set", hit=True, latency_ms=latency)
                 log.debug(f"cache SET (Redis): {key[:50]}... TTL={ttl}s")
+                self._circuit_breaker.record_success()
                 return
             except Exception as e:
+                self._circuit_breaker.record_failure()
                 log.debug(f"Redis set suppressed error (local fallback used): {str(e)[:80]}")
                 if CACHE_METRICS_ENABLED:
                     metrics.record_error("redis_set")

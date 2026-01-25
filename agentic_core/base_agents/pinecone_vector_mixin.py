@@ -67,6 +67,7 @@ class PineconeVectorMixin(RedisCacheMixin):
     _pinecone_client = None
     _index_name: str = "sovereign-agents-v1"
     _namespace: str = "agent_patterns"
+    _similarity_threshold: float = 0.85  # [PHASE 25] Configurable
     _local_vectors: dict = {}
 
     # RedisCacheMixin configuration
@@ -119,6 +120,7 @@ class PineconeVectorMixin(RedisCacheMixin):
         include_metadata: bool = True,
         score_threshold: float | None = None,
         use_cache: bool = True,  # [PHASE 34] New parameter
+        apply_similarity_threshold: bool = True,  # [PHASE 25]
     ) -> list[dict[str, Any]]:
         """
         Perform a hardened vector search with Redis caching.
@@ -210,9 +212,15 @@ class PineconeVectorMixin(RedisCacheMixin):
                 latency = (time.time() - start) * 1000
                 matches = results.get("matches", [])
 
-                # Apply optional score threshold post-retrieval
-                if score_threshold is not None:
-                    matches = [m for m in matches if m.get("score", 0) >= score_threshold]
+                # [PHASE 25] Apply similarity threshold
+                thresh = (
+                    score_threshold
+                    if score_threshold is not None
+                    else (self._similarity_threshold if apply_similarity_threshold else 0.0)
+                )
+
+                if thresh > 0:
+                    matches = [m for m in matches if m.get("score", 0) >= thresh]
 
                 # [PHASE 34] cache Write
                 if use_cache and matches:
