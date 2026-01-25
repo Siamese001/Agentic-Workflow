@@ -8,13 +8,13 @@ Legacy K-Node: K.1
 """
 
 import logging
-import re
 from dataclasses import dataclass
 from typing import Any
 
 # [Diff Start: Fix Inheritance and Config]
 # Previous: from agent_core.agent import Agent
 from apps_rg.shared.core.agent_base import RGAgentBase
+
 # Previous: from runtime.config import ReasoningConfig
 from agentic_core.schemas.models.reasoning_config import ReasoningConfig
 # [Diff End]
@@ -64,6 +64,7 @@ class StrategistBioWriter(RGAgentBase):
     """
     Agent specialized in crafting executive biographies with strategic alignment.
     """
+
     def __init__(self, config: BioWriterConfig, reasoning: ReasoningConfig):
         super().__init__()
         self.config = config

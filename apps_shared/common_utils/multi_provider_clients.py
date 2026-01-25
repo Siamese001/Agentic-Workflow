@@ -4,20 +4,24 @@ Provides unified client interface for different LLM providers.
 """
 
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
+
 
 class Provider(str, Enum):
     """Available LLM providers."""
+
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     GOOGLE = "google"
+
 
 class MultiProviderClient:
     """
     Unified client interface for interacting with multiple LLM providers.
     Acts as a facade over provider-specific SDKs.
     """
-    def __init__(self, config: Dict[str, Any]):
+
+    def __init__(self, config: dict[str, Any]):
         self.config = config
 
     async def completion(self, prompt: str, provider: str = "openai") -> str:
@@ -27,11 +31,11 @@ class MultiProviderClient:
 
 def get_client(provider: Provider, **kwargs) -> Any:
     """Get a client for the specified provider.
-    
+
     Args:
         provider: The LLM provider
         **kwargs: Additional configuration
-        
+
     Returns:
         Client instance
     """
@@ -42,11 +46,11 @@ def get_client(provider: Provider, **kwargs) -> Any:
 
 def get_instructor_client(provider: Provider, **kwargs) -> Any:
     """Get an instructor client for structured outputs.
-    
+
     Args:
         provider: The LLM provider
         **kwargs: Additional configuration
-        
+
     Returns:
         Instructor client instance
     """
@@ -54,18 +58,14 @@ def get_instructor_client(provider: Provider, **kwargs) -> Any:
     return None
 
 
-def get_litellm_completion(
-    provider: Provider,
-    messages: list[dict],
-    **kwargs
-) -> Any:
+def get_litellm_completion(provider: Provider, messages: list[dict], **kwargs) -> Any:
     """Get completion using litellm.
-    
+
     Args:
         provider: The LLM provider
         messages: List of messages
         **kwargs: Additional configuration
-        
+
     Returns:
         Completion response
     """
@@ -75,10 +75,10 @@ def get_litellm_completion(
 
 def get_default_model(provider: Provider) -> str:
     """Get the default model for a provider.
-    
+
     Args:
         provider: The LLM provider
-        
+
     Returns:
         Default model name
     """

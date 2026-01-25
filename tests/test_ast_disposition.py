@@ -7,8 +7,8 @@ import unittest
 import ast
 from scripts.ast_disposition_analyzer import AgentVisitor
 
+
 class TestAgentVisitor(unittest.TestCase):
-    
     def test_detects_langchain_import(self):
         """Test Case 1: Must detect direct langchain imports as Agentic."""
         code = "import langchain\nfrom langchain.chat_models import ChatOpenAI"
@@ -41,7 +41,7 @@ class TestAgentVisitor(unittest.TestCase):
         visitor = AgentVisitor()
         visitor.visit(tree)
         self.assertFalse(visitor.is_agent, "False positive on pure utility code")
-        
+
     def test_detects_openai_import_from(self):
         """Test Case 5: Must detect specific 'from' imports from openai."""
         code = "from openai import OpenAI"
@@ -49,6 +49,7 @@ class TestAgentVisitor(unittest.TestCase):
         visitor = AgentVisitor()
         visitor.visit(tree)
         self.assertTrue(visitor.is_agent, "Failed to detect openai import")
+
 
 if __name__ == "__main__":
     unittest.main()

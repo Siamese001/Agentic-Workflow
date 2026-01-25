@@ -31,7 +31,7 @@ class GapClosureEngine(BaseRGEngine):
     K-Node K.9: Leadership Competencies & Gap Closure.
     Reads: 'hop2_enrichment', 'mission_input'
     Writes: 'k9_competencies'
-    
+
     Now delegates skill gap analysis to SkillExtractorNode logic node
     to comply with Blueprint Depth-2 Structure requirements.
     """
@@ -54,13 +54,13 @@ class GapClosureEngine(BaseRGEngine):
             raise ValueError("Buffer missing hop2_enrichment or mission_input")
 
         jd_keywords = mission.get("job_description_keywords", [])  # Assuming extracted in HOP0/1
-        
+
         self._mcp_audit("k9_generation_start")
 
         # 2. DELEGATE: Skill Gap Analysis to Logic Node
         job_description = mission.get("job_description", "")
         skill_analysis = self.skill_extractor(job_description, enrichment)
-        
+
         # 3. LOGIC: Generate competencies based on skill gaps
         gap_skills = skill_analysis.gap_result.missing_skills[:6]  # Top 6 gaps
         competencies = self._generate_competencies(gap_skills)
@@ -89,44 +89,62 @@ class GapClosureEngine(BaseRGEngine):
 
     def _generate_competencies(self, gap_skills: list[str]) -> list[CompetencyItem]:
         """Generate competency items based on skill gaps.
-        
+
         Args:
             gap_skills: List of skills that need to be addressed
-            
+
         Returns:
             List of 6 competency items
         """
         competencies = []
-        
+
         # Generate competencies for each gap skill
         for i, skill in enumerate(gap_skills[:6]):  # Ensure exactly 6
             title = f"{skill} Leadership"
-            description = f"Demonstrated expertise in {skill} with measurable impact and team collaboration."
+            description = (
+                f"Demonstrated expertise in {skill} with measurable impact and team collaboration."
+            )
             word_count = len(description.split())
-            
-            competencies.append(CompetencyItem(
-                title=title,
-                description=description,
-                word_count=word_count
-            ))
-        
+
+            competencies.append(
+                CompetencyItem(title=title, description=description, word_count=word_count)
+            )
+
         # If less than 6 gaps, fill with generic leadership competencies
         generic_competencies = [
-            ("Strategic Leadership", "Strategic thinking and planning with cross-functional collaboration."),
-            ("Team Development", "Building and mentoring high-performing teams with clear objectives."),
-            ("Change Management", "Leading organizational change with effective communication and stakeholder engagement."),
-            ("Results Orientation", "Driving measurable results through data-driven decision making."),
-            ("Innovation Leadership", "Fostering innovation and creative problem-solving approaches."),
-            ("Communication Excellence", "Clear, persuasive communication across all organizational levels."),
+            (
+                "Strategic Leadership",
+                "Strategic thinking and planning with cross-functional collaboration.",
+            ),
+            (
+                "Team Development",
+                "Building and mentoring high-performing teams with clear objectives.",
+            ),
+            (
+                "Change Management",
+                "Leading organizational change with effective communication and stakeholder engagement.",
+            ),
+            (
+                "Results Orientation",
+                "Driving measurable results through data-driven decision making.",
+            ),
+            (
+                "Innovation Leadership",
+                "Fostering innovation and creative problem-solving approaches.",
+            ),
+            (
+                "Communication Excellence",
+                "Clear, persuasive communication across all organizational levels.",
+            ),
         ]
-        
+
         while len(competencies) < 6:
             i = len(competencies) - len(gap_skills)
             if i < len(generic_competencies):
                 title, description = generic_competencies[i]
                 word_count = len(description.split())
                 competencies.append(CompetencyItem(title, description, word_count))
-        
+
         return competencies[:6]  # Ensure exactly 6
 
     def _validate_word_counts(self, items: list[CompetencyItem]) -> list[str]:

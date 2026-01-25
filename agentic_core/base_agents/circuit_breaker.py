@@ -4,11 +4,12 @@ Provides circuit breaking functionality for resilient execution.
 """
 
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 
 class CircuitBreakerState(Enum):
     """Circuit breaker states."""
+
     CLOSED = "closed"
     OPEN = "open"
     HALF_OPEN = "half_open"
@@ -16,16 +17,17 @@ class CircuitBreakerState(Enum):
 
 class CircuitBreakerOpenError(Exception):
     """Raised when circuit breaker is open."""
+
     pass
 
 
 def get_breaker(name: str, **kwargs) -> Any:
     """Get a circuit breaker instance.
-    
+
     Args:
         name: Breaker name
         **kwargs: Additional configuration
-        
+
     Returns:
         Circuit breaker instance
     """

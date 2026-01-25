@@ -5,28 +5,28 @@ Context: New diagnostic tool to perform zero-loss analysis of common_utils using
 
 import ast
 import os
-import sys
-from typing import List, Dict, Set
 from dataclasses import dataclass
 
 # SSOT Path Validation
 TARGET_DIR = r"C:\Git\Agentic-Workflow\apps_shared\common_utils"
+
 
 @dataclass
 class FileDisposition:
     filepath: str
     is_agent: bool
     confidence: str
-    signals: List[str]
+    signals: list[str]
+
 
 class AgentVisitor(ast.NodeVisitor):
     def __init__(self):
         self.is_agent = False
         self.signals = []
         # Heuristics for Agent detection
-        self.agent_imports = {'langchain', 'openai', 'anthropic', 'crewai', 'autogen'}
-        self.agent_bases = {'BaseAgent', 'Agent', 'Chain', 'LLMChain'}
-        self.agent_decorators = {'tool', 'action'}
+        self.agent_imports = {"langchain", "openai", "anthropic", "crewai", "autogen"}
+        self.agent_bases = {"BaseAgent", "Agent", "Chain", "LLMChain"}
+        self.agent_decorators = {"tool", "action"}
 
     def visit_Import(self, node):
         for alias in node.names:
@@ -54,12 +54,17 @@ class AgentVisitor(ast.NodeVisitor):
             if isinstance(decorator, ast.Name) and decorator.id in self.agent_decorators:
                 self.is_agent = True
                 self.signals.append(f"Decorator detected: @{decorator.id}")
-            elif isinstance(decorator, ast.Call) and isinstance(decorator.func, ast.Name) and decorator.func.id in self.agent_decorators:
-                 self.is_agent = True
-                 self.signals.append(f"Decorator call detected: @{decorator.func.id}")
+            elif (
+                isinstance(decorator, ast.Call)
+                and isinstance(decorator.func, ast.Name)
+                and decorator.func.id in self.agent_decorators
+            ):
+                self.is_agent = True
+                self.signals.append(f"Decorator call detected: @{decorator.func.id}")
         self.generic_visit(node)
 
-def analyze_directory(directory: str) -> List[FileDisposition]:
+
+def analyze_directory(directory: str) -> list[FileDisposition]:
     results = []
     if not os.path.exists(directory):
         print(f"Directory not found: {directory}")
@@ -69,41 +74,47 @@ def analyze_directory(directory: str) -> List[FileDisposition]:
         for file in files:
             if not file.endswith(".py"):
                 continue
-            
+
             full_path = os.path.join(root, file)
-            with open(full_path, "r", encoding="utf-8") as f:
+            with open(full_path, encoding="utf-8") as f:
                 try:
                     tree = ast.parse(f.read())
                     visitor = AgentVisitor()
                     visitor.visit(tree)
-                    
-                    results.append(FileDisposition(
-                        filepath=full_path,
-                        is_agent=visitor.is_agent,
-                        confidence="HIGH" if visitor.signals else "LOW",
-                        signals=visitor.signals
-                    ))
+
+                    results.append(
+                        FileDisposition(
+                            filepath=full_path,
+                            is_agent=visitor.is_agent,
+                            confidence="HIGH" if visitor.signals else "LOW",
+                            signals=visitor.signals,
+                        )
+                    )
                 except Exception as e:
-                    results.append(FileDisposition(
-                        filepath=full_path,
-                        is_agent=False,
-                        confidence="ERROR",
-                        signals=[f"Parse Error: {str(e)}"]
-                    ))
+                    results.append(
+                        FileDisposition(
+                            filepath=full_path,
+                            is_agent=False,
+                            confidence="ERROR",
+                            signals=[f"Parse Error: {str(e)}"],
+                        )
+                    )
     return results
 
-def generate_report(results: List[FileDisposition]):
+
+def generate_report(results: list[FileDisposition]):
     print(f"{'DISPOSITION':<12} | {'FILE PATH':<60} | {'SIGNALS'}")
     print("-" * 100)
     for r in results:
         disp = "MOVE" if r.is_agent else "STAY"
         rel_path = r.filepath.replace(r"C:\Git\Agentic-Workflow", "...")
-        signals = ", ".join(r.signals[:2]) # Truncate for view
+        signals = ", ".join(r.signals[:2])  # Truncate for view
         if r.is_agent:
             # Highlight Agents
             print(f"!! {disp:<9} | {rel_path:<60} | {signals}")
         else:
             print(f"   {disp:<9} | {rel_path:<60} | -")
+
 
 if __name__ == "__main__":
     print(f"Scanning {TARGET_DIR} for Agent Contamination...")

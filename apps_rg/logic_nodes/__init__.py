@@ -3,22 +3,32 @@ Maintains structural parity with apps_lic.
 """
 
 from .rg_flow_router import RGFlowRouter, RGFlowOutput, ResumeFlowResult
-from .resume_section_node import ResumeSectionNode, ResumeSectionOutput, RoleExtractionResult, IndustryExtractionResult, SectionAnalysisResult
-from .skill_extractor_node import SkillExtractorNode, SkillAnalysisOutput, SkillExtractionResult, SkillGapResult, SkillMatchResult
+from .resume_section_node import (
+    ResumeSectionNode,
+    ResumeSectionOutput,
+    RoleExtractionResult,
+    IndustryExtractionResult,
+    SectionAnalysisResult,
+)
+from .skill_extractor_node import (
+    SkillExtractorNode,
+    SkillAnalysisOutput,
+    SkillExtractionResult,
+    SkillGapResult,
+    SkillMatchResult,
+)
 
 __all__ = [
     # Flow Routing Logic
     "RGFlowRouter",
-    "RGFlowOutput", 
+    "RGFlowOutput",
     "ResumeFlowResult",
-    
     # Resume Section Logic
     "ResumeSectionNode",
     "ResumeSectionOutput",
     "RoleExtractionResult",
-    "IndustryExtractionResult", 
+    "IndustryExtractionResult",
     "SectionAnalysisResult",
-    
     # Skill Extraction Logic
     "SkillExtractorNode",
     "SkillAnalysisOutput",

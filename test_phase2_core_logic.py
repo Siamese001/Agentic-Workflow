@@ -1,10 +1,17 @@
 import pytest
-from apps_rg.logic_nodes.two_phase_generation_node import TwoPhaseGenerationNode, BulletGenerationOutput
-from apps_rg.logic_nodes.thematic_analysis_node import ThematicAnalysisOutput, AuthenticityPatterns, CompetitiveIntelligence
+from apps_rg.logic_nodes.two_phase_generation_node import (
+    TwoPhaseGenerationNode,
+    BulletGenerationOutput,
+)
+from apps_rg.logic_nodes.thematic_analysis_node import (
+    ThematicAnalysisOutput,
+    AuthenticityPatterns,
+    CompetitiveIntelligence,
+)
 from apps_rg.logic_nodes.resume_section_node import ResumeSectionNode
 
-class TestPhase2CoreLogic:
 
+class TestPhase2CoreLogic:
     @pytest.fixture
     def mock_thematic_output(self):
         return ThematicAnalysisOutput(
@@ -12,7 +19,7 @@ class TestPhase2CoreLogic:
             secondary_themes=["AI", "Scale"],
             authenticity_patterns=AuthenticityPatterns(["Led"], ["Built"], ["%"], ["Expert"]),
             competitive_intelligence=CompetitiveIntelligence([], [], []),
-            company_name="TechCorp"
+            company_name="TechCorp",
         )
 
     def test_phase_a_bullet_generation_structure(self, mock_thematic_output):
@@ -21,9 +28,9 @@ class TestPhase2CoreLogic:
         """
         node = TwoPhaseGenerationNode()
         role_data = {"role": "Engineer"}
-        
+
         output = node.generate_bullets_phase_a(mock_thematic_output, role_data)
-        
+
         assert isinstance(output, BulletGenerationOutput)
         assert len(output.bullets) == 7
         assert "3V" in output.provenance_counts
@@ -36,17 +43,15 @@ class TestPhase2CoreLogic:
         """
         node = TwoPhaseGenerationNode()
         bullet_input = BulletGenerationOutput([], {}, 1.0)
-        
+
         # We expect the output to satisfy the "resume_overview" constraint (25-33 words)
-        # The mock generator produces a short string, so the Enforcer's "Regeneration" 
+        # The mock generator produces a short string, so the Enforcer's "Regeneration"
         # (mocked in Phase 1 as += string) should trigger.
-        
+
         output = node.synthesize_overview_phase_b(
-            bullet_input, 
-            mock_thematic_output,
-            target_section="resume_overview"
+            bullet_input, mock_thematic_output, target_section="resume_overview"
         )
-        
+
         assert output.word_count >= 25, "Enforcer failed to expand underflow text"
         assert output.validation_result == "VALID"
 
@@ -56,12 +61,13 @@ class TestPhase2CoreLogic:
         """
         section_node = ResumeSectionNode()
         profile = {"data": "test"}
-        
+
         result = section_node.generate_experience_section(profile, mock_thematic_output)
-        
+
         assert "bullets" in result
         assert "overview" in result
         assert result["meta"]["provenance"]["3V"] == 3
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

@@ -13,9 +13,8 @@ from typing import Any
 # Previous: from runtime.shared.HardenedAnthropicExecutor import HardenedAnthropicExecutor
 from apps_rg.engines.HardenedAnthropicExecutor import HardenedAnthropicExecutor
 from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
+
 # Previous: from runtime.shared.circuit_breaker import CircuitBreaker, CircuitBreakerState
-from agentic_core.base_agents.circuit_breaker import CircuitBreakerState
-from apps_rg.engines.schema import RouterConfig, RouteResult, ProviderType
 from apps_shared.common_utils.multi_provider_clients import Provider
 from agentic_core.base_agents.telemetry import SystemTelemetry
 from apps_shared.common_utils.AgentExecutor import AgentMessage, AgentResponse

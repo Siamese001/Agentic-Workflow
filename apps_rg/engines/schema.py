@@ -5,12 +5,13 @@ for the hardened router system.
 """
 
 from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Optional, Dict, Any
+from enum import Enum
+from typing import Any
 
 
 class RoutingTier(Enum):
     """Routing tiers for different provider priorities."""
+
     PRIMARY = "primary"
     SECONDARY = "secondary"
     TERTIARY = "tertiary"
@@ -35,13 +36,13 @@ class RouteResult:
     provider_used: ProviderType
     response: str
     latency_ms: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class RouteConfig:
     """Configuration for a specific routing tier."""
-    
+
     provider: str
     model: str
     temperature: float = 0.7
