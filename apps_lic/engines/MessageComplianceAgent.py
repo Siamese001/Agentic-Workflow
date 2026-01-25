@@ -1,3 +1,6 @@
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from dataclasses import dataclass
+
 """
 MessageComplianceAgent - Extracted for one-class-per-file pattern.
 
@@ -6,8 +9,15 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 
+# STUB: OutreachAgent base class (deprecated)
+class OutreachAgent:
+    """Legacy base class - use LICAgentBase instead."""
+
+    pass
+
+
 @dataclass
-class MessageComplianceAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
+class MessageComplianceAgent(SovereignBaseAgent):
     """
     Ensures message compliance with regulations and best practices.
 

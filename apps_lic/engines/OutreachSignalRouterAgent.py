@@ -1,4 +1,3 @@
-
 """
 Outreach Engine Self-Healing Loop
 
@@ -7,15 +6,30 @@ Provides self-healing capabilities for outreach campaigns:
 - Healing cycles with convergence detection
 - Automatic rollback on critical failures
 """
+
+from __future__ import annotations
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from enum import Enum
+from dataclasses import dataclass, field
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-    AppWorkflowOrchestratorAgent,
-)
+if TYPE_CHECKING:
+    from apps_lic.shared.orchestrators import AppWorkflowOrchestratorAgent
+    from apps_lic.engines.LeadQualityAgent import LeadQualityAgent
 
-from .agents import (
-    LeadQualityAgent,
-    OutreachTestPilot,
-)
+
+# STUBS: Legacy mixins (use LICAgentBase instead)
+class MCPHardenedMixin:
+    """Legacy mixin - use LICAgentBase instead."""
+
+    pass
+
+
+class HealerMixin:
+    """Legacy mixin - use LICAgentBase instead."""
+
+    pass
 
 
 class OutreachHealingStrategy(Enum):
@@ -59,7 +73,7 @@ class OutreachHealingResult:
     final_campaign: dict[str, Any]
 
 
-class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
+class OutreachSignalRouterAgent(SovereignBaseAgent):
     """Routes signals to appropriate agents."""
 
     SIGNAL_TO_AGENTS = {

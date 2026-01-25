@@ -7,15 +7,16 @@ Quality Assurance layer. Validates generated drafts against strict compliance ru
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass, field
+from typing import Any
 
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from typing import Any
 
 
-class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
+@dataclass
+class HOP6ValidationAgent(LICAgentBase):
     """
     V2 Implementation of HOP-6 QA.
 
@@ -25,6 +26,15 @@ class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
     - Logic: Rule-based validation engine (Regex, Keyword matching).
     - Output: 'hop6_validation_report'
     """
+
+    # Sovereign Configuration
+    validation_rules: dict[str, Any] = field(
+        default_factory=lambda: {"strict_mode": True, "max_violations": 5}
+    )
+
+    def __post_init__(self) -> None:
+        """Initialize Sovereign Capabilities."""
+        super().__post_init__()
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """

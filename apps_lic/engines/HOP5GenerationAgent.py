@@ -7,14 +7,16 @@ Synthesizes inputs from HOPs 1-4 to generate candidate messages.
 from __future__ import annotations
 
 import asyncio
+from dataclasses import dataclass, field
+from typing import Any
 
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
+@dataclass
+class HOP5GenerationAgent(LICAgentBase):
     """
     V2 Implementation of HOP-5 Writer.
 
@@ -28,6 +30,15 @@ class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
     - Logic: N-Candidate Generation -> scoring -> Selection.
     - Output: 'hop5_generation'
     """
+
+    # Sovereign Configuration
+    generation_params: dict[str, Any] = field(
+        default_factory=lambda: {"temperature": 0.7, "n_candidates": 3, "max_tokens": 500}
+    )
+
+    def __post_init__(self) -> None:
+        """Initialize Sovereign Capabilities."""
+        super().__post_init__()
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """

@@ -1,3 +1,6 @@
+from typing import Any
+from dataclasses import dataclass
+
 """
 LIC Code Interpreter Tool - Fast loop for deterministic evaluation.
 

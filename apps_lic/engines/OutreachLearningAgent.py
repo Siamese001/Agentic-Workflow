@@ -1,3 +1,15 @@
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from pathlib import Path
+from dataclasses import dataclass, field
+from typing import Any
+
+
+# OutreachEngineContext stub
+class OutreachEngineContext:
+    def __init__(self, *args, **kwargs):
+        pass
+
+
 """
 Outreach Engine Learning Module
 
@@ -7,9 +19,23 @@ Provides learning and memory capabilities:
 - Memory persistence across sessions
 """
 
+from enum import Enum
 import hashlib
 import json
 from datetime import datetime
+
+
+# STUB: OutreachAgent base class (deprecated)
+class OutreachAgent:
+    """Legacy base class - use LICAgentBase instead."""
+
+    pass
+
+
+class HealerMixin:
+    """Legacy mixin - use LICAgentBase instead."""
+
+    pass
 
 
 class OutreachConfidenceLevel(Enum):
@@ -286,7 +312,7 @@ class OutreachMemoryPersistence:
         self._save()
 
 
-class OutreachLearningAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, OutreachAgent):
+class OutreachLearningAgent(SovereignBaseAgent):
     """
     Learning agent for outreach campaigns.
 

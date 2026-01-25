@@ -180,7 +180,18 @@ class AuditTrailMixin:
         }
 
         # Structuring as JSON line for machine ingestion
-        log_entry = json.dumps(payload, separators=(",", ":"))
+        def json_serializer(obj):
+            """Custom JSON serializer for dataclass Fields and other objects"""
+            if hasattr(obj, "__name__"):  # Functions, classes, etc.
+                return str(obj)
+            elif hasattr(obj, "default"):  # dataclass Field
+                return f"Field({obj.default})"
+            elif hasattr(obj, "__dict__"):  # Objects with __dict__
+                return str(obj)
+            else:
+                return str(obj)
+
+        log_entry = json.dumps(payload, separators=(",", ":"), default=json_serializer)
 
         if level == "ERROR":
             Logger.error(log_entry)

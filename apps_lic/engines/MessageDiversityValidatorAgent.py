@@ -1,3 +1,6 @@
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from dataclasses import dataclass
+
 """
 MessageDiversityValidatorAgent - Extracted for one-class-per-file pattern.
 
@@ -6,8 +9,21 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 
+# STUBS: Legacy mixins (use LICAgentBase instead)
+class MCPHardenedMixin:
+    """Legacy mixin - use LICAgentBase instead."""
+
+    pass
+
+
+class HealerMixin:
+    """Legacy mixin - use LICAgentBase instead."""
+
+    pass
+
+
 @dataclass
-class MessageDiversityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class MessageDiversityValidatorAgent(SovereignBaseAgent):
     """
     Prevent repetitive messages using cosine similarity
     FEATURE 1.3 from SUPREME_SPELL
@@ -25,7 +41,7 @@ class MessageDiversityValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, He
         self.message_history: list[str] = []
         self.vectorizer = TfidfVectorizer()
 
-    def check_diversity(self, new_message: str) -> Tuple[bool, float, str]:
+    def check_diversity(self, new_message: str) -> tuple[bool, float, str]:
         """
         Check if new message is sufficiently different from history
 

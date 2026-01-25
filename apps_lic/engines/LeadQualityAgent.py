@@ -10,13 +10,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from apps_lic.shared.core.agent_base import LICAgentBase
-from apps_lic.shared.core.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 @dataclass
-class LeadQualitySpecialist(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class LeadQualityAgent(LICAgentBase):
     """
     LIC Sovereign Lead Quality Specialist.
     Hardened for inclusion in HOP-1 / HOP-2 foundations.

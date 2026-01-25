@@ -266,6 +266,29 @@ class TestEndgameCertification:
         # Verify normal operation resumes after cleanup
         assert CoreIntegrityVerifier.verify_core_integrity()
 
+    def test_legacy_harvest_completion(self):
+        """
+        Verify that Phase 28 legacy harvest was completed successfully.
+        """
+        # Verify legacy artifacts exist and are accessible
+        try:
+            from agentic_core.domain.legacy_artifacts import LegacyArtifacts
+
+            assert LegacyArtifacts.CIRCULAR_IMPORT_PATTERN is not None
+            assert LegacyArtifacts.CONTEXT_GROUNDING_TEMPLATE is not None
+            assert "{domain}" in LegacyArtifacts.CONTEXT_GROUNDING_TEMPLATE
+        except ImportError:
+            pytest.fail("LegacyArtifacts could not be imported")
+
+        # Verify legacy folder is permanently deleted
+        # Simplified test - just check the legacy folder is gone
+        # The harvest scripts may be in a different location during test execution
+        legacy_path = Path("apps_shared/legacy")
+        if not legacy_path.exists():
+            legacy_path = Path("../apps_shared/legacy")
+
+        assert not legacy_path.exists(), "Legacy folder was not properly deleted"
+
 
 # Import required for test
 from agentic_core.base_agents.audit_trail_mixin import AuditTrailMixin
