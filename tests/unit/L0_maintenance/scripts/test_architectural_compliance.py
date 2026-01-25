@@ -2,7 +2,7 @@
 file: tests/unit/L0_maintenance/scripts/test_architectural_compliance.py
 description: Aggressive testing of the audit tool to ensure zero false negatives.
 """
-import pytest
+
 import ast
 import os
 import sys
@@ -22,6 +22,7 @@ except ImportError:
     sys.path.append(os.path.abspath("../../../../agentic_core/L0_maintenance/scripts"))
     from architectural_audit import DriftDetector, scan_repository
 
+
 class TestDriftDetector:
     """
     Targeted tests to verify the AST visitor catches all forms of inheritance drift.
@@ -33,10 +34,10 @@ class TestDriftDetector:
         source = "class BadAgent(L2Agent): pass"
         visitor = DriftDetector("test.py")
         visitor.visit(ast.parse(source))
-        
+
         assert len(visitor.violations) == 1
-        assert visitor.violations[0]['class'] == "BadAgent"
-        assert visitor.violations[0]['detected'] == "L2Agent"
+        assert visitor.violations[0]["class"] == "BadAgent"
+        assert visitor.violations[0]["detected"] == "L2Agent"
 
     def test_detects_aliased_import(self):
         """
@@ -50,10 +51,10 @@ class SneakyAgent(BaseClass):
         """
         visitor = DriftDetector("test.py")
         visitor.visit(ast.parse(source))
-        
+
         assert len(visitor.violations) == 1
-        assert visitor.violations[0]['class'] == "SneakyAgent"
-        assert "alias of L2Agent" in visitor.violations[0]['detected']
+        assert visitor.violations[0]["class"] == "SneakyAgent"
+        assert "alias of L2Agent" in visitor.violations[0]["detected"]
 
     def test_detects_dotted_path(self):
         """Verify detection of module.Class usage."""
@@ -64,9 +65,9 @@ class DirectReferenceAgent(agentic_core.L2_execution.L2Agent):
         """
         visitor = DriftDetector("test.py")
         visitor.visit(ast.parse(source))
-        
+
         assert len(visitor.violations) == 1
-        assert "L2Agent" in visitor.violations[0]['detected']
+        assert "L2Agent" in visitor.violations[0]["detected"]
 
     def test_broken_syntax_handling(self, capsys):
         """
@@ -78,15 +79,15 @@ class DirectReferenceAgent(agentic_core.L2_execution.L2Agent):
             # Create a broken file
             with open(os.path.join(tmp_dir, "broken.py"), "w", encoding="utf-8") as f:
                 f.write("class BrokenAgent(L2Agent:  # Missing parenthesis and syntax error")
-            
+
             # Run scan on this directory - EXPECT EXIT CODE 1
             exit_code = scan_repository(tmp_dir)
-            
+
             captured = capsys.readouterr()
-            
+
             # Must return failure
             assert exit_code == 1, "Audit must fail on syntax errors"
-            
+
             # Must output the specific error
             assert "[SKIP]" in captured.out
             assert "broken.py" in captured.out
@@ -94,7 +95,7 @@ class DirectReferenceAgent(agentic_core.L2_execution.L2Agent):
 
         finally:
             shutil.rmtree(tmp_dir)
-            
+
     def test_detects_unicode_failure(self, capsys):
         """
         Verify that files with bad encoding don't crash the scanner but are logged.
@@ -104,14 +105,14 @@ class DirectReferenceAgent(agentic_core.L2_execution.L2Agent):
             # Create a file with bad byte sequence for UTF-8
             file_path = os.path.join(tmp_dir, "bad_encoding.py")
             with open(file_path, "wb") as f:
-                f.write(b"\x80abc") # Invalid start byte for UTF-8
-            
+                f.write(b"\x80abc")  # Invalid start byte for UTF-8
+
             exit_code = scan_repository(tmp_dir)
             captured = capsys.readouterr()
-            
+
             assert exit_code == 1
             assert "[SKIP]" in captured.out
             assert "[ENCODING ERROR]" in captured.out
-            
+
         finally:
             shutil.rmtree(tmp_dir)

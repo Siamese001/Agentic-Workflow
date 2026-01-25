@@ -16,7 +16,7 @@ import ast
 import logging
 import os
 import re
-from typing import Any, Dict, Optional, Set, Final, List
+from typing import Any, Final
 from dataclasses import dataclass, field
 
 from agentic_core.domain.exceptions import HealerError, CircularDependencyError
@@ -24,6 +24,7 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import CANON_VALIDATION_REGISTRY
 
 Logger = logging.getLogger(__name__)
+
 
 @dataclass
 class HealerMixin:
@@ -33,6 +34,7 @@ class HealerMixin:
     Provides autonomous diagnostic and healing loop with circular dependency protection.
     Implements V2.5 Sovereign healing requirements with canonical schema compliance.
     """
+
     _healing_count: int = field(default=0, init=False)
     _max_healing_operations: Final[int] = 100
 
@@ -45,13 +47,13 @@ class HealerMixin:
 
     @standard_heal
     def heal_repository(
-        self, 
-        dry_run: bool = True, 
-        execute: bool = False, 
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[Set[str]] = None
-    ) -> Dict[str, Any]:
+        _call_path: set[str] | None = None,
+    ) -> dict[str, Any]:
         """
         Autonomous diagnostic and healing loop.
         HARDENED: Autonomous diagnostic loop with circular dependency protection.
@@ -59,26 +61,32 @@ class HealerMixin:
         # VIOLATION JUSTIFICATION: Direct state manipulation required for self-correction
         if _call_path is None:
             _call_path = set()
-        
+
         # Circular dependency protection
         if self.name in _call_path:
-            raise CircularDependencyError(f"Circular healing chain detected: {_call_path} -> {self.name}")
-        
+            raise CircularDependencyError(
+                f"Circular healing chain detected: {_call_path} -> {self.name}"
+            )
+
         # Depth limiting protection
         if depth > max_depth:
             raise HealerError(f"Healing depth exceeded: {depth} > {max_depth}")
-        
+
         # Budget checking
         if self._healing_count >= self._max_healing_operations:
-            raise HealerError(f"Healing budget exceeded: {self._healing_count} >= {self._max_healing_operations}")
-        
+            raise HealerError(
+                f"Healing budget exceeded: {self._healing_count} >= {self._max_healing_operations}"
+            )
+
         # Add current agent to call path
         _call_path = _call_path.copy()
         _call_path.add(self.name)
-        
+
         try:
             self._healing_count += 1
-            summary: Dict[str, Any] = self._perform_healing_chain(dry_run, execute, depth, max_depth, _call_path)
+            summary: dict[str, Any] = self._perform_healing_chain(
+                dry_run, execute, depth, max_depth, _call_path
+            )
             return summary
         except Exception as e:
             raise HealerError(f"Critical failure in healing loop for {self.name}: {str(e)}") from e
@@ -86,13 +94,8 @@ class HealerMixin:
             self._healing_count -= 1
 
     def _perform_healing_chain(
-        self, 
-        dry_run: bool, 
-        execute: bool, 
-        depth: int, 
-        max_depth: int,
-        _call_path: Set[str]
-    ) -> Dict[str, Any]:
+        self, dry_run: bool, execute: bool, depth: int, max_depth: int, _call_path: set[str]
+    ) -> dict[str, Any]:
         """
         Execute the actual healing chain with proper error boundaries.
         SALVAGED: Advanced healing patterns from legacy StructuralHealerAgent.py.
@@ -101,31 +104,31 @@ class HealerMixin:
         violations_fixed = 0
         errors = 0
         skipped = 0
-        
+
         try:
             # Core diagnostic logic
             for file_path in self.python_files:
                 try:
                     file_violations = self._analyze_file_violations(file_path)
                     violations_found += len(file_violations)
-                    
+
                     if execute and not dry_run and file_violations:
                         fixed = self._fix_file_violations(file_path, file_violations)
                         violations_fixed += fixed
-                        
+
                 except Exception as e:
                     errors += 1
                     Logger.error(f"Error processing {file_path}: {e}")
-                    
+
         except Exception as e:
             errors += 1
             Logger.error(f"Healing chain error: {e}")
-            
+
         return {
-            'violations_found': violations_found,
-            'violations_fixed': violations_fixed,
-            'errors': errors,
-            'skipped': skipped
+            "violations_found": violations_found,
+            "violations_fixed": violations_fixed,
+            "errors": errors,
+            "skipped": skipped,
         }
 
     def _salvaged_advanced_recovery(self, error_trace: str) -> bool:
@@ -135,23 +138,24 @@ class HealerMixin:
         """
         if not error_trace or not isinstance(error_trace, str):
             return False
-            
+
         try:
             # VIOLATION JUSTIFICATION: Complex regex required for error pattern analysis
             import re
+
             recovery_patterns = [
-                r'ImportError:\s*(.+)',
-                r'SyntaxError:\s*(.+)',
-                r'AttributeError:\s*(.+)'
+                r"ImportError:\s*(.+)",
+                r"SyntaxError:\s*(.+)",
+                r"AttributeError:\s*(.+)",
             ]
-            
+
             for pattern in recovery_patterns:
                 match = re.search(pattern, error_trace, re.MULTILINE)
                 if match:
                     issue = match.group(1).strip()
                     return self._attempt_pattern_recovery(issue)
             return False
-            
+
         except re.error as e:
             raise HealerError(f"Regex error in recovery analysis: {str(e)}") from e
         except Exception as e:
@@ -165,29 +169,29 @@ class HealerMixin:
         # Placeholder for salvage logic integration
         return False
 
-    def _analyze_file_violations(self, file_path: str) -> List[Dict[str, Any]]:
+    def _analyze_file_violations(self, file_path: str) -> list[dict[str, Any]]:
         """Analyze file for violations."""
         violations = []
         try:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()
-            
+
             # Parse AST
             tree = ast.parse(content)
-            
+
             # Check for common issues
             violations.extend(self._check_import_issues(tree))
             violations.extend(self._check_syntax_issues(tree))
             violations.extend(self._check_naming_issues(tree))
-            
+
         except SyntaxError as e:
-            violations.append({'type': 'syntax_error', 'message': str(e)})
+            violations.append({"type": "syntax_error", "message": str(e)})
         except Exception as e:
-            violations.append({'type': 'analysis_error', 'message': str(e)})
-            
+            violations.append({"type": "analysis_error", "message": str(e)})
+
         return violations
 
-    def _fix_file_violations(self, file_path: str, violations: List[Dict[str, Any]]) -> int:
+    def _fix_file_violations(self, file_path: str, violations: list[dict[str, Any]]) -> int:
         """Fix violations in file."""
         fixed = 0
         for violation in violations:
@@ -198,7 +202,7 @@ class HealerMixin:
                 Logger.error(f"Failed to fix violation in {file_path}: {e}")
         return fixed
 
-    def _check_import_issues(self, tree: ast.AST) -> List[Dict[str, Any]]:
+    def _check_import_issues(self, tree: ast.AST) -> list[dict[str, Any]]:
         """Check for import-related issues."""
         issues = []
 
@@ -207,15 +211,15 @@ class HealerMixin:
                 # Check for problematic imports
                 for alias in node.names:
                     if alias.name.startswith("."):
-                        issues.append({'type': 'relative_import', 'node': node})
+                        issues.append({"type": "relative_import", "node": node})
             elif isinstance(node, ast.ImportFrom):
                 # Check for relative imports
                 if node.module and node.module.startswith("."):
-                    issues.append({'type': 'relative_import', 'node': node})
+                    issues.append({"type": "relative_import", "node": node})
 
         return issues
 
-    def _check_syntax_issues(self, tree: ast.AST) -> List[Dict[str, Any]]:
+    def _check_syntax_issues(self, tree: ast.AST) -> list[dict[str, Any]]:
         """Check for syntax-related issues."""
         issues = []
 
@@ -233,13 +237,13 @@ class HealerMixin:
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     if alias.asname and alias.asname not in used_names:
-                        issues.append({'type': 'unused_import', 'node': node})
+                        issues.append({"type": "unused_import", "node": node})
                     elif alias.name not in used_names:
-                        issues.append({'type': 'unused_import', 'node': node})
+                        issues.append({"type": "unused_import", "node": node})
 
         return issues
 
-    def _check_naming_issues(self, tree: ast.AST) -> List[Dict[str, Any]]:
+    def _check_naming_issues(self, tree: ast.AST) -> list[dict[str, Any]]:
         """Check for naming convention issues."""
         issues = []
 
@@ -247,11 +251,11 @@ class HealerMixin:
             if isinstance(node, ast.ClassDef):
                 # Check class naming (PascalCase)
                 if not node.name[0].isupper():
-                    issues.append({'type': 'class_naming', 'node': node})
+                    issues.append({"type": "class_naming", "node": node})
             elif isinstance(node, ast.FunctionDef):
                 # Check function naming (snake_case)
                 if not re.match(r"^[a-z_][a-z0-9_]*$", node.name):
-                    issues.append({'type': 'function_naming', 'node': node})
+                    issues.append({"type": "function_naming", "node": node})
 
         return issues
 

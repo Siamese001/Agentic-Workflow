@@ -5,9 +5,8 @@ This is a deterministic utility, NOT an autonomous agent.
 
 from __future__ import annotations
 import logging
-import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -15,9 +14,9 @@ logger = logging.getLogger(__name__)
 @dataclass
 class SkillGapResult:
     """Result of skill gap analysis."""
-    
-    missing_skills: List[str]
-    existing_skills: List[str]
+
+    missing_skills: list[str]
+    existing_skills: list[str]
     gap_severity: str  # "LOW", "MEDIUM", "HIGH", "CRITICAL"
     gap_score: float  # 0.0 to 1.0, higher means more gaps
 
@@ -25,11 +24,11 @@ class SkillGapResult:
 @dataclass
 class SkillExtractionResult:
     """Result of skill extraction from text."""
-    
-    technical_skills: List[str]
-    soft_skills: List[str]
-    domain_skills: List[str]
-    tool_skills: List[str]
+
+    technical_skills: list[str]
+    soft_skills: list[str]
+    domain_skills: list[str]
+    tool_skills: list[str]
     confidence_score: float
     source_text_length: int
 
@@ -37,125 +36,258 @@ class SkillExtractionResult:
 @dataclass
 class SkillMatchResult:
     """Result of skill matching between candidate and job requirements."""
-    
-    matched_skills: List[str]
-    partially_matched_skills: List[str]
-    unmatched_skills: List[str]
+
+    matched_skills: list[str]
+    partially_matched_skills: list[str]
+    unmatched_skills: list[str]
     match_percentage: float
-    skill_categories: Dict[str, Dict[str, List[str]]]
+    skill_categories: dict[str, dict[str, list[str]]]
 
 
 @dataclass
 class SkillAnalysisOutput:
     """Complete skill analysis output."""
-    
+
     extraction_result: SkillExtractionResult
     gap_result: SkillGapResult
     match_result: SkillMatchResult
-    recommendations: List[str]
-    metadata: Dict[str, Any]
+    recommendations: list[str]
+    metadata: dict[str, Any]
 
 
 class SkillExtractorNode:
     """
     Handles skill extraction, gap analysis, and matching for resume generation.
-    
+
     This is a deterministic logic node that extracts and analyzes skills from
     job descriptions and candidate profiles. It is NOT an autonomous agent.
     """
-    
-    def __init__(self, config: Dict[str, Any] = None):
+
+    def __init__(self, config: dict[str, Any] = None):
         self.config = config or {}
-        
+
         # Technical skill categories
         self.technical_skills = {
             "programming": [
-                "python", "java", "javascript", "typescript", "c++", "c#", "go", "rust",
-                "ruby", "php", "swift", "kotlin", "scala", "perl", "r", "matlab"
+                "python",
+                "java",
+                "javascript",
+                "typescript",
+                "c++",
+                "c#",
+                "go",
+                "rust",
+                "ruby",
+                "php",
+                "swift",
+                "kotlin",
+                "scala",
+                "perl",
+                "r",
+                "matlab",
             ],
             "web_development": [
-                "html", "css", "react", "angular", "vue", "node.js", "express", "django",
-                "flask", "spring", "laravel", "rails", "asp.net", "next.js", "gatsby"
+                "html",
+                "css",
+                "react",
+                "angular",
+                "vue",
+                "node.js",
+                "express",
+                "django",
+                "flask",
+                "spring",
+                "laravel",
+                "rails",
+                "asp.net",
+                "next.js",
+                "gatsby",
             ],
             "databases": [
-                "sql", "mysql", "postgresql", "mongodb", "redis", "elasticsearch",
-                "oracle", "sql server", "cassandra", "dynamodb", "firebase"
+                "sql",
+                "mysql",
+                "postgresql",
+                "mongodb",
+                "redis",
+                "elasticsearch",
+                "oracle",
+                "sql server",
+                "cassandra",
+                "dynamodb",
+                "firebase",
             ],
             "cloud": [
-                "aws", "azure", "gcp", "google cloud", "heroku", "digitalocean",
-                "terraform", "kubernetes", "docker", "jenkins", "ci/cd", "devops"
+                "aws",
+                "azure",
+                "gcp",
+                "google cloud",
+                "heroku",
+                "digitalocean",
+                "terraform",
+                "kubernetes",
+                "docker",
+                "jenkins",
+                "ci/cd",
+                "devops",
             ],
             "data_science": [
-                "machine learning", "data analysis", "statistics", "pandas", "numpy",
-                "scikit-learn", "tensorflow", "pytorch", "tableau", "power bi", "excel"
+                "machine learning",
+                "data analysis",
+                "statistics",
+                "pandas",
+                "numpy",
+                "scikit-learn",
+                "tensorflow",
+                "pytorch",
+                "tableau",
+                "power bi",
+                "excel",
             ],
         }
-        
+
         # Soft skills
         self.soft_skills = [
-            "leadership", "communication", "teamwork", "problem solving", "critical thinking",
-            "adaptability", "time management", "project management", "creativity", "collaboration",
-            "attention to detail", "analytical thinking", "strategic planning", "decision making",
-            "mentoring", "public speaking", "negotiation", "conflict resolution", "emotional intelligence"
+            "leadership",
+            "communication",
+            "teamwork",
+            "problem solving",
+            "critical thinking",
+            "adaptability",
+            "time management",
+            "project management",
+            "creativity",
+            "collaboration",
+            "attention to detail",
+            "analytical thinking",
+            "strategic planning",
+            "decision making",
+            "mentoring",
+            "public speaking",
+            "negotiation",
+            "conflict resolution",
+            "emotional intelligence",
         ]
-        
+
         # Domain-specific skills by industry
         self.domain_skills = {
             "finance": [
-                "financial analysis", "investment banking", "risk management", "portfolio management",
-                "financial modeling", "compliance", "audit", "tax planning", "mergers and acquisitions"
+                "financial analysis",
+                "investment banking",
+                "risk management",
+                "portfolio management",
+                "financial modeling",
+                "compliance",
+                "audit",
+                "tax planning",
+                "mergers and acquisitions",
             ],
             "healthcare": [
-                "clinical research", "medical terminology", "patient care", "healthcare compliance",
-                "medical coding", "pharmacology", "healthcare informatics", "clinical trials"
+                "clinical research",
+                "medical terminology",
+                "patient care",
+                "healthcare compliance",
+                "medical coding",
+                "pharmacology",
+                "healthcare informatics",
+                "clinical trials",
             ],
             "technology": [
-                "software development", "system architecture", "api design", "microservices",
-                "agile methodology", "scrum", "code review", "testing", "debugging", "optimization"
+                "software development",
+                "system architecture",
+                "api design",
+                "microservices",
+                "agile methodology",
+                "scrum",
+                "code review",
+                "testing",
+                "debugging",
+                "optimization",
             ],
             "marketing": [
-                "digital marketing", "seo", "sem", "content marketing", "social media marketing",
-                "brand management", "market research", "analytics", "copywriting", "campaign management"
+                "digital marketing",
+                "seo",
+                "sem",
+                "content marketing",
+                "social media marketing",
+                "brand management",
+                "market research",
+                "analytics",
+                "copywriting",
+                "campaign management",
             ],
         }
-        
+
         # Tool/software skills
         self.tool_skills = {
             "development_tools": [
-                "git", "github", "gitlab", "jira", "confluence", "slack", "vs code", "intellij",
-                "eclipse", "postman", "docker", "kubernetes", "terraform", "ansible"
+                "git",
+                "github",
+                "gitlab",
+                "jira",
+                "confluence",
+                "slack",
+                "vs code",
+                "intellij",
+                "eclipse",
+                "postman",
+                "docker",
+                "kubernetes",
+                "terraform",
+                "ansible",
             ],
             "design_tools": [
-                "figma", "sketch", "adobe creative suite", "photoshop", "illustrator", "xd",
-                "invision", "zeplin", "canva", "gimp"
+                "figma",
+                "sketch",
+                "adobe creative suite",
+                "photoshop",
+                "illustrator",
+                "xd",
+                "invision",
+                "zeplin",
+                "canva",
+                "gimp",
             ],
             "office_tools": [
-                "microsoft office", "word", "excel", "powerpoint", "outlook", "google workspace",
-                "docs", "sheets", "slides", "notion", "trello", "asana"
+                "microsoft office",
+                "word",
+                "excel",
+                "powerpoint",
+                "outlook",
+                "google workspace",
+                "docs",
+                "sheets",
+                "slides",
+                "notion",
+                "trello",
+                "asana",
             ],
         }
-        
+
         # Skill matching thresholds
         self.exact_match_threshold = 0.9
         self.partial_match_threshold = 0.7
 
-    def __call__(self, job_description: str, candidate_profile: Dict[str, Any] = None) -> SkillAnalysisOutput:
+    def __call__(
+        self, job_description: str, candidate_profile: dict[str, Any] = None
+    ) -> SkillAnalysisOutput:
         """
         Executes skill analysis using functor pattern.
-        
+
         Args:
             job_description: Job description text
             candidate_profile: Candidate's current profile/resume data
-            
+
         Returns:
             SkillAnalysisOutput: Complete skill analysis
         """
         if not job_description:
             raise ValueError("Job description cannot be empty")
-            
+
         return self.analyze_skills(job_description, candidate_profile or {})
 
-    def analyze_skills(self, job_description: str, candidate_profile: Dict[str, Any]) -> SkillAnalysisOutput:
+    def analyze_skills(
+        self, job_description: str, candidate_profile: dict[str, Any]
+    ) -> SkillAnalysisOutput:
         """Analyze skills from job description and candidate profile.
 
         Args:
@@ -169,15 +301,21 @@ class SkillExtractorNode:
 
         # Extract skills from job description
         jd_skills = self._extract_skills_from_text(job_description)
-        logger.info(f"Extracted {len(jd_skills.technical_skills) + len(jd_skills.soft_skills)} skills from job description")
+        logger.info(
+            f"Extracted {len(jd_skills.technical_skills) + len(jd_skills.soft_skills)} skills from job description"
+        )
 
         # Extract skills from candidate profile
         candidate_skills = self._extract_skills_from_profile(candidate_profile)
-        logger.info(f"Extracted {len(candidate_skills.technical_skills) + len(candidate_skills.soft_skills)} skills from candidate profile")
+        logger.info(
+            f"Extracted {len(candidate_skills.technical_skills) + len(candidate_skills.soft_skills)} skills from candidate profile"
+        )
 
         # Perform skill gap analysis
         gap_result = self._analyze_skill_gaps(jd_skills, candidate_skills)
-        logger.info(f"Skill gap analysis: {gap_result.gap_severity} severity ({gap_result.gap_score:.2f})")
+        logger.info(
+            f"Skill gap analysis: {gap_result.gap_severity} severity ({gap_result.gap_score:.2f})"
+        )
 
         # Perform skill matching
         match_result = self._match_skills(jd_skills, candidate_skills)
@@ -215,38 +353,40 @@ class SkillExtractorNode:
             SkillExtractionResult with categorized skills
         """
         text_lower = text.lower()
-        
+
         # Extract technical skills
         technical_skills = []
         for category, skills in self.technical_skills.items():
             for skill in skills:
                 if skill in text_lower:
                     technical_skills.append(skill.title())
-        
+
         # Extract soft skills
         soft_skills = []
         for skill in self.soft_skills:
             if skill in text_lower:
                 soft_skills.append(skill.title())
-        
+
         # Extract domain skills
         domain_skills = []
         for industry, skills in self.domain_skills.items():
             for skill in skills:
                 if skill in text_lower:
                     domain_skills.append(skill.title())
-        
+
         # Extract tool skills
         tool_skills = []
         for category, tools in self.tool_skills.items():
             for tool in tools:
                 if tool in text_lower:
                     tool_skills.append(tool.title())
-        
+
         # Calculate confidence score based on extraction patterns
-        total_skills = len(technical_skills) + len(soft_skills) + len(domain_skills) + len(tool_skills)
+        total_skills = (
+            len(technical_skills) + len(soft_skills) + len(domain_skills) + len(tool_skills)
+        )
         confidence_score = min(0.95, 0.5 + (total_skills * 0.02))
-        
+
         return SkillExtractionResult(
             technical_skills=list(set(technical_skills)),  # Remove duplicates
             soft_skills=list(set(soft_skills)),
@@ -256,7 +396,7 @@ class SkillExtractorNode:
             source_text_length=len(text),
         )
 
-    def _extract_skills_from_profile(self, profile: Dict[str, Any]) -> SkillExtractionResult:
+    def _extract_skills_from_profile(self, profile: dict[str, Any]) -> SkillExtractionResult:
         """Extract skills from candidate profile.
 
         Args:
@@ -267,30 +407,32 @@ class SkillExtractorNode:
         """
         # Combine all text from profile
         profile_text = ""
-        
+
         # Add experience descriptions
         for exp in profile.get("experience", []):
             profile_text += f" {exp.get('title', '')} {exp.get('description', '')}"
             for bullet in exp.get("bullets", []):
                 profile_text += f" {bullet}"
-        
+
         # Add skills section
         skills_section = profile.get("skills", [])
         if isinstance(skills_section, list):
             profile_text += " " + " ".join(str(s) for s in skills_section)
         else:
             profile_text += f" {skills_section}"
-        
+
         # Add summary
         profile_text += f" {profile.get('summary', '')}"
-        
+
         # Add education
         for edu in profile.get("education", []):
             profile_text += f" {edu.get('degree', '')} {edu.get('field', '')}"
-        
+
         return self._extract_skills_from_text(profile_text)
 
-    def _analyze_skill_gaps(self, jd_skills: SkillExtractionResult, candidate_skills: SkillExtractionResult) -> SkillGapResult:
+    def _analyze_skill_gaps(
+        self, jd_skills: SkillExtractionResult, candidate_skills: SkillExtractionResult
+    ) -> SkillGapResult:
         """Analyze skill gaps between job requirements and candidate profile.
 
         Args:
@@ -302,23 +444,23 @@ class SkillExtractorNode:
         """
         # Combine all skills into sets for easier comparison
         jd_all_skills = set(
-            jd_skills.technical_skills + 
-            jd_skills.soft_skills + 
-            jd_skills.domain_skills + 
-            jd_skills.tool_skills
+            jd_skills.technical_skills
+            + jd_skills.soft_skills
+            + jd_skills.domain_skills
+            + jd_skills.tool_skills
         )
-        
+
         candidate_all_skills = set(
-            candidate_skills.technical_skills + 
-            candidate_skills.soft_skills + 
-            candidate_skills.domain_skills + 
-            candidate_skills.tool_skills
+            candidate_skills.technical_skills
+            + candidate_skills.soft_skills
+            + candidate_skills.domain_skills
+            + candidate_skills.tool_skills
         )
-        
+
         # Find missing skills
         missing_skills = list(jd_all_skills - candidate_all_skills)
         existing_skills = list(candidate_all_skills & jd_all_skills)
-        
+
         # Calculate gap severity
         if len(jd_all_skills) == 0:
             gap_score = 0.0
@@ -333,7 +475,7 @@ class SkillExtractorNode:
                 gap_severity = "MEDIUM"
             else:
                 gap_severity = "LOW"
-        
+
         return SkillGapResult(
             missing_skills=sorted(missing_skills),
             existing_skills=sorted(existing_skills),
@@ -341,7 +483,9 @@ class SkillExtractorNode:
             gap_score=gap_score,
         )
 
-    def _match_skills(self, jd_skills: SkillExtractionResult, candidate_skills: SkillExtractionResult) -> SkillMatchResult:
+    def _match_skills(
+        self, jd_skills: SkillExtractionResult, candidate_skills: SkillExtractionResult
+    ) -> SkillMatchResult:
         """Perform detailed skill matching between JD and candidate.
 
         Args:
@@ -354,37 +498,43 @@ class SkillExtractorNode:
         # Exact matches
         jd_technical_set = set(skill.lower() for skill in jd_skills.technical_skills)
         candidate_technical_set = set(skill.lower() for skill in candidate_skills.technical_skills)
-        
+
         matched_technical = list(jd_technical_set & candidate_technical_set)
-        
+
         # Similar logic for other skill types
         jd_soft_set = set(skill.lower() for skill in jd_skills.soft_skills)
         candidate_soft_set = set(skill.lower() for skill in candidate_skills.soft_skills)
         matched_soft = list(jd_soft_set & candidate_soft_set)
-        
+
         jd_domain_set = set(skill.lower() for skill in jd_skills.domain_skills)
         candidate_domain_set = set(skill.lower() for skill in candidate_skills.domain_skills)
         matched_domain = list(jd_domain_set & candidate_domain_set)
-        
+
         jd_tool_set = set(skill.lower() for skill in jd_skills.tool_skills)
         candidate_tool_set = set(skill.lower() for skill in candidate_skills.tool_skills)
         matched_tool = list(jd_tool_set & candidate_tool_set)
-        
+
         # Combine all matches
         all_matched_skills = matched_technical + matched_soft + matched_domain + matched_tool
-        
+
         # Find unmatched skills
         all_jd_skills = (
-            jd_skills.technical_skills + jd_skills.soft_skills + 
-            jd_skills.domain_skills + jd_skills.tool_skills
+            jd_skills.technical_skills
+            + jd_skills.soft_skills
+            + jd_skills.domain_skills
+            + jd_skills.tool_skills
         )
         all_jd_lower = [skill.lower() for skill in all_jd_skills]
-        unmatched_skills = [skill for skill in all_jd_skills if skill.lower() not in all_matched_skills]
-        
+        unmatched_skills = [
+            skill for skill in all_jd_skills if skill.lower() not in all_matched_skills
+        ]
+
         # Calculate match percentage
         total_jd_skills = len(all_jd_skills)
-        match_percentage = (len(all_matched_skills) / total_jd_skills) if total_jd_skills > 0 else 0.0
-        
+        match_percentage = (
+            (len(all_matched_skills) / total_jd_skills) if total_jd_skills > 0 else 0.0
+        )
+
         return SkillMatchResult(
             matched_skills=[skill.title() for skill in all_matched_skills],
             partially_matched_skills=[],  # TODO: Implement fuzzy matching
@@ -398,7 +548,9 @@ class SkillExtractorNode:
             },
         )
 
-    def _generate_recommendations(self, gap_result: SkillGapResult, match_result: SkillMatchResult) -> List[str]:
+    def _generate_recommendations(
+        self, gap_result: SkillGapResult, match_result: SkillMatchResult
+    ) -> list[str]:
         """Generate recommendations based on skill analysis.
 
         Args:
@@ -409,37 +561,48 @@ class SkillExtractorNode:
             List of recommendations
         """
         recommendations = []
-        
+
         # Gap-based recommendations
         if gap_result.gap_severity in ["HIGH", "CRITICAL"]:
-            recommendations.append(f"Critical skill gaps identified ({gap_result.gap_severity} severity)")
-            recommendations.append(f"Focus on acquiring: {', '.join(gap_result.missing_skills[:5])}")
-        
+            recommendations.append(
+                f"Critical skill gaps identified ({gap_result.gap_severity} severity)"
+            )
+            recommendations.append(
+                f"Focus on acquiring: {', '.join(gap_result.missing_skills[:5])}"
+            )
+
         # Match-based recommendations
         if match_result.match_percentage < 0.5:
             recommendations.append("Consider highlighting transferable skills more prominently")
         elif match_result.match_percentage > 0.8:
             recommendations.append("Strong skill alignment - emphasize relevant experience")
-        
+
         # Category-specific recommendations
         if not match_result.skill_categories["technical"]["matched"]:
-            recommendations.append("Add technical skills section to highlight relevant technologies")
-        
+            recommendations.append(
+                "Add technical skills section to highlight relevant technologies"
+            )
+
         if not match_result.skill_categories["soft"]["matched"]:
-            recommendations.append("Include soft skills that demonstrate leadership and collaboration")
-        
+            recommendations.append(
+                "Include soft skills that demonstrate leadership and collaboration"
+            )
+
         # General recommendations
         if len(gap_result.missing_skills) > 10:
-            recommendations.append("Consider targeting roles that better align with current skillset")
-        
+            recommendations.append(
+                "Consider targeting roles that better align with current skillset"
+            )
+
         return recommendations
 
     def _get_timestamp(self) -> str:
         """Get current timestamp for metadata."""
         from datetime import datetime
+
         return datetime.now().isoformat()
 
-    def get_skill_categories(self) -> Dict[str, List[str]]:
+    def get_skill_categories(self) -> dict[str, list[str]]:
         """Get all available skill categories and their skills.
 
         Returns:
@@ -452,7 +615,7 @@ class SkillExtractorNode:
             "tools": [skill for tools in self.tool_skills.values() for skill in tools],
         }
 
-    def validate_skill_extraction(self, text: str, expected_skills: List[str]) -> Dict[str, Any]:
+    def validate_skill_extraction(self, text: str, expected_skills: list[str]) -> dict[str, Any]:
         """Validate skill extraction against expected skills.
 
         Args:
@@ -464,21 +627,31 @@ class SkillExtractorNode:
         """
         extraction_result = self._extract_skills_from_text(text)
         extracted_skills = set(
-            extraction_result.technical_skills + 
-            extraction_result.soft_skills + 
-            extraction_result.domain_skills + 
-            extraction_result.tool_skills
+            extraction_result.technical_skills
+            + extraction_result.soft_skills
+            + extraction_result.domain_skills
+            + extraction_result.tool_skills
         )
         expected_skills_set = set(skill.lower() for skill in expected_skills)
-        
+
         true_positives = len(extracted_skills & expected_skills_set)
         false_positives = len(extracted_skills - expected_skills_set)
         false_negatives = len(expected_skills_set - extracted_skills)
-        
-        precision = true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0.0
-        recall = true_positives / (true_positives + false_negatives) if (true_positives + false_negatives) > 0 else 0.0
-        f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
-        
+
+        precision = (
+            true_positives / (true_positives + false_positives)
+            if (true_positives + false_positives) > 0
+            else 0.0
+        )
+        recall = (
+            true_positives / (true_positives + false_negatives)
+            if (true_positives + false_negatives) > 0
+            else 0.0
+        )
+        f1_score = (
+            2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
+        )
+
         return {
             "precision": precision,
             "recall": recall,

@@ -5,28 +5,25 @@ Context: Comprehensive test suite to validate the Agent/Util separation. Verifie
 import unittest
 import importlib
 import sys
-import os
 
 # Ensure root is in path for imports
 sys.path.append(r"C:\Git\Agentic-Workflow")
 
-class TestRefactorIntegrity(unittest.TestCase):
 
+class TestRefactorIntegrity(unittest.TestCase):
     def test_01_verify_old_locations_dead(self):
         """
         Critical Check: Attempting to import agents from common_utils MUST fail.
         Ensures no 'ghost' files were left behind.
         """
-        agents = [
-            "Router", 
-            "HardenedAnthropicExecutor",
-            "strategist_biowriter"
-        ]
-        
+        agents = ["Router", "HardenedAnthropicExecutor", "strategist_biowriter"]
+
         for agent in agents:
             try:
                 importlib.import_module(f"apps_shared.common_utils.{agent}")
-                self.fail(f"CRITICAL: {agent} is still importable from common_utils! Separation failed.")
+                self.fail(
+                    f"CRITICAL: {agent} is still importable from common_utils! Separation failed."
+                )
             except ImportError:
                 # Expected behavior: ModuleNotFoundError
                 pass
@@ -52,14 +49,18 @@ class TestRefactorIntegrity(unittest.TestCase):
         """
         from apps_rg.engines.strategist_biowriter import StrategistBioWriter
         from agentic_core.base_agents.agent_base import RGAgentBase
-        
+
         # Instantiate with mocks to check MRO
         agent_instance = StrategistBioWriter(config=None, reasoning=None)
-        self.assertIsInstance(agent_instance, RGAgentBase, "StrategistBioWriter lost its RGAgentBase inheritance during move.")
+        self.assertIsInstance(
+            agent_instance,
+            RGAgentBase,
+            "StrategistBioWriter lost its RGAgentBase inheritance during move.",
+        )
 
     def test_04_run_stale_import_scanner(self):
         """
-        Executes the global scanner to ensure no main.py or orchestrator is pointing 
+        Executes the global scanner to ensure no main.py or orchestrator is pointing
         to the wrong place. Enforces 'Zero Stale References'.
         """
         # For now, we'll skip this test since the scanner script doesn't exist yet
@@ -76,20 +77,22 @@ class TestRefactorIntegrity(unittest.TestCase):
         Verify Router.py has been updated with the new import paths
         """
         import apps_rg.engines.Router
-        
+
         # Check that the module can be imported and has expected attributes
-        self.assertTrue(hasattr(apps_rg.engines.Router, 'Router'), "Router class not found in new location")
-        
+        self.assertTrue(
+            hasattr(apps_rg.engines.Router, "Router"), "Router class not found in new location"
+        )
+
     def test_06_verify_schema_types_available(self):
         """
         Verify that schema.py provides the required types
         """
-        from apps_rg.engines.schema import RouterConfig, RouteResult, ProviderType
-        
+        from apps_rg.engines.schema import RouterConfig, ProviderType
+
         # Test that the types can be instantiated
         config = RouterConfig()
         self.assertIsInstance(config.default_provider, ProviderType)
-        
+
         # Test ProviderType enum values
         self.assertEqual(ProviderType.OPENAI.value, "openai")
         self.assertEqual(ProviderType.ANTHROPIC.value, "anthropic")
@@ -100,13 +103,16 @@ class TestRefactorIntegrity(unittest.TestCase):
         Verify the recreated multi_provider_clients.py has correct structure
         """
         from apps_shared.common_utils.multi_provider_clients import MultiProviderClient
-        
+
         # Test that the class exists and can be instantiated
         client = MultiProviderClient(config={"test": "value"})
         self.assertIsInstance(client, MultiProviderClient)
-        
+
         # Test that it has the expected method
-        self.assertTrue(hasattr(client, 'completion'), "MultiProviderClient missing completion method")
+        self.assertTrue(
+            hasattr(client, "completion"), "MultiProviderClient missing completion method"
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

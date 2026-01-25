@@ -4,8 +4,8 @@ Mirrors the k1_router pattern from apps_lic but for Resume Generation domain.
 
 from __future__ import annotations
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from typing import Any
 from .thematic_analysis_node import ThematicAnalysisNode, ThematicAnalysisOutput
 
 logger = logging.getLogger(__name__)
@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ResumeFlowResult:
     """Result of resume flow routing decision."""
-    
+
     flow_type: str  # "tailor_existing", "generate_scratch", "enhance_current"
     confidence: float
-    required_hops: List[str]
+    required_hops: list[str]
     validation_required: bool
     retry_enabled: bool
 
@@ -25,10 +25,10 @@ class ResumeFlowResult:
 @dataclass
 class RGFlowOutput:
     """Resume flow routing output."""
-    
+
     flow_result: ResumeFlowResult
-    entrance_gates_passed: List[str]
-    metadata: Dict[str, Any]
+    entrance_gates_passed: list[str]
+    metadata: dict[str, Any]
 
 
 class RGFlowRouter:
@@ -37,93 +37,90 @@ class RGFlowRouter:
     Integrates K.0 Thematic Analysis to determine strategy based on
     differentiator strength and authenticity requirements.
     """
-    
-    def __init__(self, config: Dict[str, Any] = None):
+
+    def __init__(self, config: dict[str, Any] = None):
         self.config = config or {}
         # Integration of K.0 Node
         self.thematic_node = ThematicAnalysisNode(config)
-        
-        # Default flow configurations
-        self.flow_configs = self.config.get("flow_configs", {
-            "strategic_tailor_node": {
-                "required_hops": ["HOP-1", "HOP-2", "HOP-3", "HOP-4", "HOP-5", "HOP-6"],
-                "validation_required": True,
-                "retry_enabled": True
-            },
-            "tailor_existing": {
-                "required_hops": ["HOP-1", "HOP-2", "HOP-3", "HOP-4", "HOP-5"],
-                "validation_required": True,
-                "retry_enabled": True
-            },
-            "generate_scratch": {
-                "required_hops": ["HOP-1", "HOP-2", "HOP-3", "HOP-4", "HOP-5"],
-                "validation_required": True,
-                "retry_enabled": True
-            },
-            "enhance_current": {
-                "required_hops": ["HOP-3", "HOP-4", "HOP-5"],
-                "validation_required": True,
-                "retry_enabled": False
-            }
-        })
-        
-        # Flow decision keywords
-        self.tailor_keywords = [
-            "tailor", "customize", "modify", "adapt", "update", "improve"
-        ]
-        self.generate_keywords = [
-            "create", "generate", "build", "make", "new", "from scratch"
-        ]
-        self.enhance_keywords = [
-            "enhance", "optimize", "improve", "refine", "polish"
-        ]
 
-    def __call__(self, state: Dict[str, Any]) -> RGFlowOutput:
+        # Default flow configurations
+        self.flow_configs = self.config.get(
+            "flow_configs",
+            {
+                "strategic_tailor_node": {
+                    "required_hops": ["HOP-1", "HOP-2", "HOP-3", "HOP-4", "HOP-5", "HOP-6"],
+                    "validation_required": True,
+                    "retry_enabled": True,
+                },
+                "tailor_existing": {
+                    "required_hops": ["HOP-1", "HOP-2", "HOP-3", "HOP-4", "HOP-5"],
+                    "validation_required": True,
+                    "retry_enabled": True,
+                },
+                "generate_scratch": {
+                    "required_hops": ["HOP-1", "HOP-2", "HOP-3", "HOP-4", "HOP-5"],
+                    "validation_required": True,
+                    "retry_enabled": True,
+                },
+                "enhance_current": {
+                    "required_hops": ["HOP-3", "HOP-4", "HOP-5"],
+                    "validation_required": True,
+                    "retry_enabled": False,
+                },
+            },
+        )
+
+        # Flow decision keywords
+        self.tailor_keywords = ["tailor", "customize", "modify", "adapt", "update", "improve"]
+        self.generate_keywords = ["create", "generate", "build", "make", "new", "from scratch"]
+        self.enhance_keywords = ["enhance", "optimize", "improve", "refine", "polish"]
+
+    def __call__(self, state: dict[str, Any]) -> RGFlowOutput:
         """
         Executes resume flow routing using functor pattern with upstream Thematic Analysis.
-        
+
         Args:
             state: Current workflow state containing:
                 - task_description: str
                 - has_master_resume: bool
                 - job_description: str
                 - quality_requirements: Dict[str, Any]
-                
+
         Returns:
             RGFlowOutput: Complete routing decision
         """
         if not state:
             raise ValueError("Resume flow routing state cannot be empty")
-        
+
         # 1. Run K.0 Analysis if not already present
         if "thematic_analysis" not in state:
             jd = state.get("job_description", "")
             company = state.get("company_name", "Unknown")
             thematic_output = self.thematic_node(jd, company)
-            
+
             # Inject K.0 output into state
             state["thematic_analysis"] = thematic_output
             state["primary_theme"] = thematic_output.primary_theme
-            
+
         return self.execute_routing(state)
 
-    def determine_next_hop(self, state: Dict[str, Any]) -> str:
+    def determine_next_hop(self, state: dict[str, Any]) -> str:
         """
         Determines the next hop identifier for resume workflow routing.
-        
+
         Args:
             state: Current workflow state
-            
+
         Returns:
             str: Next hop identifier
         """
         if not state:
             raise ValueError("Routing state cannot be empty")
-            
+
         result = self.execute_routing(state)
         return f"flow_{result.flow_result.flow_type}"
 
-    def execute_routing(self, context: Dict[str, Any]) -> RGFlowOutput:
+    def execute_routing(self, context: dict[str, Any]) -> RGFlowOutput:
         """Execute resume flow routing logic.
 
         Args:
@@ -158,7 +155,9 @@ class RGFlowRouter:
         # Gate 4: Flow classification
         thematic_analysis = context.get("thematic_analysis")
         if thematic_analysis:
-            flow_result = self._classify_flow_with_thematic_analysis(task_description, has_master_resume, thematic_analysis)
+            flow_result = self._classify_flow_with_thematic_analysis(
+                task_description, has_master_resume, thematic_analysis
+            )
         else:
             flow_result = self._classify_flow(task_description, has_master_resume)
         entrance_gates_passed.append("GATE_4_FLOW_CLASSIFIED")
@@ -168,7 +167,9 @@ class RGFlowRouter:
         quality_requirements = context.get("quality_requirements", {})
         if quality_requirements:
             entrance_gates_passed.append("GATE_5_QUALITY_REQUIREMENTS_APPLIED")
-            logger.info(f"Gate 5: Quality requirements applied = {list(quality_requirements.keys())}")
+            logger.info(
+                f"Gate 5: Quality requirements applied = {list(quality_requirements.keys())}"
+            )
 
         # Gate 6: Final routing validation
         self._validate_routing_requirements(flow_result, context)
@@ -206,11 +207,11 @@ class RGFlowRouter:
             ResumeFlowResult with flow classification
         """
         task_lower = task_description.lower()
-        
+
         # Enhanced Routing Logic: Check for strong differentiators from K.0 analysis
         # This would be available in the context from the __call__ method
         # For now, we'll add the logic structure that will be used when thematic analysis is present
-        
+
         # Check for tailor-specific keywords
         if any(keyword in task_lower for keyword in self.tailor_keywords):
             if has_master_resume:
@@ -222,8 +223,10 @@ class RGFlowRouter:
                     retry_enabled=self.flow_configs["tailor_existing"]["retry_enabled"],
                 )
             else:
-                logger.warning("Tailor requested but no master resume available - falling back to generate")
-        
+                logger.warning(
+                    "Tailor requested but no master resume available - falling back to generate"
+                )
+
         # Check for generate-specific keywords
         if any(keyword in task_lower for keyword in self.generate_keywords):
             return ResumeFlowResult(
@@ -233,7 +236,7 @@ class RGFlowRouter:
                 validation_required=self.flow_configs["generate_scratch"]["validation_required"],
                 retry_enabled=self.flow_configs["generate_scratch"]["retry_enabled"],
             )
-        
+
         # Check for enhance-specific keywords
         if any(keyword in task_lower for keyword in self.enhance_keywords):
             return ResumeFlowResult(
@@ -243,7 +246,7 @@ class RGFlowRouter:
                 validation_required=self.flow_configs["enhance_current"]["validation_required"],
                 retry_enabled=self.flow_configs["enhance_current"]["retry_enabled"],
             )
-        
+
         # Default logic: if master resume exists, tailor; otherwise generate
         if has_master_resume:
             return ResumeFlowResult(
@@ -261,8 +264,13 @@ class RGFlowRouter:
                 validation_required=self.flow_configs["generate_scratch"]["validation_required"],
                 retry_enabled=self.flow_configs["generate_scratch"]["retry_enabled"],
             )
-    
-    def _classify_flow_with_thematic_analysis(self, task_description: str, has_master_resume: bool, thematic_analysis: ThematicAnalysisOutput) -> ResumeFlowResult:
+
+    def _classify_flow_with_thematic_analysis(
+        self,
+        task_description: str,
+        has_master_resume: bool,
+        thematic_analysis: ThematicAnalysisOutput,
+    ) -> ResumeFlowResult:
         """Enhanced flow classification using K.0 Thematic Analysis insights.
 
         Args:
@@ -274,20 +282,22 @@ class RGFlowRouter:
             ResumeFlowResult with enhanced flow classification
         """
         task_lower = task_description.lower()
-        
+
         # 2. Enhanced Routing Logic based on differentiator strength
         differentiators = thematic_analysis.competitive_intelligence.differentiator_keywords
-        
+
         # If strong differentiators exist, route to high-precision tailoring
         if len(differentiators) > 3:
             return ResumeFlowResult(
                 flow_type="strategic_tailor_node",
                 confidence=0.98,
                 required_hops=self.flow_configs["strategic_tailor_node"]["required_hops"],
-                validation_required=self.flow_configs["strategic_tailor_node"]["validation_required"],
+                validation_required=self.flow_configs["strategic_tailor_node"][
+                    "validation_required"
+                ],
                 retry_enabled=self.flow_configs["strategic_tailor_node"]["retry_enabled"],
             )
-        
+
         # Check for tailor-specific keywords
         if any(keyword in task_lower for keyword in self.tailor_keywords):
             if has_master_resume:
@@ -299,8 +309,10 @@ class RGFlowRouter:
                     retry_enabled=self.flow_configs["tailor_existing"]["retry_enabled"],
                 )
             else:
-                logger.warning("Tailor requested but no master resume available - falling back to generate")
-        
+                logger.warning(
+                    "Tailor requested but no master resume available - falling back to generate"
+                )
+
         # Check for generate-specific keywords
         if any(keyword in task_lower for keyword in self.generate_keywords):
             return ResumeFlowResult(
@@ -310,7 +322,7 @@ class RGFlowRouter:
                 validation_required=self.flow_configs["generate_scratch"]["validation_required"],
                 retry_enabled=self.flow_configs["generate_scratch"]["retry_enabled"],
             )
-        
+
         # Check for enhance-specific keywords
         if any(keyword in task_lower for keyword in self.enhance_keywords):
             return ResumeFlowResult(
@@ -320,7 +332,7 @@ class RGFlowRouter:
                 validation_required=self.flow_configs["enhance_current"]["validation_required"],
                 retry_enabled=self.flow_configs["enhance_current"]["retry_enabled"],
             )
-        
+
         # Default logic: if master resume exists, tailor; otherwise generate
         if has_master_resume:
             return ResumeFlowResult(
@@ -339,7 +351,9 @@ class RGFlowRouter:
                 retry_enabled=self.flow_configs["generate_scratch"]["retry_enabled"],
             )
 
-    def _validate_routing_requirements(self, flow_result: ResumeFlowResult, context: Dict[str, Any]) -> None:
+    def _validate_routing_requirements(
+        self, flow_result: ResumeFlowResult, context: dict[str, Any]
+    ) -> None:
         """Validate that routing requirements are met.
 
         Args:
@@ -355,7 +369,7 @@ class RGFlowRouter:
                 raise ValueError(
                     f"ROUTING_VALIDATION_FAILED: Flow '{flow_result.flow_type}' requires master resume"
                 )
-        
+
         # Check if job description meets minimum length
         job_description = context.get("job_description", "")
         if len(job_description) < 50:

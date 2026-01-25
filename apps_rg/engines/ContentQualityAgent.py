@@ -120,11 +120,11 @@ class ContentQualityAgent(RGAgentBase):
 
     def _check_placeholders(self, content_str: str, section_name: str) -> list[str]:
         """Check for placeholder text using delegated logic.
-        
+
         Args:
             content_str: Content string to check
             section_name: Name of the section being checked
-            
+
         Returns:
             List of placeholder issues found
         """
@@ -136,10 +136,10 @@ class ContentQualityAgent(RGAgentBase):
 
     def _check_quantified_achievements(self, content_str: str) -> list[str]:
         """Check for quantified achievements using delegated logic.
-        
+
         Args:
             content_str: Content string to check
-            
+
         Returns:
             List of quantification issues found
         """
@@ -154,56 +154,58 @@ class ContentQualityAgent(RGAgentBase):
 
     def _validate_skills_with_logic_node(self, resume: dict[str, Any]) -> list[str]:
         """Validate skills section using delegated logic node.
-        
+
         Args:
             resume: Resume data to validate
-            
+
         Returns:
             List of skill validation issues
         """
         issues = []
-        
+
         # Use skill extractor logic node to validate skills
         try:
             # Convert resume to profile format for skill extractor
             profile_text = self._resume_to_profile_text(resume)
             skill_analysis = self.skill_extractor(profile_text, {})
-            
+
             # Check if skills were properly extracted
             total_skills = (
-                len(skill_analysis.extraction_result.technical_skills) +
-                len(skill_analysis.extraction_result.soft_skills) +
-                len(skill_analysis.extraction_result.domain_skills) +
-                len(skill_analysis.extraction_result.tool_skills)
+                len(skill_analysis.extraction_result.technical_skills)
+                + len(skill_analysis.extraction_result.soft_skills)
+                + len(skill_analysis.extraction_result.domain_skills)
+                + len(skill_analysis.extraction_result.tool_skills)
             )
-            
+
             if total_skills < 5:
                 issues.append(f"Insufficient skills extracted ({total_skills} < 5)")
-            
+
             # Check confidence score
             if skill_analysis.extraction_result.confidence_score < 0.6:
-                issues.append(f"Low skill extraction confidence ({skill_analysis.extraction_result.confidence_score:.2f})")
-                
+                issues.append(
+                    f"Low skill extraction confidence ({skill_analysis.extraction_result.confidence_score:.2f})"
+                )
+
         except Exception as e:
             issues.append(f"Skill validation failed: {str(e)}")
-        
+
         return issues
 
     def _resume_to_profile_text(self, resume: dict[str, Any]) -> str:
         """Convert resume to profile text format for skill extractor.
-        
+
         Args:
             resume: Resume data
-            
+
         Returns:
             Formatted profile text
         """
         profile_text = ""
-        
+
         # Add summary
         if "summary" in resume:
             profile_text += f" {resume['summary']}"
-        
+
         # Add experience
         if "experience" in resume:
             for exp in resume["experience"]:
@@ -211,14 +213,14 @@ class ContentQualityAgent(RGAgentBase):
                     profile_text += f" {exp.get('title', '')} {exp.get('description', '')}"
                     for bullet in exp.get("bullets", []):
                         profile_text += f" {bullet}"
-        
+
         # Add skills
         if "skills" in resume:
             if isinstance(resume["skills"], list):
                 profile_text += " " + " ".join(str(s) for s in resume["skills"])
             else:
                 profile_text += f" {resume['skills']}"
-        
+
         return profile_text
 
     def _to_string(self, content: Any) -> str:

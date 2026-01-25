@@ -3,24 +3,27 @@
 Implements the 'Transactional State' pattern from v61.27.10.
 Prevents state corruption by requiring cryptographic signatures for commits.
 """
-from typing import Dict, Any, Optional, List
+
+from typing import Any
 from copy import deepcopy
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 class SovereignContext:
     """
     Manages application state with transactional integrity.
     Data flow: Write -> Airlock -> (Validation Gate) -> Commit(Signature) -> State
     """
+
     def __init__(self):
         # Immutable Master State
-        self._state: Dict[str, Any] = {}
+        self._state: dict[str, Any] = {}
         # Staging Area (The Airlock)
-        self._airlock: Dict[str, Any] = {}
+        self._airlock: dict[str, Any] = {}
         # Audit Trail
-        self._transaction_log: List[Dict[str, Any]] = []
+        self._transaction_log: list[dict[str, Any]] = []
 
     def write_to_airlock(self, key: str, value: Any) -> None:
         """
@@ -35,17 +38,17 @@ class SovereignContext:
         CRITICAL: REQUIRES a valid cryptographic signature to prove validation passed.
         """
         if not validation_signature:
-            raise ValueError("SECURITY VIOLATION: Cannot commit airlock without validation signature.")
-            
+            raise ValueError(
+                "SECURITY VIOLATION: Cannot commit airlock without validation signature."
+            )
+
         # Atomic commit of all staged changes
         for key, value in self._airlock.items():
             self._state[key] = deepcopy(value)
-            self._transaction_log.append({
-                "action": "COMMIT",
-                "key": key,
-                "signature": validation_signature
-            })
-        
+            self._transaction_log.append(
+                {"action": "COMMIT", "key": key, "signature": validation_signature}
+            )
+
         # Flush airlock after successful commit
         self._airlock.clear()
         logger.info(f"Airlock committed successfully with signature {validation_signature[:8]}...")

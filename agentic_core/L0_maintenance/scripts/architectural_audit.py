@@ -3,32 +3,34 @@ file: agentic_core/L0_maintenance/scripts/architectural_audit.py
 description: AST-based static analysis tool to detect inheritance drift.
 directory: agentic_core/L0_maintenance/scripts
 """
+
 import ast
 import os
 import sys
-from typing import List, Dict, Set
 
 # Configuration: strict definition of the drift
-TARGET_VIOLATION = 'L2Agent'
-REQUIRED_BASE = 'SovereignBaseAgent'
+TARGET_VIOLATION = "L2Agent"
+REQUIRED_BASE = "SovereignBaseAgent"
 
 # Exclusions based on SSOT knowledge of valid base classes
-EXCLUSIONS: Set[str] = {
-    'L2Agent',             # The class itself cannot violate
-    'SovereignBaseAgent',  # The target base
-    'MockL2Agent',         # Test mocks
-    'ExecutionCanonBaseAgent', # Likely a valid L2 base
+EXCLUSIONS: set[str] = {
+    "L2Agent",  # The class itself cannot violate
+    "SovereignBaseAgent",  # The target base
+    "MockL2Agent",  # Test mocks
+    "ExecutionCanonBaseAgent",  # Likely a valid L2 base
 }
+
 
 class DriftDetector(ast.NodeVisitor):
     """
     Parses python source to find classes inheriting from TARGET_VIOLATION.
     Uses AST to bypass regex limitations (aliasing, formatting).
     """
+
     def __init__(self, filename: str):
         self.filename = filename
-        self.violations: List[Dict] = []
-        self.imports: Dict[str, str] = {}  # alias -> original_name
+        self.violations: list[dict] = []
+        self.imports: dict[str, str] = {}  # alias -> original_name
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         """Track imports to detect aliasing e.g. 'from x import L2Agent as Base'"""
@@ -47,14 +49,14 @@ class DriftDetector(ast.NodeVisitor):
 
         for base in node.bases:
             detected_name = None
-            
+
             # Case 1: Direct Name (class X(L2Agent))
             if isinstance(base, ast.Name):
                 if base.id == TARGET_VIOLATION:
                     detected_name = base.id
                 elif base.id in self.imports and self.imports[base.id] == TARGET_VIOLATION:
                     detected_name = f"{base.id} (alias of {TARGET_VIOLATION})"
-            
+
             # Case 2: Attribute (class X(module.L2Agent))
             elif isinstance(base, ast.Attribute):
                 if base.attr == TARGET_VIOLATION:
@@ -70,12 +72,15 @@ class DriftDetector(ast.NodeVisitor):
                         detected_name = ".".join(parts)
 
             if detected_name:
-                self.violations.append({
-                    "file": self.filename,
-                    "class": node.name,
-                    "line": node.lineno,
-                    "detected": detected_name
-                })
+                self.violations.append(
+                    {
+                        "file": self.filename,
+                        "class": node.name,
+                        "line": node.lineno,
+                        "detected": detected_name,
+                    }
+                )
+
 
 def scan_repository(root_path: str = ".") -> int:
     """
@@ -84,11 +89,17 @@ def scan_repository(root_path: str = ".") -> int:
     """
     all_violations = []
     parse_errors = []
-    
+
     # SSOT: Respect the ignore_dirs from blueprint if possible, but hardcode for standalone safety
     ignored_dirs = {
-        ".git", "venv", ".venv", "__pycache__", "node_modules", 
-        "legacy_code", "legacy_engines", "archives"
+        ".git",
+        "venv",
+        ".venv",
+        "__pycache__",
+        "node_modules",
+        "legacy_code",
+        "legacy_engines",
+        "archives",
     }
 
     print(f"Scanning root: {os.path.abspath(root_path)}")
@@ -96,17 +107,17 @@ def scan_repository(root_path: str = ".") -> int:
     for root, dirs, files in os.walk(root_path):
         # In-place filtering of directories to skip
         dirs[:] = [d for d in dirs if d not in ignored_dirs]
-        
+
         for f in files:
             if not f.endswith(".py"):
                 continue
-            
+
             full_path = os.path.join(root, f)
             try:
                 # Force UTF-8 to avoid CP1252 errors on Windows
-                with open(full_path, "r", encoding="utf-8") as source:
+                with open(full_path, encoding="utf-8") as source:
                     content = source.read()
-                
+
                 tree = ast.parse(content, filename=full_path)
                 checker = DriftDetector(full_path)
                 checker.visit(tree)
@@ -127,13 +138,13 @@ def scan_repository(root_path: str = ".") -> int:
         for err in parse_errors:
             print(f"[SKIP] {err}")
         print("-" * 100)
-        
+
         # Immediate Fail if critical agents are skipped
         if any("ToolsmithAgent" in e for e in parse_errors):
             print("\n!!! ALARM: ToolsmithAgent was skipped! Audit is INVALID. !!!")
-        
+
         exit_code = 1
-    
+
     if all_violations:
         print(f"\n[FAIL] Found {len(all_violations)} Architectural Violations:")
         print(f"{'File':<60} | {'Class':<30} | {'Line':<5}")
@@ -142,13 +153,16 @@ def scan_repository(root_path: str = ".") -> int:
             print(f"{v['file']:<60} | {v['class']:<30} | {v['line']:<5}")
         exit_code = 1
     elif not parse_errors:
-        print("\n[SUCCESS] Architecture is compliant. No orphaned L2Agents found and 0 parse errors.")
-    
+        print(
+            "\n[SUCCESS] Architecture is compliant. No orphaned L2Agents found and 0 parse errors."
+        )
+
     return exit_code
+
 
 if __name__ == "__main__":
     # Determine project root based on SSOT markers if running from subdir
     current_dir = os.getcwd()
     print(f"Starting AST Audit for {TARGET_VIOLATION}...")
-    
+
     sys.exit(scan_repository(current_dir))

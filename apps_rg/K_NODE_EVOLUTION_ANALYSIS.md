@@ -211,13 +211,13 @@ class SovereignContext:
         self.in_memory_context = {}
         self.airlock_buffer = {}
         self.transaction_log = []
-    
+
     def write_with_airlock(self, key: str, value: Any):
         # Validate before committing to main context
         if self.validate_write_operation(key, value):
             self.airlock_buffer[key] = value
             self.commit_to_main_context()
-    
+
     def rollback_on_failure(self):
         # Restore last known good state
         self.restore_from_checkpoint()
@@ -234,7 +234,7 @@ class KNodeExecutor:
             "K.5B": ["K.5A", "K.0", "K.2"],
             # ... etc
         }
-    
+
     def execute_with_dependencies(self, k_node: str):
         dependencies = self.dependency_graph.get(k_node, [])
         for dep in dependencies:
@@ -251,10 +251,10 @@ class ValidationGate:
     def __init__(self, gate_id: str):
         self.gate_id = gate_id
         self.signature_key = "WORKFLOW_VALIDATION_KEY"
-    
+
     def sign_execution(self, execution_data: dict) -> str:
         return hmac_sha256(self.signature_key, execution_data)
-    
+
     def validate_before_file_write(self, required_signatures: list) -> bool:
         return all(sig in self.execution_signatures for sig in required_signatures)
 ```
@@ -313,7 +313,7 @@ class ThematicAnalysisNode:
 
 ## Conclusion
 
-The archived K-node structures reveal a sophisticated evolution from simple linear processing to a hardened, production-ready system with comprehensive validation, dependency management, and quality enforcement. 
+The archived K-node structures reveal a sophisticated evolution from simple linear processing to a hardened, production-ready system with comprehensive validation, dependency management, and quality enforcement.
 
 **Key opportunities for apps_rg:**
 1. **K.0 thematic analysis** for authentic language patterns

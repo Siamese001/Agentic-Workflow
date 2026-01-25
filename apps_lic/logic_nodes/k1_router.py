@@ -5,8 +5,8 @@ This is a deterministic utility, NOT an autonomous agent.
 
 from __future__ import annotations
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
@@ -46,35 +46,35 @@ class K1Output:
 class K1Router:
     """
     Handles state transitions and routing logic for the Profile Analysis workflow.
-    
+
     This is a deterministic logic node that implements the 7 Prompt Shell Entrance Gates,
     archetype classification with CXO precedence, and route selection with premium
     routing validation. It is NOT an autonomous agent.
     """
-    
-    def __init__(self, config: Dict[str, Any] = None):
+
+    def __init__(self, config: dict[str, Any] = None):
         self.config = config or {}
-        
+
         # Default configuration
-        self.archetype_tokens: Dict[str, List[str]] = self.config.get(
+        self.archetype_tokens: dict[str, list[str]] = self.config.get(
             "archetype_tokens",
             {
                 "C_LEVEL": ["CEO", "CTO", "CFO", "CIO", "COO", "PRESIDENT", "DIRECTOR"],
                 "EXECUTIVE": ["VP", "VICE PRESIDENT", "SENIOR", "LEAD", "HEAD", "MANAGER"],
                 "SENIOR_TA": ["SENIOR", "PRINCIPAL", "STAFF", "ENGINEER", "DEVELOPER"],
                 "RECRUITER": ["RECRUITER", "TALENT", "HR", "SOURCING"],
-            }
+            },
         )
-        self.cxo_precedence_tokens: List[str] = self.config.get(
+        self.cxo_precedence_tokens: list[str] = self.config.get(
             "cxo_precedence_tokens",
-            ["CEO", "CTO", "CFO", "CIO", "COO", "PRESIDENT", "FOUNDER", "CHIEF"]
+            ["CEO", "CTO", "CFO", "CIO", "COO", "PRESIDENT", "FOUNDER", "CHIEF"],
         )
-        self.route_configs: Dict[str, Any] = self.config.get("route_configs", {})
+        self.route_configs: dict[str, Any] = self.config.get("route_configs", {})
 
-    def __call__(self, state: Dict[str, Any]) -> K1Output:
+    def __call__(self, state: dict[str, Any]) -> K1Output:
         """
         Executes routing logic using functor pattern for graph compatibility.
-        
+
         Args:
             state (dict): The current workflow state containing:
                 - linkedin_url: str
@@ -84,31 +84,31 @@ class K1Router:
                 - lifecycle: str (NEW or EXISTING)
                 - premium_available: bool
                 - route_override: Optional[str]
-            
+
         Returns:
             K1Output: Complete routing output with archetype and route
-            
+
         Raises:
             ValueError: If routing state is empty or validation fails
         """
         if not state:
             raise ValueError("Routing state cannot be empty")
-            
+
         return self.execute_routing(state)
 
-    def determine_next_hop(self, state: Dict[str, Any]) -> str:
+    def determine_next_hop(self, state: dict[str, Any]) -> str:
         """
         Determines the next hop identifier for workflow routing.
-        
+
         Args:
             state: Current workflow state
-            
+
         Returns:
             str: Next hop identifier
         """
         if not state:
             raise ValueError("Routing state cannot be empty")
-            
+
         # Basic routing logic - can be extended based on state
         result = self.execute_routing(state)
         return f"route_{result.route.lower()}"

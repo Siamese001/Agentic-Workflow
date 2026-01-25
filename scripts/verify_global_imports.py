@@ -4,7 +4,6 @@ Context: Post-refactor validation tool. Critical Analysis suggests that while fi
 """
 
 import os
-import re
 import sys
 
 # SSOT: The agents that were moved
@@ -15,7 +14,7 @@ MOVED_AGENTS = [
     "providers_anthropic_client",
     "Router",
     "strategist_biowriter",
-    "utilities_deep_brain_harvest"
+    "utilities_deep_brain_harvest",
 ]
 
 # The old path we are banning
@@ -25,6 +24,7 @@ NEW_PATH_HINT = "apps_rg.engines"
 
 ROOT_DIR = r"C:\Git\Agentic-Workflow"
 
+
 def scan_for_stale_imports():
     stale_count = 0
     print(f"{'STATUS':<10} | {'FILE':<60} | {'ISSUE'}")
@@ -33,34 +33,38 @@ def scan_for_stale_imports():
     for root, _, files in os.walk(ROOT_DIR):
         if "venv" in root or ".git" in root or "__pycache__" in root:
             continue
-            
+
         for file in files:
             if not file.endswith(".py"):
                 continue
-                
+
             file_path = os.path.join(root, file)
-            
+
             # Skip the scanner script itself to avoid false positives
             if file_path.endswith("verify_global_imports.py"):
                 continue
-                
-            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+
+            with open(file_path, encoding="utf-8", errors="ignore") as f:
                 lines = f.readlines()
-                
+
             for i, line in enumerate(lines):
                 # Check for explicit import from the old utility path involving moved agents
                 # Regex looks for: from apps_shared.common_utils import Router
                 # OR: import apps_shared.common_utils.Router
-                
+
                 for agent in MOVED_AGENTS:
                     # Pattern 1: from ... import Agent
                     if f"from {FORBIDDEN_PATH}" in line and agent in line:
-                        print(f"!! STALE   | {file_path.replace(ROOT_DIR, '')[:60]:<60} | Importing '{agent}' from old path")
+                        print(
+                            f"!! STALE   | {file_path.replace(ROOT_DIR, '')[:60]:<60} | Importing '{agent}' from old path"
+                        )
                         stale_count += 1
-                    
+
                     # Pattern 2: import ...Agent
                     elif f"import {FORBIDDEN_PATH}.{agent}" in line:
-                        print(f"!! STALE   | {file_path.replace(ROOT_DIR, '')[:60]:<60} | Direct import of '{agent}' from old path")
+                        print(
+                            f"!! STALE   | {file_path.replace(ROOT_DIR, '')[:60]:<60} | Direct import of '{agent}' from old path"
+                        )
                         stale_count += 1
 
     if stale_count == 0:
@@ -69,6 +73,7 @@ def scan_for_stale_imports():
     else:
         print(f"\nFAILURE: Found {stale_count} stale imports. Run global search and replace.")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     scan_for_stale_imports()

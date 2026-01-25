@@ -17,7 +17,7 @@ Logger = logging.getLogger(__name__)
 class ResumePlanningEngine(BaseRGEngine):
     """
     L1 Planning - Role/Industry focus determination.
-    
+
     Now delegates role/industry extraction to ResumeSectionNode logic node
     to comply with Blueprint Depth-2 Structure requirements.
     """
@@ -37,7 +37,7 @@ class ResumePlanningEngine(BaseRGEngine):
 
         # Delegate role/industry extraction to logic node
         section_analysis = self.section_node(job_description, candidate_profile)
-        
+
         plan = {
             "target_role": section_analysis.role_result.role,
             "target_industry": section_analysis.industry_result.industry,

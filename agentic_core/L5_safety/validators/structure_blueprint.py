@@ -27,10 +27,10 @@ CANON_VALIDATION_REGISTRY: Final[dict[str, list[str]]] = {
     ],
     "forbidden_patterns": [
         "apps_shared/base_agents",  # EVICTED -> apps_shared/agents
-        "apps_shared/P1_core",      # EVICTED -> apps_shared/core
-        "apps_shared/common_utils", # EVICTED -> apps_shared/utils
+        "apps_shared/P1_core",  # EVICTED -> apps_shared/core
+        "apps_shared/common_utils",  # EVICTED -> apps_shared/utils
         "agentic_core/utils/core_extensions",  # EVICTED
-        "agentic_core/common",      # EVICTED -> use utils
+        "agentic_core/common",  # EVICTED -> use utils
     ],
     "mandatory_files": [
         "agentic_core/domain/exceptions.py",
