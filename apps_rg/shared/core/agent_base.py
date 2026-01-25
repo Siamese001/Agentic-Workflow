@@ -8,22 +8,22 @@ from typing import Any, Final
 from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.meta_learning_mixin import MetaLearningMixin
 
 
 @dataclass
-class RGAgentBase(SovereignBaseAgent):
+class RGAgentBase(MetaLearningMixin, SovereignBaseAgent):
     """
     RGAgentBase: The Sovereign Foundation for all 'Red Group' Agents.
-
-    Enforces V2.5 Sovereign Architecture:
-    1. Inherits Security Hardening from SovereignBaseAgent
-    2. Inherits Self-Healing through SovereignBaseAgent -> HealingStrategyMixin
-    3. Enforces Domain Isolation via 'domain_root'
     """
 
     # Domain-specific RG configuration
     domain_root: Path = field(default_factory=lambda: Path("apps_rg"))
     _rg_version: Final[str] = "2.5.0"
+
+    # [PHASE 25] Infrastructure Config
+    _namespace: str = field(default="apps_rg", init=False)
+    _similarity_threshold: float = field(default=0.85, init=False)
 
     def __post_init__(self) -> None:
         """

@@ -577,6 +577,60 @@ class SemanticCacheManager:
         with self._lock:
             self.stats["cache_stores"] += 1
 
+    async def learn_async(
+        self,
+        context: str,
+        namespace: str,
+        result: dict[str, Any],
+        feedback_score: float | None = None,
+    ) -> None:
+        """
+        [PHASE 25] Async version of learn for fire-and-forget pattern.
+        """
+        # Stateless mode check
+        if self.stateless_mode:
+            return
+
+        # Trace sampling check
+        if not self._should_sample_trace():
+            with self._lock:
+                self.stats["traces_skipped"] += 1
+            return
+
+        with self._lock:
+            self.stats["traces_sampled"] += 1
+
+        # Sanitize content before storage
+        sanitized_context = self.sanitizer.sanitize(context)
+
+        ctx_hash = self._compute_hash(sanitized_context, namespace)
+
+        # Add metadata to result
+        enriched_result = {
+            **result,
+            "_metadata": {
+                "namespace": namespace,
+                "timestamp": time.time(),
+                "feedback_score": feedback_score,
+                "promoted": False,
+            },
+        }
+        payload_json = json.dumps(enriched_result)
+
+        # Layer 1: Store in Redis (Working Memory - 24h TTL)
+        if self.redis_enabled:
+            try:
+                await self.redis_client.setex(
+                    f"memory:{ctx_hash}",
+                    self.DEFAULT_WORKING_MEMORY_TTL,  # 24 hours
+                    payload_json,
+                )
+            except Exception as e:
+                Logger.debug(f"[HiveMind] Redis async learn failed: {e}")
+
+        with self._lock:
+            self.stats["cache_stores"] += 1
+
     def promote_to_long_term(
         self,
         context: str,

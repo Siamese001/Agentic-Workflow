@@ -10,18 +10,22 @@ from pathlib import Path
 # CORE SOCKETING: Align with Phase 20 Hardened Standards
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.healer_mixin import HealerMixin
+from agentic_core.base_agents.meta_learning_mixin import MetaLearningMixin
 
 
 @dataclass
-class LICAgentBase(SovereignBaseAgent, HealerMixin):
+class LICAgentBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
     """
     LICAgentBase: Sovereign Foundation for 'Local Intelligence' (LIC).
-    RETROFITTED: Aligned with Phase 20 Hardened Core (@dataclass compliant).
     """
 
     # Domain-specific LIC configuration
     domain_root: Path = field(default_factory=lambda: Path("apps_lic"))
     _lic_version: Final[str] = "2.5.0-hardened"
+
+    # [PHASE 25] Infrastructure Config (STRICTER)
+    _namespace: str = field(default="apps_lic", init=False)
+    _similarity_threshold: float = field(default=0.92, init=False)
 
     def __post_init__(self) -> None:
         """
