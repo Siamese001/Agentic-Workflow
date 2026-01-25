@@ -8,6 +8,10 @@ Legacy K-Node: K.4
 """
 
 import logging
+from dataclasses import dataclass
+from typing import Any
+
+from apps_rg.shared.core.agent_base import RGAgentBase as Agent
 
 
 logger = logging.getLogger(__name__)

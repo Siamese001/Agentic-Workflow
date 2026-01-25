@@ -5,6 +5,7 @@ Following Batch 3 specifications
 
 HARDENING: Reads 'hop2_enrichment' (Candidate Data) and 'mission_input' (JD).
 Writes 'k9_competencies'. Enforces the "Exactly 6" rule via SovereignContext validation.
+Now delegates skill analysis to logic_nodes for deterministic logic extraction.
 """
 
 from __future__ import annotations
@@ -13,6 +14,7 @@ from dataclasses import dataclass
 import logging
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
+from apps_rg.logic_nodes.skill_extractor_node import SkillExtractorNode
 
 Logger = logging.getLogger(__name__)
 
@@ -29,10 +31,15 @@ class GapClosureEngine(BaseRGEngine):
     K-Node K.9: Leadership Competencies & Gap Closure.
     Reads: 'hop2_enrichment', 'mission_input'
     Writes: 'k9_competencies'
+    
+    Now delegates skill gap analysis to SkillExtractorNode logic node
+    to comply with Blueprint Depth-2 Structure requirements.
     """
 
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="K.9")
+        # Compose with logic node instead of containing fat logic
+        self.skill_extractor = SkillExtractorNode(config=self.config.get("skill_config", {}))
 
     async def execute(self) -> list[dict[str, Any]]:
         """
@@ -47,16 +54,16 @@ class GapClosureEngine(BaseRGEngine):
             raise ValueError("Buffer missing hop2_enrichment or mission_input")
 
         jd_keywords = mission.get("job_description_keywords", [])  # Assuming extracted in HOP0/1
-        candidate_skills = self._extract_skills(enrichment)
-
+        
         self._mcp_audit("k9_generation_start")
 
-        # 2. LOGIC: Identify Gaps
-        gap_keywords = [k for k in jd_keywords if k not in candidate_skills]
-
-        # 3. LOGIC: Generate (Mock LLM Call)
-        # In prod, this uses self.get_frozen_prompt("k9_gap_closure")
-        competencies = self._mock_generation(gap_keywords)
+        # 2. DELEGATE: Skill Gap Analysis to Logic Node
+        job_description = mission.get("job_description", "")
+        skill_analysis = self.skill_extractor(job_description, enrichment)
+        
+        # 3. LOGIC: Generate competencies based on skill gaps
+        gap_skills = skill_analysis.gap_result.missing_skills[:6]  # Top 6 gaps
+        competencies = self._generate_competencies(gap_skills)
 
         # 4. HARDENING: Zero Tolerance Count
         if len(competencies) != 6:
@@ -77,16 +84,50 @@ class GapClosureEngine(BaseRGEngine):
         output = [vars(c) for c in competencies]
         self.ctx.buffer.write("k9_competencies", output, source_agent=self.name)
 
-        self.record_pass("K9 Generation Complete", data={"count": 6})
+        self.record_pass("K9 Generation Complete using logic nodes", data={"count": 6})
         return output
 
-    def _extract_skills(self, data: dict) -> list[str]:
-        # Helper to flatten skills from enrichment data
-        return data.get("skills", [])
-
-    def _mock_generation(self, gaps: list[str]) -> list[CompetencyItem]:
-        # Stub for LLM generation
-        return [CompetencyItem("Skill", "Desc", 25) for _ in range(6)]
+    def _generate_competencies(self, gap_skills: list[str]) -> list[CompetencyItem]:
+        """Generate competency items based on skill gaps.
+        
+        Args:
+            gap_skills: List of skills that need to be addressed
+            
+        Returns:
+            List of 6 competency items
+        """
+        competencies = []
+        
+        # Generate competencies for each gap skill
+        for i, skill in enumerate(gap_skills[:6]):  # Ensure exactly 6
+            title = f"{skill} Leadership"
+            description = f"Demonstrated expertise in {skill} with measurable impact and team collaboration."
+            word_count = len(description.split())
+            
+            competencies.append(CompetencyItem(
+                title=title,
+                description=description,
+                word_count=word_count
+            ))
+        
+        # If less than 6 gaps, fill with generic leadership competencies
+        generic_competencies = [
+            ("Strategic Leadership", "Strategic thinking and planning with cross-functional collaboration."),
+            ("Team Development", "Building and mentoring high-performing teams with clear objectives."),
+            ("Change Management", "Leading organizational change with effective communication and stakeholder engagement."),
+            ("Results Orientation", "Driving measurable results through data-driven decision making."),
+            ("Innovation Leadership", "Fostering innovation and creative problem-solving approaches."),
+            ("Communication Excellence", "Clear, persuasive communication across all organizational levels."),
+        ]
+        
+        while len(competencies) < 6:
+            i = len(competencies) - len(gap_skills)
+            if i < len(generic_competencies):
+                title, description = generic_competencies[i]
+                word_count = len(description.split())
+                competencies.append(CompetencyItem(title, description, word_count))
+        
+        return competencies[:6]  # Ensure exactly 6
 
     def _validate_word_counts(self, items: list[CompetencyItem]) -> list[str]:
         issues = []

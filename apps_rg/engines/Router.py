@@ -9,13 +9,17 @@ Phase 2 - Resilient Routing Layer
 import logging
 from typing import Any
 
-from runtime.shared.agent_executor import AgentMessage, AgentResponse
-from runtime.shared.hardened_anthropic_executor import HardenedAnthropicExecutor
-from runtime.shared.hardened_gemini_executor import HardenedGeminiExecutor
-from runtime.shared.hardened_openai_executor import HardenedOpenAIExecutor
-from runtime.shared.multi_provider_clients import Provider
-from shared.resilience.circuit_breaker import CircuitBreakerState
-from shared.resilience.telemetry import OperationStatus, SystemTelemetry, get_telemetry
+# [Diff Start: Updated Imports for Relocation]
+# Previous: from runtime.shared.HardenedAnthropicExecutor import HardenedAnthropicExecutor
+from apps_rg.engines.HardenedAnthropicExecutor import HardenedAnthropicExecutor
+from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
+# Previous: from runtime.shared.circuit_breaker import CircuitBreaker, CircuitBreakerState
+from agentic_core.base_agents.circuit_breaker import CircuitBreakerState
+from apps_rg.engines.schema import RouterConfig, RouteResult, ProviderType
+from apps_shared.common_utils.multi_provider_clients import Provider
+from agentic_core.base_agents.telemetry import SystemTelemetry
+from apps_shared.common_utils.AgentExecutor import AgentMessage, AgentResponse
+# [Diff End]
 
 from .schema import DEFAULT_ROUTING_CONFIGS, RouteConfig, RoutingTier
 
@@ -117,7 +121,7 @@ class HardenedRouter:
         # Check circuit breaker state
         if hasattr(executor, "circuit_breaker"):
             state = executor.circuit_breaker.state
-            return state == CircuitBreakerState.CLOSED
+            return state == CircuitState.CLOSED
         elif hasattr(executor, "get_circuit_breaker_state"):
             state_str = executor.get_circuit_breaker_state()
             return state_str == "CLOSED"

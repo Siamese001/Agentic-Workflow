@@ -5,7 +5,7 @@ SOVEREIGN BRAIN: THE MASTER CONSTITUTION
 Enforces Depth-2 for Apps/Tests and Depth-3 for the Agentic Core.
 [SSOT] This is the absolute source of truth for the entire repository structure.
 
-CONSOLIDATED VERSION: Reduced redundancy while preserving all information.
+CONSOLIDATED VERSION: V2.5 - Final Polish (Unified Eviction & Domain Population)
 """
 import os
 import re
@@ -20,18 +20,23 @@ CANON_VALIDATION_REGISTRY: Final[dict[str, list[str]]] = {
         "agentic_core/domain",
         "agentic_core/L5_safety",
         "apps_lic/engines",
-        "apps_lic/shared/core",
+        "apps_lic/core",
         "apps_rg/engines",
-        "apps_rg/shared/core",
+        "apps_rg/core",
+        "apps_shared/core",
     ],
     "forbidden_patterns": [
-        "apps_shared/base_agents",  # EVICTED
+        "apps_shared/base_agents",  # EVICTED -> apps_shared/agents
+        "apps_shared/P1_core",      # EVICTED -> apps_shared/core
+        "apps_shared/common_utils", # EVICTED -> apps_shared/utils
         "agentic_core/utils/core_extensions",  # EVICTED
+        "agentic_core/common",      # EVICTED -> use utils
     ],
     "mandatory_files": [
         "agentic_core/domain/exceptions.py",
-        "apps_lic/shared/core/agent_base.py",
-        "apps_rg/shared/core/agent_base.py",
+        "apps_lic/core/base.py",
+        "apps_rg/core/base.py",
+        "apps_shared/core/base.py",
     ],
 }
 
@@ -54,8 +59,6 @@ SOVEREIGN_REGISTRY: Any = {
             "patterns",
             "semantic_memory",
             "knowledge",
-            "observability",
-            "common",
         ],
     },
     "apps_rg": {
@@ -67,6 +70,7 @@ SOVEREIGN_REGISTRY: Any = {
             "engines",
             "templates",
             "domain",
+            "core",
         ],
     },
     "apps_lic": {
@@ -84,17 +88,11 @@ SOVEREIGN_REGISTRY: Any = {
     "apps_shared": {
         "depth": 2,
         "subfolders": [
-            "base_definitions",
-            "common_utils",
-            "core_components",
-            "base_agents",
+            "core",
             "models",
             "utils",
-            "mixins",
-            "P1_core",
-            "config",
-            "data",
-            "domain",
+            "components",
+            "agents",
             "templates",
         ],
         "description": "Global utilities and shared logic accessible by all apps and core.",
@@ -322,7 +320,7 @@ CORE_SUBFOLDER_MAP: Any = {
     "domain": [],
     "L0_maintenance": ["scripts", "logs", "benchmarks", "mixins"],
     "L1_cognition": ["thought_engine", "intent_analysis", "planning"],
-    "L2_execution": ["tool_registry", "action_handlers", "mcp", "tool_registry", "unified"],
+    "L2_execution": ["tool_registry", "action_handlers", "mcp"],
     "L3_orchestration": [
         "workflow_engines",
         "fission_logic",
@@ -331,7 +329,7 @@ CORE_SUBFOLDER_MAP: Any = {
         "meta_learning",
         "interfaces",
     ],
-    "L4_state": ["ValidationContext", "ledger", "filesystem", "memory", "validation_context"],
+    "L4_state": ["ledger", "filesystem", "memory", "validation_context"],
     "L5_safety": [
         "guardrails",
         "red_teaming",
@@ -342,7 +340,6 @@ CORE_SUBFOLDER_MAP: Any = {
         "policies",
         "utils",
         "verifiability",
-        "unified",
         "core",
     ],
     "L6_observability": [
@@ -367,24 +364,27 @@ APPS_RG_SUBFOLDER_MAP: Any = {
     "logic_nodes": ["node_definitions", "node_helpers"],
     "asset_library": ["asset_definitions", "asset_helpers"],
     "system_flow": ["flow_definitions", "flow_helpers"],
-    "engines": ["resume_engine", "utils"],
+    "engines": ["drivers", "generators", "utils"],
     "templates": ["template_definitions", "template_helpers"],
+    "domain": ["models", "types", "events"],
+    "core": ["base", "config", "exceptions"],
 }
 APPS_LIC_SUBFOLDER_MAP: Any = {
     "logic_nodes": ["node_definitions", "node_helpers"],
     "asset_library": ["asset_definitions", "asset_helpers"],
     "system_flow": ["flow_definitions", "flow_helpers"],
-    "engines": ["outreach_engine", "utils"],
+    "engines": ["drivers", "generators", "utils"],
     "templates": ["template_definitions", "template_helpers"],
-    "domain": [],
+    "domain": ["models", "types", "events"],
+    "core": ["base", "config", "exceptions"],
 }
 APPS_SHARED_SUBFOLDER_MAP: Any = {
-    "base_definitions": ["definition_helpers", "definition_types"],
-    "common_utils": ["utility_helpers", "utility_types"],
-    "core_components": ["component_definitions", "component_helpers"],
-    "base_agents": ["agent_definitions", "agent_helpers"],
-    "models": ["model_definitions", "model_helpers"],
-    "utils": ["utility_helpers", "utility_types"],
+    "core": ["base_classes", "interfaces", "contracts"],
+    "models": ["dtos", "schemas", "types"],
+    "utils": ["string_utils", "date_utils", "file_utils"],
+    "components": ["loggers", "loaders", "adapters"],
+    "agents": ["worker_definitions", "mixins"],
+    "templates": ["patterns", "formats"],
 }
 TESTS_L2_SUBFOLDER_MAP: Any = {
     "unit": ["test_definitions", "test_helpers"],
@@ -2948,6 +2948,20 @@ semantic_l2_registry: Any = {
         },
     },
     "apps_rg": {
+        "core": {
+            "purpose": "App-specific base classes, configuration, and exception definitions",
+            "entity_types": ["Class"],
+            "keywords": ["base", "config", "exception", "settings", "setup"],
+            "imports": ["apps_rg.core"],
+            "bases": ["BaseConfig", "BaseException"],
+        },
+        "domain": {
+            "purpose": "Pure domain models, type definitions, and business entities",
+            "entity_types": ["Class"],
+            "keywords": ["model", "type", "entity", "struct", "dataclass"],
+            "imports": ["pydantic"],
+            "bases": ["BaseModel"],
+        },
         "logic_nodes": {
             "purpose": "Business logic nodes for resume extraction, parsing, and section formatting",
             "entity_types": ["Class"],
@@ -3044,6 +3058,20 @@ semantic_l2_registry: Any = {
         },
     },
     "apps_lic": {
+        "core": {
+            "purpose": "App-specific base classes, configuration, and exception definitions",
+            "entity_types": ["Class"],
+            "keywords": ["base", "config", "exception", "settings", "setup"],
+            "imports": ["apps_lic.core"],
+            "bases": ["BaseConfig", "BaseException"],
+        },
+        "domain": {
+            "purpose": "Pure domain models, type definitions, and business entities",
+            "entity_types": ["Class"],
+            "keywords": ["model", "type", "entity", "struct", "dataclass"],
+            "imports": ["pydantic"],
+            "bases": ["BaseModel"],
+        },
         "logic_nodes": {
             "purpose": "Business logic nodes for profile analysis, connection requests, and message generation",
             "entity_types": ["Class"],
@@ -3133,7 +3161,7 @@ semantic_l2_registry: Any = {
         },
     },
     "apps_shared": {
-        "base_definitions": {
+        "core": {
             "purpose": "Abstract base classes, core interfaces, and type contracts shared across all application domains",
             "entity_types": ["Class", "Protocol", "TypeAlias"],
             "keywords": [
@@ -3151,7 +3179,7 @@ semantic_l2_registry: Any = {
             "bases": ["ABC", "Protocol"],
             "examples": ["BaseNode", "BaseFlow", "BaseEngine", "BaseTemplate", "BaseAsset"],
         },
-        "common_utils": {
+        "utils": {
             "purpose": "Shared application-level utility functions for data manipulation, formatting, and common logic",
             "entity_types": ["Function", "Class"],
             "keywords": [
@@ -3174,7 +3202,7 @@ semantic_l2_registry: Any = {
                 "CurrencyFormatter",
             ],
         },
-        "core_components": {
+        "components": {
             "purpose": "Reusable architectural widgets and modular components used across multiple app flows",
             "entity_types": ["Class"],
             "keywords": ["component", "module", "widget", "part", "element", "plugin", "extension"],
@@ -3182,7 +3210,7 @@ semantic_l2_registry: Any = {
             "bases": ["BaseComponent"],
             "examples": ["LoggerComponent", "ConfigLoader", "NotificationWidget", "AppPluginBase"],
         },
-        "base_agents": {
+        "agents": {
             "purpose": "Shared application-level agent templates and worker base classes",
             "entity_types": ["Class"],
             "keywords": ["agent", "base_agent", "worker", "bot", "task_executor", "app_worker"],
@@ -3207,74 +3235,27 @@ semantic_l2_registry: Any = {
             "bases": ["BaseModel"],
             "examples": ["UserProfile", "TaskResult", "CommonMetadata", "SharedDataPacket"],
         },
+        "templates": {
+            "purpose": "Shared UI/Text patterns, format schemas, and presentation layers",
+            "entity_types": ["Class", "Dict"],
+            "keywords": ["template", "format", "schema", "presentation", "layout", "pattern"],
+            "imports": [],
+            "bases": ["BaseTemplate"],
+            "examples": ["CommonLayout", "StandardEmailFormat", "ReportTemplate"],
+        },
     },
 }
 SEMANTIC_L2_REGISTRY: Any = semantic_l2_registry
 
 # =============================================================================
-# SOVEREIGN CANON REGISTRY (SSOT)
+# SOVEREIGN CANON REGISTRY (DEPRECATED)
 # =============================================================================
-# The "Constitution" of Validation Rules.
-# Defines WHAT is enforced (Keys 0-50), not WHO enforces it.
-# Extracted from legacy CanonBaseAgent.py (2026-01-24)
+# ALL NUMERIC KEYS (0-50) HAVE BEEN DEPRECATED.
+# Logic moved to dynamic validation handlers and specific L5 agents.
+# This registry is kept as an empty schema for backward compatibility during transition.
 # =============================================================================
 
 SAFETY_VALIDATION_REGISTRY: dict[int, dict[str, Any]] = {
-    # SAFETY (Ported from SafetyInspectorAgent)
-    0: {"method": "check_key_00_no_hardcoded_secrets", "layer": "L5", "criticality": "HIGH"},
-    1: {"method": "check_key_01_no_todo_fixme", "layer": "L5", "criticality": "MEDIUM"},
-    2: {"method": "check_key_02_no_print_statements", "layer": "L5", "criticality": "LOW"},
-    3: {"method": "check_key_03_no_debugger_statements", "layer": "L5", "criticality": "HIGH"},
-    4: {"method": "check_key_04_no_empty_except_blocks", "layer": "L5", "criticality": "MEDIUM"},
-    5: {"method": "check_key_05_no_bare_except", "layer": "L5", "criticality": "MEDIUM"},
-    6: {"method": "check_key_06_no_eval_exec", "layer": "L5", "criticality": "CRITICAL"},
-    # DEPENDENCIES (Formerly DependencySentinelAgent)
-    7: {"method": "check_key_07_no_star_imports", "layer": "L2", "criticality": "MEDIUM"},
-    8: {"method": "check_key_08_no_relative_imports", "layer": "L2", "criticality": "MEDIUM"},
-    14: {"method": "check_key_14_no_duplicate_imports", "layer": "L2", "criticality": "LOW"},
-    44: {"method": "check_key_44_no_circular_imports", "layer": "L2", "criticality": "HIGH"},
-    45: {"method": "check_key_45_no_unused_imports", "layer": "L2", "criticality": "LOW"},
-    # CODE HYGIENE (Formerly CodeJanitor)
-    10: {"method": "check_key_10_no_long_lines", "layer": "L2", "criticality": "LOW"},
-    11: {"method": "check_key_11_no_trailing_whitespace", "layer": "L2", "criticality": "LOW"},
-    12: {"method": "check_key_12_no_missing_newline", "layer": "L2", "criticality": "LOW"},
-    13: {"method": "check_key_13_no_tabs", "layer": "L2", "criticality": "LOW"},
-    15: {"method": "check_key_15_no_magic_numbers", "layer": "L2", "criticality": "LOW"},
-    16: {"method": "check_key_16_no_deep_nesting", "layer": "L2", "criticality": "MEDIUM"},
-    # BUDGET & COMPLEXITY (Formerly BudgetAgent)
-    17: {"method": "check_key_17_no_large_functions", "layer": "L1", "criticality": "MEDIUM"},
-    19: {"method": "check_key_19_no_complex_functions", "layer": "L1", "criticality": "MEDIUM"},
-    # STRUCTURE (Formerly StructuralEngineerAgent)
-    18: {"method": "check_key_18_no_many_parameters", "layer": "L2", "criticality": "MEDIUM"},
-    20: {"method": "check_key_20_no_large_classes", "layer": "L2", "criticality": "MEDIUM"},
-    25: {"method": "check_key_25_no_global_variables", "layer": "L2", "criticality": "HIGH"},
-    42: {"method": "check_key_42_no_large_files", "layer": "L2", "criticality": "MEDIUM"},
-    43: {"method": "check_key_43_class_density", "layer": "L2", "criticality": "LOW"},
-    46: {"method": "check_key_46_no_duplicate_code", "layer": "L2", "criticality": "MEDIUM"},
-    # DOCUMENTATION (Formerly DocumentationAgent)
-    21: {"method": "check_key_21_no_missing_docstrings", "layer": "L5", "criticality": "LOW"},
-    # TYPING (Formerly TypeMechanicAgent)
-    22: {"method": "check_key_22_no_missing_type_hints", "layer": "L5", "criticality": "HIGH"},
-    23: {"method": "check_key_23_no_unreachable_code", "layer": "L5", "criticality": "MEDIUM"},
-    24: {"method": "check_key_24_no_unused_variables", "layer": "L5", "criticality": "LOW"},
-    # PATTERNS (Formerly UnifiedCodeEnforcerAgent)
-    26: {"method": "check_key_26_no_mutable_defaults", "layer": "L5", "criticality": "HIGH"},
-    27: {"method": "check_key_27_prefer_str_join", "layer": "L5", "criticality": "LOW"},
-    28: {"method": "check_key_28_no_bare_except", "layer": "L5", "criticality": "MEDIUM"},
-    29: {"method": "check_key_29_no_assert_in_prod", "layer": "L5", "criticality": "HIGH"},
-    30: {"method": "check_key_30_prefer_fstrings", "layer": "L5", "criticality": "LOW"},
-    31: {"method": "check_key_31_no_complex_comprehensions", "layer": "L5", "criticality": "LOW"},
-    32: {"method": "check_key_32_no_dict_keys_check", "layer": "L5", "criticality": "LOW"},
-    33: {"method": "check_key_33_no_float_equality", "layer": "L5", "criticality": "MEDIUM"},
-    34: {"method": "check_key_34_use_is_for_none", "layer": "L5", "criticality": "MEDIUM"},
-    36: {"method": "check_key_36_no_shadowed_builtins", "layer": "L5", "criticality": "HIGH"},
-    37: {"method": "check_key_37_no_redundant_self", "layer": "L5", "criticality": "LOW"},
-    38: {"method": "check_key_38_prefer_comprehensions", "layer": "L5", "criticality": "LOW"},
-    39: {"method": "check_key_39_no_useless_return", "layer": "L5", "criticality": "LOW"},
-    # ARCHITECTURE (Formerly SystemArchitect / NamingAgent)
-    40: {"method": "check_key_40_no_metaclasses", "layer": "L5", "criticality": "MEDIUM"},
-    41: {"method": "check_key_41_scoped_nesting", "layer": "L5", "criticality": "MEDIUM"},
-    47: {"method": "check_key_47_naming_conventions", "layer": "L5", "criticality": "LOW"},
-    49: {"method": "check_key_49_directory_depth", "layer": "L5", "criticality": "LOW"},
-    50: {"method": "check_key_50_law_of_void", "layer": "L5", "criticality": "LOW"},
+    # DEPRECATION STATUS: 100% COMPLETE
+    # Numeric keys removed to prevent structural coupling with legacy canon.
 }

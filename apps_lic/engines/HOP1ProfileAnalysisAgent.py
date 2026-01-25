@@ -13,6 +13,7 @@ from typing import Any
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+from apps_lic.logic_nodes.k1_router import K1Router
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
@@ -33,6 +34,8 @@ class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
         Initialize after dataclass construction.
         """
         super().__post_init__()
+        # Integration of the new Logic Node
+        self.router = K1Router(config=self.config.__dict__ if hasattr(self, 'config') and self.config else {})
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
