@@ -1421,7 +1421,6 @@ class LocationAgent(SubatomicTestingMixin, SovereignBaseAgent, L5Agent):
     ) -> None:
         """FACADE: Delegates to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
         healer = LocationHealerAgent(project_root=self.project_root)
         return healer._set_naming_final_status(report, heal_actions, semantic_issues)

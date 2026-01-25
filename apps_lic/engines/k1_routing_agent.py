@@ -6,15 +6,27 @@ route (INMAIL vs CONNECTION_REQ) with premium routing validation.
 """
 
 from __future__ import annotations
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
-from apps_lic.shared.core.agent_base import LICAgentBase
-from apps_lic.shared.core.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
 
 logger = logging.getLogger(__name__)
+
+
+# STUBS: Legacy mixins (use LICAgentBase instead)
+class MCPHardenedMixin:
+    """Legacy mixin - use LICAgentBase instead."""
+
+    pass
+
+
+class HealerMixin:
+    """Legacy mixin - use LICAgentBase instead."""
+
+    pass
 
 
 @dataclass
@@ -48,7 +60,8 @@ class K1Output:
     metadata: dict[str, Any]
 
 
-class RoutingSpecialist(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+@dataclass
+class RoutingSpecialist(SovereignBaseAgent):
     """LIC Sovereign Routing Specialist.
     Merged logic from k1_router_agent stub.
 
@@ -63,27 +76,14 @@ class RoutingSpecialist(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, H
     7. Final gate approval
     """
 
-    def __init__(
-        self,
-        config: ReasoningConfig,
-        archetype_tokens: dict[str, list[str]],
-        cxo_precedence_tokens: list[str],
-        route_configs: dict[str, Any],
-    ):
-        """Initialize K.1 routing agent.
+    # Sovereign Configuration
+    archetype_tokens: Dict[str, List[str]] = field(default_factory=dict)
+    cxo_precedence_tokens: List[str] = field(default_factory=list)
+    route_configs: Dict[str, Any] = field(default_factory=dict)
 
-        Args:
-            config: Reasoning configuration
-            archetype_tokens: Token lists for each archetype
-            cxo_precedence_tokens: CXO-level tokens for precedence rule
-            route_configs: Route configuration objects
-        """
-        super().__init__(config, k_node_id="K.1", element="Routing & Classification")
-
-        self.archetype_tokens = archetype_tokens
-        self.cxo_precedence_tokens = cxo_precedence_tokens
-        self.route_configs = route_configs
-
+    def __post_init__(self) -> None:
+        """Initialize Sovereign Capabilities."""
+        super().__post_init__()
         logger.info("K.1 Routing Agent initialized with CXO precedence rule")
 
     async def execute(self, context: dict[str, Any]) -> K1Output:

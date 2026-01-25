@@ -5,24 +5,30 @@ language for senior AI leadership positions. It creates safety protocols that
 address security, privacy, and evaluation frameworks.
 """
 
+from __future__ import annotations
+
 import logging
 import re
+from dataclasses import dataclass, field
 
-from apps_lic.domain.governance_shield_types import (
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-    IndustrySensitivity,
-    RiskProfile,
-    SafetyProtocol,
-)
+from apps_lic.shared.core.agent_base import LICAgentBase
 
 logger = logging.getLogger(__name__)
 
 
-class GovernanceShieldAgent(SubatomicTestingMixin):
-    """Audits and upgrades content for risk maturity."""
+@dataclass
+class GovernanceShieldAgent(LICAgentBase):
+    """Sovereign Governance Shield - Audits and upgrades content for risk maturity."""
 
-    def __init__(self):
-        """Initialize the governance shield agent."""
+    # Sovereign Configuration
+    risk_thresholds: dict[str, float] = field(
+        default_factory=lambda: {"max_confidence_score": 0.95, "min_safety_level": 0.8}
+    )
+
+    def __post_init__(self) -> None:
+        """Initialize Sovereign Capabilities."""
+        super().__post_init__()
+
         # Naive claim patterns to detect and replace
         self.naive_patterns = {
             "absolute_accuracy": [

@@ -6,6 +6,7 @@ Aggregates mission state into a persistent Markdown Audit Trail and calculates q
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -13,10 +14,10 @@ from typing import Any
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
+@dataclass
+class HOP8QAReportAgent(LICAgentBase):
     """
     V2 Implementation of HOP-8.
 
@@ -25,6 +26,15 @@ class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
     - Calculate a multi-dimensional Quality Score.
     - Generate and save a Markdown report to disk.
     """
+
+    # Sovereign Configuration
+    report_config: dict[str, Any] = field(
+        default_factory=lambda: {"output_dir": "reports", "include_timestamps": True}
+    )
+
+    def __post_init__(self) -> None:
+        """Initialize Sovereign Capabilities."""
+        super().__post_init__()
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """

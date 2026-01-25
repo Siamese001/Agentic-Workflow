@@ -18,6 +18,7 @@ class CampaignPlannerAgent(RGAgentBase):
     Orchestrates high-level campaign strategies and timeline alignment.
     """
 
+    name: str = "CampaignPlannerAgent"
     campaign_id: str = "default_campaign"
     strategy_model: str = "gpt-4-turbo"
     # Replacing mutable list=[] with defensive field factory

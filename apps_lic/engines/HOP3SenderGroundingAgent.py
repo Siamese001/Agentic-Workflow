@@ -8,16 +8,17 @@ Implements targeted whitelist extraction and achievement binding.
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class HOP3SenderGroundingAgent(SubatomicTestingMixin, LICAgentBase):
+@dataclass
+class HOP3SenderGroundingAgent(LICAgentBase):
     """
     LIC Sovereign Grounder.
 
@@ -27,6 +28,16 @@ class HOP3SenderGroundingAgent(SubatomicTestingMixin, LICAgentBase):
     - Logic: Whitelist Extraction -> Achievement Binding -> Metric Mapping
     - Output: 'hop3_sender_grounding' with grounding_whitelists and metric_source_map
     """
+
+    # Sovereign Configuration
+    grounding_rules: dict[str, str] = field(
+        default_factory=lambda: {"strict_mode": "enabled", "default_region": "us-east-1"}
+    )
+
+    def __post_init__(self) -> None:
+        """Initialize Sovereign Capabilities."""
+        # CRITICAL: Trigger Core Lock & Healing
+        super().__post_init__()
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
@@ -51,6 +62,16 @@ class HOP3SenderGroundingAgent(SubatomicTestingMixin, LICAgentBase):
 
         grounding_map = {"team_members": [], "products": [], "achievements": [], "case_studies": []}
         loaded_sources = []
+
+        # Use field factory for mutable defaults
+        if not hasattr(self, "_grounding_map_initialized"):
+            self._grounding_map_initialized = True
+            self._default_grounding_map = {
+                "team_members": [],
+                "products": [],
+                "achievements": [],
+                "case_studies": [],
+            }
 
         # 2. Specialist Extraction Loop
         for filename in source_files:

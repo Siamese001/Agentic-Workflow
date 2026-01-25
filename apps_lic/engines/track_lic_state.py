@@ -4,6 +4,8 @@ LIC State coordinator - HOP-based state management with atomic writes.
 Ported from: archives/legacy_lic/Agentic LIC/state_manager_LIC.py
 """
 
+from pathlib import Path
+from dataclasses import dataclass, field
 import hashlib
 import json
 import shutil

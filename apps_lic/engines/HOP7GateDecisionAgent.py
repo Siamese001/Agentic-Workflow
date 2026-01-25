@@ -7,14 +7,16 @@ directing the workflow (Pass, Retry Research, or Retry Generation).
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+from typing import Any
 
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class HOP7GateDecisionAgent(SubatomicTestingMixin, LICAgentBase):
+@dataclass
+class HOP7GateDecisionAgent(LICAgentBase):
     """
     V2.5 Governor Agent.
 
@@ -23,6 +25,15 @@ class HOP7GateDecisionAgent(SubatomicTestingMixin, LICAgentBase):
     - Classify failures based on GateConfig.
     - Write a decision record (PASS/FAIL_FACTUAL/FAIL_CREATIVE).
     """
+
+    # Sovereign Configuration
+    gate_thresholds: dict[str, Any] = field(
+        default_factory=lambda: {"max_factual_failures": 2, "max_creative_failures": 3}
+    )
+
+    def __post_init__(self) -> None:
+        """Initialize Sovereign Capabilities."""
+        super().__post_init__()
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """

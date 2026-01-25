@@ -1,24 +1,47 @@
-
-
 """Outreach Validation Executor - LIC-Specific Validation Gates.
 
 This module extends ValidationGateExecutor with outreach-specific validation
 rules including Metric source binding, redundancy guards, and forbidden content.
 """
+
+from __future__ import annotations
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import logging
 import re
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-    RuleFailure,
-    ValidationGateExecutor,
-)
+
+# ValidationGateExecutor stub
+class ValidationGateExecutor:
+    pass
+
+
+class RuleFailure:
+    pass
+
+
+if TYPE_CHECKING:
+    from agentic_core.L5_safety.validators import RuleFailure
 
 LOGGER = logging.getLogger(__name__)
 
 
+# STUBS: Legacy mixins (use LICAgentBase instead)
+class MCPHardenedMixin:
+    """Legacy mixin - use LICAgentBase instead."""
+
+    pass
+
+
+class HealerMixin:
+    """Legacy mixin - use LICAgentBase instead."""
+
+    pass
+
+
 @dataclass
-class OutreachValidationExecutorAgent(
-    HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ValidationGateExecutor
-):
+class OutreachValidationExecutorAgent(SovereignBaseAgent):
     """Extended validation executor for outreach-specific rules.
 
     Implements LIC-specific validation gates:

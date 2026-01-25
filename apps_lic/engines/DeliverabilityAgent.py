@@ -5,10 +5,27 @@ Originally from: LeadQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
 
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
+from apps_lic.shared.core.agent_base import LICAgentBase
+
 
 @dataclass
-class DeliverabilityAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
-    """Checks email deliverability factors."""
+class DeliverabilityAgent(LICAgentBase):
+    """Sovereign Deliverability Monitor."""
+
+    # Sovereign Configuration
+    monitored_domains: list[str] = field(default_factory=list)
+    thresholds: dict[str, float] = field(default_factory=lambda: {"spam_rate": 0.01})
+    spam_triggers: list[str] = field(
+        default_factory=lambda: ["$$$", "!!!", "CAPS LOCK", "FREE", "BUY NOW"]
+    )
+
+    def __post_init__(self) -> None:
+        """Initialize Sovereign Capabilities."""
+        super().__post_init__()
 
     async def execute(self) -> None:
         print(f"   [{self.name}] Checking deliverability...")
@@ -21,12 +38,12 @@ class DeliverabilityAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin
 
         deliverability_issues = []
 
+        # Sovereign deliverability check using configured triggers
         for i, message in enumerate(messages):
             content = message.get("content", "")
 
-            # Check for spam triggers
-            spam_triggers = ["$$$", "!!!", "CAPS LOCK", "FREE", "BUY NOW"]
-            for trigger in spam_triggers:
+            # Check for spam triggers using sovereign configuration
+            for trigger in self.spam_triggers:
                 if trigger in content:
                     deliverability_issues.append(f"Message {i}: Spam trigger '{trigger}'")
 

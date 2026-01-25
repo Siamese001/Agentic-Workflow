@@ -1,3 +1,14 @@
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from typing import Any
+from dataclasses import dataclass
+
+
+# OutreachEngineContext stub
+class OutreachEngineContext:
+    def __init__(self, *args, **kwargs):
+        pass
+
+
 """
 OutreachProactiveAgent - Extracted for one-class-per-file pattern.
 
@@ -8,8 +19,15 @@ Proactively identifies and executes outreach tasks with predictive handoff.
 """
 
 
+# STUB: OutreachAgent base class (deprecated)
+class OutreachAgent:
+    """Legacy base class - use LICAgentBase instead."""
+
+    pass
+
+
 @dataclass
-class OutreachProactiveAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
+class OutreachProactiveAgent(SovereignBaseAgent):
     """
     Agent that proactively identifies and executes outreach tasks.
 

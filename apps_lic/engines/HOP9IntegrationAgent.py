@@ -8,14 +8,16 @@ Handles delivery payload formatting and final audit verification.
 from __future__ import annotations
 
 import hashlib
+from dataclasses import dataclass, field
+from typing import Any
 
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class HOP9IntegrationAgent(SubatomicTestingMixin, LICAgentBase):
+@dataclass
+class HOP9IntegrationAgent(LICAgentBase):
     """
     LIC Sovereign Dispatcher.
 
@@ -25,6 +27,15 @@ class HOP9IntegrationAgent(SubatomicTestingMixin, LICAgentBase):
     - Logic: Checksum Integrity -> Payload Formatting -> Delivery Seal
     - Output: 'hop9_integration' to ImmutableStagingBuffer
     """
+
+    # Sovereign Configuration
+    integration_config: dict[str, Any] = field(
+        default_factory=lambda: {"checksum_enabled": True, "audit_trail": True}
+    )
+
+    def __post_init__(self) -> None:
+        """Initialize Sovereign Capabilities."""
+        super().__post_init__()
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """

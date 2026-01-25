@@ -4,18 +4,42 @@ from __future__ import annotations
 
 import json
 import re
+from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 from pydantic import BaseModel, Field
 
 from apps_lic.shared.core.agent_base import LICAgentBase
-from apps_lic.shared.core.mixins import SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
-class PIISanitizerSpecialist(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+def track_metrics(name):
+    """Stub decorator for track_metrics - TODO: Replace with sovereign equivalent"""
+
+    def decorator(func):
+        return func
+
+    return decorator
+
+
+@dataclass
+class PIISanitizerSpecialist(LICAgentBase, SubatomicTestingMixin):
     """Performs local PII detection using regex heuristics."""
+
+    # Sovereign Configuration
+    pii_patterns: dict[str, Any] = field(
+        default_factory=lambda: {
+            "EMAIL": re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"),
+            "PHONE": re.compile(r"\b(?:\+?1[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}\b"),
+            "NAME": re.compile(r"\b[A-Z][a-z]+ [A-Z][a-z]+\b"),
+        }
+    )
+
+    def __post_init__(self) -> None:
+        """Initialize Sovereign Capabilities."""
+        super().__post_init__()
 
     PII_PATTERNS = {
         "EMAIL": re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"),
@@ -42,13 +66,25 @@ class PIISanitizerSpecialist(LICAgentBase, SubatomicTestingMixin, MCPHardenedMix
         return sanitized
 
     def _sanitize_text(self, text: str) -> str:
-        for pii_type, pattern in self.PII_PATTERNS.items():
+        for pii_type, pattern in self.pii_patterns.items():
             text = pattern.sub(f"[{pii_type}_REDACTED]", text)
         return text
 
 
-class BiasDetectorSpecialist(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+@dataclass
+class BiasDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):
     """LIC Sovereign Bias Detector - Runs local bias detection with dynamic constitution rules."""
+
+    # Sovereign Configuration
+    name: str = "BiasDetectorSpecialist"
+    sensitivity_level: float = 0.85
+    prohibited_terms: list[str] = field(
+        default_factory=lambda: ["guaranteed", "unlimited", "risk-free"]
+    )
+
+    def __post_init__(self) -> None:
+        """Initialize Sovereign Capabilities."""
+        super().__post_init__()
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """Execute bias detection on buffer content."""
@@ -57,9 +93,13 @@ class BiasDetectorSpecialist(LICAgentBase, SubatomicTestingMixin, MCPHardenedMix
         mission_input = buffer.read("mission_input") or {}
         text = mission_input.get("text", "")
 
-        # Simple bias pattern detection
+        # Sovereign bias detection using configured terms
+        patterns_found = [term for term in self.prohibited_terms if term.lower() in text.lower()]
+
+        # Add bias patterns detection
         bias_patterns = ["always", "never", "everyone", "no one"]
-        patterns_found = [p for p in bias_patterns if p.lower() in text.lower()]
+        additional_patterns = [p for p in bias_patterns if p.lower() in text.lower()]
+        patterns_found.extend(additional_patterns)
 
         result = {
             "bias_detected": len(patterns_found) > 0,
@@ -69,11 +109,42 @@ class BiasDetectorSpecialist(LICAgentBase, SubatomicTestingMixin, MCPHardenedMix
         buffer.write_once("bias_detection_result", result)
         registry.add_trace("PHASE_COMPLETE", {"agent": self.__class__.__name__, "result": result})
 
+    def scan_content(self, text: str) -> dict[str, Any]:
+        """Public interface for bias scanning - used in simulation."""
+        self.log_info(f"Scanning content for bias: '{text[:50]}...'")
 
-class PromptInjectionDetectorSpecialist(
-    LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
-):
+        # Sovereign bias detection using configured terms
+        patterns_found = [term for term in self.prohibited_terms if term.lower() in text.lower()]
+
+        # Add bias patterns detection
+        bias_patterns = ["always", "never", "everyone", "no one"]
+        additional_patterns = [p for p in bias_patterns if p.lower() in text.lower()]
+        patterns_found.extend(additional_patterns)
+
+        result = {
+            "has_bias": len(patterns_found) > 0,
+            "bias_detected": len(patterns_found) > 0,  # Keep for compatibility
+            "patterns": patterns_found,
+            "sensitivity_level": self.sensitivity_level,
+        }
+
+        self.log_info(f"Bias scan complete: {result}")
+        return result
+
+
+@dataclass
+class PromptInjectionDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):
     """Detects prompt-injection attacks."""
+
+    # Sovereign Configuration
+    detection_threshold: float = 0.8
+    attack_patterns: list[str] = field(
+        default_factory=lambda: ["ignore previous instructions", "system prompt", "jailbreak"]
+    )
+
+    def __post_init__(self) -> None:
+        """Initialize Sovereign Capabilities."""
+        super().__post_init__()
 
     class PIDetectionOutput(BaseModel):
         injection_detected: bool = Field(..., description="True if an attack was detected")
@@ -129,7 +200,8 @@ class PromptInjectionDetectorSpecialist(
         return validated_output.model_dump()
 
 
-class ConstitutionalReviewerAgent(BaseAgent):
+@dataclass
+class ConstitutionalReviewerAgent(LICAgentBase, SubatomicTestingMixin):
     """Performs final constitutional review of the output."""
 
     @track_metrics("run_constitutional_review")

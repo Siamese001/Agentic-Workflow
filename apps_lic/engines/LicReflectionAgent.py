@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 """
 LicReflectionAgent - Extracted for one-class-per-file pattern.
 
@@ -6,8 +9,15 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 
+# STUB: OutreachAgent base class (deprecated)
+class OutreachAgent:
+    """Legacy base class - use LICAgentBase instead."""
+
+    pass
+
+
 @dataclass
-class LicReflectionAgent(SubatomicTestingMixin, OutreachAgent, MCPHardenedMixin):
+class LicReflectionAgent(SovereignBaseAgent):
     """
     Reflects on execution and suggests improvements.
 
