@@ -11,7 +11,7 @@ import hashlib
 import sys
 from pathlib import Path
 from typing import Final
-from agentic_core.domain.exceptions import ConfigurationError
+from agentic_core.domain.HealerError import ConfigurationError
 
 
 class CoreIntegrityVerifier:

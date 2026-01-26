@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from apps_lic.domain.config.loader import load_agent_specs
-from apps_lic.domain.config.schemas import AgentSpecs
+from apps_lic.domain.config.ArchetypeIndicator import AgentSpecs
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin

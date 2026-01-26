@@ -9,7 +9,7 @@ Defines schemas for dynamic prompt injection and safety scoping.
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class InjectionType(str, Enum):
@@ -27,6 +27,9 @@ class InjectionType(str, Enum):
 class InjectionScope(BaseModel):
     """Scope defining where an injection should be applied."""
 
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
     hop_types: list[str] = Field(default_factory=list)
     stages: list[str] = Field(default_factory=list)
     contexts: dict[str, Any] = Field(default_factory=dict)
@@ -34,6 +37,9 @@ class InjectionScope(BaseModel):
 
 class InjectionPattern(BaseModel):
     """A single prompt injection pattern template."""
+
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     id: str
     name: str
@@ -44,3 +50,12 @@ class InjectionPattern(BaseModel):
     scope: InjectionScope = Field(default_factory=InjectionScope)
     priority: int = Field(default=0, ge=0, le=10)
     enabled: bool = True
+
+    @field_validator("variables")
+    @classmethod
+    def validate_variables(cls, value: list[str]) -> list[str]:
+        """[HARDENED] Ensure variables list has no empty entries."""
+        for variable in value:
+            if not variable.strip():
+                raise ValueError("Injection variables cannot be empty")
+        return value

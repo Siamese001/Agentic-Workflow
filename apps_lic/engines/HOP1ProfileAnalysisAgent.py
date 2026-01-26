@@ -7,14 +7,15 @@ Implements mandatory LIC 7 Entrance Gates and CXO Precedence Rules.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
-from apps_lic.shared.core.agent_base import LICAgentBase
-from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.trace_registry import TraceRegistry
-from apps_lic.logic_nodes.k1_router import K1Router
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
+from apps_lic.shared.core.TraceRegistry import TraceRegistry
+from apps_lic.domain.config import load_agent_specs
+from apps_lic.logic_nodes.K1Router import K1Router
+from agentic_core.base_agents.SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -29,15 +30,52 @@ class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
     - Output: 'hop1_analysis' (Dict) to ImmutableStagingBuffer
     """
 
+    # Sovereign Seal: Runtime immutability flag
+    _sealed: bool = field(default=False, init=False, repr=False)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        """
+        Enforce Sovereign Seal (Runtime Immutability).
+        """
+        if getattr(self, "_sealed", False):
+            raise AttributeError(f"Sovereign Seal Active: Cannot modify '{name}' on {self.__class__.__name__}")
+        super().__setattr__(name, value)
+
+    def __getstate__(self) -> dict[str, Any]:
+        """
+        Pickling support for Sovereign Sealed agent.
+        """
+        return self.__dict__.copy()
+
+    def __setstate__(self, state: dict[str, Any]) -> None:
+        """
+        Unpickling support: Temporarily bypass Sovereign Seal to restore state.
+        """
+        object.__setattr__(self, "_sealed", False)
+        self.__dict__.update(state)
+        object.__setattr__(self, "_sealed", True)
+
     def __post_init__(self) -> None:
         """
         Initialize after dataclass construction.
         """
+        # Root Injection: LICAgentBase must initialize first
         super().__post_init__()
+
+        # Critical Analysis: Verify State Injection
+        if not getattr(self, 'config', None):
+             raise RuntimeError(f"CRITICAL: {self.__class__.__name__} failed to inherit Sovereign Config.")
+        
+        # Load domain-specific agent specs
+        self.agent_specs = load_agent_specs()
+        
         # Integration of the new Logic Node
         self.router = K1Router(
             config=self.config.__dict__ if hasattr(self, "config") and self.config else {}
         )
+        
+        # Engage Sovereign Seal
+        object.__setattr__(self, "_sealed", True)
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
@@ -99,7 +137,7 @@ class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
         # Hardened boundary regex: word boundaries + exclusion of common false-positives
         import re
 
-        cxo_tokens = self.config.profile_analysis_agent.cxo_precedence_tokens
+        cxo_tokens = self.agent_specs.profile_analysis_agent.cxo_precedence_tokens
         for token in cxo_tokens:
             # Hardened boundary regex: case-insensitive flag in pattern
             # Target: 'CEO', 'CTO', 'CFO', 'COO', 'CHRO', 'CMO'
@@ -199,7 +237,7 @@ class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
         """
         Apply deterministic keyword matching rules from AgentSpecs.
         """
-        config = self.config.profile_analysis_agent
+        config = self.agent_specs.profile_analysis_agent
 
         best_match = {
             "archetype": config.default_archetype,

@@ -9,9 +9,10 @@ Integrates with HealerMixin for audited healing decisions.
 Location: agentic_core/schemas/anomaly_report.py
 """
 import time
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class AnomalySeverity(Enum):
@@ -23,8 +24,7 @@ class AnomalySeverity(Enum):
     CRITICAL = "critical"  # Immediate shutdown/escalate to L0
 
 
-@dataclass(frozen=True)
-class AnomalyReport:
+class AnomalyReport(BaseModel):
     """
     Sovereign anomaly report — immutable, auditable structure.
 
@@ -41,13 +41,24 @@ class AnomalyReport:
         provenance_id: MCP chain ID if available
     """
 
-    type: str
-    severity: AnomalySeverity
-    description: str
-    source: str
-    details: dict[str, Any] | None = None
-    timestamp: float = field(default_factory=time.time)
-    provenance_id: str | None = None
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+    
+    type: str = Field(..., description="Machine-readable anomaly type")
+    severity: AnomalySeverity = Field(..., description="Severity level")
+    description: str = Field(..., description="Human-readable summary")
+    source: str = Field(..., description="Agent/class name emitting the report")
+    details: dict[str, Any] = Field(default_factory=dict, description="Agent-specific context")
+    timestamp: float = Field(default_factory=time.time, description="Auto-timestamp")
+    provenance_id: str | None = Field(default=None, description="MCP chain ID if available")
+    
+    @field_validator("description")
+    @classmethod
+    def validate_description(cls, v: str) -> str:
+        """[HARDENED] Ensure description is not empty."""
+        if not v.strip():
+            raise ValueError("Description cannot be empty")
+        return v.strip()
 
     def __str__(self) -> str:
         return f"[{self.severity.value.upper()}] {self.source}: {self.type} — {self.description}"

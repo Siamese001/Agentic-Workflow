@@ -10,7 +10,7 @@ output schemas for specialized tasks like coding and research.
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # ==========================================
 # Core Thought Process
@@ -22,6 +22,9 @@ class AgentThoughtProcess(BaseModel):
     Forces the agent to show its work before acting.
     This is the "Physics" of your Agent - the schema it must follow.
     """
+
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     reasoning_trace: list[str] = Field(
         ...,
@@ -66,6 +69,9 @@ class AgentThoughtProcess(BaseModel):
 class CodeGenerationResult(BaseModel):
     """schema for code generation tasks."""
 
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
     reasoning: str = Field(..., description="Why this code solves the problem")
     code: str = Field(..., description="The generated Python code")
     dependencies: list[str] = Field(default_factory=list, description="Required pip packages")
@@ -77,6 +83,9 @@ class CodeGenerationResult(BaseModel):
 
 class ResearchResult(BaseModel):
     """schema for research tasks."""
+
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     query_understanding: str = Field(..., description="How you interpreted the research question")
     sources: list[dict[str, str]] = Field(
@@ -91,13 +100,11 @@ class ResearchResult(BaseModel):
     )
 
 
-# ==========================================
-# High-Level Planning
-# ==========================================
-
-
 class AgentPlan(BaseModel):
     """Agent execution plan with reasoning and tool calls."""
+
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     reasoning: str = Field(..., description="High-level strategy for the overall Task")
     tool_calls: list[dict[str, Any]] = Field(

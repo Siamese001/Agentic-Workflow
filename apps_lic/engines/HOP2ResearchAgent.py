@@ -13,10 +13,11 @@ from dataclasses import dataclass, field
 from typing import Any
 
 # LIC Sovereign Architecture Imports
-from apps_lic.shared.core.agent_base import LICAgentBase
-from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.trace_registry import TraceRegistry
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
+from apps_lic.shared.core.TraceRegistry import TraceRegistry
+from apps_lic.domain.config import load_agent_specs
+from agentic_core.base_agents.SubatomicTestingMixin import SubatomicTestingMixin
 
 # Domain Imports
 try:
@@ -41,30 +42,63 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
     memory_store: Any | None = field(default=None)
     search_client: Any | None = field(default=None)
     llm_client: Any | None = field(default=None)
+    
+    # Sovereign Seal: Runtime immutability flag
+    _sealed: bool = field(default=False, init=False, repr=False)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        """
+        Enforce Sovereign Seal (Runtime Immutability).
+        """
+        if getattr(self, "_sealed", False):
+            raise AttributeError(f"Sovereign Seal Active: Cannot modify '{name}' on {self.__class__.__name__}")
+        super().__setattr__(name, value)
+
+    def __getstate__(self) -> dict[str, Any]:
+        """
+        Pickling support for Sovereign Sealed agent.
+        """
+        return self.__dict__.copy()
+
+    def __setstate__(self, state: dict[str, Any]) -> None:
+        """
+        Unpickling support: Temporarily bypass Sovereign Seal to restore state.
+        """
+        object.__setattr__(self, "_sealed", False)
+        self.__dict__.update(state)
+        object.__setattr__(self, "_sealed", True)
 
     def __post_init__(self) -> None:
         """
         Initialize after dataclass construction.
         """
-        # Initialize V2 base (loads config, toggles, etc.)
+        # Root Injection: LICAgentBase must lead MRO to establish SSOT.
         super().__post_init__()
 
-        # Store dependencies (already set by dataclass)
-        # self.memory_store = memory_store  # Already set by dataclass
-        # self.search_client = search_client  # Already set by dataclass
+        # RCA FIX: Handle 'research_agent' vs 'research' naming mismatch in Sovereign Blueprint.
+        # Critical Analysis: We use defensive getattr to prevent the 'AttributeError' loop which crashes the engine.
+        agent_specs = load_agent_specs()
+        agent_config = getattr(agent_specs, 'research_agent', None) or getattr(agent_specs, 'research', None)
+        
+        if agent_config is None:
+             raise AttributeError(
+                f"Sovereign Blueprint Fault: '{self.__class__.__name__}' config key missing. "
+                "Expected 'research_agent' or 'research'."
+            )
 
-        # Load specific configs from the LIC AgentSpecs singleton
-        self.vector_params = self.config.research_agent.vector_store_query_params
-        self.fallback_params = self.config.research_agent.fallback_rag_params
-
-        # Note: critiques params might need to be added to AgentSpecs schema if not present
-        # For now, defaulting or reading from raw config if needed,
-        # but adhering to schema is preferred.
+        # Set attributes BEFORE sealing
+        self.agent_specs = agent_specs
+        self.vector_params = agent_config.vector_store_query_params
+        self.fallback_params = agent_config.fallback_rag_params
+        
         self.critique_params = {
             "min_confidence_score": 0.6,
             "min_recency_days": 30,
             "min_recipient_specific_count": 2,
         }
+        
+        # Engage Sovereign Seal
+        object.__setattr__(self, "_sealed", True)
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """

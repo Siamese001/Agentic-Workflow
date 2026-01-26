@@ -15,7 +15,7 @@ import logging
 
 # GRAVITY FIXED: Use correct L2 location for MCPHardenedMixin
 try:
-    _mod = importlib.import_module("agentic_core.L2_execution.mcp.mcp_hardened_mixin")
+    _mod = importlib.import_module("agentic_core.L2_execution.mcp.MCPHardenedMixin")
     MCPHardenedMixin = _mod.MCPHardenedMixin
 except (ImportError, AttributeError):
     # Fallback: create stub if module not available during healing
@@ -25,7 +25,7 @@ except (ImportError, AttributeError):
         pass
 
 
-from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+from agentic_core.schemas.models.AnomalyReport import AnomalyReport, AnomalySeverity
 
 # Import instructional injection patterns for all agents
 try:

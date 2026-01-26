@@ -19,7 +19,7 @@ import re
 from typing import Any, Final
 from dataclasses import dataclass, field
 
-from agentic_core.domain.exceptions import HealerError, CircularDependencyError
+from agentic_core.domain.HealerError import HealerError, CircularDependencyError
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import CANON_VALIDATION_REGISTRY
 

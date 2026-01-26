@@ -8,7 +8,7 @@ import json
 import logging
 from pathlib import Path
 
-from .schemas import AgentSpecs
+from .ArchetypeIndicator import AgentSpecs
 
 # Module-level cache
 _AGENT_SPECS_CACHE: AgentSpecs | None = None

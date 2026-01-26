@@ -9,7 +9,7 @@ ensure strict validation and immutability.
 """
 
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 # ==========================================
 # Sovereign Root Model
@@ -23,7 +23,8 @@ class SovereignBaseModel(BaseModel):
     data integrity across agent handoffs and state transitions.
     """
 
-    ModelConfig = ConfigDict(strict=True, frozen=True)
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(strict=True, frozen=True, extra="forbid")
 
 
 # ==========================================

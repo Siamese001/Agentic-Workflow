@@ -41,7 +41,7 @@ from typing import Any
 
 Logger = logging.getLogger(__name__)
 
-from agentic_core.base_agents.base_meta_learner import BaseMetaLearner
+from agentic_core.base_agents.BaseMetaLearner import BaseMetaLearner
 
 
 class MetaLearningMixin(BaseMetaLearner):

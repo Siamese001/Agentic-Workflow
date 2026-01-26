@@ -28,8 +28,8 @@ from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 from agentic_core.L5_safety.validators.ValidatorMixin import ValidatorMixin
 from agentic_core.base_agents.SubatomicTestingMixin import SubatomicTestingMixin
 from agentic_core.base_agents.AuditTrailMixin import AuditTrailMixin
-from agentic_core.domain.exceptions import SovereignError, ConfigurationError
-from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier, emergency_shutdown
+from agentic_core.domain.HealerError import SovereignError, ConfigurationError
+from agentic_core.domain.CoreIntegrityVerifier import CoreIntegrityVerifier, emergency_shutdown
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.config.ConfigMixin import ConfigMixin
