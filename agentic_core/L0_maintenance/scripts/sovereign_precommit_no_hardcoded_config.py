@@ -56,7 +56,7 @@ def check_file(filepath: Any) -> Any:
                 )
             print("\n💡 SOLUTION: Centralize this constant in:")
             print("   agentic_core/config/blueprint_sovereign/environments/sovereign_config.py")
-            print("   Then use: from sovereign_config import config")
+            print("   Then use: from sovereign_config import OrchestratorConfig")
             print("=" * 80)
             return False
         return True

@@ -26,8 +26,13 @@ from .SectionBalanceAgent import SectionBalanceAgent
 # Core Engine Components
 from .Router import HardenedRouter as Router
 from .HardenedAnthropicExecutor import HardenedAnthropicExecutor
+from .hardened_openai_executor import HardenedOpenAIExecutor
 from .strategist_biowriter import StrategistBioWriter
 from .schema import RouterConfig, RouteResult, ProviderType, RouteConfig, RoutingTier
+# [Diff Start: Export AgentExecutor]
+from .AgentExecutor import AgentExecutor, AgentConfig, AgentMessage, AgentResponse, create_agent_executor
+from apps_shared.common_utils.multi_provider_clients import Provider
+# [Diff End]
 
 __all__ = [
     # Content Quality & Validation
@@ -49,13 +54,21 @@ __all__ = [
     "ProactiveAgent",
     # Core Engine Components
     "Router",
+    "HardenedRouter",
     "HardenedAnthropicExecutor",
+    "HardenedOpenAIExecutor",
     "StrategistBioWriter",
     "RouterConfig",
     "RouteResult",
     "ProviderType",
     "RouteConfig",
     "RoutingTier",
+    "AgentExecutor",
+    "AgentConfig",
+    "AgentMessage", 
+    "AgentResponse",
+    "create_agent_executor",
+    "Provider"
 ]
 
 
