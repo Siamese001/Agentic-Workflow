@@ -440,7 +440,7 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
                                 embedding=embedding,
                                 metadata={
                                     "action": "inject_heal_repository_stub",
-                                    "target": "CanonKey51",
+                                    "target": "HealRepositoryStub",
                                     "violations": summary.get("violations", 0),
                                     "fixed": summary.get("fixed", 0),
                                     "timestamp": self.timestamp,
@@ -463,7 +463,7 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
                     )
                     log.info(f"[META-LEARNING] Description: {healing_description}")
                     log.info(
-                        f"[META-LEARNING] Metadata: action=inject_heal_repository_stub, target=CanonKey51, fixed={summary['fixed']}"
+                        f"[META-LEARNING] Metadata: action=inject_heal_repository_stub, target=HealRepositoryStub, fixed={summary['fixed']}"
                     )
 
             except Exception as meta_error:

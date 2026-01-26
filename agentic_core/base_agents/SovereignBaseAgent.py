@@ -25,17 +25,17 @@ from typing import Any
 from pathlib import Path
 
 from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
-from agentic_core.L5_safety.validators.validator_mixin import ValidatorMixin
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.base_agents.audit_trail_mixin import AuditTrailMixin
+from agentic_core.L5_safety.validators.ValidatorMixin import ValidatorMixin
+from agentic_core.base_agents.SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.base_agents.AuditTrailMixin import AuditTrailMixin
 from agentic_core.domain.exceptions import SovereignError, ConfigurationError
 from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier, emergency_shutdown
 
 # [PHASE 9] Global Architecture Injection
-from agentic_core.config.config_mixin import ConfigMixin
-from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
-from agentic_core.L2_execution.mcp.embedding_mixin import EmbeddingMixin
-from agentic_core.L5_safety.validators.healing_strategy_mixin import HealingStrategyMixin
+from agentic_core.config.ConfigMixin import ConfigMixin
+from agentic_core.L2_execution.mcp.LLMProviderMixin import LLMProviderMixin
+from agentic_core.L2_execution.mcp.EmbeddingMixin import EmbeddingMixin
+from agentic_core.L5_safety.validators.HealingStrategyMixin import HealingStrategyMixin
 
 logger = logging.getLogger(__name__)
 

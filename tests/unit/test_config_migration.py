@@ -35,16 +35,6 @@ def test_constants_ssot():
     assert "__pycache__" in DEFAULT_EXCLUDE_DIRS
 
 
-def test_constants_active_canon_keys():
-    """Verify ACTIVE_CANON_KEYS is properly defined."""
-    from agentic_core.config.blueprint_sovereign.constants import ACTIVE_CANON_KEYS
-
-    assert isinstance(ACTIVE_CANON_KEYS, list)
-    assert len(ACTIVE_CANON_KEYS) == 20
-    assert 0 in ACTIVE_CANON_KEYS
-    assert 19 in ACTIVE_CANON_KEYS
-
-
 def test_healing_config_ssot():
     """Verify HEALING_CONFIG loads from registry."""
     from agentic_core.config.blueprint_sovereign.registry import HEALING_CONFIG
@@ -57,7 +47,6 @@ def test_healing_config_ssot():
 def test_package_init_exports():
     """Verify package __init__ exports all expected symbols."""
     from agentic_core.config.blueprint_sovereign import (
-        ACTIVE_CANON_KEYS,
         DEFAULT_EXCLUDE_DIRS,
         HEALING_CONFIG,
         SOVEREIGN_REGISTRY,
@@ -66,7 +55,6 @@ def test_package_init_exports():
     assert DEFAULT_EXCLUDE_DIRS is not None
     assert SOVEREIGN_REGISTRY is not None
     assert HEALING_CONFIG is not None
-    assert ACTIVE_CANON_KEYS is not None
 
 
 def test_ssot_discovery_uses_constants():

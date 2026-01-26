@@ -167,42 +167,9 @@ from agentic_core.base_agents.timeout_decorator import timeout
 
 
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
-def is_excepted_from_key(key_id: int, file_path, line_content: str = "") -> bool:
-    """Check if file/line is excepted from key validation."""
-    import fnmatch
-    import re
-
-    from agentic_core.L5_safety.validators.structure_blueprint import CANON_KEY_EXCEPTIONS
-
-    exceptions = CANON_KEY_EXCEPTIONS.get(key_id, {})
-    if not exceptions:
-        return False
-    try:
-        from pathlib import Path
-
-        project_root = Path(__file__).resolve().parents[3]
-        rel_path = str(file_path.relative_to(project_root)).replace("\\", "/")
-    except (ValueError, IndexError):
-        rel_path = str(file_path.name) if hasattr(file_path, "name") else str(file_path)
-    file_exceptions = exceptions.get("files", set())
-    if rel_path in file_exceptions or any(fnmatch.fnmatch(rel_path, p) for p in file_exceptions):
-        return True
-    if line_content:
-        for pattern in exceptions.get("patterns", []):
-            if re.search(pattern, line_content):
-                return True
-    return False
 
 
-from agentic_core.L5_safety.validators.L5Agent import L5Agent
-
-
-@registers_prompt(
-    template_name="file_placement.jinja",
-    purpose="Enforces territory/file placement rules",
-    territory="templates",
-)
-class LocationAgent(SubatomicTestingMixin, SovereignBaseAgent, L5Agent):
+class LocationAgent(SovereignBaseAgent):
     r"""
     Autonomous agent responsible for territorial integrity.
     Run independently or as first stage in compliance orchestrator.

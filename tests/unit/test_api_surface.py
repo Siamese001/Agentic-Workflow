@@ -88,12 +88,6 @@ def test_config_healing_config():
     assert "global_budget" in HEALING_CONFIG
 
 
-def test_config_active_canon_keys():
-    """Verify ACTIVE_CANON_KEYS is accessible."""
-    from agentic_core.config import ACTIVE_CANON_KEYS
-
-    assert isinstance(ACTIVE_CANON_KEYS, list)
-    assert len(ACTIVE_CANON_KEYS) == 20
 
 
 def test_unified_validation_types():
