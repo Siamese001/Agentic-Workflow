@@ -1,6 +1,6 @@
 """
-File: scripts/sovereignty_cleanup.py
-Path: C:\Git\Agentic-Workflow\scripts\sovereignty_cleanup.py
+File: scripts/DebrisHunter.py
+Path: C:\Git\Agentic-Workflow\scripts/DebrisHunter.py
 Status: Post-Migration Utility
 Rationale: 
     Identifies and cleans up:

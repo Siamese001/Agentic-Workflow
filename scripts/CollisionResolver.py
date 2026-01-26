@@ -1,6 +1,6 @@
 """
-File: scripts/resolve_collisions.py
-Path: C:\Git\Agentic-Workflow\scripts\resolve_collisions.py
+File: scripts/CollisionResolver.py
+Path: C:\Git\Agentic-Workflow\scripts/CollisionResolver.py
 Status: Post-Migration Triage Tool
 Rationale: 
     The automated fixer cannot resolve collisions where two files want the same name.
