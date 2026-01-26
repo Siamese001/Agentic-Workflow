@@ -25,7 +25,7 @@ echo.
 
 :: Step 2: Dry Run (Generate Impact Report)
 echo [Step 2/3] Generating Impact Report (Dry Run)...
-python pascal_sovereignty_fixer.py --dry-run > sovereignty_impact_report.txt
+python PascalSovereigntyFixer.py --dry-run > sovereignty_impact_report.txt
 type sovereignty_impact_report.txt
 echo.
 echo [INFO] Detailed report saved to sovereignty_impact_report.txt
@@ -48,7 +48,7 @@ if /i "%Auth%" neq "YES" (
 :: Step 4: Execution
 echo.
 echo [Step 3/3] Enforcing Sovereignty...
-python pascal_sovereignty_fixer.py
+python PascalSovereigntyFixer.py
 echo.
 echo [SUCCESS] File structure refactored.
 echo [NEXT] Please review 'git status' and run full integration tests.

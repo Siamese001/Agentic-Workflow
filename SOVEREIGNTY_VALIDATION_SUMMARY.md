@@ -61,7 +61,7 @@ All safety gates, validation tools, and test suites are operational and verified
 
 ### Core Components
 
-**1. `pascal_sovereignty_fixer.py` (263 lines)**
+**1. `PascalSovereigntyFixer.py` (263 lines)**
 - Class-based architecture
 - AST-driven file classification
 - Windows-safe three-step rename
@@ -269,12 +269,12 @@ python tests/test_post_migration_audit.py
 
 ### Generate Impact Report Only
 ```batch
-python pascal_sovereignty_fixer.py --dry-run > report.txt
+python PascalSovereigntyFixer.py --dry-run > report.txt
 ```
 
 ### Validate Compliance Only
 ```batch
-python pascal_sovereignty_fixer.py --validate
+python PascalSovereigntyFixer.py --validate
 ```
 
 ### Full Deployment
