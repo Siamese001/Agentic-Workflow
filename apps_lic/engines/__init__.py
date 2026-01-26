@@ -1,1 +1,1 @@
-# App utilities module
+"""SSOT Agents Package generated during migration."""
