@@ -9,7 +9,7 @@ ensure strict validation and immutability.
 """
 
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 # ==========================================
 # Sovereign Root Model
@@ -25,6 +25,11 @@ class SovereignBaseModel(BaseModel):
 
     # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
     model_config = ConfigDict(strict=True, frozen=True, extra="forbid")
+
+    @model_validator(mode="after")
+    def validate_invariants(self) -> "SovereignBaseModel":
+        """Cross-field validation hook for shared invariants."""
+        return self
 
 
 # ==========================================

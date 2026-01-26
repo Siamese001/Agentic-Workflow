@@ -12,6 +12,9 @@ from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 
+# ARCHITECTURAL MANIFEST: Explicitly declare primary exports
+__all__ = ["PitchGenerator", "PitchResult"]
+
 
 @dataclass
 class PitchResult:

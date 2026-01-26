@@ -286,13 +286,33 @@ L4_SUBFOLDER_MAP: dict[str, dict[str, list[str]]] = {
         "validators": ["tool_validators"],
         "adapters": ["tool_adapters"],
     },
-    # utils/core_extensions/ - 98 .py files, 0 subdirs
-    "core_extensions": {
-        "mixins": ["mixin_classes"],
-        "decorators": ["decorator_utils"],
-        "validators": ["validation_utils"],
-        "formatters": ["format_utils"],
-        "helpers": ["general_helpers"],
+    # prompt_governance/ - Complex template governance system requiring L4 structure
+    "prompt_governance": {
+        "L3_core": {
+            "rendering": ["engines", "contexts", "filters"],
+            "registry": ["management", "validation", "versioning"],
+            "assembly": ["builders", "optimizers", "validators"]
+        },
+        "L3_templates": {
+            "meta_prompts": ["orchestration", "reasoning", "governance", "security"],
+            "instructional": ["cognition", "execution", "coordination", "safety"],
+            "specialized": ["domain", "persona", "format"]
+        },
+        "L3_security": {
+            "injection": ["detectors", "filters", "sanitizers"],
+            "pii": ["detectors", "maskers", "validators"],
+            "compliance": ["guards", "audits", "policies"]
+        },
+        "L3_integrity": {
+            "validation": ["syntax", "schema", "dependency"],
+            "optimization": ["performance", "quality", "analysis"],
+            "testing": ["unit", "integration", "e2e"]
+        },
+        "L3_utilities": {
+            "scripts": ["audit", "migration", "maintenance"],
+            "middleware": ["auth", "cache", "logging"],
+            "monitoring": ["metrics", "telemetry", "dashboards"]
+        }
     },
 }
 
@@ -311,6 +331,11 @@ L4_APPROVED_FOLDERS: set[str] = {
     "agentic_core/schemas/models",  # 42 files - added per SSOT review
     "agentic_core/utils/core_extensions",
     "agentic_core/config/blueprint_sovereign",  # 20 files - added per SSOT review
+    "agentic_core/prompt_governance/L3_core",
+    "agentic_core/prompt_governance/L3_templates",
+    "agentic_core/prompt_governance/L3_security",
+    "agentic_core/prompt_governance/L3_integrity",
+    "agentic_core/prompt_governance/L3_utilities",
 }
 
 # ============================================================================
@@ -332,11 +357,11 @@ SCRIPTS_PLACEMENT_RULES: dict[str, dict[str, Any]] = {
 }
 
 CORE_SUBFOLDER_MAP: Any = {
-    "base_agents": [],
-    "domain": [],
+    "base_agents": ["scripts"],
+    "domain": ["scripts"],
     "L0_maintenance": ["scripts", "logs", "benchmarks", "mixins"],
-    "L1_cognition": ["thought_engine", "intent_analysis", "planning"],
-    "L2_execution": ["tool_registry", "action_handlers", "mcp"],
+    "L1_cognition": ["thought_engine", "intent_analysis", "planning", "scripts"],
+    "L2_execution": ["tool_registry", "action_handlers", "mcp", "scripts"],
     "L3_orchestration": [
         "workflow_engines",
         "fission_logic",
@@ -344,8 +369,9 @@ CORE_SUBFOLDER_MAP: Any = {
         "mcp",
         "meta_learning",
         "interfaces",
+        "scripts",
     ],
-    "L4_state": ["ledger", "filesystem", "memory", "validation_context"],
+    "L4_state": ["ledger", "filesystem", "memory", "validation_context", "scripts"],
     "L5_safety": [
         "guardrails",
         "red_teaming",
@@ -357,6 +383,7 @@ CORE_SUBFOLDER_MAP: Any = {
         "utils",
         "verifiability",
         "core",
+        "scripts",
     ],
     "L6_observability": [
         "dashboards",
@@ -366,15 +393,23 @@ CORE_SUBFOLDER_MAP: Any = {
         "tracing",
         "compliance",
         "agents",
+        "scripts",
     ],
-    "schemas": ["models", "messages", "types", "validators"],
-    "config": ["blueprint_sovereign", "environments", "feature_flags", "secrets_manager"],
-    "prompt_governance": ["meta_prompts", "version_registry", "rendering", "templates"],
-    "runtime": ["shared_runtime", "environment_setup", "shared", "resource_management"],
-    "utils": ["core_extensions", "wrappers", "general_helpers", "naming", "deduplicated"],
-    "patterns": ["agent_roles", "communication_flow", "interaction_patterns", "reasoning_patterns"],
-    "semantic_memory": ["store", "embeddings", "retrieval", "index"],
-    "knowledge": ["document_loaders", "static_index", "ResearchCache"],
+    "schemas": ["models", "messages", "types", "validators", "scripts"],
+    "config": ["blueprint_sovereign", "environments", "feature_flags", "secrets_manager", "scripts"],
+    "prompt_governance": [
+        "L3_core",
+        "L3_templates", 
+        "L3_security",
+        "L3_integrity",
+        "L3_utilities",
+        "scripts",
+    ],
+    "runtime": ["shared_runtime", "environment_setup", "shared", "resource_management", "scripts"],
+    "utils": ["core_extensions", "wrappers", "general_helpers", "naming", "deduplicated", "scripts"],
+    "patterns": ["agent_roles", "communication_flow", "interaction_patterns", "reasoning_patterns", "scripts"],
+    "semantic_memory": ["models", "interfaces", "in_memory", "store", "embeddings", "retrieval", "index", "scripts"],
+    "knowledge": ["types", "document_loaders", "static_index", "ResearchCache", "scripts"],
 }
 APPS_RG_SUBFOLDER_MAP: Any = {
     "logic_nodes": ["node_definitions", "node_helpers"],
@@ -652,7 +687,11 @@ CORE_TERRITORY_KEYWORDS: dict[str, dict[str, set[str]]] = {
     "L5_safety/gravity": {"primary": {"gravity", "import", "dependency", "layer"}},
     "config/blueprint_sovereign": {"primary": {"blueprint", "registry", "sovereign", "canon"}},
     "schemas/models": {"primary": {"schema", "model", "type", "message"}},
-    "prompt_governance": {"primary": {"prompt", "template", "persona", "render"}},
+    "prompt_governance/L3_core": {"primary": {"render", "registry", "assemble", "govern"}},
+    "prompt_governance/L3_templates": {"primary": {"template", "prompt", "persona", "instructional"}},
+    "prompt_governance/L3_security": {"primary": {"security", "injection", "pii", "compliance"}},
+    "prompt_governance/L3_integrity": {"primary": {"validate", "optimize", "test", "quality"}},
+    "prompt_governance/L3_utilities": {"primary": {"script", "middleware", "monitor", "audit"}},
     "observability": {"primary": {"metric", "trace", "telemetry", "log", "compliance"}},
     "utils": {"primary": {"util", "helper", "extension", "wrapper"}},
 }

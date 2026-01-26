@@ -1,25 +1,18 @@
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: guardrail
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
 
+"""Prompt Registry Agent - Runtime State Manager for Prompt Versioning.
 
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, workflow
-# This boosts alignment detection — review and integrate appropriately
+ARCHITECTURAL HARDENING:
+- Contract (immutable): sovereign_prompt_constitution.py defines base prompts
+- State (mutable): This agent manages runtime versioning and active/inactive status
+- Clear separation: Constitution = SSOT, Registry = Runtime tracking
+"""
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
-# PromptRegistryAgent - Sovereign Version Registry
-# Territory: agentic_core/prompt_governance/version_registry
-# Canon Alignment: Prompt versioning, active template management, backward compatibility
-# SSOT Integration: Used by SovereignPromptRenderer and mission logging
 import json
 from dataclasses import dataclass
 
-"""Brief description of functionality and purpose."""
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 import hashlib
 import logging
@@ -30,9 +23,18 @@ import numpy as np
 
 Logger = logging.getLogger(__name__)
 
-# Phase 3.2: Add proper L1 cognition base inheritance
+# HARDENING: Import immutable constitution as contract reference
+try:
+    from agentic_core.prompt_governance.PromptEntry import (
+        PromptEntry,
+        get_constitution,
+    )
 
-# [SSOT IMPORT] Structure blueprint is the single source of truth
+    CONSTITUTION_AVAILABLE = True
+except ImportError:
+    CONSTITUTION_AVAILABLE = False
+    PromptEntry = None
+    get_constitution = None
 
 # Semantic deduplication imports
 try:
@@ -47,29 +49,29 @@ SIMILARITY_THRESHOLD = 0.9
 EMBEDDING_MODEL = "text-embedding-3-small"
 
 
-# [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
-def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
-    """Bridge to LocationAgent."""
-    try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-
-        return LocationAgent(root).validate_file_location(path)
-    except ImportError:
-        return True, "Bootstrap"
+# ARCHITECTURAL HARDENING: Removed L5 upward import.
+# Placement validation is now handled via optional dependency injection
+# or external registration to maintain Layer Boundary integrity.
+def _default_placement_validator(path: Path, root: Path) -> tuple[bool, str]:
+    """Default pass-through to prevent upward layer coupling."""
+    return True, "Architecture Layer Neutral"
 
 
-# NAMING FIXED: PromptRegistry → PromptRegistryAgent
 @dataclass
 class PromptRegistryAgent(SubatomicTestingMixin, SovereignBaseAgent):
-    """
-    Sovereign registry for all prompt templates and meta-prompts.
+    """Runtime state manager for prompt versioning and activation.
 
-    Responsibilities (per blueprint Section 8):
-    - Maintain versioned entries (v1, v2, ...)
+    ARCHITECTURAL HARDENING:
+    - CONTRACT (Immutable): sovereign_prompt_constitution.py defines base prompts
+    - STATE (Mutable): This agent tracks runtime versions and active/inactive status
+    - SEPARATION: Constitution is SSOT, Registry is runtime tracking layer
+
+    Responsibilities:
+    - Maintain versioned entries (v1, v2, ...) in registry.json
     - Track active/inactive status to prevent instruction drift
     - Provide metadata for L4 Ledger traceability
     - Ensure atomic JSON persistence
+    - Sync with immutable Constitution on initialization
     """
 
     REGISTRY_FILE = Path(__file__).parent / "registry.json"
@@ -89,20 +91,59 @@ class PromptRegistryAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """
         return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self) -> None:
-        """Initialize the instance."""
+    def __init__(self, placement_validator=None) -> None:
+        """Initialize the instance.
+        
+        HARDENING:
+        1. Syncs with immutable Constitution on startup.
+        2. Uses injected placement_validator to avoid L5 upward coupling.
+        """
         self.registry: dict[str, list[dict[str, Any]]] = {}
         self._content_cache: dict[str, str] = {}  # cache for content hashing
         self.similarity_threshold = SIMILARITY_THRESHOLD
         self.embedding_model = EMBEDDING_MODEL
+        
+        # Dependency Injection for placement validation (Anti-Gravity)
+        self.validator = placement_validator or _default_placement_validator
 
-        # [L6 SOVEREIGNTY] Validate our own placement at initialization
-        is_valid, reason = validate_file_location(Path(__file__), Path.cwd())
+        # Validate placement without importing L5 directly
+        is_valid, reason = self.validator(Path(__file__), Path.cwd())
         if not is_valid:
-            # Non-breaking warning for deployment; critical in validation missions
-            print(f"[!] PromptRegistry placement Violation: {reason}")
+            Logger.warning(f"PromptRegistry placement violation: {reason}")
 
         self._load_registry()
+        
+        # HARDENING: Sync with immutable Constitution
+        if CONSTITUTION_AVAILABLE:
+            self._sync_with_constitution()
+
+    def _sync_with_constitution(self) -> None:
+        """Sync runtime registry with immutable Constitution.
+        
+        HARDENING: Ensures runtime state reflects canonical prompt definitions.
+        This is a one-way sync: Constitution -> Registry (never reverse).
+        """
+        if not CONSTITUTION_AVAILABLE:
+            return
+            
+        constitution = get_constitution()
+        Logger.info(f"Syncing registry with {len(constitution.prompts)} canonical prompts")
+        
+        # Sync canonical prompts from Constitution
+        for prompt_key, prompt_entry in constitution.prompts.items():
+            # Check if this prompt is already registered
+            if prompt_key not in self.registry:
+                # Register from Constitution
+                self.register_prompt(
+                    template_name=prompt_key,
+                    version=prompt_entry.version,
+                    purpose=f"Canonical prompt from Constitution",
+                    territory="constitution",
+                    active=True,
+                    author="PromptConstitution",
+                    content=prompt_entry.content,
+                )
+                Logger.debug(f"Synced canonical prompt: {prompt_key}")
 
     def _load_registry(self) -> None:
         """Loads the registry from disk with defensive error handling."""
@@ -111,10 +152,12 @@ class PromptRegistryAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 content = self.REGISTRY_FILE.read_text(encoding="utf-8")
                 data = json.loads(content)
                 self.registry = data.get("prompts", {})
+                Logger.info(f"Loaded registry with {len(self.registry)} prompt families")
             except Exception as e:
-                print(f"[!] PromptRegistry: Failed to load {self.REGISTRY_FILE}: {e}")
+                Logger.error(f"Failed to load {self.REGISTRY_FILE}: {e}")
                 self.registry = {}
         else:
+            Logger.info("No existing registry found, creating new")
             self.registry = {}
             self._save_registry()
 

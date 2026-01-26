@@ -19,6 +19,9 @@ from pydantic import BaseModel
 
 from agentic_core.L4_state.ValidationContext.runtime_models import InjectionMatch
 
+# ARCHITECTURAL MANIFEST: Primary Sovereign Export
+__all__ = ["PromptAssembler", "PromptComponents", "PromptTemplate", "SecurityIntegrityError"]
+
 
 # Compatibility aliases
 class InputSanitizer:
