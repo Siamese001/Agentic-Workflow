@@ -4,7 +4,7 @@ LLMProviderMixin - Unified LLM Access for Agents
 [PHASE 4 MIGRATION] Provides single interface to all LLM providers.
 """
 
-from typing import Literal
+from typing import Literal, Dict, Any, List, Optional
 from agentic_core.L2_execution.mcp.SovereignLLMGateway import get_llm_gateway, SovereignLLMGateway
 
 Provider = Literal["openai", "anthropic", "google"]
@@ -18,12 +18,12 @@ class LLMProviderMixin:
 
     Usage:
         class MyAgent(LLMProviderMixin, SovereignBaseAgent):
-            async def process(self, query: str):
+            async def process(self, query: str) -> str:
                 response = await self.llm_generate(query)
                 return response["content"]
     """
 
-    _llm_gateway: SovereignLLMGateway | None = None
+    _llm_gateway: Optional[SovereignLLMGateway] = None
 
     @property
     def llm_gateway(self) -> SovereignLLMGateway:
@@ -33,18 +33,18 @@ class LLMProviderMixin:
         return self._llm_gateway
 
     async def llm_generate(
-        self, prompt: str, model: str | None = None, provider: Provider = "openai", **kwargs
-    ) -> dict:
+        self, prompt: str, model: Optional[str] = None, provider: Provider = "openai", **kwargs: Any
+    ) -> Dict[str, Any]:
         """Generate LLM response through gateway."""
         return await self.llm_gateway.generate(prompt, model=model, provider=provider, **kwargs)
 
     async def llm_generate_with_fallback(
         self,
         prompt: str,
-        model: str | None = None,
-        fallback_providers: list[Provider] | None = None,
-        **kwargs,
-    ) -> dict:
+        model: Optional[str] = None,
+        fallback_providers: Optional[List[Provider]] = None,
+        **kwargs: Any,
+    ) -> Dict[str, Any]:
         """Generate with automatic provider fallback."""
         return await self.llm_gateway.generate(
             prompt, model=model, fallback_providers=fallback_providers, **kwargs

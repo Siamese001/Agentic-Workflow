@@ -1,0 +1,33 @@
+# Core Data Models for Semantic Memory
+# Validation: Enforces vector consistency and metadata schemas
+
+from typing import List, Optional, Dict, Any
+from pydantic import BaseModel, Field, field_validator
+from datetime import datetime, timezone
+from agentic_core.domain.entities import BaseEntity
+
+class MemoryItem(BaseEntity):
+    """
+    Represents a single unit of semantic memory (e.g., a conversation turn, a fact).
+    """
+    content: str = Field(..., min_length=1, description="Text content of the memory")
+    embedding: List[float] = Field(..., description="Vector representation")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Filterable tags")
+    score: Optional[float] = Field(default=None, description="Similarity score (only on retrieval)")
+
+    @field_validator('embedding')
+    @classmethod
+    def check_vector_integrity(cls, v: List[float]) -> List[float]:
+        if not v:
+            raise ValueError("Embedding vector cannot be empty")
+        # In a real app, we would validate dimensions against Config here.
+        # For now, we ensure it contains floats.
+        return v
+
+class MemoryQuery(BaseModel):
+    """
+    Request object for semantic search.
+    """
+    vector: List[float] = Field(..., description="Query embedding")
+    top_k: int = Field(default=5, ge=1, le=100)
+    filter_metadata: Optional[Dict[str, Any]] = Field(default=None, description="Exact match filters")

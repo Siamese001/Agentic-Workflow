@@ -9,8 +9,10 @@
         "territory": "templates",
         "active": true,
         "author": "LocationAgent",
-        "registered_date": "2026-01-19"
+        "registered_date": "2026-01-19",
+        "content_hash": "dabdf2dcb3e21a10ef205d266cac7797d5d85710a3e86c0bf0b27a05ae662927"
       }
     ]
-  }
+  },
+  "last_sync_date": "1769463975.5941505"
 }

@@ -16,6 +16,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import ClassVar
 
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
 
 class ModelProvider(str, Enum):
     """Available model providers."""
@@ -28,77 +30,97 @@ class ModelProvider(str, Enum):
     GROQ = "groq"
 
 
-@dataclass
-class ModelConfig:
+class ModelConfig(BaseModel):
     """configuration for LLM model parameters."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     Provider: ModelProvider = ModelProvider.OPENAI
     model_name: str = "gpt-4o"
-    temperature: float = 0.7
-    max_tokens: int = 2000
-    top_p: float = 0.95
-    frequency_penalty: float = 0.0
-    presence_penalty: float = 0.0
-    timeout: int = 30
-    max_retries: int = 3
+    temperature: float = Field(default=0.7, ge=0.0, le=2.0)
+    max_tokens: int = Field(default=2000, ge=1, le=32000)
+    top_p: float = Field(default=0.95, ge=0.0, le=1.0)
+    frequency_penalty: float = Field(default=0.0, ge=-2.0, le=2.0)
+    presence_penalty: float = Field(default=0.0, ge=-2.0, le=2.0)
+    timeout: int = Field(default=30, ge=1, le=600)
+    max_retries: int = Field(default=3, ge=0, le=10)
+
+    @model_validator(mode="after")
+    def validate_invariants(self) -> "ModelConfig":
+        return self
 
 
-@dataclass
-class RAGConfig:
+class RAGConfig(BaseModel):
     """configuration for Retrieval-Augmented Generation."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     enabled: bool = True
     vector_store_path: str = "data/vector_store"
     embedding_model: str = "text-embedding-3-large"
-    max_context_documents: int = 5
-    similarity_threshold: float = 0.8
+    max_context_documents: int = Field(default=5, ge=1, le=50)
+    similarity_threshold: float = Field(default=0.8, ge=0.0, le=1.0)
     rerank_enabled: bool = True
     rerank_model: str = "rerank-multilingual-v3.0"
     cache_enabled: bool = True
-    cache_ttl: int = 3600
+    cache_ttl: int = Field(default=3600, ge=0, le=86400)
+
+    @model_validator(mode="after")
+    def validate_invariants(self) -> "RAGConfig":
+        return self
 
 
-@dataclass
-class GovernorConfig:
+class GovernorConfig(BaseModel):
     """configuration for governance and safety controls."""
 
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
     safety_enabled: bool = True
-    safety_threshold: float = 0.95
+    safety_threshold: float = Field(default=0.95, ge=0.0, le=1.0)
     content_filter_enabled: bool = True
     pii_detection_enabled: bool = True
     bias_detection_enabled: bool = True
     audit_logging_enabled: bool = True
-    max_requests_per_minute: int = 100
-    allowed_models: list[str] = field(
+    max_requests_per_minute: int = Field(default=100, ge=1, le=10000)
+    allowed_models: list[str] = Field(
         default_factory=lambda: ["gpt-4o", "gpt-4o-mini", "claude-3-5-sonnet"]
     )
 
+    @model_validator(mode="after")
+    def validate_invariants(self) -> "GovernorConfig":
+        return self
 
-@dataclass
-class ReasoningConfig:
+
+class ReasoningConfig(BaseModel):
     """Centralized reasoning configuration for LLM generation."""
 
-    cot_min_paths: int = 3
-    tot_branches: int = 3
-    min_tot_depth: int = 2
-    self_consistency: int = 6
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    cot_min_paths: int = Field(default=3, ge=1, le=10)
+    tot_branches: int = Field(default=3, ge=1, le=10)
+    min_tot_depth: int = Field(default=2, ge=1, le=10)
+    self_consistency: int = Field(default=6, ge=1, le=20)
     reflexion: bool = True
-    max_reflexion_loops: int = 2
+    max_reflexion_loops: int = Field(default=2, ge=0, le=10)
 
     # Section-specific configurations (ClassVars set after class definition)
-    K0_HEADLINE_CONFIG: ClassVar[ReasoningConfig | None] = None
-    K1_EXECUTIVE_SUMMARY_CONFIG: ClassVar[ReasoningConfig | None] = None
-    K5_UNIFY_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
-    K5_UNIFY_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
-    K6_IBM_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
-    K6_IBM_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
-    K8_EY_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
-    K8_EY_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
-    K9_EARLY_CAREER_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
-    K9_EARLY_CAREER_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
-    K2_SKILLS_CONFIG: ClassVar[ReasoningConfig | None] = None
-    K10_COMPETENCIES_CONFIG: ClassVar[ReasoningConfig | None] = None
-    DEFAULT: ClassVar[ReasoningConfig | None] = None
+    K0_HEADLINE_CONFIG: ClassVar["ReasoningConfig" | None] = None
+    K1_EXECUTIVE_SUMMARY_CONFIG: ClassVar["ReasoningConfig" | None] = None
+    K5_UNIFY_BULLETS_CONFIG: ClassVar["ReasoningConfig" | None] = None
+    K5_UNIFY_OVERVIEW_CONFIG: ClassVar["ReasoningConfig" | None] = None
+    K6_IBM_BULLETS_CONFIG: ClassVar["ReasoningConfig" | None] = None
+    K6_IBM_OVERVIEW_CONFIG: ClassVar["ReasoningConfig" | None] = None
+    K8_EY_BULLETS_CONFIG: ClassVar["ReasoningConfig" | None] = None
+    K8_EY_OVERVIEW_CONFIG: ClassVar["ReasoningConfig" | None] = None
+    K9_EARLY_CAREER_BULLETS_CONFIG: ClassVar["ReasoningConfig" | None] = None
+    K9_EARLY_CAREER_OVERVIEW_CONFIG: ClassVar["ReasoningConfig" | None] = None
+    K2_SKILLS_CONFIG: ClassVar["ReasoningConfig" | None] = None
+    K10_COMPETENCIES_CONFIG: ClassVar["ReasoningConfig" | None] = None
+    DEFAULT: ClassVar["ReasoningConfig" | None] = None
+
+    @model_validator(mode="after")
+    def validate_invariants(self) -> "ReasoningConfig":
+        return self
 
 
 # Initialize default config

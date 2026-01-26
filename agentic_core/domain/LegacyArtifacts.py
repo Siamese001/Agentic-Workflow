@@ -9,6 +9,35 @@ from re import Pattern
 import re
 
 
+# [PHASE 30 DEEP HARVEST: From ProfileAnalysisAgent.py]
+# Patterns identifying weak or passive voice openings in outreach
+WEAK_OPENING_PATTERNS: Final[dict[str, Pattern]] = {  # Optimized for zero-allocation
+    "i_hope": re.compile(r"(?i)\bi hope\b"),
+    "just_checking": re.compile(r"(?i)\bjust checking\b"),
+    "just_wanted": re.compile(r"(?i)\bjust wanted\b"),
+    "just_reaching": re.compile(r"(?i)\bjust reaching\b"),
+    "just_following": re.compile(r"(?i)\bjust following\b"),
+    "wondering": re.compile(r"(?i)\bi was wondering if"),
+    "connect": re.compile(r"(?i)\bi (wanted|would like) to (reach|connect|discuss|share)"),
+    "perhaps": re.compile(r"(?i)\bperhaps (we|you) could"),
+    "if_interested": re.compile(r"(?i)\bif you('re| are) interested"),
+}
+
+# [PHASE 30 DEEP HARVEST: From OutreachValidationExecutorAgent.py]
+# Patterns identifying unreplaced placeholders in final content
+CRITICAL_PLACEHOLDERS: Final[dict[str, Pattern]] = {
+    "bracket_company": re.compile(r"\[COMPANY\]"),
+    "curly_company": re.compile(r"\{company\}"),
+    "bracket_name": re.compile(r"\[your name\]"),
+    "bracket_title": re.compile(r"\[TITLE\]"),
+    "bracket_insert": re.compile(r"\[INSERT [A-Z]+\]"),
+    "generic_placeholder": re.compile(r"\[placeholder\]"),
+    "todo_placeholder": re.compile(r"\bTODO\b|\bTBD\b"),
+    "angle_bracket_name": re.compile(r"<NAME>"),
+    "angle_bracket_company": re.compile(r"<COMPANY>"),
+}
+
+
 @dataclass(frozen=True)
 class LegacyArtifacts:
     """
@@ -44,7 +73,7 @@ class LegacyArtifacts:
 
     # SALVAGED REGEX: From OutreachEngineRefactored.py (Phase 29)
     # Used for detecting company placeholders in outreach messages
-    COMPANY_PLACEHOLDER_PATTERN: Final[Pattern] = re.compile(r"\[COMPANY\]|\{company\}|PLACEHOLDER")
+    COMPANY_PLACEHOLDER_PATTERN: Final[Pattern] = re.compile(r"\[COMPANY\]|\{company\}|\bPLACEHOLDER\b")
 
     # SALVAGED REGEX: From ProfileAnalysisAgent.py (Phase 29)
     # Used for detecting weak opening phrases in professional messages
@@ -72,41 +101,9 @@ class LegacyArtifacts:
     # Technical authority message crafting template
     TECHNICAL_AUTHORITY_TEMPLATE: Final[str] = (
         "You are crafting a technical message for a senior technical authority (architect, principal engineer).\n"
-        "Focus on: {technical_focus}\n"
+        "Focus: {technical_focus}\n"
         "Tone: Precise, knowledgeable, solution-oriented\n"
         "Context: {technical_context}"
-    )
-
-    # [PHASE 30 DEEP HARVEST: From ProfileAnalysisAgent.py]
-    # Patterns identifying weak or passive voice openings in outreach
-    WEAK_OPENING_PATTERNS: dict[str, Pattern] = field(
-        default_factory=lambda: {
-            "i_hope": re.compile(r"(?i)\bi hope\b"),
-            "just_checking": re.compile(r"(?i)\bjust checking\b"),
-            "just_wanted": re.compile(r"(?i)\bjust wanted\b"),
-            "just_reaching": re.compile(r"(?i)\bjust reaching\b"),
-            "just_following": re.compile(r"(?i)\bjust following\b"),
-            "wondering": re.compile(r"(?i)\bi was wondering if"),
-            "connect": re.compile(r"(?i)\bi (wanted|would like) to (reach|connect|discuss|share)"),
-            "perhaps": re.compile(r"(?i)\bperhaps (we|you) could"),
-            "if_interested": re.compile(r"(?i)\bif you('re| are) interested"),
-        }
-    )
-
-    # [PHASE 30 DEEP HARVEST: From OutreachValidationExecutorAgent.py]
-    # Patterns identifying unreplaced placeholders in final content
-    CRITICAL_PLACEHOLDERS: dict[str, Pattern] = field(
-        default_factory=lambda: {
-            "bracket_company": re.compile(r"\[COMPANY\]"),
-            "curly_company": re.compile(r"\{company\}"),
-            "bracket_name": re.compile(r"\[your name\]"),
-            "bracket_title": re.compile(r"\[TITLE\]"),
-            "bracket_insert": re.compile(r"\[INSERT [A-Z]+\]"),
-            "generic_placeholder": re.compile(r"\[placeholder\]"),
-            "todo_placeholder": re.compile(r"TODO|TBD"),
-            "angle_bracket_name": re.compile(r"<NAME>"),
-            "angle_bracket_company": re.compile(r"<COMPANY>"),
-        }
     )
 
     # [PHASE 30 DEEP HARVEST: From core_v107.py (via FINAL_LEGACY_AUDIT.md)]
@@ -174,20 +171,16 @@ class LegacyArtifacts:
 
     @classmethod
     def get_weak_opening_match(cls, text: str) -> str | None:
-        """Scan text for any weak opening patterns."""
-        # Create instance to access field defaults
-        instance = cls()
-        for name, pattern in instance.WEAK_OPENING_PATTERNS.items():
+        """Scan text for any weak opening patterns without instance overhead."""
+        for name, pattern in WEAK_OPENING_PATTERNS.items():
             if pattern.search(text):
                 return name
         return None
 
     @classmethod
     def get_placeholder_match(cls, text: str) -> str | None:
-        """Scan text for any critical placeholders."""
-        # Create instance to access field defaults
-        instance = cls()
-        for name, pattern in instance.CRITICAL_PLACEHOLDERS.items():
+        """Scan text for any critical placeholders without instance overhead."""
+        for name, pattern in CRITICAL_PLACEHOLDERS.items():
             if pattern.search(text):
                 return name
         return None

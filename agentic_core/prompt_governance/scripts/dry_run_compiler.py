@@ -1,0 +1,192 @@
+#!/usr/bin/env python3
+"""
+Template Syntax Verification Script (Phase 5)
+
+Compiles every template in isolation to catch syntax errors before runtime.
+Uses Jinja2 environment to validate template syntax.
+"""
+
+import sys
+from pathlib import Path
+from typing import List, Dict, Tuple
+
+# Try to import Jinja2 - should be available in the environment
+try:
+    from jinja2 import Environment, FileSystemLoader, TemplateSyntaxError, TemplateError
+except ImportError:
+    print("ERROR: Jinja2 not installed. Run: pip install jinja2")
+    sys.exit(1)
+
+def initialize_jinja_environment(template_dir: Path):
+    """Initialize Jinja2 environment for template compilation."""
+    try:
+        # Create environment with the template directory
+        env = Environment(
+            loader=FileSystemLoader(str(template_dir)),
+            trim_blocks=True,
+            lstrip_blocks=True
+        )
+        return env
+    except Exception as e:
+        print(f"ERROR: Failed to initialize Jinja2 environment: {e}")
+        sys.exit(1)
+
+def compile_template(env: Environment, template_path: Path, relative_to: Path) -> Dict:
+    """
+    Compile a single template and return result.
+    
+    Returns:
+        Dict with 'status', 'template_path', 'error' (if any)
+    """
+    try:
+        # Get relative path for Jinja2 loading (convert to forward slashes)
+        relative_path = str(template_path.relative_to(relative_to)).replace('\\', '/')
+        
+        # Try to load and parse the template
+        template = env.get_template(relative_path)
+        
+        # Try to compile it (this catches syntax errors)
+        template.new_context()
+        
+        return {
+            'status': 'PASS',
+            'template_path': relative_path,
+            'full_path': str(template_path),
+            'error': None
+        }
+        
+    except TemplateSyntaxError as e:
+        return {
+            'status': 'FAIL',
+            'template_path': relative_path,
+            'full_path': str(template_path),
+            'error': f"Syntax error at line {e.lineno}: {e.message}",
+            'line': e.lineno,
+            'error_type': 'SYNTAX_ERROR'
+        }
+    except TemplateError as e:
+        return {
+            'status': 'FAIL',
+            'template_path': relative_path,
+            'full_path': str(template_path),
+            'error': f"Template error: {str(e)}",
+            'error_type': 'TEMPLATE_ERROR'
+        }
+    except Exception as e:
+        return {
+            'status': 'FAIL',
+            'template_path': relative_path,
+            'full_path': str(template_path),
+            'error': f"Unexpected error: {str(e)}",
+            'error_type': 'UNEXPECTED_ERROR'
+        }
+
+def find_jinja_templates(directory: Path) -> List[Path]:
+    """Find all .jinja template files in the directory."""
+    templates = []
+    for file_path in directory.rglob("*.jinja"):
+        if file_path.is_file():
+            templates.append(file_path)
+    return templates
+
+def verify_all_templates(template_dir: Path) -> Tuple[List[Dict], List[Dict]]:
+    """
+    Verify all templates in the directory.
+    
+    Returns:
+        Tuple of (passed_templates, failed_templates)
+    """
+    # Initialize Jinja2 environment
+    env = initialize_jinja_environment(template_dir)
+    
+    # Find all templates
+    templates = find_jinja_templates(template_dir)
+    
+    passed = []
+    failed = []
+    
+    print(f"Found {len(templates)} templates to verify...")
+    
+    for template_path in templates:
+        result = compile_template(env, template_path, template_dir)
+        
+        if result['status'] == 'PASS':
+            passed.append(result)
+        else:
+            failed.append(result)
+    
+    return passed, failed
+
+def main():
+    # Determine paths
+    script_dir = Path(__file__).parent
+    template_dir = script_dir.parent
+    
+    print("Template Syntax Verification Audit (Phase 5)")
+    print("=" * 50)
+    print(f"Template Directory: {template_dir}")
+    print()
+    
+    if not template_dir.exists():
+        print(f"ERROR: Template directory not found: {template_dir}")
+        sys.exit(1)
+    
+    # Run verification
+    passed, failed = verify_all_templates(template_dir)
+    
+    # Report results
+    print(f"RESULTS:")
+    print(f"  Templates checked: {len(passed) + len(failed)}")
+    print(f"  Passed: {len(passed)}")
+    print(f"  Failed: {len(failed)}")
+    print()
+    
+    if failed:
+        print("❌ FAILED TEMPLATES:")
+        
+        # Group by error type
+        syntax_errors = [f for f in failed if f.get('error_type') == 'SYNTAX_ERROR']
+        other_errors = [f for f in failed if f.get('error_type') != 'SYNTAX_ERROR']
+        
+        if syntax_errors:
+            print("  Syntax Errors:")
+            for failure in syntax_errors:
+                print(f"    📁 {failure['template_path']}")
+                print(f"       Line {failure['line']}: {failure['error']}")
+            print()
+        
+        if other_errors:
+            print("  Other Errors:")
+            for failure in other_errors:
+                print(f"    📁 {failure['template_path']}")
+                print(f"       {failure['error']}")
+            print()
+        
+        print("🔧 RECOMMENDATIONS:")
+        print("   1. Fix syntax errors in the templates above")
+        print("   2. Check for unmatched Jinja2 blocks/tags")
+        print("   3. Verify variable names and filters")
+        print("   4. Re-run this script to verify fixes")
+        print()
+    else:
+        print("✅ ALL TEMPLATES PASSED")
+        print("No syntax errors detected.")
+        print()
+    
+    # Show some passed examples (optional)
+    if passed and len(passed) <= 5:
+        print("SAMPLE PASSED TEMPLATES:")
+        for success in passed[:5]:
+            print(f"  ✅ {success['template_path']}")
+        print()
+    
+    # Exit code
+    if failed:
+        print("❌ AUDIT FAILED - Template syntax errors detected")
+        sys.exit(1)
+    else:
+        print("✅ AUDIT PASSED - All templates syntactically valid")
+        sys.exit(0)
+
+if __name__ == "__main__":
+    main()

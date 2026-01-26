@@ -8,9 +8,10 @@ import re
 import sys
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENTIC_CORE_DIR,
-)
+# ARCHITECTURAL HARDENING: Removed upward import to L5.
+# Using internal constants for dashboard visualization testing.
+AGENTIC_CORE_DIR = "agentic_core"
+REPORTS_DIR = "reports"
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
@@ -19,6 +20,12 @@ DASHBOARD_PATH = project_root / REPORTS_DIR / "autonomy_dashboard.html"
 TEMPLATE_PATH = (
     project_root / AGENTIC_CORE_DIR / "L5_safety" / "validators" / "dashboard_template.html"
 )
+
+# Mock LocationValidator for testing (Anti-Gravity compliance)
+class MockLocationValidator:
+    """Mock validator to avoid L5 upward import coupling."""
+    def validate_file_location(self, path):
+        return True, "Mock Pass"
 
 
 class DashboardTestSuite:
