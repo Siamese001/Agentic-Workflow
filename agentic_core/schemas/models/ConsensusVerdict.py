@@ -9,11 +9,14 @@ the agentic collective.
 """
 
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class ConsensusVerdict(BaseModel):
     """Result of a consensus deliberation across multiple models."""
+
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     chosen_plan: str = Field(..., description="The definitive plan agreed upon by the collective")
     consensus_score: float = Field(
@@ -29,6 +32,9 @@ class ConsensusVerdict(BaseModel):
 class ModelOpinion(BaseModel):
     """Individual model's opinion on a proposed plan."""
 
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
     model_name: str = Field(..., description="The identifier of the contributing model")
     plan: str = Field(..., description="The specific plan being evaluated")
     reasoning: str = Field(..., description="Individual model's logic for its stance")
@@ -36,3 +42,12 @@ class ModelOpinion(BaseModel):
     confidence: float = Field(
         ..., ge=0.0, le=1.0, description="Confidence in this specific opinion"
     )
+    
+    @field_validator("risk_assessment")
+    @classmethod
+    def validate_risk_assessment(cls, v: str) -> str:
+        """[HARDENED] Ensure risk assessment is valid."""
+        valid_levels = {"LOW", "MEDIUM", "HIGH", "CRITICAL"}
+        if v.upper() not in valid_levels:
+            raise ValueError(f"Risk assessment must be one of: {valid_levels}")
+        return v.upper()

@@ -9,11 +9,14 @@ outcomes. Used for testing agentic behavior in sandbox environments.
 
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class SimScenario(BaseModel):
     """Definition of a simulation scenario for system testing."""
+
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     id: str = Field(..., description="Unique identifier for the scenario")
     description: str = Field(..., description="Human-readable summary of the test case")
@@ -25,9 +28,20 @@ class SimScenario(BaseModel):
     )
     run_count: int = Field(default=1, ge=1, description="Number of iterations to perform")
 
+    @field_validator("description")
+    @classmethod
+    def validate_description(cls, value: str) -> str:
+        """[HARDENED] Ensure description is not empty."""
+        if not value.strip():
+            raise ValueError("Scenario description cannot be empty")
+        return value.strip()
+
 
 class SimOutcome(BaseModel):
     """Aggregate results from a simulation run."""
+
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     scenario_id: str = Field(..., description="ID of the simulated scenario")
     average_scores: dict[str, float] = Field(

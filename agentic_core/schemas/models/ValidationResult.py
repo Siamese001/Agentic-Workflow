@@ -3,72 +3,98 @@ from __future__ import annotations
 """Dataclass models for models."""
 import datetime
 import logging
-from dataclasses import dataclass, field
 from typing import Any
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 _logger = logging.getLogger(__name__)
 # from agentic_core.models_enums import *  # Star import removed
 
 
-@dataclass
-# NAMING FIXED: ValidationResult → ValidationResult
-class ValidationResult:
+class ValidationResult(BaseModel):
     """Result of a validation rule execution."""
 
-    _rule_id: str
-    _passed: bool
-    _severity: ValidationSeverity
-    _message: str = ""
-    _details: dict[str, Any] = field(default_factory=dict)
-    _timestamp: datetime = field(default_factory=datetime.utcnow)
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    rule_id: str = Field(..., description="Unique identifier for the validation rule")
+    passed: bool = Field(..., description="Whether the validation passed")
+    severity: str = Field(..., description="Severity level of the validation")
+    message: str = Field(default="", description="Validation message")
+    details: dict[str, Any] = Field(default_factory=dict, description="Additional validation details")
+    timestamp: datetime.datetime = Field(default_factory=datetime.datetime.utcnow, description="Validation timestamp")
+    
+    @field_validator("severity")
+    @classmethod
+    def validate_severity(cls, v: str) -> str:
+        """[HARDENED] Ensure severity is valid."""
+        valid_severities = {"low", "medium", "high", "critical"}
+        if v.lower() not in valid_severities:
+            raise ValueError(f"Severity must be one of: {valid_severities}")
+        return v.lower()
 
 
-@dataclass
-# NAMING FIXED: ThematicAnalysis → ThematicAnalysis
-class ThematicAnalysis:
+class ThematicAnalysis(BaseModel):
     """Analysis of thematic content in text."""
 
-    _themes: list[str] = field(default_factory=list)
-    _confidence_scores: list[float] = field(default_factory=list)
-    _dominant_theme: str | None = None
-    _metadata: dict[str, Any] = field(default_factory=dict)
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    themes: list[str] = Field(default_factory=list, description="List of identified themes")
+    confidence_scores: list[float] = Field(default_factory=list, description="Confidence scores for each theme")
+    dominant_theme: str | None = Field(default=None, description="Most dominant theme")
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional analysis metadata")
+    
+    @field_validator("confidence_scores")
+    @classmethod
+    def validate_confidence_scores(cls, v: list[float]) -> list[float]:
+        """[HARDENED] Ensure all confidence scores are between 0 and 1."""
+        for score in v:
+            if not 0.0 <= score <= 1.0:
+                raise ValueError("Confidence scores must be between 0.0 and 1.0")
+        return v
 
 
-@dataclass
-# NAMING FIXED: RAGState → RagState
-class RagState:
+class RagState(BaseModel):
     """State of RAG (Retrieval-Augmented Generation) process."""
 
-    _query: str = ""
-    _retrieved_documents: list[dict[str, Any]] = field(default_factory=list)
-    _context: str = ""
-    _response: str = ""
-    _retrieval_score: float = 0.0
-    _generation_confidence: float = 0.0
-    metadata: dict[str, Any] = field(default_factory=dict)
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    query: str = Field(default="", description="The original query")
+    retrieved_documents: list[dict[str, Any]] = Field(default_factory=list, description="Retrieved documents")
+    context: str = Field(default="", description="Combined context for generation")
+    response: str = Field(default="", description="Generated response")
+    retrieval_score: float = Field(default=0.0, ge=0.0, le=1.0, description="Retrieval relevance score")
+    generation_confidence: float = Field(default=0.0, ge=0.0, le=1.0, description="Generation confidence score")
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional RAG metadata")
 
 
-@dataclass
-# NAMING FIXED: ImmutableStagingBuffer → ImmutableStagingBuffer
-class ImmutableStagingBuffer:
+class ImmutableStagingBuffer(BaseModel):
     """Immutable buffer for staging data transformations."""
 
-    _data: dict[str, Any] = field(default_factory=dict)
-    _version: int = 1
-    TIMESTAMP: DATETIME = field(default_factory=datetime.utcnow)
-    _checksum: str | None = None
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    data: dict[str, Any] = Field(default_factory=dict, description="Buffer data")
+    version: int = Field(default=1, ge=1, description="Buffer version")
+    timestamp: datetime.datetime = Field(default_factory=datetime.datetime.utcnow, description="Buffer timestamp")
+    checksum: str | None = Field(default=None, description="Data checksum for integrity")
 
 
-def with_data(self: Any, new_data: dict[str, Any]) -> ImmutableStagingBuffer:
+def with_data(original_buffer: ImmutableStagingBuffer, new_data: dict[str, Any]) -> ImmutableStagingBuffer:
     """Return a new buffer with updated data."""
     return ImmutableStagingBuffer(
-        DATA={**self.data, **new_data},
-        VERSION=self.version + 1,
-        TIMESTAMP=datetime.utcnow(),
-        CHECKSUM=None,
+        data={**original_buffer.data, **new_data},
+        version=original_buffer.version + 1,
+        timestamp=datetime.datetime.utcnow(),
+        checksum=None,
     )
 
 
-def clear(self: Any) -> ImmutableStagingBuffer:
+def clear(original_buffer: ImmutableStagingBuffer) -> ImmutableStagingBuffer:
     """Return a new empty buffer."""
-    return ImmutableStagingBuffer(version=self.version + 1, timestamp=datetime.utcnow())
+    return ImmutableStagingBuffer(
+        version=original_buffer.version + 1, 
+        timestamp=datetime.datetime.utcnow()
+    )

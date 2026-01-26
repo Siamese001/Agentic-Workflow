@@ -6,6 +6,8 @@ Defines the Pydantic models for type-safe configuration loading.
 
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -114,3 +116,41 @@ class AgentSpecs(BaseModel):
     validation_agent: ValidationConfig
     gate_decision_agent: GateConfig
     qa_report_agent: QAReportConfig
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "AgentSpecs":
+        """Strict parsing of dictionary to AgentSpecs schema."""
+        pa_data = data.get("profile_analysis_agent", {})
+        indicators_data = pa_data.get("archetype_indicators", {})
+        indicators = {
+            key: ArchetypeIndicator(
+                keywords=value.get("keywords", []),
+                confidence=value.get("confidence", 0.0),
+            )
+            for key, value in indicators_data.items()
+        }
+
+        pa_config = ProfileAnalysisConfig(
+            cxo_precedence_tokens=pa_data.get(
+                "cxo_precedence_tokens",
+                ["CEO", "CFO", "COO", "CTO", "CMO", "CIO", "CISO", "CPO", "CRO"],
+            ),
+            manual_override_threshold=pa_data.get("manual_override_threshold", 0.8),
+            default_archetype=pa_data.get("default_archetype", "UNKNOWN"),
+            default_confidence=pa_data.get("default_confidence", 0.0),
+            archetype_indicators=indicators,
+        )
+
+        ra_data = data.get("research_agent", {})
+        ra_config = ResearchConfig(
+            vector_store_query_params=ra_data.get("vector_store_query_params", {}),
+            fallback_rag_params=ra_data.get("fallback_rag_params", {}),
+        )
+
+        remaining = {
+            key: value
+            for key, value in data.items()
+            if key not in {"profile_analysis_agent", "research_agent"}
+        }
+
+        return cls(profile_analysis_agent=pa_config, research_agent=ra_config, **remaining)

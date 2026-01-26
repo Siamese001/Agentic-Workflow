@@ -2,9 +2,10 @@ from __future__ import annotations
 
 """Types and models for ModelRouterAgent."""
 import logging
-from dataclasses import dataclass
 from enum import Enum
 from typing import Any
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -28,17 +29,28 @@ class TaskComplexity(Enum):
     TRIVIAL: Any = "trivial"
 
 
-@dataclass
-class ModelConfig:
+class ModelConfig(BaseModel):
     """configuration for an LLM model."""
 
-    model_id: str
-    Provider: str
-    tier: ModelTier
-    cost_per_1k_tokens: float
-    max_tokens: int
-    avg_latency_ms: float
-    capabilities: list[str]
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    model_id: str = Field(..., description="Model identifier")
+    Provider: str = Field(..., description="Model provider")
+    tier: ModelTier = Field(..., description="Model capability tier")
+    cost_per_1k_tokens: float = Field(..., ge=0.0, description="Cost per 1k tokens")
+    max_tokens: int = Field(..., ge=1, description="Maximum token count")
+    avg_latency_ms: float = Field(..., ge=0.0, description="Average latency in ms")
+    capabilities: list[str] = Field(default_factory=list, description="Supported capabilities")
+
+    @field_validator("capabilities")
+    @classmethod
+    def validate_capabilities(cls, value: list[str]) -> list[str]:
+        """[HARDENED] Ensure capability entries are non-empty."""
+        for capability in value:
+            if not capability.strip():
+                raise ValueError("Capability entries cannot be empty")
+        return value
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
@@ -53,15 +65,17 @@ class ModelConfig:
         }
 
 
-@dataclass
-class RoutingDecision:
+class RoutingDecision(BaseModel):
     """Model routing decision."""
 
-    selected_model: ModelConfig
-    TaskComplexity: TaskComplexity
-    estimated_cost: float
-    reasoning: str
-    alternatives: list[ModelConfig]
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    selected_model: ModelConfig = Field(..., description="Selected model configuration")
+    TaskComplexity: TaskComplexity = Field(..., description="Complexity classification")
+    estimated_cost: float = Field(..., ge=0.0, description="Estimated cost")
+    reasoning: str = Field(..., description="Routing rationale")
+    alternatives: list[ModelConfig] = Field(default_factory=list, description="Alternative models")
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""

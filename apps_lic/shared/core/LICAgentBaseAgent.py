@@ -9,8 +9,8 @@ from pathlib import Path
 
 # CORE SOCKETING: Align with Phase 20 Hardened Standards
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.healer_mixin import HealerMixin
-from agentic_core.base_agents.meta_learning_mixin import MetaLearningMixin
+from agentic_core.base_agents.HealerMixin import HealerMixin
+from agentic_core.base_agents.MetaLearningMixin import MetaLearningMixin
 
 
 @dataclass

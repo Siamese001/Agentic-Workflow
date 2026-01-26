@@ -2,9 +2,10 @@ from __future__ import annotations
 
 """Types and models for CapabilityAnalyzer."""
 import logging
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -12,66 +13,70 @@ Logger: Any = logging.getLogger(__name__)
 class CapabilityGapType(Enum):
     """Types of capability gaps."""
 
-    MISSING_TOOL: Any = "missing_tool"
-    INSUFFICIENT_KNOWLEDGE: Any = "insufficient_knowledge"
-    PERFORMANCE_DEGRADATION: Any = "performance_degradation"
-    REASONING_LIMITATION: Any = "reasoning_limitation"
-    INTEGRATION_FAILURE: Any = "integration_failure"
+    MISSING_TOOL = "missing_tool"
+    INSUFFICIENT_KNOWLEDGE = "insufficient_knowledge"
+    PERFORMANCE_DEGRADATION = "performance_degradation"
+    REASONING_LIMITATION = "reasoning_limitation"
+    INTEGRATION_FAILURE = "integration_failure"
 
 
 class RecommendationType(Enum):
     """Types of recommendations."""
 
-    ADD_TOOL: Any = "add_tool"
-    ADD_SUB_AGENT: Any = "add_sub_agent"
-    RETRAIN_AGENT: Any = "retrain_agent"
-    UPDATE_KNOWLEDGE: Any = "update_knowledge"
-    OPTIMIZE_PERFORMANCE: Any = "optimize_performance"
+    ADD_TOOL = "add_tool"
+    ADD_SUB_AGENT = "add_sub_agent"
+    RETRAIN_AGENT = "retrain_agent"
+    UPDATE_KNOWLEDGE = "update_knowledge"
+    OPTIMIZE_PERFORMANCE = "optimize_performance"
 
 
-@dataclass
-class CapabilityGap:
+class CapabilityGap(BaseModel):
     """Identified capability gap."""
 
-    gap_id: str
-    GapType: CapabilityGapType
-    description: str
-    affected_scenarios: list[str]
-    failure_count: int
-    Severity: float
-    evidence: list[str] = field(default_factory=list)
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    gap_id: str = Field(..., description="Unique identifier for the capability gap")
+    gap_type: CapabilityGapType = Field(..., description="Type of capability gap")
+    description: str = Field(..., description="Description of the capability gap")
+    affected_scenarios: list[str] = Field(..., description="Scenarios affected by this gap")
+    failure_count: int = Field(..., ge=0, description="Number of failures observed")
+    severity: float = Field(..., ge=0.0, le=1.0, description="Severity score (0.0 to 1.0)")
+    evidence: list[str] = Field(default_factory=list, description="Evidence supporting the gap identification")
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "gap_id": self.gap_id,
-            "GapType": self.GapType.value,
+            "gap_type": self.gap_type.value,
             "description": self.description,
             "affected_scenarios": self.affected_scenarios,
             "failure_count": self.failure_count,
-            "Severity": self.Severity,
+            "severity": self.severity,
             "evidence": self.evidence,
         }
 
 
-@dataclass
-class Recommendation:
+class Recommendation(BaseModel):
     """Improvement Recommendation."""
 
-    recommendation_id: str
-    RecommendationType: RecommendationType
-    title: str
-    description: str
-    addresses_gaps: list[str]
-    priority: float
-    implementation_steps: list[str] = field(default_factory=list)
-    estimated_impact: float = 0.0
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    recommendation_id: str = Field(..., description="Unique identifier for the recommendation")
+    recommendation_type: RecommendationType = Field(..., description="Type of recommendation")
+    title: str = Field(..., description="Short title of the recommendation")
+    description: str = Field(..., description="Detailed description of the recommendation")
+    addresses_gaps: list[str] = Field(..., description="List of gap IDs this recommendation addresses")
+    priority: float = Field(..., ge=0.0, le=1.0, description="Priority score (0.0 to 1.0)")
+    implementation_steps: list[str] = Field(default_factory=list, description="Steps to implement the recommendation")
+    estimated_impact: float = Field(default=0.0, ge=0.0, le=1.0, description="Estimated impact score (0.0 to 1.0)")
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "recommendation_id": self.recommendation_id,
-            "RecommendationType": self.RecommendationType.value,
+            "recommendation_type": self.recommendation_type.value,
             "title": self.title,
             "description": self.description,
             "addresses_gaps": self.addresses_gaps,
@@ -81,16 +86,18 @@ class Recommendation:
         }
 
 
-@dataclass
-class AnalysisReport:
+class AnalysisReport(BaseModel):
     """Capability gap analysis report."""
 
-    report_id: str
-    agent_id: str
-    gaps_identified: list[CapabilityGap]
-    recommendations: list[Recommendation]
-    overall_health_score: float
-    analysis_timestamp: float
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    report_id: str = Field(..., description="Unique identifier for the analysis report")
+    agent_id: str = Field(..., description="ID of the analyzed agent")
+    gaps_identified: list[CapabilityGap] = Field(..., description="List of identified capability gaps")
+    recommendations: list[Recommendation] = Field(..., description="List of improvement recommendations")
+    overall_health_score: float = Field(..., ge=0.0, le=1.0, description="Overall health score (0.0 to 1.0)")
+    analysis_timestamp: float = Field(..., description="Timestamp of the analysis")
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""

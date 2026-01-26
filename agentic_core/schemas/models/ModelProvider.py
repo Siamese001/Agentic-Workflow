@@ -15,9 +15,10 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 
 
-from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # =============================================================================
 # CORE CONSTANTS
@@ -58,46 +59,72 @@ class ModelProvider(Enum):
     LOCAL = "local"
 
 
-@dataclass
-class ModelConfig:
-    Provider: ModelProvider = ModelProvider.OPENAI
-    model_name: str = "gpt-4-turbo"
-    api_key: str | None = None
-    temperature: float = DEFAULT_GENERATION_TEMPERATURE
-    max_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS
+class ModelConfig(BaseModel):
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    Provider: ModelProvider = Field(default=ModelProvider.OPENAI, description="Model provider")
+    model_name: str = Field(default="gpt-4-turbo", description="Model name")
+    api_key: str | None = Field(default=None, description="API key if required")
+    temperature: float = Field(
+        default=DEFAULT_GENERATION_TEMPERATURE,
+        ge=0.0,
+        le=2.0,
+        description="Sampling temperature",
+    )
+    max_tokens: int = Field(
+        default=DEFAULT_MAX_OUTPUT_TOKENS, ge=1, description="Maximum tokens"
+    )
+
+    @field_validator("model_name")
+    @classmethod
+    def validate_model_name(cls, value: str) -> str:
+        """[HARDENED] Ensure model name is not empty."""
+        if not value.strip():
+            raise ValueError("model_name cannot be empty")
+        return value.strip()
 
 
-@dataclass
-class RAGConfig:
-    enabled: bool = True
-    chunk_size: int = 1000
-    chunk_overlap: int = 200
-    retrieval_count: int = 5
+class RAGConfig(BaseModel):
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    enabled: bool = Field(default=True, description="Whether RAG is enabled")
+    chunk_size: int = Field(default=1000, ge=1, description="Chunk size for retrieval")
+    chunk_overlap: int = Field(default=200, ge=0, description="Chunk overlap")
+    retrieval_count: int = Field(default=5, ge=1, description="Number of chunks to retrieve")
 
 
-@dataclass
-class GovernorConfig:
-    strict_mode: bool = True
-    constraints: ContentConstraintsConfig = field(
-        default_factory=lambda: ContentConstraintsConfig()
+class GovernorConfig(BaseModel):
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    strict_mode: bool = Field(default=True, description="Enable strict governance")
+    constraints: ContentConstraintsConfig = Field(
+        default_factory=lambda: ContentConstraintsConfig(),
+        description="Content constraints configuration",
     )
 
 
-@dataclass
-class WorkflowConfig:
-    max_steps: int = 10
-    stop_on_error: bool = True
-    parallel_execution: bool = False
+class WorkflowConfig(BaseModel):
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    max_steps: int = Field(default=10, ge=1, description="Maximum workflow steps")
+    stop_on_error: bool = Field(default=True, description="Stop on error")
+    parallel_execution: bool = Field(default=False, description="Allow parallel execution")
 
 
-@dataclass
-class Config:
+class Config(BaseModel):
     """Legacy Config class for backward compatibility"""
 
-    model: ModelConfig = field(default_factory=ModelConfig)
-    rag: RAGConfig = field(default_factory=RAGConfig)
-    governor: GovernorConfig = field(default_factory=GovernorConfig)
-    workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    model: ModelConfig = Field(default_factory=ModelConfig)
+    rag: RAGConfig = Field(default_factory=RAGConfig)
+    governor: GovernorConfig = Field(default_factory=GovernorConfig)
+    workflow: WorkflowConfig = Field(default_factory=WorkflowConfig)
 
 
 # =============================================================================
@@ -105,9 +132,11 @@ class Config:
 # =============================================================================
 
 
-@dataclass
-class ContentConstraintsConfig:
+class ContentConstraintsConfig(BaseModel):
     """Centralized configuration for content constraints like word counts."""
+
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     # Overall Resume
     TOTAL_WORD_COUNT_MIN: int = 950
@@ -157,9 +186,11 @@ class ContentConstraintsConfig:
     COVER_LETTER_JD_RELEVANCE_THRESHOLD: float = 0.35
 
 
-@dataclass
-class SignalControlConfig:
+class SignalControlConfig(BaseModel):
     """configuration for signal quality control thresholds."""
+
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     # K.1 Executive Summary
     K1_MAX_DIFFERENTIATORS: int = 4
@@ -179,12 +210,14 @@ class SignalControlConfig:
 # =============================================================================
 
 
-@dataclass
-class GlobalConfig:
-    model: ModelConfig = field(default_factory=ModelConfig)
-    rag: RAGConfig = field(default_factory=RAGConfig)
-    governor: GovernorConfig = field(default_factory=GovernorConfig)
-    workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
+class GlobalConfig(BaseModel):
+    # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    model: ModelConfig = Field(default_factory=ModelConfig)
+    rag: RAGConfig = Field(default_factory=RAGConfig)
+    governor: GovernorConfig = Field(default_factory=GovernorConfig)
+    workflow: WorkflowConfig = Field(default_factory=WorkflowConfig)
 
 
 # Singleton Instance

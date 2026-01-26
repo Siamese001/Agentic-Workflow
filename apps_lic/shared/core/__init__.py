@@ -3,8 +3,8 @@ LIC Sovereign Architecture Patterns for apps_lic.
 Provides hardened state management, tracing, and persistence.
 """
 
-from .immutable_buffer import ImmutableStagingBuffer
-from .manifest_manager import ManifestManager
-from .trace_registry import TraceRegistry
+from .ImmutableStagingBuffer import ImmutableStagingBuffer
+from .ManifestManager import ManifestManager
+from .TraceRegistry import TraceRegistry
 
 __all__ = ["ImmutableStagingBuffer", "TraceRegistry", "ManifestManager"]
