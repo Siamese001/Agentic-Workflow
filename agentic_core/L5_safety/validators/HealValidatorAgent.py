@@ -110,7 +110,7 @@ class HealValidatorAgent(SovereignBaseAgent):
         self.bandit_available = False
         try:
             from bandit import manager as bandit_manager
-            from bandit.core import config as bandit_config
+            from bandit.core import OrchestratorConfig as bandit_config
 
             self.bandit_manager = bandit_manager
             self.bandit_config = bandit_config

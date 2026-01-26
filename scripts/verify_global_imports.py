@@ -49,7 +49,7 @@ def scan_for_stale_imports():
 
             for i, line in enumerate(lines):
                 # Check for explicit import from the old utility path involving moved agents
-                # Regex looks for: from apps_shared.common_utils import Router
+                # Regex looks for: from apps_shared.common_utils import AllProvidersDownError
                 # OR: import apps_shared.common_utils.Router
 
                 for agent in MOVED_AGENTS:

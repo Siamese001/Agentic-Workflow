@@ -8,7 +8,7 @@ Replaces all direct subprocess git calls.
 import logging
 from typing import Any
 
-from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
+from agentic_core.config.blueprint_sovereign.sovereign_config_1 import OrchestratorConfig
 from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client_1 import get_git_client
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

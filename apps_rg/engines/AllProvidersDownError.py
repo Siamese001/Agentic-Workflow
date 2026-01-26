@@ -17,7 +17,7 @@ from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
 # Previous: from runtime.shared.circuit_breaker import CircuitBreaker, CircuitBreakerState
 from apps_shared.common_utils.multi_provider_clients import Provider
 from agentic_core.base_agents.telemetry import SystemTelemetry
-from apps_shared.common_utils.AgentExecutor import AgentMessage, AgentResponse
+from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
 # [Diff End]
 
 from .schema import DEFAULT_ROUTING_CONFIGS, RouteConfig, RoutingTier

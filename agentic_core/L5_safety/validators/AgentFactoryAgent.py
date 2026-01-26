@@ -34,7 +34,7 @@ except ImportError:
     L2ExecutionBaseAgent = None
 MockL2ExecutionBaseAgent = None  # Stub
 try:
-    from agentic_core.config.blueprint_sovereign.sovereign_config_1 import config
+    from agentic_core.config.blueprint_sovereign.sovereign_config_1 import OrchestratorConfig
 except ImportError:
     config = {}
 

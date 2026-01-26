@@ -10,13 +10,21 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-from .multi_provider_clients import (
+# [Diff Start: Fix Imports for Move]
+# Previous: from .multi_provider_clients import (...)
+from apps_shared.common_utils.multi_provider_clients import (
     Provider,
     get_client,
     get_instructor_client,
     get_litellm_completion,
 )
-from .observability_clients import create_span, record_exception, set_span_attribute
+# Previous: from .observability_clients import (...)
+from apps_shared.common_utils.observability_clients import (
+    create_span, 
+    record_exception, 
+    set_span_attribute
+)
+# [Diff End]
 
 logger = logging.getLogger(__name__)
 
@@ -421,7 +429,10 @@ class AgentExecutor:
 
     def _get_default_model(self) -> str:
         """Get default model for provider."""
-        from .multi_provider_clients import get_default_model
+        # [Diff Start: Fix Local Import]
+        # Previous: from .multi_provider_clients import get_default_model
+        from apps_shared.common_utils.multi_provider_clients import get_default_model
+        # [Diff End]
 
         return get_default_model(self.config.provider)
 

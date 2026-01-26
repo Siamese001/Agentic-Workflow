@@ -16,7 +16,7 @@ from agentic_core.L4_state.ValidationContext.context_propagation_mixin import (
     ContextPropagationMixin,
 )
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.event_emission_mixin import event_emission_mixin
+from agentic_core.base_agents.event_emission_mixin import SovereignEvent
 from agentic_core.base_agents.redis_cache_mixin import RedisCacheMixin
 
 

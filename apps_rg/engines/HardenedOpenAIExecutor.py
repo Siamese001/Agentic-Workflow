@@ -14,7 +14,7 @@ import logging
 import os
 from dataclasses import dataclass
 
-from apps_shared.common_utils.AgentExecutor import AgentMessage, AgentResponse
+from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
 from agentic_core.base_agents.resilience_mixin import HardeningMixin
 from agentic_core.base_agents.telemetry import SystemTelemetry
 
