@@ -54,7 +54,6 @@ def test_tc44_l0_maintenance_blitz():
         "check_key_49_depth.py",
         "full_agent_capability_audit.py",
         "legacy_extraction_extract_archived_lic.py",
-        "pascal_sovereignty_fixer.py",
         "workflow_review_pending_merge.py",
     ]
 

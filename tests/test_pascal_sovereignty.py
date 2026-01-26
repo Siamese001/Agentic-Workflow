@@ -14,7 +14,7 @@ import sys
 # Add root to path to import fixer
 sys.path.append(str(Path(__file__).parent.parent))
 
-from pascal_sovereignty_fixer import PascalSovereigntyFixer
+from PascalSovereigntyFixer import PascalSovereigntyFixer
 
 
 class TestPascalSovereignty(unittest.TestCase):
@@ -139,7 +139,7 @@ class TestPascalSovereignty(unittest.TestCase):
         # Should update 'util' but not 'utilities'
         content = "from pkg import util\nfrom pkg import utilities"
         
-        with patch('pascal_sovereignty_fixer.get_python_files', return_value=[Path("dependent.py")]), \
+        with patch('PascalSovereigntyFixer.get_python_files', return_value=[Path("dependent.py")]), \
              patch('pathlib.Path.read_text', return_value=content), \
              patch('pathlib.Path.write_text') as mock_write:
             
@@ -155,7 +155,7 @@ class TestPascalSovereignty(unittest.TestCase):
         with patch('pathlib.Path.read_text', return_value=content), \
              patch('pathlib.Path.write_text') as mock_write:
              
-            with patch('pascal_sovereignty_fixer.get_python_files', return_value=[Path("d.py")]):
+            with patch('PascalSovereigntyFixer.get_python_files', return_value=[Path("d.py")]):
                 self.fixer.update_imports(Path("."), "old_name.py", "NewName.py")
                 mock_write.assert_not_called()
 
@@ -276,7 +276,7 @@ class TestPascalSovereignty(unittest.TestCase):
             # simpler to mock classify and get_compliant
             return ""
 
-        with patch('pascal_sovereignty_fixer.get_python_files', return_value=files), \
+        with patch('PascalSovereigntyFixer.get_python_files', return_value=files), \
              patch.object(PascalSovereigntyFixer, 'classify_file', side_effect=["AGENT", "UTILITY"]), \
              patch.object(PascalSovereigntyFixer, 'get_compliant_name', side_effect=["RealAgentAgent.py", None]), \
              patch.object(PascalSovereigntyFixer, 'update_imports', return_value=1) as mock_imports:
@@ -293,7 +293,7 @@ class TestPascalSovereignty(unittest.TestCase):
         path = Path("GoodAgent.py")
         code = "class GoodAgent(BaseAgent): pass"
         
-        with patch('pascal_sovereignty_fixer.get_python_files', return_value=[path]), \
+        with patch('PascalSovereigntyFixer.get_python_files', return_value=[path]), \
              patch('pathlib.Path.read_text', return_value=code), \
              patch('pathlib.Path.stat') as mock_stat, \
              patch.object(PascalSovereigntyFixer, 'safe_rename_windows') as mock_rename:

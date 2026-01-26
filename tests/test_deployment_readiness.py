@@ -13,7 +13,7 @@ class TestDeploymentReadiness(unittest.TestCase):
 
     def setUp(self):
         self.root = Path(".")
-        self.fixer = self.root / "pascal_sovereignty_fixer.py"
+        self.fixer = self.root / "PascalSovereigntyFixer.py"
         self.batch = self.root / "execute_sovereignty.bat"
         self.tests = self.root / "tests" / "test_pascal_sovereignty.py"
 

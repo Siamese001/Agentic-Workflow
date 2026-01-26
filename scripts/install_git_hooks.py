@@ -27,7 +27,7 @@ echo "[SOVEREIGNTY] Auditing architectural compliance..."
 # Navigate to repo root (git hook runs from .git/hooks usually or root depending on shell)
 # Git guarantees the CWD is the top-level of the working tree.
 
-python pascal_sovereignty_fixer.py --validate
+python PascalSovereigntyFixer.py --validate
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -ne 0 ]; then
@@ -35,7 +35,7 @@ if [ $EXIT_CODE -ne 0 ]; then
     echo " [BLOCK] SOVEREIGNTY VIOLATION DETECTED"
     echo "================================================================"
     echo " Your commit introduces file naming violations."
-    echo " Please run: python pascal_sovereignty_fixer.py"
+    echo " Please run: python PascalSovereigntyFixer.py"
     echo "================================================================"
     exit 1
 fi

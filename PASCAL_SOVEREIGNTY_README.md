@@ -37,7 +37,7 @@ The **Pascal Sovereignty Fixer** enforces strict file naming conventions across 
 Check current compliance without making changes:
 
 ```bash
-python pascal_sovereignty_fixer.py --validate
+python PascalSovereigntyFixer.py --validate
 ```
 
 **Output:**
@@ -57,7 +57,7 @@ Total violations: 611
 See what would be renamed without executing:
 
 ```bash
-python pascal_sovereignty_fixer.py --dry-run
+python PascalSovereigntyFixer.py --dry-run
 ```
 
 **Output Preview:**
@@ -76,7 +76,7 @@ python pascal_sovereignty_fixer.py --dry-run
 Apply all naming fixes:
 
 ```bash
-python pascal_sovereignty_fixer.py
+python PascalSovereigntyFixer.py
 ```
 
 **⚠️ WARNING:** This will rename **611 files** and update **1,273 import references**. Ensure you have:
@@ -295,7 +295,7 @@ git checkout HEAD -- path/to/file.py
 
 For issues or questions:
 1. Check test suite: `python tests/test_pascal_sovereignty.py`
-2. Run validation: `python pascal_sovereignty_fixer.py --validate`
+2. Run validation: `python PascalSovereigntyFixer.py --validate`
 3. Review logs for specific errors
 
 ## License

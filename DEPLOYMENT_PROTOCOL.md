@@ -78,7 +78,7 @@ python tests/test_pascal_sovereignty.py
 
 ### Stage 2: Impact Report (Automated)
 ```batch
-python pascal_sovereignty_fixer.py --dry-run > sovereignty_impact_report.txt
+python PascalSovereigntyFixer.py --dry-run > sovereignty_impact_report.txt
 ```
 - Generates detailed report of all planned changes
 - Lists every file to be renamed
@@ -95,7 +95,7 @@ Type 'YES' to execute the Pascal Sovereignty enforcement:
 
 ### Stage 4: Execution (Automated)
 ```batch
-python pascal_sovereignty_fixer.py
+python PascalSovereigntyFixer.py
 ```
 - Performs actual file renames
 - Updates all import references
@@ -116,18 +116,18 @@ If you need more control:
 python tests/test_pascal_sovereignty.py
 
 # 2. Generate report
-python pascal_sovereignty_fixer.py --dry-run > report.txt
+python PascalSovereigntyFixer.py --dry-run > report.txt
 
 # 3. Review report
 type report.txt
 
 # 4. Execute (if satisfied)
-python pascal_sovereignty_fixer.py
+python PascalSovereigntyFixer.py
 ```
 
 ### Validation Only (No Changes)
 ```batch
-python pascal_sovereignty_fixer.py --validate
+python PascalSovereigntyFixer.py --validate
 ```
 
 ## Post-Execution Validation
