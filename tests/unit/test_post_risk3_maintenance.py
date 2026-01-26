@@ -77,7 +77,6 @@ class TestGravityLeakDetectionConsistency:
 
         # Verify shared utility functions exist
         assert hasattr(location_utils, "is_path_compliant")
-        assert hasattr(location_utils, "is_excepted_from_key")
         assert hasattr(location_utils, "compute_module_path")
 
 
@@ -279,7 +278,6 @@ class TestUtilityFunctionAlignment:
             "get_agent_files",
             "compute_module_path",
             "is_path_compliant",
-            "is_excepted_from_key",
         ]
 
         for func_name in expected_exports:

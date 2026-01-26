@@ -79,8 +79,8 @@ class RescueReviewer:
             return
         print(f"\n--- SOVEREIGN ARCHIVE REVIEW (Auto-Home: {auto_home}) ---")
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            CANON_KEY_TO_FOLDER_MAP,
             CANON_SIGNALS,
+            DEFAULT_CORE_HEALING_TERRITORY,
         )
 
         # Phase 6.6: Use ssot_discovery instead of rglob
@@ -108,11 +108,10 @@ class RescueReviewer:
                 match: Any = results[0]
                 territory: Any = match["metadata"]["territory"]
                 conf: Any = match["score"]
-                for _k, paths in CANON_KEY_TO_FOLDER_MAP.items():
-                    if any(p in territory for p in paths):
-                        break
-                sig_count: Any = sum(1 for s in CANON_SIGNALS if s in content.lower())
-                print(f"         SUGGESTION: {territory} (Conf: {conf:.2f})")
+                # Use territory-based healing instead of canon keys
+                suggested_territory = DEFAULT_CORE_HEALING_TERRITORY
+                sig_count = sum(1 for s in CANON_SIGNALS if s in content.lower())
+                print(f"         SUGGESTION: {territory} (Conf: {conf:.2f}) -> {suggested_territory}")
                 Verdict: Any = "MANUAL_REVIEW"
                 if (
                     auto_home

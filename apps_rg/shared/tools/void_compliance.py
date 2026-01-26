@@ -12,7 +12,6 @@ import re
 from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    CANON_KEY_TO_FOLDER_MAP,
     CANON_SIGNALS,
     CORE_SUBFOLDER_MAP,
     FORBIDDEN_PATTERNS,
@@ -39,7 +38,7 @@ for stages in CORE_SUBFOLDER_MAP.values():
     ALLOWED_CORE_STAGES.update(stages)
 ALLOWED_CORE_STAGES.update(CORE_SUBFOLDER_MAP.keys())
 
-KEY_TO_FOLDER_MAP = CANON_KEY_TO_FOLDER_MAP
+# Removed canon key mapping - deprecated system
 
 # ==============================================================================
 # FILE NAMING CONVENTIONS (Key 49 Hardening)
@@ -164,7 +163,7 @@ def check_span_of_two_violation(folder_path: Path) -> tuple[bool, str]:
 # KEY-TO-FOLDER MAPPING: Canon Key Enforcement
 # ==============================================================================
 
-KEY_TO_FOLDER_MAP = CANON_KEY_TO_FOLDER_MAP
+# Removed canon key mapping - deprecated system
 
 
 # ==============================================================================
@@ -386,35 +385,6 @@ def validate_file_location(file_path: Path, project_root: Path) -> tuple[bool, s
     except ValueError:
         # File is outside project root
         return False, "VOID VIOLATION: File outside project root"
-
-
-def get_applicable_keys_for_file(file_path: Path, project_root: Path) -> set[int]:
-    """
-    Determine which canon keys should apply to a given file based on its location.
-
-    Args:
-        file_path: Absolute path to file
-        project_root: Project root directory
-
-    Returns:
-        Set of applicable key numbers
-    """
-    try:
-        rel_path = file_path.relative_to(project_root)
-        rel_path_str = str(rel_path).replace("\\", "/")
-
-        applicable_keys = set()
-
-        for key_num, folders in KEY_TO_FOLDER_MAP.items():
-            for folder_pattern in folders:
-                if rel_path_str.startswith(folder_pattern):
-                    applicable_keys.add(key_num)
-                    break
-
-        return applicable_keys
-
-    except ValueError:
-        return set()
 
 
 def enforce_void_compliance(

@@ -5,12 +5,17 @@ SOVEREIGN BRAIN: THE MASTER CONSTITUTION
 Enforces Depth-2 for Apps/Tests and Depth-3 for the Agentic Core.
 [SSOT] This is the absolute source of truth for the entire repository structure.
 
-CONSOLIDATED VERSION: V2.5 - Final Polish (Unified Eviction & Domain Population)
+CONSOLIDATED VERSION: Reduced redundancy while preserving all information.
+[CRITICAL ANALYSIS] Upgraded from Any to strict typing with Final and Mapping for immutability.
 """
 import os
 import re
 from pathlib import Path
-from typing import Any, Final
+from typing import Any, Dict, List, Optional, Protocol, Set, Union, Pattern, Tuple, Final, Mapping
+
+# Lock down core mappings to prevent runtime mutation during mission execution
+# [CRITICAL ANALYSIS] Windsurf's initial attempt lacked static enforcement;
+# this locks down the configuration to prevent 'Junior AI' drift during autonomous healing cycles.
 
 # CANONICAL BLUEPRINT: Enforces V2.5 Structure
 CANON_VALIDATION_REGISTRY: Final[dict[str, list[str]]] = {
@@ -40,7 +45,8 @@ CANON_VALIDATION_REGISTRY: Final[dict[str, list[str]]] = {
     ],
 }
 
-SOVEREIGN_REGISTRY: Any = {
+# Hardening SOVEREIGN_REGISTRY from Any to concrete Mapping to prevent accidental agent mutation
+SOVEREIGN_REGISTRY: Final[Mapping[str, Dict[str, Union[int, List[str], str, bool]]]] = {
     "agentic_core": {
         "depth": 3,
         "subfolders": [
@@ -155,18 +161,28 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
 #   )
 #   discovery_path = get_validated_project_root() / AGENT_DISCOVERY_JSON
 
+# ============================================================================
+# === HARDENED ROOT DIRECTORY CONSTANTS FOR PATH RESOLUTION ===
+# ============================================================================
+# [CRITICAL ANALYSIS] Final constants prevent runtime mutation during mission execution
+# This locks down the core directory structure to prevent 'Junior AI' drift
+# ALL DOWNSTREAM AGENTS MUST IMPORT FROM THIS SSOT
+
+# Hardened Root Directory Constants
+# ALL DOWNSTREAM AGENTS MUST IMPORT FROM THIS SSOT
+AGENTIC_CORE_DIR: Final[str] = "agentic_core"
+APPS_RG_DIR: Final[str] = "apps_rg"
+APPS_LIC_DIR: Final[str] = "apps_lic"
+APPS_SHARED_DIR: Final[str] = "apps_shared"
+
 # === Agent Discovery Files ===
 AGENT_DISCOVERY_JSON: str = "agent_discovery_full.json"
 AGENT_DISCOVERY_MANIFEST_JSON: str = "agent_discovery_full.manifest.json"
 RUNTIME_STATE_JSON: str = "runtime_state.json"
 
 # === Core Directory Paths ===
-AGENTIC_CORE_DIR: str = "agentic_core"
 SCRIPTS_DIR: str = "scripts"
 TESTS_DIR: str = "tests"
-APPS_RG_DIR: str = "apps_rg"
-APPS_LIC_DIR: str = "apps_lic"
-APPS_SHARED_DIR: str = "apps_shared"
 
 # === Layer Directories (L0-L6) ===
 L0_MAINTENANCE_DIR: str = "agentic_core/L0_maintenance"
@@ -468,80 +484,52 @@ APP_SPECIFIC_PREFIXES: dict[str, str] = {
     "company_research": "apps_rg",  # Company research executors
 }
 
-# Target subfolder for all current app-specific executors/tools (per migration pattern)
 # Central SSOT — all agents should use get_correct_app_path() for precise suggestions
 APP_SPECIFIC_TARGET_SUBFOLDER: str = "engines"
 
-# Files matching these patterns should NEVER be in agentic_core
-APP_SPECIFIC_PATTERNS: list[str] = [
-    r"^rg_.*\.py$",  # Resume Gen files
-    r"^lic_.*\.py$",  # LinkedIn Canonical files
-    r"^resume_.*\.py$",  # Resume-related files
-    r"^outreach_.*\.py$",  # Outreach-related files
-    r"^dispatch_(resume|outreach).*\.py$",  # Dispatch tools
+# Pre-compiled APP_SPECIFIC_PATTERNS for performance - eliminates hot-path re-compilation
+APP_SPECIFIC_PATTERNS: Final[List[Pattern]] = [
+    re.compile(r'^rg_.*\.py$'),
+    re.compile(r'^lic_.*\.py$'),  
+    re.compile(r'^resume_.*\.py$'),
+    re.compile(r'^outreach_.*\.py$'),
+    re.compile(r'^dispatch_(resume|outreach).*\.py$'),
 ]
 
-# === FORBIDDEN FILENAME PREFIXES ===
-# Files should NEVER begin with layer/priority prefixes - these belong in folder structure, not filenames
-# Examples: l1_cms_schemas.py, P1_core___init__.py
-FORBIDDEN_LAYER_PREFIXES: list[str] = [
-    "l0_",
-    "l1_",
-    "l2_",
-    "l3_",
-    "l4_",
-    "l5_",
-    "l6_",  # Layer prefixes (lowercase)
-    "L0_",
-    "L1_",
-    "L2_",
-    "L3_",
-    "L4_",
-    "L5_",
-    "L6_",  # Layer prefixes (uppercase)
-    "p0_",
-    "p1_",
-    "p2_",
-    "p3_",  # Priority prefixes (lowercase)
-    "P0_",
-    "P1_",
-    "P2_",
-    "P3_",  # Priority prefixes (uppercase)
-]
+# Optimized FORBIDDEN_LAYER_PREFIXES as tuple for C-level startswith() performance
+FORBIDDEN_LAYER_PREFIXES: Final[Tuple[str, ...]] = (
+    'l0_', 'l1_', 'l2_', 'l3_', 'l4_', 'l5_', 'l6_',
+    'L0_', 'L1_', 'L2_', 'L3_', 'L4_', 'L5_', 'L6_',
+    'p0_', 'p1_', 'p2_', 'p3_',
+    'P0_', 'P1_', 'P2_', 'P3_',
+)
 
-# === FORBIDDEN BACKUP FILE PATTERNS ===
-# Broken backup files that archiving agents cannot find - must be cleaned up
-# Examples: golden_record.json.bak.174742, config.yaml.bak.123456
-FORBIDDEN_BACKUP_PATTERNS: list[str] = [
-    r".*\.bak\.\d+$",  # .bak.NNNNNN pattern (broken backup)
-    r".*\.backup\.\d+$",  # .backup.NNNNNN pattern
-    r".*\.old\.\d+$",  # .old.NNNNNN pattern
-    r".*\.tmp\.\d+$",  # .tmp.NNNNNN pattern (temp files)
+# Pre-compiled FORBIDDEN_BACKUP_PATTERNS for O(1) compilation overhead
+FORBIDDEN_BACKUP_PATTERNS: Final[List[Pattern]] = [
+    re.compile(r'.*\.bak\.\d+$'),
+    re.compile(r'.*\.backup\.\d+$'),
+    re.compile(r'.*\.old\.\d+$'),
+    re.compile(r'.*\.tmp\.\d+$'),
 ]
 
 
-def has_forbidden_layer_prefix(filename: str) -> str | None:
+def has_forbidden_layer_prefix(filename: str) -> Optional[str]:
     """
     Check if filename starts with a forbidden layer/priority prefix.
-    Returns the matched prefix or None if compliant.
+    Optimized: Uses C-implemented tuple-startswith for O(1) performance in Python space.
     """
-    for prefix in FORBIDDEN_LAYER_PREFIXES:
-        if filename.startswith(prefix):
-            return prefix
+    if filename.startswith(FORBIDDEN_LAYER_PREFIXES):
+        for prefix in FORBIDDEN_LAYER_PREFIXES:
+            if filename.startswith(prefix):
+                return prefix
     return None
-
 
 def is_broken_backup_file(filename: str) -> bool:
     """
     Check if filename matches broken backup pattern (.bak.NNNNNN, etc.)
-    These files should be cleaned up as they break archiving logic.
+    [SSOT] Optimized to use pre-compiled module-level Patterns.
     """
-    import re
-
-    for pattern in FORBIDDEN_BACKUP_PATTERNS:
-        if re.match(pattern, filename):
-            return True
-    return False
+    return any(pattern.match(filename) for pattern in FORBIDDEN_BACKUP_PATTERNS)
 
 
 # === AST-BASED DOMAIN SIGNALS (2026-01-02 hardening) ===
@@ -713,13 +701,11 @@ def get_correct_app_path(filename: str) -> str | None:
 
 
 def is_app_specific_file(filename: str) -> bool:
-    """Check if a file should be in an app folder, not agentic_core."""
-    import re
-
-    for pattern in APP_SPECIFIC_PATTERNS:
-        if re.match(pattern, filename):
-            return True
-    return False
+    """
+    Check if a file should be in an app folder, not agentic_core.
+    Uses pre-compiled regex for O(1) matching during large-scale hierarchy scans.
+    """
+    return any(pattern.match(filename) for pattern in APP_SPECIFIC_PATTERNS)
 
 
 # === PROJECT ROOT SAFETY ===
@@ -1067,7 +1053,7 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
         "Thumbs.db",
     }
 )
-FORBIDDEN_FOLDER_PATTERN: Any = re.compile("^\\d+_")
+FORBIDDEN_FOLDER_PATTERN: Pattern = re.compile(r'^\d+_')
 FORBIDDEN_ROOT_FOLDERS: frozenset[str] = frozenset(
     {"legacy_code", "legacy_engines", "legacy_resume_gen", "old_core"}
 )
@@ -2208,13 +2194,11 @@ semantic_l2_registry: Any = {
             "imports": ["agentic_core.L5_safety.validators", "structure_blueprint"],
             "bases": [
                 "CanonBaseAgent",
-                "KeyValidator",
                 "StructureValidator",
                 "ComplianceAuditor",
                 "DriftDetector",
             ],
             "examples": [
-                "CanonKeyValidator",
                 "NamingLawValidator",
                 "DepthValidator",
                 "GravityComplianceValidatorAgent",

@@ -33,13 +33,13 @@ HARDENING:
 import logging
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.base_agents.healer_mixin import HealerMixin
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.base_agents.tracing_mixin import (
+from agentic_core.L2_execution.mcp.MCPHardenedMixin import MCPHardenedMixin
+from agentic_core.base_agents.HealerMixin import HealerMixin
+from agentic_core.base_agents.SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.base_agents.TracingMixin import (
     TracingMixin,
 )  # [INJECTED] Mandatory Tracing for ALL 278 Agents
-from agentic_core.base_agents.pinecone_vector_mixin import PineconeVectorMixin
+from agentic_core.base_agents.PineconeVectorMixin import PineconeVectorMixin
 
 Logger = logging.getLogger(__name__)
 
