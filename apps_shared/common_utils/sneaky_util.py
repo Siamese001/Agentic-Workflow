@@ -1,3 +1,0 @@
-
-class SneakyBot(Agent):
-    pass

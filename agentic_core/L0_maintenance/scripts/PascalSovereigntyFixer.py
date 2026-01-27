@@ -66,6 +66,17 @@ class PascalSovereigntyFixer:
         
         if path.name == "conftest.py" or path.name == "__init__.py":
             return "IGNORE"
+        
+        # --- SSOT EXEMPTION PATCH ---
+        # Critical SSOT files that have hundreds of import references and must not be renamed
+        # to avoid breaking the entire codebase
+        critical_ssot_files = {
+            "structure_blueprint.py",  # 926+ import references across codebase
+            "healer_mixin.py",  # Core mixin used throughout healing system
+            "tool_registry.py",  # Tool registration system
+        }
+        if path.name in critical_ssot_files:
+            return "IGNORE"
             
         try:
             if not path.exists() or path.stat().st_size == 0:
