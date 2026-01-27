@@ -14,7 +14,7 @@ import sys
 # Add root to path to import fixer
 sys.path.append(str(Path(__file__).parent.parent))
 
-from PascalSovereigntyFixer import PascalSovereigntyFixer
+from agentic_core.L0_maintenance.scripts.PascalSovereigntyFixer import PascalSovereigntyFixer
 
 
 class TestPascalSovereignty(unittest.TestCase):

@@ -42,7 +42,7 @@ class TestGitHooks(unittest.TestCase):
     def test_hook_content_integrity(self):
         """Scenario: Verify the shell script calls python with correct flags."""
         from ops_scripts.install_git_hooks import HOOK_CONTENT
-        self.assertIn("python PascalSovereigntyFixer.py --validate", HOOK_CONTENT)
+        self.assertIn("python agentic_core/L0_maintenance/scripts/PascalSovereigntyFixer.py --validate", HOOK_CONTENT)
         self.assertIn("exit 1", HOOK_CONTENT) # Blocking logic
         self.assertIn("#!/bin/sh", HOOK_CONTENT) # Shebang
 
