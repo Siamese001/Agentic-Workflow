@@ -266,8 +266,8 @@ AGENT_LAYERS = {
     # Core Hygiene Agents (NEW)
     "ImportAgent": "L5 – Safety & Governance",
     "CodeDeduplicationAgent": "L5 – Safety & Governance",
-    "UnifiedCodeValidatorAgent": "L5 – Safety & Governance",
-    "UnifiedStructureEnforcerAgent": "L5 – Safety & Governance",
+    "CodeValidatorAgent": "L5 – Safety & Governance",
+    "StructureEnforcerAgent": "L5 – Safety & Governance",
     "GitHygieneAgent": "L5 – Safety & Governance",
     "FileCleanupAgent": "L5 – Safety & Governance",
     "CodeJanitorAgent": "L5 – Safety & Governance",
@@ -589,7 +589,7 @@ def main():
     # Handle hygiene modes
     if args.preflight_only or args.hygiene or args.full_hygiene:
         from agentic_core.config.core_hygiene_agents import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
-        from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
+        from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
         from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
 
         execute_heal = getattr(args, "execute_heal", False) or getattr(args, "execute", False)
@@ -629,7 +629,7 @@ def main():
             }
 
         # Run orchestrator with hygiene strategy
-        orchestrator = UnifiedOrchestratorAgent(
+        orchestrator = OrchestratorAgent(
             strategy=strategy, project_root=project_root, name="HygieneOrchestrator"
         )
 
@@ -665,8 +665,8 @@ def main():
         try:
             # [PHASE 3] UNIFIED ORCHESTRATION - Strategy Pattern
             # The 5-tier logic is now encapsulated in HealingStrategy
-            from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import (
-                UnifiedOrchestratorAgent,
+            from agentic_core.L3_orchestration.OrchestratorAgent import (
+                OrchestratorAgent,
             )
             from agentic_core.L4_state.validation_context.CheckpointManagerAgent import (
                 get_checkpoint_manager,
@@ -698,7 +698,7 @@ def main():
                 print(f"\n   [TIER FILTER] Running ONLY Tier {args.tier}")
             else:
                 print("\n   [TIER FILTER] Running ALL tiers (0-4)")
-            orchestrator = UnifiedOrchestratorAgent(
+            orchestrator = OrchestratorAgent(
                 strategy=strategy, project_root=project_root, name="SovereignHealOrchestrator"
             )
 

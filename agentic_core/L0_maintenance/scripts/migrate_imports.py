@@ -29,11 +29,11 @@ MIGRATION_MAP: dict[str, str] = {
     # Structure blueprint -> config
     r"from agentic_core\.L5_safety\.validators\.structure_blueprint import": "from agentic_core.config import",
     # Unified agents -> unified API
-    r"from agentic_core\.L5_safety\.unified\.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent": "from agentic_core.unified import UnifiedCodeValidatorAgent",
-    r"from agentic_core\.L5_safety\.unified\.UnifiedStructureValidatorAgent import UnifiedStructureValidatorAgent": "from agentic_core.unified import UnifiedStructureValidatorAgent",
-    r"from agentic_core\.L5_safety\.unified\.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent": "from agentic_core.unified import UnifiedCodeEnforcerAgent",
-    r"from agentic_core\.L5_safety\.unified\.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent": "from agentic_core.unified import UnifiedStructureEnforcerAgent",
-    r"from agentic_core\.L5_safety\.unified\.UnifiedResourceManagerAgent import UnifiedResourceManagerAgent": "from agentic_core.unified import UnifiedResourceManagerAgent",
+    r"from agentic_core\.L5_safety\.unified\.CodeValidatorAgent import CodeValidatorAgent": "from agentic_core.unified import CodeValidatorAgent",
+    r"from agentic_core\.L5_safety\.unified\.StructureValidatorAgent import StructureValidatorAgent": "from agentic_core.unified import StructureValidatorAgent",
+    r"from agentic_core\.L5_safety\.unified\.CodeEnforcerAgent import CodeEnforcerAgent": "from agentic_core.unified import CodeEnforcerAgent",
+    r"from agentic_core\.L5_safety\.unified\.StructureEnforcerAgent import StructureEnforcerAgent": "from agentic_core.unified import StructureEnforcerAgent",
+    r"from agentic_core\.L5_safety\.unified\.ResourceManagerAgent import ResourceManagerAgent": "from agentic_core.unified import ResourceManagerAgent",
     # HealerMixin -> SSOT location
     r"from agentic_core\.L5_safety\.validators\.healer_mixin import": "from agentic_core.base_agents.healer_mixin import",
     r"from agentic_core\.L5_safety\.guardrails\.healer_mixin import": "from agentic_core.base_agents.healer_mixin import",

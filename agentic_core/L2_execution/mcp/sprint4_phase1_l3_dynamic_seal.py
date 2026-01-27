@@ -30,14 +30,14 @@ TARGET_FILES = {
         "static_imports": [
             "from agentic_core.L5_safety.validators.LocationAgent import LocationAgent",
             "from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent",
-            "from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import create_legacy_import_healer",
+            "from agentic_core.L5_safety.policy_engine.CodeHealerAgent import create_legacy_import_healer",
         ],
         "already_dynamic": True,  # Already uses try/except dynamic imports
     },
     "mission_orchestrator.py": {
         "static_imports": [
             "from agentic_core.L5_safety.validators.LocationAgent import LocationAgent",
-            "from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import create_legacy_import_healer",
+            "from agentic_core.L5_safety.policy_engine.CodeHealerAgent import create_legacy_import_healer",
         ],
         "needs_refactor": True,
     },
@@ -104,7 +104,7 @@ def refactor_mission_orchestrator(file_path: Path) -> bool:
             content, "from agentic_core.L5_safety.validators.LocationAgent import LocationAgent"
         )
         content = remove_static_import(
-            content, "from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import create_legacy_import_healer"
+            content, "from agentic_core.L5_safety.policy_engine.CodeHealerAgent import create_legacy_import_healer"
         )
 
         # The functions already use dynamic imports inside, so we're done

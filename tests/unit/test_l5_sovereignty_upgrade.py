@@ -75,7 +75,7 @@ class TestPhase4GravityMaps:
 
     def test_gravity_rules_include_apps_territories(self):
         """Test 4.3a: Verify gravity rules include apps_* territories."""
-        from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import GRAVITY_RULES
+        from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import GRAVITY_RULES
 
         assert "apps_shared" in GRAVITY_RULES
         assert "apps_rg" in GRAVITY_RULES
@@ -89,7 +89,7 @@ class TestPhase4GravityMaps:
 
     def test_gravity_rules_include_test_territories(self):
         """Test 4.3b: Verify gravity rules include tests/* territories."""
-        from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import GRAVITY_RULES
+        from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import GRAVITY_RULES
 
         assert "tests_unit" in GRAVITY_RULES
         assert "tests_integration" in GRAVITY_RULES
@@ -103,7 +103,7 @@ class TestPhase4GravityMaps:
 
     def test_test_isolation_rules_exist(self):
         """Test 4.3c: Verify test isolation rules are defined."""
-        from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
+        from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
             TEST_ISOLATION_RULES,
         )
 

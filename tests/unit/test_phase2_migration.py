@@ -6,7 +6,7 @@ All tests must pass at 100% before Phase 2 is considered complete.
 
 TEST CASES:
     A. The Big Switch: Verify SovereignBaseAgent uses infrastructure_mixin
-    B. Strategy Injection: Verify UnifiedOrchestratorAgent calls strategy
+    B. Strategy Injection: Verify OrchestratorAgent calls strategy
     C. Decorator Sanitization: Verify @standard_heal normalizes output
     D. Crash Containment: Verify @standard_heal catches exceptions
 
@@ -95,21 +95,21 @@ class TestCaseB_StrategyInjection:
     """
     Test Case B: Strategy Injection
 
-    Verify that UnifiedOrchestratorAgent calls the injected strategy
+    Verify that OrchestratorAgent calls the injected strategy
     when run_mission is invoked.
     """
 
     def test_unified_orchestrator_accepts_strategy(self):
-        """Verify UnifiedOrchestratorAgent accepts a strategy in __init__."""
+        """Verify OrchestratorAgent accepts a strategy in __init__."""
         try:
             from agentic_core.L3_orchestration.unified_orchestrator import (
                 MissionStrategy,
-                UnifiedOrchestratorAgent,
+                OrchestratorAgent,
             )
         except ImportError:
             from archives.location_violations.unified_orchestrator import (
                 MissionStrategy,
-                UnifiedOrchestratorAgent,
+                OrchestratorAgent,
             )
 
         # Create mock strategy
@@ -118,7 +118,7 @@ class TestCaseB_StrategyInjection:
         mock_strategy.get_tiers.return_value = {}
 
         # Should not raise
-        orchestrator = UnifiedOrchestratorAgent(strategy=mock_strategy)
+        orchestrator = OrchestratorAgent(strategy=mock_strategy)
 
         assert orchestrator.strategy is mock_strategy
 
@@ -127,12 +127,12 @@ class TestCaseB_StrategyInjection:
         try:
             from agentic_core.L3_orchestration.unified_orchestrator import (
                 MissionStrategy,
-                UnifiedOrchestratorAgent,
+                OrchestratorAgent,
             )
         except ImportError:
             from archives.location_violations.unified_orchestrator import (
                 MissionStrategy,
-                UnifiedOrchestratorAgent,
+                OrchestratorAgent,
             )
 
         # Create mock strategy
@@ -140,7 +140,7 @@ class TestCaseB_StrategyInjection:
         mock_strategy.name = "MockStrategy"
         mock_strategy.get_tiers.return_value = {}
 
-        orchestrator = UnifiedOrchestratorAgent(strategy=mock_strategy)
+        orchestrator = OrchestratorAgent(strategy=mock_strategy)
 
         # Run mission
         result = orchestrator.run_mission({"dry_run": True})
@@ -153,12 +153,12 @@ class TestCaseB_StrategyInjection:
         try:
             from agentic_core.L3_orchestration.unified_orchestrator import (
                 MissionStrategy,
-                UnifiedOrchestratorAgent,
+                OrchestratorAgent,
             )
         except ImportError:
             from archives.location_violations.unified_orchestrator import (
                 MissionStrategy,
-                UnifiedOrchestratorAgent,
+                OrchestratorAgent,
             )
 
         # Create mock strategy with one tier and one agent
@@ -168,7 +168,7 @@ class TestCaseB_StrategyInjection:
         mock_strategy.get_agent.return_value = None  # Agent not available
         mock_strategy.should_abort_tier.return_value = False
 
-        orchestrator = UnifiedOrchestratorAgent(strategy=mock_strategy)
+        orchestrator = OrchestratorAgent(strategy=mock_strategy)
 
         # Run mission
         result = orchestrator.run_mission({"dry_run": True})
@@ -181,12 +181,12 @@ class TestCaseB_StrategyInjection:
         try:
             from agentic_core.L3_orchestration.unified_orchestrator import (
                 MissionStrategy,
-                UnifiedOrchestratorAgent,
+                OrchestratorAgent,
             )
         except ImportError:
             from archives.location_violations.unified_orchestrator import (
                 MissionStrategy,
-                UnifiedOrchestratorAgent,
+                OrchestratorAgent,
             )
 
         # Create mock agent
@@ -204,7 +204,7 @@ class TestCaseB_StrategyInjection:
         }
         mock_strategy.should_abort_tier.return_value = False
 
-        orchestrator = UnifiedOrchestratorAgent(strategy=mock_strategy)
+        orchestrator = OrchestratorAgent(strategy=mock_strategy)
 
         # Run mission
         result = orchestrator.run_mission({"dry_run": True})
@@ -216,11 +216,11 @@ class TestCaseB_StrategyInjection:
         assert call_kwargs[1]["agent_name"] == "TestAgent"
 
     def test_unified_orchestrator_implements_iorchestrator(self):
-        """Verify UnifiedOrchestratorAgent implements IOrchestrator protocol."""
+        """Verify OrchestratorAgent implements IOrchestrator protocol."""
         try:
-            from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+            from agentic_core.L3_orchestration.unified_orchestrator import OrchestratorAgent
         except ImportError:
-            from archives.location_violations.unified_orchestrator import UnifiedOrchestratorAgent
+            from archives.location_violations.unified_orchestrator import OrchestratorAgent
         from agentic_core.L5_safety.validators.orchestrator import IOrchestrator
 
         # Create mock strategy
@@ -228,11 +228,11 @@ class TestCaseB_StrategyInjection:
         mock_strategy.name = "MockStrategy"
         mock_strategy.get_tiers.return_value = {}
 
-        orchestrator = UnifiedOrchestratorAgent(strategy=mock_strategy)
+        orchestrator = OrchestratorAgent(strategy=mock_strategy)
 
         # Check protocol compliance
         assert isinstance(orchestrator, IOrchestrator), (
-            "UnifiedOrchestratorAgent must implement IOrchestrator"
+            "OrchestratorAgent must implement IOrchestrator"
         )
 
 

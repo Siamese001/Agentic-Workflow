@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-UnifiedStateManagementAgent - Consolidated L4 State Controller (Phase 5)
+StateManagementAgent - Consolidated L4 State Controller (Phase 5)
 
 Consolidates:
 - ManifestManagerAgent (manifest inventory and serialization)
@@ -96,7 +96,7 @@ class IntegrityReport:
 
 
 @dataclass
-class UnifiedStateManagementAgent(SovereignBaseAgent):
+class StateManagementAgent(SovereignBaseAgent):
     """
     Unified L4 State Controller.
 
@@ -117,7 +117,7 @@ class UnifiedStateManagementAgent(SovereignBaseAgent):
         - PineconeVectorMixin: Long-term semantic memory
     """
 
-    name: str = "UnifiedStateManagementAgent"
+    name: str = "StateManagementAgent"
     layer: str = "L4"
 
     # configuration
@@ -156,7 +156,7 @@ class UnifiedStateManagementAgent(SovereignBaseAgent):
         # Load existing manifest
         self._load_manifest()
 
-        Logger.info(f"UnifiedStateManagementAgent initialized at {self.memory_root}")
+        Logger.info(f"StateManagementAgent initialized at {self.memory_root}")
 
     # =========================================================================
     # INFRASTRUCTURE
@@ -745,7 +745,7 @@ class UnifiedStateManagementAgent(SovereignBaseAgent):
 
         # Test 1: Instantiation
         try:
-            assert self.name == "UnifiedStateManagementAgent"
+            assert self.name == "StateManagementAgent"
             assert self.memory_root.exists()
             results["passed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
@@ -817,34 +817,34 @@ class UnifiedStateManagementAgent(SovereignBaseAgent):
 # =========================================================================
 
 
-def get_state_manager(memory_root: Path | None = None) -> UnifiedStateManagementAgent:
+def get_state_manager(memory_root: Path | None = None) -> StateManagementAgent:
     """
-    Factory function to get UnifiedStateManagementAgent instance.
+    Factory function to get StateManagementAgent instance.
 
     Args:
         memory_root: Optional memory root path
 
     Returns:
-        UnifiedStateManagementAgent instance
+        StateManagementAgent instance
     """
     if memory_root is None:
         memory_root = Path(".canon_memory")
 
-    return UnifiedStateManagementAgent(memory_root=memory_root)
+    return StateManagementAgent(memory_root=memory_root)
 
 
 # Backward compatibility aliases
-def get_manifest_manager(memory_root: Path | None = None) -> UnifiedStateManagementAgent:
+def get_manifest_manager(memory_root: Path | None = None) -> StateManagementAgent:
     """Get state manager (legacy ManifestManager compatibility)."""
     return get_state_manager(memory_root)
 
 
-def get_memory_manager(memory_root: Path | None = None) -> UnifiedStateManagementAgent:
+def get_memory_manager(memory_root: Path | None = None) -> StateManagementAgent:
     """Get state manager (legacy MemoryManager compatibility)."""
     return get_state_manager(memory_root)
 
 
-def get_state_guardian(memory_root: Path | None = None) -> UnifiedStateManagementAgent:
+def get_state_guardian(memory_root: Path | None = None) -> StateManagementAgent:
     """Get state manager (legacy StateGuardian compatibility)."""
     return get_state_manager(memory_root)
 

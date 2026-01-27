@@ -5,7 +5,7 @@ This test suite ensures no legacy functionality is dropped during the Phase 2
 orchestrator unification work. All 4 test cases must pass 100%.
 
 Test Cases:
-- TC-5: Mode Parity - UnifiedOrchestratorAgent(mode="healing") produces correct MissionResult
+- TC-5: Mode Parity - OrchestratorAgent(mode="healing") produces correct MissionResult
 - TC-6: Registry Resolution - get_orchestrator returns IOrchestratorAgent
 - TC-7: Graceful Fallback - Unknown mode raises descriptive ValueError
 - TC-8: Discovery Integration - No rglob calls, uses ssot_discovery exclusively
@@ -29,7 +29,7 @@ def test_tc5_mode_parity():
     """
     TC-5: Mode Parity
 
-    Verify UnifiedOrchestratorAgent(mode="healing") produces the same
+    Verify OrchestratorAgent(mode="healing") produces the same
     MissionResult schema as expected from a legacy HealingOrchestratorAgent.
     """
     print("\n" + "=" * 60)
@@ -37,10 +37,10 @@ def test_tc5_mode_parity():
     print("=" * 60)
 
     from agentic_core.L3_orchestration.interfaces import MissionResult
-    from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
+    from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
 
     # Create orchestrator in healing mode
-    orchestrator = UnifiedOrchestratorAgent(mode="healing")
+    orchestrator = OrchestratorAgent(mode="healing")
 
     # Verify mode is set correctly
     if orchestrator.mode.value != "healing":
@@ -80,7 +80,7 @@ def test_tc5_mode_parity():
         print("❌ FAIL: MissionResult metadata should contain mode='healing'")
         return False
 
-    print("✅ PASS: UnifiedOrchestratorAgent(mode='healing') produces correct MissionResult")
+    print("✅ PASS: OrchestratorAgent(mode='healing') produces correct MissionResult")
     print(f"   Mode: {orchestrator.mode.value}")
     print(f"   Result fields: {len(required_fields)} verified")
     print(f"   Metadata: {result.metadata}")
@@ -179,13 +179,13 @@ def test_tc8_discovery_integration():
     print("TC-8: Discovery Integration")
     print("=" * 60)
 
-    # Read the UnifiedOrchestratorAgent source code
+    # Read the OrchestratorAgent source code
     unified_path = (
-        PROJECT_ROOT / "agentic_core" / "L3_orchestration" / "UnifiedOrchestratorAgent.py"
+        PROJECT_ROOT / "agentic_core" / "L3_orchestration" / "OrchestratorAgent.py"
     )
 
     if not unified_path.exists():
-        print(f"❌ FAIL: UnifiedOrchestratorAgent.py not found at {unified_path}")
+        print(f"❌ FAIL: OrchestratorAgent.py not found at {unified_path}")
         return False
 
     source_code = unified_path.read_text(encoding="utf-8")
@@ -194,7 +194,7 @@ def test_tc8_discovery_integration():
     try:
         tree = ast.parse(source_code)
     except SyntaxError as e:
-        print(f"❌ FAIL: Syntax error in UnifiedOrchestratorAgent.py: {e}")
+        print(f"❌ FAIL: Syntax error in OrchestratorAgent.py: {e}")
         return False
 
     # Check for rglob or glob calls
@@ -211,28 +211,28 @@ def test_tc8_discovery_integration():
                     glob_calls.append(ast.get_source_segment(source_code, node) or "glob call")
 
     if rglob_calls:
-        print("❌ FAIL: UnifiedOrchestratorAgent contains rglob calls:")
+        print("❌ FAIL: OrchestratorAgent contains rglob calls:")
         for call in rglob_calls:
             print(f"   - {call}")
         return False
 
     if glob_calls:
-        print("❌ FAIL: UnifiedOrchestratorAgent contains glob calls:")
+        print("❌ FAIL: OrchestratorAgent contains glob calls:")
         for call in glob_calls:
             print(f"   - {call}")
         return False
 
     # Verify ssot_discovery is imported
     if "ssot_discovery" not in source_code:
-        print("❌ FAIL: UnifiedOrchestratorAgent should import ssot_discovery")
+        print("❌ FAIL: OrchestratorAgent should import ssot_discovery")
         return False
 
     # Verify get_agent_files or get_python_files is used
     if "get_agent_files" not in source_code and "get_python_files" not in source_code:
-        print("❌ FAIL: UnifiedOrchestratorAgent should use get_agent_files or get_python_files")
+        print("❌ FAIL: OrchestratorAgent should use get_agent_files or get_python_files")
         return False
 
-    print("✅ PASS: UnifiedOrchestratorAgent uses ssot_discovery exclusively")
+    print("✅ PASS: OrchestratorAgent uses ssot_discovery exclusively")
     print("   - No rglob calls found")
     print("   - No glob calls found")
     print("   - ssot_discovery imported")

@@ -23,7 +23,7 @@ OBSOLETE_FILES = [
     # --- Phase 4: LLM/Embedding ---
     "agentic_core/L1_cognition/thought_engine/llm_engine.py",
     "agentic_core/L2_execution/mcp/inference_engine.py",
-    "agentic_core/L2_execution/unified/UnifiedModelRouterAgent.py",
+    "agentic_core/L2_execution/unified/ModelRouterAgent.py",
     "agentic_core/L2_execution/tool_registry/format_llm_prompt.py",
     "agentic_core/semantic_memory/embeddings/gemini_embedder.py",
     "agentic_core/semantic_memory/embeddings/core_embedder.py",
@@ -33,9 +33,9 @@ OBSOLETE_FILES = [
     "agentic_core/L4_state/ledger/healing_transaction_manager.py",
     # --- Phase 5: Validators ---
     "agentic_core/L5_safety/unified/CodeValidatorAgent.py",
-    "agentic_core/L5_safety/unified/UnifiedCodeValidatorAgent.py",  # Duplicate
+    "agentic_core/L5_safety/unified/CodeValidatorAgent.py",  # Duplicate
     "agentic_core/L5_safety/unified/StructuralValidatorAgent.py",
-    "agentic_core/L5_safety/unified/UnifiedStructureValidatorAgent.py",  # Duplicate
+    "agentic_core/L5_safety/unified/StructureValidatorAgent.py",  # Duplicate
     # --- Config Duplicates ---
     "agentic_core/config/environments/sovereign_config.py",
     "agentic_core/config/blueprint_sovereign/sovereign_config.py",

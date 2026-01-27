@@ -45,7 +45,7 @@ from typing import Any
 
 
 # [PHASE 24] Integrate L0 Maintenance Capability
-from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
+from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
@@ -90,7 +90,7 @@ class ArchitectureGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def _get_structure_validator(self):
         """Lazy-load StructuralValidatorAgent to avoid circular imports."""
         if self._structure_validator is None:
-            from agentic_core.L5_safety.unified.StructuralValidatorAgent import (
+            from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
                 StructuralValidatorAgent,
                 StructureConfig,
             )
@@ -197,7 +197,7 @@ class ArchitectureGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 roots_scanned.append(root_name)
                 Logger.info(f"  Scanning territory: {root_name}")
 
-                # Use UnifiedStructureValidatorAgent for detection
+                # Use StructureValidatorAgent for detection
                 validator = self._get_structure_validator()
                 report = validator.validate_structure(root_path)
 

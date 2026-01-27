@@ -51,56 +51,56 @@ def _get_unified_agent_mapping() -> dict[str, type]:
         Dictionary mapping legacy agent IDs to unified agent classes.
     """
     # Import unified agents lazily to avoid circular dependencies
-    from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import (
-        UnifiedASTValidatorAgent,
+    from agentic_core.L1_cognition.thought_engine.ASTValidatorAgent import (
+        ASTValidatorAgent,
     )
-    from agentic_core.L4_state.validation_context.UnifiedCheckpointManagerAgent import (
-        UnifiedCheckpointManagerAgent,
+    from agentic_core.L4_state.validation_context.CheckpointManagerAgent import (
+        CheckpointManagerAgent,
     )
-    from agentic_core.L4_state.validation_context.UnifiedStateManagementAgent import (
-        UnifiedStateManagementAgent,
+    from agentic_core.L4_state.validation_context.StateManagementAgent import (
+        StateManagementAgent,
     )
-    from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-        UnifiedStructureValidatorAgent,
+    from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import CodeEnforcerAgent
+    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
+        StructureValidatorAgent,
     )
 
     return {
         # Phase 1: L1 AST Validator Consolidation
-        "BareExceptValidator": UnifiedASTValidatorAgent,
-        "BareExceptValidatorAgent": UnifiedASTValidatorAgent,
-        "EmptyExceptValidator": UnifiedASTValidatorAgent,
-        "EmptyExceptValidatorAgent": UnifiedASTValidatorAgent,
-        "EvalExecValidator": UnifiedASTValidatorAgent,
-        "EvalExecValidatorAgent": UnifiedASTValidatorAgent,
-        "DangerousBuiltinsValidator": UnifiedASTValidatorAgent,
-        "DangerousBuiltinsValidatorAgent": UnifiedASTValidatorAgent,
-        "DebuggerValidator": UnifiedASTValidatorAgent,
-        "DebuggerValidatorAgent": UnifiedASTValidatorAgent,
+        "BareExceptValidator": ASTValidatorAgent,
+        "BareExceptValidatorAgent": ASTValidatorAgent,
+        "EmptyExceptValidator": ASTValidatorAgent,
+        "EmptyExceptValidatorAgent": ASTValidatorAgent,
+        "EvalExecValidator": ASTValidatorAgent,
+        "EvalExecValidatorAgent": ASTValidatorAgent,
+        "DangerousBuiltinsValidator": ASTValidatorAgent,
+        "DangerousBuiltinsValidatorAgent": ASTValidatorAgent,
+        "DebuggerValidator": ASTValidatorAgent,
+        "DebuggerValidatorAgent": ASTValidatorAgent,
         # Phase 2: L5 Hygiene Validator Consolidation
-        "HygieneGuardian": UnifiedStructureValidatorAgent,
-        "HygieneGuardianAgent": UnifiedStructureValidatorAgent,
-        "HygieneValidator": UnifiedStructureValidatorAgent,
-        "HygieneValidatorAgent": UnifiedStructureValidatorAgent,
+        "HygieneGuardian": StructureValidatorAgent,
+        "HygieneGuardianAgent": StructureValidatorAgent,
+        "HygieneValidator": StructureValidatorAgent,
+        "HygieneValidatorAgent": StructureValidatorAgent,
         # Phase 3: L4 Checkpoint Manager Consolidation
-        "CheckpointManager": UnifiedCheckpointManagerAgent,
-        "CheckpointManagerAgent": UnifiedCheckpointManagerAgent,
-        "AutonomousCheckpointManager": UnifiedCheckpointManagerAgent,
-        "AutonomousCheckpointManagerAgent": UnifiedCheckpointManagerAgent,
+        "CheckpointManager": CheckpointManagerAgent,
+        "CheckpointManagerAgent": CheckpointManagerAgent,
+        "AutonomousCheckpointManager": CheckpointManagerAgent,
+        "AutonomousCheckpointManagerAgent": CheckpointManagerAgent,
         # Phase 4: L5 Code Standards Enforcer Consolidation
-        "BaseClassEnforcer": UnifiedCodeEnforcerAgent,
-        "BaseClassEnforcerAgent": UnifiedCodeEnforcerAgent,
-        "PatternEnforcer": UnifiedCodeEnforcerAgent,
-        "PatternEnforcerAgent": UnifiedCodeEnforcerAgent,
-        "TypeHintEnforcement": UnifiedCodeEnforcerAgent,
-        "TypeHintEnforcementAgent": UnifiedCodeEnforcerAgent,
+        "BaseClassEnforcer": CodeEnforcerAgent,
+        "BaseClassEnforcerAgent": CodeEnforcerAgent,
+        "PatternEnforcer": CodeEnforcerAgent,
+        "PatternEnforcerAgent": CodeEnforcerAgent,
+        "TypeHintEnforcement": CodeEnforcerAgent,
+        "TypeHintEnforcementAgent": CodeEnforcerAgent,
         # Phase 5: L4 State Management Consolidation
-        "ManifestManager": UnifiedStateManagementAgent,
-        "ManifestManagerAgent": UnifiedStateManagementAgent,
-        "MemoryManager": UnifiedStateManagementAgent,
-        "MemoryManagerAgent": UnifiedStateManagementAgent,
-        "AutonomousStateGuardian": UnifiedStateManagementAgent,
-        "AutonomousStateGuardianAgent": UnifiedStateManagementAgent,
+        "ManifestManager": StateManagementAgent,
+        "ManifestManagerAgent": StateManagementAgent,
+        "MemoryManager": StateManagementAgent,
+        "MemoryManagerAgent": StateManagementAgent,
+        "AutonomousStateGuardian": StateManagementAgent,
+        "AutonomousStateGuardianAgent": StateManagementAgent,
     }
 
 
@@ -111,40 +111,40 @@ def _get_phase3_manager_enforcer_mapping() -> dict[str, type]:
     Returns:
         Dictionary mapping legacy manager/enforcer names to unified classes.
     """
-    from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
-    from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import (
-        UnifiedResourceManagerAgent,
+    from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import CodeEnforcerAgent
+    from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import (
+        ResourceManagerAgent,
     )
-    from agentic_core.L5_safety.unified.UnifiedSecurityManagerAgent import (
-        UnifiedSecurityManagerAgent,
+    from agentic_core.L5_safety.policy_engine.SecurityManagerAgent import (
+        SecurityManagerAgent,
     )
-    from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
-        UnifiedStructureEnforcerAgent,
+    from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import (
+        StructureEnforcerAgent,
     )
 
     return {
-        # Resource Managers -> UnifiedResourceManagerAgent
-        "BudgetManagerAgent": UnifiedResourceManagerAgent,
-        "ProactiveResourceManagerAgent": UnifiedResourceManagerAgent,
-        "FallbackManagerAgent": UnifiedResourceManagerAgent,
-        # Security Managers -> UnifiedSecurityManagerAgent
-        "AgentPermissionManagerAgent": UnifiedSecurityManagerAgent,
-        "SecureCheckpointManagerAgent": UnifiedSecurityManagerAgent,
-        "SecureConfigManagerAgent": UnifiedSecurityManagerAgent,
-        # Code Enforcers -> UnifiedCodeEnforcerAgent
-        "CodeSSOTEnforcerAgent": UnifiedCodeEnforcerAgent,
-        "UnifiedCodeEnforcerAgent": UnifiedCodeEnforcerAgent,
-        "PatternEnforcerAgent": UnifiedCodeEnforcerAgent,
-        "TypeEnforcerAgent": UnifiedCodeEnforcerAgent,
-        "PythonFileSovereigntyEnforcerAgent": UnifiedCodeEnforcerAgent,
-        # Structure Enforcers -> UnifiedStructureEnforcerAgent
-        "GravityEnforcerAgent": UnifiedStructureEnforcerAgent,
-        "HierarchyEnforcerAgent": UnifiedStructureEnforcerAgent,
-        "NamingEnforcerAgent": UnifiedStructureEnforcerAgent,
-        "DocEnforcerAgent": UnifiedStructureEnforcerAgent,
-        "ASCIIEnforcerAgent": UnifiedStructureEnforcerAgent,
-        "StrictDocEnforcerAgent": UnifiedStructureEnforcerAgent,
-        "PascalSovereigntyEnforcerAgent": UnifiedStructureEnforcerAgent,
+        # Resource Managers -> ResourceManagerAgent
+        "BudgetManagerAgent": ResourceManagerAgent,
+        "ProactiveResourceManagerAgent": ResourceManagerAgent,
+        "FallbackManagerAgent": ResourceManagerAgent,
+        # Security Managers -> SecurityManagerAgent
+        "AgentPermissionManagerAgent": SecurityManagerAgent,
+        "SecureCheckpointManagerAgent": SecurityManagerAgent,
+        "SecureConfigManagerAgent": SecurityManagerAgent,
+        # Code Enforcers -> CodeEnforcerAgent
+        "CodeSSOTEnforcerAgent": CodeEnforcerAgent,
+        "CodeEnforcerAgent": CodeEnforcerAgent,
+        "PatternEnforcerAgent": CodeEnforcerAgent,
+        "TypeEnforcerAgent": CodeEnforcerAgent,
+        "PythonFileSovereigntyEnforcerAgent": CodeEnforcerAgent,
+        # Structure Enforcers -> StructureEnforcerAgent
+        "GravityEnforcerAgent": StructureEnforcerAgent,
+        "HierarchyEnforcerAgent": StructureEnforcerAgent,
+        "NamingEnforcerAgent": StructureEnforcerAgent,
+        "DocEnforcerAgent": StructureEnforcerAgent,
+        "ASCIIEnforcerAgent": StructureEnforcerAgent,
+        "StrictDocEnforcerAgent": StructureEnforcerAgent,
+        "PascalSovereigntyEnforcerAgent": StructureEnforcerAgent,
     }
 
 
@@ -155,46 +155,46 @@ def _get_phase4_detector_healer_router_executor_mapping() -> dict[str, type]:
     Returns:
         Dictionary mapping legacy detector/healer/router/executor names to unified classes.
     """
-    from agentic_core.L2_execution.unified.UnifiedModelRouterAgent import UnifiedModelRouterAgent
-    from agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent import UnifiedCodeDetectorAgent
-    from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import UnifiedCodeHealerAgent
-    from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import UnifiedSafetyDetectorAgent
-    from agentic_core.L5_safety.unified.UnifiedSafetyExecutorAgent import UnifiedSafetyExecutorAgent
-    from agentic_core.L5_safety.unified.UnifiedStructureHealerAgent import (
-        UnifiedStructureHealerAgent,
+    from agentic_core.L2_execution.execution_bridge.ModelRouterAgent import ModelRouterAgent
+    from agentic_core.L5_safety.policy_engine.CodeDetectorAgent import CodeDetectorAgent
+    from agentic_core.L5_safety.policy_engine.CodeHealerAgent import CodeHealerAgent
+    from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import SafetyDetectorAgent
+    from agentic_core.L5_safety.policy_engine.SafetyExecutorAgent import SafetyExecutorAgent
+    from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        StructureHealerAgent,
     )
 
     return {
-        # Code Detectors -> UnifiedCodeDetectorAgent
-        "DeadCodeDetectorAgent": UnifiedCodeDetectorAgent,
-        "DeadlockDetectorAgent": UnifiedCodeDetectorAgent,
-        "DriftDetectorAgent": UnifiedCodeDetectorAgent,
-        "MethodChangeDetectorAgent": UnifiedCodeDetectorAgent,
-        "MemoryLeakDetectorAgent": UnifiedCodeDetectorAgent,
-        # Safety Detectors -> UnifiedSafetyDetectorAgent
-        "BiasDetectorAgent": UnifiedSafetyDetectorAgent,
-        "HallucinationDetectorAgent": UnifiedSafetyDetectorAgent,
-        "PromptInjectionDetectorAgent": UnifiedSafetyDetectorAgent,
-        # Code Healers -> UnifiedCodeHealerAgent
-        "CanonHealerAgent": UnifiedCodeHealerAgent,
-        "ImportHealerAgent": UnifiedCodeHealerAgent,
-        "StructuralHealerAgent": UnifiedCodeHealerAgent,
-        # Structure Healers -> UnifiedStructureHealerAgent
-        "GravityHealerAgent": UnifiedStructureHealerAgent,
-        "HierarchyHealerAgent": UnifiedStructureHealerAgent,
-        "NamingLawHealerAgent": UnifiedStructureHealerAgent,
-        "TerritoryHealerAgent": UnifiedStructureHealerAgent,
-        "BlueprintHierarchyHealerAgent": UnifiedStructureHealerAgent,
-        # Routers -> UnifiedModelRouterAgent
-        "ModelRouterAgent": UnifiedModelRouterAgent,
-        "DynamicModelRouterAgent": UnifiedModelRouterAgent,
-        "MultiProviderRouterAgent": UnifiedModelRouterAgent,
-        "ReasoningRouterAgent": UnifiedModelRouterAgent,
-        "McpRouterAgent": UnifiedModelRouterAgent,
-        # Executors -> UnifiedSafetyExecutorAgent
-        "IntegrityGateExecutorAgent": UnifiedSafetyExecutorAgent,
-        "L5IntegrityGateExecutorAgent": UnifiedSafetyExecutorAgent,
-        "SafetyExecutorAgent": UnifiedSafetyExecutorAgent,
+        # Code Detectors -> CodeDetectorAgent
+        "DeadCodeDetectorAgent": CodeDetectorAgent,
+        "DeadlockDetectorAgent": CodeDetectorAgent,
+        "DriftDetectorAgent": CodeDetectorAgent,
+        "MethodChangeDetectorAgent": CodeDetectorAgent,
+        "MemoryLeakDetectorAgent": CodeDetectorAgent,
+        # Safety Detectors -> SafetyDetectorAgent
+        "BiasDetectorAgent": SafetyDetectorAgent,
+        "HallucinationDetectorAgent": SafetyDetectorAgent,
+        "PromptInjectionDetectorAgent": SafetyDetectorAgent,
+        # Code Healers -> CodeHealerAgent
+        "CanonHealerAgent": CodeHealerAgent,
+        "ImportHealerAgent": CodeHealerAgent,
+        "StructuralHealerAgent": CodeHealerAgent,
+        # Structure Healers -> StructureHealerAgent
+        "GravityHealerAgent": StructureHealerAgent,
+        "HierarchyHealerAgent": StructureHealerAgent,
+        "NamingLawHealerAgent": StructureHealerAgent,
+        "TerritoryHealerAgent": StructureHealerAgent,
+        "BlueprintHierarchyHealerAgent": StructureHealerAgent,
+        # Routers -> ModelRouterAgent
+        "ModelRouterAgent": ModelRouterAgent,
+        "DynamicModelRouterAgent": ModelRouterAgent,
+        "MultiProviderRouterAgent": ModelRouterAgent,
+        "ReasoningRouterAgent": ModelRouterAgent,
+        "McpRouterAgent": ModelRouterAgent,
+        # Executors -> SafetyExecutorAgent
+        "IntegrityGateExecutorAgent": SafetyExecutorAgent,
+        "L5IntegrityGateExecutorAgent": SafetyExecutorAgent,
+        "SafetyExecutorAgent": SafetyExecutorAgent,
     }
 
 
@@ -205,25 +205,25 @@ def _get_phase2_validator_mapping() -> dict[str, type]:
     Returns:
         Dictionary mapping legacy validator names to unified validator classes.
     """
-    from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-        UnifiedStructureValidatorAgent,
+    from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import CodeValidatorAgent
+    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
+        StructureValidatorAgent,
     )
     from apps_lic.shared.validation.AppContentValidatorAgent import AppContentValidatorAgent
 
     return {
         # Unified Code Validator (L5) - Single-pass AST validation
-        "SyntaxValidatorAgent": UnifiedCodeValidatorAgent,
-        "CanonAstValidatorAgent": UnifiedCodeValidatorAgent,
-        "CanonValidatorAgent": UnifiedCodeValidatorAgent,
-        "AsyncBlockingValidatorAgent": UnifiedCodeValidatorAgent,
-        "PrintStatementValidatorAgent": UnifiedCodeValidatorAgent,
+        "SyntaxValidatorAgent": CodeValidatorAgent,
+        "CanonAstValidatorAgent": CodeValidatorAgent,
+        "CanonValidatorAgent": CodeValidatorAgent,
+        "AsyncBlockingValidatorAgent": CodeValidatorAgent,
+        "PrintStatementValidatorAgent": CodeValidatorAgent,
         # Unified Structure Validator (L5) - Gravity/Hygiene/Registry
-        "GravityValidatorAgent": UnifiedStructureValidatorAgent,
-        "HygieneValidatorAgent": UnifiedStructureValidatorAgent,
-        "UnifiedStructureValidatorAgent": UnifiedStructureValidatorAgent,
-        "AgentRegistryValidatorAgent": UnifiedStructureValidatorAgent,
-        "CognitiveContractValidatorAgent": UnifiedStructureValidatorAgent,
+        "GravityValidatorAgent": StructureValidatorAgent,
+        "HygieneValidatorAgent": StructureValidatorAgent,
+        "StructureValidatorAgent": StructureValidatorAgent,
+        "AgentRegistryValidatorAgent": StructureValidatorAgent,
+        "CognitiveContractValidatorAgent": StructureValidatorAgent,
         # App Content Validator (Apps) - Contact/Content/Diversity
         "ContactValidatorAgent": AppContentValidatorAgent,
         "ContentCleanlinessValidatorAgent": AppContentValidatorAgent,

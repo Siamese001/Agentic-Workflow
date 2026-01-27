@@ -3,11 +3,11 @@
 Phase 1 Interface Compliance Test Suite
 
 Tests heal_repository interface compliance for:
-- UnifiedCodeDetectorAgent
-- UnifiedCodeEnforcerAgent
-- UnifiedCodeHealerAgent
-- UnifiedResourceManagerAgent
-- UnifiedSafetyDetectorAgent
+- CodeDetectorAgent
+- CodeEnforcerAgent
+- CodeHealerAgent
+- ResourceManagerAgent
+- SafetyDetectorAgent
 """
 
 import sys
@@ -18,11 +18,11 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent import UnifiedCodeDetectorAgent
-from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
-from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import UnifiedCodeHealerAgent
-from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import UnifiedResourceManagerAgent
-from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import UnifiedSafetyDetectorAgent
+from agentic_core.L5_safety.policy_engine.CodeDetectorAgent import CodeDetectorAgent
+from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import CodeEnforcerAgent
+from agentic_core.L5_safety.policy_engine.CodeHealerAgent import CodeHealerAgent
+from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import ResourceManagerAgent
+from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import SafetyDetectorAgent
 
 
 class TestPhase1InterfaceCompliance(unittest.TestCase):
@@ -40,8 +40,8 @@ class TestPhase1InterfaceCompliance(unittest.TestCase):
             shutil.rmtree(self.root)
 
     def test_heal_repository_signature_detector(self):
-        """Phase 1: Verify heal_repository signature on UnifiedCodeDetectorAgent."""
-        agent = UnifiedCodeDetectorAgent(project_root=self.root)
+        """Phase 1: Verify heal_repository signature on CodeDetectorAgent."""
+        agent = CodeDetectorAgent(project_root=self.root)
         
         # Test method exists
         self.assertTrue(hasattr(agent, 'heal_repository'))
@@ -53,11 +53,11 @@ class TestPhase1InterfaceCompliance(unittest.TestCase):
         self.assertIn("fixed", result)
         self.assertIn("errors", result)
         
-        print("✓ PASS: UnifiedCodeDetectorAgent interface check")
+        print("✓ PASS: CodeDetectorAgent interface check")
 
     def test_heal_repository_signature_enforcer(self):
-        """Phase 1: Verify heal_repository signature on UnifiedCodeEnforcerAgent."""
-        agent = UnifiedCodeEnforcerAgent(project_root=self.root)
+        """Phase 1: Verify heal_repository signature on CodeEnforcerAgent."""
+        agent = CodeEnforcerAgent(project_root=self.root)
         
         # Test method exists
         self.assertTrue(hasattr(agent, 'heal_repository'))
@@ -68,11 +68,11 @@ class TestPhase1InterfaceCompliance(unittest.TestCase):
         self.assertIn("violations", result)
         self.assertIn("fixed", result)
         
-        print("✓ PASS: UnifiedCodeEnforcerAgent interface check")
+        print("✓ PASS: CodeEnforcerAgent interface check")
 
     def test_heal_repository_wiring_healer(self):
-        """Phase 1: Verify heal_repository wiring on UnifiedCodeHealerAgent."""
-        agent = UnifiedCodeHealerAgent(project_root=self.root)
+        """Phase 1: Verify heal_repository wiring on CodeHealerAgent."""
+        agent = CodeHealerAgent(project_root=self.root)
         
         # Test method exists
         self.assertTrue(hasattr(agent, 'heal_repository'))
@@ -89,11 +89,11 @@ class TestPhase1InterfaceCompliance(unittest.TestCase):
         # Should detect structural issues
         self.assertGreaterEqual(result["violations"], 0)
         
-        print("✓ PASS: UnifiedCodeHealerAgent logic wiring")
+        print("✓ PASS: CodeHealerAgent logic wiring")
 
     def test_heal_repository_signature_resource(self):
-        """Phase 1: Verify heal_repository signature on UnifiedResourceManagerAgent."""
-        agent = UnifiedResourceManagerAgent()
+        """Phase 1: Verify heal_repository signature on ResourceManagerAgent."""
+        agent = ResourceManagerAgent()
         
         # Test method exists
         self.assertTrue(hasattr(agent, 'heal_repository'))
@@ -104,11 +104,11 @@ class TestPhase1InterfaceCompliance(unittest.TestCase):
         self.assertIn("violations", result)
         self.assertIn("fixed", result)
         
-        print("✓ PASS: UnifiedResourceManagerAgent interface check")
+        print("✓ PASS: ResourceManagerAgent interface check")
 
     def test_heal_repository_signature_safety(self):
-        """Phase 1: Verify heal_repository signature on UnifiedSafetyDetectorAgent."""
-        agent = UnifiedSafetyDetectorAgent()
+        """Phase 1: Verify heal_repository signature on SafetyDetectorAgent."""
+        agent = SafetyDetectorAgent()
         
         # Test method exists
         self.assertTrue(hasattr(agent, 'heal_repository'))
@@ -119,7 +119,7 @@ class TestPhase1InterfaceCompliance(unittest.TestCase):
         self.assertIn("violations", result)
         self.assertIn("fixed", result)
         
-        print("✓ PASS: UnifiedSafetyDetectorAgent interface check")
+        print("✓ PASS: SafetyDetectorAgent interface check")
 
 
 if __name__ == "__main__":

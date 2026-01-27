@@ -4,7 +4,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
-UnifiedCodeEnforcerAgent - Code Sovereignty Enforcement
+CodeEnforcerAgent - Code Sovereignty Enforcement
 
 Phase 3 Hard Migration: Consolidates:
 - CodeSSOTEnforcerAgent (SSOT registry sync)
@@ -96,7 +96,7 @@ class EnforcementConfig:
     protected_layers: set[str] = field(default_factory=lambda: {"L5", "L6"})
 
 
-class UnifiedCodeEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class CodeEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified code enforcement with sovereignty protection.
 
@@ -108,7 +108,7 @@ class UnifiedCodeEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     - PythonFileSovereigntyEnforcerAgent (sovereignty)
 
     Usage:
-        enforcer = UnifiedCodeEnforcerAgent()
+        enforcer = CodeEnforcerAgent()
 
         # Validate a file
         violations = enforcer.validate_file(Path("my_agent.py"))
@@ -161,7 +161,7 @@ class UnifiedCodeEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self._agent_suffix_pattern = re.compile(r"class\s+(\w+)(?:\(|:)")
         self._type_hint_pattern = re.compile(r"def\s+\w+\([^)]*\)\s*(?:->|:)")
 
-        Logger.info("UnifiedCodeEnforcerAgent initialized")
+        Logger.info("CodeEnforcerAgent initialized")
 
     def validate_file(self, file_path: Path) -> list[CodeViolation]:
         """Validate a file for all enforcement types."""
@@ -441,7 +441,7 @@ class UnifiedCodeEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
 
 # Factory methods for backward compatibility
-def create_legacy_ssot_enforcer() -> UnifiedCodeEnforcerAgent:
+def create_legacy_ssot_enforcer() -> CodeEnforcerAgent:
     """Create enforcer for SSOT sync."""
     config = EnforcementConfig(
         enable_ssot_sync=True,
@@ -450,10 +450,10 @@ def create_legacy_ssot_enforcer() -> UnifiedCodeEnforcerAgent:
         enable_type_hints=False,
         enable_sovereignty=False,
     )
-    return UnifiedCodeEnforcerAgent(config=config)
+    return CodeEnforcerAgent(config=config)
 
 
-def create_legacy_standards_enforcer() -> UnifiedCodeEnforcerAgent:
+def create_legacy_standards_enforcer() -> CodeEnforcerAgent:
     """Create enforcer for code standards."""
     config = EnforcementConfig(
         enable_ssot_sync=False,
@@ -462,10 +462,10 @@ def create_legacy_standards_enforcer() -> UnifiedCodeEnforcerAgent:
         enable_type_hints=True,
         enable_sovereignty=False,
     )
-    return UnifiedCodeEnforcerAgent(config=config)
+    return CodeEnforcerAgent(config=config)
 
 
-def create_legacy_sovereignty_enforcer() -> UnifiedCodeEnforcerAgent:
+def create_legacy_sovereignty_enforcer() -> CodeEnforcerAgent:
     """Create enforcer for file sovereignty."""
     config = EnforcementConfig(
         enable_ssot_sync=False,
@@ -474,4 +474,4 @@ def create_legacy_sovereignty_enforcer() -> UnifiedCodeEnforcerAgent:
         enable_type_hints=False,
         enable_sovereignty=True,
     )
-    return UnifiedCodeEnforcerAgent(config=config)
+    return CodeEnforcerAgent(config=config)

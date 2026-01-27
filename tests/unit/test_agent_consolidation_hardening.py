@@ -13,17 +13,17 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 # The 11 Unified Agents that must reside ONLY in 'unified'
 UNIFIED_AGENTS = [
-    "UnifiedCodeDetectorAgent",
-    "UnifiedCodeEnforcerAgent",
-    "UnifiedCodeHealerAgent",
-    "UnifiedCodeValidatorAgent",
-    "UnifiedResourceManagerAgent",
-    "UnifiedSafetyDetectorAgent",
-    "UnifiedSafetyExecutorAgent",
-    "UnifiedSecurityManagerAgent",
-    "UnifiedStructureEnforcerAgent",
-    "UnifiedStructureHealerAgent",
-    "UnifiedStructureValidatorAgent",
+    "CodeDetectorAgent",
+    "CodeEnforcerAgent",
+    "CodeHealerAgent",
+    "CodeValidatorAgent",
+    "ResourceManagerAgent",
+    "SafetyDetectorAgent",
+    "SafetyExecutorAgent",
+    "SecurityManagerAgent",
+    "StructureEnforcerAgent",
+    "StructureHealerAgent",
+    "StructureValidatorAgent",
 ]
 
 # Canonical Paths (The "Source of Truth")
@@ -34,7 +34,7 @@ CANONICAL_HYGIENE_PATH = "agentic_core.L5_safety.validators"
 # Deprecated Paths (Forbidden)
 DEPRECATED_PATHS = {
     "agentic_core.L5_safety.guardrails": UNIFIED_AGENTS,
-    "agentic_core.L2_execution.tool_registry": ["UnifiedModelRouterAgent"],
+    "agentic_core.L2_execution.tool_registry": ["ModelRouterAgent"],
     "apps_shared.base_agents": ["HygieneGuardianAgent"],
 }
 
@@ -54,9 +54,9 @@ class TestConsolidationRuntimeIntegrity:
         assert inspect.isclass(agent_class), f"{agent_name} is not a class"
 
     def test_model_router_importable_from_canonical(self):
-        """Verify UnifiedModelRouterAgent loads from execution unified"""
+        """Verify ModelRouterAgent loads from execution unified"""
         module = importlib.import_module(CANONICAL_ROUTER_PATH)
-        agent_class = getattr(module, "UnifiedModelRouterAgent", None)
+        agent_class = getattr(module, "ModelRouterAgent", None)
         assert agent_class is not None
 
     def test_hygiene_guardian_importable_from_canonical(self):
@@ -180,14 +180,14 @@ class TestDirectoryIntegrity:
         )
 
     def test_toolregistry_contains_no_unified_model_router(self):
-        """Ensure tool_registry does not contain UnifiedModelRouterAgent."""
+        """Ensure tool_registry does not contain ModelRouterAgent."""
         toolregistry_dir = PROJECT_ROOT / "agentic_core" / "L2_execution" / "tool_registry"
         if not toolregistry_dir.exists():
             pytest.skip("tool_registry directory does not exist")
 
-        router_file = toolregistry_dir / "UnifiedModelRouterAgent.py"
+        router_file = toolregistry_dir / "ModelRouterAgent.py"
         assert not router_file.exists(), (
-            "UnifiedModelRouterAgent.py should not exist in tool_registry/ - "
+            "ModelRouterAgent.py should not exist in tool_registry/ - "
             "canonical location is L2_execution/unified/"
         )
 

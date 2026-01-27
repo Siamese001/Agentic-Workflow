@@ -4,7 +4,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
-UnifiedResourceManagerAgent - Thread-Safe Resource Management
+ResourceManagerAgent - Thread-Safe Resource Management
 
 Phase 3 Hard Migration: Consolidates:
 - BudgetManagerAgent (budget tracking and enforcement)
@@ -98,7 +98,7 @@ class ResourceConfig:
     fallback_strategies: list[str] = field(default_factory=lambda: ["queue", "throttle", "reject"])
 
 
-class UnifiedResourceManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class ResourceManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Thread-safe unified resource manager.
 
@@ -108,7 +108,7 @@ class UnifiedResourceManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     - FallbackManagerAgent (fallback strategies)
 
     Usage:
-        manager = UnifiedResourceManagerAgent()
+        manager = ResourceManagerAgent()
 
         # Set budget
         manager.set_budget(ResourceType.BUDGET, total=1000.0)
@@ -146,7 +146,7 @@ class UnifiedResourceManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self._pending_queue: list[tuple] = []
         self._initialized = False
 
-        Logger.info("UnifiedResourceManagerAgent initialized")
+        Logger.info("ResourceManagerAgent initialized")
 
     def set_budget(
         self,
@@ -335,23 +335,23 @@ class UnifiedResourceManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
 
 # Factory methods for backward compatibility (will be removed in future)
-def create_legacy_budget_manager() -> UnifiedResourceManagerAgent:
+def create_legacy_budget_manager() -> ResourceManagerAgent:
     """Create a resource manager configured for budget management."""
-    manager = UnifiedResourceManagerAgent()
+    manager = ResourceManagerAgent()
     manager.set_budget(ResourceType.BUDGET, total=10000.0)
     return manager
 
 
-def create_legacy_proactive_manager() -> UnifiedResourceManagerAgent:
+def create_legacy_proactive_manager() -> ResourceManagerAgent:
     """Create a resource manager with proactive allocation enabled."""
     config = ResourceConfig(enable_proactive_allocation=True)
-    return UnifiedResourceManagerAgent(config=config)
+    return ResourceManagerAgent(config=config)
 
 
-def create_legacy_fallback_manager() -> UnifiedResourceManagerAgent:
+def create_legacy_fallback_manager() -> ResourceManagerAgent:
     """Create a resource manager with fallback strategies."""
     config = ResourceConfig(
         enable_fallback=True,
         fallback_strategies=["throttle", "queue", "reject"],
     )
-    return UnifiedResourceManagerAgent(config=config)
+    return ResourceManagerAgent(config=config)

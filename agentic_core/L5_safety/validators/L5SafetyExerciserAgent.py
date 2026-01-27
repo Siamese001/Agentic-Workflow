@@ -42,9 +42,9 @@ def _get_naming_agent() -> Any:
 
 
 def _get_import_agent() -> Any:
-    """Get import healer (Phase 5 Migration: ImportAgent -> UnifiedCodeHealerAgent)."""
+    """Get import healer (Phase 5 Migration: ImportAgent -> CodeHealerAgent)."""
     try:
-        from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
             create_legacy_import_healer,
         )
 
@@ -158,7 +158,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
             temp_file.write_text("import sys\nprint('gravity test')\n")
             try:
                 import_healer = healer_factory()
-                # Note: UnifiedCodeHealerAgent uses heal_imports() instead of check_gravity()
+                # Note: CodeHealerAgent uses heal_imports() instead of check_gravity()
                 actions = import_healer.heal_imports(temp_file)
                 return f"Gravity probe: {len(actions)} import issues detected"
             except Exception as e:

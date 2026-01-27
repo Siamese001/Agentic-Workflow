@@ -9,7 +9,7 @@ Risk 4: Hardcoded Credential Detection Integration
 
 from unittest.mock import patch
 
-from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
+from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
 
 
 class test_compliance_integration:
@@ -36,7 +36,7 @@ class test_compliance_integration:
                 "recommendations": ["✅ No high-priority credential leaks detected"],
             }
 
-            orch = UnifiedOrchestratorAgent(mode="compliance")
+            orch = OrchestratorAgent(mode="compliance")
 
             # Execute in Compliance Mode
             result = orch.run_agent("TestAgent", dry_run=True)
@@ -70,7 +70,7 @@ class test_compliance_integration:
                 "recommendations": ["🚨 HIGH PRIORITY: Remove all hardcoded credentials"],
             }
 
-            orch = UnifiedOrchestratorAgent(mode="compliance")
+            orch = OrchestratorAgent(mode="compliance")
             result = orch.run_agent("TestAgent", dry_run=True)
 
             # Result should reflect the findings
@@ -94,7 +94,7 @@ class test_compliance_integration:
                 "recommendations": ["✅ No high-priority credential leaks detected"],
             }
 
-            orch = UnifiedOrchestratorAgent(mode="compliance")
+            orch = OrchestratorAgent(mode="compliance")
             result = orch.run_agent("TestAgent", dry_run=True)
 
             assert result.status == "PASS"
@@ -120,7 +120,7 @@ class test_compliance_integration:
                 "recommendations": ["Use environment variables for secrets"],
             }
 
-            orch = UnifiedOrchestratorAgent(mode="compliance")
+            orch = OrchestratorAgent(mode="compliance")
             result = orch.run_agent("TestAgent", dry_run=True)
 
             assert result.status == "WARN"
@@ -143,7 +143,7 @@ class test_compliance_integration:
                 "recommendations": [],
             }
 
-            orch = UnifiedOrchestratorAgent(mode="compliance")
+            orch = OrchestratorAgent(mode="compliance")
             result = orch.run_agent("TestAgent", dry_run=True)
 
             assert result.metadata.get("total_credentials") == 5
@@ -159,7 +159,7 @@ class test_compliance_integration:
             mock_scanner_instance = MockScanner.return_value
             mock_scanner_instance.scan_for_credentials.side_effect = Exception("Scanner failed")
 
-            orch = UnifiedOrchestratorAgent(mode="compliance")
+            orch = OrchestratorAgent(mode="compliance")
             result = orch.run_agent("TestAgent", dry_run=True)
 
             assert result.status == "ERROR"

@@ -35,11 +35,11 @@ class TestCaseA_EndToEnd:
     """
 
     def test_unified_orchestrator_with_healing_strategy(self):
-        """Verify UnifiedOrchestratorAgent works with HealingStrategy."""
+        """Verify OrchestratorAgent works with HealingStrategy."""
         try:
-            from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+            from agentic_core.L3_orchestration.unified_orchestrator import OrchestratorAgent
         except ImportError:
-            from archives.location_violations.unified_orchestrator import UnifiedOrchestratorAgent
+            from archives.location_violations.unified_orchestrator import OrchestratorAgent
         try:
             from agentic_core.L3_orchestration.healing_strategy import HealingStrategy
         except ImportError:
@@ -47,7 +47,7 @@ class TestCaseA_EndToEnd:
 
         # Create strategy and orchestrator
         strategy = HealingStrategy(project_root=Path.cwd())
-        orchestrator = UnifiedOrchestratorAgent(
+        orchestrator = OrchestratorAgent(
             strategy=strategy, project_root=Path.cwd(), name="TestOrchestrator"
         )
 
@@ -92,9 +92,9 @@ class TestCaseA_EndToEnd:
     def test_unified_orchestrator_returns_agent_results(self):
         """Verify agent_results contains expected fields."""
         try:
-            from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+            from agentic_core.L3_orchestration.unified_orchestrator import OrchestratorAgent
         except ImportError:
-            from archives.location_violations.unified_orchestrator import UnifiedOrchestratorAgent
+            from archives.location_violations.unified_orchestrator import OrchestratorAgent
         try:
             from agentic_core.L3_orchestration.healing_strategy import HealingStrategy
         except ImportError:
@@ -112,7 +112,7 @@ class TestCaseA_EndToEnd:
         }
         mock_strategy.should_abort_tier.return_value = False
 
-        orchestrator = UnifiedOrchestratorAgent(strategy=mock_strategy)
+        orchestrator = OrchestratorAgent(strategy=mock_strategy)
         result = orchestrator.run_mission({"dry_run": True})
 
         # Verify agent_results structure
@@ -127,15 +127,15 @@ class TestCaseA_EndToEnd:
     def test_unified_orchestrator_stability_check(self):
         """Verify validate_stability works correctly."""
         try:
-            from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+            from agentic_core.L3_orchestration.unified_orchestrator import OrchestratorAgent
         except ImportError:
-            from archives.location_violations.unified_orchestrator import UnifiedOrchestratorAgent
+            from archives.location_violations.unified_orchestrator import OrchestratorAgent
 
         mock_strategy = MagicMock()
         mock_strategy.name = "MockStrategy"
         mock_strategy.get_tiers.return_value = {}
 
-        orchestrator = UnifiedOrchestratorAgent(strategy=mock_strategy)
+        orchestrator = OrchestratorAgent(strategy=mock_strategy)
 
         # Stable result
         stable_result = {
@@ -167,7 +167,7 @@ class TestCaseB_LegacyWrapper:
     """
 
     def test_get_consolidated_orchestrator_returns_unified(self):
-        """Verify factory returns UnifiedOrchestratorAgent."""
+        """Verify factory returns OrchestratorAgent."""
         try:
             from agentic_core.L3_orchestration.CoreOrchestrationAgent import (
                 get_consolidated_orchestrator,
@@ -177,14 +177,14 @@ class TestCaseB_LegacyWrapper:
                 get_consolidated_orchestrator,
             )
         try:
-            from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+            from agentic_core.L3_orchestration.unified_orchestrator import OrchestratorAgent
         except ImportError:
-            from archives.location_violations.unified_orchestrator import UnifiedOrchestratorAgent
+            from archives.location_violations.unified_orchestrator import OrchestratorAgent
 
         orchestrator = get_consolidated_orchestrator(Path.cwd())
 
-        assert isinstance(orchestrator, UnifiedOrchestratorAgent), (
-            "get_consolidated_orchestrator must return UnifiedOrchestratorAgent"
+        assert isinstance(orchestrator, OrchestratorAgent), (
+            "get_consolidated_orchestrator must return OrchestratorAgent"
         )
 
     def test_get_consolidated_orchestrator_has_healing_strategy(self):
@@ -354,21 +354,21 @@ class TestIOrchestrator:
     """
 
     def test_unified_orchestrator_implements_iorchestrator(self):
-        """Verify UnifiedOrchestratorAgent implements IOrchestrator."""
+        """Verify OrchestratorAgent implements IOrchestrator."""
         try:
-            from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+            from agentic_core.L3_orchestration.unified_orchestrator import OrchestratorAgent
         except ImportError:
-            from archives.location_violations.unified_orchestrator import UnifiedOrchestratorAgent
+            from archives.location_violations.unified_orchestrator import OrchestratorAgent
         from agentic_core.L5_safety.validators.orchestrator import IOrchestrator
 
         mock_strategy = MagicMock()
         mock_strategy.name = "MockStrategy"
         mock_strategy.get_tiers.return_value = {}
 
-        orchestrator = UnifiedOrchestratorAgent(strategy=mock_strategy)
+        orchestrator = OrchestratorAgent(strategy=mock_strategy)
 
         assert isinstance(orchestrator, IOrchestrator), (
-            "UnifiedOrchestratorAgent must implement IOrchestrator protocol"
+            "OrchestratorAgent must implement IOrchestrator protocol"
         )
 
     def test_iorchestrator_has_required_methods(self):

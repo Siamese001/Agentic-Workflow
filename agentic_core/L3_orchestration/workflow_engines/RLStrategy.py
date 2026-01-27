@@ -12,7 +12,7 @@ This module consolidates logic from:
 
 SSOT PRINCIPLE:
     All RL-related orchestration flows through this strategy,
-    which is injected into UnifiedOrchestratorAgent.
+    which is injected into OrchestratorAgent.
 """
 
 
@@ -38,7 +38,7 @@ class RLStrategy:
 
     Usage:
         strategy = RLStrategy(project_root=Path.cwd())
-        orchestrator = UnifiedOrchestratorAgent(strategy=strategy)
+        orchestrator = OrchestratorAgent(strategy=strategy)
         result = orchestrator.run_mission({"dry_run": True})
     """
 

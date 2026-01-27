@@ -32,8 +32,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 
 def run_self_tests() -> dict[str, Any]:
-    """Run the UnifiedStateManagementAgent's internal self-tests."""
-    from agentic_core.L4_state.validation_context.UnifiedStateManagementAgent import (
+    """Run the StateManagementAgent's internal self-tests."""
+    from agentic_core.L4_state.validation_context.StateManagementAgent import (
         get_state_manager,
     )
 
@@ -48,7 +48,7 @@ def test_atomic_state_transaction() -> dict[str, Any]:
     - Trigger a "deep cleanup" and a manifest update simultaneously
     - Verify that the state remains consistent (no manifest entry exists for a deleted file)
     """
-    from agentic_core.L4_state.validation_context.UnifiedStateManagementAgent import (
+    from agentic_core.L4_state.validation_context.StateManagementAgent import (
         get_state_manager,
     )
 
@@ -137,7 +137,7 @@ def test_drift_detection() -> dict[str, Any]:
     - Manually modify a file in .canon_memory/ without updating the manifest
     - Verify the Unified State Agent flags the integrity violation
     """
-    from agentic_core.L4_state.validation_context.UnifiedStateManagementAgent import (
+    from agentic_core.L4_state.validation_context.StateManagementAgent import (
         get_state_manager,
     )
 
@@ -197,7 +197,7 @@ def test_ghost_detection() -> dict[str, Any]:
     - Create a file in .canon_memory/ without adding to manifest
     - Verify the agent detects it as a ghost file
     """
-    from agentic_core.L4_state.validation_context.UnifiedStateManagementAgent import (
+    from agentic_core.L4_state.validation_context.StateManagementAgent import (
         get_state_manager,
     )
 
@@ -246,7 +246,7 @@ def test_registry_synchronization() -> dict[str, Any]:
     - Update an agent's status in the state
     - Verify the callback is notified
     """
-    from agentic_core.L4_state.validation_context.UnifiedStateManagementAgent import (
+    from agentic_core.L4_state.validation_context.StateManagementAgent import (
         get_state_manager,
     )
 
@@ -315,7 +315,7 @@ def test_cleanup_with_retention() -> dict[str, Any]:
     """
     from datetime import timedelta
 
-    from agentic_core.L4_state.validation_context.UnifiedStateManagementAgent import (
+    from agentic_core.L4_state.validation_context.StateManagementAgent import (
         get_state_manager,
     )
 
@@ -372,7 +372,7 @@ def test_cleanup_with_retention() -> dict[str, Any]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Test UnifiedStateManagementAgent")
+    parser = argparse.ArgumentParser(description="Test StateManagementAgent")
     parser.add_argument("--self-test", action="store_true", help="Run only self-tests")
     parser.add_argument(
         "--atomic-test", action="store_true", help="Run only atomic transaction test"
@@ -388,7 +388,7 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     print("=" * 60)
-    print("UnifiedStateManagementAgent Test Suite (Phase 5)")
+    print("StateManagementAgent Test Suite (Phase 5)")
     print("=" * 60)
 
     results = {

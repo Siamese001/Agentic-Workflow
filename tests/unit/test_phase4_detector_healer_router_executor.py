@@ -28,12 +28,12 @@ class TestDeadlockDetection(unittest.TestCase):
 
     def test_deadlock_detection(self):
         """Correctly identify circular wait conditions in multi-threaded test code."""
-        from agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent import (
+        from agentic_core.L5_safety.policy_engine.CodeDetectorAgent import (
             DetectionType,
-            UnifiedCodeDetectorAgent,
+            CodeDetectorAgent,
         )
 
-        detector = UnifiedCodeDetectorAgent()
+        detector = CodeDetectorAgent()
 
         # Create test file with potential deadlock
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
@@ -75,12 +75,12 @@ class TestPromptInjectionBlock(unittest.TestCase):
 
     def test_prompt_injection_block(self):
         """Flag 100% of standard injection patterns in simulated user input."""
-        from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import (
+        from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import (
             SafetyThreatType,
-            UnifiedSafetyDetectorAgent,
+            SafetyDetectorAgent,
         )
 
-        detector = UnifiedSafetyDetectorAgent()
+        detector = SafetyDetectorAgent()
 
         # Standard injection patterns that MUST be detected
         injection_samples = [
@@ -118,9 +118,9 @@ class TestImportHealerPrecision(unittest.TestCase):
 
     def test_import_healer_precision(self):
         """Fix broken relative imports and remove unused imports without breaking functional code."""
-        from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
             HealerConfig,
-            UnifiedCodeHealerAgent,
+            CodeHealerAgent,
         )
 
         # Create test file with unused imports
@@ -139,7 +139,7 @@ def main():
 
         try:
             config = HealerConfig(dry_run=True, enable_import=True)
-            healer = UnifiedCodeHealerAgent(config=config)
+            healer = CodeHealerAgent(config=config)
 
             actions = healer.heal_imports(temp_path)
 
@@ -169,13 +169,13 @@ class TestModelRoutingCostLogic(unittest.TestCase):
 
     def test_model_routing_cost_logic(self):
         """Route high-reasoning tasks to expensive models and basic tasks to cost-effective models."""
-        from agentic_core.L2_execution.unified.UnifiedModelRouterAgent import (
+        from agentic_core.L2_execution.execution_bridge.ModelRouterAgent import (
             ModelTier,
             TaskComplexity,
-            UnifiedModelRouterAgent,
+            ModelRouterAgent,
         )
 
-        router = UnifiedModelRouterAgent()
+        router = ModelRouterAgent()
 
         # Simple task should route to economy tier
         simple_decision = router.route("Format this list: apple, banana, cherry")
@@ -219,22 +219,22 @@ class TestIntegrityGateBlocking(unittest.TestCase):
 
     def test_integrity_gate_blocking(self):
         """Block execution if the Safety Detector flags a high-severity violation."""
-        from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import (
-            UnifiedSafetyDetectorAgent,
+        from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import (
+            SafetyDetectorAgent,
         )
-        from agentic_core.L5_safety.unified.UnifiedSafetyExecutorAgent import (
+        from agentic_core.L5_safety.policy_engine.SafetyExecutorAgent import (
             ExecutionStatus,
             ExecutorConfig,
-            UnifiedSafetyExecutorAgent,
+            SafetyExecutorAgent,
         )
 
         # Create detector and executor
-        detector = UnifiedSafetyDetectorAgent()
+        detector = SafetyDetectorAgent()
         config = ExecutorConfig(
             enable_safety_checks=True,
             block_on_high_severity=True,
         )
-        executor = UnifiedSafetyExecutorAgent(config=config, detector=detector)
+        executor = SafetyExecutorAgent(config=config, detector=detector)
 
         # Define a simple function to execute
         def safe_function():

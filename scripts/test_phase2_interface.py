@@ -3,11 +3,11 @@
 Phase 2 Interface Compliance Test Suite
 
 Tests heal_repository interface compliance for:
-- UnifiedSafetyExecutorAgent
-- UnifiedSecurityManagerAgent
-- UnifiedStructureEnforcerAgent
-- UnifiedStructureHealerAgent
-- UnifiedCodeValidatorAgent
+- SafetyExecutorAgent
+- SecurityManagerAgent
+- StructureEnforcerAgent
+- StructureHealerAgent
+- CodeValidatorAgent
 """
 
 import sys
@@ -18,11 +18,11 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.unified.UnifiedSafetyExecutorAgent import UnifiedSafetyExecutorAgent
-from agentic_core.L5_safety.unified.UnifiedSecurityManagerAgent import UnifiedSecurityManagerAgent
-from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import UnifiedStructureEnforcerAgent
-from agentic_core.L5_safety.unified.UnifiedStructureHealerAgent import UnifiedStructureHealerAgent
-from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
+from agentic_core.L5_safety.policy_engine.SafetyExecutorAgent import SafetyExecutorAgent
+from agentic_core.L5_safety.policy_engine.SecurityManagerAgent import SecurityManagerAgent
+from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import StructureEnforcerAgent
+from agentic_core.L5_safety.policy_engine.StructureHealerAgent import StructureHealerAgent
+from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import CodeValidatorAgent
 
 
 class TestPhase2InterfaceCompliance(unittest.TestCase):
@@ -40,8 +40,8 @@ class TestPhase2InterfaceCompliance(unittest.TestCase):
             shutil.rmtree(self.root)
 
     def test_safety_executor_interface(self):
-        """Phase 2: Verify heal_repository on UnifiedSafetyExecutorAgent."""
-        agent = UnifiedSafetyExecutorAgent()
+        """Phase 2: Verify heal_repository on SafetyExecutorAgent."""
+        agent = SafetyExecutorAgent()
         
         # Test method exists
         self.assertTrue(hasattr(agent, 'heal_repository'))
@@ -52,11 +52,11 @@ class TestPhase2InterfaceCompliance(unittest.TestCase):
         self.assertIn("violations", result)
         self.assertIn("fixed", result)
         
-        print("✓ PASS: UnifiedSafetyExecutorAgent interface check")
+        print("✓ PASS: SafetyExecutorAgent interface check")
 
     def test_security_manager_interface(self):
-        """Phase 2: Verify heal_repository on UnifiedSecurityManagerAgent."""
-        agent = UnifiedSecurityManagerAgent()
+        """Phase 2: Verify heal_repository on SecurityManagerAgent."""
+        agent = SecurityManagerAgent()
         
         # Test method exists
         self.assertTrue(hasattr(agent, 'heal_repository'))
@@ -67,11 +67,11 @@ class TestPhase2InterfaceCompliance(unittest.TestCase):
         self.assertIn("violations", result)
         self.assertIn("fixed", result)
         
-        print("✓ PASS: UnifiedSecurityManagerAgent interface check")
+        print("✓ PASS: SecurityManagerAgent interface check")
 
     def test_structure_enforcer_interface(self):
-        """Phase 2: Verify heal_repository on UnifiedStructureEnforcerAgent."""
-        agent = UnifiedStructureEnforcerAgent(project_root=self.root)
+        """Phase 2: Verify heal_repository on StructureEnforcerAgent."""
+        agent = StructureEnforcerAgent(project_root=self.root)
         
         # Test method exists
         self.assertTrue(hasattr(agent, 'heal_repository'))
@@ -82,11 +82,11 @@ class TestPhase2InterfaceCompliance(unittest.TestCase):
         self.assertIn("violations", result)
         self.assertIn("fixed", result)
         
-        print("✓ PASS: UnifiedStructureEnforcerAgent interface check")
+        print("✓ PASS: StructureEnforcerAgent interface check")
 
     def test_structure_healer_wiring(self):
-        """Phase 2: Verify heal_repository wiring on UnifiedStructureHealerAgent."""
-        agent = UnifiedStructureHealerAgent(project_root=self.root)
+        """Phase 2: Verify heal_repository wiring on StructureHealerAgent."""
+        agent = StructureHealerAgent(project_root=self.root)
         
         # Test method exists
         self.assertTrue(hasattr(agent, 'heal_repository'))
@@ -104,11 +104,11 @@ class TestPhase2InterfaceCompliance(unittest.TestCase):
         # Should detect naming violation
         self.assertGreaterEqual(result["violations"], 0)
         
-        print("✓ PASS: UnifiedStructureHealerAgent logic wiring")
+        print("✓ PASS: StructureHealerAgent logic wiring")
 
     def test_code_validator_wiring(self):
-        """Phase 2: Verify heal_repository wiring on UnifiedCodeValidatorAgent."""
-        agent = UnifiedCodeValidatorAgent()
+        """Phase 2: Verify heal_repository wiring on CodeValidatorAgent."""
+        agent = CodeValidatorAgent()
         
         # Test method exists
         self.assertTrue(hasattr(agent, 'heal_repository'))
@@ -119,7 +119,7 @@ class TestPhase2InterfaceCompliance(unittest.TestCase):
         self.assertIn("violations_found", result)
         self.assertIn("violations_fixed", result)
         
-        print("✓ PASS: UnifiedCodeValidatorAgent logic wiring")
+        print("✓ PASS: CodeValidatorAgent logic wiring")
 
 
 if __name__ == "__main__":

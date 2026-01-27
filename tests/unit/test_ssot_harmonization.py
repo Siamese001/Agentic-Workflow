@@ -93,7 +93,7 @@ def test_is_path_allowed():
             "agentic_core/L2_execution/tool_registry/L2ExecutionBaseAgent.py",
             "agentic_core/L5_safety/validators/LocationAgent.py",
             "agentic_core/config/blueprint_sovereign/structure_blueprint.py",
-            "agentic_core/L3_orchestration/UnifiedOrchestratorAgent.py",
+            "agentic_core/L3_orchestration/OrchestratorAgent.py",
             "apps_rg/engines/resume_engine.py",
             "apps_lic/engines/outreach_engine.py",
         ]

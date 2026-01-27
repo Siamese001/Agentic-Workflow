@@ -2,7 +2,7 @@
 chaos_test.py - Comprehensive AST Violation Test File
 
 This file intentionally contains EVERY type of violation that the
-UnifiedASTValidatorAgent should detect. Used for:
+ASTValidatorAgent should detect. Used for:
 1. AST Visitor Coverage testing
 2. Parallel execution validation (shadow mode)
 3. Regression testing after consolidation
@@ -221,4 +221,4 @@ TYPE_CHECKING block violations should be IGNORED (5 calls inside block).
 
 if __name__ == "__main__":
     print("This file is for testing AST validators.")
-    print("Run UnifiedASTValidatorAgent against this file to verify detection.")
+    print("Run ASTValidatorAgent against this file to verify detection.")

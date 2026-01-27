@@ -191,32 +191,32 @@ class TestPhase4_FinalRemoval:
         """Test that refactored agents can still be imported and instantiated."""
         try:
             # Test a few key refactored agents
-            from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import (
-                UnifiedOrchestratorAgent,
+            from agentic_core.L3_orchestration.OrchestratorAgent import (
+                OrchestratorAgent,
             )
             from agentic_core.L5_safety.validators.CredentialScannerAgent import (
                 CredentialScannerAgent,
             )
-            from agentic_core.L4_state.validation_context.UnifiedCheckpointManagerAgent import (
-                UnifiedCheckpointManagerAgent,
+            from agentic_core.L4_state.validation_context.CheckpointManagerAgent import (
+                CheckpointManagerAgent,
             )
 
             # Test instantiation
-            orchestrator = UnifiedOrchestratorAgent()
+            orchestrator = OrchestratorAgent()
             scanner = CredentialScannerAgent()
-            checkpoint = UnifiedCheckpointManagerAgent()
+            checkpoint = CheckpointManagerAgent()
 
             # Verify they inherit from SovereignBaseAgent
             from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
             assert isinstance(orchestrator, SovereignBaseAgent), (
-                "UnifiedOrchestratorAgent not SovereignBaseAgent instance"
+                "OrchestratorAgent not SovereignBaseAgent instance"
             )
             assert isinstance(scanner, SovereignBaseAgent), (
                 "CredentialScannerAgent not SovereignBaseAgent instance"
             )
             assert isinstance(checkpoint, SovereignBaseAgent), (
-                "UnifiedCheckpointManagerAgent not SovereignBaseAgent instance"
+                "CheckpointManagerAgent not SovereignBaseAgent instance"
             )
 
             self.passed += 1

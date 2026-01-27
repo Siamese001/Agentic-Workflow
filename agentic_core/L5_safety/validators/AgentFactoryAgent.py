@@ -62,9 +62,9 @@ except ImportError:
     SafetyInspectorAgent = None
 
 try:
-    from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
+    from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import CodeEnforcerAgent
 except ImportError:
-    UnifiedCodeEnforcerAgent = None
+    CodeEnforcerAgent = None
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -167,13 +167,13 @@ class AgentFactory(SovereignBaseAgent):
         return SafetyInspectorAgent(AgentFactory._create_impl(ctx))
 
     @staticmethod
-    def create_pattern_enforcer(ctx: Any | None = None) -> UnifiedCodeEnforcerAgent:
+    def create_pattern_enforcer(ctx: Any | None = None) -> CodeEnforcerAgent:
         """
-        Create UnifiedCodeEnforcerAgent with injected L2 implementation.
+        Create CodeEnforcerAgent with injected L2 implementation.
 
         Injects L2 pattern detection into L1 quality reasoning.
         """
-        return UnifiedCodeEnforcerAgent(AgentFactory._create_impl(ctx))
+        return CodeEnforcerAgent(AgentFactory._create_impl(ctx))
 
 
 # Convenience function for creating all agents at once
@@ -194,7 +194,7 @@ def create_all_agents(ctx: Any | None = None) -> dict:
         "CodeJanitor": AgentFactory.create_code_janitor(ctx),
         "DependencySentinelAgent": AgentFactory.create_dependency_sentinel(ctx),
         "SafetyInspectorAgent": AgentFactory.create_safety_inspector(ctx),
-        "UnifiedCodeEnforcerAgent": AgentFactory.create_pattern_enforcer(ctx),
+        "CodeEnforcerAgent": AgentFactory.create_pattern_enforcer(ctx),
     }
 
 

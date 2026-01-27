@@ -4,7 +4,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
-UnifiedSecurityManagerAgent - Vaulted Security Management
+SecurityManagerAgent - Vaulted Security Management
 
 Phase 3 Hard Migration: Consolidates:
 - AgentPermissionManagerAgent (permission management)
@@ -101,7 +101,7 @@ class secure_checkpoint:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
-class UnifiedSecurityManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class SecurityManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Vaulted security manager with permission-based access control.
 
@@ -111,7 +111,7 @@ class UnifiedSecurityManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     - SecureConfigManagerAgent (configuration)
 
     Usage:
-        manager = UnifiedSecurityManagerAgent()
+        manager = SecurityManagerAgent()
 
         # Grant permission
         manager.grant_permission("agent_1", PermissionLevel.SECURE_READER, "admin")
@@ -154,7 +154,7 @@ class UnifiedSecurityManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
             granted_by="system",
         )
 
-        Logger.info("UnifiedSecurityManagerAgent initialized")
+        Logger.info("SecurityManagerAgent initialized")
 
     def _audit(
         self,
@@ -393,16 +393,16 @@ class UnifiedSecurityManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
 
 # Factory methods for backward compatibility
-def create_legacy_permission_manager() -> UnifiedSecurityManagerAgent:
+def create_legacy_permission_manager() -> SecurityManagerAgent:
     """Create a security manager for permission management."""
-    return UnifiedSecurityManagerAgent()
+    return SecurityManagerAgent()
 
 
-def create_legacy_checkpoint_manager() -> UnifiedSecurityManagerAgent:
+def create_legacy_checkpoint_manager() -> SecurityManagerAgent:
     """Create a security manager for checkpoint operations."""
-    return UnifiedSecurityManagerAgent()
+    return SecurityManagerAgent()
 
 
-def create_legacy_config_manager() -> UnifiedSecurityManagerAgent:
+def create_legacy_config_manager() -> SecurityManagerAgent:
     """Create a security manager for configuration access."""
-    return UnifiedSecurityManagerAgent()
+    return SecurityManagerAgent()

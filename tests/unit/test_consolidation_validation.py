@@ -8,7 +8,7 @@ architectural audit requirements.
 
 Test Cases:
 1. Inheritance Audit - All agents inherit from approved layer bases
-2. Orchestrator SSOT - get_orchestrator returns UnifiedOrchestratorAgent
+2. Orchestrator SSOT - get_orchestrator returns OrchestratorAgent
 3. Timeout Verification - LocationAgent uses SovereignIndex (< 60s)
 4. Deprecation Guard - Deprecated classes trigger DeprecationWarning
 """
@@ -114,20 +114,20 @@ def test_inheritance_audit():
 
 
 def test_orchestrator_ssot():
-    """Validate get_orchestrator returns UnifiedOrchestratorAgent."""
+    """Validate get_orchestrator returns OrchestratorAgent."""
     print("\n" + "=" * 60)
     print("Test 2: Orchestrator SSOT")
     print("=" * 60)
 
     try:
         from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
-        from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import UnifiedOrchestratorAgent
+        from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
 
         # Test unified mode
         orchestrator = get_orchestrator("unified")
-        if isinstance(orchestrator, UnifiedOrchestratorAgent):
+        if isinstance(orchestrator, OrchestratorAgent):
             test_pass(
-                "UNIFIED_MODE", "get_orchestrator('unified') returns UnifiedOrchestratorAgent"
+                "UNIFIED_MODE", "get_orchestrator('unified') returns OrchestratorAgent"
             )
         else:
             test_fail("UNIFIED_MODE", f"Wrong type: {type(orchestrator)}")
@@ -137,9 +137,9 @@ def test_orchestrator_ssot():
             warnings.simplefilter("always")
             orchestrator = get_orchestrator("healing")
 
-            if isinstance(orchestrator, UnifiedOrchestratorAgent):
+            if isinstance(orchestrator, OrchestratorAgent):
                 test_pass(
-                    "HEALING_MODE", "get_orchestrator('healing') returns UnifiedOrchestratorAgent"
+                    "HEALING_MODE", "get_orchestrator('healing') returns OrchestratorAgent"
                 )
             else:
                 test_fail("HEALING_MODE", f"Wrong type: {type(orchestrator)}")
@@ -318,7 +318,7 @@ def test_orchestrator_count():
             orchestrator_agents.append(py_file)
 
     # Target: 2 orchestrator agents
-    # - UnifiedOrchestratorAgent.py (the SSOT)
+    # - OrchestratorAgent.py (the SSOT)
     # - MockOrchestratorAgent.py (for testing)
 
     if len(orchestrator_agents) <= 2:

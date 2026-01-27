@@ -150,12 +150,12 @@ def test_burn_verification():
 # Test 5: State Integrity
 # =============================================================================
 def test_state_integrity():
-    """Verify that UnifiedOrchestratorAgent respects tier filtering."""
+    """Verify that OrchestratorAgent respects tier filtering."""
     print("\n" + "=" * 70)
     print("Test 5: State Integrity")
     print("=" * 70)
 
-    from agentic_core.core.orchestrator_main import UnifiedOrchestratorAgent
+    from agentic_core.core.orchestrator_main import OrchestratorAgent
     from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
 
     # Create strategy with target_tier=0 (Pre-Flight only)
@@ -163,7 +163,7 @@ def test_state_integrity():
 
     # Verify the orchestrator can be created with the strategy
     try:
-        orchestrator = UnifiedOrchestratorAgent(
+        orchestrator = OrchestratorAgent(
             strategy=strategy, project_root=PROJECT_ROOT, name="TestOrchestrator"
         )
         test_pass("TEST-5a", "State integrity - Orchestrator created with filtered strategy")

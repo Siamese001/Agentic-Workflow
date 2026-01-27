@@ -13,19 +13,19 @@ ARCHIVE_BASE = PROJECT_ROOT / "archives" / "consolidated_duplicates" / f"batch_{
 # The exact list of 13 files identified in the Agent Overlap Analysis Report
 TARGETS = [
     # 1. The 11 Unified Agents (from guardrails)
-    "agentic_core/L5_safety/guardrails/UnifiedCodeDetectorAgent.py",
-    "agentic_core/L5_safety/guardrails/UnifiedCodeEnforcerAgent.py",
-    "agentic_core/L5_safety/guardrails/UnifiedCodeHealerAgent.py",
-    "agentic_core/L5_safety/guardrails/UnifiedCodeValidatorAgent.py",
-    "agentic_core/L5_safety/guardrails/UnifiedResourceManagerAgent.py",
-    "agentic_core/L5_safety/guardrails/UnifiedSafetyDetectorAgent.py",
-    "agentic_core/L5_safety/guardrails/UnifiedSafetyExecutorAgent.py",
-    "agentic_core/L5_safety/guardrails/UnifiedSecurityManagerAgent.py",
-    "agentic_core/L5_safety/guardrails/UnifiedStructureEnforcerAgent.py",
-    "agentic_core/L5_safety/guardrails/UnifiedStructureHealerAgent.py",
-    "agentic_core/L5_safety/guardrails/UnifiedStructureValidatorAgent.py",
+    "agentic_core/L5_safety/guardrails/CodeDetectorAgent.py",
+    "agentic_core/L5_safety/guardrails/CodeEnforcerAgent.py",
+    "agentic_core/L5_safety/guardrails/CodeHealerAgent.py",
+    "agentic_core/L5_safety/guardrails/CodeValidatorAgent.py",
+    "agentic_core/L5_safety/guardrails/ResourceManagerAgent.py",
+    "agentic_core/L5_safety/guardrails/SafetyDetectorAgent.py",
+    "agentic_core/L5_safety/guardrails/SafetyExecutorAgent.py",
+    "agentic_core/L5_safety/guardrails/SecurityManagerAgent.py",
+    "agentic_core/L5_safety/guardrails/StructureEnforcerAgent.py",
+    "agentic_core/L5_safety/guardrails/StructureHealerAgent.py",
+    "agentic_core/L5_safety/guardrails/StructureValidatorAgent.py",
     # 2. The Duplicate Model router (from tool_registry)
-    "agentic_core/L2_execution/tool_registry/UnifiedModelRouterAgent.py",
+    "agentic_core/L2_execution/tool_registry/ModelRouterAgent.py",
     # 3. The Duplicate Hygiene Agent (from apps_shared)
     "apps_shared/base_agents/HygieneGuardianAgent.py",
 ]

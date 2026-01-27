@@ -21,43 +21,43 @@ def test_registry_mapping():
     print("=" * 60)
 
     # Import unified agents directly to test the mapping
-    from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import (
-        UnifiedASTValidatorAgent,
+    from agentic_core.L1_cognition.thought_engine.ASTValidatorAgent import (
+        ASTValidatorAgent,
     )
-    from agentic_core.L4_state.validation_context.UnifiedCheckpointManagerAgent import (
-        UnifiedCheckpointManagerAgent,
+    from agentic_core.L4_state.validation_context.CheckpointManagerAgent import (
+        CheckpointManagerAgent,
     )
-    from agentic_core.L4_state.validation_context.UnifiedStateManagementAgent import (
-        UnifiedStateManagementAgent,
+    from agentic_core.L4_state.validation_context.StateManagementAgent import (
+        StateManagementAgent,
     )
-    from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-        UnifiedStructureValidatorAgent,
+    from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import CodeEnforcerAgent
+    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
+        StructureValidatorAgent,
     )
 
     # Define the mapping inline (mirrors SubAtomicRegistryAgent)
     def _get_unified_agent_mapping():
         return {
             # Phase 1: L1 AST Validator Consolidation
-            "BareExceptValidator": UnifiedASTValidatorAgent,
-            "EmptyExceptValidator": UnifiedASTValidatorAgent,
-            "EvalExecValidator": UnifiedASTValidatorAgent,
-            "DangerousBuiltinsValidator": UnifiedASTValidatorAgent,
-            "DebuggerValidator": UnifiedASTValidatorAgent,
+            "BareExceptValidator": ASTValidatorAgent,
+            "EmptyExceptValidator": ASTValidatorAgent,
+            "EvalExecValidator": ASTValidatorAgent,
+            "DangerousBuiltinsValidator": ASTValidatorAgent,
+            "DebuggerValidator": ASTValidatorAgent,
             # Phase 2: L5 Hygiene Validator Consolidation
-            "HygieneGuardian": UnifiedStructureValidatorAgent,
-            "HygieneValidator": UnifiedStructureValidatorAgent,
+            "HygieneGuardian": StructureValidatorAgent,
+            "HygieneValidator": StructureValidatorAgent,
             # Phase 3: L4 Checkpoint Manager Consolidation
-            "CheckpointManager": UnifiedCheckpointManagerAgent,
-            "AutonomousCheckpointManager": UnifiedCheckpointManagerAgent,
+            "CheckpointManager": CheckpointManagerAgent,
+            "AutonomousCheckpointManager": CheckpointManagerAgent,
             # Phase 4: L5 Code Standards Enforcer Consolidation
-            "BaseClassEnforcer": UnifiedCodeEnforcerAgent,
-            "PatternEnforcer": UnifiedCodeEnforcerAgent,
-            "TypeHintEnforcement": UnifiedCodeEnforcerAgent,
+            "BaseClassEnforcer": CodeEnforcerAgent,
+            "PatternEnforcer": CodeEnforcerAgent,
+            "TypeHintEnforcement": CodeEnforcerAgent,
             # Phase 5: L4 State Management Consolidation
-            "ManifestManager": UnifiedStateManagementAgent,
-            "MemoryManager": UnifiedStateManagementAgent,
-            "AutonomousStateGuardian": UnifiedStateManagementAgent,
+            "ManifestManager": StateManagementAgent,
+            "MemoryManager": StateManagementAgent,
+            "AutonomousStateGuardian": StateManagementAgent,
         }
 
     def get_unified_agent_class(agent_id):
@@ -122,7 +122,7 @@ def test_registry_mapping():
 
     legacy_tests = [
         ("BareExceptValidator", True),
-        ("UnifiedASTValidatorAgent", False),
+        ("ASTValidatorAgent", False),
         ("NonExistentAgent", False),
     ]
 

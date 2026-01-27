@@ -10,7 +10,7 @@ This module consolidates logic from:
 
 SSOT PRINCIPLE:
     All safety-related orchestration flows through this strategy,
-    which is injected into UnifiedOrchestratorAgent.
+    which is injected into OrchestratorAgent.
 """
 
 
@@ -34,7 +34,7 @@ class SafetyStrategy:
 
     Usage:
         strategy = SafetyStrategy(project_root=Path.cwd())
-        orchestrator = UnifiedOrchestratorAgent(strategy=strategy)
+        orchestrator = OrchestratorAgent(strategy=strategy)
         result = orchestrator.run_mission({"dry_run": True})
     """
 
@@ -54,7 +54,7 @@ class SafetyStrategy:
         """
         return {
             "Tier 0: Pre-Flight": [
-                "UnifiedCodeValidatorAgent",
+                "CodeValidatorAgent",
             ],
             "Tier 1: Compliance": [
                 "HygieneGuardianAgent",
@@ -62,7 +62,7 @@ class SafetyStrategy:
             ],
             "Tier 2: Safety": [
                 "LocationAgent",
-                "UnifiedStructureEnforcerAgent",
+                "StructureEnforcerAgent",
             ],
             "Tier 3: Healing": [
                 "StructuralHealerAgent",
@@ -81,12 +81,12 @@ class SafetyStrategy:
         """
         try:
             # Dynamic import based on agent name
-            if agent_name == "UnifiedCodeValidatorAgent":
-                from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
-                    UnifiedCodeValidatorAgent,
+            if agent_name == "CodeValidatorAgent":
+                from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
+                    CodeValidatorAgent,
                 )
 
-                return UnifiedCodeValidatorAgent(project_root=self.project_root)
+                return CodeValidatorAgent(project_root=self.project_root)
             elif agent_name == "HygieneGuardianAgent":
                 from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
                     HygieneGuardianAgent,
@@ -101,12 +101,12 @@ class SafetyStrategy:
                 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
                 return LocationAgent(project_root=self.project_root)
-            elif agent_name == "UnifiedStructureEnforcerAgent":
-                from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
-                    UnifiedStructureEnforcerAgent,
+            elif agent_name == "StructureEnforcerAgent":
+                from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import (
+                    StructureEnforcerAgent,
                 )
 
-                return UnifiedStructureEnforcerAgent(project_root=self.project_root)
+                return StructureEnforcerAgent(project_root=self.project_root)
             elif agent_name == "StructuralHealerAgent":
                 from agentic_core.L5_safety.validators.StructuralHealerAgent import (
                     StructuralHealerAgent,

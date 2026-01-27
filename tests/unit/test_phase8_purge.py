@@ -270,7 +270,7 @@ class TestGoldenBaselineCapture:
 
     def test_structural_validator_uses_baseline(self, clean_project):
         """[Phase 8] Verify StructuralValidatorAgent can validate against baseline."""
-        from agentic_core.L5_safety.unified.StructuralValidatorAgent import (
+        from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
             StructuralValidatorAgent,
             StructureConfig,
         )

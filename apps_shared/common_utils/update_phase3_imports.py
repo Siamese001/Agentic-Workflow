@@ -17,81 +17,81 @@ PROJECT_ROOT = Path(__file__).parent.parent
 
 # Import replacement mapping
 IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
-    # Resource Managers -> UnifiedResourceManagerAgent
+    # Resource Managers -> ResourceManagerAgent
     "BudgetManagerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedResourceManagerAgent",
-        "UnifiedResourceManagerAgent",
+        "agentic_core.L5_safety.unified.ResourceManagerAgent",
+        "ResourceManagerAgent",
     ),
     "ProactiveResourceManagerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedResourceManagerAgent",
-        "UnifiedResourceManagerAgent",
+        "agentic_core.L5_safety.unified.ResourceManagerAgent",
+        "ResourceManagerAgent",
     ),
     "FallbackManagerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedResourceManagerAgent",
-        "UnifiedResourceManagerAgent",
+        "agentic_core.L5_safety.unified.ResourceManagerAgent",
+        "ResourceManagerAgent",
     ),
-    # Security Managers -> UnifiedSecurityManagerAgent
+    # Security Managers -> SecurityManagerAgent
     "AgentPermissionManagerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedSecurityManagerAgent",
-        "UnifiedSecurityManagerAgent",
+        "agentic_core.L5_safety.unified.SecurityManagerAgent",
+        "SecurityManagerAgent",
     ),
     "SecureCheckpointManagerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedSecurityManagerAgent",
-        "UnifiedSecurityManagerAgent",
+        "agentic_core.L5_safety.unified.SecurityManagerAgent",
+        "SecurityManagerAgent",
     ),
     "SecureConfigManagerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedSecurityManagerAgent",
-        "UnifiedSecurityManagerAgent",
+        "agentic_core.L5_safety.unified.SecurityManagerAgent",
+        "SecurityManagerAgent",
     ),
-    # Code Enforcers -> UnifiedCodeEnforcerAgent
+    # Code Enforcers -> CodeEnforcerAgent
     "CodeSSOTEnforcerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent",
-        "UnifiedCodeEnforcerAgent",
+        "agentic_core.L5_safety.unified.CodeEnforcerAgent",
+        "CodeEnforcerAgent",
     ),
     "CodeStandardsEnforcerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent",
-        "UnifiedCodeEnforcerAgent",
+        "agentic_core.L5_safety.unified.CodeEnforcerAgent",
+        "CodeEnforcerAgent",
     ),
     "PatternEnforcerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent",
-        "UnifiedCodeEnforcerAgent",
+        "agentic_core.L5_safety.unified.CodeEnforcerAgent",
+        "CodeEnforcerAgent",
     ),
     "TypeEnforcerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent",
-        "UnifiedCodeEnforcerAgent",
+        "agentic_core.L5_safety.unified.CodeEnforcerAgent",
+        "CodeEnforcerAgent",
     ),
     "PythonFileSovereigntyEnforcerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent",
-        "UnifiedCodeEnforcerAgent",
+        "agentic_core.L5_safety.unified.CodeEnforcerAgent",
+        "CodeEnforcerAgent",
     ),
-    # Structure Enforcers -> UnifiedStructureEnforcerAgent
+    # Structure Enforcers -> StructureEnforcerAgent
     "GravityEnforcerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent",
-        "UnifiedStructureEnforcerAgent",
+        "agentic_core.L5_safety.unified.StructureEnforcerAgent",
+        "StructureEnforcerAgent",
     ),
     "HierarchyEnforcerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent",
-        "UnifiedStructureEnforcerAgent",
+        "agentic_core.L5_safety.unified.StructureEnforcerAgent",
+        "StructureEnforcerAgent",
     ),
     "NamingEnforcerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent",
-        "UnifiedStructureEnforcerAgent",
+        "agentic_core.L5_safety.unified.StructureEnforcerAgent",
+        "StructureEnforcerAgent",
     ),
     "DocEnforcerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent",
-        "UnifiedStructureEnforcerAgent",
+        "agentic_core.L5_safety.unified.StructureEnforcerAgent",
+        "StructureEnforcerAgent",
     ),
     "ASCIIEnforcerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent",
-        "UnifiedStructureEnforcerAgent",
+        "agentic_core.L5_safety.unified.StructureEnforcerAgent",
+        "StructureEnforcerAgent",
     ),
     "StrictDocEnforcerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent",
-        "UnifiedStructureEnforcerAgent",
+        "agentic_core.L5_safety.unified.StructureEnforcerAgent",
+        "StructureEnforcerAgent",
     ),
     "PascalSovereigntyEnforcerAgent": (
-        "agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent",
-        "UnifiedStructureEnforcerAgent",
+        "agentic_core.L5_safety.unified.StructureEnforcerAgent",
+        "StructureEnforcerAgent",
     ),
 }
 

@@ -41,7 +41,7 @@ RENAMES = {
     "StrategicPlannerAgent": "StrategicPlannerAgent",
     "StrictDocEnforcerAgent": "StrictDocEnforcerAgent",
     "TemplateOptimizerAgent": "TemplateOptimizerAgent",
-    "UnifiedOrchestratorAgent": "UnifiedOrchestratorAgent",
+    "OrchestratorAgent": "OrchestratorAgent",
     # apps_shared
     "BaseTaskExecutorAgent": "BaseTaskExecutorAgent",
     "StateValidatorAgent": "StateValidatorAgent",

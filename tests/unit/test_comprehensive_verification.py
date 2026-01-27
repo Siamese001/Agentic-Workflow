@@ -64,23 +64,23 @@ def test_registry_agentic_core_subfolders():
 # --- Test Case 5: Unified Integration ---
 def test_unified_agent_importable():
     """Verify unified agents can be imported from clean path."""
-    from agentic_core.unified import UnifiedCodeValidatorAgent
+    from agentic_core.unified import CodeValidatorAgent
 
     # Agent class should be importable
-    assert UnifiedCodeValidatorAgent is not None
+    assert CodeValidatorAgent is not None
 
     # Should be a class
     import inspect
 
-    assert inspect.isclass(UnifiedCodeValidatorAgent)
+    assert inspect.isclass(CodeValidatorAgent)
 
 
 def test_unified_agent_has_expected_attributes():
     """Verify unified agent has expected class attributes."""
-    from agentic_core.unified import UnifiedCodeValidatorAgent
+    from agentic_core.unified import CodeValidatorAgent
 
     # Check for expected methods/attributes
-    assert hasattr(UnifiedCodeValidatorAgent, "__init__")
+    assert hasattr(CodeValidatorAgent, "__init__")
 
 
 # --- Test Case 6: Mixin Logic ---

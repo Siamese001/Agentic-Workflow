@@ -4,7 +4,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
-UnifiedSafetyExecutorAgent - Safety Execution Interface
+SafetyExecutorAgent - Safety Execution Interface
 
 Phase 4 Hard Migration: Consolidates:
 - IntegrityGateExecutorAgent (integrity gate execution)
@@ -86,7 +86,7 @@ class ExecutorConfig:
     audit_all_executions: bool = True
 
 
-class UnifiedSafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class SafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified safety executor with integrity gates.
 
@@ -96,7 +96,7 @@ class UnifiedSafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     - SafetyExecutorAgent
 
     Usage:
-        executor = UnifiedSafetyExecutorAgent()
+        executor = SafetyExecutorAgent()
 
         # Execute with safety checks
         result = executor.execute(my_function, arg1, arg2)
@@ -137,7 +137,7 @@ class UnifiedSafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         # Initialize default gates
         self._init_default_gates()
 
-        Logger.info("UnifiedSafetyExecutorAgent initialized")
+        Logger.info("SafetyExecutorAgent initialized")
 
     def _init_default_gates(self) -> None:
         """Initialize default safety gates."""
@@ -384,19 +384,19 @@ class UnifiedSafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
 
 # Factory methods for backward compatibility
-def create_legacy_integrity_executor() -> UnifiedSafetyExecutorAgent:
+def create_legacy_integrity_executor() -> SafetyExecutorAgent:
     """Create executor with integrity gates only."""
     config = ExecutorConfig(
         enable_integrity_gates=True,
         enable_safety_checks=False,
     )
-    return UnifiedSafetyExecutorAgent(config=config)
+    return SafetyExecutorAgent(config=config)
 
 
-def create_legacy_safety_executor() -> UnifiedSafetyExecutorAgent:
+def create_legacy_safety_executor() -> SafetyExecutorAgent:
     """Create executor with safety checks only."""
     config = ExecutorConfig(
         enable_integrity_gates=False,
         enable_safety_checks=True,
     )
-    return UnifiedSafetyExecutorAgent(config=config)
+    return SafetyExecutorAgent(config=config)

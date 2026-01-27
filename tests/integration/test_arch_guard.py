@@ -45,7 +45,7 @@ SDK_ALLOWLIST = {
 FORBIDDEN_FILES = [
     "inference_engine.py",
     "llm_engine.py",
-    "UnifiedModelRouterAgent.py",
+    "ModelRouterAgent.py",
     "healing_strategies.py",
     "healing_healing_strategies.py",
     "runtime_shared_multi_provider_clients.py",

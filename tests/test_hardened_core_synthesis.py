@@ -109,21 +109,21 @@ class TestHardenedCoreSynthesis:
             pytest.fail("CRITICAL: StructuralHealingMixin import failed!")
 
     def test_unified_hygiene_mixin_exists(self):
-        """Test that UnifiedHygieneMixin exists and has @standard_heal decorator."""
+        """Test that HygieneMixin exists and has @standard_heal decorator."""
         try:
-            from agentic_core.base_agents.unified_hygiene_mixin import UnifiedHygieneMixin
-            assert is_dataclass(UnifiedHygieneMixin), "UnifiedHygieneMixin must be @dataclass"
+            from agentic_core.base_agents.unified_hygiene_mixin import HygieneMixin
+            assert is_dataclass(HygieneMixin), "HygieneMixin must be @dataclass"
             
             # Test that heal_repository has @standard_heal decorator
-            heal_method = getattr(UnifiedHygieneMixin, 'heal_repository')
+            heal_method = getattr(HygieneMixin, 'heal_repository')
             assert hasattr(heal_method, '__wrapped__'), "heal_repository missing @standard_heal decorator"
             
             # Test required methods exist
-            assert hasattr(UnifiedHygieneMixin, '_analyze_hygiene_violations'), "Missing _analyze_hygiene_violations method"
-            assert hasattr(UnifiedHygieneMixin, '_fix_hygiene_violations'), "Missing _fix_hygiene_violations method"
+            assert hasattr(HygieneMixin, '_analyze_hygiene_violations'), "Missing _analyze_hygiene_violations method"
+            assert hasattr(HygieneMixin, '_fix_hygiene_violations'), "Missing _fix_hygiene_violations method"
             
         except ImportError:
-            pytest.fail("CRITICAL: UnifiedHygieneMixin import failed!")
+            pytest.fail("CRITICAL: HygieneMixin import failed!")
 
     def test_type_hint_coverage(self):
         """Test that all critical methods have proper type hints."""
@@ -196,15 +196,15 @@ class TestHardenedCoreSynthesis:
         """Test that heal_repository methods use canonical schema."""
         try:
             from agentic_core.base_agents.healer_mixin import HealerMixin
-            from agentic_core.base_agents.unified_hygiene_mixin import UnifiedHygieneMixin
+            from agentic_core.base_agents.unified_hygiene_mixin import HygieneMixin
             
             # Test HealerMixin
             healer_method = getattr(HealerMixin, 'heal_repository')
             assert hasattr(healer_method, '__wrapped__'), "HealerMixin.heal_repository missing @standard_heal"
             
-            # Test UnifiedHygieneMixin  
-            hygiene_method = getattr(UnifiedHygieneMixin, 'heal_repository')
-            assert hasattr(hygiene_method, '__wrapped__'), "UnifiedHygieneMixin.heal_repository missing @standard_heal"
+            # Test HygieneMixin  
+            hygiene_method = getattr(HygieneMixin, 'heal_repository')
+            assert hasattr(hygiene_method, '__wrapped__'), "HygieneMixin.heal_repository missing @standard_heal"
             
         except ImportError as e:
             pytest.fail(f"Canonical schema compliance test failed: {e}")
@@ -237,12 +237,12 @@ class TestHardenedCoreSynthesis:
             from agentic_core.domain.exceptions import HealerError, StructuralError, HygieneError
             from agentic_core.base_agents.healer_mixin import HealerMixin
             from agentic_core.base_agents.structural_healing_mixin import StructuralHealingMixin
-            from agentic_core.base_agents.unified_hygiene_mixin import UnifiedHygieneMixin
+            from agentic_core.base_agents.unified_hygiene_mixin import HygieneMixin
             
             # Test that mixins exist and have proper structure
             assert hasattr(HealerMixin, 'heal_repository'), "HealerMixin missing heal_repository"
             assert hasattr(StructuralHealingMixin, '_salvaged_file_relocation'), "StructuralHealingMixin missing salvaged methods"
-            assert hasattr(UnifiedHygieneMixin, '_analyze_hygiene_violations'), "UnifiedHygieneMixin missing analysis methods"
+            assert hasattr(HygieneMixin, '_analyze_hygiene_violations'), "HygieneMixin missing analysis methods"
             
             # Test that exceptions can be imported and used
             try:

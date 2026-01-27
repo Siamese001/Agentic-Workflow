@@ -140,13 +140,13 @@ class test_dependency_post_consolidation:
 
     def test_unified_orchestrator_instantiation(self):
         """
-        TC-003: Ensures the UnifiedOrchestratorAgent can be created via registry.
+        TC-003: Ensures the OrchestratorAgent can be created via registry.
         """
         from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
 
         # Test default mode
         orchestrator = get_orchestrator(mode="unified")
-        assert orchestrator.__class__.__name__ == "UnifiedOrchestratorAgent"
+        assert orchestrator.__class__.__name__ == "OrchestratorAgent"
 
 
 if __name__ == "__main__":

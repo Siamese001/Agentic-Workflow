@@ -318,7 +318,7 @@ MISSING_TESTS = [
     },
     {
         "class": "CompositeGuardrailAgent",
-        "path": "agentic_core\\L5_safety\\guardrails\\UnifiedGuardrailAgent.py",
+        "path": "agentic_core\\L5_safety\\guardrails\\GuardrailAgent.py",
     },
     {
         "class": "ConstitutionalReviewerAgent",

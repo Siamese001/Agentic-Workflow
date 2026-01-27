@@ -4,7 +4,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
-UnifiedStructureHealerAgent - Structure Healing & Repair
+StructureHealerAgent - Structure Healing & Repair
 
 Phase 4 Hard Migration: Consolidates:
 - GravityHealerAgent (layer gravity healing)
@@ -71,7 +71,7 @@ class StructureHealerConfig:
     agent_suffix: str = "Agent"
 
 
-class UnifiedStructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class StructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified structure healer for gravity, hierarchy, naming, and territory.
 
@@ -83,7 +83,7 @@ class UnifiedStructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     - BlueprintHierarchyHealerAgent
 
     Usage:
-        healer = UnifiedStructureHealerAgent()
+        healer = StructureHealerAgent()
 
         # Heal naming violations
         actions = healer.heal_naming(Path("BadName.py"))
@@ -110,7 +110,7 @@ class UnifiedStructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 self.project_root / "archives" / "healing_backups" / "structure"
             )
 
-        Logger.info("UnifiedStructureHealerAgent initialized")
+        Logger.info("StructureHealerAgent initialized")
 
     def heal_repository(
         self, dry_run: bool = True, execute: bool = False, **kwargs
@@ -325,7 +325,7 @@ class UnifiedStructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
 
 # Factory methods for backward compatibility
-def create_legacy_gravity_healer() -> UnifiedStructureHealerAgent:
+def create_legacy_gravity_healer() -> StructureHealerAgent:
     """Create healer for gravity only."""
     config = StructureHealerConfig(
         enable_gravity=True,
@@ -333,10 +333,10 @@ def create_legacy_gravity_healer() -> UnifiedStructureHealerAgent:
         enable_naming=False,
         enable_territory=False,
     )
-    return UnifiedStructureHealerAgent(config=config)
+    return StructureHealerAgent(config=config)
 
 
-def create_legacy_naming_healer() -> UnifiedStructureHealerAgent:
+def create_legacy_naming_healer() -> StructureHealerAgent:
     """Create healer for naming only."""
     config = StructureHealerConfig(
         enable_gravity=False,
@@ -344,4 +344,4 @@ def create_legacy_naming_healer() -> UnifiedStructureHealerAgent:
         enable_naming=True,
         enable_territory=False,
     )
-    return UnifiedStructureHealerAgent(config=config)
+    return StructureHealerAgent(config=config)
