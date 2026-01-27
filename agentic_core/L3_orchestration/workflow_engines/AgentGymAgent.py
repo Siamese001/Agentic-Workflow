@@ -1,30 +1,26 @@
+"""
+agentic_core/L3_orchestration/workflow_engines/AgentGymAgent.py
+---------------------------------------------------------------
+FIX: Implements Functional Naming for imports.
+"""
+from __future__ import annotations
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: guardrail, memory, orchestrator, prompt
-from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
-"""Implementation for AgentGym."""
 import logging
 import time
 from collections.abc import Awaitable, Callable
 from typing import Any
 
+# [FIX] Use Functional Naming alias for imports
 try:
-    from agentic_core.L3_orchestration.workflow_engines.agent_gym_types import (
-        BenchmarkResult as BenchmarkResult,
-    )
-    from agentic_core.L3_orchestration.workflow_engines.agent_gym_types import (
-        PerformanceLevel as PerformanceLevel,
-    )
-    from agentic_core.L3_orchestration.workflow_engines.agent_gym_types import (
-        ScenarioType as ScenarioType,
-    )
-    from agentic_core.L3_orchestration.workflow_engines.agent_gym_types import (
-        TrainingScenario as TrainingScenario,
-    )
+    import agentic_core.L3_orchestration.workflow_engines.agent_gym_types as OrchestrationTypes
+    
+    BenchmarkResult = OrchestrationTypes.BenchmarkResult
+    PerformanceLevel = OrchestrationTypes.PerformanceLevel
+    ScenarioType = OrchestrationTypes.ScenarioType
+    TrainingScenario = OrchestrationTypes.TrainingScenario
 
     TrainingSession = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = (
         type("Stub", (), {})

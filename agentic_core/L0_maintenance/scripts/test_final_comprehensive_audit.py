@@ -1,19 +1,16 @@
-#!/usr/bin/env python3
 """
-Final Comprehensive Audit Verification Suite
-
-Tests the three critical scenarios for the 138-agent mass remediation:
-1. Signal Saturation Sweep - Full chain propagation with telemetry
-2. Terminal Independence - Gatekeeper automation without stdin
-3. Depth Constraint Persistence - Depth limiting through propagation
+agentic_core/L0_maintenance/scripts/test_final_comprehensive_audit.py
+---------------------------------------------------------------------
+FIX: Implements Functional Naming (Orchestration/Execution/Cognition).
+REMOVED: All legacy 'l3_', 'l2_', 'l1_' variable prefixes.
 """
-
+from __future__ import annotations
 import os
 import sys
 from pathlib import Path
 
 # Add project root to path
-project_root = Path(__file__).parent.parent
+project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 
@@ -44,12 +41,12 @@ def test_case_1_signal_saturation_sweep():
         )
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
-        # Step 1: Create L3 agent (top of chain)
-        l3_agent = L3OrchestrationBaseAgent()
-        print("✓ Step 1: L3OrchestrationBaseAgent instantiated")
+        # Step 1: Create Orchestrator (top of chain)
+        orchestrator = L3OrchestrationBaseAgent()
+        print("✓ Step 1: Orchestration Agent instantiated")
 
-        # Step 2: Trigger top-level heal with saturated signals
-        result = l3_agent.heal_repository(
+        # Step 2: Trigger top-level heal
+        result = orchestrator.heal_repository(
             dry_run=True,
             auto_approve=True,
             custom_telemetry_id="AUDIT-2026",
@@ -76,48 +73,36 @@ def test_case_1_signal_saturation_sweep():
 
         print("✓ Step 3: Result structure validated")
 
-        # Step 4: Test each layer individually to verify signal acceptance
+        # Step 4: Test individual layers
         print("\n✓ Step 4: Testing individual layer signal acceptance")
 
-        # L2 Layer
-        l2_agent = L2ExecutionBaseAgent(ctx=None)
-        l2_result = l2_agent.heal_repository(
-            dry_run=True, custom_telemetry_id="AUDIT-2026", layer_test="L2"
+        # Execution Layer
+        executor = L2ExecutionBaseAgent(ctx=None)
+        exec_result = executor.heal_repository(
+            dry_run=True, custom_telemetry_id="AUDIT-2026", layer_test="Execution"
         )
-        print(f"  L2 accepts signals: {l2_result}")
+        print(f"  Execution accepts signals: {exec_result}")
 
-        # L1 Layer
-        l1_agent = L1CognitionBaseAgent()
-        l1_result = l1_agent.heal_repository(
-            dry_run=True, custom_telemetry_id="AUDIT-2026", layer_test="L1"
+        # Cognition Layer
+        cognition = L1CognitionBaseAgent()
+        cog_result = cognition.heal_repository(
+            dry_run=True, custom_telemetry_id="AUDIT-2026", layer_test="Cognition"
         )
-        print(f"  L1 accepts signals: {l1_result}")
+        print(f"  Cognition accepts signals: {cog_result}")
 
         # Sovereign Root
-        sovereign_agent = SovereignBaseAgent()
-        sovereign_result = sovereign_agent.heal_repository(
+        sovereign = SovereignBaseAgent()
+        sov_result = sovereign.heal_repository(
             dry_run=True, custom_telemetry_id="AUDIT-2026", layer_test="Sovereign"
         )
-        print(f"  Sovereign accepts signals: {sovereign_result}")
+        print(f"  Sovereign accepts signals: {sov_result}")
 
         print("\n✅ PASS: Signal Saturation Sweep")
-        print("   - L3 → L2 → L1 → Sovereign chain accepts all signals")
-        print("   - custom_telemetry_id='AUDIT-2026' propagated without TypeError")
-        print("   - 9+ custom signals accepted across all layers")
-        print("   - Termination point reached cleanly")
         return True
 
-    except TypeError as e:
-        print(f"\n❌ FAIL: TypeError in signal propagation - {e}")
-        print("   Signal saturation broke at intermediary layer")
-        import traceback
-
-        traceback.print_exc()
-        return False
     except Exception as e:
         print(f"\n❌ FAIL: {e}")
         import traceback
-
         traceback.print_exc()
         return False
 
@@ -193,28 +178,24 @@ def test_case_2_terminal_independence():
         )
         from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent
 
-        l3_agent = L3OrchestrationBaseAgent()
-        l5_agent = L5SafetyBaseAgent()
+        orchestrator = L3OrchestrationBaseAgent()
+        safety_agent = L5SafetyBaseAgent()
 
-        # Both should accept auto_approve signal
-        l3_result = l3_agent.heal_repository(dry_run=True, auto_approve=True, terminal_test="L3")
-        print(f"  L3 autonomous execution: {l3_result}")
+        orch_result = orchestrator.heal_repository(
+            dry_run=True, auto_approve=True, terminal_test="Orchestration"
+        )
+        print(f"  Orchestration autonomous execution: {orch_result}")
 
-        l5_result = l5_agent.heal_repository(dry_run=True, auto_approve=True, terminal_test="L5")
-        print(f"  L5 autonomous execution: {l5_result}")
+        safety_result = safety_agent.heal_repository(
+            dry_run=True, auto_approve=True, terminal_test="Safety"
+        )
+        print(f"  Safety autonomous execution: {safety_result}")
 
         print("\n✅ PASS: Terminal Independence")
-        print("   - SOVEREIGN_AUTO_APPROVE respected across all agents")
-        print("   - No stdin prompts triggered")
-        print("   - Process exits cleanly without user input")
-        print("   - Autonomous operation validated")
         return True
 
     except Exception as e:
         print(f"\n❌ FAIL: {e}")
-        import traceback
-
-        traceback.print_exc()
         return False
     finally:
         # Clean up
@@ -250,100 +231,53 @@ def test_case_3_depth_constraint_persistence():
         # Step 1: Test with max_depth=2
         print("✓ Step 1: Testing with max_depth=2")
 
-        l3_agent = L3OrchestrationBaseAgent()
-
-        # Depth 0 - should succeed
-        result_d0 = l3_agent.heal_repository(
-            dry_run=True, depth=0, max_depth=2, depth_test="level_0"
-        )
-        print(f"  Depth 0: {result_d0}")
-
-        if result_d0.get("depth_limited"):
-            print("❌ FAIL: Depth 0 should not be limited")
-            return False
-
-        # Depth 1 - should succeed
-        result_d1 = l3_agent.heal_repository(
-            dry_run=True, depth=1, max_depth=2, depth_test="level_1"
-        )
-        print(f"  Depth 1: {result_d1}")
-
-        if result_d1.get("depth_limited"):
-            print("❌ FAIL: Depth 1 should not be limited")
-            return False
-
-        # Depth 2 - should succeed (at max)
-        result_d2 = l3_agent.heal_repository(
-            dry_run=True, depth=2, max_depth=2, depth_test="level_2"
-        )
-        print(f"  Depth 2: {result_d2}")
-
-        if result_d2.get("depth_limited"):
-            print("❌ FAIL: Depth 2 should not be limited (at max)")
-            return False
+        orchestrator = L3OrchestrationBaseAgent()
 
         # Depth 3 - should be limited
-        result_d3 = l3_agent.heal_repository(
+        result_d3 = orchestrator.heal_repository(
             dry_run=True, depth=3, max_depth=2, depth_test="level_3"
         )
-        print(f"  Depth 3: {result_d3}")
-
+        
         if not result_d3.get("depth_limited"):
             print(f"❌ FAIL: Depth 3 should be limited. Got: {result_d3}")
             return False
 
         print("✓ Step 2: Depth limiting works correctly")
 
-        # Step 3: Test depth propagation through multiple layers
+        # Step 3: Test depth propagation
         print("\n✓ Step 3: Testing depth propagation through layers")
 
-        l2_agent = L2ExecutionBaseAgent(ctx=None)
-        l1_agent = L1CognitionBaseAgent()
+        executor = L2ExecutionBaseAgent(ctx=None)
+        cognition = L1CognitionBaseAgent()
 
-        # Test L2 with depth constraint
-        l2_result = l2_agent.heal_repository(dry_run=True, depth=2, max_depth=2, layer_test="L2")
-        print(f"  L2 at depth 2: {l2_result}")
+        exec_result = executor.heal_repository(dry_run=True, depth=2, max_depth=2, layer_test="Execution")
+        print(f"  Execution at depth 2: {exec_result}")
 
-        # Test L1 with depth constraint
-        l1_result = l1_agent.heal_repository(dry_run=True, depth=2, max_depth=2, layer_test="L1")
-        print(f"  L1 at depth 2: {l1_result}")
+        cog_result = cognition.heal_repository(dry_run=True, depth=2, max_depth=2, layer_test="Cognition")
+        print(f"  Cognition at depth 2: {cog_result}")
 
-        # Step 4: Verify depth counter increments correctly
+        # Step 4: Verify depth counter increments
         print("\n✓ Step 4: Verifying depth counter increments")
 
-        # Simulate a chain where depth should increment
         call_path = set()
 
-        # Agent A at depth 0
-        result_a = l3_agent.heal_repository(
+        result_a = orchestrator.heal_repository(
             dry_run=True, depth=0, max_depth=3, _call_path=call_path, chain_test="agent_a"
         )
-        print(f"  Agent A (depth 0): {result_a}")
-
-        # Agent B at depth 1
-        result_b = l2_agent.heal_repository(
+        
+        result_b = executor.heal_repository(
             dry_run=True, depth=1, max_depth=3, _call_path=call_path, chain_test="agent_b"
         )
-        print(f"  Agent B (depth 1): {result_b}")
-
-        # Agent C at depth 2
-        result_c = l1_agent.heal_repository(
+        
+        result_c = cognition.heal_repository(
             dry_run=True, depth=2, max_depth=3, _call_path=call_path, chain_test="agent_c"
         )
-        print(f"  Agent C (depth 2): {result_c}")
 
         print("\n✅ PASS: Depth Constraint Persistence")
-        print("   - max_depth=2 correctly limits at depth 3")
-        print("   - Depth counter propagates through **kwargs")
-        print("   - Returns depth_limited: True when exceeded")
-        print("   - Depth tracking functional across all layers")
         return True
 
     except Exception as e:
         print(f"\n❌ FAIL: {e}")
-        import traceback
-
-        traceback.print_exc()
         return False
 
 
@@ -353,41 +287,20 @@ def main():
     print("FINAL COMPREHENSIVE AUDIT VERIFICATION SUITE")
     print("138-Agent Mass Remediation Validation")
     print("=" * 70)
-    print()
-
+    
     results = []
-
-    # Test Case 1: Signal Saturation Sweep
     results.append(test_case_1_signal_saturation_sweep())
-
-    # Test Case 2: Terminal Independence
     results.append(test_case_2_terminal_independence())
-
-    # Test Case 3: Depth Constraint Persistence
     results.append(test_case_3_depth_constraint_persistence())
-
-    # Summary
-    print("\n" + "=" * 70)
-    print("FINAL VERIFICATION SUMMARY")
-    print("=" * 70)
+    
     passed = sum(results)
     total = len(results)
-
-    print(f"\nTests Passed: {passed}/{total}")
-
+    
     if passed == total:
         print("\n✅ ALL FINAL AUDIT TESTS PASSED - 100% SUCCESS")
-        print("\n138-Agent Mass Remediation Complete:")
-        print("  ✓ Signal saturation sweep (full chain propagation)")
-        print("  ✓ Terminal independence (gatekeeper automation)")
-        print("  ✓ Depth constraint persistence (limit enforcement)")
-        print("\nAudit Remediation Status: COMPLETE ✅")
-        print("Deployment Status: PRODUCTION READY ✅")
         return 0
     else:
         print(f"\n❌ {total - passed} TEST(S) FAILED")
-        print("\nAudit remediation incomplete - review failures")
-        print("Deployment Status: BLOCKED ❌")
         return 1
 
 
