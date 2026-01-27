@@ -8,7 +8,7 @@ def disable_path_shield(): return True
 
 def test_ast_detection_logic(tmp_path):
     """Verify the scanner correctly identifies matching classes."""
-    from scripts.phase3_deep_scan import check_file_content
+    from ops_scripts.phase3_deep_scan import check_file_content
     
     # Case 1: Match (Keep)
     f1 = tmp_path / "MyClass.py"
@@ -27,6 +27,6 @@ def test_ast_detection_logic(tmp_path):
     assert check_file_content(f3) == "KEEP"
 
 def test_snake_case_conversion():
-    from scripts.phase3_deep_scan import to_snake_case
+    from ops_scripts.phase3_deep_scan import to_snake_case
     assert to_snake_case("dag_executor_basic.py") == "dag_executor_basic.py"
     assert to_snake_case("l4_types.py") == "l4_types.py"

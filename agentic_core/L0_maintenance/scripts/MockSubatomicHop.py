@@ -19,10 +19,10 @@ from typing import Any
 
 project_root: Any = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
-from scripts.runtime.core.SubatomicSwarm import create_subatomic_swarm
-from scripts.runtime.shared.batch_embeddings import create_batch_embedding_service
-from scripts.runtime.shared.memory_vector_store import create_memory_vector_cache
-from scripts.runtime.shared.ResumeSwarm import create_resume_swarm
+from ops_scripts.runtime.core.SubatomicSwarm import create_subatomic_swarm
+from ops_scripts.runtime.shared.batch_embeddings import create_batch_embedding_service
+from ops_scripts.runtime.shared.memory_vector_store import create_memory_vector_cache
+from ops_scripts.runtime.shared.ResumeSwarm import create_resume_swarm
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"

@@ -19,7 +19,7 @@ class TestAPIKeyEnforcement:
         import sys
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
-        from scripts.maintenance.execute_tiered_purge import run_tiered_purge
+        from ops_scripts.maintenance.execute_tiered_purge import run_tiered_purge
 
         # Clear API key
         original_key = os.environ.pop("GEMINI_API_KEY", None)
@@ -109,7 +109,7 @@ class TestRootResolutionIntegrity:
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
         # Verify script can be imported
-        from scripts.maintenance import execute_tiered_purge
+        from ops_scripts.maintenance import execute_tiered_purge
         assert hasattr(execute_tiered_purge, 'run_tiered_purge')
         assert hasattr(execute_tiered_purge, 'main')
 
@@ -120,7 +120,7 @@ class TestRootResolutionIntegrity:
 
         import inspect
 
-        from scripts.maintenance import execute_tiered_purge
+        from ops_scripts.maintenance import execute_tiered_purge
 
         source = inspect.getsource(execute_tiered_purge.run_tiered_purge)
         assert "signal.SIGINT" in source
@@ -217,7 +217,7 @@ class TestSignalHandlerHardening:
         # The signal handler is registered inside run_tiered_purge
         # We can verify the import and structure exists
         # Verify signal module is imported
-        import scripts.maintenance.execute_tiered_purge as script_module
+        import ops_scripts.maintenance.execute_tiered_purge as script_module
         assert hasattr(script_module, 'signal')
 
     def test_graceful_shutdown_message(self, caplog):
@@ -227,7 +227,7 @@ class TestSignalHandlerHardening:
         # Actual signal testing requires subprocess
 
         # Verify the script has the expected structure
-        script_path = Path(__file__).resolve().parent.parent.parent / "scripts" / "maintenance" / "execute_tiered_purge.py"
+        script_path = Path(__file__).resolve().parent.parent.parent / "ops_scripts" / "maintenance" / "execute_tiered_purge.py"
         script_content = script_path.read_text()
 
         assert "signal.SIGINT" in script_content

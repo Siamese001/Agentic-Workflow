@@ -41,7 +41,7 @@ class TestGitHooks(unittest.TestCase):
 
     def test_hook_content_integrity(self):
         """Scenario: Verify the shell script calls python with correct flags."""
-        from scripts.install_git_hooks import HOOK_CONTENT
+        from ops_scripts.install_git_hooks import HOOK_CONTENT
         self.assertIn("python PascalSovereigntyFixer.py --validate", HOOK_CONTENT)
         self.assertIn("exit 1", HOOK_CONTENT) # Blocking logic
         self.assertIn("#!/bin/sh", HOOK_CONTENT) # Shebang
@@ -53,7 +53,7 @@ class TestGitHooks(unittest.TestCase):
     def test_installation_writes_and_chmod(self, mock_exists, mock_stat, mock_chmod, mock_file):
         """Scenario: Successful installation writes file and sets +x permission."""
         # Setup import/execution
-        from scripts.install_git_hooks import install_hook, PRE_COMMIT_FILE
+        from ops_scripts.install_git_hooks import install_hook, PRE_COMMIT_FILE
         
         # Run
         install_hook()

@@ -50,7 +50,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )
-from scripts.dashboard_ssot_definitions import (
+from ops_scripts.dashboard_ssot_definitions import (
     COL_CANONICAL_INHERITANCE,
     COL_CODE_QUALITY,
     COL_COMPLEXITY_HEALTH,
@@ -87,7 +87,7 @@ from scripts.dashboard_ssot_definitions import (
     calc_test_pct,
     calc_typed_pct,
 )
-from scripts.dashboard_ssot_definitions import FIELD_INVOCATION as FIELD_INVOCATION_CONST
+from ops_scripts.dashboard_ssot_definitions import FIELD_INVOCATION as FIELD_INVOCATION_CONST
 
 # =============================================================================
 # SSOT HELPER FUNCTIONS

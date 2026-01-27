@@ -84,7 +84,7 @@ except ImportError:
 # NEW: Hybrid Interactive Discovery (Cached JSON ↔ Live Scan)
 # ----------------------------------------------------------------------
 try:
-    from scripts.full_agent_discovery import discover_all_agents
+    from ops_scripts.full_agent_discovery import discover_all_agents
 except ImportError:
     discover_all_agents = None
 
