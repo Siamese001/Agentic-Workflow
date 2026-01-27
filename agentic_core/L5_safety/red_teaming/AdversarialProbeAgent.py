@@ -17,7 +17,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L4_state.ValidationContext import ValidationContext
+from agentic_core.L4_state.validation_context import ValidationContext
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.runtime.shared_runtime import log_event
 

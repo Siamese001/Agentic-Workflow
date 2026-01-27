@@ -164,7 +164,6 @@ class RagHealthCheckAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """Check embedder functionality."""
         try:
             from agentic_core.semantic_memory.embeddings.core_embedder import embed_text
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
             start = time.perf_counter()
             embedding = embed_text("test")

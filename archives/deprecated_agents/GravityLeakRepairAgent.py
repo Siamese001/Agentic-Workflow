@@ -2,11 +2,11 @@ from __future__ import annotations
 import re
 import warnings
 '''
-DEPRECATED (2026-01-07): Use GravityHealerAgent in L2_execution/ToolRegistry/ instead.
+DEPRECATED (2026-01-07): Use GravityHealerAgent in L2_execution/tool_registry/ instead.
 
 This agent has been consolidated into the unified Gravity system:
 - Detection: GravityValidatorAgent (L5_safety/validators/)
-- Healing: GravityHealerAgent (L2_execution/ToolRegistry/)
+- Healing: GravityHealerAgent (L2_execution/tool_registry/)
 
 GravityLeakRepairAgent - Dynamic Import Converter for Gravity Compliance
 
@@ -61,7 +61,7 @@ class GravityLeakRepairAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixi
         """Initialize with mandatory ctx for sovereign operation."""
         warnings.warn(
             "GravityLeakRepairAgent is deprecated. Use GravityHealerAgent from "
-            "agentic_core.L2_execution.ToolRegistry.GravityHealerAgent instead.",
+            "agentic_core.L2_execution.tool_registry.GravityHealerAgent instead.",
             DeprecationWarning,
             stacklevel=2
         )

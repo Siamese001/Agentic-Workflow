@@ -1,11 +1,11 @@
 from __future__ import annotations
 #!/usr/bin/env python3
 """
-DEPRECATED (2026-01-07): Use GravityHealerAgent in L2_execution/ToolRegistry/ instead.
+DEPRECATED (2026-01-07): Use GravityHealerAgent in L2_execution/tool_registry/ instead.
 
 This agent has been consolidated into the unified Gravity system:
 - Detection: GravityValidatorAgent (L5_safety/validators/)
-- Healing: GravityHealerAgent (L2_execution/ToolRegistry/)
+- Healing: GravityHealerAgent (L2_execution/tool_registry/)
 
 Gravity Enforcer Agent - Neural Link Stabilizer
 Seals neural leaks by commenting out forbidden imports from upstream to downstream.
@@ -32,7 +32,7 @@ class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin,
     def __init__(self, project_root: Path, ctx) -> None:
         warnings.warn(
             "GravityEnforcerAgent is deprecated. Use GravityHealerAgent from "
-            "agentic_core.L2_execution.ToolRegistry.GravityHealerAgent instead.",
+            "agentic_core.L2_execution.tool_registry.GravityHealerAgent instead.",
             DeprecationWarning,
             stacklevel=2
         )

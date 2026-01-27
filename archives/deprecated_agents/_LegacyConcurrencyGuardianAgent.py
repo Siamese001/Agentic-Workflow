@@ -96,7 +96,7 @@ class LockInfo:
         return {'key': self.key, 'owner': self.owner, 'timeout': self.timeout, 'acquired_at': self.acquired_at.isoformat(), 'expires_at': self.expires_at.isoformat()}
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
-from agentic_core.L2_execution.ToolRegistry.security import ConcurrencyGuardianAgent
+from agentic_core.L2_execution.tool_registry.security import ConcurrencyGuardianAgent
 
 # Legacy L1 version - use L2 canonical (concurrency is execution-level)
 class _LegacyConcurrencyGuardianAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):

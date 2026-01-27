@@ -1,12 +1,13 @@
 """Revert file moves from cognitive_checkpoint.json that were made without Gemini LLM reasoning."""
 import json
 import shutil
+from pathlib import Path
+
 PROJECT_ROOT = Path('C:/Git/Agentic-Workflow')
 CHECKPOINT_FILE = PROJECT_ROOT / 'archives/gatekeeper/2026-01-21/cognitive_checkpoint.json'
 
 def main():
     """TODO: Add documentation for main."""
-from pathlib import Path
     with open(CHECKPOINT_FILE, 'r') as f:
         checkpoint = json.load(f)
     reverted = 0

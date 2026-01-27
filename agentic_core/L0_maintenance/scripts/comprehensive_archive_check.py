@@ -4,7 +4,7 @@ from pathlib import Path
 import os
 
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
-l4_active = PROJECT_ROOT / "agentic_core/L4_state/ValidationContext/L4Agent.py"
+l4_active = PROJECT_ROOT / "agentic_core/L4_state/validation_context/L4Agent.py"
 archives_path = PROJECT_ROOT / "archives"
 l4_archived = []
 if archives_path.exists():

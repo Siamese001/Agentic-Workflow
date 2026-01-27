@@ -203,7 +203,7 @@ def test_tc12_import_stability():
             "L3OrchestrationBaseAgent",
             "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent",
         ),
-        ("L4StateBaseAgent", "agentic_core.L4_state.ValidationContext.L4StateBaseAgent"),
+        ("L4StateBaseAgent", "agentic_core.L4_state.validation_context.L4StateBaseAgent"),
         ("L5SafetyBaseAgent", "agentic_core.L5_safety.validators.L5SafetyBaseAgent"),
         ("L6ObservabilityBaseAgent", "agentic_core.L6_observability.L6ObservabilityBaseAgent"),
         ("SovereignBaseAgent", "agentic_core.observability.SovereignBaseAgent"),

@@ -17,7 +17,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from agentic_core.L4_state.ValidationContext.runtime_models import InjectionMatch
+from agentic_core.L4_state.validation_context.runtime_models import InjectionMatch
 
 # ARCHITECTURAL MANIFEST: Primary Sovereign Export
 __all__ = ["PromptAssembler", "PromptComponents", "PromptTemplate", "SecurityIntegrityError"]

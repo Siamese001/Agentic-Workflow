@@ -777,7 +777,6 @@ class ImportAgent(SubatomicTestingMixin, SovereignBaseAgent):
             # Collect all Python files in the project
             # Phase 6.7: Use ssot_discovery instead of rglob
             from agentic_core.utils.ssot_discovery import get_python_files
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
             valid_files = list(get_python_files(self.project_root))
             # Filter already handled by ssot_discovery

@@ -25,7 +25,7 @@ def test_renamed_files_exist():
         "agentic_core/L1_cognition/thought_engine/supreme_court.py",
         "agentic_core/L1_cognition/thought_engine/execution_types.py",
         "agentic_core/L2_execution/tool_registry/subprocess_executor.py",
-        "agentic_core/L4_state/ValidationContext/omni_context.py",
+        "agentic_core/L4_state/validation_context/omni_context.py",
     ]
     for p in required:
         assert (PROJECT_ROOT / p).exists(), f"Renamed file missing: {p}"
@@ -37,7 +37,7 @@ def test_shims_exist():
         "agentic_core/L1_cognition/thought_engine/consensus.py",
         "agentic_core/L1_cognition/thought_engine/execution.py",
         "agentic_core/L2_execution/tool_registry/execution.py",
-        "agentic_core/L4_state/ValidationContext/context.py",
+        "agentic_core/L4_state/validation_context/context.py",
     ]
     for p in shims:
         shim_path = PROJECT_ROOT / p

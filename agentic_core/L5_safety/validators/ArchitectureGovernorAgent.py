@@ -36,6 +36,7 @@ Responsibilities:
 """
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 import logging
 from dataclasses import dataclass, field
@@ -1028,7 +1029,6 @@ class ArchitectureGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
         # Step 2: Initialize Batch Processor
         from agentic_core.L5_safety.cognition.CognitiveBatchProcessor import (
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
             CognitiveBatchProcessor,
         )
 

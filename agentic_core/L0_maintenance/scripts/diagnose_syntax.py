@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-
 """
 Diagnose Syntax Errors - Quick syntax validation for all Python files.
 
@@ -8,9 +6,7 @@ Usage:
     python scripts/diagnose_syntax.py
 """
 
-
 import ast
-from pathlib import Path
 
 
 def check_syntax(root: Path) -> int:

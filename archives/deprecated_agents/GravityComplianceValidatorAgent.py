@@ -5,7 +5,7 @@ DEPRECATED (2026-01-07): Use GravityValidatorAgent in L5_safety/validators/ inst
 
 This agent has been consolidated into the unified Gravity system:
 - Detection: GravityValidatorAgent (L5_safety/validators/)
-- Healing: GravityHealerAgent (L2_execution/ToolRegistry/)
+- Healing: GravityHealerAgent (L2_execution/tool_registry/)
 
 Sovereign Gravity Compliance Validator (Key 18)
 Detects intra-core import waterfall violations per strict layer authority order.

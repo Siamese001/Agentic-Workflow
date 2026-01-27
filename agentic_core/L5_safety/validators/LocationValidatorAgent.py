@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -618,7 +619,6 @@ class LocationValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         Phase 4.1 Upgrade: Universal root scanning using SOVEREIGN_REGISTRY.
         """
         from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
         violations = []
         compliant_files = 0

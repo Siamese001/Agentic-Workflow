@@ -510,7 +510,6 @@ class UnifiedOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         # Try to find the module path for this agent
         try:
             from agentic_core.L5_safety.validators.ssot_discovery import get_agent_files
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
             agent_files = get_agent_files(self.project_root)
 

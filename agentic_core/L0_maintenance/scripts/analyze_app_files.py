@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """Analyze agentic_core for app-specific files that should be in apps_rg or apps_lic."""
 
-from collections import defaultdict
-from pathlib import Path
-
 ROOT = Path(__file__).parent.parent
 AGENTIC_CORE = ROOT / "agentic_core"
 

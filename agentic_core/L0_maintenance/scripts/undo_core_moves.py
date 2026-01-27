@@ -34,8 +34,8 @@ def undo_core_moves() -> Any:
         if not core_path.exists():
             continue
         # Phase 6.9 Sub-50: Use ssot_discovery instead of glob
-    from agentic_core.utils.ssot_discovery import get_python_files
-    for py_file in get_python_files(core_path):
+        from agentic_core.utils.ssot_discovery import get_python_files
+        for py_file in get_python_files(core_path):
             if py_file.name == '__init__.py':
                 continue
             target: Any = core_path.parent / py_file.name

@@ -1,5 +1,8 @@
 """Generate agent report in dashboard table style with territory/sub-territory rows."""
 import json
+from pathlib import Path
+from collections import defaultdict
+
 PROJECT_ROOT = Path(__file__).parent.parent
 with open(PROJECT_ROOT / 'agent_discovery_full.json', 'r') as f:
     agents = json.load(f)
@@ -13,7 +16,6 @@ for agent in agents:
 
 def calc_pct(agents_list, key, true_val=True):
     """TODO: Add documentation for calc_pct."""
-from pathlib import Path
     if not agents_list:
         return 0.0
     count = sum((1 for a in agents_list if a.get(key) == true_val))

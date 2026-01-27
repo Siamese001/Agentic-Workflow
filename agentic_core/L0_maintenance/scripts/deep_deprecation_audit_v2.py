@@ -1,12 +1,13 @@
 """Deep Deprecation Audit v2 - Find clearly deprecated/legacy Agent files."""
 import re
 import sys
+from pathlib import Path
+
 sys.path.insert(0, '.')
 DEPRECATION_PATTERNS = [('\\blegacy\\b', 'legacy'), ('\\bdeprecated\\b', 'deprecated'), ('\\bsuperseded\\b', 'superseded'), ('\\barchive\\b', 'archive'), ('use\\s+\\S+\\s+instead', 'use X instead'), ('\\bremoved\\b', 'removed'), ('\\bstub\\b', 'stub'), ('\\bobsolete\\b', 'obsolete')]
 
 def scan_file(filepath):
     """TODO: Add documentation for scan_file."""
-from pathlib import Path
     findings = []
     try:
         content = filepath.read_text(encoding='utf-8')

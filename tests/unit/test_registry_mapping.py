@@ -24,10 +24,10 @@ def test_registry_mapping():
     from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import (
         UnifiedASTValidatorAgent,
     )
-    from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import (
+    from agentic_core.L4_state.validation_context.UnifiedCheckpointManagerAgent import (
         UnifiedCheckpointManagerAgent,
     )
-    from agentic_core.L4_state.ValidationContext.UnifiedStateManagementAgent import (
+    from agentic_core.L4_state.validation_context.UnifiedStateManagementAgent import (
         UnifiedStateManagementAgent,
     )
     from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import UnifiedCodeEnforcerAgent

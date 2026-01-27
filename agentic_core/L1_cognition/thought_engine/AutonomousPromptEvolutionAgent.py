@@ -63,7 +63,6 @@ class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, SovereignBaseAgent):
         if self._meta_learning is None:
             try:
                 from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
                 self._meta_learning = MetaLearningAgent()
             except ImportError as e:

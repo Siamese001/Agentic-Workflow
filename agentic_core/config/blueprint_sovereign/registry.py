@@ -202,7 +202,7 @@ L4_APPROVED_FOLDERS: set = {
     "agentic_core/L5_safety/gravity",
     "agentic_core/L2_execution/tool_registry",
     "agentic_core/L2_execution/mcp",
-    "agentic_core/L4_state/ValidationContext",
+    "agentic_core/L4_state/validation_context",
     "agentic_core/schemas/models",
     "agentic_core/utils/core_extensions",
     "agentic_core/config/blueprint_sovereign",

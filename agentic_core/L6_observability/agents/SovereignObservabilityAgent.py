@@ -12,7 +12,7 @@ from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.base_agents.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
-from agentic_core.L4_state.ValidationContext.context_propagation_mixin import (
+from agentic_core.L4_state.validation_context.context_propagation_mixin import (
     ContextPropagationMixin,
 )
 from agentic_core.base_agents.decorators import standard_heal
