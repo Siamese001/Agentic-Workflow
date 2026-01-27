@@ -14,10 +14,10 @@ TIERS:
     Tier 4: Final Gate - Safety validation, final checks
 
 USAGE:
-    from agentic_core.L3_orchestration.unified_orchestrator import UnifiedOrchestratorAgent
+    from agentic_core.L3_orchestration.unified_orchestrator import OrchestratorAgent
 
     strategy = HealingStrategy(project_root=Path.cwd())
-    orchestrator = UnifiedOrchestratorAgent(strategy=strategy)
+    orchestrator = OrchestratorAgent(strategy=strategy)
     result = orchestrator.run_mission({"dry_run": True})
 """
 
@@ -38,7 +38,7 @@ class HealingStrategy:
     """
     Tiered healing execution strategy.
 
-    Implements the MissionStrategy protocol for the UnifiedOrchestratorAgent.
+    Implements the MissionStrategy protocol for the OrchestratorAgent.
     Encapsulates the 5-tier healing execution flow from SSOTOrchestratorAgent.
     """
 
@@ -70,7 +70,7 @@ class HealingStrategy:
                 "TwoPhaseDeduplicationAgent_PhaseB",  # Logic duplicates (late)
             ],
             "Tier 3: Dynamic": [
-                "UnifiedCodeEnforcerAgent",
+                "CodeEnforcerAgent",
             ]
             + CORE_HYGIENE_AGENTS["tier_3_autonomy"],
             "Tier 4: Final Gate": [
@@ -179,12 +179,12 @@ class HealingStrategy:
             Agent instance or None if not available
         """
         try:
-            if agent_name == "UnifiedCodeValidatorAgent":
-                from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
-                    UnifiedCodeValidatorAgent,
+            if agent_name == "CodeValidatorAgent":
+                from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
+                    CodeValidatorAgent,
                 )
 
-                return UnifiedCodeValidatorAgent()
+                return CodeValidatorAgent()
 
             elif agent_name == "HygieneGuardianAgent":
                 from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
@@ -193,12 +193,12 @@ class HealingStrategy:
 
                 return HygieneGuardianAgent(project_root=self.project_root)
 
-            elif agent_name == "UnifiedStructureEnforcerAgent":
-                from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
-                    UnifiedStructureEnforcerAgent,
+            elif agent_name == "StructureEnforcerAgent":
+                from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import (
+                    StructureEnforcerAgent,
                 )
 
-                return UnifiedStructureEnforcerAgent(project_root=self.project_root)
+                return StructureEnforcerAgent(project_root=self.project_root)
 
             elif agent_name == "NamingAgent":
                 from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
@@ -210,12 +210,12 @@ class HealingStrategy:
 
                 return LocationAgent(project_root=self.project_root)
 
-            elif agent_name == "UnifiedCodeEnforcerAgent":
-                from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import (
-                    UnifiedCodeEnforcerAgent,
+            elif agent_name == "CodeEnforcerAgent":
+                from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import (
+                    CodeEnforcerAgent,
                 )
 
-                return UnifiedCodeEnforcerAgent()
+                return CodeEnforcerAgent()
 
             elif agent_name == "StructuralHealerAgent":
                 from agentic_core.L5_safety.guardrails.StructuralHealerAgent import (
@@ -226,8 +226,8 @@ class HealingStrategy:
 
             # Core Hygiene Agents
             elif agent_name == "ImportAgent":
-                # Phase 5 Migration: ImportAgent -> UnifiedCodeHealerAgent
-                from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import (
+                # Phase 5 Migration: ImportAgent -> CodeHealerAgent
+                from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
                     create_legacy_import_healer,
                 )
 

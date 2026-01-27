@@ -4,7 +4,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
-UnifiedCodeDetectorAgent - Code Quality Detection
+CodeDetectorAgent - Code Quality Detection
 
 Phase 4 Hard Migration: Consolidates:
 - DeadCodeDetectorAgent (unused code detection)
@@ -80,7 +80,7 @@ class DetectorConfig:
     ignore_patterns: list[str] = field(default_factory=lambda: ["test_", "_test.py"])
 
 
-class UnifiedCodeDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class CodeDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified code quality detector.
 
@@ -92,7 +92,7 @@ class UnifiedCodeDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     - MemoryLeakDetectorAgent
 
     Usage:
-        detector = UnifiedCodeDetectorAgent()
+        detector = CodeDetectorAgent()
 
         # Detect all issues in a file
         detections = detector.detect_all(Path("my_agent.py"))
@@ -144,7 +144,7 @@ class UnifiedCodeDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self._baseline: dict[str, Any] = {}
         self._detections: list[Detection] = []
 
-        Logger.info("UnifiedCodeDetectorAgent initialized")
+        Logger.info("CodeDetectorAgent initialized")
 
     def detect_all(self, file_path: Path) -> list[Detection]:
         """Run all enabled detections on a file."""
@@ -398,7 +398,7 @@ class UnifiedCodeDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
 
 # Factory methods for backward compatibility
-def create_legacy_dead_code_detector() -> UnifiedCodeDetectorAgent:
+def create_legacy_dead_code_detector() -> CodeDetectorAgent:
     """Create detector for dead code only."""
     config = DetectorConfig(
         enable_dead_code=True,
@@ -407,10 +407,10 @@ def create_legacy_dead_code_detector() -> UnifiedCodeDetectorAgent:
         enable_deadlock=False,
         enable_memory_leak=False,
     )
-    return UnifiedCodeDetectorAgent(config=config)
+    return CodeDetectorAgent(config=config)
 
 
-def create_legacy_deadlock_detector() -> UnifiedCodeDetectorAgent:
+def create_legacy_deadlock_detector() -> CodeDetectorAgent:
     """Create detector for deadlocks only."""
     config = DetectorConfig(
         enable_dead_code=False,
@@ -419,4 +419,4 @@ def create_legacy_deadlock_detector() -> UnifiedCodeDetectorAgent:
         enable_deadlock=True,
         enable_memory_leak=False,
     )
-    return UnifiedCodeDetectorAgent(config=config)
+    return CodeDetectorAgent(config=config)

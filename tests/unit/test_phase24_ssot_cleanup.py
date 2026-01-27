@@ -29,7 +29,7 @@ class TestPathApproval:
     @pytest.fixture
     def cleanup_agent(self, tmp_path):
         """Create a SSOTFolderCleanupAgent with temp project."""
-        from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import (
+        from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import (
             SSOTFolderCleanupAgent,
         )
 
@@ -82,7 +82,7 @@ class TestFileDiscovery:
     @pytest.fixture
     def project_with_files(self, tmp_path):
         """Create a project with files in various locations."""
-        from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import (
+        from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import (
             SSOTFolderCleanupAgent,
         )
 
@@ -128,7 +128,7 @@ class TestImportUpdate:
     @pytest.fixture
     def cleanup_agent(self, tmp_path):
         """Create a cleanup agent."""
-        from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import (
+        from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import (
             SSOTFolderCleanupAgent,
         )
 
@@ -192,7 +192,7 @@ class TestEmptyFolderDeletion:
     @pytest.fixture
     def project_with_empty_folders(self, tmp_path):
         """Create a project with empty non-approved folders."""
-        from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import (
+        from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import (
             SSOTFolderCleanupAgent,
         )
 
@@ -239,7 +239,7 @@ class TestCleanupWorkflow:
     @pytest.fixture
     def cleanup_agent(self, tmp_path):
         """Create a cleanup agent with mocked dependencies."""
-        from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import (
+        from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import (
             SSOTFolderCleanupAgent,
         )
 
@@ -266,7 +266,7 @@ class TestCleanupWorkflow:
 
     def test_cleanup_with_mocked_triage(self, tmp_path):
         """Test cleanup with mocked CognitiveDispositionAgent."""
-        from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import (
+        from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import (
             SSOTFolderCleanupAgent,
         )
 
@@ -313,7 +313,7 @@ class TestPhase24Integration:
 
     def test_ssot_folder_cleanup_agent_import(self):
         """Test that SSOTFolderCleanupAgent can be imported."""
-        from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import (
+        from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import (
             SSOTFolderCleanupAgent,
         )
 
@@ -321,7 +321,7 @@ class TestPhase24Integration:
 
     def test_agent_has_required_methods(self):
         """Test that agent has all required methods."""
-        from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import (
+        from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import (
             SSOTFolderCleanupAgent,
         )
 
@@ -337,7 +337,7 @@ class TestPhase24Integration:
 
     def test_approved_paths_loaded(self, tmp_path):
         """Test that approved paths are loaded from SSOT config."""
-        from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import (
+        from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import (
             SSOTFolderCleanupAgent,
         )
 
@@ -368,7 +368,7 @@ class TestASTGuidedImportSafety:
     @pytest.fixture
     def cleanup_agent(self, tmp_path):
         """Create a cleanup agent."""
-        from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import (
+        from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import (
             SSOTFolderCleanupAgent,
         )
 
@@ -480,7 +480,7 @@ class TestConfigurationSafetyInterlock:
 
     def test_config_load_failure_raises_runtime_error(self):
         """Test that config load failure raises RuntimeError, not silent empty config."""
-        from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import (
+        from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import (
             SSOTFolderCleanupAgent,
         )
 
@@ -503,7 +503,7 @@ class TestConfigurationSafetyInterlock:
         """Test that agent uses AST for import updates."""
         import inspect
 
-        from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import (
+        from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import (
             SSOTFolderCleanupAgent,
         )
 

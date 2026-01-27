@@ -378,8 +378,8 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """Lazy-load import healer to avoid circular import."""
         if self._import_agent is None:
             try:
-                # Phase 5 Migration: ImportAgent -> UnifiedCodeHealerAgent
-                from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import (
+                # Phase 5 Migration: ImportAgent -> CodeHealerAgent
+                from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
                     create_legacy_import_healer,
                 )
                 self._import_agent = create_legacy_import_healer()

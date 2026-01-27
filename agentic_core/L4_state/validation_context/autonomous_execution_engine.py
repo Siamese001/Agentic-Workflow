@@ -21,8 +21,8 @@ from typing import Any
 
 Logger = logging.getLogger(__name__)
 
-# L2 Resource awareness - Use UnifiedResourceManagerAgent (consolidates ProactiveResourceManagerAgent)
-from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import (
+# L2 Resource awareness - Use ResourceManagerAgent (consolidates ProactiveResourceManagerAgent)
+from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import (
     create_proactive_resource_manager,
 )
 

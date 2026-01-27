@@ -133,11 +133,11 @@ class DecompositionOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         task_keywords = {
             "refactor": ["StructuralEngineerAgent", "ArchitectureGovernorAgent"],
             "validate": ["CodeValidatorAgent", "StructuralValidatorAgent"],
-            "fix": ["HierarchyAgent", "UnifiedCodeHealerAgent", "NamingAgent"],
+            "fix": ["HierarchyAgent", "CodeHealerAgent", "NamingAgent"],
             "security": ["SecurityManagerAgent", "SafetyInspector"],
             "format": ["CodeFormatterAgent"],
             "test": ["TestCoverageGuardianAgent", "CoverageAgent"],
-            "import": ["UnifiedCodeHealerAgent", "UnifiedStructureEnforcerAgent"],
+            "import": ["CodeHealerAgent", "StructureEnforcerAgent"],
             "naming": ["NamingAgent"],
             "heal": ["ArchitectureGovernorAgent", "HygieneGuardianAgent"],
         }
@@ -151,8 +151,8 @@ class DecompositionOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             agent_data = self._agent_registry.get(best_agent, {})
             return (best_agent, agent_data.get("path", ""))
         return (
-            "UnifiedOrchestratorAgent",
-            "agentic_core/L3_orchestration/UnifiedOrchestratorAgent.py",
+            "OrchestratorAgent",
+            "agentic_core/L3_orchestration/OrchestratorAgent.py",
         )
 
     def decompose(self, prompt: str, max_tasks: int = 10) -> MissionPlan:

@@ -19,7 +19,7 @@ from typing import Any, Dict, List, Optional, Protocol, Set, Union, Pattern, Tup
 # [HARDENING] 2026-01-26: Converted all mutable containers to immutable
 
 # ============================================================================
-# UNIFIED SOVEREIGN TERRITORY SCHEMA (The Master Constitution)
+# SOVEREIGN TERRITORY SCHEMA (The Master Constitution)
 # ============================================================================
 # [SSOT 2026-01-27] Consolidates all 5 legacy registries into a single 
 # hierarchical model. This eliminates 'Architectural Split-Brain'.
@@ -265,7 +265,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
 # These subfolders are exempt from strict depth enforcement.
 # Files at depth 2 are allowed in these folders to support:
 # - Base agents at layer root (e.g., SovereignBaseAgent.py)
-# - Unified orchestrators (e.g., unified_orchestrator.py)
+# Orchestrator at layer root
 # - Core utilities (e.g., sovereign_index.py)
 VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
     {
@@ -274,7 +274,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
         "common",  # common/healing/* variable depth
         "observability",  # observability/* at depth 2 (legacy)
         "L6_observability",  # L6ObservabilityBaseAgent.py at depth 2
-        "L3_orchestration",  # unified_orchestrator.py at depth 2
+        "L3_orchestration",  # Orchestrator at layer root
         "L0_maintenance",  # scripts at variable depth
         "L1_cognition",  # thought_engine at variable depth
         "L2_execution",  # mcp at variable depth
@@ -491,10 +491,10 @@ CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "domain": [],  # Pure domain entities and business objects - no subfolders currently
     "L0_maintenance": ["scripts", "logs", "reports", "boot", "security", "agentic_core"],  # System maintenance and healing
     "L1_cognition": ["thought_engine", "intent_analysis"],  # Cognitive processing (no scripts - pure data domain)
-    "L2_execution": ["tool_registry", "mcp", "unified"],  # Execution engines and tools
+    "L2_execution": ["tool_registry", "mcp", "execution_bridge"],  # Execution engines and tools
     "L3_orchestration": ["workflow_engines", "fission_logic", "interfaces"],  # Workflow orchestration
     "L4_state": ["validation_context", "ledger", "memory"],  # State management
-    "L5_safety": ["validators", "guardrails", "unified", "gravity", "red_teaming", "cognition", "core", "utils"],  # Security and validation
+    "L5_safety": ["validators", "guardrails", "policy_engine", "gravity", "red_teaming", "cognition", "core", "utils"],  # Security and validation
     "L6_observability": ["dashboards", "agents", "reports", "telemetry"],  # Monitoring and reporting
     
     # === SPECIALIZED DOMAINS ===

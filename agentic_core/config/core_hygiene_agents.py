@@ -13,7 +13,7 @@ Territory: agentic_core/config/
 # Core hygiene agents organized by tier
 CORE_HYGIENE_AGENTS: dict[str, list[str]] = {
     "tier_0_preflight": [
-        "UnifiedCodeValidatorAgent",
+        "CodeValidatorAgent",
     ],
     "tier_1_structural": [
         "ImportAgent",
@@ -24,7 +24,7 @@ CORE_HYGIENE_AGENTS: dict[str, list[str]] = {
         "HygieneGuardianAgent",  # Now includes FileCleanupAgent logic (consolidated 2026-01-21)
     ],
     "tier_2_architectural": [
-        "UnifiedStructureEnforcerAgent",
+        "StructureEnforcerAgent",
         "FilesystemSSOTReconcilerAgent",
         "DDDAlignmentAgent",
         "GitHygieneAgent",
@@ -32,34 +32,34 @@ CORE_HYGIENE_AGENTS: dict[str, list[str]] = {
     ],
     "tier_3_autonomy": [
         "AutonomyGuardianAgent",
-        # CodeJanitorAgent - ARCHIVED: Redundant with UnifiedCodeValidatorAgent (2026-01-21)
+        # CodeJanitorAgent - ARCHIVED: Redundant with CodeValidatorAgent (2026-01-21)
     ],
 }
 
 # Agents that MUST pass before any healing proceeds
 MANDATORY_PREFLIGHT: list[str] = [
-    "UnifiedCodeValidatorAgent",  # Syntax must be valid
+    "CodeValidatorAgent",  # Syntax must be valid
     "ImportAgent",  # Imports must be valid
     "LocationAgent",  # Files must be in valid locations
 ]
 
 # Agent descriptions for documentation
 AGENT_DESCRIPTIONS: dict[str, str] = {
-    "UnifiedCodeValidatorAgent": "Syntax validation, AST parsing, canon compliance",
+    "CodeValidatorAgent": "Syntax validation, AST parsing, canon compliance",
     "ImportAgent": "Import ordering, gravity waterfall, unused import detection",
     "LocationAgent": "Root folder whitelist, depth enforcement, forbidden patterns",
     "NamingAgent": "Naming conventions, *Agent suffix enforcement",
     "HierarchyAgent": "L2/L3 structure creation, depth enforcement, orphan purging",
     "CodeDeduplicationAgent": "Filename uniqueness, whole-file duplicate detection",
     "HygieneGuardianAgent": "Empty files, orphaned __init__.py, backup/temp cleanup, repeated filenames, copy patterns (consolidated)",
-    "UnifiedStructureEnforcerAgent": "Gravity/layer import enforcement, hierarchy validation",
+    "StructureEnforcerAgent": "Gravity/layer import enforcement, hierarchy validation",
     "FilesystemSSOTReconcilerAgent": "Blueprint → Filesystem alignment, drift detection",
     "DDDAlignmentAgent": "DDD bounded context enforcement, cross-context import detection",
     "GitHygieneAgent": "Stale branches, large files, uncommitted changes",
     "AutonomyGuardianAgent": "Agent autonomy enforcement, heal_repository() requirement",
     # ARCHIVED AGENTS (kept for reference):
     # "FileCleanupAgent": "ARCHIVED - Consolidated into HygieneGuardianAgent (2026-01-21)",
-    # "CodeJanitorAgent": "ARCHIVED - Redundant with UnifiedCodeValidatorAgent (2026-01-21)",
+    # "CodeJanitorAgent": "ARCHIVED - Redundant with CodeValidatorAgent (2026-01-21)",
 }
 
 

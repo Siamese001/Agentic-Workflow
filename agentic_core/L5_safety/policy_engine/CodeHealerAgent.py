@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 """
-UnifiedCodeHealerAgent - Code Healing & Repair
+CodeHealerAgent - Code Healing & Repair
 
 Phase 4 Hard Migration: Consolidates:
 - CanonHealerAgent (canon compliance healing)
@@ -70,7 +70,7 @@ class HealerConfig:
     backup_dir: Path | None = None
 
 
-class UnifiedCodeHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class CodeHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified code healer for canon, imports, and structure.
 
@@ -80,7 +80,7 @@ class UnifiedCodeHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     - StructuralHealerAgent
 
     Usage:
-        healer = UnifiedCodeHealerAgent()
+        healer = CodeHealerAgent()
 
         # Heal imports in a file
         actions = healer.heal_imports(Path("my_agent.py"))
@@ -131,7 +131,7 @@ class UnifiedCodeHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         if self._agent_config.backup_dir is None:
             self._agent_config.backup_dir = self.project_root / "archives" / "healing_backups" / "code"
 
-        Logger.info("UnifiedCodeHealerAgent initialized")
+        Logger.info("CodeHealerAgent initialized")
 
     def heal_repository(
         self, dry_run: bool = True, execute: bool = False, **kwargs
@@ -383,21 +383,21 @@ class UnifiedCodeHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
 
 # Factory methods for backward compatibility
-def create_legacy_canon_healer() -> UnifiedCodeHealerAgent:
+def create_legacy_canon_healer() -> CodeHealerAgent:
     """Create healer for canon compliance only."""
     config = HealerConfig(
         enable_canon=True,
         enable_import=False,
         enable_structural=False,
     )
-    return UnifiedCodeHealerAgent(config=config)
+    return CodeHealerAgent(config=config)
 
 
-def create_legacy_import_healer() -> UnifiedCodeHealerAgent:
+def create_legacy_import_healer() -> CodeHealerAgent:
     """Create healer for imports only."""
     config = HealerConfig(
         enable_canon=False,
         enable_import=True,
         enable_structural=False,
     )
-    return UnifiedCodeHealerAgent(config=config)
+    return CodeHealerAgent(config=config)

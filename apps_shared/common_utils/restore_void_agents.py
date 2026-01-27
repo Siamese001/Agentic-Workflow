@@ -63,7 +63,7 @@ SKIP_AGENTS = {
     "MetricsAgent.py",  # -> MetricsWitnessAgent
     "TelemetryAgent.py",  # -> RuntimeTelemetryAgent
     "PatternEnforcerAgent.py",  # -> CodeStandardsEnforcerAgent
-    "HygieneValidatorAgent.py",  # -> UnifiedHygieneValidatorAgent
+    "HygieneValidatorAgent.py",  # -> HygieneValidatorAgent
     "StateValidatorAgent.py",  # Deprecated
     "StateValidatorDeprecatedAgent.py",
     "GenerativeGuardDeprecatedAgent.py",

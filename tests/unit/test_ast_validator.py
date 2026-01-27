@@ -2,7 +2,7 @@
 """
 test_unified_ast_validator.py - Parallel Execution Testing (Shadow Mode)
 
-This script runs both legacy validators and the new UnifiedASTValidatorAgent
+This script runs both legacy validators and the new ASTValidatorAgent
 on the same codebase, outputting results to separate JSON files for diff comparison.
 
 Testing Procedures:
@@ -109,7 +109,7 @@ def run_legacy_validators(source: str, file_path: Path) -> dict[str, list[dict[s
 
 def run_unified_validator(source: str, file_path: Path) -> dict[str, list[dict[str, Any]]]:
     """
-    Run the UnifiedASTValidatorAgent and collect violations.
+    Run the ASTValidatorAgent and collect violations.
 
     Args:
         source: Python source code
@@ -119,14 +119,14 @@ def run_unified_validator(source: str, file_path: Path) -> dict[str, list[dict[s
         Dictionary with grouped violations
     """
     try:
-        from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import (
-            UnifiedASTValidatorAgent,
+        from agentic_core.L1_cognition.thought_engine.ASTValidatorAgent import (
+            ASTValidatorAgent,
         )
 
-        validator = UnifiedASTValidatorAgent()
+        validator = ASTValidatorAgent()
         grouped = validator.validate_all(source, file_path)
         return {
-            "UnifiedASTValidatorAgent": grouped,
+            "ASTValidatorAgent": grouped,
             "all_violations": validator.get_violations(),
         }
     except Exception as e:
@@ -214,11 +214,11 @@ def run_chaos_test() -> dict[str, Any]:
     source = chaos_file.read_text(encoding="utf-8")
 
     # Run unified validator
-    from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import (
-        UnifiedASTValidatorAgent,
+    from agentic_core.L1_cognition.thought_engine.ASTValidatorAgent import (
+        ASTValidatorAgent,
     )
 
-    validator = UnifiedASTValidatorAgent()
+    validator = ASTValidatorAgent()
     grouped = validator.validate_all(source, chaos_file)
     all_violations = validator.get_violations()
 
@@ -260,21 +260,21 @@ def run_chaos_test() -> dict[str, Any]:
 
 def run_self_tests() -> dict[str, Any]:
     """
-    Run the UnifiedASTValidatorAgent's internal self-tests.
+    Run the ASTValidatorAgent's internal self-tests.
 
     Returns:
         Self-test results
     """
-    from agentic_core.L1_cognition.thought_engine.UnifiedASTValidatorAgent import (
-        UnifiedASTValidatorAgent,
+    from agentic_core.L1_cognition.thought_engine.ASTValidatorAgent import (
+        ASTValidatorAgent,
     )
 
-    validator = UnifiedASTValidatorAgent()
+    validator = ASTValidatorAgent()
     return validator._run_self_tests()
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Test UnifiedASTValidatorAgent")
+    parser = argparse.ArgumentParser(description="Test ASTValidatorAgent")
     parser.add_argument(
         "--chaos-only", action="store_true", help="Run only chaos_test.py validation"
     )
@@ -293,7 +293,7 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     print("=" * 60)
-    print("UnifiedASTValidatorAgent Test Suite")
+    print("ASTValidatorAgent Test Suite")
     print("=" * 60)
 
     results = {

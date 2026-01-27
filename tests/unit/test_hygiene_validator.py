@@ -30,12 +30,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 
 def run_self_tests() -> dict[str, Any]:
-    """Run the UnifiedStructureValidatorAgent's internal self-tests."""
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-        UnifiedStructureValidatorAgent,
+    """Run the StructureValidatorAgent's internal self-tests."""
+    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
+        StructureValidatorAgent,
     )
 
-    validator = UnifiedStructureValidatorAgent(project_root=PROJECT_ROOT)
+    validator = StructureValidatorAgent(project_root=PROJECT_ROOT)
     return validator._run_self_tests()
 
 
@@ -46,8 +46,8 @@ def test_gap4_duplicate_detection() -> dict[str, Any]:
     Creates two identical files in different directories and verifies
     the validator detects them as duplicates via MD5 hash.
     """
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-        UnifiedStructureValidatorAgent,
+    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
+        StructureValidatorAgent,
     )
 
     # Use the test fixtures directory
@@ -56,7 +56,7 @@ def test_gap4_duplicate_detection() -> dict[str, Any]:
     if not fixtures_dir.exists():
         return {"status": "SKIP", "reason": f"Test fixtures directory not found: {fixtures_dir}"}
 
-    validator = UnifiedStructureValidatorAgent(project_root=fixtures_dir)
+    validator = StructureValidatorAgent(project_root=fixtures_dir)
     validator._scan_repository()
     duplicates = validator._find_duplicates()
 
@@ -82,8 +82,8 @@ def test_orphan_detection() -> dict[str, Any]:
 
     Verifies the validator identifies files not imported anywhere.
     """
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-        UnifiedStructureValidatorAgent,
+    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
+        StructureValidatorAgent,
     )
 
     # Use the test fixtures directory
@@ -92,7 +92,7 @@ def test_orphan_detection() -> dict[str, Any]:
     if not fixtures_dir.exists():
         return {"status": "SKIP", "reason": f"Test fixtures directory not found: {fixtures_dir}"}
 
-    validator = UnifiedStructureValidatorAgent(project_root=fixtures_dir)
+    validator = StructureValidatorAgent(project_root=fixtures_dir)
     validator._scan_repository()
     orphans = validator._find_orphans()
 
@@ -113,8 +113,8 @@ def test_marker_scanning() -> dict[str, Any]:
 
     Verifies the validator finds TODO, FIXME, HACK, XXX, BUG markers.
     """
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-        UnifiedStructureValidatorAgent,
+    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
+        StructureValidatorAgent,
     )
 
     # Use the test fixtures directory
@@ -123,7 +123,7 @@ def test_marker_scanning() -> dict[str, Any]:
     if not fixtures_dir.exists():
         return {"status": "SKIP", "reason": f"Test fixtures directory not found: {fixtures_dir}"}
 
-    validator = UnifiedStructureValidatorAgent(project_root=fixtures_dir)
+    validator = StructureValidatorAgent(project_root=fixtures_dir)
     validator._scan_repository()
     markers = validator._scan_markers()
 
@@ -151,8 +151,8 @@ def test_full_validation() -> dict[str, Any]:
     """
     Full Validation Test: Run complete repository validation.
     """
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-        UnifiedStructureValidatorAgent,
+    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
+        StructureValidatorAgent,
     )
 
     # Use the test fixtures directory for controlled testing
@@ -161,7 +161,7 @@ def test_full_validation() -> dict[str, Any]:
     if not fixtures_dir.exists():
         return {"status": "SKIP", "reason": f"Test fixtures directory not found: {fixtures_dir}"}
 
-    validator = UnifiedStructureValidatorAgent(project_root=fixtures_dir)
+    validator = StructureValidatorAgent(project_root=fixtures_dir)
     results = validator.validate_repository()
 
     return {
@@ -172,7 +172,7 @@ def test_full_validation() -> dict[str, Any]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Test UnifiedStructureValidatorAgent")
+    parser = argparse.ArgumentParser(description="Test StructureValidatorAgent")
     parser.add_argument("--self-test", action="store_true", help="Run only self-tests")
     parser.add_argument(
         "--duplicates-only", action="store_true", help="Run only duplicate detection test"
@@ -192,7 +192,7 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     print("=" * 60)
-    print("UnifiedStructureValidatorAgent Test Suite (Phase 2)")
+    print("StructureValidatorAgent Test Suite (Phase 2)")
     print("=" * 60)
 
     results = {

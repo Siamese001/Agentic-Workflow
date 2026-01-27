@@ -4,7 +4,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
-UnifiedStructureEnforcerAgent - Structural Enforcement
+StructureEnforcerAgent - Structural Enforcement
 
 Phase 3 Hard Migration: Consolidates:
 - GravityEnforcerAgent (layer gravity enforcement)
@@ -85,7 +85,7 @@ class StructureConfig:
     min_docstring_length: int = 10
 
 
-class UnifiedStructureEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class StructureEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified structure enforcement with gravity and naming.
 
@@ -98,7 +98,7 @@ class UnifiedStructureEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     - StrictDocEnforcerAgent (strict docs)
 
     Usage:
-        enforcer = UnifiedStructureEnforcerAgent()
+        enforcer = StructureEnforcerAgent()
 
         # Validate structure
         violations = enforcer.validate_file(Path("my_agent.py"))
@@ -151,7 +151,7 @@ class UnifiedStructureEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self._lock = threading.RLock()
         self._violations: list[StructureViolation] = []
 
-        Logger.info("UnifiedStructureEnforcerAgent initialized")
+        Logger.info("StructureEnforcerAgent initialized")
 
     def validate_file(self, file_path: Path) -> list[StructureViolation]:
         """Validate a file for all structure rules."""
@@ -440,7 +440,7 @@ class UnifiedStructureEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
 
 # Factory methods for backward compatibility
-def create_legacy_gravity_enforcer() -> UnifiedStructureEnforcerAgent:
+def create_legacy_gravity_enforcer() -> StructureEnforcerAgent:
     """Create enforcer for gravity rules."""
     config = StructureConfig(
         enable_gravity=True,
@@ -449,10 +449,10 @@ def create_legacy_gravity_enforcer() -> UnifiedStructureEnforcerAgent:
         enable_documentation=False,
         enable_ascii=False,
     )
-    return UnifiedStructureEnforcerAgent(config=config)
+    return StructureEnforcerAgent(config=config)
 
 
-def create_legacy_naming_enforcer() -> UnifiedStructureEnforcerAgent:
+def create_legacy_naming_enforcer() -> StructureEnforcerAgent:
     """Create enforcer for naming conventions."""
     config = StructureConfig(
         enable_gravity=False,
@@ -461,10 +461,10 @@ def create_legacy_naming_enforcer() -> UnifiedStructureEnforcerAgent:
         enable_documentation=False,
         enable_ascii=False,
     )
-    return UnifiedStructureEnforcerAgent(config=config)
+    return StructureEnforcerAgent(config=config)
 
 
-def create_legacy_doc_enforcer() -> UnifiedStructureEnforcerAgent:
+def create_legacy_doc_enforcer() -> StructureEnforcerAgent:
     """Create enforcer for documentation."""
     config = StructureConfig(
         enable_gravity=False,
@@ -473,4 +473,4 @@ def create_legacy_doc_enforcer() -> UnifiedStructureEnforcerAgent:
         enable_documentation=True,
         enable_ascii=False,
     )
-    return UnifiedStructureEnforcerAgent(config=config)
+    return StructureEnforcerAgent(config=config)

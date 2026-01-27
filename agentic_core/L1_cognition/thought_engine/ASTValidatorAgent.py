@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-UnifiedASTValidatorAgent - Consolidated AST validator replacing 5 micro-agents.
+ASTValidatorAgent - Consolidated AST validator replacing 5 micro-agents.
 
 Consolidates:
 - BareExceptValidatorAgent (Key 5)
@@ -32,7 +32,7 @@ MCPHardenedMixin = _mod.MCPHardenedMixin
 
 
 @dataclass
-class UnifiedASTValidatorAgent(SovereignBaseAgent, CanonASTValidator):
+class ASTValidatorAgent(SovereignBaseAgent, CanonASTValidator):
     """
     Unified AST validator replacing 5 micro-agents.
 
@@ -337,29 +337,29 @@ if TYPE_CHECKING:
 
 
 # Factory function for sovereign discovery
-def get_unified_ast_validator() -> UnifiedASTValidatorAgent:
-    """Factory function to get UnifiedASTValidatorAgent instance."""
-    return UnifiedASTValidatorAgent()
+def get_unified_ast_validator() -> ASTValidatorAgent:
+    """Factory function to get ASTValidatorAgent instance."""
+    return ASTValidatorAgent()
 
 
 # Convenience functions for backward compatibility with legacy validators
 def validate_bare_except(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 5: No bare except statements."""
-    validator = UnifiedASTValidatorAgent()
+    validator = ASTValidatorAgent()
     violations = validator.validate(content, file_path)
     return [v for v in violations if "bare except" in v.get("message", "").lower()]
 
 
 def validate_empty_except(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 4: No empty except blocks."""
-    validator = UnifiedASTValidatorAgent()
+    validator = ASTValidatorAgent()
     violations = validator.validate(content, file_path)
     return [v for v in violations if "empty except" in v.get("message", "").lower()]
 
 
 def validate_eval_exec(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 6: No eval/exec."""
-    validator = UnifiedASTValidatorAgent()
+    validator = ASTValidatorAgent()
     violations = validator.validate(content, file_path)
     return [
         v
@@ -370,14 +370,14 @@ def validate_eval_exec(file_path: Path, content: str) -> list[dict[str, Any]]:
 
 def validate_dangerous_builtins(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 42: No dangerous builtins."""
-    validator = UnifiedASTValidatorAgent()
+    validator = ASTValidatorAgent()
     violations = validator.validate(content, file_path)
     return [v for v in violations if "dangerous builtin" in v.get("message", "").lower()]
 
 
 def validate_debugger(file_path: Path, content: str) -> list[dict[str, Any]]:
     """Validate Key 3: No debugger statements."""
-    validator = UnifiedASTValidatorAgent()
+    validator = ASTValidatorAgent()
     violations = validator.validate(content, file_path)
     return [
         v

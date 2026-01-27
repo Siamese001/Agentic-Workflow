@@ -37,7 +37,7 @@ class TestCoreHygieneAgentRegistry:
     def test_mandatory_preflight_agents(self):
         """Verify mandatory preflight agents are defined."""
         assert len(MANDATORY_PREFLIGHT) > 0
-        assert "UnifiedCodeValidatorAgent" in MANDATORY_PREFLIGHT
+        assert "CodeValidatorAgent" in MANDATORY_PREFLIGHT
         assert "ImportAgent" in MANDATORY_PREFLIGHT
         assert "LocationAgent" in MANDATORY_PREFLIGHT
 
@@ -47,27 +47,27 @@ class TestCoreHygieneAgentRegistry:
         assert isinstance(all_agents, list)
         assert len(all_agents) > 0
         # Should contain agents from all tiers
-        assert "UnifiedCodeValidatorAgent" in all_agents
+        assert "CodeValidatorAgent" in all_agents
         assert "HygieneGuardianAgent" in all_agents
 
     def test_get_tier_agents(self):
         """Verify get_tier_agents returns correct agents for each tier."""
         tier_0 = get_tier_agents(0)
-        assert "UnifiedCodeValidatorAgent" in tier_0
+        assert "CodeValidatorAgent" in tier_0
 
         tier_1 = get_tier_agents(1)
         assert "ImportAgent" in tier_1
         assert "LocationAgent" in tier_1
 
         tier_2 = get_tier_agents(2)
-        assert "UnifiedStructureEnforcerAgent" in tier_2
+        assert "StructureEnforcerAgent" in tier_2
 
         tier_3 = get_tier_agents(3)
         assert "AutonomyGuardianAgent" in tier_3
 
     def test_is_mandatory_agent(self):
         """Verify is_mandatory_agent correctly identifies mandatory agents."""
-        assert is_mandatory_agent("UnifiedCodeValidatorAgent") is True
+        assert is_mandatory_agent("CodeValidatorAgent") is True
         assert is_mandatory_agent("ImportAgent") is True
         assert is_mandatory_agent("LocationAgent") is True
         assert is_mandatory_agent("FileCleanupAgent") is False
@@ -94,7 +94,7 @@ class TestHealingStrategyIntegration:
 
         # Tier 0 should have preflight agents
         tier_0_agents = tiers["Tier 0: Pre-Flight"]
-        assert "UnifiedCodeValidatorAgent" in tier_0_agents
+        assert "CodeValidatorAgent" in tier_0_agents
 
         # Tier 1 should have structural agents
         tier_1_agents = tiers["Tier 1: Structural"]
@@ -193,13 +193,13 @@ class TestAgentLoadingAndExecution:
         assert agent.__class__.__name__ == "ImportAgent"
 
     def test_unified_code_validator_loads(self):
-        """Verify UnifiedCodeValidatorAgent can be loaded."""
+        """Verify CodeValidatorAgent can be loaded."""
         strategy = HealingStrategy(project_root=Path.cwd())
-        agent = strategy.get_agent("UnifiedCodeValidatorAgent")
+        agent = strategy.get_agent("CodeValidatorAgent")
 
         assert agent is not None
         assert hasattr(agent, "heal_repository")
-        assert agent.__class__.__name__ == "UnifiedCodeValidatorAgent"
+        assert agent.__class__.__name__ == "CodeValidatorAgent"
 
     def test_agent_heal_repository_signature(self):
         """Verify agents have correct heal_repository signature."""

@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 """
-Bias Auditor - Shim layer for UnifiedSafetyDetectorAgent
-Phase 5 Migration: Migrated from BiasAuditorAgent to UnifiedSafetyDetectorAgent
+Bias Auditor - Shim layer for SafetyDetectorAgent
+Phase 5 Migration: Migrated from BiasAuditorAgent to SafetyDetectorAgent
 """
 
 from dataclasses import dataclass
 from enum import Enum
 
-from agentic_core.L5_safety.unified.UnifiedSafetyDetectorAgent import (
-    UnifiedSafetyDetectorAgent,
+from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import (
+    SafetyDetectorAgent,
     SafetyThreat,
     SafetyThreatType,
     ThreatSeverity,
@@ -54,15 +54,15 @@ class BiasResult:
 
 # Compatibility wrapper class
 class BiasAuditorAgent:
-    """Legacy compatibility wrapper for UnifiedSafetyDetectorAgent."""
+    """Legacy compatibility wrapper for SafetyDetectorAgent."""
     
     def __init__(self, enable_logging: bool = True):
-        """Initialize bias auditor using UnifiedSafetyDetectorAgent."""
-        self._detector = UnifiedSafetyDetectorAgent()
+        """Initialize bias auditor using SafetyDetectorAgent."""
+        self._detector = SafetyDetectorAgent()
         self.enable_logging = enable_logging
     
     def audit_content(self, content: str) -> BiasResult:
-        """Check for biased language patterns using UnifiedSafetyDetectorAgent."""
+        """Check for biased language patterns using SafetyDetectorAgent."""
         if not content:
             return BiasResult(
                 has_bias=False,
@@ -73,7 +73,7 @@ class BiasAuditorAgent:
                 recommendations=["Content appears neutral and inclusive"],
             )
         
-        # Use UnifiedSafetyDetectorAgent to detect bias
+        # Use SafetyDetectorAgent to detect bias
         threats = self._detector.detect_bias(content)
         
         # Convert SafetyThreat list to legacy BiasResult format
@@ -85,7 +85,7 @@ class BiasAuditorAgent:
         matches = []
         for threat in threats:
             matches.append(BiasMatch(
-                BiasType=BiasType.GENDER,  # Default, as UnifiedSafetyDetectorAgent doesn't categorize
+                BiasType=BiasType.GENDER,  # Default, as SafetyDetectorAgent doesn't categorize
                 phrase=threat.details.get("matched_text", ""),
                 context=threat.details.get("text_preview", ""),
                 Severity=0.5 if threat.severity == ThreatSeverity.MEDIUM else 0.8,

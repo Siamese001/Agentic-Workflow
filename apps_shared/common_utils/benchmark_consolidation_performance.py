@@ -179,10 +179,10 @@ def main():
 
     unified_modules = [
         "agentic_core.L3_orchestration.unified.CoreOrchestrationAgent",
-        "agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent",
-        "agentic_core.L5_safety.unified.UnifiedResourceManagerAgent",
-        "agentic_core.L5_safety.unified.UnifiedCodeDetectorAgent",
-        "agentic_core.L2_execution.unified.UnifiedModelRouterAgent",
+        "agentic_core.L5_safety.unified.CodeValidatorAgent",
+        "agentic_core.L5_safety.unified.ResourceManagerAgent",
+        "agentic_core.L5_safety.unified.CodeDetectorAgent",
+        "agentic_core.L2_execution.unified.ModelRouterAgent",
     ]
 
     total_import_time = 0

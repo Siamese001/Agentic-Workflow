@@ -94,7 +94,7 @@ def test_migration_map_covers_key_patterns():
     patterns_to_check = [
         "structure_blueprint",
         "healer_mixin",
-        "UnifiedCodeValidatorAgent",
+        "CodeValidatorAgent",
     ]
 
     migration_patterns = " ".join(MIGRATION_MAP.keys())
@@ -112,9 +112,9 @@ def test_ssot_modules_importable():
     assert DEFAULT_EXCLUDE_DIRS is not None
 
     # Unified API
-    from agentic_core.unified import UnifiedCodeValidatorAgent
+    from agentic_core.unified import CodeValidatorAgent
 
-    assert UnifiedCodeValidatorAgent is not None
+    assert CodeValidatorAgent is not None
 
     # Project root
     from agentic_core.utils.project_root import get_project_root

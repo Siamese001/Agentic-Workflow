@@ -21,44 +21,44 @@ def test_unified_api_exports():
     """Verify cleaner import paths for Agents."""
     # New clean import
     # Old deep import
-    from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
-        UnifiedCodeValidatorAgent as Original,
+    from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
+        CodeValidatorAgent as Original,
     )
-    from agentic_core.unified import UnifiedCodeValidatorAgent
+    from agentic_core.unified import CodeValidatorAgent
 
-    assert UnifiedCodeValidatorAgent is Original
-    assert inspect.isclass(UnifiedCodeValidatorAgent)
+    assert CodeValidatorAgent is Original
+    assert inspect.isclass(CodeValidatorAgent)
 
 
 def test_unified_structure_validator_export():
-    """Verify UnifiedStructureValidatorAgent is exported."""
-    from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-        UnifiedStructureValidatorAgent as Original,
+    """Verify StructureValidatorAgent is exported."""
+    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
+        StructureValidatorAgent as Original,
     )
-    from agentic_core.unified import UnifiedStructureValidatorAgent
+    from agentic_core.unified import StructureValidatorAgent
 
-    assert UnifiedStructureValidatorAgent is Original
-    assert inspect.isclass(UnifiedStructureValidatorAgent)
+    assert StructureValidatorAgent is Original
+    assert inspect.isclass(StructureValidatorAgent)
 
 
 def test_unified_code_enforcer_export():
-    """Verify UnifiedCodeEnforcerAgent is exported."""
-    from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import (
-        UnifiedCodeEnforcerAgent as Original,
+    """Verify CodeEnforcerAgent is exported."""
+    from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import (
+        CodeEnforcerAgent as Original,
     )
-    from agentic_core.unified import UnifiedCodeEnforcerAgent
+    from agentic_core.unified import CodeEnforcerAgent
 
-    assert UnifiedCodeEnforcerAgent is Original
+    assert CodeEnforcerAgent is Original
 
 
 def test_unified_resource_manager_export():
-    """Verify UnifiedResourceManagerAgent is exported."""
-    from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import (
-        UnifiedResourceManagerAgent as Original,
+    """Verify ResourceManagerAgent is exported."""
+    from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import (
+        ResourceManagerAgent as Original,
     )
-    from agentic_core.unified import UnifiedResourceManagerAgent
+    from agentic_core.unified import ResourceManagerAgent
 
-    assert UnifiedResourceManagerAgent is Original
+    assert ResourceManagerAgent is Original
 
 
 def test_config_api_exports():

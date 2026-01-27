@@ -7,7 +7,7 @@ This module provides advanced intelligence capabilities:
 - SemanticAnalyzer: Docstring consistency, content quality analysis
 - StrategicAdvisor: Code smell detection, refactoring proposals
 - OmniContext: Global context management and semantic retrieval
-- UnifiedOrchestratorAgent: Multi-phase execution with convergence
+- OrchestratorAgent: Multi-phase execution with convergence
 """
 import asyncio
 import hashlib
@@ -746,7 +746,7 @@ class OmniContext:
         }
 
 
-class UnifiedOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Multi-phase execution orchestrator.
 

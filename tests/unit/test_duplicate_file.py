@@ -2,7 +2,7 @@
 Test Duplicate File A - For GAP-4 Verification
 
 This file is intentionally identical to test_duplicate_file.py in duplicate_b/
-to verify that the UnifiedHygieneValidatorAgent correctly detects duplicates
+to verify that the HygieneValidatorAgent correctly detects duplicates
 via MD5 hash comparison.
 
 DO NOT MODIFY - Used for testing duplicate detection.

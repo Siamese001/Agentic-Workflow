@@ -93,7 +93,7 @@ RENAMES = {
     "StrategicPlannerAgent": "StrategicPlannerAgent",
     "StrictDocEnforcerAgent": "StrictDocEnforcerAgent",
     "TemplateOptimizerAgent": "TemplateOptimizerAgent",
-    "UnifiedOrchestratorAgent": "UnifiedOrchestratorAgent",
+    "OrchestratorAgent": "OrchestratorAgent",
     # Utils
     "Phase5Validator": "Phase5ValidatorAgent",
     "SystemValidator": "SystemValidatorAgent",

@@ -2,7 +2,7 @@
 Orphan Test File - For Dead Code Detection Verification
 
 This file is intentionally NOT imported by any other file in the repository.
-It should be detected as an "orphan" (dead code) by the UnifiedHygieneValidatorAgent.
+It should be detected as an "orphan" (dead code) by the HygieneValidatorAgent.
 
 DO NOT IMPORT THIS FILE - Used for testing orphan detection.
 """

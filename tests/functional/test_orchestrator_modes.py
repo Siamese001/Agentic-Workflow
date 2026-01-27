@@ -1,5 +1,5 @@
 """
-Test Suite for UnifiedOrchestratorAgent Modes
+Test Suite for OrchestratorAgent Modes
 
 Verifies mode-based execution (HEALING, COMPLIANCE, SSOT, FULL)
 as implemented in Opportunity #1.
@@ -9,9 +9,9 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import (
+from agentic_core.L3_orchestration.OrchestratorAgent import (
     OrchestratorMode,
-    UnifiedOrchestratorAgent,
+    OrchestratorAgent,
 )
 
 
@@ -20,8 +20,8 @@ class test_unified_orchestrator_modes:
 
     @pytest.fixture
     def orchestrator(self):
-        """Create a UnifiedOrchestratorAgent instance."""
-        return UnifiedOrchestratorAgent(agent_id="test_orchestrator", mode="unified")
+        """Create a OrchestratorAgent instance."""
+        return OrchestratorAgent(agent_id="test_orchestrator", mode="unified")
 
     def test_mode_enum_integrity(self):
         """Verify OrchestratorMode enum values exist."""
@@ -33,23 +33,23 @@ class test_unified_orchestrator_modes:
 
     def test_orchestrator_initialization_with_mode(self):
         """Test orchestrator initializes with specified mode."""
-        healing_orch = UnifiedOrchestratorAgent(mode="healing")
+        healing_orch = OrchestratorAgent(mode="healing")
         assert healing_orch.mode == OrchestratorMode.HEALING
 
-        compliance_orch = UnifiedOrchestratorAgent(mode="compliance")
+        compliance_orch = OrchestratorAgent(mode="compliance")
         assert compliance_orch.mode == OrchestratorMode.COMPLIANCE
 
-        ssot_orch = UnifiedOrchestratorAgent(mode="ssot")
+        ssot_orch = OrchestratorAgent(mode="ssot")
         assert ssot_orch.mode == OrchestratorMode.SSOT
 
     def test_invalid_mode_defaults_to_unified(self):
         """Test that invalid mode string defaults to UNIFIED."""
-        orch = UnifiedOrchestratorAgent(mode="invalid_mode")
+        orch = OrchestratorAgent(mode="invalid_mode")
         assert orch.mode == OrchestratorMode.UNIFIED
 
     def test_run_agent_healing_mode(self):
         """Test that HEALING mode triggers healing flow."""
-        orch = UnifiedOrchestratorAgent(mode="healing")
+        orch = OrchestratorAgent(mode="healing")
         result = orch.run_agent("TestAgent", dry_run=True)
 
         assert result.metadata.get("mode") == "healing"
@@ -57,7 +57,7 @@ class test_unified_orchestrator_modes:
 
     def test_run_agent_compliance_mode(self):
         """Test that COMPLIANCE mode triggers compliance flow with credential scan."""
-        orch = UnifiedOrchestratorAgent(mode="compliance")
+        orch = OrchestratorAgent(mode="compliance")
 
         with patch(
             "agentic_core.L5_safety.validators.CredentialScannerAgent.CredentialScannerAgent"
@@ -77,7 +77,7 @@ class test_unified_orchestrator_modes:
 
     def test_run_agent_ssot_mode(self):
         """Test that SSOT mode triggers SSOT flow."""
-        orch = UnifiedOrchestratorAgent(mode="ssot")
+        orch = OrchestratorAgent(mode="ssot")
         result = orch.run_agent("TestAgent", dry_run=True)
 
         assert result.metadata.get("mode") == "ssot"
@@ -85,14 +85,14 @@ class test_unified_orchestrator_modes:
 
     def test_run_agent_full_mode(self):
         """Test that FULL mode runs all operations."""
-        orch = UnifiedOrchestratorAgent(mode="full")
+        orch = OrchestratorAgent(mode="full")
         result = orch.run_agent("TestAgent", dry_run=True)
 
         assert result.metadata.get("mode") == "full"
 
     def test_run_mission_with_multiple_agents(self):
         """Test run_mission coordinates multiple agents."""
-        orch = UnifiedOrchestratorAgent(mode="unified")
+        orch = OrchestratorAgent(mode="unified")
 
         result = orch.run_mission(agents=["Agent1", "Agent2", "Agent3"], dry_run=True)
 
@@ -102,7 +102,7 @@ class test_unified_orchestrator_modes:
 
     def test_get_available_agents(self):
         """Test get_available_agents returns list."""
-        orch = UnifiedOrchestratorAgent()
+        orch = OrchestratorAgent()
         try:
             agents = orch.get_available_agents()
             assert isinstance(agents, list)
@@ -112,7 +112,7 @@ class test_unified_orchestrator_modes:
 
     def test_validate_mission_with_valid_agents(self):
         """Test validate_mission returns True for available agents."""
-        orch = UnifiedOrchestratorAgent()
+        orch = OrchestratorAgent()
 
         try:
             # Get some available agents
@@ -127,7 +127,7 @@ class test_unified_orchestrator_modes:
 
     def test_dispatch_to_strategy(self):
         """Test dispatch routes to correct strategy."""
-        orch = UnifiedOrchestratorAgent()
+        orch = OrchestratorAgent()
 
         # Test dispatch with unknown domain
         result = orch.dispatch("unknown_domain", "action", {})

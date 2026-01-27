@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-UnifiedOrchestratorAgent - Central Nervous System for Agentic Workflow
+OrchestratorAgent - Central Nervous System for Agentic Workflow
 
 Architecture: Strategy Pattern
 - Instead of hardcoding 10+ sub-agents, we delegate to domain-specific Strategies.
@@ -40,7 +40,7 @@ Logger = logging.getLogger(__name__)
 
 
 class OrchestratorMode(str, Enum):
-    """Orchestration modes supported by UnifiedOrchestratorAgent."""
+    """Orchestration modes supported by OrchestratorAgent."""
 
     HEALING = "healing"
     COMPLIANCE = "compliance"
@@ -49,7 +49,7 @@ class OrchestratorMode(str, Enum):
     UNIFIED = "unified"
 
 
-class UnifiedOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class OrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     The Central Nervous System for Agentic Workflow.
 

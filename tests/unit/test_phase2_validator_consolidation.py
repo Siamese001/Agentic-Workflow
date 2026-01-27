@@ -29,15 +29,15 @@ import pytest
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
+from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
     RuleSet,
-    UnifiedCodeValidatorAgent,
+    CodeValidatorAgent,
     ViolationType,
     create_legacy_syntax_validator,
 )
-from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
+from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
     StructureViolationType,
-    UnifiedStructureValidatorAgent,
+    StructureValidatorAgent,
     create_legacy_gravity_validator,
     extract_layer_from_import,
     extract_layer_from_path,
@@ -80,7 +80,7 @@ class TestAgent:
 '''
 
         # Measure single-pass validation time
-        agent = UnifiedCodeValidatorAgent()
+        agent = CodeValidatorAgent()
         rules_all = RuleSet(
             check_syntax=True,
             check_canon=True,
@@ -149,7 +149,7 @@ class BadAgent:
         return True
 '''
 
-        agent = UnifiedCodeValidatorAgent()
+        agent = CodeValidatorAgent()
         rules = RuleSet(
             check_syntax=True,
             check_canon=True,
@@ -190,7 +190,7 @@ class BadAgent:
 
 
 class TestGravityViolationDetection:
-    """Test 3: Verify that the UnifiedStructureValidatorAgent correctly
+    """Test 3: Verify that the StructureValidatorAgent correctly
     flags an L3 agent attempting to import an L5 utility directly."""
 
     def test_gravity_violation_detection(self):
@@ -220,7 +220,7 @@ class L3OrchestratorAgent:
             # Simulate L3 path
             fake_l3_path = Path("agentic_core/L3_orchestration/workflow_engines/TestAgent.py")
 
-            agent = UnifiedStructureValidatorAgent()
+            agent = StructureValidatorAgent()
             violations = agent.check_gravity(fake_l3_path, test_code)
 
             # Should detect gravity violations
@@ -255,7 +255,7 @@ class L3OrchestratorAgent:
 
         fake_l3_path = Path("agentic_core/L3_orchestration/workflow_engines/TestAgent.py")
 
-        agent = UnifiedStructureValidatorAgent()
+        agent = StructureValidatorAgent()
         violations = agent.check_gravity(fake_l3_path, test_code)
 
         # Should NOT have gravity violations for valid imports
@@ -336,7 +336,7 @@ class BadAgent:
         print("test")
 """
 
-        agent = UnifiedCodeValidatorAgent()
+        agent = CodeValidatorAgent()
 
         # With print check enabled
         rules_with_print = RuleSet(check_print=True, check_canon=False)
@@ -386,7 +386,7 @@ class TestStructureDuplicateDetection:
             (tmpdir / "dir1" / "DuplicateAgent.py").write_text("class DuplicateAgent: pass")
             (tmpdir / "dir2" / "DuplicateAgent.py").write_text("class DuplicateAgent: pass")
 
-            agent = UnifiedStructureValidatorAgent()
+            agent = StructureValidatorAgent()
             violations = agent.check_duplicates(tmpdir)
 
             # Should detect duplicate
@@ -411,7 +411,7 @@ class TestLegacyFactoryWarnings:
             assert "SyntaxValidatorAgent" in str(w[0].message)
             assert "deprecated" in str(w[0].message).lower()
 
-        assert isinstance(agent, UnifiedCodeValidatorAgent)
+        assert isinstance(agent, CodeValidatorAgent)
 
     def test_legacy_gravity_validator_warning(self):
         """Legacy gravity factory should raise deprecation warning."""
@@ -423,7 +423,7 @@ class TestLegacyFactoryWarnings:
             assert issubclass(w[0].category, DeprecationWarning)
             assert "GravityValidatorAgent" in str(w[0].message)
 
-        assert isinstance(agent, UnifiedStructureValidatorAgent)
+        assert isinstance(agent, StructureValidatorAgent)
 
     def test_legacy_diversity_validator_warning(self):
         """Legacy diversity factory should raise deprecation warning."""
@@ -444,25 +444,25 @@ class test_registry_mapping:
     def test_phase2_validator_mapping_exists(self):
         """Phase 2 validator mapping should be defined."""
         # Import the mapping function directly to avoid SubAtomicRegistryAgent import issues
-        from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import (
-            UnifiedCodeValidatorAgent,
+        from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
+            CodeValidatorAgent,
         )
-        from agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent import (
-            UnifiedStructureValidatorAgent,
+        from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
+            StructureValidatorAgent,
         )
         from apps_lic.shared.validation.AppContentValidatorAgent import AppContentValidatorAgent
 
         # Define expected mapping (mirrors what's in SubAtomicRegistryAgent)
         expected_mapping = {
-            "SyntaxValidatorAgent": UnifiedCodeValidatorAgent,
-            "CanonValidatorAgent": UnifiedCodeValidatorAgent,
-            "GravityValidatorAgent": UnifiedStructureValidatorAgent,
+            "SyntaxValidatorAgent": CodeValidatorAgent,
+            "CanonValidatorAgent": CodeValidatorAgent,
+            "GravityValidatorAgent": StructureValidatorAgent,
             "ContactValidatorAgent": AppContentValidatorAgent,
         }
 
         # Verify the unified agents exist and are importable
-        assert UnifiedCodeValidatorAgent is not None
-        assert UnifiedStructureValidatorAgent is not None
+        assert CodeValidatorAgent is not None
+        assert StructureValidatorAgent is not None
         assert AppContentValidatorAgent is not None
 
         # Verify mapping structure is correct

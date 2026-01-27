@@ -6,12 +6,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
+from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import CodeValidatorAgent
 
 
 def main():
     project_root = Path(__file__).parent.parent
-    agent = UnifiedCodeValidatorAgent(project_root=project_root)
+    agent = CodeValidatorAgent(project_root=project_root)
     result = agent.validate_repository()
 
     print(f"Total errors: {result['total_violations']}")

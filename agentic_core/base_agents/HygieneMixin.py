@@ -10,10 +10,10 @@ from agentic_core.domain.exceptions import HealerError, HygieneError
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 @dataclass
-class UnifiedHygieneMixin:
+class HygieneMixin:
     """
     HARDENED: Unified code hygiene validation and healing.
-    SALVAGED: Consolidated from UnifiedHygieneValidatorAgent.py.
+    SALVAGED: Consolidated from HygieneValidatorAgent.py.
     """
     project_root: Path = field(default_factory=Path.cwd)
     allowed_duplicates: Set[str] = field(default_factory=lambda: {'__init__.py', 'README.md', '.gitignore'})
@@ -43,7 +43,7 @@ class UnifiedHygieneMixin:
     def _analyze_hygiene_violations(self) -> Dict[str, List[Dict[str, Any]]]:
         """
         Analyze hygiene violations across the project.
-        SALVAGED: Comprehensive hygiene analysis from legacy UnifiedHygieneValidatorAgent.
+        SALVAGED: Comprehensive hygiene analysis from legacy HygieneValidatorAgent.
         """
         results = {
             'empty_files': [],
@@ -154,7 +154,7 @@ class UnifiedHygieneMixin:
     def get_hygiene_report(self) -> Dict[str, Any]:
         """
         Generate comprehensive hygiene report.
-        SALVAGED: Reporting functionality from legacy UnifiedHygieneValidatorAgent.
+        SALVAGED: Reporting functionality from legacy HygieneValidatorAgent.
         """
         try:
             violations = self._analyze_hygiene_violations()

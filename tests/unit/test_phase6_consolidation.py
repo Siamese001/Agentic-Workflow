@@ -177,7 +177,7 @@ class TestSovereignScannerIOReduction:
 
     def test_cross_agent_scanner_sharing(self, mock_project):
         """[Phase 6] Verify multiple agents share same scanner instance."""
-        from agentic_core.L5_safety.unified.StructuralValidatorAgent import (
+        from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
             StructuralValidatorAgent,
             StructureConfig,
         )

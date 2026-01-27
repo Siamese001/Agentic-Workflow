@@ -16,7 +16,7 @@ GravityLeakRepairAgent - Automated Gravity Violation Healer (Phase 2.3)
 Territory: agentic_core/L5_safety/gravity/
 
 RESPONSIBILITIES:
-- Automatically fix upward imports detected by UnifiedStructureEnforcerAgent
+- Automatically fix upward imports detected by StructureEnforcerAgent
 - Refactor code to eliminate gravity violations
 - Suggest architectural improvements
 - Generate import rewrite recommendations
@@ -62,7 +62,7 @@ class GravityLeakRepairAgent(
     """
     [L5 HEALER] Automated gravity violation repair agent.
 
-    Works in tandem with UnifiedStructureEnforcerAgent to automatically fix
+    Works in tandem with StructureEnforcerAgent to automatically fix
     upward imports and architectural violations.
 
     Healing Strategies:
@@ -151,7 +151,7 @@ class GravityLeakRepairAgent(
         Generate fix recommendations for all violations.
 
         Args:
-            violations: List of gravity violations from UnifiedStructureEnforcerAgent
+            violations: List of gravity violations from StructureEnforcerAgent
 
         Returns:
             List of GravityFix recommendations
@@ -238,17 +238,17 @@ class GravityLeakRepairAgent(
             f"[GravityLeakRepairAgent] Starting gravity leak repair (dry_run={dry_run})"
         )
 
-        # Get violations from UnifiedStructureEnforcerAgent
+        # Get violations from StructureEnforcerAgent
         try:
-            from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
-                UnifiedStructureEnforcerAgent,
+            from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import (
+                StructureEnforcerAgent,
             )
 
-            enforcer = UnifiedStructureEnforcerAgent(project_root=self.project_root)
+            enforcer = StructureEnforcerAgent(project_root=self.project_root)
             results = enforcer.validate_repository()
             violations = results.get("violations", [])
         except Exception as e:
-            self.logger.error(f"Failed to get violations from UnifiedStructureEnforcerAgent: {e}")
+            self.logger.error(f"Failed to get violations from StructureEnforcerAgent: {e}")
             return {
                 "agent": "GravityLeakRepairAgent",
                 "status": "ERROR",

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-UnifiedCheckpointManagerAgent - Consolidated L4 Checkpoint Guardian (Priority 2)
+CheckpointManagerAgent - Consolidated L4 Checkpoint Guardian (Priority 2)
 
 Consolidates:
 - CheckpointManagerAgent (synchronous legacy checkpoints)
@@ -106,7 +106,7 @@ def timeout(seconds: int) -> Callable:
 
 
 @dataclass
-class UnifiedCheckpointManagerAgent(SovereignBaseAgent):
+class CheckpointManagerAgent(SovereignBaseAgent):
     """
     Unified L4 Checkpoint Guardian.
 
@@ -125,7 +125,7 @@ class UnifiedCheckpointManagerAgent(SovereignBaseAgent):
         - PineconeVectorMixin: Long-term semantic memory
     """
 
-    name: str = "UnifiedCheckpointManagerAgent"
+    name: str = "CheckpointManagerAgent"
     layer: str = "L4"
 
     # configuration
@@ -762,35 +762,35 @@ class UnifiedCheckpointManagerAgent(SovereignBaseAgent):
 
 def get_checkpoint_manager(
     mode: str = "ASYNC", storage_path: Path | None = None
-) -> UnifiedCheckpointManagerAgent:
+) -> CheckpointManagerAgent:
     """
-    Factory function to get UnifiedCheckpointManagerAgent instance.
+    Factory function to get CheckpointManagerAgent instance.
 
     Args:
         mode: Operating mode (SYNC, ASYNC, AUTONOMOUS)
         storage_path: Optional custom storage path
 
     Returns:
-        UnifiedCheckpointManagerAgent instance
+        CheckpointManagerAgent instance
     """
     if storage_path is None:
         storage_path = Path(".canon_memory/checkpoints")
 
-    return UnifiedCheckpointManagerAgent(
+    return CheckpointManagerAgent(
         mode=mode,
         storage_path=storage_path,
     )
 
 
 # Backward compatibility aliases
-def get_sync_checkpoint_manager(storage_path: Path | None = None) -> UnifiedCheckpointManagerAgent:
+def get_sync_checkpoint_manager(storage_path: Path | None = None) -> CheckpointManagerAgent:
     """Get a synchronous checkpoint manager (legacy compatibility)."""
     return get_checkpoint_manager(mode="SYNC", storage_path=storage_path)
 
 
 def get_autonomous_checkpoint_manager(
     storage_path: Path | None = None,
-) -> UnifiedCheckpointManagerAgent:
+) -> CheckpointManagerAgent:
     """Get an autonomous checkpoint manager with mirroring."""
     return get_checkpoint_manager(mode="AUTONOMOUS", storage_path=storage_path)
 

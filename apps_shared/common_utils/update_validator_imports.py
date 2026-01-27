@@ -7,11 +7,11 @@ Updates all imports of archived legacy validators to use the new unified agents.
 Mapping:
 - SyntaxValidatorAgent, CanonValidatorAgent, CanonAstValidatorAgent,
   AsyncBlockingValidatorAgent, PrintStatementValidatorAgent
-  -> UnifiedCodeValidatorAgent
+  -> CodeValidatorAgent
 
-- GravityValidatorAgent, HygieneValidatorAgent, UnifiedHygieneValidatorAgent,
+- GravityValidatorAgent, HygieneValidatorAgent, HygieneValidatorAgent,
   AgentRegistryValidatorAgent, CognitiveContractValidatorAgent
-  -> UnifiedStructureValidatorAgent
+  -> StructureValidatorAgent
 
 - ContactValidatorAgent, ContentCleanlinessValidatorAgent, MessageDiversityValidatorAgent
   -> AppContentValidatorAgent
@@ -31,44 +31,44 @@ PROJECT_ROOT = Path(__file__).parent.parent
 IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
     # Legacy validator -> (unified module, unified class)
     "SyntaxValidatorAgent": (
-        "agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent",
-        "UnifiedCodeValidatorAgent",
+        "agentic_core.L5_safety.unified.CodeValidatorAgent",
+        "CodeValidatorAgent",
     ),
     "CanonValidatorAgent": (
-        "agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent",
-        "UnifiedCodeValidatorAgent",
+        "agentic_core.L5_safety.unified.CodeValidatorAgent",
+        "CodeValidatorAgent",
     ),
     "CanonAstValidatorAgent": (
-        "agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent",
-        "UnifiedCodeValidatorAgent",
+        "agentic_core.L5_safety.unified.CodeValidatorAgent",
+        "CodeValidatorAgent",
     ),
     "AsyncBlockingValidatorAgent": (
-        "agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent",
-        "UnifiedCodeValidatorAgent",
+        "agentic_core.L5_safety.unified.CodeValidatorAgent",
+        "CodeValidatorAgent",
     ),
     "PrintStatementValidatorAgent": (
-        "agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent",
-        "UnifiedCodeValidatorAgent",
+        "agentic_core.L5_safety.unified.CodeValidatorAgent",
+        "CodeValidatorAgent",
     ),
     "GravityValidatorAgent": (
-        "agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent",
-        "UnifiedStructureValidatorAgent",
+        "agentic_core.L5_safety.unified.StructureValidatorAgent",
+        "StructureValidatorAgent",
     ),
     "HygieneValidatorAgent": (
-        "agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent",
-        "UnifiedStructureValidatorAgent",
+        "agentic_core.L5_safety.unified.StructureValidatorAgent",
+        "StructureValidatorAgent",
     ),
-    "UnifiedHygieneValidatorAgent": (
-        "agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent",
-        "UnifiedStructureValidatorAgent",
+    "HygieneValidatorAgent": (
+        "agentic_core.L5_safety.unified.StructureValidatorAgent",
+        "StructureValidatorAgent",
     ),
     "AgentRegistryValidatorAgent": (
-        "agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent",
-        "UnifiedStructureValidatorAgent",
+        "agentic_core.L5_safety.unified.StructureValidatorAgent",
+        "StructureValidatorAgent",
     ),
     "CognitiveContractValidatorAgent": (
-        "agentic_core.L5_safety.unified.UnifiedStructureValidatorAgent",
-        "UnifiedStructureValidatorAgent",
+        "agentic_core.L5_safety.unified.StructureValidatorAgent",
+        "StructureValidatorAgent",
     ),
     "ContactValidatorAgent": (
         "apps_lic.shared.validation.AppContentValidatorAgent",

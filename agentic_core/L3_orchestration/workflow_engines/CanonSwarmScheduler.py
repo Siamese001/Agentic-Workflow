@@ -81,9 +81,9 @@ class CanonSwarmScheduler:
             TheStrategist,
             TypeEnforcer,
         )
-        from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import (
+        from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import (
             StructuralEngineer,
-            UnifiedCodeEnforcerAgent,
+            CodeEnforcerAgent,
         )
 
         self.phases = {
@@ -103,7 +103,7 @@ class CanonSwarmScheduler:
             "resource_safety_parallel": [ConcurrencyGuardianAgent(self.ctx)],
             "engineering_parallel": [
                 StructuralEngineer(self.ctx),
-                UnifiedCodeEnforcerAgent(self.ctx),
+                CodeEnforcerAgent(self.ctx),
                 ToolsmithAgent(self.ctx),
             ],
             "refinement_parallel": [

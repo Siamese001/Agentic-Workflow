@@ -4,7 +4,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
-UnifiedSafetyDetectorAgent - Safety & Security Detection
+SafetyDetectorAgent - Safety & Security Detection
 
 Phase 4 Hard Migration: Consolidates:
 - BiasDetectorAgent (bias detection in outputs)
@@ -75,7 +75,7 @@ class SafetyConfig:
     block_high_severity: bool = True
 
 
-class UnifiedSafetyDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class SafetyDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Unified safety and security detector.
 
@@ -85,7 +85,7 @@ class UnifiedSafetyDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     - PromptInjectionDetectorAgent
 
     Usage:
-        detector = UnifiedSafetyDetectorAgent()
+        detector = SafetyDetectorAgent()
 
         # Check user input for injection
         threats = detector.detect_injection("user input here")
@@ -154,7 +154,7 @@ class UnifiedSafetyDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self._compiled_injection = [re.compile(p, re.IGNORECASE) for p in self.INJECTION_PATTERNS]
         self._compiled_bias = [re.compile(p, re.IGNORECASE) for p in self.BIAS_PATTERNS]
 
-        Logger.info("UnifiedSafetyDetectorAgent initialized")
+        Logger.info("SafetyDetectorAgent initialized")
 
     def detect_all(self, text: str, source: str = "unknown") -> list[SafetyThreat]:
         """Run all enabled detections on text."""
@@ -277,21 +277,21 @@ class UnifiedSafetyDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
 
 # Factory methods for backward compatibility
-def create_legacy_bias_detector() -> UnifiedSafetyDetectorAgent:
+def create_legacy_bias_detector() -> SafetyDetectorAgent:
     """Create detector for bias only."""
     config = SafetyConfig(
         enable_bias=True,
         enable_hallucination=False,
         enable_injection=False,
     )
-    return UnifiedSafetyDetectorAgent(config=config)
+    return SafetyDetectorAgent(config=config)
 
 
-def create_legacy_injection_detector() -> UnifiedSafetyDetectorAgent:
+def create_legacy_injection_detector() -> SafetyDetectorAgent:
     """Create detector for prompt injection only."""
     config = SafetyConfig(
         enable_bias=False,
         enable_hallucination=False,
         enable_injection=True,
     )
-    return UnifiedSafetyDetectorAgent(config=config)
+    return SafetyDetectorAgent(config=config)

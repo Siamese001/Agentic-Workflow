@@ -8,19 +8,19 @@ Phase 4 Hard Migration: Consolidated routing agents.
 """
 
 
-from agentic_core.L2_execution.unified.UnifiedModelRouterAgent import (
+from agentic_core.L2_execution.execution_bridge.ModelRouterAgent import (
     ModelConfig,
     ModelTier,
     RouterConfig,
     RoutingDecision,
     TaskComplexity,
-    UnifiedModelRouterAgent,
+    ModelRouterAgent,
     create_legacy_dynamic_router,
     create_legacy_model_router,
 )
 
 __all__ = [
-    "UnifiedModelRouterAgent",
+    "ModelRouterAgent",
     "ModelConfig",
     "ModelTier",
     "TaskComplexity",

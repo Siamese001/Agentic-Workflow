@@ -32,13 +32,13 @@ class TestResourceConcurrency(unittest.TestCase):
 
     def test_resource_concurrency(self):
         """10+ agents requesting budget simultaneously without race conditions."""
-        from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import (
+        from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import (
             AllocationStatus,
             ResourceType,
-            UnifiedResourceManagerAgent,
+            ResourceManagerAgent,
         )
 
-        manager = UnifiedResourceManagerAgent()
+        manager = ResourceManagerAgent()
         manager.set_budget(ResourceType.BUDGET, total=1000.0)
 
         results = []
@@ -86,13 +86,13 @@ class TestBudgetHardCap(unittest.TestCase):
 
     def test_budget_hard_cap(self):
         """Agent execution is strictly halted when budget reaches 100% exhaustion."""
-        from agentic_core.L5_safety.unified.UnifiedResourceManagerAgent import (
+        from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import (
             AllocationStatus,
             ResourceType,
-            UnifiedResourceManagerAgent,
+            ResourceManagerAgent,
         )
 
-        manager = UnifiedResourceManagerAgent()
+        manager = ResourceManagerAgent()
         manager.set_budget(ResourceType.BUDGET, total=100.0, hard_cap=True)
 
         # Allocate 100% of budget
@@ -117,12 +117,12 @@ class TestVaultConfigAccess(unittest.TestCase):
 
     def test_vault_config_access(self):
         """Config keys are only accessible by agents with SECURE_READER permission."""
-        from agentic_core.L5_safety.unified.UnifiedSecurityManagerAgent import (
+        from agentic_core.L5_safety.policy_engine.SecurityManagerAgent import (
             PermissionLevel,
-            UnifiedSecurityManagerAgent,
+            SecurityManagerAgent,
         )
 
-        manager = UnifiedSecurityManagerAgent()
+        manager = SecurityManagerAgent()
 
         # Grant SECURE_WRITER to admin
         manager.grant_permission("admin", PermissionLevel.ADMIN, "system")
@@ -160,9 +160,9 @@ class TestEnforcerSSOTSync(unittest.TestCase):
 
     def test_enforcer_ssot_sync(self):
         """Any refactor made by the enforcer is immediately updated in SSOT registry."""
-        from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import (
+        from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import (
             EnforcementConfig,
-            UnifiedCodeEnforcerAgent,
+            CodeEnforcerAgent,
         )
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -173,7 +173,7 @@ class TestEnforcerSSOTSync(unittest.TestCase):
             ssot_path.write_text('{"agents": [], "count": 0}', encoding="utf-8")
 
             config = EnforcementConfig(ssot_registry_path=ssot_path)
-            enforcer = UnifiedCodeEnforcerAgent(project_root=tmpdir, config=config)
+            enforcer = CodeEnforcerAgent(project_root=tmpdir, config=config)
 
             # Sync registry
             registry = enforcer.sync_ssot_registry()
@@ -196,11 +196,11 @@ class TestSovereigntyProtection(unittest.TestCase):
 
     def test_sovereignty_protection(self):
         """Block any L3/L4 agent attempting to modify an L5 file without signed exception."""
-        from agentic_core.L5_safety.unified.UnifiedCodeEnforcerAgent import (
-            UnifiedCodeEnforcerAgent,
+        from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import (
+            CodeEnforcerAgent,
         )
 
-        enforcer = UnifiedCodeEnforcerAgent()
+        enforcer = CodeEnforcerAgent()
 
         # L3 trying to modify L5 file - should be blocked
         allowed, reason = enforcer.check_sovereignty(
@@ -241,9 +241,9 @@ class TestNamingLawCompliance(unittest.TestCase):
 
     def test_naming_law_compliance(self):
         """Force-rename any class not adhering to [Name]Agent suffix standard."""
-        from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
+        from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import (
             StructureViolationType,
-            UnifiedStructureEnforcerAgent,
+            StructureEnforcerAgent,
         )
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -256,7 +256,7 @@ class TestNamingLawCompliance(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            enforcer = UnifiedStructureEnforcerAgent(project_root=tmpdir)
+            enforcer = StructureEnforcerAgent(project_root=tmpdir)
 
             # Validate - should find naming violation
             violations = enforcer.validate_file(bad_file)
@@ -290,12 +290,12 @@ class TestGravityImportBlock(unittest.TestCase):
 
     def test_gravity_import_block(self):
         """Reject imports that bypass the defined layer hierarchy (e.g., L2 importing L5)."""
-        from agentic_core.L5_safety.unified.UnifiedStructureEnforcerAgent import (
+        from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import (
             StructureViolationType,
-            UnifiedStructureEnforcerAgent,
+            StructureEnforcerAgent,
         )
 
-        enforcer = UnifiedStructureEnforcerAgent()
+        enforcer = StructureEnforcerAgent()
 
         # L2 importing L5 - should be blocked
         allowed, reason = enforcer.check_gravity_import("L2", "L5")
@@ -330,7 +330,7 @@ class TestGravityImportBlock(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            enforcer2 = UnifiedStructureEnforcerAgent(project_root=tmpdir)
+            enforcer2 = StructureEnforcerAgent(project_root=tmpdir)
             violations = enforcer2.validate_file(bad_file)
 
             gravity_violations = [

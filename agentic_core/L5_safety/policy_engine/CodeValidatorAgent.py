@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-UnifiedCodeValidatorAgent - Unified Code Validation
+CodeValidatorAgent - Unified Code Validation
 
 Phase 4 Hard Migration: Consolidates:
 - SyntaxValidatorAgent (syntax validation)
@@ -99,7 +99,7 @@ class ValidationReport:
         }
 
 
-class UnifiedCodeValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
+class CodeValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
     """
     Unified Code Validation Agent.
     
@@ -385,29 +385,29 @@ class UnifiedCodeValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
 def create_legacy_syntax_validator(**kwargs):
     """Create a legacy syntax validator."""
     ruleset = RuleSet(check_syntax=True, check_canon=False, check_async=False, check_prints=False)
-    return UnifiedCodeValidatorAgent(ruleset=ruleset, **kwargs)
+    return CodeValidatorAgent(ruleset=ruleset, **kwargs)
 
 
 def create_legacy_canon_validator(**kwargs):
     """Create a legacy canon validator."""
     ruleset = RuleSet(check_syntax=False, check_canon=True, check_async=False, check_prints=False)
-    return UnifiedCodeValidatorAgent(ruleset=ruleset, **kwargs)
+    return CodeValidatorAgent(ruleset=ruleset, **kwargs)
 
 
 def create_legacy_async_validator(**kwargs):
     """Create a legacy async validator."""
     ruleset = RuleSet(check_syntax=False, check_canon=False, check_async=True, check_prints=False)
-    return UnifiedCodeValidatorAgent(ruleset=ruleset, **kwargs)
+    return CodeValidatorAgent(ruleset=ruleset, **kwargs)
 
 
 def create_legacy_print_validator(**kwargs):
     """Create a legacy print validator."""
     ruleset = RuleSet(check_syntax=False, check_canon=False, check_async=False, check_prints=True)
-    return UnifiedCodeValidatorAgent(ruleset=ruleset, **kwargs)
+    return CodeValidatorAgent(ruleset=ruleset, **kwargs)
 
 
 __all__ = [
-    "UnifiedCodeValidatorAgent",
+    "CodeValidatorAgent",
     "ViolationType",
     "Violation",
     "RuleSet",

@@ -38,7 +38,7 @@ class ValidatorOrchestrator:
     [PHASE 5 MIGRATION] Absorbed from:
     - CodeValidatorAgent.py
     - StructuralValidatorAgent.py
-    - UnifiedCodeValidatorAgent.py (Duplicate)
+    - CodeValidatorAgent.py (Duplicate)
     """
 
     _instance: ValidatorOrchestrator | None = None

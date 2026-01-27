@@ -9,7 +9,7 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.L5_safety.unified.UnifiedCodeValidatorAgent import UnifiedCodeValidatorAgent
+from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import CodeValidatorAgent
 
 
 def main():
@@ -19,7 +19,7 @@ def main():
     print()
 
     # Initialize validator
-    agent = UnifiedCodeValidatorAgent(project_root=project_root)
+    agent = CodeValidatorAgent(project_root=project_root)
 
     # Run validation
     results = agent.validate_repository()
