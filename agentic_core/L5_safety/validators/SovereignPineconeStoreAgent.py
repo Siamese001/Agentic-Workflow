@@ -12,7 +12,7 @@ from dataclasses import dataclass
 ==============================================================================
 SOVEREIGN PINECONE STORE AGENT (MERGED IMPLEMENTATION)
 ==============================================================================
-Logic sourced from L4_state/ValidationContext/SovereignPineconeStoreAgent.py
+Logic sourced from L4_state/validation_context/SovereignPineconeStoreAgent.py
 to ensure index management and retry logic (9KB) is preserved over the 3KB stub.
 
 Canonical Location: semantic_memory/store/ (SSOT)

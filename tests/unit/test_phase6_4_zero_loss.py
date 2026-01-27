@@ -35,7 +35,7 @@ def test_tc35_memory_manager_discovery_integrity():
 
     import tempfile
 
-    from agentic_core.L4_state.ValidationContext.MemoryManagerAgent import MemoryManagerAgent
+    from agentic_core.L4_state.validation_context.MemoryManagerAgent import MemoryManagerAgent
 
     # Create a temporary memory directory
     with tempfile.TemporaryDirectory() as temp_dir:

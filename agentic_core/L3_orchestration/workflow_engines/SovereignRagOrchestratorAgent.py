@@ -66,7 +66,7 @@ class SovereignRagOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent, I
         """
         self.query_history: list[Any] = []
         self.config_path: Path = Path(
-            "agentic_core/L4_state/ValidationContext/.sovereign_config.json"
+            "agentic_core/L4_state/validation_context/.sovereign_config.json"
         )
         self._load_sovereign_config()
         self.threshold_adaptation_rate: float = 0.02
@@ -151,7 +151,6 @@ class SovereignRagOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent, I
             """Parse critique."""
             try:
                 from agentic_core.L1_cognition.thought_engine.query_planner import query_planner
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
                 planner_helper = query_planner()
                 cleaned = planner_helper._clean_json_response(raw)

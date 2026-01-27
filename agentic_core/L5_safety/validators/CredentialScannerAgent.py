@@ -196,7 +196,6 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """
         if target_path is None:
             from agentic_core.L5_safety.validators.structure_blueprint import (
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
                 get_validated_project_root,
             )
 

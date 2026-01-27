@@ -71,7 +71,7 @@ def test_inheritance_audit():
         "L3OrchestrationBaseAgent": PROJECT_ROOT
         / "agentic_core/L3_orchestration/workflow_engines/L3OrchestrationBaseAgent.py",
         "L4StateBaseAgent": PROJECT_ROOT
-        / "agentic_core/L4_state/ValidationContext/L4StateBaseAgent.py",
+        / "agentic_core/L4_state/validation_context/L4StateBaseAgent.py",
         "L5SafetyBaseAgent": PROJECT_ROOT
         / "agentic_core/L5_safety/validators/L5SafetyBaseAgent.py",
         "L6ObservabilityBaseAgent": PROJECT_ROOT

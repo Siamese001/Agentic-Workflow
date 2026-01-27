@@ -5,6 +5,7 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 from dataclasses import dataclass
 
@@ -155,9 +156,6 @@ class SystemArchitectAgent(SubatomicTestingMixin, SovereignBaseAgent, CanonBaseA
                 continue
             depth: Any = len(rel_path.parts) - 1
             root_folder: Any = rel_path.parts[0] if rel_path.parts else None
-            from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-
             if root_folder in SOVEREIGN_REGISTRY:
                 required_depth: Any = SOVEREIGN_REGISTRY[root_folder]["depth"]
                 if depth != required_depth:

@@ -26,6 +26,7 @@ def run_code_deduplication_check() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
+        from agentic_core.L5_safety.guardrails.CodeDeduplicationAgent import (
             CodeDeduplicationAgent,
         )
 
@@ -65,6 +66,7 @@ def run_architecture_governance_check() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
+        from agentic_core.L5_safety.gravity.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 

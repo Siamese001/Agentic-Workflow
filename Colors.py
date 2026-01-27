@@ -668,7 +668,7 @@ def main():
             from agentic_core.L3_orchestration.UnifiedOrchestratorAgent import (
                 UnifiedOrchestratorAgent,
             )
-            from agentic_core.L4_state.ValidationContext.CheckpointManagerAgent import (
+            from agentic_core.L4_state.validation_context.CheckpointManagerAgent import (
                 get_checkpoint_manager,
             )
             from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy

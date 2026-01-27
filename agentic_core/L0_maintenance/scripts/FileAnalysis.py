@@ -6,9 +6,6 @@ how archived code fits into the current codebase.
 """
 
 import ast
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any
 
 
 @dataclass

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 CI Guard: rglob/glob Usage Checker
 
@@ -18,10 +16,8 @@ Date: January 19, 2026
 Phase: 4.1 - Scaled Refactoring & CI Enforcement
 """
 
-
 import re
 import sys
-from pathlib import Path
 
 # configuration
 MAX_ALLOWED_RGLOB = 260  # Phase 6: Temporary ceiling, target is 50

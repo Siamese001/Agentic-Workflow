@@ -244,7 +244,7 @@ finally:
 
 ## Conclusion
 
-Phase 5.1 audit complete. {f"{len(self.results["missed_agents"])} agents require fixes." if self.results["missed_agents"] else "All agents confirmed with super() - healing chain fully active!"}
+Phase 5.1 audit complete. {f"{len(self.results['missed_agents'])} agents require fixes." if self.results["missed_agents"] else "All agents confirmed with super() - healing chain fully active!"}
 
 **Status**: ✓ AUDIT COMPLETE
 """

@@ -3,7 +3,7 @@
 restore_all_archived_agents.py - Comprehensive restoration of incorrectly archived agents
 
 Restores unique agents from:
-- L4_state/ (4 agents) -> agentic_core/L4_state/ValidationContext/
+- L4_state/ (4 agents) -> agentic_core/L4_state/validation_context/
 - location_violations/ (12 agents) -> appropriate layer directories
 - runtime/ (14 agents) -> apps_lic/engines/outreach_engine/ or apps_rg/
 - void_violations/ (82 remaining unique) -> appropriate layer directories
@@ -30,7 +30,7 @@ TARGETS = {
     "L1": "L1_cognition/thought_engine/",
     "L2": "L2_execution/tool_registry/",
     "L3": "L3_orchestration/workflow_engines/",
-    "L4": "L4_state/ValidationContext/",
+    "L4": "L4_state/validation_context/",
     "L5": "L5_safety/validators/",
     "L6": "L6_observability/agents/",
 }

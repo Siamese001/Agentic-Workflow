@@ -34,7 +34,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 def run_self_tests() -> dict[str, Any]:
     """Run the UnifiedCheckpointManagerAgent's internal self-tests."""
-    from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import (
+    from agentic_core.L4_state.validation_context.UnifiedCheckpointManagerAgent import (
         get_checkpoint_manager,
     )
 
@@ -51,7 +51,7 @@ def test_mode_switching() -> dict[str, Any]:
     2. Instantiate in ASYNC mode and verify non-blocking save
     3. Instantiate in AUTONOMOUS mode and verify mirroring
     """
-    from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import (
+    from agentic_core.L4_state.validation_context.UnifiedCheckpointManagerAgent import (
         get_checkpoint_manager,
     )
 
@@ -159,7 +159,7 @@ def test_corruption_recovery() -> dict[str, Any]:
     3. Verify integrity check detects missing primary
     4. Verify auto-recovery restores from mirror
     """
-    from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import (
+    from agentic_core.L4_state.validation_context.UnifiedCheckpointManagerAgent import (
         get_checkpoint_manager,
     )
 
@@ -244,7 +244,7 @@ def test_performance_benchmark() -> dict[str, Any]:
     - Checkpoint retrieval
     - Integrity verification
     """
-    from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import (
+    from agentic_core.L4_state.validation_context.UnifiedCheckpointManagerAgent import (
         get_checkpoint_manager,
     )
 
@@ -332,7 +332,7 @@ def test_state_integrity() -> dict[str, Any]:
     - Rollback restores correct state
     - Index is properly maintained
     """
-    from agentic_core.L4_state.ValidationContext.UnifiedCheckpointManagerAgent import (
+    from agentic_core.L4_state.validation_context.UnifiedCheckpointManagerAgent import (
         get_checkpoint_manager,
     )
 

@@ -290,11 +290,11 @@ class PineconePopulator:
         for pattern in rca_patterns:
             if pattern:
                 # Absolute Zero: Use ssot_discovery instead of glob
-        from agentic_core.utils.ssot_discovery import get_python_files
-        if "*" in str(pattern):
-            rca_files.extend(list(get_python_files(pattern.parent)))
-        else:
-            rca_files.append(pattern)
+                from agentic_core.utils.ssot_discovery import get_python_files
+                if "*" in str(pattern):
+                    rca_files.extend(list(get_python_files(pattern.parent)))
+                else:
+                    rca_files.append(pattern)
 
         for file_path in rca_files:
             if not file_path.exists() or not file_path.is_file():

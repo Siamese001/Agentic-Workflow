@@ -122,7 +122,7 @@ SOVEREIGN_REGISTRY: Final[Mapping[str, Mapping[str, Union[int, Sequence[str], st
         ],
         "purpose": "Test suites organized by test type",
     },
-    "scripts": {
+    "ops_scripts": {
         "depth": 2,
         "subfolders": ["ci", "maintenance", "security"],
         "purpose": "Standalone utility scripts",
@@ -232,7 +232,7 @@ AGENT_DISCOVERY_MANIFEST_JSON: str = "agent_discovery_full.manifest.json"
 RUNTIME_STATE_JSON: str = "runtime_state.json"
 
 # === Core Directory Paths ===
-SCRIPTS_DIR: str = "scripts"
+OPS_SCRIPTS_DIR: str = "ops_scripts"
 TESTS_DIR: str = "tests"
 
 # === Layer Directories (L0-L6) ===
@@ -372,7 +372,7 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset({
     "agentic_core/L5_safety/gravity",  # 22 files - added per SSOT review
     "agentic_core/L2_execution/tool_registry",
     "agentic_core/L2_execution/mcp",  # 26 files - added per SSOT review
-    "agentic_core/L4_state/ValidationContext",  # 41 files - added per SSOT review
+    "agentic_core/L4_state/validation_context",  # 41 files - added per SSOT review
     "agentic_core/schemas/models",  # 42 files - added per SSOT review
     # agentic_core/utils/core_extensions EVICTED per CANON_VALIDATION_REGISTRY
     "agentic_core/config/blueprint_sovereign",  # 20 files - added per SSOT review
@@ -386,13 +386,14 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset({
 # ============================================================================
 # SCRIPTS PLACEMENT RULES - Semantic Boundary Enforcement
 # ============================================================================
-# Distinguishes root scripts/ (standalone utilities) from L0_maintenance/scripts/
+# Distinguishes root ops_scripts/ (standalone utilities) from L0_maintenance/scripts/
 # (sovereign system scripts). Uses AST import analysis, NOT line counts.
 SCRIPTS_PLACEMENT_RULES: Final[Mapping[str, Mapping[str, Any]]] = {
-    "root_scripts": {
+    "root_ops_scripts": {
         "description": "Standalone utilities (setup, pip, env) with NO core dependencies.",
         "forbidden_imports": ["agentic_core"],
         "allowed_depth": 1,
+        "violation_destination": "agentic_core/L0_maintenance/scripts",
     },
     "l0_maintenance_scripts": {
         "description": "System maintenance, healing, and sovereign agents.",
@@ -407,9 +408,9 @@ CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "domain": [],  # Pure domain entities and business objects - no subfolders currently
     "L0_maintenance": ["scripts", "logs", "reports", "boot", "security", "agentic_core"],  # System maintenance and healing
     "L1_cognition": ["thought_engine", "intent_analysis"],  # Cognitive processing (no scripts - pure data domain)
-    "L2_execution": ["ToolRegistry", "mcp", "unified"],  # Execution engines and tools
+    "L2_execution": ["tool_registry", "mcp", "unified"],  # Execution engines and tools
     "L3_orchestration": ["workflow_engines", "fission_logic", "interfaces"],  # Workflow orchestration
-    "L4_state": ["ValidationContext", "ledger", "memory"],  # State management
+    "L4_state": ["validation_context", "ledger", "memory"],  # State management
     "L5_safety": ["validators", "guardrails", "unified", "gravity", "red_teaming", "cognition", "core", "utils"],  # Security and validation
     "L6_observability": ["dashboards", "agents", "reports", "telemetry"],  # Monitoring and reporting
     
@@ -807,7 +808,7 @@ CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
         "primary": frozenset({"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"})
     },
     "L3_orchestration/fission_logic": {"primary": frozenset({"fission", "split", "decompose", "atomic"})},
-    "L4_state/ValidationContext": {"primary": frozenset({"state", "context", "checkpoint", "persist"})},
+    "L4_state/validation_context": {"primary": frozenset({"state", "context", "checkpoint", "persist"})},
     "L4_state/ledger": {"primary": frozenset({"ledger", "history", "record", "transaction"})},
     "L5_safety/validators": {
         "primary": frozenset({"validate", "enforce", "check", "guard", "policy", "heal"})
@@ -1623,11 +1624,11 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "weight": 7,
     },
     # L4_state placements
-    "agentic_core/L4_state/ValidationContext": {
+    "agentic_core/L4_state/validation_context": {
         "class_patterns": [".*Context.*", ".*State.*", ".*Session.*"],
         "base_classes": ["ValidationContext", "StateManager"],
         "function_patterns": ["get_context.*", "set_state.*", "validate_context.*"],
-        "import_signals": ["ValidationContext"],
+        "import_signals": ["validation_context"],
         "keyword_signals": ["context", "state", "session", "validation"],
         "weight": 8,
     },
@@ -1775,7 +1776,7 @@ L2_TO_L1_MAP: Final[Mapping[str, str]] = {
     "fission_logic": "L3_orchestration",
     "meta_learning": "L3_orchestration",
     "S3_vitality": "L3_orchestration",
-    "ValidationContext": "L4_state",
+    "validation_context": "L4_state",
     "ledger": "L4_state",
     "memory": "L4_state",
     "filesystem": "L4_state",
@@ -1991,43 +1992,43 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, Union[str, int]]]]] = {
     "L4": [
         {
             "name": "AutonomousCheckpointManagerAgent",
-            "file": "agentic_core/L4_state/ValidationContext/AutonomousCheckpointManagerAgent.py",
+            "file": "agentic_core/L4_state/validation_context/AutonomousCheckpointManagerAgent.py",
             "methods": 13,
             "fingerprint": "41e505612b995ed9",
         },
         {
             "name": "AutonomousStateGuardianAgent",
-            "file": "agentic_core/L4_state/ValidationContext/AutonomousStateGuardianAgent.py",
+            "file": "agentic_core/L4_state/validation_context/AutonomousStateGuardianAgent.py",
             "methods": 10,
             "fingerprint": "5ebb94cbbdf1aa58",
         },
         {
             "name": "PineconeSovereignAgent",
-            "file": "agentic_core/L4_state/ValidationContext/PineconeSovereignAgent.py",
+            "file": "agentic_core/L4_state/validation_context/PineconeSovereignAgent.py",
             "methods": 12,
             "fingerprint": "4dd0d1e4b0e3e220",
         },
         {
             "name": "RedisSovereignAgent",
-            "file": "agentic_core/L4_state/ValidationContext/RedisSovereignAgent.py",
+            "file": "agentic_core/L4_state/validation_context/RedisSovereignAgent.py",
             "methods": 6,
             "fingerprint": "b040e351f725cddb",
         },
         {
             "name": "SchemaEvolverAgent",
-            "file": "agentic_core/L4_state/ValidationContext/SchemaEvolverAgent.py",
+            "file": "agentic_core/L4_state/validation_context/SchemaEvolverAgent.py",
             "methods": 14,
             "fingerprint": "895c1f48e33df32e",
         },
         {
             "name": "SovereignPineconeStoreAgent",
-            "file": "agentic_core/L4_state/ValidationContext/SovereignPineconeStoreAgent.py",
+            "file": "agentic_core/L4_state/validation_context/SovereignPineconeStoreAgent.py",
             "methods": 10,
             "fingerprint": "f441583d3a2a4cd2",
         },
         {
             "name": "SubAtomicRegistryAgent",
-            "file": "agentic_core/L4_state/ValidationContext/SubAtomicRegistryAgent.py",
+            "file": "agentic_core/L4_state/validation_context/SubAtomicRegistryAgent.py",
             "methods": 7,
             "fingerprint": "78801bbc67f74db4",
         },
@@ -2743,7 +2744,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
         },
     },
     "L4_state": {
-        "ValidationContext": {
+        "validation_context": {
             "purpose": "Runtime validation contexts, state integrity containers, and scoped validation environments",
             "entity_types": ["Class"],
             "keywords": [
