@@ -12,7 +12,7 @@ sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
-    SOVEREIGN_REGISTRY,
+    SOVEREIGN_TERRITORIES,
 )
 
 
@@ -28,7 +28,7 @@ def validate_l2_l3_structure(project_root: Path) -> dict:
     violations = []
     missing_dirs = []
 
-    l1_structure = SOVEREIGN_REGISTRY["agentic_core"]["subfolders"]
+    l1_structure = SOVEREIGN_TERRITORIES["agentic_core"]["subfolders"]
 
     for l1_name in l1_structure:
         l1_path = project_root / "agentic_core" / l1_name
@@ -57,7 +57,7 @@ def validate_l2_l3_structure(project_root: Path) -> dict:
 
 def validate_depth_precision(project_root: Path) -> dict:
     """Validate apps_* depth without archiving."""
-    apps_exact_depth = SOVEREIGN_REGISTRY["apps_rg"]["depth"]
+    apps_exact_depth = SOVEREIGN_TERRITORIES["apps_rg"]["depth"]
     violations = []
 
     # Phase 6.5: Use ssot_discovery instead of rglob
@@ -86,7 +86,7 @@ def validate_depth_precision(project_root: Path) -> dict:
 
 def validate_tests_depth(project_root: Path) -> dict:
     """Validate tests depth without archiving."""
-    tests_exact_depth = SOVEREIGN_REGISTRY["tests"]["depth"]
+    tests_exact_depth = SOVEREIGN_TERRITORIES["tests"]["depth"]
     violations = []
 
     # Phase 6.5: Use ssot_discovery instead of rglob
@@ -115,7 +115,7 @@ def validate_tests_depth(project_root: Path) -> dict:
 
 def validate_universal_depth(project_root: Path) -> dict:
     """Validate universal depth for non-Python files without archiving."""
-    agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]
+    agentic_core_exact_depth = SOVEREIGN_TERRITORIES["agentic_core"]["depth"]
     violations = []
 
     # Phase 6.5: Use ssot_discovery instead of rglob

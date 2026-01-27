@@ -76,34 +76,70 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "knowledge": {"purpose": "Knowledge management and RAG systems"}
         },
         "ast_signals": {
-            "agentic_core/base_agents": {"base_classes": ["SovereignBaseAgent"], "weight": 100},
-            "agentic_core/L2_execution/tool_registry": {"class_patterns": [".*Agent$"], "weight": 9},
-            # GRAVITY WELL SHIELDING: Specialized weights override generic L0/L2 signals
+            # --- CONSTITUTIONAL FOUNDATION (Weight 100) ---
+            "agentic_core/base_agents": {
+                "class_patterns": [".*BaseAgent$"],
+                "base_classes": ["SovereignBaseAgent", "CanonBaseAgent"],
+                "weight": 100
+            },
+            
+            # --- L5 SAFETY: MAXIMUM DEFENSIVE PRIORITY (Weight 22-25) ---
+            "agentic_core/L5_safety/guardrails": {
+                "class_patterns": [".*Guardrail.*", ".*Barrier.*"],
+                "base_classes": ["BaseGuardrail", "SafetyAirlock"],
+                "keyword_signals": ["mutation_check", "deletion_block", "circuit_breaker"],
+                "weight": 25 
+            },
+            "agentic_core/L5_safety/gravity": {
+                "class_patterns": [".*Gravity.*", ".*Leak.*"],
+                "keyword_signals": ["import_waterfall", "layer_violation", "deportation"],
+                "weight": 22
+            },
+
+            # --- L1 COGNITION: REASONING SUPERIORITY (Weight 18) ---
+            "agentic_core/L1_cognition/thought_engine": {
+                "class_patterns": [".*Node$", ".*Thought.*", ".*Reason.*"],
+                "base_classes": ["ThoughtNode", "ReActNode"],
+                "keyword_signals": ["chain_of_thought", "self_reflection", "deliberation"],
+                "weight": 18 
+            },
+
+            # --- L3 ORCHESTRATION: STRATEGIC COORDINATION (Weight 16) ---
+            "agentic_core/L3_orchestration/workflow_engines": {
+                "class_patterns": [".*Orchestrator$", ".*Workflow.*"],
+                "base_classes": ["BaseOrchestrator", "WorkflowEngine"],
+                "keyword_signals": ["mission_control", "fission_logic", "dag_executor"],
+                "weight": 16
+            },
+
+            # --- DOMAIN SPECIALIZATION: PROMPT GOVERNANCE (Weight 12-15) ---
             "agentic_core/prompt_governance/meta_prompts": {
                 "class_patterns": [".*MetaPrompt.*", ".*Persona.*"],
                 "base_classes": ["MetaPrompt", "BasePersona"],
-                "keyword_signals": ["sovereign_instruction", "persona_definition", "system_override"],
+                "keyword_signals": ["sovereign_instruction", "persona_definition"],
                 "weight": 15
             },
             "agentic_core/prompt_governance/scripts": {
-                "description": "Domain-specific prompt utility scripts.",
                 "content_signals": {
-                    "keywords": ["render_all_templates", "validate_prompt_syntax", "sync_registry"],
+                    "keywords": ["render_all_templates", "validate_prompt_syntax"],
                     "imports": ["jinja2", "prompt_governance"]
                 },
-                "weight": 12  # Beats L0 Maintenance script weight (9)
+                "weight": 12
             },
-            "agentic_core/prompt_governance/version_registry": {
-                "description": "Registry management and version locking.",
-                "json_keys": ["registry_version", "active_branch", "checksum_manifest"],
-                "weight": 10
-            },
-            # [HARDENING] State & Validation Signals
+
+            # --- L4 STATE: PERSISTENCE INTEGRITY (Weight 11-14) ---
             "agentic_core/L4_state/validation_context": {
                 "class_patterns": [".*Context.*", ".*State.*"],
                 "base_classes": ["ValidationContext", "StateManager"],
-                "weight": 8
-            }
+                "weight": 14
+            },
+            "agentic_core/prompt_governance/version_registry": {
+                "json_keys": ["registry_version", "checksum_manifest"],
+                "weight": 11
+            },
+
+            # --- L0/L2 BASELINE: GENERIC UTILITIES (Weight 9) ---
+            "agentic_core/L2_execution/tool_registry": {"class_patterns": [".*Agent$"], "weight": 9}
         },
         "required_dirs": ["agentic_core/base_agents", "agentic_core/L5_safety"],
         "forbidden_patterns": ["agentic_core/common", "agentic_core/utils/core_extensions"]
@@ -143,16 +179,20 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
     "apps_shared": {
         "depth": 2,
         "purpose": "Global utilities and shared logic accessible by all apps and core.",
-        "subfolders": [
-            "agents",
-            "config",
-            "core_components",
-            "data",
-            "tools",
-            "utils",
-        ],
-        "description": "Global utilities and shared logic accessible by all apps and core.",
-        "note": "Structure hardened 2026-01-26 to match eviction rules",
+        "subfolders": ["agents", "config", "core_components", "data", "tools", "utils"],
+        # [HARDENING] 2026-01-27: Strict Shared-Layer Independence
+        "forbidden_imports": ["apps_rg", "apps_lic"],
+        "ast_signals": {
+            "apps_shared/utils": {
+                "class_patterns": [".*Utility$", ".*Helper$", ".*Detector$"],
+                "keyword_signals": ["global", "shared", "generic", "cross_app"],
+                "weight": 95  # Constitutional priority for shared code
+            },
+            "apps_shared/core_components": {
+                "base_classes": ["BaseNode", "BaseEngine", "BaseFlow"],
+                "weight": 92
+            }
+        }
     },
     "tests": {
         "depth": 2,
@@ -833,10 +873,15 @@ APP_LIC_STRING_TERMS: Final[frozenset[str]] = frozenset({
 })
 
 # === CORE LAYER GRAVITY RULES (Internal dependency direction) ===
+# === APP-LAYER GRAVITY RULES (Cross-App Isolation) ===
+# [SSOT] Prevents apps_shared from importing from specific apps to avoid circularity.
 LAYER_FORBIDDEN_IMPORTS: Final[Mapping[str, frozenset[str]]] = {
     "L1_cognition": frozenset({"L2_execution", "L3_orchestration", "L4_state", "L5_safety"}),
     "L2_execution": frozenset({"L1_cognition", "L3_orchestration", "L5_safety"}),
     "L3_orchestration": frozenset({"L5_safety"}),
+    "apps_shared": frozenset({"apps_rg", "apps_lic"}),  # Shared must be independent
+    "apps_rg": frozenset({"apps_lic"}),  # Apps are horizontally isolated
+    "apps_lic": frozenset({"apps_rg"}),  # Apps are horizontally isolated
 }
 
 # === STRUCTURED TERRITORY KEYWORDS FOR ALIGNMENT SCORING ===
@@ -1510,12 +1555,27 @@ GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset(
 
 def is_path_allowed(rel_path: str | Path) -> bool:
     """
-    [SSOT] UNIFIED: Determines if a path conforms to SOVEREIGN_TERRITORIES.
-    Supports recursive L4 validation while enforcing root-level depth.
+    [ULTRA-HARDENED] Determines if a path conforms to SOVEREIGN_TERRITORIES.
+    Enforces path normalization, cross-domain deportation, and depth precision.
     """
-    path_str = str(rel_path).replace("\\", "/")
-    parts = path_str.split("/")
+    # 1. Path Normalization: Neutralize traversal (../) and redundant slashes (//)
+    original_path = str(rel_path).replace("\\", "/")
     
+    # [CRITICAL] Block paths with redundant slashes for security
+    if "//" in original_path:
+        return False
+        
+    normalized_path = os.path.normpath(original_path).replace("\\", "/")
+    
+    # Reject paths that normalize to parent directories or empty
+    if not normalized_path or normalized_path.startswith("..") or normalized_path == ".":
+        return False
+        
+    # Filter out empty parts from normalized path
+    parts = [p for p in normalized_path.split("/") if p]
+    if not parts:
+        return False
+
     if len(parts) == 1:
         return parts[0] in ROOT_PROTECTED_FILES or parts[0] in ALLOWED_DUPLICATE_FILENAMES
 
@@ -1525,8 +1585,26 @@ def is_path_allowed(rel_path: str | Path) -> bool:
 
     config = SOVEREIGN_TERRITORIES[root]
     
-    # Check depth (Depth 2/3/4 enforcement)
-    if len(parts) > config["depth"] + 1 and not is_l4_approved(path_str):
+    # 2. Cross-Sovereign Deportation: Prevent App/Test leakage into Core
+    filename = parts[-1]
+    if root == "agentic_core":
+        # Critical Analysis: Blocks 'rg_', 'lic_', and 'test_' prefixes to prevent 
+        # semantic drift while allowing __init__.py and L0 scripts.
+        if filename.startswith(("rg_", "lic_", "test_")):
+            if not (filename == "__init__.py" or "L0_maintenance/scripts" in normalized_path):
+                return False
+
+    # 3. Depth Enforcement: L4 applies to folder structure, not the filename
+    path_depth = len(parts)
+    # If the last part is a file, the 'folder depth' is path_depth - 1
+    folder_depth = path_depth - 1 if "." in filename else path_depth
+    
+    # [CRITICAL] For L4 specializations, ensure we don't exceed depth 5 (L4 + 1 for file)
+    if folder_depth > config["depth"] + 1 and not is_l4_approved(normalized_path):
+        return False
+    
+    # [CRITICAL] Even for L4-approved paths, don't allow depth 6+ (L4 + L5 + file)
+    if folder_depth > config["depth"] + 2:
         return False
 
     # Check subfolder existence and nested forbidden patterns
@@ -1539,7 +1617,7 @@ def is_path_allowed(rel_path: str | Path) -> bool:
             sub_cfg = allowed_subs[sub_name]
             if isinstance(sub_cfg, dict):
                 patterns = sub_cfg.get("forbidden_patterns", [])
-                if any(re.search(p, path_str) for p in patterns):
+                if any(re.search(p, normalized_path) for p in patterns):
                     return False # BLOCK: Legacy structure detected
 
         if isinstance(allowed_subs, dict):
@@ -1552,26 +1630,58 @@ def is_path_allowed(rel_path: str | Path) -> bool:
     return True
 
 def is_l4_approved(path: str) -> bool:
-    """Helper to verify if a path matches an explicit L4 specialization."""
-    parts = path.split("/")
+    """
+    [HARDENED] Helper to verify L4 specializations.
+    Safely navigates both List-based (Apps) and Dict-based (Core) subfolders.
+    ONLY approves exactly depth 4 folder structures (excluding filename).
+    """
+    parts = [p for p in path.split("/") if p]
     if len(parts) < 4: return False
     
     root, l2, l3, l4 = parts[0], parts[1], parts[2], parts[3]
+    
+    # Remove filename to check folder structure (depth should be exactly 4 folders)
+    folder_parts = parts[:-1] if parts and '.' in parts[-1] else parts
+    
+    # Must be exactly depth 4 folders for L4 approval
+    if len(folder_parts) != 4: return False
+    
     try:
-        l2_cfg = SOVEREIGN_TERRITORIES[root]["subfolders"][l2]
-        # Check if l2 has l4_specializations (like prompt_governance)
-        if "l4_specializations" in l2_cfg:
-            # For prompt_governance, check if l3 is a valid specialization and l4 is in its L4_SUBFOLDER_MAP
-            if l3 in l2_cfg["l4_specializations"]:
-                # Navigate the nested L4_SUBFOLDER_MAP structure
-                return l4 in L4_SUBFOLDER_MAP.get(l2, {}).get(l3, {})
-            return False
-        # Otherwise check l3-specific configuration (for other territories)
-        elif isinstance(l2_cfg, dict) and l3 in l2_cfg:
-            l3_cfg = l2_cfg[l3]
-            return l4 in l3_cfg.get("l4_specializations", {})
+        # Check if this is an L4-approved folder path first
+        full_folder_path = f"{root}/{l2}/{l3}"
+        if full_folder_path in L4_APPROVED_FOLDERS:
+            # For approved folders, check if l4 is a valid L4 subfolder in L4_SUBFOLDER_MAP
+            # Need to find the right key in L4_SUBFOLDER_MAP and navigate the nested structure
+            l4_structure = L4_SUBFOLDER_MAP.get(l2, {})
+            if isinstance(l4_structure, dict) and l3 in l4_structure:
+                l3_structure = l4_structure[l3]
+                if isinstance(l3_structure, dict):
+                    # Check if l4 is directly a key in the L3 structure
+                    if l4 in l3_structure:
+                        return True
+                    # Check if l4 is in any of the subfolder lists within the L3 structure
+                    for subfolder_list in l3_structure.values():
+                        if isinstance(subfolder_list, list) and l4 in subfolder_list:
+                            return True
+        
+        # Fallback: Check l3-specific configuration for l4_specializations
+        root_cfg = SOVEREIGN_TERRITORIES.get(root, {})
+        subs = root_cfg.get("subfolders", {})
+        
+        # Critical Analysis: Prevent TypeError by ensuring 'subs' is a Dict 
+        # before attempting L2/L3 key lookups (fixes apps_rg crash).
+        if not isinstance(subs, dict): return False
+        
+        # Check both L2 and L3 for the specialization map (Fallback lookup)
+        l2_cfg = subs.get(l2, {})
+        if isinstance(l2_cfg, dict):
+            l3_cfg = l2_cfg.get(l3, {})
+            if isinstance(l3_cfg, dict):
+                specs = l3_cfg.get("l4_specializations", [])
+                if l4 in specs: return True
+
         return False
-    except (KeyError, TypeError):
+    except (KeyError, TypeError, AttributeError):
         return False
 
 
@@ -1856,7 +1966,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "base_classes": ["BaseModel", "pydantic.BaseModel"],
         "import_signals": ["pydantic"],
         "keyword_signals": ["field", "validator", "root_validator", "config"],
-        "weight": 85,
+        "weight": 10,
     },
     # [NEW] Configuration Modeling
     "agentic_core/config": {
@@ -1864,7 +1974,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "base_classes": ["BaseSettings"],
         "import_signals": ["pydantic_settings"],
         "keyword_signals": ["env_file", "secrets", "api_key"],
-        "weight": 90,
+        "weight": 10,
     },
     # L1_cognition placements
     "agentic_core/L1_cognition/thought_engine": {
@@ -1874,7 +1984,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "import_signals": ["langchain", "langgraph", "thought_engine"],
         "keyword_signals": ["thought", "reasoning", "decomposition", "chain_of_thought", "react"],
         "decorator_signals": ["@thought_node", "@reasoning_step"],
-        "weight": 10,  # High confidence signal
+        "weight": 15,  # Domain Logic tier
     },
     "agentic_core/L1_cognition/intent_analysis": {
         "class_patterns": [".*Intent.*", ".*Parser.*", ".*Classifier.*"],
@@ -1882,7 +1992,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "function_patterns": ["parse_intent.*", "classify_.*", "extract_intent.*"],
         "import_signals": ["intent", "classification"],
         "keyword_signals": ["intent", "classify", "parse", "extract", "query"],
-        "weight": 8,
+        "weight": 15,
     },
     "agentic_core/L1_cognition/planning": {
         "class_patterns": [".*Planner.*", ".*Strategy.*", ".*Plan.*"],
@@ -1890,7 +2000,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "function_patterns": ["plan_.*", "strategize_.*", "decompose_task.*"],
         "import_signals": ["planning", "strategy"],
         "keyword_signals": ["planner", "strategy", "plan", "goal", "objective"],
-        "weight": 8,
+        "weight": 15,
     },
     # L2_execution placements
     "agentic_core/L2_execution/tool_registry": {
@@ -1933,7 +2043,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
             "controller",
         ],
         "decorator_signals": ["@workflow", "@orchestrate"],
-        "weight": 10,
+        "weight": 16,
     },
     "agentic_core/L3_orchestration/fission_logic": {
         "class_patterns": [".*Fission.*", ".*Split.*", ".*Decompose.*"],
@@ -1941,7 +2051,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "function_patterns": ["fission_.*", "split_.*", "decompose_.*"],
         "import_signals": ["fission_logic"],
         "keyword_signals": ["fission", "split", "decompose", "parallel", "distribute"],
-        "weight": 8,
+        "weight": 16,
     },
     "agentic_core/L3_orchestration/meta_learning": {
         "class_patterns": [".*MetaLearn.*", ".*Adaptive.*", ".*SelfImprove.*"],
@@ -1949,7 +2059,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "function_patterns": ["meta_learn.*", "adapt_.*", "self_improve.*"],
         "import_signals": ["meta_learning"],
         "keyword_signals": ["meta", "learning", "adaptive", "self_improve", "evolve"],
-        "weight": 7,
+        "weight": 16,
     },
     # L4_state placements
     "agentic_core/L4_state/validation_context": {
@@ -1958,7 +2068,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "function_patterns": ["get_context.*", "set_state.*", "validate_context.*"],
         "import_signals": ["validation_context"],
         "keyword_signals": ["context", "state", "session", "validation"],
-        "weight": 8,
+        "weight": 14,
     },
     "agentic_core/L4_state/ledger": {
         "class_patterns": [".*Ledger.*", ".*Audit.*", ".*Log.*", ".*Historian.*"],
@@ -1966,7 +2076,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "function_patterns": ["log_.*", "record_.*", "audit_.*"],
         "import_signals": ["ledger"],
         "keyword_signals": ["ledger", "audit", "log", "record", "Historian", "trail"],
-        "weight": 8,
+        "weight": 14,
     },
     "agentic_core/L4_state/memory": {
         "class_patterns": [".*Memory.*", ".*cache.*", ".*Store.*"],
@@ -1974,7 +2084,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "function_patterns": ["store_.*", "retrieve_.*", "cache_.*"],
         "import_signals": ["pinecone", "redis", "memory"],
         "keyword_signals": ["memory", "cache", "store", "retrieve", "embedding", "vector"],
-        "weight": 9,
+        "weight": 14,
     },
     # L5_safety placements
     "agentic_core/L5_safety/guardrails": {
@@ -1992,7 +2102,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
             "breaker",
         ],
         "decorator_signals": ["@guardrail", "@rate_limit"],
-        "weight": 10,
+        "weight": 25,
     },
     "agentic_core/L5_safety/validators": {
         "class_patterns": [".*Validator.*", ".*Enforcer.*", ".*Checker.*", ".*Agent$"],
@@ -2000,7 +2110,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "function_patterns": ["validate_.*", "enforce_.*", "check_.*"],
         "import_signals": ["validators", "compliance"],
         "keyword_signals": ["validator", "enforce", "compliance", "check", "verify", "audit"],
-        "weight": 9,
+        "weight": 25,
     },
     "agentic_core/L5_safety/gravity": {
         "class_patterns": [".*Gravity.*", ".*Import.*", ".*Waterfall.*"],
@@ -2008,7 +2118,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "function_patterns": ["check_gravity.*", "validate_import.*"],
         "import_signals": ["gravity"],
         "keyword_signals": ["gravity", "import", "waterfall", "upstream", "downstream"],
-        "weight": 8,
+        "weight": 22,
     },
     "agentic_core/L5_safety/red_teaming": {
         "class_patterns": [".*RedTeam.*", ".*Adversarial.*", ".*Attack.*"],
@@ -2016,7 +2126,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "function_patterns": ["attack_.*", "probe_.*", "fuzz_.*"],
         "import_signals": ["red_teaming"],
         "keyword_signals": ["redteam", "adversarial", "attack", "probe", "jailbreak", "exploit"],
-        "weight": 8,
+        "weight": 20,
     },
     # Utils placements
     # core_extensions EVICTED - merged into utils root or specialized helpers
@@ -2061,7 +2171,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "import_signals": ["pydantic", "dataclasses"],
         "keyword_signals": ["model", "schema", "dto", "dataclass"],
         "decorator_signals": ["@dataclass"],
-        "weight": 9,
+        "weight": 10,
     },
     # Prompt governance placements
     "agentic_core/prompt_governance/templates": {
@@ -2071,7 +2181,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "import_signals": ["jinja2", "prompt_governance"],
         "keyword_signals": ["prompt", "template", "jinja", "render"],
         "decorator_signals": ["@registers_prompt"],
-        "weight": 8,
+        "weight": 15,
     },
     "agentic_core/prompt_governance/meta_prompts": {
         "class_patterns": [".*MetaPrompt.*", ".*SystemPrompt.*"],
@@ -2079,7 +2189,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "function_patterns": ["generate_meta_prompt.*"],
         "import_signals": ["meta_prompts"],
         "keyword_signals": ["meta_prompt", "system_prompt", "persona"],
-        "weight": 7,
+        "weight": 15,
     },
 }
 

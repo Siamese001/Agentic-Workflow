@@ -23,12 +23,13 @@ def execute_phase0_validation():
     """PHASE 0: PRE-EXECUTION VALIDATION"""
     logger.info("=== PHASE 0: PRE-EXECUTION VALIDATION ===")
     
-    # Step 0.1: Verify SSOT Source
+    # Step 0.1: Verify Unified SSOT Source
     try:
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP
-        if not SOVEREIGN_REGISTRY:
-            raise ValueError("SOVEREIGN_REGISTRY is empty. Critical SSOT failure.")
-        logger.info(f"SSOT Loaded: {len(SOVEREIGN_REGISTRY)} territories defined")
+        # [RECONCILED] Import the Unified Master Constitution
+        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
+        if not SOVEREIGN_TERRITORIES:
+            raise ValueError("SOVEREIGN_TERRITORIES is empty. Critical SSOT failure.")
+        logger.info(f"SSOT Loaded: {len(SOVEREIGN_TERRITORIES)} territories defined")
     except ImportError as e:
         logger.critical(f"Failed to load structure blueprint: {e}")
         sys.exit(1)
@@ -47,8 +48,7 @@ def execute_phase0_validation():
             'hierarchy': HierarchyAgent,
             'arch_governor': ArchitectureGovernorAgent,
             'system_architect': SystemArchitectAgent,
-            'registry': SOVEREIGN_REGISTRY,
-            'subfolder_map': CORE_SUBFOLDER_MAP
+            'territories': SOVEREIGN_TERRITORIES
         }
     except ImportError as e:
         logger.critical(f"Agent registry corruption detected: {e}")
@@ -103,7 +103,7 @@ def execute_phase2_alignment(agents, territory, drift_report):
     hierarchy_agent = agents['hierarchy']()
     structure_proposal = hierarchy_agent.analyze_and_propose(
         target_path=f"agentic_core/{territory}",
-        blueprint_reference=agents['subfolder_map'].get(territory, {})
+        blueprint_reference=agents['territories']['agentic_core']['subfolders'].get(territory, {})
     )
 
     # CRITICAL: Null Pointer Protection
@@ -327,12 +327,12 @@ def main(target_territory=None):
         target_territories = [target_territory]
         logger.info(f"Targeting specific territory: {target_territory}")
     else:
-        # Default to first registry item if none provided, or exit
-        registry = agents.get('registry', {})
-        if not registry:
-            logger.critical("No territories found in SOVEREIGN_REGISTRY.")
+        # [RECONCILED] Reference the unified registry
+        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
+        if not SOVEREIGN_TERRITORIES:
+            logger.critical("No territories found in SOVEREIGN_TERRITORIES.")
             sys.exit(1)
-        target_territories = [list(registry.keys())[0]]
+        target_territories = [list(SOVEREIGN_TERRITORIES.keys())[0]]
         logger.warning(f"No territory specified. Defaulting to first in registry: {target_territories[0]}")
     
     # Execute compliance for each territory

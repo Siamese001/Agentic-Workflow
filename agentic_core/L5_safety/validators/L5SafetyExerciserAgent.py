@@ -42,11 +42,13 @@ def _get_naming_agent() -> Any:
 
 
 def _get_import_agent() -> Any:
-    """Get import agent."""
+    """Get import healer (Phase 5 Migration: ImportAgent -> UnifiedCodeHealerAgent)."""
     try:
-        from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+        from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import (
+            create_legacy_import_healer,
+        )
 
-        return ImportAgent
+        return create_legacy_import_healer
     except Exception:
         return None
 
@@ -148,16 +150,17 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
 
     def _exercise_gravity_check(self) -> str:
         """Probe gravity on synthetic import code."""
-        ImportAgent = _get_import_agent()
-        if ImportAgent is None:
+        healer_factory = _get_import_agent()
+        if healer_factory is None:
             return "Gravity probe: Skipped (agent not available)"
         with tempfile.TemporaryDirectory() as tmpdir:
             temp_file = Path(tmpdir) / "synthetic_gravity_test.py"
             temp_file.write_text("import sys\nprint('gravity test')\n")
             try:
-                import_agent = ImportAgent()
-                violations = import_agent.check_gravity(temp_file)
-                return f"Gravity probe: {len(violations) if violations else 0} synthetic leaks detected"
+                import_healer = healer_factory()
+                # Note: UnifiedCodeHealerAgent uses heal_imports() instead of check_gravity()
+                actions = import_healer.heal_imports(temp_file)
+                return f"Gravity probe: {len(actions)} import issues detected"
             except Exception as e:
                 return f"Gravity probe: Dry-run executed (expected: {str(e)[:50]})"
 

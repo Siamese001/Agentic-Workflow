@@ -66,7 +66,7 @@ class TestUltraHardening:
         
         # Check version registry weight
         version_weight = ast_signals["agentic_core/prompt_governance/version_registry"]["weight"]
-        assert version_weight == 10
+        assert version_weight == 11
 
     def test_is_l4_approved_type_safety(self):
         """Test that is_l4_approved handles TypeError gracefully."""

@@ -236,11 +236,11 @@ class LocationValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         have deeper structures (e.g., utils/core_extensions/, config/blueprint_sovereign/).
         """
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            SOVEREIGN_REGISTRY,
+            SOVEREIGN_TERRITORIES,
             VARIABLE_DEPTH_SUBFOLDERS,
         )
 
-        expected_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth")
+        expected_depth = SOVEREIGN_TERRITORIES.get(root_folder, {}).get("depth")
         actual_depth = len(parts) - 1
 
         # Check if this is a variable-depth subfolder (exempt from strict depth check)
@@ -433,16 +433,35 @@ class LocationValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         return module.startswith(("apps_rg.", "apps_lic.")) or module in FORBIDDEN_APP_MODULES
 
     def _check_layer_import_violation(self, module: str, current_l1: str) -> str | None:
-        """Check for layer import violations and return violation description."""
+        """Check for layer import violations and return violation description.
+        
+        [RECONCILED 2026-01-27] Now enforces:
+        1. Core layer gravity (L1-L5 import direction)
+        2. App-layer horizontal isolation (apps_shared independence)
+        """
         from agentic_core.L5_safety.validators.structure_blueprint import LAYER_FORBIDDEN_IMPORTS
 
         if not current_l1:
             return None
 
+        # Check agentic_core layer imports
         if module.startswith("agentic_core.") and len(module.split(".")) > 2:
             imported_l1 = module.split(".")[1]
             if imported_l1 in LAYER_FORBIDDEN_IMPORTS.get(current_l1, set()):
                 return f"{current_l1} → {imported_l1}"
+
+        # [SHARED GRAVITY] Check app-layer horizontal isolation
+        # apps_shared MUST NOT import from apps_rg or apps_lic
+        if current_l1 == "apps_shared":
+            if module.startswith(("apps_rg.", "apps_lic.")):
+                imported_app = module.split(".")[0]
+                return f"apps_shared → {imported_app} (HORIZONTAL ISOLATION VIOLATION)"
+        
+        # Apps cannot import from each other
+        if current_l1 == "apps_rg" and module.startswith("apps_lic."):
+            return "apps_rg → apps_lic (HORIZONTAL ISOLATION VIOLATION)"
+        if current_l1 == "apps_lic" and module.startswith("apps_rg."):
+            return "apps_lic → apps_rg (HORIZONTAL ISOLATION VIOLATION)"
 
         return None
 
@@ -495,25 +514,31 @@ class LocationValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def _check_app_domain_violation(
         self, app_rg_score: float, app_lic_score: float, rel_path: Path
     ) -> tuple[bool, str]:
-        """Check for app-specific domain violations."""
-        from agentic_core.L5_safety.validators.structure_blueprint import (
-            APP_SPECIFIC_TARGET_SUBFOLDER,
-            AST_DOMAIN_HIT_THRESHOLD,
-            get_correct_app_path,
-        )
+        """
+        [HARDENED] Detects cross-contamination AND Global Candidates for apps_shared.
+        [SSOT 2026-01-27] Implements the 'Shared Vacuum' logic.
+        """
+        current_root = rel_path.parts[0]
+        
+        # 1. GLOBAL CANDIDATE DETECTION (Vacuum to apps_shared)
+        # If file is in an app folder but has near-ZERO domain DNA (Resume or LinkedIn)
+        if current_root in ["apps_rg", "apps_lic"]:
+            # Threshold: < 0.5 indicates purely generic utility logic (e.g., date_helper.py)
+            if app_rg_score < 0.5 and app_lic_score < 0.5:
+                # Disqualify files that already carry explicit app-specific prefixes
+                filename = rel_path.name
+                if not filename.startswith(("rg_", "lic_", "resume_", "outreach_")):
+                    # Violation triggers move to apps_shared/utils (Weight 95)
+                    return False, "GLOBAL CANDIDATE DETECTED: Low domain signals - belongs in apps_shared/utils"
 
-        total_app_score = app_rg_score + app_lic_score
-        if total_app_score >= AST_DOMAIN_HIT_THRESHOLD:
-            dominant = "apps_rg" if app_rg_score >= app_lic_score else "apps_lic"
-            target = (
-                get_correct_app_path(rel_path.name) or f"{dominant}/{APP_SPECIFIC_TARGET_SUBFOLDER}"
-            )
-            return False, (
-                f"AST DOMAIN VIOLATION (app score {total_app_score:.2f}): "
-                f"Strong application signals (RG: {app_rg_score:.2f}, LIC: {app_lic_score:.2f}). "
-                f"Move to '{target}/'. File: {rel_path}"
-            )
-        return True, "OK"
+        # 2. CROSS-CONTAMINATION CHECK (App vs App)
+        if current_root == "apps_rg" and app_lic_score > app_rg_score * 2.0:
+            return False, f"APP DOMAIN VIOLATION: Strong apps_lic signals ({app_lic_score:.1f} vs {app_rg_score:.1f})"
+            
+        if current_root == "apps_lic" and app_rg_score > app_lic_score * 2.0:
+            return False, f"APP DOMAIN VIOLATION: Strong apps_rg signals ({app_rg_score:.1f} vs {app_lic_score:.1f})"
+            
+        return True, ""
 
     def _check_territory_alignment(
         self, current_territory: str, territory_scores: dict[str, float], rel_path: Path
@@ -639,17 +664,17 @@ class LocationValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """
         Execute validation-only scan across ALL sovereign territories.
 
-        Phase 4.1 Upgrade: Universal root scanning using SOVEREIGN_REGISTRY.
+        Phase 4.1 Upgrade: Universal root scanning using SOVEREIGN_TERRITORIES.
         """
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
 
         violations = []
         compliant_files = 0
         total_files = 0
         roots_scanned = []
 
-        # Scan all SOVEREIGN_REGISTRY roots (Universal Scope)
-        for root_name in SOVEREIGN_REGISTRY.keys():
+        # Scan all SOVEREIGN_TERRITORIES roots (Universal Scope)
+        for root_name in SOVEREIGN_TERRITORIES.keys():
             root_path = self.project_root / root_name
             if not root_path.exists():
                 continue

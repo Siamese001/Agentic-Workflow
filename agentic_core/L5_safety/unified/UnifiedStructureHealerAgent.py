@@ -98,19 +98,44 @@ class UnifiedStructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def __init__(
         self,
         project_root: Path | None = None,
-        config: StructureHealerConfig | None = None,
+        agent_config: StructureHealerConfig | None = None,
     ):
         self.project_root = project_root or Path.cwd()
-        self.config = config or StructureHealerConfig()
+        self._agent_config = agent_config or StructureHealerConfig()
         self._lock = threading.RLock()
         self._actions: list[StructureHealingAction] = []
 
-        if self.config.backup_dir is None:
-            self.config.backup_dir = (
+        if self._agent_config.backup_dir is None:
+            self._agent_config.backup_dir = (
                 self.project_root / "archives" / "healing_backups" / "structure"
             )
 
         Logger.info("UnifiedStructureHealerAgent initialized")
+
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+        
+        Wraps heal_all to provide the standard Sovereign interface.
+        """
+        # Update config based on args
+        self._agent_config.dry_run = dry_run
+        
+        actions = []
+        # Similar to CodeHealer, we expect a file_path in kwargs or handle project-wide
+        # For now, if file_path is provided, we heal it.
+        target_file = kwargs.get("file_path")
+        if target_file:
+            actions = self.heal_all(Path(target_file))
+        
+        return {
+            "violations": len(actions),
+            "fixed": len([a for a in actions if a.applied]),
+            "errors": 0,
+            "actions": [str(a) for a in actions]
+        }
 
     def heal_all(self, file_path: Path) -> list[StructureHealingAction]:
         """Run all enabled healing on a file."""
@@ -119,13 +144,13 @@ class UnifiedStructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         if not file_path.exists():
             return actions
 
-        if self.config.enable_naming:
+        if self._agent_config.enable_naming:
             actions.extend(self.heal_naming(file_path))
 
-        if self.config.enable_gravity:
+        if self._agent_config.enable_gravity:
             actions.extend(self.heal_gravity(file_path))
 
-        if self.config.enable_territory:
+        if self._agent_config.enable_territory:
             actions.extend(self.heal_territory(file_path))
 
         return actions
@@ -148,8 +173,8 @@ class UnifiedStructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         matches = class_pattern.findall(content)
 
         for class_name in matches:
-            if not class_name.endswith(self.config.agent_suffix):
-                new_name = f"{class_name}{self.config.agent_suffix}"
+            if not class_name.endswith(self._agent_config.agent_suffix):
+                new_name = f"{class_name}{self._agent_config.agent_suffix}"
 
                 action = StructureHealingAction(
                     healing_type=StructureHealingType.NAMING,
@@ -160,7 +185,7 @@ class UnifiedStructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 )
                 actions.append(action)
 
-                if not self.config.dry_run:
+                if not self._agent_config.dry_run:
                     self._backup_file(file_path)
 
                     # Replace class name
@@ -213,7 +238,7 @@ class UnifiedStructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     )
                     actions.append(action)
 
-                    if not self.config.dry_run:
+                    if not self._agent_config.dry_run:
                         new_lines[i] = f"# GRAVITY VIOLATION: {line}"
                         modified = True
                         action.applied = True
@@ -280,10 +305,10 @@ class UnifiedStructureHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
     def _backup_file(self, file_path: Path) -> Path | None:
         """Create backup before healing."""
-        if not self.config.backup_before_heal:
+        if not self._agent_config.backup_before_heal:
             return None
 
-        backup_dir = self.config.backup_dir
+        backup_dir = self._agent_config.backup_dir
         backup_dir.mkdir(parents=True, exist_ok=True)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

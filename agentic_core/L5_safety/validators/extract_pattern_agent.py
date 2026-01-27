@@ -57,7 +57,7 @@ from agentic_core.base_agents.canon_base_agent_interface import CanonBaseAgentIn
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
+    SOVEREIGN_TERRITORIES,
     CORE_SUBFOLDER_MAP,
 )
 from agentic_core.base_agents.healer_mixin import HealerMixin

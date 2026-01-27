@@ -23,7 +23,7 @@ from agentic_core.L1_cognition.thought_engine.validation_protocol import Validat
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
+    SOVEREIGN_TERRITORIES,
     CORE_SUBFOLDER_MAP,
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin

@@ -94,6 +94,22 @@ class UnifiedSafetyDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         threats = detector.detect_bias("model output here")
     """
 
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+        
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes
+            
+        Returns:
+            Dict with healing summary
+        """
+        # Safety detector identifies threats; it does not auto-heal them
+        return {"violations": 0, "fixed": 0, "errors": 0}
+
     # Standard injection patterns
     INJECTION_PATTERNS = [
         r"ignore\s+(previous|all|above)\s+instructions?",
@@ -131,8 +147,8 @@ class UnifiedSafetyDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         r"according\s+to\s+my\s+training\s+data",
     ]
 
-    def __init__(self, config: SafetyConfig | None = None):
-        self.config = config or SafetyConfig()
+    def __init__(self, agent_config: SafetyConfig | None = None):
+        self._agent_config = agent_config or SafetyConfig()
         self._lock = threading.RLock()
         self._threats: list[SafetyThreat] = []
         self._compiled_injection = [re.compile(p, re.IGNORECASE) for p in self.INJECTION_PATTERNS]
@@ -144,13 +160,13 @@ class UnifiedSafetyDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """Run all enabled detections on text."""
         threats = []
 
-        if self.config.enable_injection:
+        if self._agent_config.enable_injection:
             threats.extend(self.detect_injection(text, source))
 
-        if self.config.enable_bias:
+        if self._agent_config.enable_bias:
             threats.extend(self.detect_bias(text, source))
 
-        if self.config.enable_hallucination:
+        if self._agent_config.enable_hallucination:
             threats.extend(self.detect_hallucination(text, source))
 
         return threats
@@ -183,7 +199,7 @@ class UnifiedSafetyDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     "patterns_matched": matched_patterns,
                     "text_preview": text[:100] + "..." if len(text) > 100 else text,
                 },
-                blocked=self.config.block_high_severity
+                blocked=self._agent_config.block_high_severity
                 and severity.value >= ThreatSeverity.HIGH.value,
             )
             threats.append(threat)

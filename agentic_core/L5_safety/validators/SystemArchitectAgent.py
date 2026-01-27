@@ -97,7 +97,7 @@ class SystemArchitectAgent(SubatomicTestingMixin, SovereignBaseAgent, CanonBaseA
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations: Any = []
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
 
         # [PHASE 20] DEPRECATION: void_compliance.py removed - using HierarchyAgent
         def validate_canonical_hierarchy(proj_root):
@@ -111,7 +111,7 @@ class SystemArchitectAgent(SubatomicTestingMixin, SovereignBaseAgent, CanonBaseA
             except ValueError:
                 rel_path: Any = path
             violations.append(f"{rel_path}: {reason}")
-        for root_folder, config in SOVEREIGN_REGISTRY.items():
+        for root_folder, config in SOVEREIGN_TERRITORIES.items():
             root_path: Any = project_root / root_folder
             if not root_path.exists():
                 continue
@@ -156,8 +156,8 @@ class SystemArchitectAgent(SubatomicTestingMixin, SovereignBaseAgent, CanonBaseA
                 continue
             depth: Any = len(rel_path.parts) - 1
             root_folder: Any = rel_path.parts[0] if rel_path.parts else None
-            if root_folder in SOVEREIGN_REGISTRY:
-                required_depth: Any = SOVEREIGN_REGISTRY[root_folder]["depth"]
+            if root_folder in SOVEREIGN_TERRITORIES:
+                required_depth: Any = SOVEREIGN_TERRITORIES[root_folder]["depth"]
                 if depth != required_depth:
                     violations.append(
                         f"{rel_path}: {root_folder} requires exactly depth {required_depth}, found {depth}."

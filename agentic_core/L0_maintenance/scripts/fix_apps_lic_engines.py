@@ -68,7 +68,7 @@ MODULE_PATH_FIXES = {
     },
     "control_plane.py": {
         "old": "from apps_lic.engines.BiasAuditorAgent import",
-        "new": "# from apps_lic.engines.BiasDetectorAgent import",
+        "new": "# Phase 5 Migration: BiasAuditorAgent -> UnifiedSafetyDetectorAgent",
     },
 }
 
