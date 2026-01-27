@@ -62,7 +62,7 @@ repos:
         args: [--ignore-missing-imports, --strict]
         additional_dependencies: [types-requests, types-PyYAML, types-toml] # Specific stubs avoid dependency conflicts
         types: [python]
-        exclude: ^(tests/|scripts/|stubs/)
+        exclude: ^(tests/|ops_scripts/|stubs/)
 
   # ============================================================================
   # TIER 2: Project-Specific Safety Checks (Windows-Compatible)
@@ -81,7 +81,7 @@ repos:
       - id: check-heal-schema-compliance
         name: Check @standard_heal Schema Compliance
         entry: python
-        args: [scripts/maintenance/check_heal_schema_compliance.py, --strict]
+        args: [ops_scripts/maintenance/check_heal_schema_compliance.py, --strict]
         language: python
         pass_filenames: false
         always_run: true
@@ -89,7 +89,7 @@ repos:
       - id: check-protected-files
         name: Gatekeeper Protection (Block ArchivalGatekeeper.py changes)
         entry: python
-        args: [scripts/maintenance/check_protected_files.py]
+        args: [ops_scripts/maintenance/check_protected_files.py]
         language: python
         pass_filenames: false
         always_run: true
@@ -97,7 +97,7 @@ repos:
       - id: gatekeeper-security-lock
         name: Gatekeeper Security Lock (Requires [SECURITY-OVERRIDE])
         entry: python
-        args: [scripts/security/gatekeeper_lock.py]
+        args: [ops_scripts/security/gatekeeper_lock.py]
         language: python
         pass_filenames: false
         always_run: true
@@ -123,7 +123,7 @@ repos:
       - id: sovereign-lockdown-verification
         name: Sovereign Lockdown Verification (Phase 7)
         entry: python
-        args: [scripts/ci/sovereign_lockdown_check.py]
+        args: [ops_scripts/ci/sovereign_lockdown_check.py]
         language: python
         pass_filenames: false
         always_run: true

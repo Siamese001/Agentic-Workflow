@@ -10,7 +10,7 @@ import tempfile
 
 # Add the project root to Python path to import scripts
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from scripts.architectural_guard import scan_for_violations
+from ops_scripts.architectural_guard import scan_for_violations
 
 # SSOT Path
 COMMON_UTILS = r"C:\Git\Agentic-Workflow\apps_shared\common_utils"

@@ -9,7 +9,7 @@ from pathlib import Path
 
 def test_map_performance():
     """Verify that the project mapping completes in under 2 seconds."""
-    from scripts.remediate_naming_phase2 import get_project_file_map
+    from ops_scripts.remediate_naming_phase2 import get_project_file_map
     
     start_time = time.time()
     file_map = get_project_file_map()
@@ -24,7 +24,7 @@ def test_map_performance():
 
 def test_quarantine_exclusion():
     """Ensure venv and .git are NOT in the file map."""
-    from scripts.remediate_naming_phase2 import get_project_file_map, QUARANTINED_DIRS
+    from ops_scripts.remediate_naming_phase2 import get_project_file_map, QUARANTINED_DIRS
     
     file_map = get_project_file_map()
     
@@ -44,7 +44,7 @@ def test_log_cleaning_logic():
 
 def test_scoped_import_replacement():
     """Verify that only lines starting with import/from are modified."""
-    from scripts.remediate_naming_phase2 import to_snake_case
+    from ops_scripts.remediate_naming_phase2 import to_snake_case
     
     old = "fix_all_agentic_imports"
     new = to_snake_case(old)

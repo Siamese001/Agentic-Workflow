@@ -20,9 +20,9 @@ def fix_mission_runner() -> Any:
     new_lines: Any = []
     skip_until_blank: Any = False
     for _i, line in enumerate(lines):
-        if "from scripts.CanonValidator" in line:
+        if "from ops_scripts.CanonValidator" in line:
             if not skip_until_blank:
-                new_lines.append("    # GRAVITY FIX: Removed all scripts.CanonValidator imports\n")
+                new_lines.append("    # GRAVITY FIX: Removed all ops_scripts.CanonValidator imports\n")
                 new_lines.append(
                     "    # These agents need to be moved to agentic_core or refactored\n"
                 )
@@ -36,7 +36,7 @@ def fix_mission_runner() -> Any:
             continue
         if "STRUCTURAL FIX:" in line:
             continue
-        if line.strip().startswith("#") and "from scripts.CanonValidator" in line:
+        if line.strip().startswith("#") and "from ops_scripts.CanonValidator" in line:
             continue
         new_lines.append(line)
     with open(mission_runner, "w", encoding="utf-8") as f:

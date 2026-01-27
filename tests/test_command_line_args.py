@@ -21,13 +21,13 @@ class TestCLIHardening(unittest.TestCase):
         Ensures the main() function correctly accepts and prioritizes the 
         --territory argument over hardcoded defaults.
         """
-        from scripts.execute_ssot_compliance_protocol import main
+        from ops_scripts.execute_ssot_compliance_protocol import main
         
         # Mock agents dict
         mock_agents = {'registry': {'test_folder': {}}}
         
-        with patch('scripts.execute_ssot_compliance_protocol.execute_phase0_validation', return_value=mock_agents):
-            with patch('scripts.execute_ssot_compliance_protocol.execute_territory_compliance') as mock_exec:
+        with patch('ops_scripts.execute_ssot_compliance_protocol.execute_phase0_validation', return_value=mock_agents):
+            with patch('ops_scripts.execute_ssot_compliance_protocol.execute_territory_compliance') as mock_exec:
                 # Test passing a specific folder
                 main(target_territory="prompt_governance")
                 
@@ -42,12 +42,12 @@ class TestCLIHardening(unittest.TestCase):
         Ensures that if no territory is provided AND the registry is empty, 
         the system executes a hard stop (exit 1) rather than a null pointer crash.
         """
-        from scripts.execute_ssot_compliance_protocol import main
+        from ops_scripts.execute_ssot_compliance_protocol import main
         
         # Mock empty registry
         mock_agents = {'registry': {}}
         
-        with patch('scripts.execute_ssot_compliance_protocol.execute_phase0_validation', return_value=mock_agents):
+        with patch('ops_scripts.execute_ssot_compliance_protocol.execute_phase0_validation', return_value=mock_agents):
             # The sys.exit(1) should be called and raise SystemExit
             mock_exit.side_effect = SystemExit(1)
             
@@ -62,7 +62,7 @@ class TestCLIHardening(unittest.TestCase):
         Verifies that even when a territory is specified via CLI, 
         interactive phases are still blocked if CI environment is detected.
         """
-        from scripts.execute_ssot_compliance_protocol import execute_phase2_alignment
+        from ops_scripts.execute_ssot_compliance_protocol import execute_phase2_alignment
         
         mock_agents = {'hierarchy': MagicMock(), 'subfolder_map': {}}
         mock_drift = {'has_changes': True}
@@ -81,12 +81,12 @@ class TestCLIHardening(unittest.TestCase):
         Ensures that if --territory is passed via shell, it reaches the main logic.
         """
         mock_args.return_value = MagicMock(territory="custom_folder")
-        from scripts.execute_ssot_compliance_protocol import main
+        from ops_scripts.execute_ssot_compliance_protocol import main
         
-        with patch('scripts.execute_ssot_compliance_protocol.execute_phase0_validation', return_value={'registry': {}}):
-             with patch('scripts.execute_ssot_compliance_protocol.execute_territory_compliance') as mock_exec:
+        with patch('ops_scripts.execute_ssot_compliance_protocol.execute_phase0_validation', return_value={'registry': {}}):
+             with patch('ops_scripts.execute_ssot_compliance_protocol.execute_territory_compliance') as mock_exec:
                  # Logic simulation of the __main__ block
-                 from scripts.execute_ssot_compliance_protocol import main
+                 from ops_scripts.execute_ssot_compliance_protocol import main
                  main(target_territory="custom_folder")
                  self.assertEqual(mock_exec.call_args[0][1], "custom_folder")
 
@@ -95,13 +95,13 @@ class TestCLIHardening(unittest.TestCase):
         CRITICAL TEST 13: Default Territory Selection.
         Ensures that when no territory is specified, the first registry territory is selected.
         """
-        from scripts.execute_ssot_compliance_protocol import main
+        from ops_scripts.execute_ssot_compliance_protocol import main
         
         # Mock registry with multiple territories
         mock_agents = {'registry': {'first_folder': {}, 'second_folder': {}}}
         
-        with patch('scripts.execute_ssot_compliance_protocol.execute_phase0_validation', return_value=mock_agents):
-            with patch('scripts.execute_ssot_compliance_protocol.execute_territory_compliance') as mock_exec:
+        with patch('ops_scripts.execute_ssot_compliance_protocol.execute_phase0_validation', return_value=mock_agents):
+            with patch('ops_scripts.execute_ssot_compliance_protocol.execute_territory_compliance') as mock_exec:
                 main(target_territory=None)
                 
                 # Verify the execution was called for the FIRST folder in registry
@@ -113,13 +113,13 @@ class TestCLIHardening(unittest.TestCase):
         CRITICAL TEST 14: Invalid Territory Handling.
         Ensures the system gracefully handles territories not in registry.
         """
-        from scripts.execute_ssot_compliance_protocol import main
+        from ops_scripts.execute_ssot_compliance_protocol import main
         
         # Mock registry with limited territories
         mock_agents = {'registry': {'valid_folder': {}}}
         
-        with patch('scripts.execute_ssot_compliance_protocol.execute_phase0_validation', return_value=mock_agents):
-            with patch('scripts.execute_ssot_compliance_protocol.execute_territory_compliance') as mock_exec:
+        with patch('ops_scripts.execute_ssot_compliance_protocol.execute_phase0_validation', return_value=mock_agents):
+            with patch('ops_scripts.execute_ssot_compliance_protocol.execute_territory_compliance') as mock_exec:
                 # Test with territory not in registry
                 main(target_territory="invalid_folder")
                 

@@ -27,7 +27,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
 )
-from scripts.smart_discovery import get_json_mtime, is_discovery_stale
+from ops_scripts.smart_discovery import get_json_mtime, is_discovery_stale
 
 logging.basicConfig(
     level=logging.INFO,
@@ -85,7 +85,7 @@ def regenerate_dashboard() -> bool:
     """
     try:
         log.info("🔄 Regenerating discovery JSON...")
-        from scripts.smart_discovery import ensure_fresh_discovery
+        from ops_scripts.smart_discovery import ensure_fresh_discovery
 
         ensure_fresh_discovery()
 
