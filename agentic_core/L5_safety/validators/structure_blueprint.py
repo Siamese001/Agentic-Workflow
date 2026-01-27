@@ -16,60 +16,101 @@ from typing import Any, Dict, List, Optional, Protocol, Set, Union, Pattern, Tup
 # Lock down core mappings to prevent runtime mutation during mission execution
 # [CRITICAL ANALYSIS] Windsurf's initial attempt lacked static enforcement;
 # this locks down the configuration to prevent 'Junior AI' drift during autonomous healing cycles.
-# [HARDENING] 2026-01-26: Converted all mutable containers to immutable Mapping/Sequence/frozenset.
+# [HARDENING] 2026-01-26: Converted all mutable containers to immutable
 
-# CANONICAL BLUEPRINT: Enforces V2.5 Structure
-CANON_VALIDATION_REGISTRY: Final[Mapping[str, Sequence[str]]] = {
-    "required_dirs": [
-        "agentic_core",
-        "agentic_core/base_agents",
-        "agentic_core/domain",
-        "agentic_core/L5_safety",
-        "apps_lic/engines",
-        "apps_lic/core",
-        "apps_rg/engines",
-        "apps_rg/core",
-        "apps_shared/core",
-    ],
-    "forbidden_patterns": [
-        "apps_shared/base_agents",  # EVICTED -> apps_shared/agents
-        "apps_shared/P1_core",  # EVICTED -> apps_shared/core
-        "apps_shared/common_utils",  # EVICTED -> apps_shared/utils
-        "agentic_core/utils/core_extensions",  # EVICTED
-        "agentic_core/common",  # EVICTED -> use utils
-    ],
-    "mandatory_files": [
-        "agentic_core/domain/exceptions.py",
-        "apps_lic/core/base.py",
-        "apps_rg/core/base.py",
-        "apps_shared/core/base.py",
-    ],
-}
+# ============================================================================
+# UNIFIED SOVEREIGN TERRITORY SCHEMA (The Master Constitution)
+# ============================================================================
+# [SSOT 2026-01-27] Consolidates all 5 legacy registries into a single 
+# hierarchical model. This eliminates 'Architectural Split-Brain'.
 
-# Hardening SOVEREIGN_REGISTRY from Any to concrete Mapping to prevent accidental agent mutation
-SOVEREIGN_REGISTRY: Final[Mapping[str, Mapping[str, Union[int, Sequence[str], str, bool]]]] = {
+class SubfolderDefinition(TypedDict, total=False):
+    purpose: str
+    l4_specializations: Mapping[str, Sequence[str]]
+    ast_signals: Mapping[str, Any]
+    required_dirs: Sequence[str]
+    forbidden_patterns: Sequence[str]
+
+class TerritoryDefinition(TypedDict):
+    depth: int
+    purpose: str
+    subfolders: Mapping[str, Union[Sequence[str], Mapping[str, SubfolderDefinition]]]
+    ast_signals: Optional[Mapping[str, Mapping[str, Any]]]
+    volatile: Optional[bool]
+    required_dirs: Optional[Sequence[str]]
+    forbidden_patterns: Optional[Sequence[str]]
+
+SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
     "agentic_core": {
         "depth": 3,
-        "subfolders": [
-            "L0_maintenance",
-            "L1_cognition",
-            "L2_execution",
-            "L3_orchestration",
-            "L4_state",
-            "L5_safety",
-            "L6_observability",
-            "config",
-            "schemas",
-            "prompt_governance",
-            "runtime",
-            "utils",
-            "patterns",
-            "semantic_memory",
-            "knowledge",
-        ],
+        "purpose": "Core agentic logic and safety layers.",
+        "subfolders": {
+            "L0_maintenance": {"purpose": "System maintenance and healing operations"},
+            "L1_cognition": {"purpose": "Cognitive processing and thought patterns"},
+            "L2_execution": {"purpose": "Tool execution and action handling"},
+            "L3_orchestration": {"purpose": "Workflow orchestration and coordination"},
+            "L4_state": {"purpose": "State management and persistence"},
+            "L5_safety": {"purpose": "Security, validation, and safety enforcement"},
+            "L6_observability": {"purpose": "Monitoring, telemetry, and compliance reporting"},
+            "config": {"purpose": "Configuration management and environment settings"},
+            "schemas": {"purpose": "Data models, message schemas, and validation rules"},
+            "prompt_governance": {
+                "purpose": "Template lifecycle and persona management.",
+                "l4_specializations": {
+                    "meta_prompts": ["orchestration", "reasoning", "personas"],
+                    "templates": ["instructional", "specialized", "fragments"],
+                    "scripts": ["audit", "migration", "maintenance"],
+                    "version_registry": ["manifests", "locks", "lineage"]
+                },
+                # VIOLATION PREVENTION: Explicitly block legacy L3_ prefixing
+                "forbidden_patterns": ["L3_", "l3_"],
+                "required_dirs": [
+                    "agentic_core/prompt_governance/meta_prompts",
+                    "agentic_core/prompt_governance/version_registry"
+                ]
+            },
+            "runtime": {"purpose": "Runtime environment setup and resource management"},
+            "utils": {"purpose": "General utility functions and helpers"},
+            "patterns": {"purpose": "Architectural and behavioral patterns for agents"},
+            "semantic_memory": {"purpose": "Vector storage and semantic retrieval systems"},
+            "knowledge": {"purpose": "Knowledge management and RAG systems"}
+        },
+        "ast_signals": {
+            "agentic_core/base_agents": {"base_classes": ["SovereignBaseAgent"], "weight": 100},
+            "agentic_core/L2_execution/tool_registry": {"class_patterns": [".*Agent$"], "weight": 9},
+            # GRAVITY WELL SHIELDING: Specialized weights override generic L0/L2 signals
+            "agentic_core/prompt_governance/meta_prompts": {
+                "class_patterns": [".*MetaPrompt.*", ".*Persona.*"],
+                "base_classes": ["MetaPrompt", "BasePersona"],
+                "keyword_signals": ["sovereign_instruction", "persona_definition", "system_override"],
+                "weight": 15
+            },
+            "agentic_core/prompt_governance/scripts": {
+                "description": "Domain-specific prompt utility scripts.",
+                "content_signals": {
+                    "keywords": ["render_all_templates", "validate_prompt_syntax", "sync_registry"],
+                    "imports": ["jinja2", "prompt_governance"]
+                },
+                "weight": 12  # Beats L0 Maintenance script weight (9)
+            },
+            "agentic_core/prompt_governance/version_registry": {
+                "description": "Registry management and version locking.",
+                "json_keys": ["registry_version", "active_branch", "checksum_manifest"],
+                "weight": 10
+            },
+            # [HARDENING] State & Validation Signals
+            "agentic_core/L4_state/validation_context": {
+                "class_patterns": [".*Context.*", ".*State.*"],
+                "base_classes": ["ValidationContext", "StateManager"],
+                "weight": 8
+            }
+        },
+        "required_dirs": ["agentic_core/base_agents", "agentic_core/L5_safety"],
+        "forbidden_patterns": ["agentic_core/common", "agentic_core/utils/core_extensions"]
     },
     "apps_rg": {
         "depth": 2,
+        "purpose": "Resume Generation Application domain.",
         "subfolders": [
             "asset_library",
             "core",
@@ -80,9 +121,13 @@ SOVEREIGN_REGISTRY: Final[Mapping[str, Mapping[str, Union[int, Sequence[str], st
             "system_flow",
             "validation",
         ],
+        "ast_signals": {
+            "apps_rg/engines": {"keyword_signals": ["resume", "cv", "formatting"], "weight": 90}
+        }
     },
     "apps_lic": {
         "depth": 2,
+        "purpose": "LinkedIn Canonical application domain.",
         "subfolders": [
             "asset_library",
             "domain",
@@ -97,19 +142,21 @@ SOVEREIGN_REGISTRY: Final[Mapping[str, Mapping[str, Union[int, Sequence[str], st
     },
     "apps_shared": {
         "depth": 2,
+        "purpose": "Global utilities and shared logic accessible by all apps and core.",
         "subfolders": [
-            "agents",  # RECONCILED: Formerly base_agents
+            "agents",
             "config",
             "core_components",
             "data",
             "tools",
-            "utils",   # RECONCILED: Merged common_utils here
+            "utils",
         ],
         "description": "Global utilities and shared logic accessible by all apps and core.",
         "note": "Structure hardened 2026-01-26 to match eviction rules",
     },
     "tests": {
         "depth": 2,
+        "purpose": "Universal test suites.",
         "subfolders": [
             "unit",
             "integration",
@@ -118,23 +165,24 @@ SOVEREIGN_REGISTRY: Final[Mapping[str, Mapping[str, Union[int, Sequence[str], st
             "fixtures",
             "core",
             "apps_rg",
-            "apps_lic",  # RECONCILED: Parity with apps_rg
+            "apps_lic",
         ],
-        "purpose": "Test suites organized by test type",
+        "volatile": False
     },
     "ops_scripts": {
         "depth": 2,
+        "purpose": "Standalone utility scripts.",
         "subfolders": ["ci", "maintenance", "security"],
-        "purpose": "Standalone utility scripts",
     },
     "archives": {
         "depth": 2,
+        "purpose": "Historical artifacts and deprecated code.",
         "subfolders": [],
-        "purpose": "Historical artifacts and deprecated code",
         "volatile": True,
     },
     "data": {
         "depth": 2,
+        "purpose": "Data storage and processing artifacts.",
         "subfolders": [
             "archives",
             "cache",
@@ -153,23 +201,22 @@ SOVEREIGN_REGISTRY: Final[Mapping[str, Mapping[str, Union[int, Sequence[str], st
             "sdks_mcps",
             "tasks",
         ],
-        "purpose": "Data storage and processing artifacts",
     },
     "docs": {
         "depth": 2,
+        "purpose": "Documentation and reporting.",
         "subfolders": ["MCP", "metrics", "reports"],
-        "purpose": "Documentation and reporting",
     },
     "logs": {
         "depth": 2,
+        "purpose": "Runtime logs and test outputs.",
         "subfolders": [],
-        "purpose": "Runtime logs and test outputs",
         "volatile": True,
     },
     ".sovereign_healing_backup": {
         "depth": 2,
+        "purpose": "Backup directory for healing operations.",
         "subfolders": ["filesystem", "location", "naming", "transactions"],
-        "purpose": "Backup directory for healing operations",
         "volatile": True,
     },
 }
@@ -1423,7 +1470,7 @@ PYTHON_STDLIB_MODULES: frozenset[str] = frozenset(
         "pickle",
     }
 )
-ROOT_WHITELIST: set[str] = set(SOVEREIGN_REGISTRY.keys())
+ROOT_WHITELIST: set[str] = set(SOVEREIGN_TERRITORIES.keys())
 
 # ============================================================================
 # GLOBAL EXCLUDED DIRECTORIES - Production Lens SSOT
@@ -1463,42 +1510,69 @@ GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset(
 
 def is_path_allowed(rel_path: str | Path) -> bool:
     """
-    [SSOT] Determines if a path conforms to the SOVEREIGN_REGISTRY structure.
-    Used by agents (Filesystem/Hierarchy) as a safety brake to prevent
-    'friendly fire' archiving of validly placed files.
-
-    Args:
-        rel_path: Path relative to project root (e.g., 'agentic_core/L2_execution/file.py')
-
-    Returns:
-        True if path is within a valid sovereign territory, False otherwise
+    [SSOT] UNIFIED: Determines if a path conforms to SOVEREIGN_TERRITORIES.
+    Supports recursive L4 validation while enforcing root-level depth.
     """
     path_str = str(rel_path).replace("\\", "/")
     parts = path_str.split("/")
-
-    # 1. Check Root Whitelist (Files allowed at strict root)
+    
     if len(parts) == 1:
         return parts[0] in ROOT_PROTECTED_FILES or parts[0] in ALLOWED_DUPLICATE_FILENAMES
 
     root = parts[0]
-
-    # 2. Check Sovereign Roots
-    if root not in SOVEREIGN_REGISTRY:
-        # If the root folder isn't known (e.g. "random_folder/"), it's invalid
+    if root not in SOVEREIGN_TERRITORIES:
         return False
 
-    # 3. Check First-Level Subfolders (The Sovereign Domain Check)
-    # Ensures file is in e.g., 'agentic_core/L2_execution', not 'agentic_core/junk'
+    config = SOVEREIGN_TERRITORIES[root]
+    
+    # Check depth (Depth 2/3/4 enforcement)
+    if len(parts) > config["depth"] + 1 and not is_l4_approved(path_str):
+        return False
+
+    # Check subfolder existence and nested forbidden patterns
     if len(parts) > 1:
-        expected_subfolders = SOVEREIGN_REGISTRY[root].get("subfolders", [])
-        # Allow if no subfolders defined OR subfolder is in allowed list
-        if expected_subfolders and parts[1] not in expected_subfolders:
-            # Check if it's a .py file at root level (e.g., agentic_core/__init__.py)
-            if not parts[1].endswith(".py"):
+        sub_name = parts[1]
+        allowed_subs = config["subfolders"]
+        
+        # [HARDENING] Check for forbidden patterns at the subfolder level (e.g., L3_ prefixes)
+        if isinstance(allowed_subs, dict) and sub_name in allowed_subs:
+            sub_cfg = allowed_subs[sub_name]
+            if isinstance(sub_cfg, dict):
+                patterns = sub_cfg.get("forbidden_patterns", [])
+                if any(re.search(p, path_str) for p in patterns):
+                    return False # BLOCK: Legacy structure detected
+
+        if isinstance(allowed_subs, dict):
+            if sub_name not in allowed_subs:
+                return sub_name.endswith(".py") # Root files like __init__.py
+        elif isinstance(allowed_subs, list):
+            if sub_name not in allowed_subs:
                 return False
 
-    # If it passed these gates, it is structurally aligned with the blueprint
     return True
+
+def is_l4_approved(path: str) -> bool:
+    """Helper to verify if a path matches an explicit L4 specialization."""
+    parts = path.split("/")
+    if len(parts) < 4: return False
+    
+    root, l2, l3, l4 = parts[0], parts[1], parts[2], parts[3]
+    try:
+        l2_cfg = SOVEREIGN_TERRITORIES[root]["subfolders"][l2]
+        # Check if l2 has l4_specializations (like prompt_governance)
+        if "l4_specializations" in l2_cfg:
+            # For prompt_governance, check if l3 is a valid specialization and l4 is in its L4_SUBFOLDER_MAP
+            if l3 in l2_cfg["l4_specializations"]:
+                # Navigate the nested L4_SUBFOLDER_MAP structure
+                return l4 in L4_SUBFOLDER_MAP.get(l2, {}).get(l3, {})
+            return False
+        # Otherwise check l3-specific configuration (for other territories)
+        elif isinstance(l2_cfg, dict) and l3 in l2_cfg:
+            l3_cfg = l2_cfg[l3]
+            return l4 in l3_cfg.get("l4_specializations", {})
+        return False
+    except (KeyError, TypeError):
+        return False
 
 
 GRAVITY_CONFIG: Any = {
