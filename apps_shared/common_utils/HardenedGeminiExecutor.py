@@ -236,7 +236,7 @@ class HardenedGeminiExecutor:
         """
         # Try to import types from google.genai, fallback to dict format
         try:
-            from google.genai import types
+            from google.genai import SourceDocument
 
             return [
                 types.SafetySetting(

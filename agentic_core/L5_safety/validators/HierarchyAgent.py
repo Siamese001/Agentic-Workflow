@@ -5,6 +5,7 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.SubatomicTestingMixin import SubatomicTestingMixin
 
 from dataclasses import dataclass
 
@@ -53,7 +54,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class HierarchyAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
     """
     Unified Hierarchy Management Agent
 
@@ -1109,11 +1110,12 @@ class HierarchyAgent(SubatomicTestingMixin, SovereignBaseAgent):
     # ========================================================================
 
     # Forbidden folders at root (they have SSOT locations elsewhere)
+    # [SSOT UPDATE] scripts/ and logs/ are now VALID project roots per PROJECT_ROOT_METADATA
     FORBIDDEN_ROOT_FOLDERS = {
-        "scripts",  # SSOT: agentic_core/L0_maintenance/scripts/
-        "logs",  # SSOT: agentic_core/L0_maintenance/logs/
         "coverage_html",  # SSOT: reports/coverage_html/ or gitignored
         "observability",  # SSOT: agentic_core/L6_observability/
+        "legacy_code",
+        "legacy_engines",
     }
 
     def scan_root_violations(self) -> dict[str, Any]:
@@ -1161,25 +1163,9 @@ class HierarchyAgent(SubatomicTestingMixin, SovereignBaseAgent):
             )
 
         # 3. Check for duplicate folders
-        ssot_locations = {
-            "scripts": self.project_root / "agentic_core" / "L0_maintenance" / "scripts",
-            "logs": self.project_root / "agentic_core" / "L0_maintenance" / "logs",
-        }
-
-        for folder_name, ssot_path in ssot_locations.items():
-            root_path = self.project_root / folder_name
-            if root_path.exists() and ssot_path.exists():
-                results["violations_found"] += 1
-                results["duplicate_folders"].append(
-                    {
-                        "name": folder_name,
-                        "root_path": str(root_path),
-                        "ssot_path": str(ssot_path),
-                    }
-                )
-                Logger.warning(
-                    f"   [!] DUPLICATE FOLDER: {folder_name}/ exists at root AND {ssot_path.relative_to(self.project_root)}"
-                )
+        # [SSOT UPDATE] scripts/ and logs/ allowed at root. Only flag if they contain conflicting content?
+        # For now, we disable the duplicate check for these valid roots to prevent false positives.
+        pass
 
         if results["violations_found"] > 0:
             Logger.info(
@@ -1192,9 +1178,8 @@ class HierarchyAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
     # SSOT target locations for forbidden root folders
     ROOT_FOLDER_SSOT_TARGETS = {
-        "scripts": "agentic_core/L0_maintenance/scripts",
-        "logs": "agentic_core/L0_maintenance/logs",
         "coverage_html": "reports/coverage_html",  # Or add to .gitignore
+        "observability": "agentic_core/L6_observability",
     }
 
     def heal_root_violations(self, dry_run: bool = True) -> dict[str, Any]:
@@ -1203,9 +1188,8 @@ class HierarchyAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
         Actions:
         1. Move .archived files to archives/root_archived/
-        2. Move scripts/ contents to agentic_core/L0_maintenance/scripts/
-        3. Move logs/ contents to agentic_core/L0_maintenance/logs/
-        4. Add coverage_html/ to .gitignore or move to reports/
+        2. [DEPRECATED] scripts/ and logs/ are now valid roots (no merge)
+        3. Add coverage_html/ to .gitignore or move to reports/
 
         Args:
             dry_run: If True, only preview actions
@@ -1266,23 +1250,8 @@ class HierarchyAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
             results["actions"].append(action)
 
-        # 2. Handle scripts/ folder - merge into SSOT location
-        if "scripts" in scan_results["forbidden_folders"]:
-            scripts_result = self._merge_root_folder_to_ssot("scripts", dry_run)
-            results["scripts_files_moved"] = scripts_result.get("files_moved", 0)
-            results["actions"].extend(scripts_result.get("actions", []))
-            results["errors"].extend(scripts_result.get("errors", []))
-            if scripts_result.get("folder_removed"):
-                results["folders_removed"] += 1
-
-        # 3. Handle logs/ folder - move to SSOT location
-        if "logs" in scan_results["forbidden_folders"]:
-            logs_result = self._merge_root_folder_to_ssot("logs", dry_run)
-            results["logs_files_moved"] = logs_result.get("files_moved", 0)
-            results["actions"].extend(logs_result.get("actions", []))
-            results["errors"].extend(logs_result.get("errors", []))
-            if logs_result.get("folder_removed"):
-                results["folders_removed"] += 1
+        # 2. [UPDATED] scripts/ and logs/ are valid - no action taken unless explicitly forbidden
+        pass
 
         # 4. Handle coverage_html/ - add to .gitignore
         if "coverage_html" in scan_results["forbidden_folders"]:
@@ -1333,7 +1302,6 @@ class HierarchyAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
         # Phase 6.5: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
         # Iterate through all files in root folder
         all_files = list(get_python_files(root_folder)) + list(

@@ -39,7 +39,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class LocationHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class LocationHealerAgent(SovereignBaseAgent):
     """
     Automated remediation agent for location violations.
 
@@ -352,7 +352,6 @@ class LocationHealerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         try:
             # Get all Python files
             from agentic_core.L5_safety.validators.location_utils import get_agent_files
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
             python_files = [Path(f) for f in get_agent_files(str(self.project_root))]
 
