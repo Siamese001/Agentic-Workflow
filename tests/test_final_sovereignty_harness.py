@@ -9,7 +9,7 @@ Rationale:
 import unittest
 from pathlib import Path
 from unittest.mock import patch, MagicMock
-from PascalSovereigntyFixer import PascalSovereigntyFixer
+from agentic_core.L0_maintenance.scripts.PascalSovereigntyFixer import PascalSovereigntyFixer
 
 class TestFinalSovereignty(unittest.TestCase):
     def setUp(self):
