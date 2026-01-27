@@ -383,7 +383,26 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         results: dict[str, Any],
     ) -> None:
         """Relocate a single file to approved L2 layer."""
+        from agentic_core.L5_safety.validators.structure_blueprint import check_forbidden_signals
+        
         try:
+            # ARTIFACT ROUTING NEGATIVE LOGIC CHECK
+            # Prevent files with forbidden extensions/keywords from being relocated
+            try:
+                content = None
+                if py_file.exists() and py_file.stat().st_size < 1_000_000:
+                    content = py_file.read_text(encoding="utf-8", errors="ignore")
+                
+                rejection_reason = check_forbidden_signals(py_file.name, content)
+                if rejection_reason:
+                    Logger.warning(
+                        f"      [!] SKIP (forbidden): {py_file.name} - {rejection_reason}"
+                    )
+                    results["errors"].append(f"{py_file.name}: {rejection_reason}")
+                    return
+            except Exception:
+                pass  # Non-blocking
+            
             target_layer_l2 = get_best_target_l1(bad_layer_l2, approved_layers_l2)
             target_path = agentic_core_path / target_layer_l2
             target_territory_l3 = get_best_target_l2(target_layer_l2, py_file.name)
@@ -458,7 +477,26 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         results: dict[str, Any],
     ) -> None:
         """Relocate a single file to approved L3 territory."""
+        from agentic_core.L5_safety.validators.structure_blueprint import check_forbidden_signals
+        
         try:
+            # ARTIFACT ROUTING NEGATIVE LOGIC CHECK
+            # Prevent files with forbidden extensions/keywords from being relocated
+            try:
+                content = None
+                if py_file.exists() and py_file.stat().st_size < 1_000_000:
+                    content = py_file.read_text(encoding="utf-8", errors="ignore")
+                
+                rejection_reason = check_forbidden_signals(py_file.name, content)
+                if rejection_reason:
+                    Logger.warning(
+                        f"      [!] SKIP (forbidden): {py_file.name} - {rejection_reason}"
+                    )
+                    results["errors"].append(f"{py_file.name}: {rejection_reason}")
+                    return
+            except Exception:
+                pass  # Non-blocking
+            
             target_territory_l3 = get_best_target_l2(layer_l2_name, bad_territory_l3)
             target_path = layer_l2_path / target_territory_l3
             target_path.mkdir(parents=True, exist_ok=True)
