@@ -18,7 +18,7 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
 
 
 def sync_pre_commit(dry_run: bool = False):
@@ -29,7 +29,7 @@ def sync_pre_commit(dry_run: bool = False):
         dry_run: If True, only print changes without modifying files
     """
     # [SSOT] Dynamically derive sovereign roots
-    sovereign_roots = list(SOVEREIGN_REGISTRY.keys())
+    sovereign_roots = list(SOVEREIGN_TERRITORIES.keys())
 
     # Add system folders that should be included in patterns
     system_folders = ["data", "archives"]
@@ -111,11 +111,13 @@ def sync_pre_commit(dry_run: bool = False):
 
 def generate_sovereign_list():
     """Generate a formatted list of sovereign roots for documentation"""
-    sovereign_roots = list(SOVEREIGN_REGISTRY.keys())
-    print("\n[SSOT] Current Sovereign Registry:")
+    sovereign_roots = list(SOVEREIGN_TERRITORIES.keys())
+    print("\n[SSOT] Current Sovereign Registry (SOVEREIGN_TERRITORIES):")
     for i, root in enumerate(sovereign_roots, 1):
-        depth = SOVEREIGN_REGISTRY[root]["depth"]
-        subfolders = len(SOVEREIGN_REGISTRY[root]["subfolders"])
+        # Safe access with .get() for robustness
+        territory_data = SOVEREIGN_TERRITORIES.get(root, {})
+        depth = territory_data.get("depth", "N/A")
+        subfolders = len(territory_data.get("subfolders", []))
         print(f"  {i:2d}. {root:<25} (Depth: {depth}, Subfolders: {subfolders})")
     print(f"\nTotal: {len(sovereign_roots)} sovereign roots")
 

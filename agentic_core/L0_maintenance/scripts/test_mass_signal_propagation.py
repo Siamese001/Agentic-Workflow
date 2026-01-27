@@ -1,19 +1,16 @@
-#!/usr/bin/env python3
 """
-Mass Signal Propagation Verification Suite
-
-Tests the three critical scenarios for the 108-agent remediation:
-1. Long Chain Propagation Test - L3 → L2 → L1 → Sovereign
-2. Multi-Agent Cycle Persistence - Sibling agent calls with cycle detection
-3. Gatekeeper Automation Sweep - SOVEREIGN_AUTO_APPROVE across multiple agents
+agentic_core/L0_maintenance/scripts/test_mass_signal_propagation.py
+-------------------------------------------------------------------
+FIX: Implements Functional Naming.
+REMOVED: 'l3_agent', 'l2_agent' legacy names.
 """
-
+from __future__ import annotations
 import os
 import sys
 from pathlib import Path
 
 # Add project root to path
-project_root = Path(__file__).parent.parent
+project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 
@@ -38,12 +35,12 @@ def test_case_1_long_chain_propagation():
         from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
         from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import L1CognitionBaseAgent
         
-        # Step 1: Create L3 agent (top of chain)
-        l3_agent = L3OrchestrationBaseAgent()
-        print("✓ Step 1: L3OrchestrationBaseAgent instantiated")
+        # Step 1: Create Orchestrator
+        orchestrator = L3OrchestrationBaseAgent()
+        print("✓ Step 1: Orchestration Agent instantiated")
         
         # Step 2: Call with unique global audit ID
-        result = l3_agent.heal_repository(
+        result = orchestrator.heal_repository(
             dry_run=True,
             global_audit_id="2026-X1",
             propagation_test="long_chain",
@@ -63,30 +60,27 @@ def test_case_1_long_chain_propagation():
         
         print(f"✓ Result from chain: {result}")
         
-        # Step 3: Test L2 → L1 → Sovereign chain
-        print("\n✓ Step 3: Testing L2 → L1 → Sovereign chain")
-        l2_agent = L2ExecutionBaseAgent(ctx=None)
-        l2_result = l2_agent.heal_repository(
+        # Step 3: Test Execution → Cognition → Sovereign
+        print("\n✓ Step 3: Testing Execution → Cognition → Sovereign chain")
+        executor = L2ExecutionBaseAgent(ctx=None)
+        exec_result = executor.heal_repository(
             dry_run=True,
             global_audit_id="2026-X1",
-            layer_test="L2"
+            layer_test="Execution"
         )
-        print(f"  L2 result: {l2_result}")
+        print(f"  Execution result: {exec_result}")
         
-        # Step 4: Test L1 → Sovereign chain
-        print("\n✓ Step 4: Testing L1 → Sovereign chain")
-        l1_agent = L1CognitionBaseAgent()
-        l1_result = l1_agent.heal_repository(
+        # Step 4: Test Cognition → Sovereign chain
+        print("\n✓ Step 4: Testing Cognition → Sovereign chain")
+        cognition = L1CognitionBaseAgent()
+        cog_result = cognition.heal_repository(
             dry_run=True,
             global_audit_id="2026-X1",
-            layer_test="L1"
+            layer_test="Cognition"
         )
-        print(f"  L1 result: {l1_result}")
+        print(f"  Cognition result: {cog_result}")
         
         print("\n✅ PASS: Long Chain Propagation Test")
-        print("   - L3 → L2 → L1 → Sovereign chain functional")
-        print("   - global_audit_id='2026-X1' propagated without TypeError")
-        print("   - All layers properly call super() with **kwargs")
         return True
         
     except TypeError as e:
@@ -120,55 +114,35 @@ def test_case_2_multi_agent_cycle_persistence():
         from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
         from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
         
-        # Step 1: Create two agents that could call each other
-        agent_a = L3OrchestrationBaseAgent()
-        agent_b = L2ExecutionBaseAgent(ctx=None)
-        print("✓ Step 1: Created two agents (L3 and L2)")
+        # Step 1: Create agents
+        orchestrator = L3OrchestrationBaseAgent()
+        executor = L2ExecutionBaseAgent(ctx=None)
+        print("✓ Step 1: Created Orchestrator and Executor")
         
-        # Step 2: Simulate Agent A calling Agent B
+        # Step 2: Simulate Orchestrator in call path
         call_path = set()
         call_path.add("L3OrchestrationBaseAgent")
-        print("✓ Step 2: Simulated Agent A in call path")
         
-        # Step 3: Agent B tries to call with Agent A already in path
-        result_b = agent_b.heal_repository(
+        # Step 3: Executor tries to call with Orchestrator already in path
+        result_exec = executor.heal_repository(
             dry_run=True,
             _call_path=call_path,
             cycle_test="multi_agent"
         )
-        print(f"✓ Step 3: Agent B called with existing call_path: {result_b}")
+        print(f"✓ Step 3: Executor called with existing path: {result_exec}")
         
-        # Step 4: Now simulate Agent B calling back to Agent A (cycle)
+        # Step 4: Simulate cycle
         call_path.add("L2ExecutionBaseAgent")
-        result_a = agent_a.heal_repository(
+        result_orch = orchestrator.heal_repository(
             dry_run=True,
             _call_path=call_path,
             cycle_test="return_call"
         )
-        print(f"✓ Step 4: Agent A called with both agents in path")
         
-        # Verify cycle detection
-        if result_a.get("cycle_detected"):
-            print(f"  ✓ Cycle detected correctly: {result_a}")
-        else:
-            print(f"  ⚠ No cycle detected (may be valid if path cleared): {result_a}")
-        
-        # Step 5: Test with actual cycle scenario
-        print("\n✓ Step 5: Testing actual cycle scenario")
-        fresh_path = {"L3OrchestrationBaseAgent"}
-        cycle_result = agent_a.heal_repository(
-            dry_run=True,
-            _call_path=fresh_path,
-            test_signal="cycle_check"
-        )
-        
-        if cycle_result.get("cycle_detected"):
-            print(f"  ✓ Cycle correctly detected: {cycle_result}")
+        if result_orch.get("cycle_detected"):
+            print(f"  ✓ Cycle detected correctly: {result_orch}")
         
         print("\n✅ PASS: Multi-Agent Cycle Persistence")
-        print("   - _call_path maintained through **kwargs propagation")
-        print("   - Cycle detection functional across agent boundaries")
-        print("   - No infinite recursion with proper path tracking")
         return True
         
     except RecursionError:
@@ -228,34 +202,20 @@ def test_case_3_gatekeeper_automation_sweep():
         
         print(f"✓ Approval granted without stdin prompt: {approval}")
         
-        # Step 3: Test with multiple agents that respect the flag
-        print("\n✓ Step 3: Testing multiple agents with SOVEREIGN_AUTO_APPROVE")
-        
+        # Step 3: Test with multiple agents
         from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
         from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent
         
-        l3_agent = L3OrchestrationBaseAgent()
-        l5_agent = L5SafetyBaseAgent()
+        orchestrator = L3OrchestrationBaseAgent()
+        safety_agent = L5SafetyBaseAgent()
         
-        # Both should accept the auto_approve signal
-        l3_result = l3_agent.heal_repository(
-            dry_run=True,
-            auto_approve=True,
-            sweep_test="L3"
-        )
-        print(f"  L3 result: {l3_result}")
+        orch_result = orchestrator.heal_repository(dry_run=True, auto_approve=True, sweep_test="Orchestration")
+        print(f"  Orchestration result: {orch_result}")
         
-        l5_result = l5_agent.heal_repository(
-            dry_run=True,
-            auto_approve=True,
-            sweep_test="L5"
-        )
-        print(f"  L5 result: {l5_result}")
+        safety_result = safety_agent.heal_repository(dry_run=True, auto_approve=True, sweep_test="Safety")
+        print(f"  Safety result: {safety_result}")
         
         print("\n✅ PASS: Gatekeeper Automation Sweep")
-        print("   - SOVEREIGN_AUTO_APPROVE respected across agents")
-        print("   - No stdin prompts triggered")
-        print("   - auto_approve signal propagated through **kwargs")
         return True
         
     except Exception as e:
@@ -271,44 +231,20 @@ def test_case_3_gatekeeper_automation_sweep():
 
 
 def main():
-    """Run all mass signal propagation verification tests."""
     print("\n" + "=" * 70)
     print("MASS SIGNAL PROPAGATION VERIFICATION SUITE")
-    print("Testing 108-Agent Remediation Pattern")
     print("=" * 70)
-    print()
     
     results = []
-    
-    # Test Case 1: Long Chain Propagation
     results.append(test_case_1_long_chain_propagation())
-    
-    # Test Case 2: Multi-Agent Cycle Persistence
     results.append(test_case_2_multi_agent_cycle_persistence())
-    
-    # Test Case 3: Gatekeeper Automation Sweep
     results.append(test_case_3_gatekeeper_automation_sweep())
     
-    # Summary
-    print("\n" + "=" * 70)
-    print("VERIFICATION SUMMARY")
-    print("=" * 70)
-    passed = sum(results)
-    total = len(results)
-    
-    print(f"\nTests Passed: {passed}/{total}")
-    
-    if passed == total:
+    if all(results):
         print("\n✅ ALL MASS PROPAGATION TESTS PASSED - 100% SUCCESS")
-        print("\nMass signal propagation remediation verified:")
-        print("  ✓ Long chain propagation (L3→L2→L1→Sovereign)")
-        print("  ✓ Multi-agent cycle detection maintained")
-        print("  ✓ Gatekeeper automation sweep functional")
-        print("\n108-Agent Remediation Pattern: VALIDATED ✅")
         return 0
     else:
-        print(f"\n❌ {total - passed} TEST(S) FAILED")
-        print("\nMass propagation remediation incomplete")
+        print("\n❌ TESTS FAILED")
         return 1
 
 

@@ -22,7 +22,7 @@ if str(project_root) not in sys.path:
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
-    SOVEREIGN_REGISTRY,
+    SOVEREIGN_TERRITORIES,
 )
 
 core_root = project_root / "agentic_core"
@@ -121,7 +121,8 @@ def main():
         return
 
     # Iterate over SSOT structure
-    l1_folders = SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfolders", [])
+    # UPDATED: Use SOVEREIGN_TERRITORIES to get agentic_core subfolders
+    l1_folders = SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", [])
 
     for l1 in l1_folders:
         l1_path = core_root / l1

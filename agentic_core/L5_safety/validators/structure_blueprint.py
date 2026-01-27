@@ -1347,8 +1347,9 @@ HEALING_CONFIG: Final[Mapping[str, int]] = {
     "global_budget": int(
         os.getenv("GLOBAL_HEALING_BUDGET", "500")
     ),  # [TEMP BOOST] Unblock 10k Violation backlog
-    "max_moves_per_run": 250,  # New constraint for Key 15 volume
-    "max_fissions_per_run": 50,  # Prevent file system explosion
+    "max_moves_per_run": 250,  
+    "max_shared_upgrades_per_run": 10,  # [CIRCUIT BREAKER] Prevent mass-migration to apps_shared
+    "max_fissions_per_run": 50,  
     "dust_threshold": 40,  # Minimum lines for a module to exist (Span-of-Two)
 }
 AGENT_RESILIENCE_CONFIG: Final[Mapping[str, Union[int, float]]] = {

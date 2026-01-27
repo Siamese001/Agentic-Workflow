@@ -125,6 +125,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
     root_folder = parts[0]
 
     # 2. Root folder must be whitelisted (in SOVEREIGN_TERRITORIES)
+    from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
     if root_folder not in SOVEREIGN_TERRITORIES:
         return False
 
@@ -265,6 +266,16 @@ class LocationAgent(SovereignBaseAgent):
         # These are created on-demand via properties, not in __init__
         self._naming_agent = None
         self._import_agent = None
+        # Autonomous mode flag for healing operations
+        self._autonomous_mode = False
+
+    def _get_healer(self):
+        """Get LocationHealerAgent with autonomous mode preserved."""
+        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        healer = LocationHealerAgent(project_root=self.project_root)
+        if hasattr(self, '_autonomous_mode'):
+            healer._autonomous_mode = self._autonomous_mode
+        return healer
 
     @property
     def naming_agent(self):
@@ -308,9 +319,7 @@ class LocationAgent(SovereignBaseAgent):
 
     def safe_create_directory(self, relative_path: str) -> Path:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer.safe_create_directory(relative_path)
 
     def validate_sovereign_roots(self) -> list[tuple[Path, str]]:
@@ -457,9 +466,7 @@ class LocationAgent(SovereignBaseAgent):
         import_touched_paths: list[Path],
     ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._apply_healing_strategy(
             file_path, msg, archives_root, dry_run, affected_paths, import_touched_paths
         )
@@ -468,9 +475,7 @@ class LocationAgent(SovereignBaseAgent):
         self, file_path: Path, dry_run: bool, affected_paths: list[Path]
     ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._heal_broken_backup(file_path, dry_run, affected_paths)
 
     def _heal_app_specific_violation(
@@ -482,9 +487,7 @@ class LocationAgent(SovereignBaseAgent):
         import_touched_paths: list[Path],
     ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._heal_app_specific_violation(
             file_path, msg, dry_run, affected_paths, import_touched_paths
         )
@@ -498,9 +501,7 @@ class LocationAgent(SovereignBaseAgent):
         import_touched_paths: list[Path],
     ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._heal_territory_mismatch(
             file_path, msg, dry_run, affected_paths, import_touched_paths
         )
@@ -514,9 +515,7 @@ class LocationAgent(SovereignBaseAgent):
         import_touched_paths: list[Path],
     ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._heal_depth_violation(
             file_path, msg, dry_run, affected_paths, import_touched_paths
         )
@@ -532,9 +531,7 @@ class LocationAgent(SovereignBaseAgent):
         affected_paths: list[Path],
     ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
 
     def _validate_forbidden_patterns(self, parts: tuple, root_folder: str) -> tuple[bool, str]:
@@ -618,25 +615,19 @@ class LocationAgent(SovereignBaseAgent):
     # Per SSOT: Only archives/ is the canonical backup location
     def _init_backup_dir(self) -> Path:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._init_backup_dir()
 
     def _backup_file(self, file_path: Path, backup_dir: Path = None) -> Path:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._backup_file(file_path, backup_dir)
 
     def post_heal_validation(
         self, original_path: Path, new_path: Path | None = None, dry_run: bool = True
     ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer.post_heal_validation(original_path, new_path, dry_run)
 
     def _compute_module_path(self, file_path: Path) -> str:
@@ -660,23 +651,17 @@ class LocationAgent(SovereignBaseAgent):
         self, old_path: Path, new_path: Path, dry_run: bool = True
     ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer.fix_imports_after_move(old_path, new_path, dry_run)
 
     def safe_move(self, src_path: Path, dst_path: Path, dry_run: bool = True) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer.safe_move(src_path, dst_path, dry_run)
 
     def safe_delete(self, file_path: Path, dry_run: bool = True) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer.safe_delete(file_path, dry_run)
 
     def post_naming_validation(
@@ -1210,7 +1195,41 @@ class LocationAgent(SovereignBaseAgent):
                             )
                             # Recompute AST scores for root-cause move
                             app_rg, app_lic, terr_scores = self._recompute_ast_scores(tree)
-                            if (app_rg + app_lic) >= AST_DOMAIN_HIT_THRESHOLD * 0.8:
+                            
+                            # [HARDENING] PERSISTENT GLOBAL CANDIDATE DETECTION
+                            from agentic_core.L5_safety.validators.structure_blueprint import HEALING_CONFIG
+                            from agentic_core.L4_state.validation_context.RuntimeStateGuard import RuntimeStateGuard
+
+                            # Initialize Guard (Singleton behavior scoped to agent instance)
+                            if not hasattr(self, "state_guard"):
+                                self.state_guard = RuntimeStateGuard(self.project_root)
+
+                            # [TELEMETRY] Track total scan volume for Health Ratio
+                            # Use batch context to prevent IO thrashing on high-volume scans
+                            self.state_guard.increment_metric("files_scanned")
+
+                            # Fetch authoritative persistent count
+                            shared_upgrade_count = self.state_guard.get_metric("upgrade_count", 0)
+
+                            # 1. Check if file is significant enough to score (Dust Threshold)
+                            with open(path, 'r') as f:
+                                if len(f.readlines()) < HEALING_CONFIG["dust_threshold"]:
+                                    return # Skip boilerplate/noise
+
+                            # 2. Check Circuit Breaker before shared upgrade
+                            if (app_rg + app_lic) < AST_DOMAIN_HIT_THRESHOLD * 0.5:
+                                if shared_upgrade_count >= HEALING_CONFIG["max_shared_upgrades_per_run"]:
+                                    Logger.error(f"CIRCUIT BREAKER TRIPPED: Shared upgrade limit reached at {path}")
+                                    return
+
+                                target = self.project_root / "apps_shared" / "utils" / path.name
+                                move_result = self.safe_move(path, target, dry_run=False)
+                                
+                                # Atomic State Update via Guard
+                                self.state_guard.increment_metric("upgrade_count")
+                                
+                                additional_moves.append(move_result)
+                            elif (app_rg + app_lic) >= AST_DOMAIN_HIT_THRESHOLD * 0.8:
                                 dominant = "apps_rg" if app_rg >= app_lic else "apps_lic"
                                 target = (
                                     self.project_root
@@ -1298,9 +1317,7 @@ class LocationAgent(SovereignBaseAgent):
         self, py_files: list[Path], affected_paths: list[Path]
     ) -> tuple[list, list]:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._collect_naming_violations(py_files, affected_paths)
 
     def _check_naming_conventions(self, filename: str) -> list:
@@ -1359,46 +1376,34 @@ class LocationAgent(SovereignBaseAgent):
 
     def _apply_naming_heals(self, heal_actions: list, affected_paths: list[Path]) -> int:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._apply_naming_heals(heal_actions, affected_paths)
 
     def _insert_semantic_keywords(self, path: Path, missing_signals: set) -> None:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._insert_semantic_keywords(path, missing_signals)
 
     def _find_docstring_end(self, lines: list) -> int:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._find_docstring_end(lines)
 
     def _insert_sovereign_marker(self, path: Path) -> None:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._insert_sovereign_marker(path)
 
     def _apply_convention_fixes(self, path: Path, action: dict, affected_paths: list[Path]) -> None:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._apply_convention_fixes(path, action, affected_paths)
 
     def _set_naming_final_status(
         self, report: dict, heal_actions: list, semantic_issues: list
     ) -> None:
         """FACADE: Delegates to LocationHealerAgent."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-
-        healer = LocationHealerAgent(project_root=self.project_root)
+        healer = self._get_healer()
         return healer._set_naming_final_status(report, heal_actions, semantic_issues)
 
     def _determine_target_root_from_metadata(self, filename: str) -> str | None:
