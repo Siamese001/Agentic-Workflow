@@ -17,7 +17,9 @@ Re-exported from L5_safety for backwards compatibility.
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L5_safety.validators.structure_blueprint import PROJECT_ROOT_METADATA
 from typing import Any
+from fnmatch import fnmatch
 
 
 TREE_SITTER_AVAILABLE = False  # Stub - tree-sitter not required for tests
@@ -70,7 +72,17 @@ class NamingAgent(SubatomicTestingMixin, SovereignBaseAgent):
         pass
 
     def validate_name(self, name: str) -> bool:
-        """Validate a name against naming conventions."""
+        """
+        Validate a name against naming conventions.
+        [SSOT] Checks PROJECT_ROOT_METADATA for whitelist exemptions.
+        """
+        # Check if file matches any exempt pattern in metadata
+        for meta in PROJECT_ROOT_METADATA.values():
+            for pattern in meta.get("file_patterns", []):
+                if fnmatch(name, pattern):
+                    return True
+        
+        # Default behavior (Stub)
         return True
 
     def suggest_name(self, context: str) -> str:

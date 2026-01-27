@@ -11,14 +11,15 @@ CONSOLIDATED VERSION: Reduced redundancy while preserving all information.
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Set, Union, Pattern, Tuple, Final, Mapping
+from typing import Any, Dict, List, Optional, Protocol, Set, Union, Pattern, Tuple, Final, Mapping, Sequence, TypedDict
 
 # Lock down core mappings to prevent runtime mutation during mission execution
 # [CRITICAL ANALYSIS] Windsurf's initial attempt lacked static enforcement;
 # this locks down the configuration to prevent 'Junior AI' drift during autonomous healing cycles.
+# [HARDENING] 2026-01-26: Converted all mutable containers to immutable Mapping/Sequence/frozenset.
 
 # CANONICAL BLUEPRINT: Enforces V2.5 Structure
-CANON_VALIDATION_REGISTRY: Final[dict[str, list[str]]] = {
+CANON_VALIDATION_REGISTRY: Final[Mapping[str, Sequence[str]]] = {
     "required_dirs": [
         "agentic_core",
         "agentic_core/base_agents",
@@ -46,7 +47,7 @@ CANON_VALIDATION_REGISTRY: Final[dict[str, list[str]]] = {
 }
 
 # Hardening SOVEREIGN_REGISTRY from Any to concrete Mapping to prevent accidental agent mutation
-SOVEREIGN_REGISTRY: Final[Mapping[str, Dict[str, Union[int, List[str], str, bool]]]] = {
+SOVEREIGN_REGISTRY: Final[Mapping[str, Mapping[str, Union[int, Sequence[str], str, bool]]]] = {
     "agentic_core": {
         "depth": 3,
         "subfolders": [
@@ -70,38 +71,42 @@ SOVEREIGN_REGISTRY: Final[Mapping[str, Dict[str, Union[int, List[str], str, bool
     "apps_rg": {
         "depth": 2,
         "subfolders": [
-            "logic_nodes",
             "asset_library",
-            "system_flow",
-            "engines",
-            "templates",
-            "domain",
             "core",
+            "domain",
+            "engines",
+            "logic_nodes",
+            "shared",
+            "system_flow",
+            "validation",
         ],
     },
     "apps_lic": {
         "depth": 2,
         "subfolders": [
-            "logic_nodes",
             "asset_library",
-            "system_flow",
-            "engines",
-            "templates",
             "domain",
-            "core",
+            "engines",
+            "logic_nodes",
+            "reports",
+            "scripts",
+            "shared",
+            "system_flow",
+            "tools",
         ],
     },
     "apps_shared": {
         "depth": 2,
         "subfolders": [
-            "core",
-            "models",
-            "utils",
-            "components",
-            "agents",
-            "templates",
+            "agents",  # RECONCILED: Formerly base_agents
+            "config",
+            "core_components",
+            "data",
+            "tools",
+            "utils",   # RECONCILED: Merged common_utils here
         ],
         "description": "Global utilities and shared logic accessible by all apps and core.",
+        "note": "Structure hardened 2026-01-26 to match eviction rules",
     },
     "tests": {
         "depth": 2,
@@ -111,10 +116,56 @@ SOVEREIGN_REGISTRY: Final[Mapping[str, Dict[str, Union[int, List[str], str, bool
             "e2e",
             "functional",
             "fixtures",
+            "core",
+            "apps_rg",
+            "apps_lic",  # RECONCILED: Parity with apps_rg
         ],
         "purpose": "Test suites organized by test type",
     },
-    "scripts": {"depth": 1, "subfolders": [], "purpose": "Standalone utility scripts"},
+    "scripts": {
+        "depth": 2,
+        "subfolders": ["ci", "maintenance", "security"],
+        "purpose": "Standalone utility scripts",
+    },
+    "archives": {
+        "depth": 2,
+        "subfolders": [],
+        "purpose": "Historical artifacts and deprecated code",
+        "volatile": True,
+    },
+    "data": {
+        "depth": 2,
+        "subfolders": [
+            "archives",
+            "cache",
+            "external",
+            "freeze_reports",
+            "golden",
+            "golden_state",
+            "logs",
+            "manifests",
+            "output",
+            "processed",
+            "prompt_governance",
+            "prompt_libraries",
+            "prompts",
+            "raw",
+            "sdks_mcps",
+            "tasks",
+        ],
+        "purpose": "Data storage and processing artifacts",
+    },
+    "docs": {
+        "depth": 2,
+        "subfolders": ["MCP", "metrics", "reports"],
+        "purpose": "Documentation and reporting",
+    },
+    "logs": {
+        "depth": 2,
+        "subfolders": [],
+        "purpose": "Runtime logs and test outputs",
+        "volatile": True,
+    },
     ".sovereign_healing_backup": {
         "depth": 2,
         "subfolders": ["filesystem", "location", "naming", "transactions"],
@@ -219,7 +270,7 @@ COVERAGE_HTML_DIR: str = "coverage_html"
 # This map defines the approved L4 structure for these folders.
 # Criteria for L4: >50 files, >5 subdirs, or high functional diversity.
 
-L4_SUBFOLDER_MAP: dict[str, dict[str, list[str]]] = {
+L4_SUBFOLDER_MAP: Final[Mapping[str, Mapping[str, Sequence[str]]]] = {
     # L6_observability/dashboards/ - 13 .py files, 7 subdirs, mixed concerns
     "dashboards": {
         "generators": ["dashboard_generators", "data_generators"],
@@ -231,21 +282,15 @@ L4_SUBFOLDER_MAP: dict[str, dict[str, list[str]]] = {
         "css": ["themes", "layouts"],
         "config": ["dashboard_config"],
     },
-    # L0_maintenance/scripts/ - 181 .py files, 13 subdirs
+    # L0_maintenance/scripts/ - 181 .py files, flat structure (simplified)
     "scripts": {
         "healing": ["healing_strategies", "healing_engines"],
         "validation": ["validators", "checkers"],
         "utilities": ["file_utilities", "code_utilities"],
         "workflows": ["workflow_scripts", "pipeline_scripts"],
-        "runtime": ["runtime_scripts", "shared"],
-        "schemas": ["schema_scripts"],
         "installation": ["install_scripts"],
-        "documentation": ["doc_generators"],
         "maintenance": ["maintenance_scripts"],
-        "canon_validator": ["validator_scripts"],
         "test_utilities": ["test_helpers"],
-        "mixins": ["mixin_scripts"],
-        "logs": ["log_handlers"],
     },
     # L3_orchestration/workflow_engines/ - 130 .py files, 5 subdirs
     "workflow_engines": {
@@ -317,7 +362,7 @@ L4_SUBFOLDER_MAP: dict[str, dict[str, list[str]]] = {
 }
 
 # Folders that are approved for L4 depth (depth=4 instead of depth=3)
-L4_APPROVED_FOLDERS: set[str] = {
+L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset({
     "agentic_core/L6_observability/dashboards",
     "agentic_core/L0_maintenance/scripts",
     "agentic_core/L3_orchestration/workflow_engines",
@@ -329,21 +374,21 @@ L4_APPROVED_FOLDERS: set[str] = {
     "agentic_core/L2_execution/mcp",  # 26 files - added per SSOT review
     "agentic_core/L4_state/ValidationContext",  # 41 files - added per SSOT review
     "agentic_core/schemas/models",  # 42 files - added per SSOT review
-    "agentic_core/utils/core_extensions",
+    # agentic_core/utils/core_extensions EVICTED per CANON_VALIDATION_REGISTRY
     "agentic_core/config/blueprint_sovereign",  # 20 files - added per SSOT review
     "agentic_core/prompt_governance/L3_core",
     "agentic_core/prompt_governance/L3_templates",
     "agentic_core/prompt_governance/L3_security",
     "agentic_core/prompt_governance/L3_integrity",
     "agentic_core/prompt_governance/L3_utilities",
-}
+})
 
 # ============================================================================
 # SCRIPTS PLACEMENT RULES - Semantic Boundary Enforcement
 # ============================================================================
 # Distinguishes root scripts/ (standalone utilities) from L0_maintenance/scripts/
 # (sovereign system scripts). Uses AST import analysis, NOT line counts.
-SCRIPTS_PLACEMENT_RULES: dict[str, dict[str, Any]] = {
+SCRIPTS_PLACEMENT_RULES: Final[Mapping[str, Mapping[str, Any]]] = {
     "root_scripts": {
         "description": "Standalone utilities (setup, pip, env) with NO core dependencies.",
         "forbidden_imports": ["agentic_core"],
@@ -356,102 +401,186 @@ SCRIPTS_PLACEMENT_RULES: dict[str, dict[str, Any]] = {
     },
 }
 
-CORE_SUBFOLDER_MAP: Any = {
-    "base_agents": ["scripts"],
-    "domain": ["scripts"],
-    "L0_maintenance": ["scripts", "logs", "benchmarks", "mixins"],
-    "L1_cognition": ["thought_engine", "intent_analysis", "planning", "scripts"],
-    "L2_execution": ["tool_registry", "action_handlers", "mcp", "scripts"],
-    "L3_orchestration": [
-        "workflow_engines",
-        "fission_logic",
-        "S3_vitality",
-        "mcp",
-        "meta_learning",
-        "interfaces",
-        "scripts",
-    ],
-    "L4_state": ["ledger", "filesystem", "memory", "validation_context", "scripts"],
-    "L5_safety": [
-        "guardrails",
-        "red_teaming",
-        "gravity",
-        "validators",
-        "agents",
-        "bases",
-        "policies",
-        "utils",
-        "verifiability",
-        "core",
-        "scripts",
-    ],
-    "L6_observability": [
-        "dashboards",
-        "reports",
-        "metrics",
-        "telemetry",
-        "tracing",
-        "compliance",
-        "agents",
-        "scripts",
-    ],
-    "schemas": ["models", "messages", "types", "validators", "scripts"],
-    "config": ["blueprint_sovereign", "environments", "feature_flags", "secrets_manager", "scripts"],
-    "prompt_governance": [
-        "L3_core",
-        "L3_templates", 
-        "L3_security",
-        "L3_integrity",
-        "L3_utilities",
-        "scripts",
-    ],
-    "runtime": ["shared_runtime", "environment_setup", "shared", "resource_management", "scripts"],
-    "utils": ["core_extensions", "wrappers", "general_helpers", "naming", "deduplicated", "scripts"],
-    "patterns": ["agent_roles", "communication_flow", "interaction_patterns", "reasoning_patterns", "scripts"],
-    "semantic_memory": ["models", "interfaces", "in_memory", "store", "embeddings", "retrieval", "index", "scripts"],
-    "knowledge": ["types", "document_loaders", "static_index", "ResearchCache", "scripts"],
+CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    # === LAYERED ARCHITECTURE (L0-L6) ===
+    "base_agents": [],  # Pure library domain - foundational classes and mixins only
+    "domain": [],  # Pure domain entities and business objects - no subfolders currently
+    "L0_maintenance": ["scripts", "logs", "reports", "boot", "security", "agentic_core"],  # System maintenance and healing
+    "L1_cognition": ["thought_engine", "intent_analysis"],  # Cognitive processing (no scripts - pure data domain)
+    "L2_execution": ["ToolRegistry", "mcp", "unified"],  # Execution engines and tools
+    "L3_orchestration": ["workflow_engines", "fission_logic", "interfaces"],  # Workflow orchestration
+    "L4_state": ["ValidationContext", "ledger", "memory"],  # State management
+    "L5_safety": ["validators", "guardrails", "unified", "gravity", "red_teaming", "cognition", "core", "utils"],  # Security and validation
+    "L6_observability": ["dashboards", "agents", "reports", "telemetry"],  # Monitoring and reporting
+    
+    # === SPECIALIZED DOMAINS ===
+    "schemas": ["models"],  # Data schemas - currently only models subfolder exists
+    "config": ["blueprint_sovereign"],  # Configuration management - currently only blueprint_sovereign exists
+    "prompt_governance": ["meta_prompts", "templates", "scripts", "version_registry"],  # Prompt management
+    "runtime": ["shared_runtime"],  # Runtime environment - currently only shared_runtime exists
+    "utils": [],  # Utility functions - no subfolders currently (flat structure)
+    "patterns": ["agent_roles"],  # Architectural and behavioral patterns
+    "semantic_memory": ["store"],  # Vector memory and retrieval systems - currently only store exists
+    "knowledge": ["document_loaders"],  # Knowledge management - currently only document_loaders exists
 }
-APPS_RG_SUBFOLDER_MAP: Any = {
-    "logic_nodes": ["node_definitions", "node_helpers"],
-    "asset_library": ["asset_definitions", "asset_helpers"],
-    "system_flow": ["flow_definitions", "flow_helpers"],
-    "engines": ["drivers", "generators", "utils"],
-    "templates": ["template_definitions", "template_helpers"],
-    "domain": ["models", "types", "events"],
-    "core": ["base", "config", "exceptions"],
+
+# === SUBFOLDER METADATA AND CONTENT GUIDELINES ===
+SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
+    # === LAYERED ARCHITECTURE ===
+    "base_agents": {
+        "purpose": "Foundational agent classes and mixins for inheritance",
+        "content_types": ["abstract_classes", "mixins", "base_classes", "interfaces"],
+        "execution_allowed": False,
+        "notes": "Pure library domain - no executable scripts or operational logic"
+    },
+    "domain": {
+        "purpose": "Pure domain entities and business objects",
+        "content_types": ["domain_entities", "domain_models", "domain_exceptions"],
+        "execution_allowed": False,
+        "notes": "Contains only pure domain objects - no validation or infrastructure logic"
+    },
+    "L0_maintenance": {
+        "purpose": "System maintenance, healing, and operational tasks",
+        "content_types": ["maintenance_scripts", "healing_tools", "logs", "benchmarks", "mixins"],
+        "execution_allowed": True,
+        "notes": "Operational domain - contains system maintenance and healing scripts"
+    },
+    "L1_cognition": {
+        "purpose": "Cognitive processing and thought patterns",
+        "content_types": ["thought_engines", "intent_analyzers", "planners", "cognitive_models"],
+        "execution_allowed": False,
+        "notes": "Pure cognitive domain - no execution scripts, cognitive processing only"
+    },
+    "L2_execution": {
+        "purpose": "Tool execution and action handling",
+        "content_types": ["execution_engines", "tool_registries", "action_handlers", "mcp_clients"],
+        "execution_allowed": True,
+        "notes": "Execution domain - core contains fundamental execution abstractions"
+    },
+    "L3_orchestration": {
+        "purpose": "Workflow orchestration and fission logic",
+        "content_types": ["workflow_engines", "fission_logic", "orchestration_interfaces", "coordination_tools"],
+        "execution_allowed": True,
+        "notes": "Orchestration domain - coordinates multiple execution components"
+    },
+    "L4_state": {
+        "purpose": "State management and persistence",
+        "content_types": ["state_ledgers", "memory_systems", "validation_contexts", "persistence_tools"],
+        "execution_allowed": True,
+        "notes": "State domain - manages data persistence and validation"
+    },
+    "L5_safety": {
+        "purpose": "Security, validation, and safety enforcement",
+        "content_types": ["guardrails", "validators", "safety_agents", "security_policies", "audit_tools"],
+        "execution_allowed": True,
+        "notes": "Security domain - core contains fundamental safety abstractions"
+    },
+    "L6_observability": {
+        "purpose": "Monitoring, telemetry, and compliance reporting",
+        "content_types": ["dashboards", "telemetry_systems", "compliance_tools", "monitoring_agents"],
+        "execution_allowed": True,
+        "notes": "Observability domain - core contains fundamental monitoring abstractions"
+    },
+    
+    # === SPECIALIZED DOMAINS ===
+    "schemas": {
+        "purpose": "Data models, message schemas, and validation rules",
+        "content_types": ["data_models", "message_schemas", "type_definitions", "validation_tools"],
+        "execution_allowed": True,
+        "notes": "Schema domain - scripts for validation and schema generation"
+    },
+    "config": {
+        "purpose": "Configuration management and environment settings",
+        "content_types": ["config_files", "environment_settings", "feature_flags", "secret_managers"],
+        "execution_allowed": True,
+        "notes": "Configuration domain - scripts for config management and deployment"
+    },
+    "prompt_governance": {
+        "purpose": "Prompt template management and security validation",
+        "content_types": ["prompt_templates", "meta_prompts", "security_rules", "governance_tools"],
+        "execution_allowed": True,
+        "notes": "Governance domain - scripts for prompt validation and management"
+    },
+    "runtime": {
+        "purpose": "Runtime environment setup and resource management",
+        "content_types": ["runtime_engines", "environment_configs", "resource_managers"],
+        "execution_allowed": False,
+        "notes": "Pure runtime domain - no execution scripts, runtime configuration only"
+    },
+    "utils": {
+        "purpose": "General utility functions and helpers",
+        "content_types": ["utility_functions", "helper_classes", "extensions", "wrappers"],
+        "execution_allowed": False,
+        "notes": "Pure utility domain - no execution scripts, reusable utilities only"
+    },
+    "patterns": {
+        "purpose": "Architectural and behavioral patterns for agents",
+        "content_types": ["reasoning_patterns", "behavior_patterns", "interaction_patterns"],
+        "execution_allowed": False,
+        "notes": "Fundamental patterns used across all agent layers - no execution scripts, pure patterns"
+    },
+    "semantic_memory": {
+        "purpose": "Vector storage and semantic retrieval systems",
+        "content_types": ["memory_models", "vector_stores", "retrieval_algorithms", "storage_interfaces", "search_indexes"],
+        "execution_allowed": False,
+        "notes": "Core architectural components for agent memory and learning - no execution scripts"
+    },
+    "knowledge": {
+        "purpose": "Knowledge management and RAG systems for agents",
+        "content_types": ["document_loaders", "knowledge_types", "rag_systems", "processing_pipelines"],
+        "execution_allowed": False,
+        "notes": "Core architectural components for agent cognition and reasoning - no execution scripts"
+    },
 }
-APPS_LIC_SUBFOLDER_MAP: Any = {
-    "logic_nodes": ["node_definitions", "node_helpers"],
-    "asset_library": ["asset_definitions", "asset_helpers"],
-    "system_flow": ["flow_definitions", "flow_helpers"],
-    "engines": ["drivers", "generators", "utils"],
-    "templates": ["template_definitions", "template_helpers"],
-    "domain": ["models", "types", "events"],
-    "core": ["base", "config", "exceptions"],
+
+# === ACTUAL REPOSITORY STRUCTURE (2026-01-26 AUDIT) ===
+APPS_RG_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "asset_library": [],           # Empty in actual repo
+    "core": [],                    # Has 1 item (flat structure)
+    "domain": [],                  # Has 6 items (flat structure)
+    "engines": [],                 # Has 73 items (flat structure) - consider L3 depth
+    "logic_nodes": [],             # Has 6 items (flat structure)
+    "shared": [],                  # Has 53 items (flat structure) - consider L3 depth
+    "system_flow": [],             # Empty in actual repo
+    "validation": [],              # Has 4 items (flat structure)
 }
-APPS_SHARED_SUBFOLDER_MAP: Any = {
-    "core": ["base_classes", "interfaces", "contracts"],
-    "models": ["dtos", "schemas", "types"],
-    "utils": ["string_utils", "date_utils", "file_utils"],
-    "components": ["loggers", "loaders", "adapters"],
-    "agents": ["worker_definitions", "mixins"],
-    "templates": ["patterns", "formats"],
+
+APPS_LIC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "asset_library": [],           # Empty in actual repo
+    "domain": [],                  # Has 18 items (flat structure)
+    "engines": [],                 # Has 53 items (flat structure) - consider L3 depth
+    "logic_nodes": [],             # Has 1 item (flat structure)
+    "reports": [],                 # Has 2 items (flat structure)
+    "scripts": [],                 # Has 2 items (flat structure)
+    "shared": [],                  # Has 66 items (flat structure) - consider L3 depth
+    "system_flow": [],             # Empty in actual repo
+    "tools": [],                   # Has 2 items (flat structure)
 }
-TESTS_L2_SUBFOLDER_MAP: Any = {
-    "unit": ["test_definitions", "test_helpers"],
-    "integration": ["test_definitions", "test_helpers"],
-    "e2e": ["test_definitions", "test_helpers"],
-    "functional": ["test_definitions", "test_helpers"],
-    "fixtures": ["fixture_definitions", "fixture_helpers"],
-    "automation": ["automation_definitions", "automation_helpers"],
-    "core": ["core_definitions", "core_helpers"],
-    "data": ["data_definitions", "data_helpers"],
-    "performance": ["performance_definitions", "performance_helpers"],
-    "security": ["security_definitions", "security_helpers"],
+
+APPS_SHARED_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "agents": [],                  # RECONCILED: Formerly base_agents
+    "config": [],                  # Has 2 items (flat structure)
+    "core_components": [],         # Has 4 items (flat structure)
+    "data": [],                    # Has 3 items (flat structure)
+    "tools": [],                   # Empty in actual repo
+    "utils": [],                   # Has 7 items (flat structure) - Absorbs common_utils
 }
-agentic_core_registry: Any = CORE_SUBFOLDER_MAP
-TESTS_SUBFOLDER_MAP: Any = TESTS_L2_SUBFOLDER_MAP
-CANON_SIGNALS: set[str] = {
+
+TESTS_L2_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "unit": [],                    # Has 229 items (flat structure) - LARGE FOLDER
+    "integration": [],             # Has 23 items (flat structure)
+    "e2e": [],                     # Has 8 items (flat structure)
+    "functional": [],              # Has 19 items (flat structure)
+    "fixtures": [],                # Has 12 items (flat structure)
+    "core": [],                    # Has 4 items (flat structure)
+    "apps_rg": [],                 # Has 19 items (flat structure)
+    "apps_lic": [],                # RECONCILED: Added parity with apps_rg
+}
+# Type-safe aliases
+agentic_core_registry: Final[Mapping[str, Sequence[str]]] = CORE_SUBFOLDER_MAP
+TESTS_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = TESTS_L2_SUBFOLDER_MAP
+
+CANON_SIGNALS: Final[frozenset[str]] = frozenset({
     "agent",
     "manager",
     "engine",
@@ -502,13 +631,13 @@ CANON_SIGNALS: set[str] = {
     "gravity",
     "subatomic",
     "gemini",
-}
+})
 
 # === APP-SPECIFIC FILE PLACEMENT RULES ===
 # Files with these prefixes MUST be placed in their respective app folders, NOT agentic_core
 # This is enforced by LocationAgent and HierarchyAgent during validation
 
-APP_SPECIFIC_PREFIXES: dict[str, str] = {
+APP_SPECIFIC_PREFIXES: Final[Mapping[str, str]] = {
     "rg_": "apps_rg",  # Resume Gen executors/tools
     "lic_": "apps_lic",  # LinkedIn Canonical executors/tools
     "resume_": "apps_rg",  # Resume-related files
@@ -569,7 +698,7 @@ def is_broken_backup_file(filename: str) -> bool:
 
 # === AST-BASED DOMAIN SIGNALS (2026-01-02 hardening) ===
 # High-confidence identifier terms for structural detection of leaked app logic
-APP_RG_AST_TERMS: set[str] = {
+APP_RG_AST_TERMS: Final[frozenset[str]] = frozenset({
     "resume",
     "cv",
     "skill",
@@ -586,8 +715,8 @@ APP_RG_AST_TERMS: set[str] = {
     "summary",
     "achievement",
     "certification",
-}
-APP_LIC_AST_TERMS: set[str] = {
+})
+APP_LIC_AST_TERMS: Final[frozenset[str]] = frozenset({
     "linkedin",
     "lic",
     "profile",
@@ -601,8 +730,8 @@ APP_LIC_AST_TERMS: set[str] = {
     "scrap",
     "navigate",
     "browser",
-}
-APP_RG_VARIABLE_TERMS: set[str] = {
+})
+APP_RG_VARIABLE_TERMS: Final[frozenset[str]] = frozenset({
     "resume",
     "cv",
     "skill",
@@ -618,8 +747,8 @@ APP_RG_VARIABLE_TERMS: set[str] = {
     "candidate",
     "position",
     "role",
-}
-APP_LIC_VARIABLE_TERMS: set[str] = {
+})
+APP_LIC_VARIABLE_TERMS: Final[frozenset[str]] = frozenset({
     "profile",
     "linkedin",
     "connection",
@@ -632,14 +761,14 @@ APP_LIC_VARIABLE_TERMS: set[str] = {
     "contact",
     "person",
     "url",
-}
-VARIABLE_HIT_WEIGHT: float = 0.5
-STRING_HIT_WEIGHT: float = 0.25
-AST_DOMAIN_HIT_THRESHOLD: float = 2.0
-FORBIDDEN_APP_MODULES: set[str] = {"apps_rg", "apps_lic"}
+})
+VARIABLE_HIT_WEIGHT: Final[float] = 0.5
+STRING_HIT_WEIGHT: Final[float] = 0.25
+AST_DOMAIN_HIT_THRESHOLD: Final[float] = 2.0
+FORBIDDEN_APP_MODULES: Final[frozenset[str]] = frozenset({"apps_rg", "apps_lic"})
 
 # String literal signals (docstrings, comments, etc.)
-APP_RG_STRING_TERMS: set[str] = {
+APP_RG_STRING_TERMS: Final[frozenset[str]] = frozenset({
     "resume",
     "cv",
     "skill",
@@ -649,64 +778,64 @@ APP_RG_STRING_TERMS: set[str] = {
     "outreach",
     "candidate",
     "applicant",
-}
-APP_LIC_STRING_TERMS: set[str] = {
+})
+APP_LIC_STRING_TERMS: Final[frozenset[str]] = frozenset({
     "linkedin",
     "profile",
     "connection",
     "invite",
     "campaign",
     "cadence",
-}
+})
 
 # === CORE LAYER GRAVITY RULES (Internal dependency direction) ===
-LAYER_FORBIDDEN_IMPORTS: dict[str, set[str]] = {
-    "L1_cognition": {"L2_execution", "L3_orchestration", "L4_state", "L5_safety"},
-    "L2_execution": {"L1_cognition", "L3_orchestration", "L5_safety"},
-    "L3_orchestration": {"L5_safety"},
+LAYER_FORBIDDEN_IMPORTS: Final[Mapping[str, frozenset[str]]] = {
+    "L1_cognition": frozenset({"L2_execution", "L3_orchestration", "L4_state", "L5_safety"}),
+    "L2_execution": frozenset({"L1_cognition", "L3_orchestration", "L5_safety"}),
+    "L3_orchestration": frozenset({"L5_safety"}),
 }
 
 # === STRUCTURED TERRITORY KEYWORDS FOR ALIGNMENT SCORING ===
-CORE_TERRITORY_KEYWORDS: dict[str, dict[str, set[str]]] = {
+CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
     "L1_cognition/thought_engine": {
-        "primary": {"think", "reason", "plan", "decompose", "critique", "reflect"}
+        "primary": frozenset({"think", "reason", "plan", "decompose", "critique", "reflect"})
     },
-    "L1_cognition/intent_analysis": {"primary": {"intent", "goal", "understand", "parse", "user"}},
-    "L2_execution/tool_registry": {"primary": {"tool", "execute", "call", "registry", "runner"}},
-    "L2_execution/mcp": {"primary": {"mcp", "client", "fetch", "protocol"}},
+    "L1_cognition/intent_analysis": {"primary": frozenset({"intent", "goal", "understand", "parse", "user"})},
+    "L2_execution/tool_registry": {"primary": frozenset({"tool", "execute", "call", "registry", "runner"})},
+    "L2_execution/mcp": {"primary": frozenset({"mcp", "client", "fetch", "protocol"})},
     "L3_orchestration/workflow_engines": {
-        "primary": {"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"}
+        "primary": frozenset({"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"})
     },
-    "L3_orchestration/fission_logic": {"primary": {"fission", "split", "decompose", "atomic"}},
-    "L4_state/ValidationContext": {"primary": {"state", "context", "checkpoint", "persist"}},
-    "L4_state/ledger": {"primary": {"ledger", "history", "record", "transaction"}},
+    "L3_orchestration/fission_logic": {"primary": frozenset({"fission", "split", "decompose", "atomic"})},
+    "L4_state/ValidationContext": {"primary": frozenset({"state", "context", "checkpoint", "persist"})},
+    "L4_state/ledger": {"primary": frozenset({"ledger", "history", "record", "transaction"})},
     "L5_safety/validators": {
-        "primary": {"validate", "enforce", "check", "guard", "policy", "heal"}
+        "primary": frozenset({"validate", "enforce", "check", "guard", "policy", "heal"})
     },
-    "L5_safety/guardrails": {"primary": {"guardrail", "safety", "membrane", "airlock", "pii"}},
-    "L5_safety/gravity": {"primary": {"gravity", "import", "dependency", "layer"}},
-    "config/blueprint_sovereign": {"primary": {"blueprint", "registry", "sovereign", "canon"}},
-    "schemas/models": {"primary": {"schema", "model", "type", "message"}},
-    "prompt_governance/L3_core": {"primary": {"render", "registry", "assemble", "govern"}},
-    "prompt_governance/L3_templates": {"primary": {"template", "prompt", "persona", "instructional"}},
-    "prompt_governance/L3_security": {"primary": {"security", "injection", "pii", "compliance"}},
-    "prompt_governance/L3_integrity": {"primary": {"validate", "optimize", "test", "quality"}},
-    "prompt_governance/L3_utilities": {"primary": {"script", "middleware", "monitor", "audit"}},
-    "observability": {"primary": {"metric", "trace", "telemetry", "log", "compliance"}},
-    "utils": {"primary": {"util", "helper", "extension", "wrapper"}},
+    "L5_safety/guardrails": {"primary": frozenset({"guardrail", "safety", "membrane", "airlock", "pii"})},
+    "L5_safety/gravity": {"primary": frozenset({"gravity", "import", "dependency", "layer"})},
+    "config/blueprint_sovereign": {"primary": frozenset({"blueprint", "registry", "sovereign", "canon"})},
+    "schemas/models": {"primary": frozenset({"schema", "model", "type", "message"})},
+    "prompt_governance/L3_core": {"primary": frozenset({"render", "registry", "assemble", "govern"})},
+    "prompt_governance/L3_templates": {"primary": frozenset({"template", "prompt", "persona", "instructional"})},
+    "prompt_governance/L3_security": {"primary": frozenset({"security", "injection", "pii", "compliance"})},
+    "prompt_governance/L3_integrity": {"primary": frozenset({"validate", "optimize", "test", "quality"})},
+    "prompt_governance/L3_utilities": {"primary": frozenset({"script", "middleware", "monitor", "audit"})},
+    "observability": {"primary": frozenset({"metric", "trace", "telemetry", "log", "compliance"})},
+    "utils": {"primary": frozenset({"util", "helper", "extension", "wrapper"})},
 }
 
 # Territory alignment thresholds
-TERRITORY_MISMATCH_THRESHOLD: float = 2.5
-MIN_ALIGNMENT_SCORE: float = 1.5
+TERRITORY_MISMATCH_THRESHOLD: Final[float] = 2.5
+MIN_ALIGNMENT_SCORE: Final[float] = 1.5
 
 # === ULTRA HEALING DEFAULTS (2026-01-02 Reliability Hardening) ===
 # Fallback targets when AST scoring is inconclusive
-DEFAULT_APP_HEALING_TARGET: str = "apps_rg/engines"  # Most common leak destination
-DEFAULT_CORE_HEALING_TERRITORY: str = "L2_execution/tool_registry"  # Safe neutral territory
+DEFAULT_APP_HEALING_TARGET: Final[str] = "apps_rg/engines"  # Most common leak destination
+DEFAULT_CORE_HEALING_TERRITORY: Final[str] = "L2_execution/tool_registry"  # Safe neutral territory
 
 # Violation severity levels for prioritized healing
-VIOLATION_SEVERITY: dict[str, int] = {
+VIOLATION_SEVERITY: Final[Mapping[str, int]] = {
     "GRAVITY VIOLATION": 10,
     "AST DOMAIN VIOLATION": 9,
     "TERRITORY MISMATCH VIOLATION": 8,
@@ -818,7 +947,7 @@ def safe_path_join(project_root, *parts):
 # === COMPREHENSIVE NAMING CONVENTIONS (SSOT) ===
 # All naming rules for all file types in the repository
 
-NAMING_CONVENTIONS: dict[str, dict[str, Any]] = {
+NAMING_CONVENTIONS: Final[Mapping[str, Mapping[str, Any]]] = {
     # Python Agent files - PascalCase, must end with Agent
     "agent": {
         "pattern": r"^[A-Z][a-zA-Z0-9]*Agent\.py$",
@@ -976,6 +1105,8 @@ NAMING_EXEMPT_DIRS: frozenset[str] = frozenset(
     {
         "archives",
         "data",
+        "scripts",  # [ADDED] Valid root
+        "docs",     # [ADDED] Valid root
         "legacy_code",
         "legacy_engines",
         "__pycache__",
@@ -992,7 +1123,7 @@ NAMING_EXEMPT_DIRS: frozenset[str] = frozenset(
         "logs",
     }
 )
-FORBIDDEN_PATTERNS: Any = [
+FORBIDDEN_PATTERNS: Final[Sequence[Pattern]] = [
     re.compile("^utils\\.py$"),
     re.compile("^helper\\.py$"),
     re.compile("^temp\\.py$"),
@@ -1107,10 +1238,10 @@ AUTONOMOUS_AGENT_WHITELIST: frozenset[str] = frozenset(
         "neural_auto_immune_agent.py",
     }
 )
-protected_folders: Any = SOVEREIGN_EXCLUDED_FOLDERS
-ignore_dirs: Any = SOVEREIGN_EXCLUDED_FOLDERS
-sovereign_ignored_folders: Any = SOVEREIGN_EXCLUDED_FOLDERS
-HEALING_CONFIG: Any = {
+protected_folders: Final[frozenset[str]] = SOVEREIGN_EXCLUDED_FOLDERS
+ignore_dirs: Final[frozenset[str]] = SOVEREIGN_EXCLUDED_FOLDERS
+sovereign_ignored_folders: Final[frozenset[str]] = SOVEREIGN_EXCLUDED_FOLDERS
+HEALING_CONFIG: Final[Mapping[str, int]] = {
     "max_rounds": int(os.getenv("MAX_HEALING_ROUNDS", "10")),
     "max_per_file": int(os.getenv("MAX_HEALING_PER_FILE", "8")),
     "global_budget": int(
@@ -1120,11 +1251,11 @@ HEALING_CONFIG: Any = {
     "max_fissions_per_run": 50,  # Prevent file system explosion
     "dust_threshold": 40,  # Minimum lines for a module to exist (Span-of-Two)
 }
-AGENT_RESILIENCE_CONFIG: Any = {
+AGENT_RESILIENCE_CONFIG: Final[Mapping[str, Union[int, float]]] = {
     "retry_count": int(os.getenv("AGENT_RETRY_COUNT", "3")),
     "backoff_base": float(os.getenv("AGENT_RETRY_BACKOFF_BASE", "0.5")),
 }
-MISSION_CONFIG: Any = {
+MISSION_CONFIG: Final[Mapping[str, Union[bool, int]]] = {
     "GRAVITY_SURGERY_ENABLED": True,
     "hierarchy_healing_enabled": True,
     "span_surgery_enabled": True,
@@ -1136,7 +1267,7 @@ MISSION_CONFIG: Any = {
     "structural_only_mode": False,
     "timeout_seconds": int(os.getenv("MISSION_TIMEOUT_SECONDS", "1800")),
 }
-MCP_CAPABILITIES: Any = {
+MCP_CAPABILITIES: Final[Mapping[str, Mapping[str, Union[bool, str]]]] = {
     "router": {"enabled": True, "path": "agentic_core.L3_orchestration.mcp"},
     "marketplace_filter": {"enabled": True, "path": "agentic_core.L3_orchestration.mcp"},
     "filesystem": {"enabled": True, "path": "agentic_core.L4_state.filesystem"},
@@ -1395,7 +1526,7 @@ _semantic_templates = {
 # === AST PLACEMENT SIGNAL REGISTRY ===
 # Maps AST patterns to exact L1/L2 paths for file placement
 # This is the SSOT for AST-based file placement decisions
-AST_PLACEMENT_SIGNALS: dict[str, dict[str, Any]] = {
+AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
     # Base agents - Constitutional Priority
     "agentic_core/base_agents": {
         "class_patterns": [".*BaseAgent$"],
@@ -1559,14 +1690,7 @@ AST_PLACEMENT_SIGNALS: dict[str, dict[str, Any]] = {
         "weight": 8,
     },
     # Utils placements
-    "agentic_core/utils/core_extensions": {
-        "class_patterns": [".*Extension.*", ".*Mixin.*", ".*Helper.*"],
-        "base_classes": ["ExtensionMixin"],
-        "function_patterns": ["extend_.*", "enhance_.*"],
-        "import_signals": ["core_extensions"],
-        "keyword_signals": ["extension", "mixin", "enhance", "utility"],
-        "weight": 6,
-    },
+    # core_extensions EVICTED - merged into utils root or specialized helpers
     "agentic_core/utils/naming": {
         "class_patterns": [".*Naming.*", ".*Case.*"],
         "base_classes": [],
@@ -1640,7 +1764,7 @@ PLACEMENT_CONFIDENCE = {
 
 # === REVERSE LOOKUP: L2 -> L1 MAPPING ===
 # For quick parent resolution
-L2_TO_L1_MAP: dict[str, str] = {
+L2_TO_L1_MAP: Final[Mapping[str, str]] = {
     "thought_engine": "L1_cognition",
     "intent_analysis": "L1_cognition",
     "planning": "L1_cognition",
@@ -1659,7 +1783,7 @@ L2_TO_L1_MAP: dict[str, str] = {
     "validators": "L5_safety",
     "gravity": "L5_safety",
     "red_teaming": "L5_safety",
-    "core_extensions": "utils",
+    # "core_extensions": "utils",  # EVICTED per CANON_VALIDATION_REGISTRY
     "naming": "utils",
     "wrappers": "utils",
     "general_helpers": "utils",
@@ -1684,7 +1808,7 @@ L2_TO_L1_MAP: dict[str, str] = {
 
 # === GENERALIZED EXERCISER REGISTRY (Phase 7 SSOT) ===
 # Map layer → exerciser class (or "GeneralExerciserAgent" for fallback)
-EXERCISER_REGISTRY: dict[str, str] = {
+EXERCISER_REGISTRY: Final[Mapping[str, str]] = {
     "L5_safety": "L5SafetyExerciserAgent",  # Existing specialized
     "L4_state": "L4StateExerciserAgent",
     "L1_cognition": "L1CognitionExerciserAgent",
@@ -1705,7 +1829,7 @@ EXERCISER_REGISTRY: dict[str, str] = {
 
 # [PHASE 17] AGENT REGISTRY - Complete PascalCase Agent Discovery Map
 # Generated from AST analysis - 64 total agents across all layers
-AGENT_REGISTRY: Any = {
+AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, Union[str, int]]]]] = {
     "L0": [
         {
             "name": "BootstrapAgent",
@@ -2108,7 +2232,8 @@ AGENT_REGISTRY: Any = {
     ],
 }
 
-semantic_l2_registry: Any = {
+# [HARDENING] Convert nested structures to Mapping for immutability
+semantic_l2_registry: Final[Mapping[str, Any]] = {
     "L5_safety": {
         "base_agents": {
             "purpose": "Constitutional foundation for all agents. Home of SovereignBaseAgent and LayerBaseAgents.",
@@ -3268,7 +3393,7 @@ semantic_l2_registry: Any = {
         },
     },
 }
-SEMANTIC_L2_REGISTRY: Any = semantic_l2_registry
+SEMANTIC_L2_REGISTRY: Final[Mapping[str, Any]] = semantic_l2_registry
 
 # =============================================================================
 # SOVEREIGN CANON REGISTRY (DEPRECATED)
@@ -3281,4 +3406,181 @@ SEMANTIC_L2_REGISTRY: Any = semantic_l2_registry
 SAFETY_VALIDATION_REGISTRY: dict[int, dict[str, Any]] = {
     # DEPRECATION STATUS: 100% COMPLETE
     # Numeric keys removed to prevent structural coupling with legacy canon.
+}
+
+# =============================================================================
+# PROJECT ROOT STRUCTURE
+# =============================================================================
+
+# Project root subfolders that are not part of agentic_core or apps_*
+PROJECT_ROOT_SUBFOLDERS: Final[Mapping[str, Sequence[str]]] = {
+    "logs": [],  # Mission execution logs and trace files
+    "scripts": [
+        "testing",         # All test execution scripts (65 files)
+        "analysis",        # Analysis and audit scripts (19 files)
+        "remediation",     # Fix and repair scripts (15 files)
+        "migration",       # Migration and movement scripts (5 files)
+        "execution",       # Phase execution and run scripts (46 files)
+        "security",        # Security and sovereignty scripts (9 files)
+        "architecture",    # Core and structural scripts (10 files)
+        "maintenance",     # System maintenance scripts (38 files) - EXISTING
+        "ci",             # Continuous integration scripts (2 files) - EXISTING
+        "utilities"       # General utility scripts (1 file)
+    ],
+    "data": [
+        "raw",              # Raw input data and sources
+        "processed",        # Processed and transformed data
+        "datasets",         # Structured datasets and test data
+        "configurations",   # Configuration files and settings
+        "governance",       # Governance and security data
+        "cache",            # Temporary cache files
+        "archives",         # Archived historical data
+        "logs"              # Data processing logs
+    ],
+    "docs": [
+        "technical",        # Technical documentation
+        "project",          # Project management docs
+        "analysis",         # Analysis and research
+        "guides",           # User and developer guides
+        "archive"           # Archived documentation
+    ],
+    "tests": [],          # Test files (separate from scripts)
+    "archives": []        # Archived files and historical data
+}
+
+# Project root metadata for clarity
+PROJECT_ROOT_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
+    "logs": {
+        "purpose": "Mission execution logs and trace files",
+        "content_types": ["mission_logs", "trace_files", "execution_logs"],
+        "execution_allowed": False,
+        "notes": "Contains trace.jsonl files for various mission executions",
+        "file_patterns": ["*.log", "*.jsonl", "*.trace"],
+        "keywords": ["transcript", "log", "trace", "execution"]
+    },
+    "scripts": {
+        "purpose": "Project-level utility scripts (standalone, no core dependencies)",
+        "content_types": ["setup_scripts", "deployment_tools", "ci_scripts", "migration_tools"],
+        "execution_allowed": True,
+        "notes": "Standalone utilities only - NO agentic_core imports allowed",
+        "file_patterns": ["*.py", "*.sh", "*.bat", "*.cmd"],
+        "keywords": ["setup", "install", "ci", "build", "deploy", "migration", "run"]
+    },
+    "data": {
+        "purpose": "Data files and datasets used by the project",
+        "content_types": ["raw_data", "processed_data", "datasets", "configurations", "governance_data"],
+        "execution_allowed": False,
+        "notes": "Organized by data lifecycle: raw → processed → datasets → configurations",
+        "file_patterns": ["*.csv", "*.json", "*.yaml", "*.yml", "*.xml", "*.parquet", "*.db", "*.sqlite"],
+        "keywords": ["data", "dataset", "config", "settings", "parameters"]
+    },
+    "docs": {
+        "purpose": "Project documentation and reports organized by purpose",
+        "content_types": ["technical_docs", "project_docs", "analysis_reports", "user_guides"],
+        "execution_allowed": False,
+        "notes": "Categorized documentation: technical, project, analysis, and guides",
+        "file_patterns": ["*.md", "*.rst", "*.txt", "*.pdf", "*.docx", "*.html"],
+        "keywords": ["doc", "guide", "manual", "readme", "tutorial", "specification"]
+    },
+    "tests": {
+        "purpose": "Test files and test data",
+        "content_types": ["test_files", "test_data", "fixtures"],
+        "execution_allowed": True,
+        "notes": "Test files separate from execution scripts",
+        "file_patterns": ["test_*.py", "*_test.py", "conftest.py", "*.fixture"],
+        "keywords": ["test", "spec", "fixture", "mock"]
+    },
+    "archives": {
+        "purpose": "Archived files and historical data",
+        "content_types": ["archived_code", "historical_data", "backups"],
+        "execution_allowed": False,
+        "notes": "Legacy files and historical archives",
+        "file_patterns": ["*.bak", "*.old", "*.backup", "*.archive", "*.zip", "*.tar.gz"],
+        "keywords": ["archive", "backup", "old", "legacy", "retired"]
+    }
+}
+
+# Detailed subfolder metadata for data and docs directories
+DATA_SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
+    "raw": {
+        "purpose": "Raw input data and external sources",
+        "content_types": ["external_references", "input_files", "source_data"],
+        "execution_allowed": False,
+        "notes": "Contains external/ reference materials and raw inputs"
+    },
+    "processed": {
+        "purpose": "Processed and transformed data artifacts",
+        "content_types": ["audit_results", "evaluations", "manifests", "outputs"],
+        "execution_allowed": False,
+        "notes": "Data that has been processed or transformed"
+    },
+    "datasets": {
+        "purpose": "Structured datasets for testing and reference",
+        "content_types": ["golden_datasets", "test_data", "reference_data"],
+        "execution_allowed": False,
+        "notes": "Curated datasets for testing and validation"
+    },
+    "configurations": {
+        "purpose": "Configuration files and settings",
+        "content_types": ["sdk_configs", "mcp_configs", "prompt_configs", "task_definitions"],
+        "execution_allowed": False,
+        "notes": "Configuration files for various components"
+    },
+    "governance": {
+        "purpose": "Governance and security-related data",
+        "content_types": ["prompt_governance", "injection_data", "safety_data", "registry_data"],
+        "execution_allowed": False,
+        "notes": "Security, governance, and compliance data"
+    },
+    "cache": {
+        "purpose": "Temporary cache files",
+        "content_types": ["temp_files", "cache_data"],
+        "execution_allowed": False,
+        "notes": "Temporary storage that can be cleared"
+    },
+    "archives": {
+        "purpose": "Archived historical data",
+        "content_types": ["historical_data", "backups", "legacy_files"],
+        "execution_allowed": False,
+        "notes": "Long-term storage of historical data"
+    },
+    "logs": {
+        "purpose": "Data processing logs and traces",
+        "content_types": ["processing_logs", "error_logs", "trace_files"],
+        "execution_allowed": False,
+        "notes": "Logs from data processing operations"
+    }
+}
+
+DOCS_SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
+    "technical": {
+        "purpose": "Technical documentation and specifications",
+        "content_types": ["architecture_docs", "integration_guides", "api_docs", "configuration_guides"],
+        "execution_allowed": False,
+        "notes": "Technical documentation for developers and architects"
+    },
+    "project": {
+        "purpose": "Project management and governance documentation",
+        "content_types": ["phase_docs", "planning_docs", "governance_docs", "milestone_tracking"],
+        "execution_allowed": False,
+        "notes": "Project management and planning documentation"
+    },
+    "analysis": {
+        "purpose": "Analysis reports and research documentation",
+        "content_types": ["analysis_reports", "metrics_docs", "investigation_reports", "rca_docs"],
+        "execution_allowed": False,
+        "notes": "Analysis, research, and investigation reports"
+    },
+    "guides": {
+        "purpose": "User and developer guides",
+        "content_types": ["user_guides", "developer_guides", "deployment_guides", "tutorials"],
+        "execution_allowed": False,
+        "notes": "Instructional documentation for users and developers"
+    },
+    "archive": {
+        "purpose": "Archived and outdated documentation",
+        "content_types": ["legacy_docs", "outdated_specs", "historical_docs"],
+        "execution_allowed": False,
+        "notes": "Documentation kept for historical reference"
+    }
 }

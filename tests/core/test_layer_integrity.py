@@ -19,7 +19,7 @@ def test_governance_gravity_compliance():
     MANDATORY: 100% pass required for architectural convergence.
     """
     # Import the enforcement function
-    from agentic_core.prompt_governance.scripts.enforce_layer_boundaries import enforce_layer_boundaries
+    from agentic_core.prompt_governance.scripts.enforce_layer_boundaries import ImportViolationVisitor
     
     governance_path = Path("agentic_core/prompt_governance")
     

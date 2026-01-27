@@ -148,8 +148,10 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     APP_SPECIFIC_TARGET_SUBFOLDER,
     AST_DOMAIN_HIT_THRESHOLD,  # Flexible depth exemptions (Option A)
     ROOT_PROTECTED_FILES,
+    PROJECT_ROOT_METADATA,  # [ENHANCED] Imported for smart routing
     get_validated_project_root,
 )
+from fnmatch import fnmatch
 
 # Optional prompt registry for meta-learning
 try:
@@ -1392,6 +1394,31 @@ class LocationAgent(SovereignBaseAgent):
         healer = LocationHealerAgent(project_root=self.project_root)
         return healer._set_naming_final_status(report, heal_actions, semantic_issues)
 
+    def _determine_target_root_from_metadata(self, filename: str) -> str | None:
+        """
+        [ENHANCED] Smart routing using active PROJECT_ROOT_METADATA.
+        Matches filenames against defined patterns (e.g., *.log -> logs)
+        to resolve root clutter autonomously.
+        """
+        # 1. Pattern Priority (Highest)
+        for folder, meta in PROJECT_ROOT_METADATA.items():
+            patterns = meta.get("file_patterns", [])
+            for pattern in patterns:
+                if fnmatch(filename, pattern):
+                    return folder
+
+        # 2. Keyword Fallback (Lower confidence)
+        filename_lower = filename.lower()
+        for folder, meta in PROJECT_ROOT_METADATA.items():
+            keywords = meta.get("keywords", [])
+            # Simple heuristic: if keyword is surrounded by non-alphanumeric or start/end
+            for kw in keywords:
+                if kw in filename_lower:
+                    # Weak check, but better than nothing for things like "setup_final.py"
+                    return folder
+        
+        return None
+
     def cleanup_violations(
         self, violations: list[tuple[Path, str]], dry_run: bool = True, max_actions: int = 50
     ) -> list[dict[str, Any]]:
@@ -1399,6 +1426,7 @@ class LocationAgent(SovereignBaseAgent):
         ULTRA HEALING ENGINE — Full FilesystemAgent integration (2026-01-02)
 
         Prioritized autonomous healing:
+        - [NEW] Smart Root Routing: Uses metadata patterns to sort root files (logs, scripts, data)
         - Archives void/depth/general violations
         - Auto-moves app-specific/domain leaks to correct apps_*/engines/
         - Auto-moves territory mismatches to semantically best agentic_core L1/L2
@@ -1458,11 +1486,38 @@ class LocationAgent(SovereignBaseAgent):
                 "action_taken": "",
             }
 
-            # Apply specific healing strategy
-            heal_result = self._apply_healing_strategy(
-                file_path, msg, archives_root, dry_run, affected_paths, import_touched_paths
-            )
-            action.update(heal_result)
+            # [ENHANCED] Intercept Root Violations for Smart Routing
+            # If the file is in the project root but not whitelisted, try to route it
+            is_root_file = file_path.parent == self.project_root
+            routed = False
+            
+            if is_root_file and "not in ROOT_WHITELIST" in msg:
+                target_root = self._determine_target_root_from_metadata(file_path.name)
+                if target_root:
+                    target_path = self.project_root / target_root / file_path.name
+                    
+                    # Safety check: ensure target root exists or create it (if allowed)
+                    target_dir = self.project_root / target_root
+                    if not target_dir.exists():
+                        # We only create folders if they are in our official metadata list
+                        if dry_run:
+                            Logger.info(f"Would create target root: {target_root}")
+                        else:
+                            target_dir.mkdir(exist_ok=True)
+
+                    move_res = self.safe_move(file_path, target_path, dry_run=dry_run)
+                    action.update(move_res)
+                    if move_res.get("applied"):
+                        action["action_taken"] = f"Smart-routed to {target_root}/"
+                        affected_paths.append(target_path)
+                        routed = True
+
+            # If not routed by smart metadata, fall back to standard strategies
+            if not routed:
+                heal_result = self._apply_healing_strategy(
+                    file_path, msg, archives_root, dry_run, affected_paths, import_touched_paths
+                )
+                action.update(heal_result)
 
             actions.append(action)
 
