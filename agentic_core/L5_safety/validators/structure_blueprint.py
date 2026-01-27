@@ -331,32 +331,29 @@ L4_SUBFOLDER_MAP: Final[Mapping[str, Mapping[str, Sequence[str]]]] = {
         "validators": ["tool_validators"],
         "adapters": ["tool_adapters"],
     },
-    # prompt_governance/ - Complex template governance system requiring L4 structure
+    # prompt_governance/ - [RECONCILED] Functional L3 Structure
     "prompt_governance": {
-        "L3_core": {
-            "rendering": ["engines", "contexts", "filters"],
-            "registry": ["management", "validation", "versioning"],
-            "assembly": ["builders", "optimizers", "validators"]
+        "meta_prompts": {
+            "orchestration": ["agents", "flows"],
+            "reasoning": ["cot", "tot", "react"],
+            "security": ["guards", "pii"],
+            "personas": ["roles", "behavioral"]
         },
-        "L3_templates": {
-            "meta_prompts": ["orchestration", "reasoning", "governance", "security"],
-            "instructional": ["cognition", "execution", "coordination", "safety"],
-            "specialized": ["domain", "persona", "format"]
+        "templates": {
+            "instructional": ["cognition", "execution", "safety"],
+            "specialized": ["domain", "format"],
+            "fragments": ["partials", "blocks"],
+            "rendering": ["engines", "filters"]
         },
-        "L3_security": {
-            "injection": ["detectors", "filters", "sanitizers"],
-            "pii": ["detectors", "maskers", "validators"],
-            "compliance": ["guards", "audits", "policies"]
+        "scripts": {
+            "audit": ["syntax_checks", "compliance_scans"],
+            "migration": ["version_porters", "legacy_converters"],
+            "maintenance": ["registry_cleaners", "cache_managers"]
         },
-        "L3_integrity": {
-            "validation": ["syntax", "schema", "dependency"],
-            "optimization": ["performance", "quality", "analysis"],
-            "testing": ["unit", "integration", "e2e"]
-        },
-        "L3_utilities": {
-            "scripts": ["audit", "migration", "maintenance"],
-            "middleware": ["auth", "cache", "logging"],
-            "monitoring": ["metrics", "telemetry", "dashboards"]
+        "version_registry": {
+            "manifests": ["active", "history"],
+            "locks": ["commit_locks"],
+            "lineage": ["parents", "forks"]
         }
     },
 }
@@ -376,11 +373,10 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset({
     "agentic_core/schemas/models",  # 42 files - added per SSOT review
     # agentic_core/utils/core_extensions EVICTED per CANON_VALIDATION_REGISTRY
     "agentic_core/config/blueprint_sovereign",  # 20 files - added per SSOT review
-    "agentic_core/prompt_governance/L3_core",
-    "agentic_core/prompt_governance/L3_templates",
-    "agentic_core/prompt_governance/L3_security",
-    "agentic_core/prompt_governance/L3_integrity",
-    "agentic_core/prompt_governance/L3_utilities",
+    "agentic_core/prompt_governance/meta_prompts",
+    "agentic_core/prompt_governance/templates",
+    "agentic_core/prompt_governance/scripts",
+    "agentic_core/prompt_governance/version_registry",
 })
 
 # ============================================================================
@@ -417,7 +413,7 @@ CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     # === SPECIALIZED DOMAINS ===
     "schemas": ["models"],  # Data schemas - currently only models subfolder exists
     "config": ["blueprint_sovereign"],  # Configuration management - currently only blueprint_sovereign exists
-    "prompt_governance": ["meta_prompts", "templates", "scripts", "version_registry"],  # Prompt management
+    "prompt_governance": ["meta_prompts", "templates", "scripts", "version_registry"],  # [RECONCILED] Canonical L3 folders
     "runtime": ["shared_runtime"],  # Runtime environment - currently only shared_runtime exists
     "utils": [],  # Utility functions - no subfolders currently (flat structure)
     "patterns": ["agent_roles"],  # Architectural and behavioral patterns
@@ -1177,6 +1173,17 @@ _DYNAMIC_ROOT_PROTECTED_FILES: frozenset[str] = frozenset(
 
 # Final combined immutable set - Single Source of Truth for all root-level protection
 ROOT_PROTECTED_FILES: frozenset[str] = _STATIC_ROOT_PROTECTED_FILES | _DYNAMIC_ROOT_PROTECTED_FILES
+
+# [SSOT] STRICT ROOT POLICY: Any file NOT in this list or matching these patterns
+# is considered "Drift" and must be routed via ARTIFACT_ROUTING_MAP.
+ROOT_ALLOWED_PATTERNS: Final[Sequence[Pattern]] = [
+    re.compile(r"^trace_.*\.jsonl$"),     # Allowed: Mission Traces
+    re.compile(r"^mission_.*\.log$"),     # Allowed: Mission Logs
+    re.compile(r"^.*\.bat$"),             # Allowed: Windows Batch scripts
+    re.compile(r"^.*\.sh$"),              # Allowed: Shell scripts
+    re.compile(r"^root_drift_.*\.py$"),   # Allowed: Remediation scripts (Temp)
+]
+
 SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
     {
         ".git",
@@ -1524,6 +1531,237 @@ _semantic_templates = {
         "examples_suffix": ["Template", "Layout", "Format"],
     },
 }
+# ============================================================================
+# ARTIFACT ROUTING MAP (The "Customs" Agent Logic)
+# ============================================================================
+# Routes non-code artifacts and standalone scripts based on INTELLIGENT CONTENT SIGNATURES.
+# [SSOT 2026-01-27] Ultra-Hardened: Includes strict 'forbidden_signals' to prevent gravity leakage.
+ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
+    # === DOCS & REPORTS ===
+    "docs/reports": {
+        "description": "Assessment findings, audit results, and execution summaries.",
+        "file_extensions": [".md", ".json", ".csv", ".txt"],
+        "content_signals": {
+            "headers": ["# Assessment", "## Findings", "## Recommendations", "# Audit Report", "## Violations"],
+            "json_keys": ["critical_violations", "compliance_score", "drift_metrics", "assessment_summary"],
+            "keywords": ["CRITICAL FAILURE", "PASS", "FAIL", "Violation Count:", "Severity: High"],
+        },
+        "naming_patterns": [
+            re.compile(r".*audit.*"), re.compile(r".*assessment.*"), re.compile(r".*finding.*"),
+            re.compile(r".*report.*"), re.compile(r".*scan_results.*"),
+        ],
+        # HARDENING: Prevent code files from being misclassified as reports
+        "forbidden_extensions": [".py", ".js", ".sh", ".bat", ".ts"],
+        "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
+    },
+
+    # === DATA & LOGS (Runtime Debugging) ===
+    "agentic_core/L0_maintenance/logs": {
+        "description": "Runtime debug logs, error dumps, and stack traces.",
+        "file_extensions": [".log", ".err", ".out", ".txt"],
+        "content_signals": {
+            "keywords": ["DEBUG", "ERROR", "Traceback (most recent call)", "Exception", "Stack trace"],
+        },
+        "naming_patterns": [re.compile(r".*debug.*"), re.compile(r".*error.*"), re.compile(r".*crash.*")],
+        # HARDENING: Explicitly forbid Python scripts even if they contain the word "error"
+        "forbidden_extensions": [".py", ".pyc", ".pyo"],
+        "forbidden_keywords": ["def main", "if __name__", "import sys", "class "],
+    },
+
+    # === PYTHON UTILITY SCRIPTS (Standalone) ===
+    "agentic_core/L0_maintenance/scripts": {
+        "description": "Python utility scripts, maintenance tools, and standalone executables.",
+        "file_extensions": [".py"],
+        "content_signals": {
+            "keywords": ["def main(", "if __name__", "#!/usr/bin/env python", "import sys", "argparse", "click", "typer"],
+            "imports": ["os", "sys", "shutil", "pathlib", "logging"],
+        },
+        "naming_patterns": [
+            re.compile(r".*script.*"), re.compile(r".*fixer.*"), re.compile(r".*tool.*"),
+            re.compile(r".*util.*"), re.compile(r".*cleaner.*"), re.compile(r".*migrat.*"),
+        ],
+        # HARDENING: Prevent Tests and Core Modules from being misclassified as scripts
+        "forbidden_keywords": [
+            "class Test", "def test_", "import unittest", "import pytest",  # Not a Test
+            "class BaseAgent", "class Sovereign",                           # Not a Core Agent
+        ],
+    },
+
+    # === MISSION TRACES (Root Approved) ===
+    "logs": {
+        "description": "High-level Mission Execution Traces (Approved for Root).",
+        "file_extensions": [".jsonl", ".trace"],
+        "content_signals": {
+            "json_keys": ["mission_id", "step_count", "agent_action", "thought_process"],
+        },
+        "naming_patterns": [re.compile(r"^trace_.*"), re.compile(r"^mission_.*")],
+        # HARDENING: Prevent generic JSON data or debug logs
+        "forbidden_keywords": ["Traceback", "Exception", "dataset_version"],
+    },
+
+    # === DATASETS ===
+    "data/processed": {
+        "description": "Structured data outputs and intermediate processing states.",
+        "file_extensions": [".json", ".csv", ".parquet"],
+        "content_signals": {
+            "json_keys": ["dataset_version", "record_count", "processed_at", "schema_version"],
+        },
+        "naming_patterns": [re.compile(r".*dataset.*"), re.compile(r".*processed.*")],
+        # HARDENING: Prevent config files or code
+        "forbidden_keywords": ["def ", "class ", "api_key", "secret"],
+    }
+}
+
+# ============================================================================
+# ARTIFACT ROUTING VALIDATION UTILITIES
+# ============================================================================
+
+def validate_artifact_routing(filename: str, content: Optional[str] = None) -> tuple[bool, Optional[str], Optional[str]]:
+    """
+    Validate file against ARTIFACT_ROUTING_MAP negative logic.
+    
+    Implements HARD REJECT for files that match forbidden_extensions or forbidden_keywords
+    ONLY when they would otherwise match the positive signals for that destination.
+    This prevents gravity leakage where code files get misclassified as reports/logs/data.
+    
+    Args:
+        filename: Name of the file to validate
+        content: Optional file content for keyword checking
+        
+    Returns:
+        Tuple of (is_valid, matched_destination, rejection_reason)
+        - is_valid: False if file matches forbidden signals (HARD REJECT)
+        - matched_destination: Destination path if positive match found
+        - rejection_reason: Reason for rejection if is_valid is False
+        
+    Example:
+        >>> validate_artifact_routing("test_report.py", "def main():")
+        (False, None, "Forbidden extension .py for destination docs/reports")
+        
+        >>> validate_artifact_routing("audit_results.md", "# Assessment Report")
+        (True, "docs/reports", None)
+    """
+    file_ext = Path(filename).suffix.lower()
+    
+    for dest, rules in ARTIFACT_ROUTING_MAP.items():
+        # First check if file would match positive signals for this destination
+        allowed_exts = rules.get("file_extensions", [])
+        matches_positive = False
+        
+        # Check extension match
+        if allowed_exts and file_ext in allowed_exts:
+            matches_positive = True
+        
+        # Check naming patterns
+        naming_patterns = rules.get("naming_patterns", [])
+        if naming_patterns:
+            for pattern in naming_patterns:
+                if pattern.match(filename):
+                    matches_positive = True
+                    break
+        
+        # Check content signals if provided
+        if content and matches_positive:
+            content_signals = rules.get("content_signals", {})
+            
+            # Check headers
+            headers = content_signals.get("headers", [])
+            if headers and any(header in content for header in headers):
+                matches_positive = True
+            
+            # Check keywords
+            keywords = content_signals.get("keywords", [])
+            if keywords and any(keyword in content for keyword in keywords):
+                matches_positive = True
+        
+        # ONLY apply negative checks if file matches positive signals
+        if matches_positive:
+            # 1. NEGATIVE EXTENSION CHECK (HARD REJECT)
+            forbidden_exts = rules.get("forbidden_extensions", [])
+            if forbidden_exts and file_ext in forbidden_exts:
+                return (False, None, f"Forbidden extension {file_ext} for destination {dest}")
+            
+            # 2. NEGATIVE CONTENT CHECK (HARD REJECT)
+            if content:
+                forbidden_keywords = rules.get("forbidden_keywords", [])
+                if forbidden_keywords:
+                    for keyword in forbidden_keywords:
+                        if keyword in content:
+                            return (False, None, f"Forbidden keyword '{keyword}' for destination {dest}")
+            
+            # Passed all checks - return positive match
+            return (True, dest, None)
+    
+    # No match found (neither positive nor negative)
+    return (True, None, None)
+
+
+def check_forbidden_signals(filename: str, content: Optional[str] = None) -> Optional[str]:
+    """
+    Quick check for forbidden signals across all routing rules.
+    
+    Returns rejection reason if file matches any forbidden_extensions or forbidden_keywords,
+    None otherwise.
+    
+    This is a fast-path check for agents that only need to know if a file is forbidden,
+    without needing the full routing destination.
+    
+    Args:
+        filename: Name of the file to check
+        content: Optional file content for keyword checking
+        
+    Returns:
+        Rejection reason string if forbidden, None if allowed
+    """
+    is_valid, _, rejection_reason = validate_artifact_routing(filename, content)
+    return rejection_reason if not is_valid else None
+
+
+# ============================================================================
+# TEST TAXONOMY SIGNALS (The "Test Sorter" Logic)
+# ============================================================================
+# Strictly enforces the separation of Unit, Integration, and E2E tests based on
+# their import dependencies and decorators.
+TEST_TYPE_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
+    "tests/unit": {
+        "description": "Isolated logic tests using mocks and no external I/O.",
+        "imports": ["unittest.mock", "MagicMock", "patch", "pytest_mock"],
+        "forbidden_imports": ["playwright", "selenium", "requests", "httpx", "psycopg2"],
+        "decorators": ["@pytest.mark.unit"],
+        "class_patterns": [".*Unit.*", ".*TestBase$"],
+        "priority": 1,
+    },
+    "tests/integration": {
+        "description": "Component interaction tests involving DB, API, or Filesystem.",
+        "imports": ["fastapi.testclient", "httpx", "requests", "sqlalchemy", "redis"],
+        "decorators": ["@pytest.mark.integration", "@pytest.mark.asyncio"],
+        "class_patterns": [".*Integration.*", ".*ApiTest.*"],
+        "priority": 2,
+    },
+    "tests/e2e": {
+        "description": "Full system simulation using browser automation or real environments.",
+        "imports": ["playwright", "selenium", "puppeteer", "subprocess"],
+        "decorators": ["@pytest.mark.e2e"],
+        "class_patterns": [".*E2E.*", ".*Browser.*", ".*Flow.*"],
+        "priority": 3,
+    },
+}
+
+# ============================================================================
+# LEGACY/ZOMBIE SIGNALS (The "Archivist" Logic)
+# ============================================================================
+# Detects deprecated or superseded code and routes it to archives.
+LEGACY_AST_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
+    "archives/legacy_code": {
+        "description": "Code explicitly marked as deprecated, legacy, or v1.",
+        "decorators": ["@deprecated", "@obsolete"],
+        "docstring_markers": ["DEPRECATED", "LEGACY", "DO NOT USE", "MOVED TO"],
+        "class_patterns": [".*Legacy.*", ".*Old$", ".*V1$"],
+        "function_calls": ["warnings.warn"],
+        "variable_markers": ["DEPRECATION_WARNING"],
+    }
+}
+
 # === AST PLACEMENT SIGNAL REGISTRY ===
 # Maps AST patterns to exact L1/L2 paths for file placement
 # This is the SSOT for AST-based file placement decisions
@@ -1537,6 +1775,22 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "keyword_signals": ["sovereign", "base", "inheritance", "abstract", "foundation"],
         "decorator_signals": [],
         "weight": 100,  # Constitutional Priority
+    },
+    # [NEW] Pydantic Domain Modeling (Schema Separation)
+    "agentic_core/schemas/models": {
+        "class_patterns": [".*Model$", ".*Schema$", ".*DTO$"],
+        "base_classes": ["BaseModel", "pydantic.BaseModel"],
+        "import_signals": ["pydantic"],
+        "keyword_signals": ["field", "validator", "root_validator", "config"],
+        "weight": 85,
+    },
+    # [NEW] Configuration Modeling
+    "agentic_core/config": {
+        "class_patterns": [".*Config$", ".*Settings$"],
+        "base_classes": ["BaseSettings"],
+        "import_signals": ["pydantic_settings"],
+        "keyword_signals": ["env_file", "secrets", "api_key"],
+        "weight": 90,
     },
     # L1_cognition placements
     "agentic_core/L1_cognition/thought_engine": {

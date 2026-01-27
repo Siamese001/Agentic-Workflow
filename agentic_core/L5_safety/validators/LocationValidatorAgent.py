@@ -280,6 +280,7 @@ class LocationValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """Validate filename patterns for forbidden prefixes and backup files."""
         from agentic_core.L5_safety.validators.structure_blueprint import (
             has_forbidden_layer_prefix,
+            check_forbidden_signals,
         )
 
         # Forbidden layer prefixes
@@ -293,6 +294,28 @@ class LocationValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         # Broken backup files
         if file_path.name.endswith((".bak", ".backup", ".old", ".tmp")):
             return False, "BROKEN BACKUP FILE: Remove stale backup file"
+
+        # ARTIFACT ROUTING NEGATIVE LOGIC CHECK
+        # Check forbidden_extensions and forbidden_keywords from ARTIFACT_ROUTING_MAP
+        # This prevents code files from being misclassified as reports/logs/data
+        try:
+            content = None
+            if file_path.exists() and file_path.is_file():
+                # Only read content for small files to avoid performance issues
+                if file_path.stat().st_size < 1_000_000:  # 1MB limit
+                    try:
+                        content = file_path.read_text(encoding="utf-8", errors="ignore")
+                    except Exception:
+                        pass  # Content check is optional
+            
+            rejection_reason = check_forbidden_signals(file_path.name, content)
+            if rejection_reason:
+                return (
+                    False,
+                    f"ARTIFACT ROUTING VIOLATION: {rejection_reason}",
+                )
+        except Exception:
+            pass  # Non-blocking - routing check is supplementary
 
         return True, "OK"
 
