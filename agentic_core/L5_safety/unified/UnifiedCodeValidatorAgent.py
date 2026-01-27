@@ -1,10 +1,3 @@
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Set
-from pathlib import Path
-from dataclasses import dataclass, field
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-
 #!/usr/bin/env python3
 """
 UnifiedCodeValidatorAgent - Unified Code Validation
@@ -22,10 +15,17 @@ Features:
 - Print statement policy enforcement
 """
 
-import logging
 import ast
+import logging
 import re
+from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum, auto
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -331,9 +331,16 @@ class UnifiedCodeValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
         self.Logger.info(f"Validation complete: {report.total_violations} violations found")
         return report
     
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, int]:
-        """Heal code violations found during validation."""
-        validation_report = self.validate_project()
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+        
+        Wraps validate_project and applies auto-fixes where possible.
+        """
+        # Reuse existing implementation logic, just ensure signature match
+        validation_report = self.validate_project(kwargs.get("project_root"))
         
         violations_found = validation_report.total_violations
         violations_fixed = 0

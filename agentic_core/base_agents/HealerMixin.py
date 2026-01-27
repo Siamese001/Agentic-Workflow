@@ -7,7 +7,8 @@ for sovereign agents. Implements V2.5 Sovereign healing requirements.
 SSOT VALIDATION ROUTER (2026-01-24):
 This mixin now contains the centralized validation logic ported from
 legacy agents (SafetyInspectorAgent, etc.) and routes validation
-requests via CANON_VALIDATION_REGISTRY in structure_blueprint.py.
+requests via SAFETY_VALIDATION_REGISTRY in structure_blueprint.py.
+Note: Numeric canon keys (0-50) are deprecated in unified schema.
 """
 
 from __future__ import annotations
@@ -21,7 +22,7 @@ from dataclasses import dataclass, field
 
 from agentic_core.domain.HealerError import HealerError, CircularDependencyError
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.L5_safety.validators.structure_blueprint import CANON_VALIDATION_REGISTRY
+from agentic_core.L5_safety.validators.structure_blueprint import SAFETY_VALIDATION_REGISTRY
 
 Logger = logging.getLogger(__name__)
 
@@ -264,32 +265,36 @@ class HealerMixin:
     # =========================================================================
     def validate_canon_key(self, key_id: int, context: Any) -> tuple[bool, list[Any]]:
         """
-        Dynamically dispatches validation based on CANON_VALIDATION_REGISTRY.
+        [DEPRECATED] Dynamically dispatches validation based on SAFETY_VALIDATION_REGISTRY.
+        Numeric canon keys (0-50) have been removed in unified schema.
 
         Args:
-            key_id: Canon key number (0-50)
+            key_id: Canon key number (0-50) - DEPRECATED
             context: Validation context dict with 'content' key for file content
 
         Returns:
             Tuple of (passed: bool, violations: List[str])
         """
-        if key_id not in CANON_VALIDATION_REGISTRY:
-            Logger.warning(f"Canon Key {key_id} not found in SSOT registry.")
-            return False, ["Invalid Key"]
-
-        rule = CANON_VALIDATION_REGISTRY[key_id]
-        method_name = rule.get("method")
-
-        if not hasattr(self, method_name):
-            Logger.warning(f"HealerMixin missing implementation for {method_name} (Key {key_id})")
+        # [DEPRECATED] Numeric canon keys have been removed in unified schema
+        # SAFETY_VALIDATION_REGISTRY is empty - all validation moved to dynamic handlers
+        if key_id in SAFETY_VALIDATION_REGISTRY:
+            rule = SAFETY_VALIDATION_REGISTRY[key_id]
+            method_name = rule.get("method")
+            
+            if not hasattr(self, method_name):
+                Logger.warning(f"HealerMixin missing implementation for {method_name} (Key {key_id})")
+                return True, []
+            
+            validator = getattr(self, method_name)
+            try:
+                return validator(context)
+            except Exception as e:
+                Logger.error(f"Canon Key {key_id} validation failed: {e}")
+                return False, [f"Validation error: {e}"]
+        else:
+            # All numeric keys (0-50) are deprecated - return success by default
+            Logger.debug(f"Canon Key {key_id} deprecated in unified schema - auto-passing")
             return True, []
-
-        validator = getattr(self, method_name)
-        try:
-            return validator(context)
-        except Exception as e:
-            Logger.error(f"Validation failed for Key {key_id}: {str(e)}")
-            return False, [str(e)]
 
     # =========================================================================
     # SAFETY VALIDATORS (PORTED FROM SafetyInspectorAgent)

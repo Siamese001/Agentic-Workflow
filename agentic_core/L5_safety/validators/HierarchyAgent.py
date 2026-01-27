@@ -43,7 +43,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
     ROOT_PROTECTED_FILES,
     SOVEREIGN_EXCLUDED_FOLDERS,
-    SOVEREIGN_REGISTRY,
+    SOVEREIGN_TERRITORIES,
     VARIABLE_DEPTH_SUBFOLDERS,
 )
 from agentic_core.base_agents.timeout_decorator import timeout
@@ -133,7 +133,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         Logger.info("HierarchyAgent: Enforcing L3 sub-territory subatomic structure per SSOT...")
 
         # agentic_core is L1; subfolders are L2 layers (L1_cognition, etc.)
-        approved_layers_l2 = SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfolders", [])
+        approved_layers_l2 = SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", [])
 
         for layer_l2_name in approved_layers_l2:
             layer_l2_path = self.project_root / "agentic_core" / layer_l2_name
@@ -210,8 +210,8 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
             "roots_processed": [],
         }
 
-        # Universal Scope: Iterate through all roots defined in SOVEREIGN_REGISTRY
-        target_roots = [r for r in SOVEREIGN_REGISTRY.keys() if (self.project_root / r).exists()]
+        # Universal Scope: Iterate through all roots defined in SOVEREIGN_TERRITORIES
+        target_roots = [r for r in SOVEREIGN_TERRITORIES.keys() if (self.project_root / r).exists()]
 
         Logger.info(
             f"HierarchyAgent: Auditing {len(target_roots)} sovereign territories: {target_roots}"
@@ -248,7 +248,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         self, agentic_core_path: Path, results: dict[str, Any]
     ) -> None:
         """Enforce strictly defined L2 structure for agentic_core."""
-        approved_layers_l2 = set(SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfolders", []))
+        approved_layers_l2 = set(SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", []))
 
         # Phase 1: Find all non-approved Layer (L2) folders
         actual_layers_l2 = {
@@ -270,7 +270,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
     def _enforce_apps_structure(self, root_path: Path, results: dict[str, Any]) -> None:
         """Flatten files in apps_*/subfolder/subsubfolder/ to match target depth."""
         root_key = root_path.name
-        target_depth = SOVEREIGN_REGISTRY.get(root_key, {}).get("depth", 2)
+        target_depth = SOVEREIGN_TERRITORIES.get(root_key, {}).get("depth", 2)
 
         # Use existing depth enforcement logic but specifically for apps scope
         # This will trigger _heal_depth_violation which handles flattening
@@ -597,7 +597,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         self, root_key: str, root_check: callable, archive_subdir: str, label: str
     ) -> int:
         """Generic depth enforcement using dispatch pattern."""
-        expected_depth = SOVEREIGN_REGISTRY.get(root_key, {}).get("depth", 2)
+        expected_depth = SOVEREIGN_TERRITORIES.get(root_key, {}).get("depth", 2)
         archived, violations = 0, 0
         # Phase 6.5: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
@@ -713,7 +713,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         total_violations = 0
         # Check each apps_* folder with its own depth requirement
         for apps_key in ["apps_rg", "apps_lic", "apps_shared"]:
-            if apps_key in SOVEREIGN_REGISTRY:
+            if apps_key in SOVEREIGN_TERRITORIES:
                 violations = self._enforce_depth_for_root(
                     apps_key,
                     lambda r, key=apps_key: r == key,
@@ -729,7 +729,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
 
     def _enforce_universal_depth(self) -> int:
         """Enforce universal depth for non-Python files in agentic_core (depth 3). Detection-First."""
-        agentic_core_exact_depth = SOVEREIGN_REGISTRY.get("agentic_core", {}).get("depth", 3)
+        agentic_core_exact_depth = SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("depth", 3)
         archived = 0
         violations = 0
 
@@ -843,7 +843,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         errors = []
 
         # [SSOT] Dynamically pull roots from registry
-        allowed_roots = set(SOVEREIGN_REGISTRY.keys())
+        allowed_roots = set(SOVEREIGN_TERRITORIES.keys())
 
         Logger.info("HierarchyAgent: Scanning for orphaned files outside sovereign territory...")
 

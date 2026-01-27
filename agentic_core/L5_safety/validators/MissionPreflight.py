@@ -63,12 +63,15 @@ class MissionPreflight:
         return self._hierarchy_agent
 
     def _get_import_agent(self):
-        """Lazy load ImportAgent."""
+        """Lazy load import healer."""
         if self._import_agent is None:
             try:
-                from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+                # Phase 5 Migration: ImportAgent -> UnifiedCodeHealerAgent
+                from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import (
+                    create_legacy_import_healer,
+                )
 
-                self._import_agent = ImportAgent(self.project_root)
+                self._import_agent = create_legacy_import_healer()
             except ImportError:
                 pass
         return self._import_agent

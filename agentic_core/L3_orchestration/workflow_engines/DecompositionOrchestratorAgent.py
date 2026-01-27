@@ -133,11 +133,11 @@ class DecompositionOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         task_keywords = {
             "refactor": ["StructuralEngineerAgent", "ArchitectureGovernorAgent"],
             "validate": ["CodeValidatorAgent", "StructuralValidatorAgent"],
-            "fix": ["HierarchyAgent", "ImportAgent", "NamingAgent"],
+            "fix": ["HierarchyAgent", "UnifiedCodeHealerAgent", "NamingAgent"],
             "security": ["SecurityManagerAgent", "SafetyInspector"],
             "format": ["CodeFormatterAgent"],
             "test": ["TestCoverageGuardianAgent", "CoverageAgent"],
-            "import": ["ImportAgent", "ImportLockAgent"],
+            "import": ["UnifiedCodeHealerAgent", "UnifiedStructureEnforcerAgent"],
             "naming": ["NamingAgent"],
             "heal": ["ArchitectureGovernorAgent", "HygieneGuardianAgent"],
         }

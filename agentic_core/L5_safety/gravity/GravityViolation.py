@@ -27,7 +27,7 @@ from agentic_core.L5_safety.gravity.ssot_scanner import SSOTScanner
 from agentic_core.L5_safety.validators.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_EXCLUDED_FOLDERS,
-    SOVEREIGN_REGISTRY,
+    SOVEREIGN_TERRITORIES,  # [RECONCILED 2026-01-27] Use unified schema
 )
 
 
@@ -386,7 +386,7 @@ class UnifiedSSOTValidator:
         """Check for folders exceeding maximum depth limits."""
         violations = []
 
-        for root_name, config in SOVEREIGN_REGISTRY.items():
+        for root_name, config in SOVEREIGN_TERRITORIES.items():
             root_path = self.project_root / root_name
             if not root_path.exists():
                 continue
@@ -435,7 +435,7 @@ class UnifiedSSOTValidator:
             return violations
 
         # Get authorized L1 folders from blueprint
-        authorized_l1 = set(SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfolders", []))
+        authorized_l1 = set(SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", []))
 
         # Check actual L1 folders
         for folder in agentic_core.iterdir():

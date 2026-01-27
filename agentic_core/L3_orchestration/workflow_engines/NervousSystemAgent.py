@@ -106,10 +106,13 @@ class NervousSystemAgent(
         except ImportError:
             self.hierarchy_agent = None
         # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
+        # Phase 5 Migration: ImportAgent -> UnifiedCodeHealerAgent
         try:
-            from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+            from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import (
+                create_legacy_import_healer,
+            )
 
-            self.import_agent = ImportAgent(self.project_root)
+            self.import_agent = create_legacy_import_healer()
         except ImportError:
             self.import_agent = None
         self._backup_dir: Path | None = None

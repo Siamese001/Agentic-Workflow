@@ -5,8 +5,8 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 LocationAgent: Sovereign territorial gatekeeper (Canon Key 6 territory)
 
 Enforces:
-- Root folder whitelist (from ROOT_WHITELIST)
-- Exact depth per sovereign root (SOVEREIGN_REGISTRY['depth'])
+- Root folder whitelist (from SOVEREIGN_TERRITORIES)
+- Exact depth per sovereign root (SOVEREIGN_TERRITORIES[root]['depth'])
 - Forbidden root folders and numbered patterns
 - Sovereign root existence
 - Gravity leak prevention (compliance logic in apps_*)
@@ -76,7 +76,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
 
     Enforces:
     1. Path must be within project root
-    2. Root folder must be in SOVEREIGN_REGISTRY (whitelist)
+    2. Root folder must be in SOVEREIGN_TERRITORIES (whitelist)
     3. Depth must not exceed MAX_ALLOWED_DEPTH per root
     4. No forbidden root folders (legacy_*, old_*)
     5. No numbered folder prefixes (^\d+_)
@@ -98,6 +98,8 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
     """
     from agentic_core.L5_safety.validators.structure_blueprint import (
         get_validated_project_root,
+        SOVEREIGN_TERRITORIES,
+        FORBIDDEN_LAYER_PREFIXES,
     )
 
     # Auto-detect project root if not provided
@@ -122,22 +124,24 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
 
     root_folder = parts[0]
 
-    # 2. Root folder must be whitelisted (in SOVEREIGN_REGISTRY)
-    if root_folder not in ROOT_WHITELIST:
+    # 2. Root folder must be whitelisted (in SOVEREIGN_TERRITORIES)
+    if root_folder not in SOVEREIGN_TERRITORIES:
         return False
 
     # 3. Depth restriction check
-    max_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth", 3)
+    max_depth = SOVEREIGN_TERRITORIES.get(root_folder, {}).get("depth", 3)
     if len(parts) > max_depth:
         return False
 
-    # 4. Forbidden root folders check
-    if root_folder in FORBIDDEN_ROOT_FOLDERS:
+    # 4. Forbidden root folders check (legacy_*, old_*)
+    if root_folder.startswith(("legacy_", "old_")):
         return False
 
     # 5. Forbidden numbered folder pattern check (^\d+_)
+    import re
+    forbidden_pattern = re.compile(r"^\d+_")
     for part in parts:
-        if FORBIDDEN_FOLDER_PATTERN.match(part):
+        if forbidden_pattern.match(part):
             return False
 
     # All checks passed
@@ -276,14 +280,17 @@ class LocationAgent(SovereignBaseAgent):
 
     @property
     def import_agent(self):
-        """Lazy ImportAgent - created on first access to avoid circular init."""
+        """Lazy import healer - created on first access to avoid circular init."""
         if self._import_agent is None:
             try:
-                from agentic_core.L5_safety.gravity.ImportAgent import get_import_agent
+                # Phase 5 Migration: ImportAgent -> UnifiedCodeHealerAgent
+                from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import (
+                    create_legacy_import_healer,
+                )
 
-                self._import_agent = get_import_agent(self.project_root)
+                self._import_agent = create_legacy_import_healer()
             except (ImportError, RecursionError):
-                Logger.warning("ImportAgent not available - post-heal import validation disabled")
+                Logger.warning("Import healer not available - post-heal import validation disabled")
         return self._import_agent
 
     def _validate_project_root(self) -> None:

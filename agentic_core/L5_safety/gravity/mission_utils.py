@@ -13,7 +13,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     APPS_RG_SUBFOLDER_MAP,
     APPS_SHARED_SUBFOLDER_MAP,
     CORE_SUBFOLDER_MAP,
-    SOVEREIGN_REGISTRY,
+    SOVEREIGN_TERRITORIES,
 )
 
 
@@ -46,7 +46,7 @@ def get_layer_rank(path_str: str) -> int:
     Returns:
         Layer rank (0-based index), or -1 if not found
     """
-    gravity_layers = SOVEREIGN_REGISTRY["agentic_core"]["subfolders"]
+    gravity_layers = SOVEREIGN_TERRITORIES["agentic_core"]["subfolders"]
     for i, layer in enumerate(gravity_layers):
         if layer in path_str:
             return i

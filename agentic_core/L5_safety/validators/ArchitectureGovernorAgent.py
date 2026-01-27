@@ -46,14 +46,14 @@ from typing import Any
 
 # [PHASE 24] Integrate L0 Maintenance Capability
 from agentic_core.L5_safety.unified.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
-from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
 # Layer directories from SSOT
-LAYER_DIRS: set[str] = set(SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfolders", []))
+LAYER_DIRS: set[str] = set(SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", []))
 
 
 @dataclass

@@ -78,7 +78,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
 
     Enforces:
     1. Path must be within project root
-    2. Root folder must be in SOVEREIGN_REGISTRY (whitelist)
+    2. Root folder must be in SOVEREIGN_TERRITORIES (whitelist)
     3. Depth must not exceed MAX_ALLOWED_DEPTH per root
     4. No forbidden root folders (legacy_*, old_*)
     5. No numbered folder prefixes (^\d+_)
@@ -102,7 +102,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         FORBIDDEN_FOLDER_PATTERN,
         FORBIDDEN_ROOT_FOLDERS,
         ROOT_WHITELIST,
-        SOVEREIGN_REGISTRY,
+        SOVEREIGN_TERRITORIES,
         get_validated_project_root,
     )
 
@@ -147,7 +147,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         return False
 
     # Check 4: Depth requirements
-    expected_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth")
+    expected_depth = SOVEREIGN_TERRITORIES.get(root_folder, {}).get("depth")
     if expected_depth is not None:
         actual_depth = len(parts) - 1
         if actual_depth != expected_depth:

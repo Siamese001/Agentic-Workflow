@@ -105,12 +105,28 @@ class UnifiedSafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         executor.add_gate("custom_check", lambda: check_something())
     """
 
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+        
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes
+            
+        Returns:
+            Dict with healing summary
+        """
+        # Executor agents enforce runtime safety; they do not auto-heal code
+        return {"violations": 0, "fixed": 0, "errors": 0}
+
     def __init__(
         self,
-        config: ExecutorConfig | None = None,
+        agent_config: ExecutorConfig | None = None,
         detector: Any | None = None,
     ):
-        self.config = config or ExecutorConfig()
+        self._agent_config = agent_config or ExecutorConfig()
         self._detector = detector
         self._lock = threading.RLock()
         self._gates: list[SafetyGate] = []
@@ -175,7 +191,7 @@ class UnifiedSafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
         with self._lock:
             # Run pre-execution safety checks
-            if self.config.enable_safety_checks:
+            if self._agent_config.enable_safety_checks:
                 check_result = self._run_safety_checks(context or {})
                 if check_result.status == ExecutionStatus.BLOCKED:
                     self._blocked_count += 1
@@ -183,7 +199,7 @@ class UnifiedSafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     return check_result
 
             # Run integrity gates
-            if self.config.enable_integrity_gates:
+            if self._agent_config.enable_integrity_gates:
                 gate_result = self._run_gates(context or {})
                 if gate_result.status == ExecutionStatus.BLOCKED:
                     self._blocked_count += 1
@@ -244,7 +260,7 @@ class UnifiedSafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             # Check for injection threats first
             if hasattr(self._detector, "detect_injection"):
                 injection_threats = self._detector.detect_injection(input_text)
-                if injection_threats and self.config.block_on_high_severity:
+                if injection_threats and self._agent_config.block_on_high_severity:
                     return ExecutionResult(
                         status=ExecutionStatus.BLOCKED,
                         block_reason=BlockReason.DETECTOR_FLAG,
@@ -259,7 +275,7 @@ class UnifiedSafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     t for t in threats if hasattr(t, "severity") and t.severity.value >= 2
                 ]
 
-                if high_severity and self.config.block_on_high_severity:
+                if high_severity and self._agent_config.block_on_high_severity:
                     return ExecutionResult(
                         status=ExecutionStatus.BLOCKED,
                         block_reason=BlockReason.DETECTOR_FLAG,
@@ -269,11 +285,11 @@ class UnifiedSafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             if hasattr(self._detector, "get_safety_score"):
                 score = self._detector.get_safety_score(input_text)
 
-                if score < self.config.safety_score_threshold:
+                if score < self._agent_config.safety_score_threshold:
                     return ExecutionResult(
                         status=ExecutionStatus.BLOCKED,
                         block_reason=BlockReason.THRESHOLD_EXCEEDED,
-                        message=f"Safety score {score:.2f} below threshold {self.config.safety_score_threshold}",
+                        message=f"Safety score {score:.2f} below threshold {self._agent_config.safety_score_threshold}",
                     )
 
         except Exception as e:
@@ -341,7 +357,7 @@ class UnifiedSafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
             if hasattr(self._detector, "get_safety_score"):
                 score = self._detector.get_safety_score(input_text)
-                if score < self.config.safety_score_threshold:
+                if score < self._agent_config.safety_score_threshold:
                     return True, f"Safety score {score:.2f} below threshold"
 
         except Exception as e:

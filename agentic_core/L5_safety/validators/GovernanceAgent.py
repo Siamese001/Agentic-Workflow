@@ -375,13 +375,14 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
     @property
     def import_agent(self) -> Any:
-        """Lazy-load ImportAgent to avoid circular import."""
+        """Lazy-load import healer to avoid circular import."""
         if self._import_agent is None:
             try:
-                # GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
-                _mod = importlib.import_module("agentic_core.L5_safety.gravity.ImportAgent")
-                ImportAgent = _mod.ImportAgent
-                self._import_agent = ImportAgent(self.root_dir)
+                # Phase 5 Migration: ImportAgent -> UnifiedCodeHealerAgent
+                from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import (
+                    create_legacy_import_healer,
+                )
+                self._import_agent = create_legacy_import_healer()
             except ImportError:
                 pass
         return self._import_agent

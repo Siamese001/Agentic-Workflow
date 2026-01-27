@@ -226,9 +226,12 @@ class HealingStrategy:
 
             # Core Hygiene Agents
             elif agent_name == "ImportAgent":
-                from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+                # Phase 5 Migration: ImportAgent -> UnifiedCodeHealerAgent
+                from agentic_core.L5_safety.unified.UnifiedCodeHealerAgent import (
+                    create_legacy_import_healer,
+                )
 
-                return ImportAgent(project_root=self.project_root)
+                return create_legacy_import_healer()
 
             elif agent_name == "HierarchyAgent":
                 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
