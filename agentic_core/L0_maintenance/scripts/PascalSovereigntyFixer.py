@@ -77,6 +77,7 @@ class PascalSovereigntyFixer:
         critical_ssot_files = {
             "structure_blueprint.py",  # 926+ import references
             "tool_registry.py",        # Tool registration system
+            "execute_ssot.py",         # SSOT execution orchestrator - do not rename
         }
         if path.name in critical_ssot_files:
             return "IGNORE"
