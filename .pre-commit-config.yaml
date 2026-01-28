@@ -127,3 +127,11 @@ repos:
         language: python
         pass_filenames: false
         always_run: true
+
+      - id: purge-cache
+        name: Purge Python Cache (Performance Optimization)
+        entry: python
+        args: [scripts/purge_cache.py]
+        language: python
+        pass_filenames: false
+        always_run: true

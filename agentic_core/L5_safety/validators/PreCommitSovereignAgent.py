@@ -41,6 +41,7 @@ from typing import Any
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.L5_safety.gravity.unified_validator import UnifiedSSOTValidator
+from scripts.purge_cache import purge_repository_cache # Integrated Maintenance Hook
 
 
 @dataclass
@@ -142,10 +143,10 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBaseAgent):
             python_files = [f for f in output.splitlines() if f.endswith(".py")]
             return python_files
         except subprocess.CalledProcessError as e:
-            print(f"⚠️  Warning: Could not get staged files: {e}")
+            print(f"Warning: Could not get staged files: {e}")
             return []
         except FileNotFoundError:
-            print("⚠️  Warning: Git not found. Skipping pre-commit validation.")
+            print("Warning: Git not found. Skipping pre-commit validation.")
             return []
 
     def _create_empty_result(self) -> dict[str, Any]:
@@ -187,7 +188,8 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBaseAgent):
     def _print_violations(self, violations: list[ViolationReport]) -> None:
         """Print violation details to console."""
         for violation in violations:
-            print(f"❌ GRAVITY VIOLATION: {violation.file_path}:{violation.line_number}")
+            # ASCII SANITIZATION: Removed error emoji
+            print(f"GRAVITY VIOLATION DETECTED: {violation.file_path}:{violation.line_number}")
             print(f"   {violation.violation_type}: {violation.import_statement[:70]}...")
 
     def validate_staged_files(self) -> dict[str, Any]:
@@ -196,12 +198,17 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBaseAgent):
         Returns:
             Dictionary with validation results.
         """
+        # L0 HARDENING: Automated cache purge before validation to ensure clean state
+        print("SOVEREIGN PRE-FLIGHT: Purging temporary artifacts...")
+        purge_repository_cache(target_path=self.root)
+        
         staged_files = self.get_staged_files()
 
         if not staged_files:
             return self._create_empty_result()
 
-        print(f"🛡️  Sovereign Sentinel: Auditing {len(staged_files)} staged files...")
+        # ASCII SANITIZATION: Removed shield emoji for Windows compatibility
+        print(f"Sovereign Sentinel: Auditing {len(staged_files)} staged files...")
 
         try:
             report = self.validator.validate_all()
@@ -232,7 +239,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBaseAgent):
         result = self.validate_staged_files()
 
         if result["error"]:
-            print(f"❌ Error during validation: {result['error']}")
+            print(f"Error during validation: {result['error']}")
             return 1
 
         if not result["compliant"]:
@@ -240,8 +247,9 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBaseAgent):
             return 1
 
         if result["files_scanned"] > 0:
+            # ASCII SANITIZATION: Removed success emoji
             print(
-                f"✅ Sovereignty Validated. {result['files_scanned']} files compliant. Commit permitted."
+                f"Sovereignty Validated. {result['files_scanned']} files compliant. Commit permitted."
             )
 
         return 0
@@ -253,7 +261,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBaseAgent):
         print("!" * 80)
         print(f"Found {len(self.violations_found)} new gravity violations in staged files.")
         print()
-        print("The Sovereign Architecture requires dependencies to flow DOWNSTREAM (L5 → L0).")
+        print("The Sovereign Architecture requires dependencies to flow DOWNSTREAM (L5 -> L0).")
         print()
         print("REMEDIATION OPTIONS:")
         print("1. Use the 'Dynamic Seal' pattern (lazy loading) for cross-layer calls:")
@@ -280,7 +288,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBaseAgent):
         """
         git_dir = self.root / ".git"
         if not git_dir.exists():
-            print("❌ Not a git repository")
+            print("Not a git repository")
             return False
 
         hooks_dir = git_dir / "hooks"
@@ -317,14 +325,14 @@ if __name__ == "__main__":
 
                 os.chmod(hook_path, 0o755)
 
-            print(f"✅ Pre-commit hook installed: {hook_path}")
+            print(f"Pre-commit hook installed: {hook_path}")
             print()
             print("The hook will now validate all commits for architectural compliance.")
             print("To bypass the hook (not recommended), use: git commit --no-verify")
             return True
 
         except Exception as e:
-            print(f"❌ Failed to install hook: {e}")
+            print(f"Failed to install hook: {e}")
             return False
 
     def uninstall_hook(self) -> bool:
@@ -337,15 +345,15 @@ if __name__ == "__main__":
         hook_path = self.root / ".git" / "hooks" / "pre-commit"
 
         if not hook_path.exists():
-            print("ℹ️  No pre-commit hook found")
+            print("No pre-commit hook found")
             return True
 
         try:
             hook_path.unlink()
-            print("✅ Pre-commit hook removed")
+            print("Pre-commit hook removed")
             return True
         except Exception as e:
-            print(f"❌ Failed to remove hook: {e}")
+            print(f"Failed to remove hook: {e}")
             return False
 
 
