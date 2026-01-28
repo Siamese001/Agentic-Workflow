@@ -742,6 +742,9 @@ Examples:
     parser.add_argument("--list-agents", action="store_true", help="List discoverable agents")
     parser.add_argument("--enable-llm", action="store_true", help="Enable LLM for low-confidence decisions")
     parser.add_argument("--manual", action="store_true", help="Disable autonomous mode (legacy)")
+    parser.add_argument("--validate", action="store_true", help="Run in validation-only mode (CI)")
+    # [PHASE 8] New Flag for Golden Baseline capture
+    parser.add_argument("--capture-baseline", action="store_true", help="Capture new Golden Baseline")
     args = parser.parse_args()
 
     # [ULTRA-HARDENED] Validate user-supplied territory name format via regex
@@ -756,6 +759,19 @@ Examples:
             print(f"   {i:3}. {name:<40} [{path}]")
         print(f"\nTotal: {len(agents_list)} agents")
         return
+
+    # [PHASE 8] Handle baseline capture command
+    if args.capture_baseline:
+        print("\n🔒 INITIATING BASELINE CAPTURE PROTOCOL...")
+        try:
+            from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+            governor = ArchitectureGovernorAgent(project_root=project_root)
+            manifest = governor.capture_golden_baseline()
+            print(f"✨ Golden Baseline captured at: {manifest}")
+            sys.exit(0)
+        except Exception as e:
+            logger.error(f"Baseline capture failed: {e}")
+            sys.exit(1)
 
     # 2. Handle Direct Agent Invocation (Developer Mode)
     if args.agent:
@@ -856,6 +872,26 @@ Examples:
     try:
         with NonInteractiveGuard(active=is_autonomous):
             state_mgr.start_mission(f"Unified Protocol: {mission_mode}", [f"{t}" for t in targets])
+            
+            # [PHASE 8] Integrated Integrity Check
+            # We check integrity BEFORE attempting any healing to ensure we aren't
+            # healing based on corrupted logic.
+            if is_autonomous:
+                logger.info("🔍 [PHASE 8] Running integrity check...")
+                try:
+                    from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+                    governor = ArchitectureGovernorAgent(project_root=project_root, ci_mode=True)
+                    audit_results = governor.run_audit()
+                    
+                    if audit_results['stats']['drift_detected'] > 0:
+                        logger.error(f"🛑 CRITICAL: {audit_results['stats']['drift_detected']} integrity violations detected.")
+                        if args.validate:
+                            state_mgr.finish_mission(status="failed_integrity")
+                            sys.exit(1) # Fatal in CI
+                        else:
+                            logger.warning("⚠️  Proceeding with caution (Heal mode active)...")
+                except Exception as e:
+                    logger.warning(f"Integrity check failed, continuing: {e}")
             
             # [INTEGRATION] Attempt L3 Smart Orchestration first
             if args.domains:
