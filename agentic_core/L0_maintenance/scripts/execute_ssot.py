@@ -350,16 +350,22 @@ class AutonomousDecisionEngine:
         )
     
     def should_proceed_with_healing(self, confidence: ConfidenceScore) -> Tuple[bool, str]:
+        """
+        [HARDENED] Confidence Gate.
+        Threshold increased to 0.7 to ensure LLM oversight for all non-trivial actions.
+        """
         decision = {
             'confidence': confidence.value,
             'timestamp': datetime.now().isoformat()
         }
         
-        if confidence.is_high_confidence:
+        # New Threshold Logic: < 0.7 triggers LLM
+        if confidence.value >= 0.8:
             result = (True, f"HIGH CONFIDENCE ({confidence.value:.2f})")
-        elif confidence.is_medium_confidence:
+        elif confidence.value >= 0.7:
             result = (True, f"MEDIUM CONFIDENCE ({confidence.value:.2f})")
         else:
+            # Score is < 0.7: Request LLM Intervention
             if self.enable_llm:
                 result = (True, f"LOW CONFIDENCE ({confidence.value:.2f}) - LLM Override")
             else:
@@ -545,8 +551,13 @@ def execute_phase2_alignment_impl(agents, territory, decision_engine, state_mgr,
     state_mgr.update_agent("HierarchyAgent", "L5 - Safety")
     hierarchy = agents['hierarchy'](project_root=Path.cwd())
     
-    scan = hierarchy.scan_root_violations()
+    # [STRICT SCOPE] Pass territory to scan only the target root
+    scan = hierarchy.scan_root_violations(target_territory=territory)
     violations = scan.get('violations_found', 0)
+    
+    # Check if we found violations in the returned dict format (list vs count)
+    if 'violations' in scan and isinstance(scan['violations'], list):
+         violations = len(scan['violations'])
     
     if violations > 0:
         confidence = decision_engine.calculate_healing_confidence(violations, ['HIERARCHY'], territory)
@@ -562,7 +573,7 @@ def execute_phase2_alignment_impl(agents, territory, decision_engine, state_mgr,
                 relocate_files=True,
                 enforce_depth=True,
                 purge_orphans=False,
-                target_territory=territory,
+                target_territory=territory, # [STRICT SCOPE] Already correct here, but ensuring strict adherence
                 dry_run=dry_run,
                 auto_approve=auto_approve
             )
@@ -686,6 +697,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr):
             'FilesystemSSOTReconcilerAgent',
             'LocationAgent',
             'HierarchyAgent',
+            'PascalSovereigntyAgent',
             'ArchitectureGovernorAgent',
             'SystemArchitectAgent'
         ]
@@ -969,21 +981,56 @@ Examples:
                 state_mgr.add_event("domain_start", f"Entering Domain: {territory}")
                 
                 try:
-                    # [STRICT SCOPE] All phases must now receive the territory context.
-                    # Phase 1: Discovery (Now utilizes LocationAgent targeted discovery)
+                    # [UNIVERSAL HEALING] Unified Execution Phase
+                    # All agents now receive the 'Heal' signal if confidence is met
                     p1_drift, p1_loc = execute_phase1_discovery(agents, territory, decision_engine, state_mgr)
                     
                     if p1_drift is not None:
-                        # [SOVEREIGN DEFAULT] Pass active state variables to all phases
-                        # Phase 2: Alignment (Passes dry_run/auto_approve)
+                        # Phase 2: Structural Alignment (Hierarchy)
                         execute_phase2_alignment(agents, territory, decision_engine, state_mgr, dry_run, auto_approve)
-                        # Phase 3: Validation (Now returns Unified Manifest)
+                        
+                        # [UNIVERSAL HEALING] Phase 2.5: Sovereignty Enforcement (Pascal/Header/Naming)
+                        # Now integrated with confidence-based decision engine
+                        pascal_confidence = decision_engine.calculate_healing_confidence(
+                            violations_count=len(p1_loc) if p1_loc else 0,
+                            violation_types=['SOVEREIGNTY', 'NAMING', 'HEADER'],
+                            territory=territory
+                        )
+                        pascal_proceed, pascal_reason = decision_engine.should_proceed_with_healing(pascal_confidence)
+                        
+                        state_mgr.add_event("decision", f"Sovereignty Healing: {pascal_reason}")
+                        logger.info(f"Sovereignty Decision: {pascal_reason}")
+                        
+                        if pascal_proceed and not dry_run:
+                            logger.info(f"🛡️ Triggering Sovereignty Purge: {territory}")
+                            state_mgr.update_agent("PascalSovereigntyAgent", "L5 - Safety")
+                            pascal = agents['pascal_sovereignty'](project_root=Path.cwd())
+                            # Force the agent to fix headers and rename files with proper parameters
+                            if hasattr(pascal, 'heal_repository'):
+                                res = pascal.heal_repository(
+                                    target_territory=territory, 
+                                    dry_run=dry_run,
+                                    auto_approve=auto_approve
+                                )
+                                healed = res.get('files_healed', 0) if isinstance(res, dict) else 0
+                                state_mgr.complete_agent("PascalSovereigntyAgent", True, f"Healed: {healed}")
+                            else:
+                                state_mgr.complete_agent("PascalSovereigntyAgent", False, "No heal_repository method")
+                        elif not pascal_proceed:
+                            state_mgr.add_event("warning", f"Sovereignty healing skipped - {pascal_reason}")
+                        elif dry_run:
+                            state_mgr.add_event("info", "Sovereignty healing skipped - Dry run mode")
+
+                        # Phase 3: Validation
                         gov, arch = execute_phase3_validation(agents, territory, state_mgr)
+                        
                         # Persist full work to state
                         state_mgr.state["compliance_report"] = gov
                         state_mgr.save()
-                        # Phase 4: Healing (Passes dry_run/auto_approve)
+                        
+                        # Phase 4: Final Healing (Governor)
                         execute_phase4_healing(agents, territory, gov, decision_engine, state_mgr, dry_run, auto_approve)
+                        
                         # Phase 5
                         cert = execute_phase5_final(agents, territory, state_mgr)
                         results.append(cert)

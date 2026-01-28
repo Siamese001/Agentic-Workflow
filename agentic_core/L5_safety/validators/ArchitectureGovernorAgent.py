@@ -234,6 +234,14 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 report = validator.validate_structure(root_path)
 
                 for violation in report.violations:
+                    # [REFINEMENT] Intelligent Noise Filtering
+                    # Ignore Naming violations for Exception/Error classes often found in Agent files
+                    if "must end with 'Agent'" in violation.message:
+                        if "'Error'" in violation.message or "'Exception'" in violation.message:
+                            continue
+                        if "Error'" in violation.message or "Exception'" in violation.message:
+                             continue
+
                     violations_found += 1
                     
                     # [FIX] Robustly handle violation types (Enum vs String) to prevent crashes
@@ -418,30 +426,23 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         roots_scanned = []
 
         try:
-            # Determine Audit Scope
+            # [STRICT SCOPE] Determine Audit Scope
             if target_territories:
-                # [STRICT SCOPE] Use provided targets. 
-                # Handle both full roots ("agentic_core") and sub-territories ("agentic_core/prompt_governance")
+                # Explicitly only scan the requested targets
                 scan_targets = []
                 for t in target_territories:
-                    # check if direct root key
-                    if t in SOVEREIGN_TERRITORIES:
-                         scan_targets.append(self.project_root / t)
+                    # Logic to resolve path (same as above, just ensuring it's robust)
+                    p_core = self.project_root / "agentic_core" / t
+                    p_root = self.project_root / t
+                    
+                    if p_core.exists():
+                        scan_targets.append(p_core)
+                    elif p_root.exists():
+                        scan_targets.append(p_root)
                     else:
-                        # Assume relative path or specific sub-territory
-                        # If user passes "prompt_governance", we assume it's under agentic_core if not found elsewhere,
-                        # OR we resolve it relative to root.
-                        p = self.project_root / "agentic_core" / t
-                        if p.exists():
-                            scan_targets.append(p)
-                        else:
-                            p_direct = self.project_root / t
-                            if p_direct.exists():
-                                scan_targets.append(p_direct)
-                            else:
-                                Logger.warning(f"⚠️ Target territory not found: {t}")
+                        Logger.warning(f"⚠️ Target territory not found: {t}")
             else:
-                # UNIVERSAL SCOPE: Scan all SOVEREIGN_TERRITORIES roots
+                # GLOBAL SCOPE: Only runs if NO targets are provided
                 scan_targets = [self.project_root / k for k in SOVEREIGN_TERRITORIES.keys()]
 
             for root_path in scan_targets:
@@ -476,6 +477,14 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     Logger.warning(f"Hierarchy cross-check failed for {root_name}: {e}")
 
                 for violation in report.violations:
+                    # [REFINEMENT] Intelligent Noise Filtering
+                    # Ignore Naming violations for Exception/Error classes often found in Agent files
+                    if "must end with 'Agent'" in violation.message:
+                        if "'Error'" in violation.message or "'Exception'" in violation.message:
+                            continue
+                        if "Error'" in violation.message or "Exception'" in violation.message:
+                             continue
+
                     total_violations += 1
                     
                     # [FIX] Robustly handle violation types (Enum vs String) to prevent crashes
@@ -1418,33 +1427,41 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
     def generate_healing_plan(self, gov_report: dict[str, Any]) -> dict[str, Any]:
         """
         Generates a healing plan based on the governance report.
-        
-        Args:
-            gov_report: The governance report from comprehensive_territory_audit
-            
-        Returns:
-            Dictionary containing the healing plan
+        Now recognizes STRUCTURE violations (Root Files) and GRAVITY violations.
         """
         Logger.info("🔧 Generating healing plan from governance report")
         
+        # [INTEGRATION] Analyze violation types
+        violations = gov_report.get("violations", [])
+        has_naming = any(v.get("type") == "NAMING" for v in violations)
+        has_structure = any(v.get("type") == "STRUCTURE" for v in violations)
+        has_gravity = any(v.get("type") == "GRAVITY" for v in violations)
+
         plan = {
             "actions": [],
-            "violations_count": gov_report.get("violations_found", 0),
-            "drift_count": gov_report.get("drift_detected", 0),
-            "errors_count": gov_report.get("errors", 0),
+            "requires_healing": (len(violations) > 0),
+            "violations_count": gov_report.get("stats", {}).get("violations_found", 0),
+            "drift_count": gov_report.get("stats", {}).get("drift_detected", 0),
+            "errors_count": gov_report.get("stats", {}).get("errors", 0),
             "target_territories": gov_report.get("target_territories", []),
+            # Pass detailed breakdowns for the executor
+            "naming_fixes": [v for v in violations if v.get("type") == "NAMING"],
+            "structure_fixes": [v for v in violations if v.get("type") == "STRUCTURE"]
         }
         
-        # Add healing actions based on violations found
-        if plan["violations_count"] > 0:
-            plan["actions"].append("Fix architectural violations")
-        if plan["drift_count"] > 0:
-            plan["actions"].append("Address baseline drift")
-        if plan["errors_count"] > 0:
-            plan["actions"].append("Resolve processing errors")
+        # Add specific healing actions
+        if has_naming:
+            plan["actions"].append("Rename Non-Compliant Agent Classes")
+        if has_structure:
+            plan["actions"].append("Relocate Root Files to SSOT Subfolders")
+        if has_gravity:
+            plan["actions"].append("Repair Circular Dependencies")
             
         if not plan["actions"]:
             plan["actions"].append("No healing required - system is compliant")
+            
+        Logger.info(f"Generated healing plan with {len(plan['actions'])} actions")
+        return plan
             
         Logger.info(f"Generated healing plan with {len(plan['actions'])} actions")
         return plan
