@@ -1292,6 +1292,64 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
     # PHASE 11: COGNITIVE DISPOSITION - AI-POWERED TRIAGE
     # =========================================================================
 
+    def comprehensive_territory_audit(self, target_territories: list[str], check_layer_boundaries: bool = True, check_naming_conventions: bool = True) -> dict[str, Any]:
+        """
+        Executes a comprehensive territory audit for specified territories.
+        
+        Args:
+            target_territories: List of territories to audit
+            check_layer_boundaries: Whether to check layer boundaries
+            check_naming_conventions: Whether to check naming conventions
+            
+        Returns:
+            Dictionary containing audit results
+        """
+        Logger.info(f"🎯 Starting comprehensive territory audit for: {target_territories}")
+        
+        # Use the existing run_audit method as base
+        audit_results = self.run_audit()
+        
+        # Add territory-specific information
+        audit_results["target_territories"] = target_territories
+        audit_results["layer_boundaries_checked"] = check_layer_boundaries
+        audit_results["naming_conventions_checked"] = check_naming_conventions
+        
+        return audit_results
+
+    def generate_healing_plan(self, gov_report: dict[str, Any]) -> dict[str, Any]:
+        """
+        Generates a healing plan based on the governance report.
+        
+        Args:
+            gov_report: The governance report from comprehensive_territory_audit
+            
+        Returns:
+            Dictionary containing the healing plan
+        """
+        Logger.info("🔧 Generating healing plan from governance report")
+        
+        plan = {
+            "actions": [],
+            "violations_count": gov_report.get("violations_found", 0),
+            "drift_count": gov_report.get("drift_detected", 0),
+            "errors_count": gov_report.get("errors", 0),
+            "target_territories": gov_report.get("target_territories", []),
+        }
+        
+        # Add healing actions based on violations found
+        if plan["violations_count"] > 0:
+            plan["actions"].append("Fix architectural violations")
+        if plan["drift_count"] > 0:
+            plan["actions"].append("Address baseline drift")
+        if plan["errors_count"] > 0:
+            plan["actions"].append("Resolve processing errors")
+            
+        if not plan["actions"]:
+            plan["actions"].append("No healing required - system is compliant")
+            
+        Logger.info(f"Generated healing plan with {len(plan['actions'])} actions")
+        return plan
+
     def _process_cognitive_disposition(
         self,
         file_path: Path,
