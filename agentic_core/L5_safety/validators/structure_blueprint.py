@@ -197,18 +197,35 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
         }
     },
     "tests": {
-        "depth": 2,
-        "purpose": "Universal test suites.",
-        "subfolders": [
-            "unit",
-            "integration",
-            "e2e",
-            "functional",
-            "fixtures",
-            "core",
-            "apps_rg",
-            "apps_lic",
-        ],
+        "depth": 3,
+        "purpose": "Universal test suites organized by Type then Domain.",
+        "subfolders": {
+            # TYPE 1: Unit Tests (Mocked, Fast, Isolated)
+            "unit": {
+                "purpose": "Isolated logic tests mirroring source structure",
+                "subfolders": [
+                    "agentic_core",
+                    "apps_rg",
+                    "apps_lic",
+                    "apps_shared",
+                    "utils"
+                ]
+            },
+            # TYPE 2: Integration Tests (DB, API, Component Interaction)
+            "integration": {
+                "purpose": "Component interaction tests mirroring source structure",
+                "subfolders": ["agentic_core", "apps_rg", "apps_lic", "apps_shared"]
+            },
+            # TYPE 3: E2E (Full System)
+            "e2e": {
+                "purpose": "Full system user-flow simulations",
+                "subfolders": ["scenarios", "flows", "snapshots"]
+            },
+            "fixtures": {
+                "purpose": "Shared Pytest fixtures",
+                "subfolders": ["data", "mocks", "factories"]
+            }
+        },
         "volatile": False
     },
     "ops_scripts": {
