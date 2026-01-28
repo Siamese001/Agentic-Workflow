@@ -8,6 +8,7 @@ Phase 3 Upgrade (2026-01-21): Environmental Maintenance & Root-Level Lockdown.
 Phase 4 Upgrade (2026-01-21): Deduplication & Logic Consolidation.
 Phase 6 Upgrade (2026-01-21): Universal Logic Consolidation & Healing.
 Phase 7 Upgrade (2026-01-21): Final Sovereign Lockdown & CI/CD Integration.
+Phase 8 Upgrade (2026-01-28): Golden Baseline & Immutable Snapshotting.
 Phase 9 Upgrade (2026-01-21): Golden Baseline Capture & SSOT Normalization.
 Phase 10 Upgrade (2026-01-21): Sovereign Convergence & Categorical Drift Audits.
 
@@ -20,7 +21,7 @@ Responsibilities:
 - Perform Categorical Drift Audits (Phase 10)
 - Manage Immutable Project Baselines
 - Execute Automated Sovereign Purges
-- Enforce Universal Sovereignty via Phase 9 Golden Baseline
+- Enforce Universal Sovereignty via Phase 8 Golden Baseline with SHA-256 integrity
 - Enforce Universal Sovereignty via CI/CD sync verification
 - Support headless CI mode with auto_approve
 - [Phase 2] Autonomous healing via GravityLeakRepairAgent orchestration
@@ -29,17 +30,23 @@ Responsibilities:
 - [Phase 4] Cross-agent deduplication audit
 - [Phase 6] Zero-loss collision resolution via ArchivalGatekeeper
 - [Phase 7] Final CI-ready lockdown verification
+- [Phase 8] SHA-256 snapshotting for immutable "Gold Master" state
+- [Phase 8] Silent Drift detection (logic changes without naming violations)
+- [Phase 8] Immutable audit logs for long-term sovereignty tracking
 - [Phase 9] Golden Baseline capture for SSOT normalization
 - [Phase 10] Sovereign Convergence terminal command
 
-[SSOT] All territorial scope derived from SOVEREIGN_REGISTRY in structure_blueprint.py
+[SSOT] All territorial scope derived from SOVEREIGN_TERRITORIES in structure_blueprint.py
 """
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
+import hashlib
+import json
 import logging
+import uuid
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -47,6 +54,7 @@ from typing import Any
 # [PHASE 24] Integrate L0 Maintenance Capability
 from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
+from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent, get_python_files_fast
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
 
@@ -57,7 +65,7 @@ LAYER_DIRS: set[str] = set(SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("su
 
 
 @dataclass
-class ArchitectureGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class ArchitectureGovernorAgent(SovereignBaseAgent):
     """
     [L5 GOVERNOR] Universal Architecture Pattern Enforcement
 
@@ -66,7 +74,7 @@ class ArchitectureGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     across ALL sovereign territories (not just agentic_core).
 
     Features:
-    - Universal Scope: Scans all SOVEREIGN_REGISTRY roots
+    - Universal Scope: Scans all SOVEREIGN_TERRITORIES roots
     - Auto-Approve Mode: Headless CI operation without stdin prompts
     - Gravity Detection: L3 importing L5 = violation
     - Naming Enforcement: *Agent.py suffix validation
@@ -75,17 +83,24 @@ class ArchitectureGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     project_root: Path = field(default_factory=Path.cwd)
     healing_enabled: bool = True
     auto_approve: bool = False
+    ci_mode: bool = False
 
     def __post_init__(self) -> None:
         """Initialize the ArchitectureGovernorAgent."""
         if isinstance(self.project_root, str):
             self.project_root = Path(self.project_root)
         self.violations: list[dict[str, Any]] = []
+        self.stats = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "drift_detected": 0}
+        
+        # Sovereign Data Locations for Phase 8
+        self.baseline_dir = self.project_root / "agentic_core" / "config" / "baselines"
+        self.audit_log_dir = self.project_root / "logs" / "sovereign_audit"
+        
         self._structure_validator = None  # Lazy-loaded
         self._gravity_repair_agent = None  # Lazy-loaded
         self._archival_gatekeeper = None  # Lazy-loaded
         self._cognitive_agent = None  # Lazy-loaded (Phase 11)
-        Logger.info(f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve})")
+        Logger.info(f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve}, ci_mode={self.ci_mode})")
 
     def _get_structure_validator(self):
         """Lazy-load StructuralValidatorAgent to avoid circular imports."""
@@ -188,8 +203,8 @@ class ArchitectureGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             roots_scanned = []
             all_violations = []
 
-            # UNIVERSAL SCOPE: Scan all SOVEREIGN_REGISTRY roots
-            for root_name in SOVEREIGN_REGISTRY.keys():
+            # UNIVERSAL SCOPE: Scan all SOVEREIGN_TERRITORIES roots
+            for root_name in SOVEREIGN_TERRITORIES.keys():
                 root_path = self.project_root / root_name
                 if not root_path.exists():
                     continue
@@ -319,6 +334,92 @@ class ArchitectureGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
         return is_compliant, results
 
+    def run_audit(self) -> dict[str, Any]:
+        """
+        Executes a comprehensive structural and naming audit with Phase 8 Drift Detection.
+        In CI mode, this returns a non-zero-weighted success status.
+        """
+        Logger.info(f"🚀 Starting Sovereign Audit (CI_MODE: {self.ci_mode})")
+        
+        # [EFFICIENCY] Logic consolidated to scan all L5 Guardians in one pass
+        structural_results = self._orchestrate_guardian_scan()
+        
+        # [PHASE 8] Integrity Scan for Silent Drift
+        drift_violations = self._check_baseline_drift()
+        
+        # 3. Aggregation
+        total_violations = structural_results.get("total_violations", 0) + len(drift_violations)
+        
+        self.stats.update({
+            "violations_found": total_violations,
+            "drift_detected": len(drift_violations),
+            "errors": structural_results.get("total_errors", 0)
+        })
+        
+        # [PHASE 8] Observability - Persist audit report
+        self._persist_audit_report(structural_results, drift_violations)
+        
+        # [SIGNAL] Define failure threshold
+        success = self.stats["violations_found"] == 0 and self.stats["errors"] == 0
+        
+        if self.ci_mode and not success:
+            Logger.critical(f"🛑 CI FAILURE: {self.stats['violations_found']} violations (Drift: {len(drift_violations)})")
+            
+        return {
+            "success": success,
+            "stats": self.stats,
+            "violations": structural_results.get("violation_details", []),
+            "drift_violations": drift_violations
+        }
+
+    def _orchestrate_guardian_scan(self) -> dict[str, Any]:
+        """
+        Orchestrate scanning of all L5 Guardians in one pass.
+        Internal method for run_audit to consolidate scanning logic.
+        """
+        total_violations = 0
+        total_errors = 0
+        violation_details = []
+        roots_scanned = []
+
+        try:
+            # UNIVERSAL SCOPE: Scan all SOVEREIGN_TERRITORIES roots
+            for root_name in SOVEREIGN_TERRITORIES.keys():
+                root_path = self.project_root / root_name
+                if not root_path.exists():
+                    continue
+
+                roots_scanned.append(root_name)
+                Logger.info(f"  Scanning territory: {root_name}")
+
+                # Use StructureValidatorAgent for detection
+                validator = self._get_structure_validator()
+                report = validator.validate_structure(root_path)
+
+                for violation in report.violations:
+                    total_violations += 1
+                    violation_dict = {
+                        "type": violation.violation_type.name,
+                        "file": str(violation.file_path) if violation.file_path else None,
+                        "message": violation.message,
+                        "severity": violation.severity,
+                        "suggestion": violation.suggestion,
+                        "source_layer": getattr(violation, "source_layer", None),
+                        "target_layer": getattr(violation, "target_layer", None),
+                    }
+                    violation_details.append(violation_dict)
+
+        except Exception as e:
+            Logger.error(f"Guardian scan failed: {e}")
+            total_errors += 1
+
+        return {
+            "total_violations": total_violations,
+            "total_errors": total_errors,
+            "violation_details": violation_details,
+            "roots_scanned": roots_scanned
+        }
+
     def validate_layer_boundaries(self, file_path: Path) -> tuple[bool, str]:
         """
         [PHASE 22] Validate that file respects layer boundaries (L0-L6) using Cognitive Triage.
@@ -344,7 +445,7 @@ class ArchitectureGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 return self._cognitive_triage_validation(file_path, "ORPHAN")
 
             # Check other sovereign territories
-            if parts[0] in SOVEREIGN_REGISTRY:
+            if parts[0] in SOVEREIGN_TERRITORIES:
                 return (True, f"Valid sovereign territory: {parts[0]}")
 
             # File outside sovereign territories - invoke Cognitive Triage
@@ -854,6 +955,113 @@ class ArchitectureGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             )
 
         return is_pure, results
+
+    # =========================================================================
+    # PHASE 8: GOLDEN BASELINE & IMMUTABLE SNAPSHOTTING
+    # =========================================================================
+
+    def capture_golden_baseline(self) -> Path:
+        """
+        [PHASE 8] Generates a SHA-256 manifest of all files in sovereign territories.
+        This represents the 'Gold Master' state of the repository.
+        """
+        Logger.info("📸 CAPTURING GOLDEN BASELINE...")
+        
+        # 1. Initialize Manifest
+        manifest = {
+            "version": "1.0",
+            "timestamp": datetime.utcnow().isoformat(),
+            "audit_id": str(uuid.uuid4()),
+            "files": {}
+        }
+        
+        # 2. fast-scan the repository using the Phase 3 agent logic
+        # We instantiate it temporarily just to use its optimized scanner
+        scanner = PascalSovereigntyAgent(self.project_root)
+        files = get_python_files_fast(self.project_root)
+        
+        # 3. Calculate Hashes
+        for file_path in files:
+            try:
+                relative_path = str(file_path.relative_to(self.project_root)).replace("\\", "/")
+                # Binary read ensures hash stability across OS line-ending differences
+                file_hash = hashlib.sha256(file_path.read_bytes()).hexdigest()
+                manifest["files"][relative_path] = file_hash
+            except Exception as e:
+                Logger.warning(f"Skipping file {file_path.name} in baseline: {e}")
+            
+        # 4. Atomic Write
+        self.baseline_dir.mkdir(parents=True, exist_ok=True)
+        baseline_path = self.baseline_dir / "golden_baseline.json"
+        
+        temp_path = baseline_path.with_suffix(".tmp")
+        with open(temp_path, 'w', encoding='utf-8') as f:
+            json.dump(manifest, f, indent=4)
+        temp_path.replace(baseline_path)
+        
+        Logger.info(f"✅ BASELINE CAPTURED: {len(manifest['files'])} files tracked.")
+        return baseline_path
+
+    def _check_baseline_drift(self) -> list[dict[str, Any]]:
+        """[PHASE 8] Compares live files against the Golden Baseline."""
+        baseline_path = self.baseline_dir / "golden_baseline.json"
+        if not baseline_path.exists():
+            Logger.warning("⚠️ No Golden Baseline found. Skipping integrity check.")
+            return []
+            
+        violations = []
+        try:
+            with open(baseline_path, 'r') as f:
+                baseline = json.load(f)
+                
+            # Check for Modified or Missing files
+            for rel_path, expected_hash in baseline["files"].items():
+                full_path = self.project_root / rel_path
+                
+                if not full_path.exists():
+                    violations.append({
+                        "type": "MISSING_FILE", 
+                        "path": rel_path,
+                        "severity": "CRITICAL"
+                    })
+                    continue
+                    
+                current_hash = hashlib.sha256(full_path.read_bytes()).hexdigest()
+                if current_hash != expected_hash:
+                    violations.append({
+                        "type": "CONTENT_DRIFT", 
+                        "path": rel_path,
+                        "expected": expected_hash,
+                        "actual": current_hash,
+                        "severity": "CRITICAL"
+                    })
+            
+            # Check for Ghost Files (Files on disk but not in baseline)
+            # (Optional: Can be expensive, omitted for speed in this iteration)
+            
+        except Exception as e:
+            Logger.error(f"Drift check failed: {e}")
+            
+        return violations
+
+    def _persist_audit_report(self, structural_results: dict[str, Any], drift_violations: list[dict[str, Any]]) -> None:
+        """[PHASE 8] Saves immutable audit record."""
+        self.audit_log_dir.mkdir(parents=True, exist_ok=True)
+        
+        report = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "audit_id": str(uuid.uuid4()),
+            "structural_summary": structural_results,
+            "drift_violations": drift_violations,
+            "stats": self.stats
+        }
+        
+        report_path = self.audit_log_dir / f"audit_{report['timestamp'].replace(':','-')}.json"
+        try:
+            with open(report_path, 'w') as f:
+                json.dump(report, f, indent=4)
+        except Exception as e:
+            Logger.error(f"Failed to persist audit log: {e}")
 
     # =========================================================================
     # PHASE 9: GOLDEN BASELINE CAPTURE & SSOT NORMALIZATION

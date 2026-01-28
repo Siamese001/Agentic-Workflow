@@ -21,7 +21,7 @@ import platform
 import time
 from pathlib import Path
 from typing import Literal, Optional, Dict, List, Tuple, Any, Set
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
@@ -65,7 +65,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
     This agent canonizes the PascalSovereigntyFixer functionality as a 
     first-class L5 safety agent with full orchestration capabilities.
     """
-    project_root: Path
+    project_root: Path = field(default_factory=Path.cwd)
     dry_run: bool = False
     verbose: bool = False
     validate_only: bool = False
