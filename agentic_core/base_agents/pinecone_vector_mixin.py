@@ -43,7 +43,7 @@ class RetrievalBroadness(Enum):
     EXHAUSTIVE = 50  # Maximum retrieval for meta-learning
 
 
-from agentic_core.base_agents.RedisCacheMixin import redis_cache_mixin
+from agentic_core.base_agents.redis_cache_mixin import RedisCacheMixin
 
 
 class PineconeVectorMixin(RedisCacheMixin):

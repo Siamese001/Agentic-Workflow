@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 SafetyDetectorAgent - Safety & Security Detection
@@ -75,7 +75,7 @@ class SafetyConfig:
     block_high_severity: bool = True
 
 
-class SafetyDetectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class SafetyDetectorAgent(SovereignBaseAgent):
     """
     Unified safety and security detector.
 

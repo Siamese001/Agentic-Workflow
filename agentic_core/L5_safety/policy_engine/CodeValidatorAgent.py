@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -99,7 +99,7 @@ class ValidationReport:
         }
 
 
-class CodeValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
+class CodeValidatorAgent(SovereignBaseAgent):
     """
     Unified Code Validation Agent.
     

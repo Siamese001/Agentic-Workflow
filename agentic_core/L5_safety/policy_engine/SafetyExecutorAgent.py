@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 SafetyExecutorAgent - Safety Execution Interface
@@ -86,7 +86,7 @@ class ExecutorConfig:
     audit_all_executions: bool = True
 
 
-class SafetyExecutorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class SafetyExecutorAgent(SovereignBaseAgent):
     """
     Unified safety executor with integrity gates.
 

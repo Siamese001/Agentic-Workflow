@@ -30,15 +30,13 @@ HEALING STRATEGIES:
 Canon Key 51 Compliance: Includes heal_repository() method
 """
 import logging
+import os
+import shutil
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
-    SubatomicTestingMixin,
-)
-from agentic_core.base_agents.healer_mixin import healer_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
@@ -56,9 +54,7 @@ class GravityFix:
     rationale: str
 
 
-class GravityLeakRepairAgent(
-    SovereignBaseAgent, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin
-):
+class GravityLeakRepairAgent(SovereignBaseAgent):
     """
     [L5 HEALER] Automated gravity violation repair agent.
 
@@ -76,10 +72,8 @@ class GravityLeakRepairAgent(
     LAYER_ORDER = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
 
     def __init__(self, project_root: Path = None) -> None:
-        """Initialize the gravity leak repair agent."""
         self.project_root = Path(project_root) if project_root else Path.cwd()
         self.logger = Logger
-        super().__init__()
 
     def analyze_violation(
         self, file_path: Path, import_statement: str, file_layer: str, import_layer: str
@@ -169,40 +163,49 @@ class GravityLeakRepairAgent(
 
         return fixes
 
-    def apply_fix(self, fix: GravityFix, dry_run: bool = True) -> dict[str, Any]:
+    def apply_fix(self, fix: 'GravityFix', dry_run: bool = True) -> Dict[str, Any]:
         """
-        Apply a gravity fix to a file.
-
-        Args:
-            fix: GravityFix to apply
-            dry_run: If True, only simulate the fix
-
-        Returns:
-            Dict with fix results
+        Apply a gravity fix to a file using Atomic Write Safety.
         """
         try:
             if dry_run:
-                self.logger.info(f"[DRY RUN] Would fix {fix.file_path.name}:")
-                self.logger.info(f"  OLD: {fix.old_import}")
-                self.logger.info(f"  NEW: {fix.new_import}")
-                self.logger.info(f"  TYPE: {fix.fix_type}")
-                self.logger.info(f"  REASON: {fix.rationale}")
+                self.logger.info(f"[DRY RUN] Would fix {fix.file_path.name}: {fix.fix_type}")
                 return {"status": "simulated", "fix_type": fix.fix_type}
-            else:
-                # Read file
-                content = fix.file_path.read_text(encoding="utf-8")
 
-                # Replace import
-                new_content = content.replace(fix.old_import, fix.new_import)
+            if not fix.file_path.exists():
+                return {"status": "error", "error": "File not found"}
 
-                # Write back
-                if new_content != content:
-                    fix.file_path.write_text(new_content, encoding="utf-8")
-                    self.logger.info(f"[FIXED] {fix.file_path.name}: {fix.fix_type}")
-                    return {"status": "fixed", "fix_type": fix.fix_type}
-                else:
-                    self.logger.warning(f"[NO CHANGE] {fix.file_path.name}: Import not found")
-                    return {"status": "no_change", "fix_type": fix.fix_type}
+            # Read original
+            content = fix.file_path.read_text(encoding="utf-8")
+            
+            # Apply logic
+            new_content = content.replace(fix.old_import, fix.new_import)
+            
+            if new_content == content:
+                return {"status": "no_change", "fix_type": fix.fix_type}
+
+            # [ATOMIC WRITE HARDENING]
+            temp_fd, temp_path = tempfile.mkstemp(dir=fix.file_path.parent, text=True)
+            try:
+                with os.fdopen(temp_fd, 'w', encoding='utf-8') as tf:
+                    tf.write(new_content)
+                
+                # Create backup
+                backup_dir = self.project_root / "archives" / "healing_backups" / "gravity"
+                backup_dir.mkdir(parents=True, exist_ok=True)
+                backup_path = backup_dir / f"{fix.file_path.name}.{int(os.times().system)}.bak"
+                shutil.copy2(fix.file_path, backup_path)
+                
+                # Atomic Swap
+                os.replace(temp_path, fix.file_path)
+                self.logger.info(f"[FIXED] {fix.file_path.name} (Backup: {backup_path.name})")
+                return {"status": "fixed", "fix_type": fix.fix_type}
+                
+            except Exception as write_err:
+                # Cleanup temp on failure
+                if os.path.exists(temp_path):
+                    os.unlink(temp_path)
+                raise write_err
 
         except Exception as e:
             self.logger.error(f"Error applying fix to {fix.file_path}: {e}")
@@ -238,15 +241,17 @@ class GravityLeakRepairAgent(
             f"[GravityLeakRepairAgent] Starting gravity leak repair (dry_run={dry_run})"
         )
 
-        # Get violations from StructureEnforcerAgent
+        # Get violations from StructuralValidatorAgent
         try:
-            from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import (
-                StructureEnforcerAgent,
+            from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+                StructuralValidatorAgent,
             )
 
-            enforcer = StructureEnforcerAgent(project_root=self.project_root)
-            results = enforcer.validate_repository()
-            violations = results.get("violations", [])
+            from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import StructureConfig
+            config = StructureConfig(project_root=self.project_root)
+            enforcer = StructuralValidatorAgent(config=config)
+            results = enforcer.validate_structure(self.project_root)
+            violations = results.violations
         except Exception as e:
             self.logger.error(f"Failed to get violations from StructureEnforcerAgent: {e}")
             return {
@@ -276,12 +281,21 @@ class GravityLeakRepairAgent(
         fixes_applied = 0
 
         for v in violations[:10]:  # Limit to first 10 for safety
-            fix = self.analyze_violation(
-                file_path=v.file_path,
-                import_statement=v.import_statement,
-                file_layer=v.file_layer,
-                import_layer=v.import_layer,
-            )
+            if hasattr(v, 'file_path'):
+                fix = self.analyze_violation(
+                    file_path=v.file_path,
+                    import_statement=getattr(v, 'import_statement', ''),
+                    file_layer=getattr(v, 'source_layer', ''),
+                    import_layer=getattr(v, 'target_layer', ''),
+                )
+            else:
+                # Legacy dict format
+                fix = self.analyze_violation(
+                    file_path=v.get('file_path'),
+                    import_statement=v.get('import_statement', ''),
+                    file_layer=v.get('file_layer', ''),
+                    import_layer=v.get('import_layer', ''),
+                )
 
             fix_summary[fix.fix_type] += 1
 

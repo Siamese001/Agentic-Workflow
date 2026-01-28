@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 ResourceManagerAgent - Thread-Safe Resource Management
@@ -98,7 +98,7 @@ class ResourceConfig:
     fallback_strategies: list[str] = field(default_factory=lambda: ["queue", "throttle", "reject"])
 
 
-class ResourceManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class ResourceManagerAgent(SovereignBaseAgent):
     """
     Thread-safe unified resource manager.
 
