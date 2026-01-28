@@ -116,11 +116,14 @@ class PascalSovereigntyFixer:
         old_mod, new_mod = old_name.replace(".py", ""), new_name.replace(".py", "")
         
         # Ultra-Precision Regex: Handles 'from x import', 'import x', and 'import x as y'
-        # Critical Analysis: Added lookahead/behind to ensure we don't partially match 
-        # modules with similar names (e.g., 'tools' matching 'tools_v2').
-        regex_from = re.compile(rf"(?P<prefix>from\s+){re.escape(old_mod)}(?P<suffix>\s+import)")
+        # Critical Analysis: Expanded to handle relative imports (e.g., 'from .old_mod import')
+        # by adding an optional dot-prefix group. This is vital for maintaining integrity
+        # in hierarchical multi-agent systems where local package imports are standard.
+        regex_from = re.compile(rf"(?P<prefix>from\s+\.*)"+re.escape(old_mod)+rf"(?P<suffix>\s+import)")
         regex_import = re.compile(rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))")
-        
+        # Note: The \.* in regex_from captures any number of leading dots for relative paths,
+        # ensuring that 'from ..llm_mixin' correctly becomes 'from ..new_name' (or the new name).
+
         # Optimized: Scans in-memory file_registry instead of hitting disk rglob
         for i, path in enumerate(self.file_registry):
             if path.name == new_name or not path.exists():
