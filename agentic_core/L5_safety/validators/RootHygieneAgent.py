@@ -18,7 +18,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, Optional, Set
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
@@ -56,7 +56,7 @@ class RootHygieneAgent(SovereignBaseAgent):
     2. Moves 'coverage_html' to 'reports/'
     3. Deletes illegal root directories after evacuation
     """
-    project_root: Path
+    project_root: Path = field(default_factory=Path.cwd)
     dry_run: bool = False
     
     def __post_init__(self):

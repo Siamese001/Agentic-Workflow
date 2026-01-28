@@ -294,31 +294,54 @@ class AutonomousDecisionEngine:
         territory: str,
         historical_success_rate: float = 0.9
     ) -> ConfidenceScore:
+        """
+        Calculate confidence based on Territorial Trust logic.
+        Trusted territories tolerate higher violation counts.
+        """
         factors = {}
         
-        # Factor 1: Violation count
-        if violations_count == 0: factors['violation_count'] = 1.0
-        elif violations_count <= 5: factors['violation_count'] = 0.9
-        elif violations_count <= 10: factors['violation_count'] = 0.7
-        elif violations_count <= 50: factors['violation_count'] = 0.5
-        else: factors['violation_count'] = 0.3
+        # [SOVEREIGN TRUST] Define Risk Profiles
+        TRUSTED_TERRITORIES = {'prompt_governance', 'scripts', 'tests', 'L0_maintenance', 'apps_lic', 'apps_rg'}
+        CRITICAL_TERRITORIES = {'L5_safety', 'L3_orchestration', 'base_agents', 'L2_execution'}
         
-        # Factor 2: Known violation types
-        known_types = {'SHALLOW', 'DEEP', 'VOID', 'NAMING', 'IMPORT', 'HIERARCHY'}
+        is_trusted = any(t in territory for t in TRUSTED_TERRITORIES)
+        is_critical = any(c in territory for c in CRITICAL_TERRITORIES)
+
+        # Factor 1: Violation Count (Risk-Adjusted)
+        if violations_count == 0: 
+            factors['violation_count'] = 1.0
+        elif violations_count <= 5: 
+            factors['violation_count'] = 0.95 if is_trusted else 0.9
+        elif violations_count <= 25: 
+            factors['violation_count'] = 0.90 if is_trusted else 0.7
+        elif violations_count <= 100: 
+            # Senior Dev Velocity: Mass edits in trusted zones are normal
+            factors['violation_count'] = 0.85 if is_trusted else 0.4
+        else: 
+            factors['violation_count'] = 0.70 if is_trusted else 0.2
+        
+        # Factor 2: Known violation types (Expanded definition)
+        known_types = {'SHALLOW', 'DEEP', 'VOID', 'NAMING', 'IMPORT', 'HIERARCHY', 'ORPHAN', 'DUPLICATE', 'STRUCTURE'}
         unknown_types = [v for v in violation_types if not any(k in str(v) for k in known_types)]
-        factors['known_types'] = 1.0 if not unknown_types else 0.6
+        factors['known_types'] = 1.0 if not unknown_types else 0.5
         
         # Factor 3: Historical success
         factors['historical_success'] = historical_success_rate
         
-        # Factor 4: Complexity
-        complex_territories = {'L5_safety', 'L3_orchestration', 'base_agents'}
-        factors['territory_complexity'] = 0.7 if territory in complex_territories else 0.9
+        # Factor 4: Complexity / Trust Bonus
+        if is_trusted:
+             factors['territory_complexity'] = 1.0   # High Trust Bonus
+        elif is_critical:
+             factors['territory_complexity'] = 0.6   # High Caution Penalty
+        else:
+             factors['territory_complexity'] = 0.85  # Standard
         
-        weights = {'violation_count': 0.4, 'known_types': 0.2, 'historical_success': 0.2, 'territory_complexity': 0.2}
+        # Adjusted Weights to favor Territory Trust
+        weights = {'violation_count': 0.35, 'known_types': 0.25, 'historical_success': 0.15, 'territory_complexity': 0.25}
         confidence_value = sum(factors[k] * weights[k] for k in factors)
         
-        reasoning = f"Violations: {violations_count}, Unknowns: {len(unknown_types)}, Historical: {historical_success_rate:.1%}"
+        risk_profile = "TRUSTED" if is_trusted else ("CRITICAL" if is_critical else "STANDARD")
+        reasoning = f"[{risk_profile}] Violations: {violations_count}, Unknowns: {len(unknown_types)}, Conf: {confidence_value:.2f}"
         
         return ConfidenceScore(
             value=confidence_value,
@@ -511,11 +534,11 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr)
     return drift_report, violations
 
 @with_retry(max_retries=3)
-def execute_phase2_alignment(agents, territory, decision_engine, state_mgr):
+def execute_phase2_alignment(agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True):
     """PHASE 2: STRUCTURAL ALIGNMENT (Retriable)"""
-    return execute_phase2_alignment_impl(agents, territory, decision_engine, state_mgr)
+    return execute_phase2_alignment_impl(agents, territory, decision_engine, state_mgr, dry_run, auto_approve)
 
-def execute_phase2_alignment_impl(agents, territory, decision_engine, state_mgr):
+def execute_phase2_alignment_impl(agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True):
     """PHASE 2: STRUCTURAL ALIGNMENT - Implementation"""
     logger.info(f"=== PHASE 2: ALIGNMENT - {territory} ===")
     
@@ -533,12 +556,15 @@ def execute_phase2_alignment_impl(agents, territory, decision_engine, state_mgr)
         logger.info(f"Decision: {reason}")
         
         if proceed:
+            # [SOVEREIGN DEFAULT] Propagate active/dry-run status to HierarchyAgent
             res = hierarchy.heal_hierarchy(
                 create_structure=True, 
                 relocate_files=True,
                 enforce_depth=True,
                 purge_orphans=False,
-                target_territory=territory
+                target_territory=territory,
+                dry_run=dry_run,
+                auto_approve=auto_approve
             )
             healed = res.get('total_healed', 0)
             state_mgr.complete_agent("HierarchyAgent", True, f"Healed: {healed}")
@@ -592,16 +618,16 @@ def execute_phase3_validation_impl(agents, territory, state_mgr):
     return gov_report, arch_report
 
 @with_retry(max_retries=3)
-def execute_phase4_healing(agents, territory, gov_report, decision_engine, state_mgr):
+def execute_phase4_healing(agents, territory, gov_report, decision_engine, state_mgr, dry_run=False, auto_approve=True):
     """PHASE 4: HEALING (Retriable)"""
     # [STRICT SCOPE] Gatekeeper check
     if not gov_report:
         logger.warning("Skipping healing: No governance report available.")
         return None
 
-    return execute_phase4_healing_impl(agents, territory, gov_report, decision_engine, state_mgr)
+    return execute_phase4_healing_impl(agents, territory, gov_report, decision_engine, state_mgr, dry_run, auto_approve)
 
-def execute_phase4_healing_impl(agents, territory, gov_report, decision_engine, state_mgr):
+def execute_phase4_healing_impl(agents, territory, gov_report, decision_engine, state_mgr, dry_run=False, auto_approve=True):
     """PHASE 4: HEALING - Implementation"""
     logger.info(f"=== PHASE 4: HEALING - {territory} ===")
     
@@ -626,7 +652,12 @@ def execute_phase4_healing_impl(agents, territory, gov_report, decision_engine, 
         
         if proceed:
             state_mgr.update_agent("ArchitectureGovernorAgent", "HEALING MODE")
-            res = arch_gov.execute_healing_plan(plan)
+            # [SOVEREIGN DEFAULT] Pass orchestration flags to the Governor healing plan
+            res = arch_gov.execute_healing_plan(
+                plan, 
+                dry_run=dry_run, 
+                auto_approve=auto_approve
+            )
             success = res.get('success', False)
             state_mgr.complete_agent("ArchitectureGovernorAgent", success, f"Healed: {success}")
             return res
@@ -746,9 +777,12 @@ Examples:
     parser.add_argument("--domains", action="store_true", help="Scan all major domains (Multi-Domain Mode)")
     parser.add_argument("--agent", type=str, help="Run specific agent directly")
     parser.add_argument("--list-agents", action="store_true", help="List discoverable agents")
-    parser.add_argument("--enable-llm", action="store_true", help="Enable LLM for low-confidence decisions")
+    # [SOVEREIGN DEFAULT] Inverting safety logic to 'Active by Default' for Senior Developer velocity
+    parser.add_argument("--disable-llm", action="store_true", help="Disable LLM for low-confidence decisions")
+    parser.add_argument("--dry-run", action="store_true", help="Run in preview mode (no changes applied)")
+    parser.add_argument("--interactive", action="store_true", help="Enable human-in-the-loop prompts (Default: Auto-Approve)")
     parser.add_argument("--manual", action="store_true", help="Disable autonomous mode (legacy)")
-    parser.add_argument("--validate", action="store_true", help="Run in validation-only mode (CI)")
+    parser.add_argument("--validate", action="store_true", help="Run in validation-only mode (CI/Dry-Run Mode)")
     # [PHASE 8] New Flag for Golden Baseline capture
     parser.add_argument("--capture-baseline", action="store_true", help="Capture new Golden Baseline")
     args = parser.parse_args()
@@ -826,11 +860,19 @@ Examples:
 
     # 3. Initialize Sovereign State & Agents
     state_mgr = RuntimeStateManager(project_root)
-    decision_engine = AutonomousDecisionEngine(enable_llm=args.enable_llm)
+    
+    # [SOVEREIGN DEFAULT] Resolve 'Active-by-Default' logic across the orchestration chain
+    enable_llm = not args.disable_llm
+    dry_run = args.dry_run or args.validate
+    auto_approve = not args.interactive
+    
+    decision_engine = AutonomousDecisionEngine(enable_llm=enable_llm)
     
     logger.info("🏛️ UNIFIED SOVEREIGN PROTOCOL STARTED")
     logger.info(f"  Mode: {'AUTONOMOUS' if not args.manual else 'MANUAL'}")
-    logger.info(f"  LLM: {'ENABLED' if args.enable_llm else 'DISABLED'}")
+    logger.info(f"  LLM: {'ENABLED' if enable_llm else 'DISABLED'}")
+    logger.info(f"  HEALING: {'ACTIVE' if not dry_run else 'DRY-RUN'}")
+    logger.info(f"  APPROVAL: {'AUTO' if auto_approve else 'INTERACTIVE'}")
     
     try:
         from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
@@ -922,12 +964,13 @@ Examples:
                     p1_drift, p1_loc = execute_phase1_discovery(agents, territory, decision_engine, state_mgr)
                     
                     if p1_drift is not None:
-                        # Phase 2: Alignment (Now utilizes HierarchyAgent targeted relocation)
-                        execute_phase2_alignment(agents, territory, decision_engine, state_mgr)
-                        # Phase 3: Validation (Now utilizes ArchitectureGovernor targeted audit)
+                        # [SOVEREIGN DEFAULT] Pass active state variables to all phases
+                        # Phase 2: Alignment (Passes dry_run/auto_approve)
+                        execute_phase2_alignment(agents, territory, decision_engine, state_mgr, dry_run, auto_approve)
+                        # Phase 3: Validation
                         gov, arch = execute_phase3_validation(agents, territory, state_mgr)
-                        # Phase 4
-                        execute_phase4_healing(agents, territory, gov, decision_engine, state_mgr)
+                        # Phase 4: Healing (Passes dry_run/auto_approve)
+                        execute_phase4_healing(agents, territory, gov, decision_engine, state_mgr, dry_run, auto_approve)
                         # Phase 5
                         cert = execute_phase5_final(agents, territory, state_mgr)
                         results.append(cert)
