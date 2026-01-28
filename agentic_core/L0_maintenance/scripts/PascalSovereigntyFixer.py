@@ -115,13 +115,13 @@ class PascalSovereigntyFixer:
         count = 0
         old_mod, new_mod = old_name.replace(".py", ""), new_name.replace(".py", "")
         
-        # Enhanced Regex: Catches 'from x import' AND 'import x' patterns
-        # Critical Analysis: Previous regex missed direct module imports.
-        regex_from = re.compile(rf"(from\s+){re.escape(old_mod)}(\s+import)")
-        regex_import = re.compile(rf"(import\s+){re.escape(old_mod)}(\s|$)")
+        # Ultra-Precision Regex: Handles 'from x import', 'import x', and 'import x as y'
+        # Critical Analysis: Added lookahead/behind to ensure we don't partially match 
+        # modules with similar names (e.g., 'tools' matching 'tools_v2').
+        regex_from = re.compile(rf"(?P<prefix>from\s+){re.escape(old_mod)}(?P<suffix>\s+import)")
+        regex_import = re.compile(rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))")
         
         # Optimized: Scans in-memory file_registry instead of hitting disk rglob
-        #
         for i, path in enumerate(self.file_registry):
             if path.name == new_name or not path.exists():
                 continue
@@ -130,8 +130,8 @@ class PascalSovereigntyFixer:
                 if old_mod not in content:
                     continue
                 
-                new_content = regex_from.sub(rf"\1{new_mod}\2", content)
-                new_content = regex_import.sub(rf"\1{new_mod}\2", new_content)
+                new_content = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
+                new_content = regex_import.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", new_content)
 
                 if new_content != content:
                     if not self.dry_run:
@@ -231,9 +231,19 @@ class PascalSovereigntyFixer:
         """Calculates the target filename based on the primary class definition."""
         if file_type == "IGNORE":
             return None
-        # --- MIXIN EXEMPTION ---
+        
+        # --- MIXIN STANDARDIZATION ---
+        # Logic: PascalCase class 'BaseMixin' -> base_mixin.py
         if file_type == "MIXIN":
-            return None
+            stem = path.stem
+            if not stem.endswith("_mixin"):
+                # Convert PascalCase/camelCase to snake_case for the suffix
+                clean_stem = re.sub(r'(?<!^)(?=[A-Z])', '_', stem).lower()
+                if not clean_stem.endswith("_mixin"):
+                    clean_stem += "_mixin"
+                return f"{clean_stem}.py"
+            return None  # Already compliant
+            
         if file_type == "UTILITY":
             return None
         try:
