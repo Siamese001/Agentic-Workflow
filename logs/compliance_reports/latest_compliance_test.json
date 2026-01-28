@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "territory": "test",
+    "timestamp": "2026-01-28T17:48:32.538424",
+    "status": "COMPLIANT",
+    "sovereignty_level": "L5"
+  },
+  "metrics": {
+    "confidence_score": 1.0,
+    "violation_count": 0,
+    "drift_count": 0,
+    "errors": 0,
+    "violations_fixed": 0
+  },
+  "governance_log": {
+    "decisions": [
+      {
+        "confidence": 1.0,
+        "timestamp": "2026-01-28T17:48:32.319302",
+        "decision": true,
+        "reason": "HIGH CONFIDENCE (1.00 > 0.75) - AUTO-HEAL"
+      }
+    ],
+    "files_processed": []
+  },
+  "unified_violations": [],
+  "agents_executed": [
+    "FilesystemSSOTReconcilerAgent",
+    "LocationAgent",
+    "HierarchyAgent",
+    "PascalSovereigntyAgent",
+    "ArchitectureGovernorAgent",
+    "SystemArchitectAgent"
+  ]
+}

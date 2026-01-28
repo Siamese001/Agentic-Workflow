@@ -1,7 +1,7 @@
 {
   "meta": {
     "territory": "prompt_governance",
-    "timestamp": "2026-01-28T17:50:29.764443",
+    "timestamp": "2026-01-28T17:48:23.771642",
     "status": "NON-COMPLIANT",
     "sovereignty_level": "L5"
   },
@@ -16,22 +16,22 @@
     "decisions": [
       {
         "confidence": 0.8425,
-        "timestamp": "2026-01-28T17:50:12.501405",
+        "timestamp": "2026-01-28T17:48:06.402913",
         "decision": true,
         "reason": "HIGH CONFIDENCE (0.84 > 0.75) - AUTO-HEAL"
       },
       {
         "confidence": 0.8425,
-        "timestamp": "2026-01-28T17:50:12.542049",
+        "timestamp": "2026-01-28T17:48:06.443557",
         "decision": true,
         "reason": "HIGH CONFIDENCE (0.84 > 0.75) - AUTO-HEAL"
       }
     ],
     "files_processed": [
+      "C:\\Git\\Agentic-Workflow\\.sovereign_healing_backup",
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\SovereignPromptRenderer.py",
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardTestSuite.py",
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\tests_golden_state_test_datasets.py",
-      "C:\\Git\\Agentic-Workflow\\.sovereign_healing_backup",
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\audit_registry_linkages.py"
     ]
   },
