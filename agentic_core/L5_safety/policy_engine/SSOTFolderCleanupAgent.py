@@ -1,6 +1,6 @@
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 [PHASE 24] SSOT Folder Cleanup Agent - Automated SSOT Compliance Enforcement.
@@ -28,7 +28,7 @@ from typing import Any
 Logger = logging.getLogger(__name__)
 
 
-class SSOTFolderCleanupAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class SSOTFolderCleanupAgent(SovereignBaseAgent):
     """
     [PHASE 24] Automated SSOT Folder Cleanup Agent.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 StructureEnforcerAgent - Structural Enforcement
@@ -85,7 +85,7 @@ class StructureConfig:
     min_docstring_length: int = 10
 
 
-class StructureEnforcerAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class StructureEnforcerAgent(SovereignBaseAgent):
     """
     Unified structure enforcement with gravity and naming.
 

@@ -4,7 +4,7 @@ HARDENED: Consolidated exception hierarchy with SSOT compliance
 """
 
 # Export core entities
-from .entities import BaseEntity, AgentConfig
+from .BaseEntity import BaseEntity, AgentConfig
 
 # Export consolidated exception hierarchy (SSOT)
 from .SovereignError import (
