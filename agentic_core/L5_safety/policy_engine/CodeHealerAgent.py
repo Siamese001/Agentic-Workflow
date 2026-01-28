@@ -20,15 +20,16 @@ Features:
 
 import ast
 import logging
+import os
 import re
 import shutil
+import tempfile
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -123,6 +124,7 @@ class CodeHealerAgent(SovereignBaseAgent):
         project_root: Path | None = None,
         agent_config: HealerConfig | None = None,
     ):
+        super().__init__()
         self.project_root = project_root or Path.cwd()
         self._agent_config = agent_config or HealerConfig()
         self._lock = threading.RLock()
@@ -145,19 +147,47 @@ class CodeHealerAgent(SovereignBaseAgent):
         self._agent_config.dry_run = dry_run
         
         actions = []
+        violations_found = 0
+        violations_fixed = 0
+        errors = 0
+        
         # In a real repository context, we would iterate over all relevant files.
         # For the agent interface, we assume the caller might pass a specific file
         # or we scan the project root.
         target_file = kwargs.get("file_path")
         if target_file:
             actions = self.heal_all(Path(target_file))
+            violations_found = len(actions)
+            violations_fixed = len([a for a in actions if a.applied])
         
         return {
-            "violations": len(actions),
-            "fixed": len([a for a in actions if a.applied]),
-            "errors": 0,
-            "actions": [str(a) for a in actions]
+            'violations_found': violations_found,
+            'violations_fixed': violations_fixed,
+            'errors': errors,
+            'skipped': violations_found - violations_fixed - errors
         }
+
+    def atomic_write(self, file_path: Path, new_content: str) -> bool:
+        """
+        [ATOMIC SAFETY] Writes file safely using temp-swap pattern.
+        """
+        try:
+            # 1. Create Temp File
+            temp_fd, temp_path = tempfile.mkstemp(dir=file_path.parent, text=True)
+            with os.fdopen(temp_fd, 'w', encoding='utf-8') as tf:
+                tf.write(new_content)
+            
+            # 2. Create Backup
+            self._backup_file(file_path)
+            
+            # 3. Atomic Swap
+            os.replace(temp_path, file_path)
+            return True
+        except Exception as e:
+            Logger.critical(f"Atomic write failed for {file_path}: {e}")
+            if os.path.exists(temp_path):
+                os.unlink(temp_path)
+            return False
 
     def heal_all(self, file_path: Path) -> list[HealingAction]:
         """Run all enabled healing on a file."""
@@ -232,8 +262,6 @@ class CodeHealerAgent(SovereignBaseAgent):
 
         # Apply fixes if not dry run
         if not self._agent_config.dry_run and unused_imports:
-            self._backup_file(file_path)
-
             # Remove unused import lines
             new_lines = []
             unused_line_numbers = {lineno for _, lineno in unused_imports}
@@ -242,10 +270,13 @@ class CodeHealerAgent(SovereignBaseAgent):
                 if i not in unused_line_numbers:
                     new_lines.append(line)
 
-            file_path.write_text("\n".join(new_lines), encoding="utf-8")
-
-            for action in actions:
-                action.applied = True
+            # Use atomic write instead of direct write
+            new_content = "\n".join(new_lines)
+            if self.atomic_write(file_path, new_content):
+                for action in actions:
+                    action.applied = True
+            else:
+                Logger.error(f"Failed to apply atomic write to {file_path}")
 
         self._actions.extend(actions)
         return actions
@@ -299,8 +330,13 @@ class CodeHealerAgent(SovereignBaseAgent):
                     action.applied = True
 
         if modified:
-            self._backup_file(file_path)
-            file_path.write_text("\n".join(new_lines), encoding="utf-8")
+            new_content = "\n".join(new_lines)
+            if self.atomic_write(file_path, new_content):
+                for action in actions:
+                    if not action.applied:
+                        action.applied = True
+            else:
+                Logger.error(f"Failed to apply atomic write to {file_path}")
 
         self._actions.extend(actions)
         return actions
@@ -355,8 +391,13 @@ class CodeHealerAgent(SovereignBaseAgent):
                 blank_count = 0
 
         if modified:
-            self._backup_file(file_path)
-            file_path.write_text("\n".join(new_lines), encoding="utf-8")
+            new_content = "\n".join(new_lines)
+            if self.atomic_write(file_path, new_content):
+                for action in actions:
+                    if not action.applied:
+                        action.applied = True
+            else:
+                Logger.error(f"Failed to apply atomic write to {file_path}")
 
         self._actions.extend(actions)
         return actions

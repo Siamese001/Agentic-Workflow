@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 CodeEnforcerAgent - Code Sovereignty Enforcement
@@ -135,13 +134,19 @@ class CodeEnforcerAgent(SovereignBaseAgent):
         """
         # Enforcer agents enforce rules; active healing is delegated to Healer agents
         # though auto-fix logic exists in validate_file for some rules
-        return {"violations": 0, "fixed": 0, "errors": 0}
+        return {
+            'violations_found': 0,
+            'violations_fixed': 0,
+            'errors': 0,
+            'skipped': 0
+        }
 
     def __init__(
         self,
         project_root: Path | None = None,
         agent_config: EnforcementConfig | None = None,
     ):
+        super().__init__()
         self.project_root = project_root or Path.cwd()
         self._agent_config = agent_config or EnforcementConfig()
         self._lock = threading.RLock()
