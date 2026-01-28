@@ -816,15 +816,21 @@ Examples:
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent
         from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
+        # [ADDED] Integrated Sovereignty Guardians
+        from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
+        from agentic_core.L5_safety.validators.RootHygieneAgent import RootHygieneAgent
         
         agents = {
             'reconciler': FilesystemSSOTReconcilerAgent,
             'location': LocationAgent,
             'hierarchy': HierarchyAgent,
             'arch_governor': ArchitectureGovernorAgent,
-            'system_architect': SystemArchitectAgent
+            'system_architect': SystemArchitectAgent,
+            # [ADDED]
+            'pascal_sovereignty': PascalSovereigntyAgent,
+            'root_hygiene': RootHygieneAgent
         }
-        logger.info("✅ All agents loaded successfully")
+        logger.info("✅ All agents loaded successfully including Sovereignty Guardians")
     except ImportError as e:
         logger.critical(f"Failed to load Sovereign Agents: {e}")
         sys.exit(1)

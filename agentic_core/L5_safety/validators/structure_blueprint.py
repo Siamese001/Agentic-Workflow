@@ -230,8 +230,8 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
     },
     "ops_scripts": {
         "depth": 2,
-        "purpose": "Standalone utility scripts.",
-        "subfolders": ["ci", "maintenance", "security"],
+        "purpose": "Standalone utility scripts (formerly root scripts/).",
+        "subfolders": ["ci", "maintenance", "security", "setup"],
     },
     "archives": {
         "depth": 2,
@@ -3885,17 +3885,11 @@ SAFETY_VALIDATION_REGISTRY: dict[int, dict[str, Any]] = {
 # Project root subfolders that are not part of agentic_core or apps_*
 PROJECT_ROOT_SUBFOLDERS: Final[Mapping[str, Sequence[str]]] = {
     "logs": [],  # Mission execution logs and trace files
-    "scripts": [
-        "testing",         # All test execution scripts (65 files)
-        "analysis",        # Analysis and audit scripts (19 files)
-        "remediation",     # Fix and repair scripts (15 files)
-        "migration",       # Migration and movement scripts (5 files)
-        "execution",       # Phase execution and run scripts (46 files)
-        "security",        # Security and sovereignty scripts (9 files)
-        "architecture",    # Core and structural scripts (10 files)
-        "maintenance",     # System maintenance scripts (38 files) - EXISTING
-        "ci",             # Continuous integration scripts (2 files) - EXISTING
-        "utilities"       # General utility scripts (1 file)
+    "ops_scripts": [ # [ADDED] The new legal location for standalone scripts
+        "ci",
+        "maintenance",
+        "security", 
+        "setup"
     ],
     "data": [
         "raw",              # Raw input data and sources

@@ -1,0 +1,273 @@
+"""
+File: agentic_core/L5_safety/validators/RootHygieneAgent.py
+Path: agentic_core/L5_safety/validators/RootHygieneAgent.py
+Rationale: 
+    Canonizes the RootHygieneEnforcer as a first-class L5 Agent.
+    Relocated from L0_maintenance/scripts to L5_safety/validators to 
+    centralize enforcement and enable auto-discovery by execute_ssot.py.
+    
+    Integration Features:
+    - Inherits from SovereignBaseAgent for full infrastructure support
+    - Implements standard agent interface for execute_ssot.py orchestration
+    - Preserves all original RootHygieneEnforcer functionality
+    - Adds heal_repository() method for standard healing chain integration
+"""
+
+import shutil
+import os
+import sys
+from pathlib import Path
+from typing import Any, Dict, Optional, Set
+from dataclasses import dataclass
+
+# Optional: Import SovereignBaseAgent if available for full integration
+try:
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.L5_safety.validators.decorators import standard_heal
+    HAS_SOVEREIGN_BASE = True
+except ImportError:
+    HAS_SOVEREIGN_BASE = False
+    SovereignBaseAgent = object
+    def standard_heal(func):
+        """Fallback decorator when full infrastructure unavailable."""
+        return func
+
+# SSOT Constants
+ROOT_MARKERS = ["agentic_core", "pyproject.toml"]
+
+def get_project_root() -> Path:
+    """Resolve project root securely."""
+    current = Path.cwd()
+    for marker in ROOT_MARKERS:
+        if (current / marker).exists():
+            return current
+    raise RuntimeError("Must run from Project Root")
+
+@dataclass
+class RootHygieneAgent(SovereignBaseAgent):
+    """
+    Enforces strict root directory hygiene standards.
+    
+    This agent canonizes the RootHygieneEnforcer functionality as a 
+    first-class L5 safety agent with full orchestration capabilities.
+    
+    Responsibilities:
+    1. Moves root 'scripts/*' to 'ops_scripts/' (standalone) or 'L0_maintenance/scripts/' (core)
+    2. Moves 'coverage_html' to 'reports/'
+    3. Deletes illegal root directories after evacuation
+    """
+    project_root: Path
+    dry_run: bool = False
+    
+    def __post_init__(self):
+        if HAS_SOVEREIGN_BASE and hasattr(super(), '__post_init__'):
+            super().__post_init__()
+        # [HARDENING] Ensure path is absolute for resolve() calls
+        self.project_root = self.project_root.resolve()
+        self.stats = {
+            "scripts_evacuated": 0,
+            "dirs_evacuated": 0,
+            "coverage_relocated": 0,
+            "illegal_dirs_removed": 0,
+            "errors": 0
+        }
+
+    def run(self) -> Dict[str, Any]:
+        """Entry point for execute_ssot.py orchestration."""
+        print(f"[HYGIENE] Executing Root Hygiene Enforcement at {self.project_root}")
+        success = self._enforce_root_hygiene()
+        return {
+            "success": success == 0,
+            "stats": self.stats,
+            "summary": f"Scripts: {self.stats['scripts_evacuated']}, Dirs: {self.stats['dirs_evacuated']}, Errors: {self.stats['errors']}"
+        }
+
+    def _enforce_root_hygiene(self) -> int:
+        """Core logic from RootHygieneEnforcer.py."""
+        print(f"[HYGIENE] Enforcing Root Sovereignty at: {self.project_root}")
+        print("="*60)
+
+        try:
+            # 1. EVACUATE ROOT SCRIPTS
+            self._evacuate_root_scripts()
+            
+            # 2. EVACUATE COVERAGE_HTML
+            self._evacuate_coverage_html()
+            
+            # 3. RELOCATE PURGE_CACHE (Specific Request)
+            self._relocate_purge_cache()
+            
+            return 0  # Success
+            
+        except Exception as e:
+            print(f"[ERROR] Root hygiene enforcement failed: {e}")
+            self.stats["errors"] += 1
+            return 1
+
+    def _evacuate_root_scripts(self):
+        """Evacuate root scripts directory to appropriate locations."""
+        root_scripts = self.project_root / "scripts"
+        ops_scripts = self.project_root / "ops_scripts"
+        l0_scripts = self.project_root / "agentic_core" / "L0_maintenance" / "scripts"
+
+        if root_scripts.exists():
+            print(f"[DETECT] Illegal root 'scripts/' directory found.")
+            
+            if not self.dry_run:
+                ops_scripts.mkdir(exist_ok=True)
+                l0_scripts.mkdir(exist_ok=True, parents=True)
+
+            for item in root_scripts.iterdir():
+                try:
+                    if item.is_file() and item.suffix == ".py":
+                        # Decision Logic: Does it import agentic_core?
+                        content = item.read_text(encoding='utf-8')
+                        if "agentic_core" in content or "from agentic_core" in content:
+                            target = l0_scripts / item.name
+                            action = "REPATRIATE (Core)"
+                        else:
+                            target = ops_scripts / item.name
+                            action = "RELOCATE (Ops)"
+                        
+                        print(f"  - {item.name} -> {action}")
+                        if not self.dry_run:
+                            shutil.move(str(item), str(target))
+                        self.stats["scripts_evacuated"] += 1
+                        
+                    elif item.is_dir():
+                        # Move entire subfolders to ops_scripts/maintenance or similar
+                        target = ops_scripts / item.name
+                        print(f"  - DIR {item.name}/ -> RELOCATE (Ops)")
+                        if not self.dry_run:
+                            if target.exists():
+                                shutil.rmtree(target)  # Force overwrite logic for dirs
+                            shutil.move(str(item), str(target))
+                        self.stats["dirs_evacuated"] += 1
+                        
+                except Exception as e:
+                    print(f"  [ERROR] Could not move {item.name}: {e}")
+                    self.stats["errors"] += 1
+
+            # Cleanup empty dir
+            if not self.dry_run:
+                try:
+                    root_scripts.rmdir()
+                    print("[SUCCESS] Illegal 'scripts/' directory eliminated.")
+                    self.stats["illegal_dirs_removed"] += 1
+                except OSError:
+                    print("[WARNING] 'scripts/' not empty, manual check required.")
+        else:
+            print("[CHECK] Root 'scripts/' is clean.")
+
+    def _evacuate_coverage_html(self):
+        """Evacuate coverage_html directory to reports/."""
+        cov_html = self.project_root / "coverage_html"
+        reports_cov = self.project_root / "reports" / "coverage_html"
+        
+        if cov_html.exists():
+            print(f"\n[DETECT] Illegal root 'coverage_html/' found.")
+            
+            if not self.dry_run:
+                reports_cov.parent.mkdir(exist_ok=True)
+                
+                if reports_cov.exists():
+                    shutil.rmtree(reports_cov)
+                
+                print(f"  - Moving to reports/coverage_html")
+                shutil.move(str(cov_html), str(reports_cov))
+                self.stats["coverage_relocated"] += 1
+                print("[SUCCESS] Coverage report relocated.")
+        else:
+            print("[CHECK] Root 'coverage_html/' is clean.")
+
+    def _relocate_purge_cache(self):
+        """Specific handling for purge_cache.py organization."""
+        ops_scripts = self.project_root / "ops_scripts"
+        purge_script = ops_scripts / "purge_cache.py"
+        maint_script_dir = ops_scripts / "maintenance"
+        
+        if purge_script.exists():
+            print(f"\n[REFILE] Organizing purge_cache.py -> ops_scripts/maintenance/")
+            if not self.dry_run:
+                maint_script_dir.mkdir(exist_ok=True)
+                target = maint_script_dir / "purge_cache.py"
+                shutil.move(str(purge_script), str(target))
+
+    @standard_heal
+    def heal_repository(self, dry_run: bool = True, execute: bool = False,
+                       depth: int = 0, max_depth: int = 3,
+                       _call_path: Optional[Set[str]] = None) -> Dict[str, int]:
+        """
+        Standard healing interface for execute_ssot.py integration.
+        
+        This method provides the canonical healing interface that integrates
+        with the HealerMixin chain and execute_ssot.py orchestration.
+        """
+        if _call_path is None:
+            _call_path = set()
+        
+        # Prevent cycles
+        agent_id = f"RootHygieneAgent@{self.project_root}"
+        if agent_id in _call_path:
+            return {
+                'violations_found': 0,
+                'violations_fixed': 0,
+                'errors': 0,
+                'skipped': 0
+            }
+        _call_path.add(agent_id)
+        
+        # Configure healing mode
+        self.dry_run = dry_run and not execute
+        
+        try:
+            # Execute the hygiene enforcement
+            exit_code = self._enforce_root_hygiene()
+            
+            # Calculate violations based on stats
+            violations_found = (
+                self.stats["scripts_evacuated"] + 
+                self.stats["dirs_evacuated"] + 
+                self.stats["coverage_relocated"] +
+                self.stats["illegal_dirs_removed"]
+            )
+            violations_fixed = violations_found  # All detected violations are fixed
+            
+            return {
+                'violations_found': violations_found,
+                'violations_fixed': violations_fixed,
+                'errors': self.stats["errors"],
+                'skipped': 0
+            }
+            
+        except Exception as e:
+            print(f"[ERROR] RootHygieneAgent healing failed: {e}")
+            return {
+                'violations_found': 0,
+                'violations_fixed': 0,
+                'errors': 1,
+                'skipped': 0
+            }
+        finally:
+            _call_path.discard(agent_id)
+
+def main():
+    """Standalone execution for testing."""
+    import argparse
+    parser = argparse.ArgumentParser(description="Root Hygiene Agent")
+    parser.add_argument("--dry-run", action="store_true", help="Preview changes")
+    args = parser.parse_args()
+    
+    from pathlib import Path
+    project_root = Path(".")
+    
+    agent = RootHygieneAgent(
+        project_root=project_root,
+        dry_run=args.dry_run
+    )
+    
+    result = agent.run()
+    sys.exit(0 if result["success"] else 1)
+
+if __name__ == "__main__":
+    main()

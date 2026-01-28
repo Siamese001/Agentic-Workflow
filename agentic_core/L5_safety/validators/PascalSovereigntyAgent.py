@@ -1,11 +1,16 @@
 """
-File: PascalSovereigntyFixer.py
-Path: C:\Git\Agentic-Workflow\PascalSovereigntyFixer.py
-Status: FINAL - GOLD MASTER (Phase 4)
+File: agentic_core/L5_safety/validators/PascalSovereigntyAgent.py
+Path: agentic_core/L5_safety/validators/PascalSovereigntyAgent.py
 Rationale: 
-    Removes legacy commentary regarding 'healer_mixin.py' to produce a clean, 
-    professional artifact. The logic is now fully reliant on the '_mixin.py' 
-    pattern matcher verified in Phase 2/3.
+    Canonizes the PascalSovereigntyFixer as a first-class L5 Agent. 
+    Relocated from L0_maintenance/scripts to L5_safety/validators to 
+    centralize enforcement and enable auto-discovery by execute_ssot.py.
+    
+    Integration Features:
+    - Inherits from SovereignBaseAgent for full infrastructure support
+    - Implements standard agent interface for execute_ssot.py orchestration
+    - Preserves all original PascalSovereigntyFixer functionality
+    - Adds heal_repository() method for standard healing chain integration
 """
 
 import ast
@@ -15,7 +20,20 @@ import os
 import platform
 import time
 from pathlib import Path
-from typing import Literal, Optional, Dict, List, Tuple
+from typing import Literal, Optional, Dict, List, Tuple, Any, Set
+from dataclasses import dataclass
+
+# Optional: Import SovereignBaseAgent if available for full integration
+try:
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.L5_safety.validators.decorators import standard_heal
+    HAS_SOVEREIGN_BASE = True
+except ImportError:
+    HAS_SOVEREIGN_BASE = False
+    SovereignBaseAgent = object
+    def standard_heal(func):
+        """Fallback decorator when full infrastructure unavailable."""
+        return func
 
 # SSOT Integration with fast-fail pruning
 def get_python_files_fast(root: Path) -> List[Path]:
@@ -39,22 +57,100 @@ def get_python_files_fast(root: Path) -> List[Path]:
 
 FileType = Literal["AGENT", "CLASS", "MIXIN", "UTILITY", "IGNORE"]
 
-class PascalSovereigntyFixer:
-    """Enforces strict file naming conventions based on AST content analysis."""
-
-    def __init__(self, dry_run: bool = False, verbose: bool = False, validate_only: bool = False):
-        self.dry_run = dry_run
-        self.verbose = verbose
-        self.validate_only = validate_only
+@dataclass
+class PascalSovereigntyAgent(SovereignBaseAgent):
+    """
+    Enforces strict file naming conventions and resolves SSOT collisions.
+    
+    This agent canonizes the PascalSovereigntyFixer functionality as a 
+    first-class L5 safety agent with full orchestration capabilities.
+    """
+    project_root: Path
+    dry_run: bool = False
+    verbose: bool = False
+    validate_only: bool = False
+    
+    def __post_init__(self):
+        if HAS_SOVEREIGN_BASE and hasattr(super(), '__post_init__'):
+            super().__post_init__()
+        # [HARDENING] Ensure path is absolute for resolve() calls
+        self.project_root = self.project_root.resolve()
         self.stats = {
-            "analyzed": 0, 
-            "compliant": 0, 
-            "renamed": 0, 
-            "imports_fixed": 0, 
+            "analyzed": 0, "compliant": 0, "renamed": 0, 
+            "imports_fixed": 0, "collisions_resolved": 0,
             "violations": {"AGENT": 0, "CLASS": 0, "MIXIN": 0, "UTILITY": 0}
         }
         # CACHE: Track file paths in memory to avoid repetitive disk scanning (O(1) lookups)
         self.file_registry: List[Path] = []
+
+    def run(self) -> Dict[str, Any]:
+        """Entry point for execute_ssot.py orchestration."""
+        print(f"[SOVEREIGNTY] Executing Pascal Sovereignty Audit at {self.project_root}")
+        success = self._orchestrate_audit(self.project_root)
+        return {
+            "success": success == 0,
+            "stats": self.stats,
+            "summary": f"Renamed: {self.stats['renamed']}, Collisions: {self.stats['collisions_resolved']}"
+        }
+
+    def _orchestrate_audit(self, root: Path) -> int:
+        """Original core logic from PascalSovereigntyFixer.py."""
+        print(f"[SOVEREIGNTY] {'DRY RUN' if self.dry_run else 'EXECUTE'} MODE")
+        print("="*60)
+        
+        if not self.verify_environment():
+            return 1
+        
+        print("Scanning repository (Fast One-Time Pass)...")
+        self.file_registry = get_python_files_fast(root)
+        self.stats["analyzed"] = len(self.file_registry)
+        
+        # Iterating over a copy to allow registry updates during renames
+        for idx, path in enumerate(list(self.file_registry)):
+            if not path.exists():
+                continue
+            ftype = self.classify_file(path)
+            if ftype == "IGNORE":
+                continue
+            
+            new_name = self.get_compliant_name(path, ftype)
+            if new_name and new_name != path.name:
+                self.stats["violations"][ftype] += 1
+                print(f"\n[DETECT] {path.name} ({ftype}) -> {new_name}")
+                # [CHANGED] From safe_rename_windows to resolve_collision_and_rename
+                if self.resolve_collision_and_rename(path, new_name):
+                    if not self.dry_run:
+                        self.stats["renamed"] += 1
+                        self.stats["collisions_resolved"] += 1
+                    # Update in-memory tracker for subsequent import refactors
+                    dest = path.parent / new_name
+                    
+                    # Only update registry if the file wasn't deleted (duplicate merge)
+                    if dest.exists():
+                        self.file_registry[idx] = dest
+                    
+                    if not self.dry_run:
+                        self.stats["imports_fixed"] += self.update_imports(path.name, new_name)
+            else:
+                self.stats["compliant"] += 1
+
+        print("\n" + "="*60)
+        print(f"Total files analyzed: {self.stats['analyzed']}")
+        print(f"Compliant files:      {self.stats['compliant']}")
+        total_violations = sum(self.stats["violations"].values())
+        print(f"Violations detected:  {total_violations}")
+        print(f"  - Agents:  {self.stats['violations']['AGENT']}")
+        print(f"  - Classes: {self.stats['violations']['CLASS']}")
+        print(f"  - Utils:   {self.stats['violations']['UTILITY']}")
+        print(f"  - Mixins:  {self.stats['violations']['MIXIN']}")
+        if not self.dry_run:
+            print(f"Files Renamed:        {self.stats['renamed']}")
+            print(f"Imports Fixed:        {self.stats['imports_fixed']}")
+            print(f"Collisions Resolved:  {self.stats['collisions_resolved']}")
+
+        # Critical Analysis: Returning exit 1 on violations ensures git hooks
+        # block non-compliant commits.
+        return 0 if (not self.validate_only or total_violations == 0) else 1
 
     def classify_file(self, path: Path) -> FileType:
         """Analyze file AST to determine architectural role with strict test exemptions."""
@@ -144,61 +240,6 @@ class PascalSovereigntyFixer:
             except:
                 continue
         return count
-
-    def run(self, root: Path) -> int:
-        """Main orchestration loop."""
-        print(f"[SOVEREIGNTY] {'DRY RUN' if self.dry_run else 'EXECUTE'} MODE")
-        print("="*60)
-        
-        if not self.verify_environment():
-            return 1
-        
-        print("Scanning repository (Fast One-Time Pass)...")
-        self.file_registry = get_python_files_fast(root)
-        self.stats["analyzed"] = len(self.file_registry)
-        
-        # Iterating over a copy to allow registry updates during renames
-        for idx, path in enumerate(list(self.file_registry)):
-            if not path.exists():
-                continue
-            ftype = self.classify_file(path)
-            if ftype == "IGNORE":
-                continue
-            
-            new_name = self.get_compliant_name(path, ftype)
-            if new_name and new_name != path.name:
-                self.stats["violations"][ftype] += 1
-                print(f"\n[DETECT] {path.name} ({ftype}) -> {new_name}")
-                # [CHANGED] From safe_rename_windows to resolve_collision_and_rename
-                if self.resolve_collision_and_rename(path, new_name):
-                    self.stats["renamed"] += 1
-                    # Update in-memory tracker for subsequent import refactors
-                    dest = path.parent / new_name
-                    
-                    # Only update registry if the file wasn't deleted (duplicate merge)
-                    if dest.exists():
-                        self.file_registry[idx] = dest
-                    
-                    self.stats["imports_fixed"] += self.update_imports(path.name, new_name)
-            else:
-                self.stats["compliant"] += 1
-
-        print("\n" + "="*60)
-        print(f"Total files analyzed: {self.stats['analyzed']}")
-        print(f"Compliant files:      {self.stats['compliant']}")
-        total_violations = sum(self.stats["violations"].values())
-        print(f"Violations detected:  {total_violations}")
-        print(f"  - Agents:  {self.stats['violations']['AGENT']}")
-        print(f"  - Classes: {self.stats['violations']['CLASS']}")
-        print(f"  - Utils:   {self.stats['violations']['UTILITY']}")
-        print(f"  - Mixins:  {self.stats['violations']['MIXIN']}")
-        if not self.dry_run:
-            print(f"Files Renamed:        {self.stats['renamed']}")
-            print(f"Imports Fixed:        {self.stats['imports_fixed']}")
-
-        # Critical Analysis: Returning exit 1 on violations ensures git hooks
-        # block non-compliant commits.
-        return 0 if (not self.validate_only or total_violations == 0) else 1
 
     def verify_environment(self) -> bool:
         """Checks for LongPathsEnabled on Windows."""
@@ -318,14 +359,78 @@ class PascalSovereigntyFixer:
         except:
             return None
 
+    @standard_heal
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, 
+                       depth: int = 0, max_depth: int = 3, 
+                       _call_path: Optional[Set[str]] = None) -> Dict[str, int]:
+        """
+        Standard healing interface for execute_ssot.py integration.
+        
+        This method provides the canonical healing interface that integrates
+        with the HealerMixin chain and execute_ssot.py orchestration.
+        """
+        if _call_path is None:
+            _call_path = set()
+        
+        # Prevent cycles
+        agent_id = f"PascalSovereigntyAgent@{self.project_root}"
+        if agent_id in _call_path:
+            return {
+                'violations_found': 0,
+                'violations_fixed': 0,
+                'errors': 0,
+                'skipped': 0
+            }
+        _call_path.add(agent_id)
+        
+        # Configure healing mode
+        self.dry_run = dry_run and not execute
+        
+        try:
+            # Execute the sovereignty audit
+            exit_code = self._orchestrate_audit(self.project_root)
+            
+            # Calculate violations based on stats
+            total_violations = sum(self.stats["violations"].values())
+            violations_fixed = self.stats["renamed"] + self.stats["collisions_resolved"]
+            
+            return {
+                'violations_found': total_violations,
+                'violations_fixed': violations_fixed,
+                'errors': 0 if exit_code == 0 else 1,
+                'skipped': 0
+            }
+            
+        except Exception as e:
+            print(f"[ERROR] PascalSovereigntyAgent healing failed: {e}")
+            return {
+                'violations_found': 0,
+                'violations_fixed': 0,
+                'errors': 1,
+                'skipped': 0
+            }
+        finally:
+            _call_path.discard(agent_id)
+
 def main():
+    """Standalone execution for testing."""
     import argparse
-    parser = argparse.ArgumentParser(description="Pascal Sovereignty Fixer")
+    parser = argparse.ArgumentParser(description="Pascal Sovereignty Agent")
     parser.add_argument("--dry-run", action="store_true", help="Preview changes")
     parser.add_argument("--validate", action="store_true", help="Check compliance only")
     args = parser.parse_args()
+    
+    from pathlib import Path
     is_dry_run = args.dry_run or args.validate
-    sys.exit(PascalSovereigntyFixer(dry_run=is_dry_run, validate_only=args.validate).run(Path(".")))
+    
+    agent = PascalSovereigntyAgent(
+        project_root=Path("."),
+        dry_run=is_dry_run,
+        validate_only=args.validate
+    )
+    
+    result = agent.run()
+    sys.exit(0 if result["success"] else 1)
 
 if __name__ == "__main__":
     main()
