@@ -233,20 +233,20 @@ class PascalSovereigntyFixer:
             return None
         
         # --- MIXIN STANDARDIZATION ---
-        # Logic: PascalCase class 'BaseMixin' or acronym 'LLMMixin' -> base_mixin.py / llm_mixin.py
+        # Logic: Forces Mixins to snake_case.
+        # Example: HygieneMixin.py -> hygiene_mixin.py
         if file_type == "MIXIN":
             stem = path.stem
-            if not stem.endswith("_mixin"):
-                # Acronym-aware snake_case conversion:
-                # Pass 1: Handle acronyms followed by words (LLMProvider -> LLM_Provider)
-                s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', stem)
-                # Pass 2: Handle camelCase boundaries (llmProvider -> llm_Provider)
-                clean_stem = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-                
-                if not clean_stem.endswith("_mixin"):
-                    clean_stem += "_mixin"
-                return f"{clean_stem}.py"
-            return None  # Already compliant
+            # Acronym-aware snake_case conversion (Pass 1: LLMProvider -> LLM_Provider)
+            s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', stem)
+            # Pass 2: camelCase boundaries (llmProvider -> llm_Provider)
+            clean_stem = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+            
+            if not clean_stem.endswith("_mixin"):
+                clean_stem += "_mixin"
+            
+            target = f"{clean_stem}.py"
+            return target if target != path.name else None
             
         if file_type == "UTILITY":
             return None
