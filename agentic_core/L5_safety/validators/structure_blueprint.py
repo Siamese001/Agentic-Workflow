@@ -272,6 +272,11 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
         "subfolders": [],
         "volatile": True,
     },
+    "reports": {
+        "depth": 2,
+        "purpose": "Generated reports and analysis outputs.",
+        "subfolders": ["coverage_html", "telemetry", "audit"],
+    },
     ".sovereign_healing_backup": {
         "depth": 2,
         "purpose": "Backup directory for healing operations.",
@@ -369,7 +374,7 @@ TESTS_AUTOGEN_DIR: str = "tests/autogen"
 # === Reporting and Output Directories ===
 REPORTS_DIR: str = "reports"
 ARCHIVES_DIR: str = "archives"
-COVERAGE_HTML_DIR: str = "coverage_html"
+COVERAGE_HTML_DIR: str = "reports/coverage_html"
 
 # ============================================================================
 # === L4 SUBFOLDER MAP (Depth-4 Structure for Complex L3 Folders) ===
@@ -1215,7 +1220,6 @@ NAMING_EXEMPT_DIRS: frozenset[str] = frozenset(
     {
         "archives",
         "data",
-        "scripts",  # [ADDED] Valid root
         "docs",     # [ADDED] Valid root
         "legacy_code",
         "legacy_engines",
@@ -1226,7 +1230,6 @@ NAMING_EXEMPT_DIRS: frozenset[str] = frozenset(
         "node_modules",
         ".pytest_cache",
         ".mypy_cache",
-        "coverage_html",
         "dist",
         "build",
         ".tox",
@@ -1599,6 +1602,9 @@ def is_path_allowed(rel_path: str | Path) -> bool:
         return False
 
     if len(parts) == 1:
+        # Allow sovereign territory directories at root level
+        if parts[0] in SOVEREIGN_TERRITORIES:
+            return True
         return parts[0] in ROOT_PROTECTED_FILES or parts[0] in ALLOWED_DUPLICATE_FILENAMES
 
     root = parts[0]
@@ -1647,6 +1653,9 @@ def is_path_allowed(rel_path: str | Path) -> bool:
                 return sub_name.endswith(".py") # Root files like __init__.py
         elif isinstance(allowed_subs, list):
             if sub_name not in allowed_subs:
+                # Allow files at the correct depth (not subdirectories)
+                if "." in sub_name and len(parts) <= config["depth"] + 1:
+                    return True
                 return False
 
     return True

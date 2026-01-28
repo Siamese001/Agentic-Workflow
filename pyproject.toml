@@ -33,7 +33,7 @@ dev = [
 minversion = "7.0"
 # Pointing to 'agentic_core' based on actual repo structure.
 # Enforcing 100% coverage, branch checking, and detailed html reports.
-addopts = "--cov=agentic_core --cov-branch --cov-report=term-missing --cov-report=html:coverage_html --cov-fail-under=100 -ra -v"
+addopts = "--cov=agentic_core --cov-branch --cov-report=term-missing --cov-report=html:reports/coverage_html --cov-fail-under=100 -ra -v"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
@@ -74,7 +74,7 @@ exclude_lines = [
 ]
 
 [tool.coverage.html]
-directory = "coverage_html"
+directory = "reports/coverage_html"
 
 [tool.black]
 line-length = 100
