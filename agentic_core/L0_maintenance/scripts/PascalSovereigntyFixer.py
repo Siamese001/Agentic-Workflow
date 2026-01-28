@@ -67,8 +67,8 @@ class PascalSovereigntyFixer:
             return "IGNORE"
         
         # --- EXEMPTION PATCH: MIXINS ---
-        # Explicitly categorize mixins to track them without enforcing PascalCase.
-        # This replaces the need for manual whitelisting of files like 'healer_mixin.py'.
+        # Mixins are explicitly categorized to enforce snake_case naming conventions,
+        # differentiating them from the PascalCase requirement of primary Agent/Class files.
         if path.name.endswith("_mixin.py") or path.name.endswith("Mixin.py"):
             return "MIXIN"
 
@@ -182,7 +182,7 @@ class PascalSovereigntyFixer:
         print(f"  - Agents:  {self.stats['violations']['AGENT']}")
         print(f"  - Classes: {self.stats['violations']['CLASS']}")
         print(f"  - Utils:   {self.stats['violations']['UTILITY']}")
-        print(f"  - Mixins:  {self.stats['violations']['MIXIN']} (Exempt)")
+        print(f"  - Mixins:  {self.stats['violations']['MIXIN']}")
         if not self.dry_run:
             print(f"Files Renamed:        {self.stats['renamed']}")
             print(f"Imports Fixed:        {self.stats['imports_fixed']}")
@@ -233,12 +233,16 @@ class PascalSovereigntyFixer:
             return None
         
         # --- MIXIN STANDARDIZATION ---
-        # Logic: PascalCase class 'BaseMixin' -> base_mixin.py
+        # Logic: PascalCase class 'BaseMixin' or acronym 'LLMMixin' -> base_mixin.py / llm_mixin.py
         if file_type == "MIXIN":
             stem = path.stem
             if not stem.endswith("_mixin"):
-                # Convert PascalCase/camelCase to snake_case for the suffix
-                clean_stem = re.sub(r'(?<!^)(?=[A-Z])', '_', stem).lower()
+                # Acronym-aware snake_case conversion:
+                # Pass 1: Handle acronyms followed by words (LLMProvider -> LLM_Provider)
+                s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', stem)
+                # Pass 2: Handle camelCase boundaries (llmProvider -> llm_Provider)
+                clean_stem = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+                
                 if not clean_stem.endswith("_mixin"):
                     clean_stem += "_mixin"
                 return f"{clean_stem}.py"
