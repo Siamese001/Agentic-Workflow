@@ -931,8 +931,14 @@ Examples:
                     governor = ArchitectureGovernorAgent(project_root=project_root, ci_mode=True)
                     audit_results = governor.run_audit()
                     
+                    # [UNIFIED AUDIT] Persist all identified violations to the runtime state
+                    state_mgr.state["compliance_report"] = audit_results
+                    
+                    if audit_results['stats']['violations_found'] > 0:
+                        logger.warning(f"⚠️  {audit_results['stats']['violations_found']} total violations identified.")
+                        
                     if audit_results['stats']['drift_detected'] > 0:
-                        logger.error(f"🛑 CRITICAL: {audit_results['stats']['drift_detected']} integrity violations detected.")
+                        logger.error(f"🛑 CRITICAL: {audit_results['stats']['drift_detected']} integrity drift detected.")
                         if args.validate:
                             state_mgr.finish_mission(status="failed_integrity")
                             sys.exit(1) # Fatal in CI
@@ -950,12 +956,16 @@ Examples:
                     logger.info("🎉 L3 MISSION COMPLETED")
                     return l3_results
             
-            # Fallback to standard L5 Iteration (The original loop)
+            # [HARDENED] Universal Compliance Persistence
             results = []
             for territory in targets:
                 logger.info(f"\n{'='*60}")
                 logger.info(f"🚀 PROCESSING TERRITORY: {territory}")
                 logger.info(f"{'='*60}")
+                
+                # Update State with Target
+                state_mgr.state["current_territory"] = territory
+                state_mgr.save()
                 state_mgr.add_event("domain_start", f"Entering Domain: {territory}")
                 
                 try:
@@ -967,8 +977,11 @@ Examples:
                         # [SOVEREIGN DEFAULT] Pass active state variables to all phases
                         # Phase 2: Alignment (Passes dry_run/auto_approve)
                         execute_phase2_alignment(agents, territory, decision_engine, state_mgr, dry_run, auto_approve)
-                        # Phase 3: Validation
+                        # Phase 3: Validation (Now returns Unified Manifest)
                         gov, arch = execute_phase3_validation(agents, territory, state_mgr)
+                        # Persist full work to state
+                        state_mgr.state["compliance_report"] = gov
+                        state_mgr.save()
                         # Phase 4: Healing (Passes dry_run/auto_approve)
                         execute_phase4_healing(agents, territory, gov, decision_engine, state_mgr, dry_run, auto_approve)
                         # Phase 5
