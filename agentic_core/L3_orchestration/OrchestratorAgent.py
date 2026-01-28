@@ -22,6 +22,7 @@ Phase 2 Enhancement (Jan 19, 2026):
 
 import logging
 from enum import Enum
+from pathlib import Path
 from typing import Any
 
 from agentic_core.L3_orchestration.interfaces import (
@@ -33,10 +34,32 @@ from agentic_core.L3_orchestration.interfaces import (
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # [PHASE 2] SSOT Discovery Integration
-from agentic_core.utils.ssot_discovery import get_agent_files
+from agentic_core.utils.ssot_discovery import get_agent_paths
 from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
 
 Logger = logging.getLogger(__name__)
+
+# [ULTRA-HARDENED] Whitelist of allowed module prefixes for dynamic imports.
+# This mirrors the L5 execute_ssot.py security standard to prevent 
+# arbitrary code execution during agent discovery/import.
+ALLOWED_MODULE_PREFIXES = (
+    "agentic_core",
+    "apps_shared",
+    "apps_lic",
+    "apps_rg"
+)
+
+
+def get_consolidated_orchestrator(project_root: Path | None = None) -> OrchestratorAgent:
+    """
+    [INTEGRATION] Factory method required by execute_ssot.py.
+    Instantiates the orchestrator with the hardened Unified mode and resolved root.
+    """
+    # [CRITICAL] Force resolution to anchor the agent to the physical filesystem immediately
+    root = project_root.resolve() if project_root else Path.cwd().resolve()
+    agent = OrchestratorAgent(mode="unified")
+    agent.project_root = root  # Explicitly set resolved root, overriding default CWD
+    return agent
 
 
 class OrchestratorMode(str, Enum):
@@ -49,7 +72,7 @@ class OrchestratorMode(str, Enum):
     UNIFIED = "unified"
 
 
-class OrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class OrchestratorAgent(SovereignBaseAgent):
     """
     The Central Nervous System for Agentic Workflow.
 
@@ -71,6 +94,8 @@ class OrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self.agent_id = agent_id
         self.agent_type = "L3_Unified"
         self.logger = Logger
+        # [ULTRA-HARDENED] Default to resolved CWD to prevent symlink attacks if factory isn't used
+        self.project_root = Path.cwd().resolve()
 
         # Set orchestration mode
         try:
@@ -459,8 +484,8 @@ class OrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             try:
                 project_root = get_validated_project_root()
                 # Use ssot_discovery exclusively (no rglob)
-                agent_files = get_agent_files(project_root)
-                self._available_agents = [f.stem for f in agent_files]
+                agent_paths = get_agent_paths(project_root)
+                self._available_agents = [Path(p).stem for p in agent_paths]
                 self.logger.debug(
                     f"[DISCOVERY] Found {len(self._available_agents)} agents via ssot_discovery"
                 )
@@ -498,6 +523,9 @@ class OrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         before attempting to run it. This prevents runtime crashes from
         missing dependencies, syntax errors, or circular imports.
 
+        [ULTRA-HARDENED] Validates module path against whitelist before subprocess execution
+        to prevent arbitrary code execution security vulnerabilities.
+
         Args:
             agent_name: Name of the agent to validate
 
@@ -509,19 +537,26 @@ class OrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
         # Try to find the module path for this agent
         try:
-            from agentic_core.L5_safety.validators.ssot_discovery import get_agent_files
+            agent_paths = get_agent_paths(self.project_root)
 
-            agent_files = get_agent_files(self.project_root)
-
-            # Find matching agent file
-            agent_file = next((f for f in agent_files if f.stem == agent_name), None)
-            if not agent_file:
+            # Find matching agent path
+            agent_path = next((p for p in agent_paths if Path(p).stem == agent_name), None)
+            if not agent_path:
                 # Agent not found in discovery - skip validation (may be dynamically loaded)
                 return True
 
-            # Convert file path to module path
+            # Convert path string to module path
+            agent_file = Path(agent_path)
             rel_path = agent_file.relative_to(self.project_root)
             module_path = str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
+            
+            # [ULTRA-HARDENED] Enforce Module Whitelist
+            # Blocks malicious actors from tricking the agent into importing 'os', 'subprocess', or 'shutil' directly
+            if not any(module_path == p or module_path.startswith(p + ".") for p in ALLOWED_MODULE_PREFIXES):
+                self.logger.critical(
+                    f"[GATE] SECURITY BLOCK: Agent '{agent_name}' ({module_path}) is outside allowed namespaces."
+                )
+                return False
 
             # Perform subprocess import check
             result = subprocess.run(
