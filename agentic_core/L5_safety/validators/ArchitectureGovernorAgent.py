@@ -235,12 +235,20 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
                 for violation in report.violations:
                     violations_found += 1
+                    
+                    # [FIX] Robustly handle violation types (Enum vs String) to prevent crashes
+                    v_type_raw = getattr(violation, "violation_type", "UNKNOWN")
+                    if hasattr(v_type_raw, "name"):
+                        v_type_name = v_type_raw.name
+                    else:
+                        v_type_name = str(v_type_raw)
+                        
                     violation_dict = {
-                        "type": violation.violation_type.name,
+                        "type": v_type_name,
                         "file": str(violation.file_path) if violation.file_path else None,
                         "message": violation.message,
-                        "severity": violation.severity,
-                        "suggestion": violation.suggestion,
+                        "severity": getattr(violation, "severity", None),
+                        "suggestion": getattr(violation, "suggestion", None),
                         "source_layer": getattr(violation, "source_layer", None),
                         "target_layer": getattr(violation, "target_layer", None),
                     }
@@ -255,7 +263,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         if fixed:
                             violations_fixed += 1
                     elif not dry_run:
-                        Logger.warning(f"    [{violation.violation_type.name}] {violation.message}")
+                        Logger.warning(f"    [{v_type_name}] {violation.message}")
 
             # Store violations for inspection
             self.violations = all_violations
@@ -352,18 +360,25 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         return is_compliant, results
 
-    def run_audit(self) -> dict[str, Any]:
+    def run_audit(self, target_territories: list[str] | None = None) -> dict[str, Any]:
         """
         Executes a comprehensive structural and naming audit with Phase 8 Drift Detection.
         In CI mode, this returns a non-zero-weighted success status.
+        
+        Args:
+            target_territories: [STRICT SCOPE] Optional list of specific paths/domains to audit.
         """
-        Logger.info(f"🚀 Starting Sovereign Audit (CI_MODE: {self.ci_mode})")
+        Logger.info(f"🚀 Starting Sovereign Audit (CI_MODE: {self.ci_mode}, SCOPE: {target_territories or 'GLOBAL'})")
         
         # [EFFICIENCY] Logic consolidated to scan all L5 Guardians in one pass
-        structural_results = self._orchestrate_guardian_scan()
+        structural_results = self._orchestrate_guardian_scan(target_territories)
         
         # [PHASE 8] Integrity Scan for Silent Drift
-        drift_violations = self._check_baseline_drift()
+        # Only check drift if we are doing a global scan or if the drift checker supports partials
+        # For now, we only run full drift check on global scans to prevent false positives on partials
+        drift_violations = []
+        if not target_territories:
+            drift_violations = self._check_baseline_drift()
         
         # 3. Aggregation
         total_violations = structural_results.get("total_violations", 0) + len(drift_violations)
@@ -390,10 +405,12 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             "drift_violations": drift_violations
         }
 
-    def _orchestrate_guardian_scan(self) -> dict[str, Any]:
+    def _orchestrate_guardian_scan(self, target_territories: list[str] | None = None) -> dict[str, Any]:
         """
         Orchestrate scanning of all L5 Guardians in one pass.
         Internal method for run_audit to consolidate scanning logic.
+        
+        Now supports [STRICT SCOPE] targeting via target_territories.
         """
         total_violations = 0
         total_errors = 0
@@ -401,27 +418,79 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         roots_scanned = []
 
         try:
-            # UNIVERSAL SCOPE: Scan all SOVEREIGN_TERRITORIES roots
-            for root_name in SOVEREIGN_TERRITORIES.keys():
-                root_path = self.project_root / root_name
+            # Determine Audit Scope
+            if target_territories:
+                # [STRICT SCOPE] Use provided targets. 
+                # Handle both full roots ("agentic_core") and sub-territories ("agentic_core/prompt_governance")
+                scan_targets = []
+                for t in target_territories:
+                    # check if direct root key
+                    if t in SOVEREIGN_TERRITORIES:
+                         scan_targets.append(self.project_root / t)
+                    else:
+                        # Assume relative path or specific sub-territory
+                        # If user passes "prompt_governance", we assume it's under agentic_core if not found elsewhere,
+                        # OR we resolve it relative to root.
+                        p = self.project_root / "agentic_core" / t
+                        if p.exists():
+                            scan_targets.append(p)
+                        else:
+                            p_direct = self.project_root / t
+                            if p_direct.exists():
+                                scan_targets.append(p_direct)
+                            else:
+                                Logger.warning(f"⚠️ Target territory not found: {t}")
+            else:
+                # UNIVERSAL SCOPE: Scan all SOVEREIGN_TERRITORIES roots
+                scan_targets = [self.project_root / k for k in SOVEREIGN_TERRITORIES.keys()]
+
+            for root_path in scan_targets:
                 if not root_path.exists():
                     continue
 
-                roots_scanned.append(root_name)
-                Logger.info(f"  Scanning territory: {root_name}")
+                root_name = root_path.name
+                roots_scanned.append(str(root_path.relative_to(self.project_root)))
+                Logger.info(f"  Scanning territory: {roots_scanned[-1]}")
 
                 # Use StructureValidatorAgent for detection
                 validator = self._get_structure_validator()
                 report = validator.validate_structure(root_path)
 
+                # [UNIFIED AUDIT] Ingest Physical Hierarchy Violations
+                try:
+                    from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+                    hierarchy = HierarchyAgent(project_root=self.project_root)
+                    # Scan specifically for files sitting in the root that shouldn't be there
+                    h_report = hierarchy.scan_root_violations(target_territory=root_name)
+                    
+                    for h_violation in h_report.get('violations', []):
+                        total_violations += 1
+                        violation_details.append({
+                            "type": "STRUCTURE",
+                            "file": h_violation.get('file'),
+                            "message": f"File sitting in territory root. Should be in SSOT subfolder.",
+                            "severity": "ERROR",
+                            "suggestion": f"Relocate to approved subfolder (agents/, registry/, etc.)"
+                        })
+                except Exception as e:
+                    Logger.warning(f"Hierarchy cross-check failed for {root_name}: {e}")
+
                 for violation in report.violations:
                     total_violations += 1
+                    
+                    # [FIX] Robustly handle violation types (Enum vs String) to prevent crashes
+                    v_type_raw = getattr(violation, "violation_type", "UNKNOWN")
+                    if hasattr(v_type_raw, "name"):
+                        v_type_name = v_type_raw.name
+                    else:
+                        v_type_name = str(v_type_raw)
+                        
                     violation_dict = {
-                        "type": violation.violation_type.name,
+                        "type": v_type_name,
                         "file": str(violation.file_path) if violation.file_path else None,
                         "message": violation.message,
-                        "severity": violation.severity,
-                        "suggestion": violation.suggestion,
+                        "severity": getattr(violation, "severity", None),
+                        "suggestion": getattr(violation, "suggestion", None),
                         "source_layer": getattr(violation, "source_layer", None),
                         "target_layer": getattr(violation, "target_layer", None),
                     }
@@ -1294,25 +1363,55 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
     def comprehensive_territory_audit(self, target_territories: list[str], check_layer_boundaries: bool = True, check_naming_conventions: bool = True) -> dict[str, Any]:
         """
-        Executes a comprehensive territory audit for specified territories.
-        
-        Args:
-            target_territories: List of territories to audit
-            check_layer_boundaries: Whether to check layer boundaries
-            check_naming_conventions: Whether to check naming conventions
-            
-        Returns:
-            Dictionary containing audit results
+        [HARDENED] Unified Compliance Audit.
+        Aggregates output from Hierarchy, Location, and SystemArchitect agents into a single JSON manifest.
         """
-        Logger.info(f"🎯 Starting comprehensive territory audit for: {target_territories}")
+        Logger.info(f"🎯 INITIATING UNIFIED AUDIT: {target_territories}")
         
-        # Use the existing run_audit method as base
-        audit_results = self.run_audit()
+        # 1. Base Naming/Drift Audit
+        audit_results = self.run_audit(target_territories=target_territories)
         
-        # Add territory-specific information
+        # Ensure violations list exists
+        if "violations" not in audit_results:
+            audit_results["violations"] = []
+
+        # 2. Ingest Hierarchy (Physical Placement)
+        try:
+            from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+            hierarchy = HierarchyAgent(project_root=self.project_root)
+            for territory in target_territories:
+                h_report = hierarchy.scan_root_violations(target_territory=territory)
+                for v in h_report.get('violations', []):
+                    audit_results["violations"].append({
+                        "type": "STRUCTURE",
+                        "file": v.get('file'),
+                        "message": "File sitting in territory root; must be in SSOT subfolder.",
+                        "severity": "ERROR"
+                    })
+        except Exception as e:
+            Logger.warning(f"Unified Audit: Hierarchy ingestion failed: {e}")
+
+        # 3. Ingest System Architect (Circular Dependencies/Gravity)
+        try:
+            from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
+            architect = SystemArchitectAgent(project_root=self.project_root)
+            for territory in target_territories:
+                path = f"agentic_core/{territory}"
+                arch_report = architect.validate_core_architecture(path)
+                if not arch_report.get('imports_valid', True):
+                    for circ in arch_report.get('circular_dependencies', []):
+                        audit_results["violations"].append({
+                            "type": "GRAVITY",
+                            "file": territory,
+                            "message": f"Circular dependency detected: {circ}",
+                            "severity": "CRITICAL"
+                        })
+        except Exception as e:
+            Logger.warning(f"Unified Audit: Architecture ingestion failed: {e}")
+            
+        # Update Total Stats
+        audit_results["stats"]["violations_found"] = len(audit_results["violations"])
         audit_results["target_territories"] = target_territories
-        audit_results["layer_boundaries_checked"] = check_layer_boundaries
-        audit_results["naming_conventions_checked"] = check_naming_conventions
         
         return audit_results
 
