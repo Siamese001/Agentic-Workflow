@@ -14,7 +14,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 Logger = logging.getLogger(__name__)
 
 
-class ConversationalRepair(SovereignBaseAgent):
+class ConversationalRepairAgent(SovereignBaseAgent):
     """
     Manages multi-agent debate using Sovereign Architecture.
     """
@@ -50,8 +50,8 @@ class ConversationalRepair(SovereignBaseAgent):
 _conversational_repair = None
 
 
-def get_conversational_repair() -> ConversationalRepair:
+def get_conversational_repair() -> ConversationalRepairAgent:
     global _conversational_repair
     if _conversational_repair is None:
-        _conversational_repair = ConversationalRepair()
+        _conversational_repair = ConversationalRepairAgent()
     return _conversational_repair

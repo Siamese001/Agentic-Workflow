@@ -12,7 +12,7 @@ import json
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 import hashlib
 import logging
@@ -58,7 +58,7 @@ def _default_placement_validator(path: Path, root: Path) -> tuple[bool, str]:
 
 
 @dataclass
-class PromptRegistryAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class PromptRegistryAgent(SovereignBaseAgent):
     """Runtime state manager for prompt versioning and activation.
 
     ARCHITECTURAL HARDENING:
@@ -250,7 +250,7 @@ class PromptRegistryAgent(SubatomicTestingMixin, SovereignBaseAgent):
         skip registration to prevent the 9-duplicate bug.
 
         SEMANTIC DEDUPLICATION: Checks for semantically similar prompts across registry
-        using embedding-based similarity (threshold: 0.9). Raises DuplicatePromptError
+        using embedding-based similarity (threshold: 0.9). Raises DuplicatePromptErrorAgent
         if a similar prompt is found to prevent sprawl.
         """
         # Compute embedding for semantic deduplication
@@ -260,7 +260,7 @@ class PromptRegistryAgent(SubatomicTestingMixin, SovereignBaseAgent):
         if content_emb is not None:
             similar = self._find_similar_prompts(content_emb, template_name)
             if similar:
-                raise DuplicatePromptError(
+                raise DuplicatePromptErrorAgent(
                     f"Semantic duplicate detected (threshold {self.similarity_threshold}). "
                     f"Found {len(similar)} similar prompt(s): {similar[0]['name']} "
                     f"(similarity: {similar[0]['similarity']:.3f})",
@@ -348,7 +348,7 @@ class PromptRegistryAgent(SubatomicTestingMixin, SovereignBaseAgent):
         ]
 
 
-class DuplicatePromptError(Exception):
+class DuplicatePromptErrorAgent(Exception):
     """Raised when a semantically duplicate prompt is detected."""
 
     def __init__(self, message, similar_entries) -> None:
