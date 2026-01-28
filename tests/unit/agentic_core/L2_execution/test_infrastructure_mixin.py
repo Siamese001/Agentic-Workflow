@@ -8,7 +8,7 @@ of the consolidated infrastructure_mixin (Opportunity #4).
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
 from agentic_core.base_agents.healer_mixin import healer_mixin
 from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 
 class ConcreteInfrastructureAgent(infrastructure_mixin):

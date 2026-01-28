@@ -22,7 +22,7 @@ from agentic_core.prompt_governance.version_registry.PromptRegistry import regis
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 # Template content loading for registry
 TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"

@@ -6,7 +6,7 @@ Status: DEPRECATED - Do not use in production
 # LEGACY CODE BELOW - COMMENTED OUT
 # from enum import Enum
 # from dataclasses import dataclass, field
-# from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+# from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 # """
 # Proactive Scheduling and Predictive Handoff for Outreach Engine L4.5 Autonomy
 

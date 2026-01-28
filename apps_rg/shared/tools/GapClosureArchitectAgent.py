@@ -11,7 +11,7 @@ Location: apps_rg/engines/ (Application Logic - Resume Generator)
 """
 
 import logging
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 Logger: Any = logging.getLogger(__name__)
 

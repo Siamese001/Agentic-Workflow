@@ -210,17 +210,32 @@ class PascalSovereigntyFixer:
         return True
 
     def safe_rename_windows(self, src: Path, dest_name: str) -> bool:
-        """Atomically rename files on Windows using a 3-step temp shuffle."""
-        #
+        """Atomically rename files on Windows using a 3-step temp shuffle with collision handling."""
         dest = src.parent / dest_name
         if src.name == dest_name:
             return False
         if self.dry_run:
             print(f"  [PLAN] Rename {src.name} -> {dest_name}")
             return True
-        if dest.exists() and dest.resolve() != src.resolve():
-            print(f"  [ERROR] Collision: {dest_name} already exists. Skipping.")
-            return False
+        
+        # Handle collision: if target exists, check if content is identical
+        if dest.exists():
+            if dest.resolve() != src.resolve():
+                try:
+                    # Compare file contents
+                    if src.read_text(encoding="utf-8") == dest.read_text(encoding="utf-8"):
+                        print(f"  [INFO] Collision: {dest_name} already exists with identical content. Removing duplicate.")
+                        src.unlink()  # Remove the source duplicate
+                        return True
+                    else:
+                        print(f"  [ERROR] Collision: {dest_name} already exists with different content. Skipping.")
+                        return False
+                except (OSError, UnicodeDecodeError) as e:
+                    print(f"  [ERROR] Collision check failed: {e}")
+                    return False
+            else:
+                return False  # Same file, no action needed
+        
         try:
             temp = src.parent / f"__temp_{src.name}"
             src.rename(temp)

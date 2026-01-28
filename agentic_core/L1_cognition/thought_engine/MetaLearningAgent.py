@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.utils.sovereign_index import SovereignIndex
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 # Type alias for telemetry callback
 TelemetryCallback = Callable[[str, dict[str, Any]], None]

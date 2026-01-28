@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 from agentic_core.base_agents.redis_cache_mixin import redis_cache_mixin
 from agentic_core.config.SovereignConfigManager import get_sovereign_config
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 Logger = logging.getLogger(__name__)
 

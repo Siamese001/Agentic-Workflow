@@ -20,7 +20,7 @@ from dataclasses import field
 import json
 import uuid
 from datetime import datetime
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 
 @dataclass
