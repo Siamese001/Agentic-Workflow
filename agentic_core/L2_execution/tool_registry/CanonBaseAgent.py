@@ -19,7 +19,7 @@ import logging
 import os
 from typing import Any, Dict, List, Optional, Set
 
-from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
+from agentic_core.L1_cognition.thought_engine.ValidationProtocol import ValidationProtocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.validators.structure_blueprint import (
