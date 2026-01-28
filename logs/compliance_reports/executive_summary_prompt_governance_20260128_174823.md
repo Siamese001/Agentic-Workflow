@@ -1,5 +1,5 @@
 # 🛡️ Sovereign Compliance Report: prompt_governance
-**Date:** 2026-01-28 17:50:29 | **Status:** NON-COMPLIANT
+**Date:** 2026-01-28 17:48:23 | **Status:** NON-COMPLIANT
 
 ## 📊 Executive Summary
 

@@ -408,6 +408,176 @@ class AutonomousDecisionEngine:
         
         return result
 
+class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
+    """Enhanced decision engine with CognitiveDispositionAgent integration."""
+    
+    def __init__(self, enable_llm: bool = False, state_mgr: Optional['RuntimeStateManager'] = None, enable_cda: bool = False):
+        super().__init__(enable_llm, state_mgr)
+        self.enable_cda = enable_cda
+        self.cda = None
+        
+        if enable_cda:
+            try:
+                from agentic_core.L5_safety.validators.CognitiveDispositionAgent import CognitiveDispositionAgent
+                project_root = state_mgr.project_root if state_mgr else Path.cwd()
+                self.cda = CognitiveDispositionAgent(project_root=project_root)
+                logger.info("🧠 CognitiveDispositionAgent integrated for enhanced decision making")
+            except ImportError as e:
+                logger.warning(f"CognitiveDispositionAgent not available: {e}")
+                self.enable_cda = False
+    
+    async def get_cognitive_disposition(self, file_path: Path, violation_type: str, context: dict = None) -> Optional['DispositionDecision']:
+        """Get AI-powered disposition analysis for complex violations."""
+        if not self.cda:
+            return None
+            
+        try:
+            return await self.cda.analyze_violation_async(file_path, violation_type, context)
+        except Exception as e:
+            logger.warning(f"Cognitive analysis failed for {file_path}: {e}")
+            return None
+    
+    def calculate_healing_confidence(
+        self,
+        violations_count: int,
+        violation_types: List[str],
+        territory: str,
+        historical_success_rate: float = 0.9,
+        cognitive_dispositions: List['DispositionDecision'] = None
+    ) -> ConfidenceScore:
+        """
+        Enhanced confidence calculation with cognitive disposition analysis.
+        """
+        # Get base confidence from parent calculation
+        base_confidence = super().calculate_healing_confidence(
+            violations_count, violation_types, territory, historical_success_rate
+        )
+        
+        # Enhance with cognitive analysis if available
+        if cognitive_dispositions and self.enable_cda:
+            cognitive_factor = self._calculate_cognitive_factor(cognitive_dispositions)
+            base_confidence.factors['cognitive_analysis'] = cognitive_factor
+            
+            # Adjust confidence based on cognitive analysis
+            # Weight cognitive analysis at 15% of total confidence
+            cognitive_weight = 0.15
+            base_weight = 0.85
+            
+            # Re-calculate weighted confidence
+            base_confidence.value = (
+                base_confidence.value * base_weight + 
+                cognitive_factor * cognitive_weight
+            )
+            
+            # Update reasoning to include cognitive insights
+            avg_cognitive_conf = sum(d.confidence for d in cognitive_dispositions) / len(cognitive_dispositions)
+            base_confidence.reasoning += f" | Cognitive: {avg_cognitive_conf:.2f}"
+        
+        return base_confidence
+    
+    def _calculate_cognitive_factor(self, dispositions: List['DispositionDecision']) -> float:
+        """Calculate cognitive confidence factor from disposition decisions."""
+        if not dispositions:
+            return 0.5  # Neutral factor
+        
+        # Average confidence across all cognitive dispositions
+        avg_confidence = sum(d.confidence for d in dispositions) / len(dispositions)
+        
+        # Factor in action types - some actions are riskier than others
+        action_weights = {
+            'MOVE': 0.9,      # High confidence in move decisions
+            'ARCHIVE': 0.95,  # Very safe action
+            'IGNORE': 0.7,    # Lower confidence for ignoring
+            'MANUAL_REVIEW': 0.3  # Lowest confidence - requires human intervention
+        }
+        
+        # Weight by action type
+        weighted_confidences = []
+        for disposition in dispositions:
+            action_weight = action_weights.get(disposition.action, 0.5)
+            weighted_confidences.append(disposition.confidence * action_weight)
+        
+        if weighted_confidences:
+            return sum(weighted_confidences) / len(weighted_confidences)
+        
+        return avg_confidence
+    
+    async def analyze_violations_with_cognitive_disposition(
+        self,
+        violations: List,
+        territory: str,
+        state_mgr=None
+    ) -> Tuple[List['DispositionDecision'], ConfidenceScore]:
+        """
+        Analyze violations using CognitiveDispositionAgent and calculate enhanced confidence.
+        """
+        if not self.enable_cda or not self.cda:
+            return [], self.calculate_healing_confidence(len(violations), ['UNKNOWN'], territory)
+        
+        cognitive_dispositions = []
+        
+        # Analyze each violation with CDA (limit to first 10 for performance)
+        for violation in violations[:10]:
+            try:
+                # Extract file path and violation type
+                if isinstance(violation, tuple) and len(violation) >= 2:
+                    file_path = Path(violation[0])
+                    violation_message = str(violation[1])
+                elif hasattr(violation, 'file'):
+                    file_path = Path(violation.file)
+                    violation_message = getattr(violation, 'message', str(violation))
+                else:
+                    continue
+                
+                # Determine violation type from message
+                violation_type = self._classify_violation_type(violation_message)
+                
+                # Get cognitive disposition
+                context = {
+                    'territory': territory,
+                    'total_violations': len(violations),
+                    'violation_index': len(cognitive_dispositions)
+                }
+                
+                disposition = await self.get_cognitive_disposition(
+                    file_path, violation_type, context
+                )
+                
+                if disposition:
+                    cognitive_dispositions.append(disposition)
+                    logger.info(f"🧠 CDA Analysis: {file_path.name} -> {disposition.action} (conf: {disposition.confidence:.2f})")
+                
+            except Exception as e:
+                logger.warning(f"Cognitive analysis failed for violation: {e}")
+                continue
+        
+        # Calculate enhanced confidence with cognitive insights
+        enhanced_confidence = self.calculate_healing_confidence(
+            len(violations),
+            ['COGNITIVE_ANALYZED'],
+            territory,
+            cognitive_dispositions=cognitive_dispositions
+        )
+        
+        return cognitive_dispositions, enhanced_confidence
+    
+    def _classify_violation_type(self, violation_message: str) -> str:
+        """Classify violation type from message content."""
+        message_lower = violation_message.lower()
+        
+        if 'missing sovereign root' in message_lower:
+            return 'MISSING_DIRECTORY'
+        elif 'forbidden keyword' in message_lower:
+            return 'FORBIDDEN_CONTENT'
+        elif 'forbidden extension' in message_lower:
+            return 'EXTENSION_MISMATCH'
+        elif 'test_' in message_lower:
+            return 'TEST_FILE_MISPLACED'
+        elif 'sovereign' in message_lower:
+            return 'SOVEREIGN_VIOLATION'
+        else:
+            return 'STRUCTURAL_VIOLATION'
+
 # ============================================================================
 # AGENT DISCOVERY (From Canon Validator)
 # ============================================================================
@@ -524,7 +694,7 @@ def execute_phase1_discovery(agents, territory, decision_engine, state_mgr, dry_
     return execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr, dry_run, auto_approve)
 
 def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True):
-    """PHASE 1: TERRITORIAL DISCOVERY - Implementation"""
+    """PHASE 1: TERRITORIAL DISCOVERY - Implementation with CognitiveDispositionAgent integration"""
     logger.info(f"=== PHASE 1: DISCOVERY - {territory} ===")
     
     state_mgr.update_agent("FilesystemSSOTReconcilerAgent", "L0 - Maintenance")
@@ -560,11 +730,36 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr,
     else:
         logger.warning(f"Territory path does not exist: {territory_path}")
     
-    confidence = decision_engine.calculate_healing_confidence(
-        len(violations), 
-        [str(v) for v in violations[:10]], 
-        territory
-    )
+    # Enhanced confidence calculation with cognitive analysis
+    if hasattr(decision_engine, 'enable_cda') and decision_engine.enable_cda and violations:
+        logger.info("🧠 Using CognitiveDispositionAgent for enhanced violation analysis...")
+        
+        # Create event loop for async cognitive analysis
+        import asyncio
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        
+        # Get cognitive dispositions and enhanced confidence
+        cognitive_dispositions, enhanced_confidence = loop.run_until_complete(
+            decision_engine.analyze_violations_with_cognitive_disposition(violations, territory, state_mgr)
+        )
+        
+        # Store cognitive dispositions in state for reporting
+        state_mgr.state["cognitive_dispositions"] = [d.__dict__ for d in cognitive_dispositions]
+        
+        confidence = enhanced_confidence
+        logger.info(f"🧠 Enhanced confidence with cognitive analysis: {confidence.value:.2f}")
+    else:
+        # Fallback to standard confidence calculation
+        confidence = decision_engine.calculate_healing_confidence(
+            len(violations), 
+            [str(v) for v in violations[:10]], 
+            territory
+        )
+    
     state_mgr.state["compliance_scores"][territory] = confidence.value
     
     # [DETAILED TRACKING] Store actual LocationAgent violations for final report
@@ -1086,6 +1281,7 @@ Examples:
     parser.add_argument("--list-agents", action="store_true", help="List discoverable agents")
     # [SOVEREIGN DEFAULT] Inverting safety logic to 'Active by Default' for Senior Developer velocity
     parser.add_argument("--disable-llm", action="store_true", help="Disable LLM for low-confidence decisions")
+    parser.add_argument("--enable-cda", action="store_true", help="Enable CognitiveDispositionAgent for enhanced AI-powered violation analysis")
     parser.add_argument("--dry-run", action="store_true", help="Run in preview mode (no changes applied)")
     parser.add_argument("--interactive", action="store_true", help="Enable human-in-the-loop prompts (Default: Auto-Approve)")
     parser.add_argument("--manual", action="store_true", help="Disable autonomous mode (legacy)")
@@ -1173,11 +1369,15 @@ Examples:
     dry_run = args.dry_run or args.validate
     auto_approve = not args.interactive
     
-    decision_engine = AutonomousDecisionEngine(enable_llm=enable_llm, state_mgr=state_mgr)
+    # [NEW] Enable CognitiveDispositionAgent if requested
+    enable_cda = getattr(args, 'enable_cda', False)
+    
+    decision_engine = EnhancedAutonomousDecisionEngine(enable_llm=enable_llm, state_mgr=state_mgr, enable_cda=enable_cda)
     
     logger.info("🏛️ UNIFIED SOVEREIGN PROTOCOL STARTED")
     logger.info(f"  Mode: {'AUTONOMOUS' if not args.manual else 'MANUAL'}")
     logger.info(f"  LLM: {'ENABLED' if enable_llm else 'DISABLED'}")
+    logger.info(f"  CDA: {'ENABLED' if enable_cda else 'DISABLED'}")
     logger.info(f"  HEALING: {'ACTIVE' if not dry_run else 'DRY-RUN'}")
     logger.info(f"  APPROVAL: {'AUTO' if auto_approve else 'INTERACTIVE'}")
     

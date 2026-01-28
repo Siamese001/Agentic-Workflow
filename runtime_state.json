@@ -1,7 +1,7 @@
 {
   "status": "completed",
-  "start_time": "2026-01-28T17:10:47.634906",
-  "end_time": "2026-01-28T17:11:15.143775",
+  "start_time": "2026-01-28T17:50:11.115577",
+  "end_time": "2026-01-28T17:50:29.875371",
   "current_agent": null,
   "current_layer": "L5 - Compliance",
   "agents_order": [
@@ -10,135 +10,124 @@
   "completed_agents": [
     {
       "agent": "FilesystemSSOTReconcilerAgent",
-      "time": "2026-01-28T17:10:48.104830",
+      "time": "2026-01-28T17:50:11.441956",
       "success": true,
       "details": "Drift violations: 0"
     },
     {
       "agent": "LocationAgent",
-      "time": "2026-01-28T17:10:49.434768",
+      "time": "2026-01-28T17:50:12.509246",
       "success": true,
-      "details": "Violations: 5 | Conf: 0.84 (no heal method)"
+      "details": "Violations: 5 | Conf: 0.84 (healing skipped)"
     },
     {
       "agent": "HierarchyAgent",
-      "time": "2026-01-28T17:10:49.460273",
+      "time": "2026-01-28T17:50:12.531591",
       "success": true,
       "details": "No violations found"
     },
     {
-      "agent": "PascalSovereigntyAgent",
-      "time": "2026-01-28T17:10:49.542462",
-      "success": true,
-      "details": "Healed: 0"
-    },
-    {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-01-28T17:11:02.839701",
+      "time": "2026-01-28T17:50:21.389676",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "SystemArchitectAgent",
-      "time": "2026-01-28T17:11:14.967584",
+      "time": "2026-01-28T17:50:29.736058",
       "success": true,
       "details": "Architecture Valid"
     },
     {
       "agent": "SovereignCertifier",
-      "time": "2026-01-28T17:11:15.132812",
+      "time": "2026-01-28T17:50:29.865528",
       "success": true,
       "details": "Certificate Issued"
     }
   ],
   "events": [
     {
-      "time": "2026-01-28T17:10:47.634906",
+      "time": "2026-01-28T17:50:11.115577",
       "type": "info",
       "message": "Mission started: Unified Protocol: Territory Scan: prompt_governance"
     },
     {
-      "time": "2026-01-28T17:10:48.064263",
+      "time": "2026-01-28T17:50:11.412124",
       "type": "domain_start",
       "message": "Entering Domain: prompt_governance"
     },
     {
-      "time": "2026-01-28T17:10:48.065307",
+      "time": "2026-01-28T17:50:11.412124",
       "type": "agent_start",
       "message": "\u2192 Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-01-28T17:10:48.104830",
+      "time": "2026-01-28T17:50:11.441956",
       "type": "agent_end",
       "message": "\u2713 Completed FilesystemSSOTReconcilerAgent"
     },
     {
-      "time": "2026-01-28T17:10:48.114836",
+      "time": "2026-01-28T17:50:11.447148",
       "type": "agent_start",
       "message": "\u2192 Executing LocationAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-28T17:10:49.432818",
+      "time": "2026-01-28T17:50:12.508234",
       "type": "decision",
-      "message": "Location Healing: HIGH CONFIDENCE (0.84)"
+      "message": "Location Healing: HIGH CONFIDENCE (0.84 > 0.75) - AUTO-HEAL"
     },
     {
-      "time": "2026-01-28T17:10:49.434768",
+      "time": "2026-01-28T17:50:12.509246",
       "type": "agent_end",
       "message": "\u2713 Completed LocationAgent"
     },
     {
-      "time": "2026-01-28T17:10:49.444496",
+      "time": "2026-01-28T17:50:12.516470",
       "type": "agent_start",
       "message": "\u2192 Executing HierarchyAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-28T17:10:49.460273",
+      "time": "2026-01-28T17:50:12.531591",
       "type": "agent_end",
       "message": "\u2713 Completed HierarchyAgent"
     },
     {
-      "time": "2026-01-28T17:10:49.477105",
+      "time": "2026-01-28T17:50:12.549451",
       "type": "decision",
-      "message": "Sovereignty Healing: HIGH CONFIDENCE (0.84)"
+      "message": "Sovereignty Healing: HIGH CONFIDENCE (0.84 > 0.75) - AUTO-HEAL"
     },
     {
-      "time": "2026-01-28T17:10:49.478154",
-      "type": "agent_start",
-      "message": "\u2192 Executing PascalSovereigntyAgent (L5 - Safety)"
+      "time": "2026-01-28T17:50:12.551325",
+      "type": "info",
+      "message": "Sovereignty healing skipped - Dry run mode"
     },
     {
-      "time": "2026-01-28T17:10:49.542462",
-      "type": "agent_end",
-      "message": "\u2713 Completed PascalSovereigntyAgent"
-    },
-    {
-      "time": "2026-01-28T17:10:49.555581",
+      "time": "2026-01-28T17:50:12.552008",
       "type": "agent_start",
       "message": "\u2192 Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-28T17:11:02.839701",
+      "time": "2026-01-28T17:50:21.389676",
       "type": "agent_end",
       "message": "\u2713 Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-01-28T17:11:02.850910",
+      "time": "2026-01-28T17:50:21.398199",
       "type": "agent_start",
       "message": "\u2192 Executing SystemArchitectAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-28T17:11:14.967584",
+      "time": "2026-01-28T17:50:29.736058",
       "type": "agent_end",
       "message": "\u2713 Completed SystemArchitectAgent"
     },
     {
-      "time": "2026-01-28T17:11:14.992257",
+      "time": "2026-01-28T17:50:29.751990",
       "type": "agent_start",
       "message": "\u2192 Executing SovereignCertifier (L5 - Compliance)"
     },
     {
-      "time": "2026-01-28T17:11:15.132812",
+      "time": "2026-01-28T17:50:29.865528",
       "type": "agent_end",
       "message": "\u2713 Completed SovereignCertifier"
     }
@@ -160,15 +149,15 @@
   "decisions_made": [
     {
       "confidence": 0.8425,
-      "timestamp": "2026-01-28T17:10:49.424128",
+      "timestamp": "2026-01-28T17:50:12.501405",
       "decision": true,
-      "reason": "HIGH CONFIDENCE (0.84)"
+      "reason": "HIGH CONFIDENCE (0.84 > 0.75) - AUTO-HEAL"
     },
     {
       "confidence": 0.8425,
-      "timestamp": "2026-01-28T17:10:49.469522",
+      "timestamp": "2026-01-28T17:50:12.542049",
       "decision": true,
-      "reason": "HIGH CONFIDENCE (0.84)"
+      "reason": "HIGH CONFIDENCE (0.84 > 0.75) - AUTO-HEAL"
     }
   ],
   "compliance_report": {
@@ -186,6 +175,7 @@
     ]
   },
   "current_territory": "prompt_governance",
+  "cognitive_dispositions": [],
   "location_violations": [
     [
       "C:\\Git\\Agentic-Workflow\\.sovereign_healing_backup",
