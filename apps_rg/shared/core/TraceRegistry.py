@@ -18,7 +18,7 @@ from typing import Any
 from pathlib import Path
 from datetime import datetime
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
 
 Logger = logging.getLogger(__name__)
 

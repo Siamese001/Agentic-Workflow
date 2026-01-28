@@ -196,7 +196,7 @@ def test_heal_repository_smoke(red_sentinel_agent):
 
 def test_healer_mixin_inheritance(red_sentinel_agent):
     """Test that agent properly inherits from HealerMixin."""
-    from agentic_core.base_agents.healer_mixin import HealerMixin
+    from agentic_core.base_agents.healer_mixin import healer_mixin
 
     assert isinstance(red_sentinel_agent, HealerMixin)
 

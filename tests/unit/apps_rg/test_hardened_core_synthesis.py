@@ -35,7 +35,7 @@ class TestHardenedCoreSynthesis:
     def test_healer_mixin_is_dataclass(self):
         """Test that HealerMixin is properly converted to @dataclass."""
         try:
-            from agentic_core.base_agents.healer_mixin import HealerMixin
+            from agentic_core.base_agents.healer_mixin import healer_mixin
             assert is_dataclass(HealerMixin), "HealerMixin must be @dataclass"
             
             # Test that required fields exist
@@ -98,7 +98,7 @@ class TestHardenedCoreSynthesis:
     def test_structural_healing_mixin_exists(self):
         """Test that StructuralHealingMixin exists and has salvaged methods."""
         try:
-            from agentic_core.base_agents.structural_healing_mixin import StructuralHealingMixin
+            from agentic_core.base_agents.structural_healing_mixin import structural_healing_mixin
             assert is_dataclass(StructuralHealingMixin), "StructuralHealingMixin must be @dataclass"
             
             # Test salvaged methods exist
@@ -111,7 +111,7 @@ class TestHardenedCoreSynthesis:
     def test_unified_hygiene_mixin_exists(self):
         """Test that HygieneMixin exists and has @standard_heal decorator."""
         try:
-            from agentic_core.base_agents.unified_hygiene_mixin import HygieneMixin
+            from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin
             assert is_dataclass(HygieneMixin), "HygieneMixin must be @dataclass"
             
             # Test that heal_repository has @standard_heal decorator
@@ -129,7 +129,7 @@ class TestHardenedCoreSynthesis:
         """Test that all critical methods have proper type hints."""
         try:
             # Test HealerMixin directly
-            from agentic_core.base_agents.healer_mixin import HealerMixin
+            from agentic_core.base_agents.healer_mixin import healer_mixin
             
             methods = inspect.getmembers(HealerMixin, predicate=inspect.isfunction)
             for name, func in methods:
@@ -195,8 +195,8 @@ class TestHardenedCoreSynthesis:
     def test_canonical_schema_compliance(self):
         """Test that heal_repository methods use canonical schema."""
         try:
-            from agentic_core.base_agents.healer_mixin import HealerMixin
-            from agentic_core.base_agents.unified_hygiene_mixin import HygieneMixin
+            from agentic_core.base_agents.healer_mixin import healer_mixin
+            from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin
             
             # Test HealerMixin
             healer_method = getattr(HealerMixin, 'heal_repository')
@@ -235,9 +235,9 @@ class TestHardenedCoreSynthesis:
         """Test that proper exception hierarchy is integrated."""
         try:
             from agentic_core.domain.exceptions import HealerError, StructuralError, HygieneError
-            from agentic_core.base_agents.healer_mixin import HealerMixin
-            from agentic_core.base_agents.structural_healing_mixin import StructuralHealingMixin
-            from agentic_core.base_agents.unified_hygiene_mixin import HygieneMixin
+            from agentic_core.base_agents.healer_mixin import healer_mixin
+            from agentic_core.base_agents.structural_healing_mixin import structural_healing_mixin
+            from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin
             
             # Test that mixins exist and have proper structure
             assert hasattr(HealerMixin, 'heal_repository'), "HealerMixin missing heal_repository"

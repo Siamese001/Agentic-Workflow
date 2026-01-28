@@ -180,9 +180,9 @@ INIT_CONTENT = '''from __future__ import annotations
 
 """MCP Integration - Hardened Sovereign Module."""
 from .SovereignLLMGateway import SovereignLLMGateway, get_llm_gateway
-from .llm_provider_mixin import LLMProviderMixin
+from .llm_provider_mixin import llm_provider_mixin
 from .EmbeddingSovereignAgent import EmbeddingSovereignAgent, get_embedding_gateway
-from .embedding_mixin import EmbeddingMixin
+from .embedding_mixin import embedding_mixin
 
 __all__ = [
     "SovereignLLMGateway",

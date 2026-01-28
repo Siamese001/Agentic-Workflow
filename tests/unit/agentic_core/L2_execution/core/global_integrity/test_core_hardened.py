@@ -18,7 +18,7 @@ from pydantic import ValidationError
 
 # Import hardened components
 from agentic_core.schemas.models.ReasoningConfig import ReasoningConfig, ModelConfig, RAGConfig, GovernorConfig
-from agentic_core.L2_execution.mcp.LLMProviderMixin import LLMProviderMixin
+from agentic_core.L2_execution.mcp.LLMProviderMixin import llm_provider_mixin
 from agentic_core.patterns.base import BaseReasoningPattern
 
 

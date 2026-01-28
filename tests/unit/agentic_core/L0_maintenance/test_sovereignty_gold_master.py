@@ -47,7 +47,7 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         regex_from = re.compile(r"(?P<prefix>from\s+\.*)"+re.escape(old_mod)+r"(?P<suffix>\s+import)")
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
         
-        self.assertIn("from HealerMixin import", updated,
+        self.assertIn("from healer_mixin import", updated,
                      "Absolute import should work without dots")
 
     def test_relative_import_triple_dots(self):
@@ -59,7 +59,7 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         regex_from = re.compile(r"(?P<prefix>from\s+\.*)"+re.escape(old_mod)+r"(?P<suffix>\s+import)")
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
         
-        self.assertIn("from ...ConfigMixin import", updated,
+        self.assertIn("from ...config_mixin import", updated,
                      "Triple-dot relative import should be preserved")
 
     def test_mixin_acronym_consistency(self):
@@ -132,7 +132,7 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         regex_from = re.compile(r"(?P<prefix>from\s+\.*)"+re.escape(old_mod)+r"(?P<suffix>\s+import)")
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
         
-        self.assertIn("from .TracingMixin import", updated,
+        self.assertIn("from .tracing_mixin import", updated,
                      "Direct relative import should be updated")
 
     def test_import_alias_with_relative(self):
@@ -144,7 +144,7 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         regex_import = re.compile(rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))")
         updated = regex_import.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
         
-        self.assertIn("import HealerMixin as hm", updated,
+        self.assertIn("import healer_mixin as hm", updated,
                      "Import alias should be preserved")
 
 

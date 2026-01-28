@@ -1,1 +1,0 @@
-# Duplicate test fixtures B

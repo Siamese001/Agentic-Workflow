@@ -354,7 +354,7 @@ class TestHealingStrategyMixin:
 
     def test_mixin_lazy_loads_orchestrator(self):
         """Test that mixin lazy-loads the healing orchestrator."""
-        from agentic_core.L5_safety.validators.healing_strategy_mixin import HealingStrategyMixin
+        from agentic_core.L5_safety.validators.healing_strategy_mixin import healing_strategy_mixin
 
         class TestAgent(HealingStrategyMixin):
             pass
@@ -385,7 +385,7 @@ class TestValidatorMixin:
 
     def test_mixin_lazy_loads_orchestrator(self):
         """Test that mixin lazy-loads the validator orchestrator."""
-        from agentic_core.L5_safety.validators.validator_mixin import ValidatorMixin
+        from agentic_core.L5_safety.validators.validator_mixin import validator_mixin
 
         class TestAgent(ValidatorMixin):
             pass

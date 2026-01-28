@@ -12,7 +12,7 @@ from __future__ import annotations
 from apps_rg.shared.core.agent_base import RGAgentBase
 from apps_rg.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_rg.shared.core.trace_registry import TraceRegistry
-from apps_rg.shared.core.mixins import MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
+from apps_rg.shared.core.mixins import mcp_hardened_mixin, HealerMixin, SubatomicTestingMixin
 
 __all__ = [
     "RGAgentBase",

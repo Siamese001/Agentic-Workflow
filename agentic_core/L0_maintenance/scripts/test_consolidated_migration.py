@@ -31,7 +31,7 @@ class TestConsolidatedMigration:
     def test_healer_mixin_exists(self):
         """HealerMixin must exist and be importable."""
         try:
-            from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+            from agentic_core.utils.core_extensions.healer_mixin import healer_mixin
 
             assert HealerMixin is not None, "HealerMixin should be importable"
             assert hasattr(HealerMixin, "heal_repository"), "HealerMixin should have heal_repository"
@@ -46,7 +46,7 @@ class TestConsolidatedMigration:
     def test_healer_mixin_has_core_methods(self):
         """HealerMixin must have core healing methods."""
         try:
-            from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+            from agentic_core.utils.core_extensions.healer_mixin import healer_mixin
 
             # Check core methods exist
             assert hasattr(HealerMixin, "heal_repository"), (
@@ -109,7 +109,7 @@ class TestConsolidatedMigration:
     def test_mixin_logic_functionality(self):
         """Verify the HealerMixin has core healing functionality."""
         try:
-            from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+            from agentic_core.utils.core_extensions.healer_mixin import healer_mixin
             
             # Simple functional test of the mixin method existence
             assert hasattr(HealerMixin, 'heal_repository')

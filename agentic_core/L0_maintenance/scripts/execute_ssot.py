@@ -710,6 +710,11 @@ def try_summon_orchestrator(project_root: Path, targets: List[str], execute: boo
 # ============================================================================
 
 def main():
+    # Add project root to Python path
+    project_root = Path.cwd()
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+    
     parser = argparse.ArgumentParser(
         description="Unified Sovereign Compliance Protocol v4.0",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -742,8 +747,6 @@ Examples:
     # [ULTRA-HARDENED] Validate user-supplied territory name format via regex
     if args.territory and not re.match(r"^[A-Za-z0-9_]+$", args.territory):
         parser.error("Invalid territory name: only alphanumeric and underscores allowed.")
-
-    project_root = Path.cwd()
     
     # 1. Handle Discovery
     if args.list_agents:

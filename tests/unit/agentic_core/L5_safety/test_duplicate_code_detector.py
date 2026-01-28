@@ -347,7 +347,7 @@ def test_import_validation():
         test_fail("IMPORT_SSOT", f"SSOT import failed: {e}")
 
     try:
-        from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+        from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
 
         test_pass("IMPORT_MCP", "MCPHardenedMixin imports correctly")
     except ImportError as e:

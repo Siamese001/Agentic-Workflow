@@ -30,7 +30,7 @@ class TestPhase1_5_CognitiveMigration:
     def test_healer_mixin_exists(self):
         """HealerMixin must exist and be importable."""
         try:
-            from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+            from agentic_core.utils.core_extensions.healer_mixin import healer_mixin
 
             assert HealerMixin is not None, "HealerMixin should be importable"
             assert hasattr(HealerMixin, "heal_repository"), "HealerMixin should have heal_repository"
@@ -45,7 +45,7 @@ class TestPhase1_5_CognitiveMigration:
     def test_healer_mixin_has_core_methods(self):
         """HealerMixin must have core healing methods."""
         try:
-            from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+            from agentic_core.utils.core_extensions.healer_mixin import healer_mixin
 
             # Check core methods exist
             assert hasattr(HealerMixin, "heal_repository"), (

@@ -20,7 +20,7 @@ import hashlib
 if TYPE_CHECKING:
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
-from agentic_core.base_agents.redis_cache_mixin import RedisCacheMixin
+from agentic_core.base_agents.redis_cache_mixin import redis_cache_mixin
 from agentic_core.config.SovereignConfigManager import get_sovereign_config
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 

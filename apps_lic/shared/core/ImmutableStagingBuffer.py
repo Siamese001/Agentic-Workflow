@@ -9,8 +9,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L2_execution.mcp.MCPHardenedMixin import MCPHardenedMixin
-from agentic_core.base_agents.HealerMixin import HealerMixin
+from agentic_core.L2_execution.mcp.MCPHardenedMixin import mcp_hardened_mixin
+from agentic_core.base_agents.HealerMixin import healer_mixin
 
 
 @dataclass

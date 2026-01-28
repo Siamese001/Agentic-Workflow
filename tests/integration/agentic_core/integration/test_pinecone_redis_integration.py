@@ -102,8 +102,8 @@ class test_pinecone_redis_integration(unittest.TestCase):
         print("TC-REDIS-002: PineconeVectorMixin Inheritance Check")
         print("=" * 60)
 
-        from agentic_core.base_agents.pinecone_vector_mixin import PineconeVectorMixin
-        from agentic_core.base_agents.redis_cache_mixin import RedisCacheMixin
+        from agentic_core.base_agents.pinecone_vector_mixin import pinecone_vector_mixin
+        from agentic_core.base_agents.redis_cache_mixin import redis_cache_mixin
 
         # Verify inheritance
         self.assertTrue(

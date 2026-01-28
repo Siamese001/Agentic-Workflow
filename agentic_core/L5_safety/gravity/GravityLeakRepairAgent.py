@@ -34,11 +34,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
-from agentic_core.base_agents.healer_mixin import HealerMixin
+from agentic_core.base_agents.healer_mixin import healer_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)

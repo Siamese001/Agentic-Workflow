@@ -27,8 +27,8 @@ import re
 from typing import Any, List
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
-from agentic_core.config.config_mixin import ConfigMixin
+from agentic_core.L2_execution.mcp.llm_provider_mixin import llm_provider_mixin
+from agentic_core.config.config_mixin import config_mixin
 # Import schemas from SSOT
 from agentic_core.schemas.models.consensus import ConsensusVerdict, ModelOpinion
 
@@ -136,8 +136,8 @@ StructuredEngine - Intent to Plan Converter
 import logging
 from typing import Any, List, Dict
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
-from agentic_core.config.config_mixin import ConfigMixin
+from agentic_core.L2_execution.mcp.llm_provider_mixin import llm_provider_mixin
+from agentic_core.config.config_mixin import config_mixin
 
 Logger = logging.getLogger(__name__)
 

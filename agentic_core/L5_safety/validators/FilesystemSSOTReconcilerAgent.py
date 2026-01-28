@@ -70,14 +70,13 @@ from typing import Any
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
-# GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
 # Use correct MCP mixin location
 try:
-    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
+    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
 except ImportError:
     # Fallback for testing
     class MCPHardenedMixin:
@@ -141,7 +140,6 @@ class ReconciliationViolation:
 
 class FilesystemSSOTReconcilerAgent(
     AutonomyMixin,
-    AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
     L0MaintenanceBaseAgent,
 ):

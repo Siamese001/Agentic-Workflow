@@ -135,7 +135,7 @@ def test_ssot_modules_importable():
 
 def test_healer_mixin_ssot_location():
     """Verify HealerMixin SSOT is in correct location."""
-    from agentic_core.base_agents.healer_mixin import HealerMixin
+    from agentic_core.base_agents.healer_mixin import healer_mixin
 
     assert HealerMixin is not None
 
