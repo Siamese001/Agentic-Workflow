@@ -31,7 +31,7 @@ except ImportError:
 
 
 try:
-    from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+    from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 except ImportError:
 
     class SubatomicTestingMixin:

@@ -5,7 +5,7 @@ Status: DEPRECATED - Do not use in production
 
 # LEGACY CODE BELOW - COMMENTED OUT
 # from typing import Any, Dict, List, Optional, Tuple
-# from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+# from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 # from dataclasses import dataclass, field
 
 # Stubs for missing dependencies

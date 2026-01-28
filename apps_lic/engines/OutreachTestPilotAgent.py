@@ -5,7 +5,7 @@ Status: DEPRECATED - Do not use in production
 
 # LEGACY CODE BELOW - COMMENTED OUT
 # from dataclasses import dataclass, field
-# from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+# from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 # """
 # OutreachTestPilotAgent - Campaign validation testing agent.
 

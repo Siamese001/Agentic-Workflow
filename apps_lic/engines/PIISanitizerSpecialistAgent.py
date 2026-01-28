@@ -6,7 +6,7 @@ import json
 import re
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 from pydantic import BaseModel, Field
 

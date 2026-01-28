@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 """
 SafetyExecutorAgent - Safety Execution Interface

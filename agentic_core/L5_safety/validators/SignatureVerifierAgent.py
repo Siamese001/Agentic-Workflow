@@ -31,7 +31,7 @@ class OperationResult:
 
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30

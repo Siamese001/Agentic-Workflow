@@ -29,7 +29,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 )
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.utils.ssot_discovery import get_python_files
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 
 @dataclass

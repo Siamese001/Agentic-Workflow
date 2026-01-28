@@ -142,7 +142,7 @@ class BenchmarkSuite:
 
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 
 # NAMING FIXED: BenchmarkingAgent → BenchmarkingAgent

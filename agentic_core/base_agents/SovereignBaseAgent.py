@@ -26,7 +26,7 @@ from pathlib import Path
 
 from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 from agentic_core.L5_safety.validators.ValidatorMixin import validator_mixin
-from agentic_core.base_agents.SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.base_agents.SubatomicTestingMixin import subatomic_testing_mixin
 from agentic_core.base_agents.AuditTrailMixin import audit_trail_mixin
 from agentic_core.domain.HealerError import SovereignError, ConfigurationError
 from agentic_core.domain.CoreIntegrityVerifier import CoreIntegrityVerifier, emergency_shutdown

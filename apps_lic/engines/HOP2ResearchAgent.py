@@ -17,7 +17,7 @@ from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
 from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.shared.core.TraceRegistry import TraceRegistry
 from apps_lic.domain.config import load_agent_specs
-from agentic_core.base_agents.SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.base_agents.SubatomicTestingMixin import subatomic_testing_mixin
 
 # Domain Imports
 try:

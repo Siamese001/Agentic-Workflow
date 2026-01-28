@@ -15,7 +15,7 @@ from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.shared.core.TraceRegistry import TraceRegistry
 from apps_lic.domain.config import load_agent_specs
 from apps_lic.logic_nodes.K1Router import K1Router
-from agentic_core.base_agents.SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.base_agents.SubatomicTestingMixin import subatomic_testing_mixin
 
 
 @dataclass

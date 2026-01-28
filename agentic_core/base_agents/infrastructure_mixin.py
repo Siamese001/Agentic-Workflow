@@ -35,7 +35,7 @@ from typing import Any
 
 from agentic_core.L2_execution.mcp.MCPHardenedMixin import mcp_hardened_mixin
 from agentic_core.base_agents.HealerMixin import healer_mixin
-from agentic_core.base_agents.SubatomicTestingMixin import SubatomicTestingMixin
+from agentic_core.base_agents.SubatomicTestingMixin import subatomic_testing_mixin
 from agentic_core.base_agents.TracingMixin import (
     TracingMixin,
 )  # [INJECTED] Mandatory Tracing for ALL 278 Agents

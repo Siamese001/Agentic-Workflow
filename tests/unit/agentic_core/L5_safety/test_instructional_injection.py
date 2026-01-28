@@ -117,7 +117,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.base_agents.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
-        from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+        from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
         assert issubclass(SubatomicTestingMixin, instructional_injection_mixin)
 
