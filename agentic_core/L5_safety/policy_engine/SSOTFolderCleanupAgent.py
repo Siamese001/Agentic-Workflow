@@ -147,7 +147,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
 
             self._cognitive_agent = CognitiveDispositionAgent(
                 project_root=self.project_root,
-                confidence_threshold=0.7,
+                confidence_threshold=0.75,  # Unified threshold > 0.75
             )
         return self._cognitive_agent
 

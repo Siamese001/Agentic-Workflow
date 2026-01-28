@@ -158,7 +158,10 @@ class RuntimeStateManager:
                 "strategy_weights": {"cot": 1.0, "tot": 1.0, "react": 1.0},
                 "recent_experiences": []
             },
-            "compliance_scores": {}
+            "compliance_scores": {},
+            # [SILENT AGGREGATION] Track decisions for final report
+            "decisions_made": [],
+            "compliance_report": {}
         }
         # [HARDENED] Register exit handler to prevent 'zombie' running states
         atexit.register(self._emergency_cleanup)
@@ -177,12 +180,17 @@ class RuntimeStateManager:
         self.save()
 
     def complete_agent(self, agent_name: str, success: bool, details: str = ""):
+        """
+        [HARDENED] Silent Aggregation.
+        Records agent completion but suppresses intermediate JSON console dumps.
+        """
         self.state["completed_agents"].append({
             "agent": agent_name,
             "time": datetime.now().isoformat(),
             "success": success,
             "details": details
         })
+        # Log to file/state but DO NOT PRINT JSON to console here
         self.add_event("agent_end", f"{'✓' if success else '❌'} Completed {agent_name}")
         self.save()
 
@@ -192,13 +200,18 @@ class RuntimeStateManager:
             "type": event_type,
             "message": message
         })
-        # Mirror to logger
+        # [SILENT AGGREGATION] Only log minimal status to console during execution
+        # Full telemetry captured in state for final report
         if event_type == "error":
             logger.error(message)
         elif event_type == "warning":
             logger.warning(message)
-        else:
+        elif event_type in ["agent_start", "agent_end"]:
+            # Keep minimal agent progress indicators
             logger.info(message)
+        else:
+            # Suppress other verbose intermediate logs
+            pass
 
     def finish_mission(self, status="completed"):
         self.state["status"] = status
@@ -270,11 +283,11 @@ class ConfidenceScore:
     
     @property
     def is_high_confidence(self) -> bool:
-        return self.value >= 0.8
+        return self.value > 0.75
     
     @property
     def is_medium_confidence(self) -> bool:
-        return 0.5 <= self.value < 0.8
+        return 0.5 <= self.value <= 0.75
     
     @property
     def is_low_confidence(self) -> bool:
@@ -283,9 +296,10 @@ class ConfidenceScore:
 class AutonomousDecisionEngine:
     """Makes autonomous healing decisions based on confidence scores."""
     
-    def __init__(self, enable_llm: bool = False):
+    def __init__(self, enable_llm: bool = False, state_mgr: Optional['RuntimeStateManager'] = None):
         self.enable_llm = enable_llm
         self.decisions_made = []
+        self.state_mgr = state_mgr  # [SILENT AGGREGATION] Link to state for decision tracking
         
     def calculate_healing_confidence(
         self,
@@ -309,7 +323,13 @@ class AutonomousDecisionEngine:
 
         # Factor 1: Violation Count (Risk-Adjusted)
         if violations_count == 0: 
+            # [LOGIC FIX] Zero violations = perfect confidence (1.0)
+            # No need for weighted averaging when there are no issues
             factors['violation_count'] = 1.0
+            factors['known_types'] = 1.0
+            factors['historical_success'] = 1.0
+            factors['territory_complexity'] = 1.0
+            confidence_value = 1.0
         elif violations_count <= 5: 
             factors['violation_count'] = 0.95 if is_trusted else 0.9
         elif violations_count <= 25: 
@@ -320,25 +340,33 @@ class AutonomousDecisionEngine:
         else: 
             factors['violation_count'] = 0.70 if is_trusted else 0.2
         
-        # Factor 2: Known violation types (Expanded definition)
-        known_types = {'SHALLOW', 'DEEP', 'VOID', 'NAMING', 'IMPORT', 'HIERARCHY', 'ORPHAN', 'DUPLICATE', 'STRUCTURE'}
-        unknown_types = [v for v in violation_types if not any(k in str(v) for k in known_types)]
-        factors['known_types'] = 1.0 if not unknown_types else 0.5
-        
-        # Factor 3: Historical success
-        factors['historical_success'] = historical_success_rate
-        
-        # Factor 4: Complexity / Trust Bonus
-        if is_trusted:
-             factors['territory_complexity'] = 1.0   # High Trust Bonus
-        elif is_critical:
-             factors['territory_complexity'] = 0.6   # High Caution Penalty
+        # Only calculate weighted confidence for violations > 0
+        unknown_types = []  # Initialize for all cases
+        if violations_count > 0:
+            # Factor 2: Known violation types (Expanded definition)
+            known_types = {'SHALLOW', 'DEEP', 'VOID', 'NAMING', 'IMPORT', 'HIERARCHY', 'ORPHAN', 'DUPLICATE', 'STRUCTURE'}
+            unknown_types = [v for v in violation_types if not any(k in str(v) for k in known_types)]
+            factors['known_types'] = 1.0 if not unknown_types else 0.5
+            
+            # Factor 3: Historical success
+            factors['historical_success'] = historical_success_rate
+            
+            # Factor 4: Complexity / Trust Bonus
+            if is_trusted:
+                 factors['territory_complexity'] = 1.0   # High Trust Bonus
+            elif is_critical:
+                 factors['territory_complexity'] = 0.6   # High Caution Penalty
+            else:
+                 factors['territory_complexity'] = 0.85  # Standard
+            
+            # Adjusted Weights to favor Territory Trust
+            weights = {'violation_count': 0.35, 'known_types': 0.25, 'historical_success': 0.15, 'territory_complexity': 0.25}
+            confidence_value = sum(factors[k] * weights[k] for k in factors)
         else:
-             factors['territory_complexity'] = 0.85  # Standard
-        
-        # Adjusted Weights to favor Territory Trust
-        weights = {'violation_count': 0.35, 'known_types': 0.25, 'historical_success': 0.15, 'territory_complexity': 0.25}
-        confidence_value = sum(factors[k] * weights[k] for k in factors)
+            # Zero violations - set all factors to perfect for consistency
+            factors['known_types'] = 1.0
+            factors['historical_success'] = 1.0
+            factors['territory_complexity'] = 1.0
         
         risk_profile = "TRUSTED" if is_trusted else ("CRITICAL" if is_critical else "STANDARD")
         reasoning = f"[{risk_profile}] Violations: {violations_count}, Unknowns: {len(unknown_types)}, Conf: {confidence_value:.2f}"
@@ -352,20 +380,18 @@ class AutonomousDecisionEngine:
     def should_proceed_with_healing(self, confidence: ConfidenceScore) -> Tuple[bool, str]:
         """
         [HARDENED] Confidence Gate.
-        Threshold increased to 0.7 to ensure LLM oversight for all non-trivial actions.
+        Strict threshold > 0.75 for autonomous healing actions.
         """
         decision = {
             'confidence': confidence.value,
             'timestamp': datetime.now().isoformat()
         }
         
-        # New Threshold Logic: < 0.7 triggers LLM
-        if confidence.value >= 0.8:
-            result = (True, f"HIGH CONFIDENCE ({confidence.value:.2f})")
-        elif confidence.value >= 0.7:
-            result = (True, f"MEDIUM CONFIDENCE ({confidence.value:.2f})")
+        # New Threshold Logic: > 0.75 triggers Autonomous Healing
+        if confidence.value > 0.75:
+            result = (True, f"HIGH CONFIDENCE ({confidence.value:.2f} > 0.75) - AUTO-HEAL")
         else:
-            # Score is < 0.7: Request LLM Intervention
+            # Score is <= 0.75: Request LLM Intervention or Fail
             if self.enable_llm:
                 result = (True, f"LOW CONFIDENCE ({confidence.value:.2f}) - LLM Override")
             else:
@@ -374,6 +400,11 @@ class AutonomousDecisionEngine:
         decision['decision'] = result[0]
         decision['reason'] = result[1]
         self.decisions_made.append(decision)
+        
+        # [SILENT AGGREGATION] Also store in state manager for final report
+        if self.state_mgr:
+            self.state_mgr.state["decisions_made"].append(decision)
+            self.state_mgr.save()
         
         return result
 
@@ -488,11 +519,11 @@ def list_available_agents(project_root: Path, dedupe: bool = True) -> List[Tuple
 # ============================================================================
 
 @with_retry(max_retries=3)
-def execute_phase1_discovery(agents, territory, decision_engine, state_mgr):
+def execute_phase1_discovery(agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True):
     """PHASE 1: TERRITORIAL DISCOVERY (Retriable)"""
-    return execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr)
+    return execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr, dry_run, auto_approve)
 
-def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr):
+def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True):
     """PHASE 1: TERRITORIAL DISCOVERY - Implementation"""
     logger.info(f"=== PHASE 1: DISCOVERY - {territory} ===")
     
@@ -535,7 +566,30 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr)
         territory
     )
     state_mgr.state["compliance_scores"][territory] = confidence.value
-    state_mgr.complete_agent("LocationAgent", True, f"Violations: {len(violations)} | Conf: {confidence.value:.2f}")
+    
+    # [DETAILED TRACKING] Store actual LocationAgent violations for final report
+    state_mgr.state["location_violations"] = violations
+    
+    # [AUTO-HEALING] If confidence is high enough, trigger LocationAgent healing
+    if len(violations) > 0:
+        proceed, reason = decision_engine.should_proceed_with_healing(confidence)
+        state_mgr.add_event("decision", f"Location Healing: {reason}")
+        logger.info(f"Location Decision: {reason}")
+        
+        if proceed and not dry_run:
+            logger.info(f"🔧 Triggering LocationAgent auto-heal for {len(violations)} violations")
+            # LocationAgent should have a heal method - call it
+            if hasattr(location_validator, 'heal_violations'):
+                heal_result = location_validator.heal_violations(violations, auto_approve=auto_approve)
+                healed_count = heal_result.get('healed', 0) if isinstance(heal_result, dict) else 0
+                state_mgr.complete_agent("LocationAgent", True, f"Violations: {len(violations)} | Healed: {healed_count} | Conf: {confidence.value:.2f}")
+            else:
+                logger.warning("LocationAgent has no heal_violations method - violations detected but not healed")
+                state_mgr.complete_agent("LocationAgent", True, f"Violations: {len(violations)} | Conf: {confidence.value:.2f} (no heal method)")
+        else:
+            state_mgr.complete_agent("LocationAgent", True, f"Violations: {len(violations)} | Conf: {confidence.value:.2f} (healing skipped)")
+    else:
+        state_mgr.complete_agent("LocationAgent", True, f"Violations: 0 | Conf: {confidence.value:.2f}")
     
     return drift_report, violations
 
@@ -683,30 +737,271 @@ def execute_phase5_final(agents, territory, state_mgr):
     return execute_phase5_final_impl(agents, territory, state_mgr)
 
 def execute_phase5_final_impl(agents, territory, state_mgr):
-    """PHASE 5: CERTIFICATION - Implementation"""
+    """PHASE 5: CERTIFICATION - Implementation with Silent Aggregation"""
     logger.info(f"=== PHASE 5: CERTIFICATION - {territory} ===")
     
     state_mgr.update_agent("SovereignCertifier", "L5 - Compliance")
     
-    cert = {
-        'territory': territory,
-        'timestamp': datetime.now().isoformat(),
-        'status': 'COMPLIANT',
-        'confidence_score': state_mgr.state["compliance_scores"].get(territory, 0.0),
+    # [UNIFIED MANIFEST] Aggregate all findings from the state manager
+    compliance_report = state_mgr.state.get("compliance_report", {})
+    decision_history = state_mgr.state.get("decision_history", [])
+    
+    # [CRITICAL FIX] Aggregate violations from ALL agents, not just ArchitectureGovernor
+    # The compliance_report only has ArchitectureGovernor violations
+    # We need to include LocationAgent violations from Phase 1
+    all_violations = []
+    
+    # Get ArchitectureGovernor violations
+    arch_violations = compliance_report.get('violations', [])
+    all_violations.extend(arch_violations)
+    
+    # Get LocationAgent violations from Phase 1 (stored in state)
+    location_violations = state_mgr.state.get("location_violations", [])
+    for loc_violation in location_violations:
+        # LocationAgent violations are tuples: (Path, message)
+        if isinstance(loc_violation, tuple) and len(loc_violation) >= 2:
+            file_path = str(loc_violation[0])
+            message = str(loc_violation[1])
+        else:
+            file_path = str(getattr(loc_violation, 'file', 'unknown'))
+            message = str(loc_violation)
+        
+        # Generate specific, actionable recommendations based on violation type
+        if "Missing sovereign root:" in message:
+            dir_name = message.split('Missing sovereign root:')[1].strip().strip("')")
+            action = f"Create directory: {dir_name}"
+        elif "Forbidden keyword 'def test_'" in message:
+            path_parts = file_path.replace('\\', '/').split('/')
+            filename = path_parts[-1]
+            action = f"Move {filename} to tests/ directory (contains test functions)"
+        elif "Forbidden keyword 'class Sovereign'" in message:
+            path_parts = file_path.replace('\\', '/').split('/')
+            filename = path_parts[-1]
+            action = f"Move {filename} to agentic_core/base_agents/ or agentic_core/L5_safety/"
+        elif "Forbidden extension .py for destination docs/reports" in message:
+            path_parts = file_path.replace('\\', '/').split('/')
+            filename = path_parts[-1]
+            action = f"Move {filename} to agentic_core/L0_maintenance/scripts/ (Python files don't belong in docs/)"
+        else:
+            action = f"Fix location/naming issue: {message[:60]}"
+        
+        # Convert LocationAgent violation object to detailed dict
+        violation_dict = {
+            "type": "LOCATION",
+            "source": "LocationAgent",
+            "file": file_path,
+            "message": message,
+            "severity": "medium",
+            "recommended_action": action,
+            "llm_triggered": False,  # LocationAgent doesn't trigger LLM
+            "confidence": state_mgr.state["compliance_scores"].get(territory, 0.0)
+        }
+        all_violations.append(violation_dict)
+    
+    violation_count = len(all_violations)
+    status = 'COMPLIANT' if violation_count == 0 else 'NON-COMPLIANT'
+    
+    # [LOGIC FIX] Recalculate confidence based on FINAL violation count, not Phase 1
+    # Get the decision engine to recalculate confidence for the final state
+    decision_engine = getattr(state_mgr, '_decision_engine', None)
+    if decision_engine is None:
+        # Fallback: create a temporary decision engine for final calculation
+        decision_engine = AutonomousDecisionEngine(enable_llm=False)
+    
+    final_confidence = decision_engine.calculate_healing_confidence(
+        violations_count=violation_count,
+        violation_types=[v.get('type', 'UNKNOWN') for v in all_violations[:10]],
+        territory=territory
+    )
+    confidence_avg = final_confidence.value
+    
+    drift_count = compliance_report.get('stats', {}).get('drift_detected', 0)
+    
+    # Build detailed decision log with LLM status
+    decisions_made = state_mgr.state.get("decisions_made", [])
+    
+    detailed_cert = {
+        'meta': {
+            'territory': territory,
+            'timestamp': datetime.now().isoformat(),
+            'status': status,
+            'sovereignty_level': 'L5',
+        },
+        'metrics': {
+            'confidence_score': confidence_avg,
+            'violation_count': violation_count,
+            'drift_count': drift_count,
+            'errors': compliance_report.get('stats', {}).get('errors', 0),
+            'violations_fixed': compliance_report.get('stats', {}).get('violations_fixed', 0),
+        },
+        'governance_log': {
+            'decisions': decisions_made,
+            'files_processed': []
+        },
+        'unified_violations': all_violations,  # Use all_violations instead of just arch violations
         'agents_executed': [
             'FilesystemSSOTReconcilerAgent',
-            'LocationAgent',
+            'LocationAgent', 
             'HierarchyAgent',
             'PascalSovereigntyAgent',
             'ArchitectureGovernorAgent',
             'SystemArchitectAgent'
         ]
     }
+
+    # Add violations to file log
+    files_affected = set()
+    for v in all_violations:  # Use all_violations instead of violations
+        files_affected.add(v.get('file', 'unknown'))
+        
+    detailed_cert['governance_log']['files_processed'] = list(files_affected)
+
+    # Generate Markdown Executive Summary
+    markdown_summary = [
+        f"# 🛡️ Sovereign Compliance Report: {territory}",
+        f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | **Status:** {status}",
+        "",
+        "## 📊 Executive Summary",
+        "",
+        f"* **Confidence Score:** {confidence_avg:.4f}",
+        f"* **Violations Detected:** {violation_count}",
+        f"* **Integrity Drift:** {drift_count}",
+        f"* **Violations Fixed:** {detailed_cert['metrics']['violations_fixed']}",
+        "",
+        "## 🚨 Violations Detected",
+        ""
+    ]
     
+    # Add detailed violations table
+    if violation_count > 0:
+        markdown_summary.extend([
+            "| # | Type | File | Issue | Severity | LLM | Confidence | Action |",
+            "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |"
+        ])
+        
+        for idx, violation in enumerate(all_violations, 1):
+            v_type = violation.get('type', 'UNKNOWN')
+            v_file = violation.get('file', 'unknown')
+            # Extract just the filename from full path
+            if '/' in v_file or '\\' in v_file:
+                v_file = v_file.split('/')[-1].split('\\')[-1]
+            
+            # Parse message to get the actual issue
+            v_message = violation.get('message', '')
+            if 'ARTIFACT ROUTING VIOLATION:' in v_message:
+                issue = v_message.split('ARTIFACT ROUTING VIOLATION:')[1].split("'")[0].strip()
+            elif 'Missing sovereign root:' in v_message:
+                issue = v_message.split('Missing sovereign root:')[1].strip().strip("')")
+            else:
+                issue = v_message[:50] + "..." if len(v_message) > 50 else v_message
+            
+            v_severity = violation.get('severity', 'medium')
+            v_llm = 'Yes' if violation.get('llm_triggered', False) else 'No'
+            v_conf = violation.get('confidence', 0.0)
+            v_action = violation.get('recommended_action', 'Review')[:30] + "..."
+            
+            markdown_summary.append(
+                f"| {idx} | {v_type} | `{v_file}` | {issue} | {v_severity} | {v_llm} | {v_conf:.2f} | {v_action} |"
+            )
+    else:
+        markdown_summary.append("*No violations detected - territory is compliant.*")
+    
+    markdown_summary.extend([
+        "",
+        "## 🧠 AI Governance Log",
+        "",
+        "| Decision Context | Confidence | LLM Triggered | Outcome |",
+        "| :--- | :--- | :--- | :--- |"
+    ])
+    
+    # Add decision details to markdown table
+    for decision in decisions_made:
+        confidence = decision.get('confidence', 0.0)
+        llm_triggered = confidence <= 0.75
+        outcome = "PROCEED" if decision.get('decision', False) else "SKIP"
+        context = decision.get('reason', 'Unknown')
+        markdown_summary.append(f"| {context} | {confidence:.2f} | {'Yes' if llm_triggered else 'No'} | {outcome} |")
+    
+    # Print JSON Manifest
+    print(json.dumps(detailed_cert, indent=2))
+    
+    # Print Markdown Summary
+    print("\n" + "\n".join(markdown_summary))
+    if files_affected:
+        print("\n### 📂 Affected Files")
+        for f in sorted(files_affected):
+            print(f"* `{f}`")
+    else:
+        print("\n*No files required remediation.*")
+    
+    # [COMPREHENSIVE REPORTS] Save detailed reports to files
+    save_comprehensive_reports(territory, detailed_cert, markdown_summary, files_affected, state_mgr.project_root)
+
     logger.info(f"📜 CERTIFICATE ISSUED: {territory}")
-    print(json.dumps(cert, indent=2))
     state_mgr.complete_agent("SovereignCertifier", True, "Certificate Issued")
-    return cert
+    return detailed_cert
+
+def save_comprehensive_reports(territory: str, detailed_cert: dict, markdown_summary: list, files_affected: set, project_root: Path):
+    """
+    [COMPREHENSIVE REPORTS] Save detailed JSON manifest and Markdown summary to persistent files.
+    Creates timestamped reports in logs/compliance_reports/ directory.
+    """
+    try:
+        # Create reports directory
+        reports_dir = project_root / "logs" / "compliance_reports"
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Generate timestamp for filenames
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Save JSON Manifest
+        json_filename = f"compliance_report_{territory}_{timestamp}.json"
+        json_path = reports_dir / json_filename
+        
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(detailed_cert, f, indent=2, default=str)
+        
+        # Save Markdown Executive Summary
+        md_filename = f"executive_summary_{territory}_{timestamp}.md"
+        md_path = reports_dir / md_filename
+        
+        with open(md_path, 'w', encoding='utf-8') as f:
+            f.write("\n".join(markdown_summary))
+            if files_affected:
+                f.write("\n\n### 📂 Affected Files\n\n")
+                for f_sorted in sorted(files_affected):
+                    f.write(f"* `{f_sorted}`\n")
+            else:
+                f.write("\n\n*No files required remediation.*\n")
+        
+        # Save latest symlink for easy access
+        latest_json = reports_dir / f"latest_compliance_{territory}.json"
+        latest_md = reports_dir / f"latest_summary_{territory}.md"
+        
+        # Remove existing symlinks/files
+        if latest_json.exists():
+            latest_json.unlink()
+        if latest_md.exists():
+            latest_md.unlink()
+        
+        # Create symlinks (or copy on Windows)
+        try:
+            latest_json.symlink_to(json_path)
+            latest_md.symlink_to(md_path)
+        except (OSError, NotImplementedError):
+            # Fallback for Windows or systems without symlink support
+            import shutil
+            shutil.copy2(json_path, latest_json)
+            shutil.copy2(md_path, latest_md)
+        
+        logger.info(f"📁 Comprehensive reports saved:")
+        logger.info(f"   JSON: {json_path.relative_to(project_root)}")
+        logger.info(f"   Markdown: {md_path.relative_to(project_root)}")
+        logger.info(f"   Latest: {latest_json.relative_to(project_root)}")
+        
+    except Exception as e:
+        logger.error(f"Failed to save comprehensive reports: {e}")
+        # Don't fail the entire process if report saving fails
 
 # ============================================================================
 # L3 ORCHESTRATION INTEGRATION
@@ -878,7 +1173,7 @@ Examples:
     dry_run = args.dry_run or args.validate
     auto_approve = not args.interactive
     
-    decision_engine = AutonomousDecisionEngine(enable_llm=enable_llm)
+    decision_engine = AutonomousDecisionEngine(enable_llm=enable_llm, state_mgr=state_mgr)
     
     logger.info("🏛️ UNIFIED SOVEREIGN PROTOCOL STARTED")
     logger.info(f"  Mode: {'AUTONOMOUS' if not args.manual else 'MANUAL'}")
@@ -934,14 +1229,14 @@ Examples:
             state_mgr.start_mission(f"Unified Protocol: {mission_mode}", [f"{t}" for t in targets])
             
             # [PHASE 8] Integrated Integrity Check
-            # We check integrity BEFORE attempting any healing to ensure we aren't
-            # healing based on corrupted logic.
+            # [HARDENED] Pass territory targets to ensure integrity check is also scoped.
             if is_autonomous:
-                logger.info("🔍 [PHASE 8] Running integrity check...")
+                logger.info(f"🔍 [PHASE 8] Running integrity check (Scope: {targets})...")
                 try:
                     from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent
                     governor = ArchitectureGovernorAgent(project_root=project_root, ci_mode=True)
-                    audit_results = governor.run_audit()
+                    # Use provided targets to prevent global scanning during pre-flight check
+                    audit_results = governor.run_audit(target_territories=targets)
                     
                     # [UNIFIED AUDIT] Persist all identified violations to the runtime state
                     state_mgr.state["compliance_report"] = audit_results
@@ -983,7 +1278,7 @@ Examples:
                 try:
                     # [UNIVERSAL HEALING] Unified Execution Phase
                     # All agents now receive the 'Heal' signal if confidence is met
-                    p1_drift, p1_loc = execute_phase1_discovery(agents, territory, decision_engine, state_mgr)
+                    p1_drift, p1_loc = execute_phase1_discovery(agents, territory, decision_engine, state_mgr, dry_run, auto_approve)
                     
                     if p1_drift is not None:
                         # Phase 2: Structural Alignment (Hierarchy)
@@ -1066,8 +1361,8 @@ Examples:
             logger.info(f"Decisions made: {len(decision_engine.decisions_made)}")
             
             # Decision breakdown
-            high_conf = sum(1 for d in decision_engine.decisions_made if d['confidence'] >= 0.8)
-            med_conf = sum(1 for d in decision_engine.decisions_made if 0.5 <= d['confidence'] < 0.8)
+            high_conf = sum(1 for d in decision_engine.decisions_made if d['confidence'] > 0.75)
+            med_conf = sum(1 for d in decision_engine.decisions_made if 0.5 <= d['confidence'] <= 0.75)
             low_conf = sum(1 for d in decision_engine.decisions_made if d['confidence'] < 0.5)
             logger.info(f"  High confidence: {high_conf}, Medium: {med_conf}, Low: {low_conf}")
             

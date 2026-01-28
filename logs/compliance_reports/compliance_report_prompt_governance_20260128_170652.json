@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "territory": "prompt_governance",
+    "timestamp": "2026-01-28T17:06:52.582994",
+    "status": "NON-COMPLIANT",
+    "sovereignty_level": "L5"
+  },
+  "metrics": {
+    "confidence_score": 0.8425,
+    "violation_count": 5,
+    "drift_count": 0,
+    "errors": 0,
+    "violations_fixed": 0
+  },
+  "governance_log": {
+    "decisions": [
+      {
+        "confidence": 0.8425,
+        "timestamp": "2026-01-28T17:06:29.147583",
+        "decision": true,
+        "reason": "HIGH CONFIDENCE (0.84)"
+      }
+    ],
+    "files_processed": [
+      "unknown"
+    ]
+  },
+  "unified_violations": [
+    {
+      "type": "LOCATION",
+      "source": "LocationAgent",
+      "file": "unknown",
+      "message": "(WindowsPath('C:/Git/Agentic-Workflow/.sovereign_healing_backup'), 'Missing sovereign root: .sovereign_healing_backup')",
+      "severity": "medium",
+      "recommended_action": "Review file location and naming conventions",
+      "llm_triggered": false,
+      "confidence": 0.8425
+    },
+    {
+      "type": "LOCATION",
+      "source": "LocationAgent",
+      "file": "unknown",
+      "message": "(WindowsPath('C:/Git/Agentic-Workflow/agentic_core/prompt_governance/agents/DashboardTestSuite.py'), \"ARTIFACT ROUTING VIOLATION: Forbidden keyword 'def test_' for destination agentic_core/L0_maintenance/scripts\")",
+      "severity": "medium",
+      "recommended_action": "Review file location and naming conventions",
+      "llm_triggered": false,
+      "confidence": 0.8425
+    },
+    {
+      "type": "LOCATION",
+      "source": "LocationAgent",
+      "file": "unknown",
+      "message": "(WindowsPath('C:/Git/Agentic-Workflow/agentic_core/prompt_governance/agents/SovereignPromptRenderer.py'), \"ARTIFACT ROUTING VIOLATION: Forbidden keyword 'class Sovereign' for destination agentic_core/L0_maintenance/scripts\")",
+      "severity": "medium",
+      "recommended_action": "Review file location and naming conventions",
+      "llm_triggered": false,
+      "confidence": 0.8425
+    },
+    {
+      "type": "LOCATION",
+      "source": "LocationAgent",
+      "file": "unknown",
+      "message": "(WindowsPath('C:/Git/Agentic-Workflow/agentic_core/prompt_governance/meta_prompts/tests_golden_state_test_datasets.py'), \"ARTIFACT ROUTING VIOLATION: Forbidden keyword 'def test_' for destination agentic_core/L0_maintenance/scripts\")",
+      "severity": "medium",
+      "recommended_action": "Review file location and naming conventions",
+      "llm_triggered": false,
+      "confidence": 0.8425
+    },
+    {
+      "type": "LOCATION",
+      "source": "LocationAgent",
+      "file": "unknown",
+      "message": "(WindowsPath('C:/Git/Agentic-Workflow/agentic_core/prompt_governance/scripts/audit_registry_linkages.py'), 'ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports')",
+      "severity": "medium",
+      "recommended_action": "Review file location and naming conventions",
+      "llm_triggered": false,
+      "confidence": 0.8425
+    }
+  ],
+  "agents_executed": [
+    "FilesystemSSOTReconcilerAgent",
+    "LocationAgent",
+    "HierarchyAgent",
+    "PascalSovereigntyAgent",
+    "ArchitectureGovernorAgent",
+    "SystemArchitectAgent"
+  ]
+}

@@ -63,7 +63,7 @@ class ReflectionConfig(BaseModel):
 
     use_fast_model: bool = True
     max_critique_loops: int = Field(default=3, ge=1, le=10)
-    confidence_threshold: float = Field(default=0.7, ge=0.0, le=1.0)
+    confidence_threshold: float = Field(default=0.75, ge=0.0, le=1.0)
     enable_regex_cache: bool = True
     llm_provider: str = "openai"
     llm_model: str = "gpt-4o-mini"  # Cost-effective model

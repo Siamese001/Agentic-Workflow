@@ -286,7 +286,7 @@ class AdaptiveLearningEngine:
         recent_violations: Any = [v[0] for v in file_history[-5:] if not v[1]]
         for violation_key in set(recent_violations):
             patterns: Any = self.patterns.get(violation_key, [])
-            high_confidence_patterns: Any = [p for p in patterns if p.confidence_score > 0.7]
+            high_confidence_patterns: Any = [p for p in patterns if p.confidence_score > 0.75]
             if high_confidence_patterns:
                 best_pattern: Any = max(high_confidence_patterns, key=lambda p: p.confidence_score)
                 predictions.append(
@@ -335,7 +335,7 @@ class AdaptiveLearningEngine:
         """
         signature: Any = self._create_violation_signature(violation_details, file_path)
         pattern: Any = self._find_matching_pattern(violation_key, signature)
-        if pattern and pattern.confidence_score > 0.7:
+        if pattern and pattern.confidence_score > 0.75:
             return pattern.fix_strategy
         patterns: Any = self.patterns.get(violation_key, [])
         if patterns:

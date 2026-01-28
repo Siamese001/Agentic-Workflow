@@ -895,7 +895,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             # Analyze subfolder semantics for confidence scoring
             confidence_score = self._calculate_subfolder_confidence(unknown_subfolder, existing_subfolders)
             
-            if confidence_score >= 0.8:
+            if confidence_score > 0.75:
                 # HIGH CONFIDENCE: Create new subfolder
                 Logger.info(f"  ✅ High confidence ({confidence_score:.2f}) - Creating new subfolder '{unknown_subfolder}'")
                 return self._autonomous_create_subfolder(

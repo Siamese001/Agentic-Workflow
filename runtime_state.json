@@ -1,18 +1,146 @@
 {
-  "status": "running",
-  "start_time": "2026-01-28T16:17:08.131697",
-  "end_time": null,
+  "status": "completed",
+  "start_time": "2026-01-28T17:10:47.634906",
+  "end_time": "2026-01-28T17:11:15.143775",
   "current_agent": null,
-  "current_layer": null,
+  "current_layer": "L5 - Compliance",
   "agents_order": [
     "prompt_governance"
   ],
-  "completed_agents": [],
+  "completed_agents": [
+    {
+      "agent": "FilesystemSSOTReconcilerAgent",
+      "time": "2026-01-28T17:10:48.104830",
+      "success": true,
+      "details": "Drift violations: 0"
+    },
+    {
+      "agent": "LocationAgent",
+      "time": "2026-01-28T17:10:49.434768",
+      "success": true,
+      "details": "Violations: 5 | Conf: 0.84 (no heal method)"
+    },
+    {
+      "agent": "HierarchyAgent",
+      "time": "2026-01-28T17:10:49.460273",
+      "success": true,
+      "details": "No violations found"
+    },
+    {
+      "agent": "PascalSovereigntyAgent",
+      "time": "2026-01-28T17:10:49.542462",
+      "success": true,
+      "details": "Healed: 0"
+    },
+    {
+      "agent": "ArchitectureGovernorAgent",
+      "time": "2026-01-28T17:11:02.839701",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "SystemArchitectAgent",
+      "time": "2026-01-28T17:11:14.967584",
+      "success": true,
+      "details": "Architecture Valid"
+    },
+    {
+      "agent": "SovereignCertifier",
+      "time": "2026-01-28T17:11:15.132812",
+      "success": true,
+      "details": "Certificate Issued"
+    }
+  ],
   "events": [
     {
-      "time": "2026-01-28T16:17:08.131697",
+      "time": "2026-01-28T17:10:47.634906",
       "type": "info",
       "message": "Mission started: Unified Protocol: Territory Scan: prompt_governance"
+    },
+    {
+      "time": "2026-01-28T17:10:48.064263",
+      "type": "domain_start",
+      "message": "Entering Domain: prompt_governance"
+    },
+    {
+      "time": "2026-01-28T17:10:48.065307",
+      "type": "agent_start",
+      "message": "\u2192 Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-01-28T17:10:48.104830",
+      "type": "agent_end",
+      "message": "\u2713 Completed FilesystemSSOTReconcilerAgent"
+    },
+    {
+      "time": "2026-01-28T17:10:48.114836",
+      "type": "agent_start",
+      "message": "\u2192 Executing LocationAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-01-28T17:10:49.432818",
+      "type": "decision",
+      "message": "Location Healing: HIGH CONFIDENCE (0.84)"
+    },
+    {
+      "time": "2026-01-28T17:10:49.434768",
+      "type": "agent_end",
+      "message": "\u2713 Completed LocationAgent"
+    },
+    {
+      "time": "2026-01-28T17:10:49.444496",
+      "type": "agent_start",
+      "message": "\u2192 Executing HierarchyAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-01-28T17:10:49.460273",
+      "type": "agent_end",
+      "message": "\u2713 Completed HierarchyAgent"
+    },
+    {
+      "time": "2026-01-28T17:10:49.477105",
+      "type": "decision",
+      "message": "Sovereignty Healing: HIGH CONFIDENCE (0.84)"
+    },
+    {
+      "time": "2026-01-28T17:10:49.478154",
+      "type": "agent_start",
+      "message": "\u2192 Executing PascalSovereigntyAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-01-28T17:10:49.542462",
+      "type": "agent_end",
+      "message": "\u2713 Completed PascalSovereigntyAgent"
+    },
+    {
+      "time": "2026-01-28T17:10:49.555581",
+      "type": "agent_start",
+      "message": "\u2192 Executing ArchitectureGovernorAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-01-28T17:11:02.839701",
+      "type": "agent_end",
+      "message": "\u2713 Completed ArchitectureGovernorAgent"
+    },
+    {
+      "time": "2026-01-28T17:11:02.850910",
+      "type": "agent_start",
+      "message": "\u2192 Executing SystemArchitectAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-01-28T17:11:14.967584",
+      "type": "agent_end",
+      "message": "\u2713 Completed SystemArchitectAgent"
+    },
+    {
+      "time": "2026-01-28T17:11:14.992257",
+      "type": "agent_start",
+      "message": "\u2192 Executing SovereignCertifier (L5 - Compliance)"
+    },
+    {
+      "time": "2026-01-28T17:11:15.132812",
+      "type": "agent_end",
+      "message": "\u2713 Completed SovereignCertifier"
     }
   ],
   "meta_learning": {
@@ -26,5 +154,58 @@
     },
     "recent_experiences": []
   },
-  "compliance_scores": {}
+  "compliance_scores": {
+    "prompt_governance": 0.8425
+  },
+  "decisions_made": [
+    {
+      "confidence": 0.8425,
+      "timestamp": "2026-01-28T17:10:49.424128",
+      "decision": true,
+      "reason": "HIGH CONFIDENCE (0.84)"
+    },
+    {
+      "confidence": 0.8425,
+      "timestamp": "2026-01-28T17:10:49.469522",
+      "decision": true,
+      "reason": "HIGH CONFIDENCE (0.84)"
+    }
+  ],
+  "compliance_report": {
+    "success": true,
+    "stats": {
+      "violations_found": 0,
+      "violations_fixed": 0,
+      "errors": 0,
+      "drift_detected": 0
+    },
+    "violations": [],
+    "drift_violations": [],
+    "target_territories": [
+      "prompt_governance"
+    ]
+  },
+  "current_territory": "prompt_governance",
+  "location_violations": [
+    [
+      "C:\\Git\\Agentic-Workflow\\.sovereign_healing_backup",
+      "Missing sovereign root: .sovereign_healing_backup"
+    ],
+    [
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardTestSuite.py",
+      "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'def test_' for destination agentic_core/L0_maintenance/scripts"
+    ],
+    [
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\SovereignPromptRenderer.py",
+      "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'class Sovereign' for destination agentic_core/L0_maintenance/scripts"
+    ],
+    [
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\tests_golden_state_test_datasets.py",
+      "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'def test_' for destination agentic_core/L0_maintenance/scripts"
+    ],
+    [
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\audit_registry_linkages.py",
+      "ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports"
+    ]
+  ]
 }
