@@ -45,6 +45,8 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
         "depth": 3,
         "purpose": "Core agentic logic and safety layers.",
         "subfolders": {
+            "base_agents": {"purpose": "Foundational agent classes and mixins for inheritance"},
+            "domain": {"purpose": "Pure domain entities and business objects"},
             "L0_maintenance": {"purpose": "System maintenance and healing operations"},
             "L1_cognition": {"purpose": "Cognitive processing and thought patterns"},
             "L2_execution": {"purpose": "Tool execution and action handling"},
@@ -269,6 +271,8 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
 # - Core utilities (e.g., sovereign_index.py)
 VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
     {
+        "base_agents",  # Flat folder - foundational classes at depth 2
+        "domain",  # Flat folder - domain entities at depth 2
         "utils",  # utils/sovereign_index.py at depth 2
         "config",  # config/blueprint_sovereign/* variable depth
         "common",  # common/healing/* variable depth

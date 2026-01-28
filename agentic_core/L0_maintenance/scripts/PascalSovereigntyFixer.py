@@ -1,11 +1,11 @@
 """
 File: PascalSovereigntyFixer.py
 Path: C:\Git\Agentic-Workflow\PascalSovereigntyFixer.py
-Status: FINAL - Hardened & Optimized (Phase 5)
+Status: FINAL - GOLD MASTER (Phase 4)
 Rationale: 
-    Finalizes the transition from O(N²) disk thrashing to O(1) in-memory lookups.
-    This version incorporates the 'Exemption Patch' to preserve pytest discovery 
-    and the 'Registry Cache' to prevent recursive filesystem hangs.
+    Removes legacy commentary regarding 'healer_mixin.py' to produce a clean, 
+    professional artifact. The logic is now fully reliant on the '_mixin.py' 
+    pattern matcher verified in Phase 2/3.
 """
 
 import ast
@@ -36,7 +36,7 @@ def get_python_files_fast(root: Path) -> List[Path]:
                 python_files.append(Path(dirpath) / filename)
     return python_files
 
-FileType = Literal["AGENT", "CLASS", "UTILITY", "IGNORE"]
+FileType = Literal["AGENT", "CLASS", "MIXIN", "UTILITY", "IGNORE"]
 
 class PascalSovereigntyFixer:
     """Enforces strict file naming conventions based on AST content analysis."""
@@ -50,30 +50,33 @@ class PascalSovereigntyFixer:
             "compliant": 0, 
             "renamed": 0, 
             "imports_fixed": 0, 
-            "violations": {"AGENT": 0, "CLASS": 0, "UTILITY": 0}
+            "violations": {"AGENT": 0, "CLASS": 0, "MIXIN": 0, "UTILITY": 0}
         }
         # CACHE: Track file paths in memory to avoid repetitive disk scanning (O(1) lookups)
         self.file_registry: List[Path] = []
 
     def classify_file(self, path: Path) -> FileType:
         """Analyze file AST to determine architectural role with strict test exemptions."""
-        # --- EXEMPTION PATCH ---
+        # --- EXEMPTION PATCH: TESTS ---
         # Critical Analysis: Preserving Pytest Discovery. Renaming test_*.py to PascalCase
         # would render the CI/CD pipeline blind as pytest would ignore the files.
-        #
         if path.name.startswith("test_") or path.name.endswith("_test.py") or "tests" in path.parts:
             return "IGNORE"
         
         if path.name == "conftest.py" or path.name == "__init__.py":
             return "IGNORE"
         
-        # --- SSOT EXEMPTION PATCH ---
-        # Critical SSOT files that have hundreds of import references and must not be renamed
-        # to avoid breaking the entire codebase
+        # --- EXEMPTION PATCH: MIXINS ---
+        # Explicitly categorize mixins to track them without enforcing PascalCase.
+        # This replaces the need for manual whitelisting of files like 'healer_mixin.py'.
+        if path.name.endswith("_mixin.py") or path.name.endswith("Mixin.py"):
+            return "MIXIN"
+
+        # --- EXEMPTION PATCH: SSOT ---
+        # Critical SSOT files that have hundreds of import references.
         critical_ssot_files = {
-            "structure_blueprint.py",  # 926+ import references across codebase
-            "healer_mixin.py",  # Core mixin used throughout healing system
-            "tool_registry.py",  # Tool registration system
+            "structure_blueprint.py",  # 926+ import references
+            "tool_registry.py",        # Tool registration system
         }
         if path.name in critical_ssot_files:
             return "IGNORE"
@@ -110,7 +113,11 @@ class PascalSovereigntyFixer:
         """Refactors imports using the in-memory registry to avoid O(N²) disk hits."""
         count = 0
         old_mod, new_mod = old_name.replace(".py", ""), new_name.replace(".py", "")
-        regex = re.compile(rf"(from\s+[\w\.]+\s+import\s+){re.escape(old_mod)}\b")
+        
+        # Enhanced Regex: Catches 'from x import' AND 'import x' patterns
+        # Critical Analysis: Previous regex missed direct module imports.
+        regex_from = re.compile(rf"(from\s+){re.escape(old_mod)}(\s+import)")
+        regex_import = re.compile(rf"(import\s+){re.escape(old_mod)}(\s|$)")
         
         # Optimized: Scans in-memory file_registry instead of hitting disk rglob
         #
@@ -121,7 +128,10 @@ class PascalSovereigntyFixer:
                 content = path.read_text(encoding="utf-8")
                 if old_mod not in content:
                     continue
-                new_content = regex.sub(rf"\1{new_mod}", content)
+                
+                new_content = regex_from.sub(rf"\1{new_mod}\2", content)
+                new_content = regex_import.sub(rf"\1{new_mod}\2", new_content)
+
                 if new_content != content:
                     if not self.dry_run:
                         path.write_text(new_content, encoding="utf-8")
@@ -131,7 +141,7 @@ class PascalSovereigntyFixer:
         return count
 
     def run(self, root: Path) -> int:
-        """Main orchestration loop with one-time repository scanning."""
+        """Main orchestration loop."""
         print(f"[SOVEREIGNTY] {'DRY RUN' if self.dry_run else 'EXECUTE'} MODE")
         print("="*60)
         
@@ -139,7 +149,6 @@ class PascalSovereigntyFixer:
             return 1
         
         print("Scanning repository (Fast One-Time Pass)...")
-        #
         self.file_registry = get_python_files_fast(root)
         self.stats["analyzed"] = len(self.file_registry)
         
@@ -172,6 +181,7 @@ class PascalSovereigntyFixer:
         print(f"  - Agents:  {self.stats['violations']['AGENT']}")
         print(f"  - Classes: {self.stats['violations']['CLASS']}")
         print(f"  - Utils:   {self.stats['violations']['UTILITY']}")
+        print(f"  - Mixins:  {self.stats['violations']['MIXIN']} (Exempt)")
         if not self.dry_run:
             print(f"Files Renamed:        {self.stats['renamed']}")
             print(f"Imports Fixed:        {self.stats['imports_fixed']}")
@@ -181,8 +191,7 @@ class PascalSovereigntyFixer:
         return 0 if (not self.validate_only or total_violations == 0) else 1
 
     def verify_environment(self) -> bool:
-        """Checks for LongPathsEnabled on Windows to prevent silent rename failures."""
-        #
+        """Checks for LongPathsEnabled on Windows."""
         if platform.system() == "Windows":
             try:
                 import winreg
@@ -219,8 +228,10 @@ class PascalSovereigntyFixer:
 
     def get_compliant_name(self, path: Path, file_type: FileType) -> Optional[str]:
         """Calculates the target filename based on the primary class definition."""
-        #
         if file_type == "IGNORE":
+            return None
+        # --- MIXIN EXEMPTION ---
+        if file_type == "MIXIN":
             return None
         if file_type == "UTILITY":
             return None
