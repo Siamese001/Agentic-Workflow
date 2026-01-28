@@ -91,6 +91,8 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             self.project_root = Path(self.project_root)
         self.violations: list[dict[str, Any]] = []
         self.stats = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "drift_detected": 0}
+        self.name = self.__class__.__name__
+        self.python_files: list[str] = []
         
         # Sovereign Data Locations for Phase 8
         self.baseline_dir = self.project_root / "agentic_core" / "config" / "baselines"
@@ -163,9 +165,10 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         max_depth: int = 3,
         _call_path: set | None = None,
         auto_approve: bool | None = None,
+        target_territory: str | None = None,  # [STRICT SCOPE] Target injection point
     ) -> dict[str, Any]:
         """
-        Universal architecture governance across ALL sovereign territories.
+        Universal architecture governance with optional strict scope targeting.
 
         Phase 1 Upgrade: Now performs actual validation instead of returning stub.
 
@@ -176,6 +179,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             max_depth: Maximum recursion depth
             _call_path: Internal call path tracking
             auto_approve: Override instance auto_approve setting
+            target_territory: [STRICT SCOPE] If provided, restricts audit to specific territory
 
         Returns:
             Dictionary with canonical keys: violations_found, violations_fixed, status
@@ -203,8 +207,21 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             roots_scanned = []
             all_violations = []
 
-            # UNIVERSAL SCOPE: Scan all SOVEREIGN_TERRITORIES roots
-            for root_name in SOVEREIGN_TERRITORIES.keys():
+            # [STRICT SCOPE] Filter SOVEREIGN_TERRITORIES to prevent audit bleed
+            from agentic_core.L5_safety.validators import structure_blueprint as _structure_blueprint
+
+            sovereign_territories = _structure_blueprint.SOVEREIGN_TERRITORIES
+
+            if target_territory:
+                if target_territory in sovereign_territories and target_territory != "agentic_core":
+                    target_roots = [target_territory]
+                else:
+                    target_roots = ["agentic_core"]
+                Logger.info(f"[{agent_name}] TARGETED AUDIT: {target_territory} (Roots: {target_roots})")
+            else:
+                target_roots = list(sovereign_territories.keys())
+
+            for root_name in target_roots:
                 root_path = self.project_root / root_name
                 if not root_path.exists():
                     continue
@@ -276,25 +293,26 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             # Delegate physical reorganization to the specialized L5 agent
             ssot_moves = 0
             ssot_imports_updated = 0
-            try:
-                Logger.info(f"[{agent_name}] Initiating SSOT Folder Cleanup (dry_run={dry_run})...")
-                janitor = SSOTFolderCleanupAgent(project_root=self.project_root, dry_run=dry_run)
+            if not dry_run:
+                try:
+                    Logger.info(f"[{agent_name}] Initiating SSOT Folder Cleanup (dry_run={dry_run})...")
+                    janitor = SSOTFolderCleanupAgent(project_root=self.project_root, dry_run=dry_run)
 
-                # Execute cleanup (or preview)
-                cleanup_stats = janitor.cleanup_repository()
+                    # Execute cleanup (or preview)
+                    cleanup_stats = janitor.cleanup_repository()
 
-                # Merge statistics
-                ssot_moves = cleanup_stats.get("files_moved", 0)
-                ssot_imports_updated = cleanup_stats.get("imports_updated", 0)
-                violations_fixed += ssot_moves
+                    # Merge statistics
+                    ssot_moves = cleanup_stats.get("files_moved", 0)
+                    ssot_imports_updated = cleanup_stats.get("imports_updated", 0)
+                    violations_fixed += ssot_moves
 
-                if cleanup_stats.get("errors", 0) > 0:
-                    Logger.warning(
-                        f"[{agent_name}] SSOT Cleanup reported errors: {cleanup_stats['errors']}"
-                    )
+                    if cleanup_stats.get("errors", 0) > 0:
+                        Logger.warning(
+                            f"[{agent_name}] SSOT Cleanup reported errors: {cleanup_stats['errors']}"
+                        )
 
-            except Exception as e:
-                Logger.error(f"[{agent_name}] SSOT Cleanup Sub-routine failed: {e}")
+                except Exception as e:
+                    Logger.error(f"[{agent_name}] SSOT Cleanup Sub-routine failed: {e}")
 
             return {
                 "violations_found": violations_found,

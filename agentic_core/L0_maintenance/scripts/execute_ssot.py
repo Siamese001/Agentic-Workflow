@@ -537,7 +537,8 @@ def execute_phase2_alignment_impl(agents, territory, decision_engine, state_mgr)
                 create_structure=True, 
                 relocate_files=True,
                 enforce_depth=True,
-                purge_orphans=False
+                purge_orphans=False,
+                target_territory=territory
             )
             healed = res.get('total_healed', 0)
             state_mgr.complete_agent("HierarchyAgent", True, f"Healed: {healed}")
@@ -593,6 +594,11 @@ def execute_phase3_validation_impl(agents, territory, state_mgr):
 @with_retry(max_retries=3)
 def execute_phase4_healing(agents, territory, gov_report, decision_engine, state_mgr):
     """PHASE 4: HEALING (Retriable)"""
+    # [STRICT SCOPE] Gatekeeper check
+    if not gov_report:
+        logger.warning("Skipping healing: No governance report available.")
+        return None
+
     return execute_phase4_healing_impl(agents, territory, gov_report, decision_engine, state_mgr)
 
 def execute_phase4_healing_impl(agents, territory, gov_report, decision_engine, state_mgr):
@@ -911,13 +917,14 @@ Examples:
                 state_mgr.add_event("domain_start", f"Entering Domain: {territory}")
                 
                 try:
-                    # Phase 1
+                    # [STRICT SCOPE] All phases must now receive the territory context.
+                    # Phase 1: Discovery (Now utilizes LocationAgent targeted discovery)
                     p1_drift, p1_loc = execute_phase1_discovery(agents, territory, decision_engine, state_mgr)
                     
                     if p1_drift is not None:
-                        # Phase 2
+                        # Phase 2: Alignment (Now utilizes HierarchyAgent targeted relocation)
                         execute_phase2_alignment(agents, territory, decision_engine, state_mgr)
-                        # Phase 3
+                        # Phase 3: Validation (Now utilizes ArchitectureGovernor targeted audit)
                         gov, arch = execute_phase3_validation(agents, territory, state_mgr)
                         # Phase 4
                         execute_phase4_healing(agents, territory, gov, decision_engine, state_mgr)

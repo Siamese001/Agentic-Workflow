@@ -5,7 +5,7 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SubatomicTestingMixin import subatomic_testing_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 from dataclasses import dataclass
 
@@ -193,11 +193,14 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
     # FILE RELOCATION (from HierarchyHealerAgent)
     # ========================================================================
 
-    def relocate_misplaced_files(self) -> dict[str, Any]:
+    def relocate_misplaced_files(self, target_territory: str | None = None) -> dict[str, Any]:
         """
-        Relocate files from all Sovereign Roots to approved locations.
+        Relocate files from Sovereign Roots with optional territory filtering.
 
         Detection-First: Always scans and counts violations, only heals if healing_enabled=True.
+
+        Args:
+            target_territory: If specified, restricts auditing to the relevant root (Strict Targeting).
 
         Returns:
             Dict with counts of relocated files, removed folders, violations found, and roots processed
@@ -210,8 +213,18 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
             "roots_processed": [],
         }
 
-        # Universal Scope: Iterate through all roots defined in SOVEREIGN_TERRITORIES
-        target_roots = [r for r in SOVEREIGN_TERRITORIES.keys() if (self.project_root / r).exists()]
+        # [STRICT SCOPE] Scope Targeting Logic
+        if target_territory:
+            # If territory is a known root, target only that. Otherwise, target agentic_core.
+            if target_territory in SOVEREIGN_TERRITORIES:
+                target_roots = [target_territory]
+            else:
+                target_roots = ["agentic_core"]
+            Logger.info(f"HierarchyAgent: 🎯 TARGETED SCAN: {target_territory} -> Roots: {target_roots}")
+        else:
+            # Universal Scope: Iterate through all roots defined in SOVEREIGN_TERRITORIES
+            target_roots = [r for r in SOVEREIGN_TERRITORIES.keys() if (self.project_root / r).exists()]
+            Logger.info(f"HierarchyAgent: 🌍 Universal Scope active: {len(target_roots)} roots")
 
         Logger.info(
             f"HierarchyAgent: Auditing {len(target_roots)} sovereign territories: {target_roots}"
