@@ -1169,15 +1169,19 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         "legacy_engines",
     }
 
-    def scan_root_violations(self) -> dict[str, Any]:
+    def scan_root_violations(self, target_territory: str | None = None) -> dict[str, Any]:
         """
-        Scan project root for SSOT violations.
-
+        [ULTRA-HARDENED] Universal Root Purge.
+        Flags EVERY file in the territory root. Nothing is allowed to sit at L3 root.
+        
         Detects:
-        1. Forbidden folders at root (scripts/, logs/, coverage_html/)
-        2. .archived files at root (should be in archives/)
-        3. Duplicate folders (root vs SSOT location)
-
+        1. Forbidden folders at project root (scripts/, logs/, coverage_html/)
+        2. .archived files at project root (should be in archives/)
+        3. Files sitting in territory root instead of SSOT subfolders
+        
+        Args:
+            target_territory: If specified, scans territory root for structural violations
+            
         Returns:
             Dict with violations found and details
         """
@@ -1185,35 +1189,66 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
             "violations_found": 0,
             "forbidden_folders": [],
             "archived_files_at_root": [],
+            "territory_root_files": [],
             "duplicate_folders": [],
             "errors": [],
         }
 
-        Logger.info("HierarchyAgent: Scanning root directory for SSOT violations...")
+        # Phase 1: Traditional project root scanning
+        if not target_territory:
+            Logger.info("HierarchyAgent: Scanning project root directory for SSOT violations...")
+            
+            # 1. Check for forbidden folders at root
+            for item in self.project_root.iterdir():
+                if item.is_dir() and item.name in self.FORBIDDEN_ROOT_FOLDERS:
+                    results["violations_found"] += 1
+                    results["forbidden_folders"].append(item.name)
+                    Logger.warning(f"   [!] FORBIDDEN ROOT FOLDER: {item.name}/")
 
-        # 1. Check for forbidden folders at root
-        for item in self.project_root.iterdir():
-            if item.is_dir() and item.name in self.FORBIDDEN_ROOT_FOLDERS:
-                results["violations_found"] += 1
-                results["forbidden_folders"].append(item.name)
-                Logger.warning(f"   [!] FORBIDDEN ROOT FOLDER: {item.name}/")
+            # 2. Check for .archived files at root
+            archive_patterns = (".archived", ".backup", ".old")
+            for item in self.project_root.iterdir():
+                if item.is_file():
+                    for pattern in archive_patterns:
+                        if pattern in item.name:
+                            results["violations_found"] += 1
+                            results["archived_files_at_root"].append(item.name)
+                            break
 
-        # 2. Check for .archived files at root
-        archive_patterns = (".archived", ".backup", ".old")
-        for item in self.project_root.iterdir():
-            if item.is_file():
-                for pattern in archive_patterns:
-                    if pattern in item.name:
-                        results["violations_found"] += 1
-                        results["archived_files_at_root"].append(item.name)
-                        break
+            if results["archived_files_at_root"]:
+                Logger.warning(
+                    f"   [!] {len(results['archived_files_at_root'])} archived files at root (should be in archives/)"
+                )
 
-        if results["archived_files_at_root"]:
-            Logger.warning(
-                f"   [!] {len(results['archived_files_at_root'])} archived files at root (should be in archives/)"
-            )
+        # Phase 2: Territory root violation scanning (Ultra-hardened)
+        if target_territory:
+            search_path = self.project_root / "agentic_core" / target_territory
+            Logger.info(f"HierarchyAgent: 🎯 ULTRA SCAN: Territory root violations in {target_territory}")
+            
+            if not search_path.exists():
+                results["errors"].append(f"Territory path not found: {search_path}")
+                return results
 
-        # 3. Check for duplicate folders
+            # Approved subfolders for prompt_governance per Blueprint
+            # meta_prompts, templates, scripts, version_registry, agents, registry
+            approved_subs = {"meta_prompts", "templates", "scripts", "version_registry", "agents", "registry", "__pycache__"}
+            
+            for item in search_path.iterdir():
+                # Flag any file sitting at the root level of the territory
+                if item.is_file() and item.name not in {".gitkeep", "__init__.py"}:
+                    violation = {
+                        "file": str(item.name),
+                        "path": str(item.relative_to(self.project_root)),
+                        "type": "STRUCTURE",
+                        "message": f"File '{item.name}' sitting in {target_territory} root. Must be in SSOT subfolder.",
+                        "severity": "ERROR",
+                        "territory": target_territory
+                    }
+                    results["territory_root_files"].append(violation)
+                    results["violations_found"] += 1
+                    Logger.warning(f"   [!] TERRITORY ROOT FILE: {item.name} in {target_territory}/")
+
+        # Phase 3: Check for duplicate folders (original logic preserved)
         # [SSOT UPDATE] scripts/ and logs/ allowed at root. Only flag if they contain conflicting content?
         # For now, we disable the duplicate check for these valid roots to prevent false positives.
         pass

@@ -1,0 +1,30 @@
+{
+  "status": "running",
+  "start_time": "2026-01-28T16:17:08.131697",
+  "end_time": null,
+  "current_agent": null,
+  "current_layer": null,
+  "agents_order": [
+    "prompt_governance"
+  ],
+  "completed_agents": [],
+  "events": [
+    {
+      "time": "2026-01-28T16:17:08.131697",
+      "type": "info",
+      "message": "Mission started: Unified Protocol: Territory Scan: prompt_governance"
+    }
+  ],
+  "meta_learning": {
+    "enabled": false,
+    "total_experiences": 0,
+    "patterns_extracted": 0,
+    "strategy_weights": {
+      "cot": 1.0,
+      "tot": 1.0,
+      "react": 1.0
+    },
+    "recent_experiences": []
+  },
+  "compliance_scores": {}
+}
