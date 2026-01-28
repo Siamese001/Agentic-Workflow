@@ -2,9 +2,9 @@
 Script to fix all incorrect healer_mixin import paths.
 
 Changes:
-    from agentic_core.base_agents.healer_mixin import HealerMixin
+    from agentic_core.base_agents.healer_mixin import healer_mixin
 to:
-    from agentic_core.base_agents.healer_mixin import HealerMixin
+    from agentic_core.base_agents.healer_mixin import healer_mixin
 """
 
 

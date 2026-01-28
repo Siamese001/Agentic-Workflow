@@ -8,7 +8,7 @@ from typing import Any, Final
 from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.meta_learning_mixin import MetaLearningMixin
+from agentic_core.base_agents.meta_learning_mixin import meta_learning_mixin
 
 
 @dataclass

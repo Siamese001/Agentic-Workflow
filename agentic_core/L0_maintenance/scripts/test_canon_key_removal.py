@@ -114,7 +114,7 @@ class TestCanonKeyRemoval:
     def test_safety_logic_ported(self):
         """Verify SafetyInspector Logic exists in Mixin (Zero Loss)."""
         try:
-            from agentic_core.base_agents.healer_mixin import HealerMixin
+            from agentic_core.base_agents.healer_mixin import healer_mixin
 
             # Create a mock agent with HealerMixin
             class MockAgent(HealerMixin):
@@ -154,7 +154,7 @@ class TestCanonKeyRemoval:
     def test_validate_canon_key_router(self):
         """Verify the SSOT validation router works."""
         try:
-            from agentic_core.base_agents.healer_mixin import HealerMixin
+            from agentic_core.base_agents.healer_mixin import healer_mixin
 
             class MockAgent(HealerMixin):
                 def __init__(self):
@@ -259,7 +259,7 @@ class TestCanonKeyRemoval:
             from agentic_core.L5_safety.validators.structure_blueprint import (
                 CANON_VALIDATION_REGISTRY,
             )
-            from agentic_core.base_agents.healer_mixin import HealerMixin
+            from agentic_core.base_agents.healer_mixin import healer_mixin
 
             class MockAgent(HealerMixin):
                 def __init__(self):

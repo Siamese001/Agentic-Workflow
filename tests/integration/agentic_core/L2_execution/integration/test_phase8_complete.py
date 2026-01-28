@@ -35,7 +35,7 @@ def test_refactor_inheritance():
     # Import here to avoid import errors if files don't exist yet
     from agentic_core.L1_cognition.thought_engine.supreme_court import SupremeCourt
     from agentic_core.L2_execution.tool_registry.structured_engine import StructuredEngine
-    from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
+    from agentic_core.L2_execution.mcp.llm_provider_mixin import llm_provider_mixin
 
     # Supreme Court
     assert issubclass(SupremeCourt, LLMProviderMixin), "SupremeCourt must use LLMProviderMixin"

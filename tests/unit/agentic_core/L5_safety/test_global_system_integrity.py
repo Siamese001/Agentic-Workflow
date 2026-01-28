@@ -100,7 +100,7 @@ class TestGlobalSystemIntegrity:
         # Test LIC Agent Base compliance
         from apps_lic.shared.core.agent_base import LICAgentBase
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.base_agents.healer_mixin import HealerMixin
+        from agentic_core.base_agents.healer_mixin import healer_mixin
 
         # Verify inheritance chain
         assert issubclass(LICAgentBase, SovereignBaseAgent), (
@@ -117,7 +117,7 @@ class TestGlobalSystemIntegrity:
         """
         from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.base_agents.healer_mixin import HealerMixin
+        from agentic_core.base_agents.healer_mixin import healer_mixin
 
         # Create agent instance
         agent = HOP1ProfileAnalysisAgent()

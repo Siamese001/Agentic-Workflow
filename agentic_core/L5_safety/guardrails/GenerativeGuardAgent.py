@@ -24,11 +24,11 @@ from pathlib import Path
 from typing import Any
 
 # GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface (MOVED to agentic_core.utils.core_extensions)
-# GRAVITY FIXED (Upward Leak): from agentic_core.base_agents.mcp_hardened_mixin import MCPHardenedMixin
+# GRAVITY FIXED (Upward Leak): from agentic_core.base_agents.mcp_hardened_mixin import mcp_hardened_mixin
 _mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import mcp_hardened_mixin
 
 # Import CanonBaseAgentInterface
 try:

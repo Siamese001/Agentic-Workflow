@@ -1,1 +1,0 @@
-# Hygiene test fixtures package
