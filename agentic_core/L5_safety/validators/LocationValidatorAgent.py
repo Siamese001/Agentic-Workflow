@@ -19,11 +19,11 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class LocationValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
     """
     Pure validation agent for territorial compliance.
 
@@ -660,9 +660,12 @@ class LocationValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         return violations
 
     # Validation orchestration
-    def run(self) -> dict[str, Any]:
+    def run(self, target_territory: str | None = None) -> dict[str, Any]:
         """
-        Execute validation-only scan across ALL sovereign territories.
+        Execute validation-only scan across sovereign territories.
+
+        Args:
+            target_territory: If provided, restricts scan to this domain (Strict Targeting).
 
         Phase 4.1 Upgrade: Universal root scanning using SOVEREIGN_TERRITORIES.
         """
@@ -673,8 +676,14 @@ class LocationValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         total_files = 0
         roots_scanned = []
 
-        # Scan all SOVEREIGN_TERRITORIES roots (Universal Scope)
-        for root_name in SOVEREIGN_TERRITORIES.keys():
+        # [STRICT SCOPE] Target specific roots or all
+        if target_territory:
+            target_roots = [target_territory] if target_territory in SOVEREIGN_TERRITORIES else ["agentic_core"]
+        else:
+            target_roots = list(SOVEREIGN_TERRITORIES.keys())
+
+        # Scan targeted roots
+        for root_name in target_roots:
             root_path = self.project_root / root_name
             if not root_path.exists():
                 continue

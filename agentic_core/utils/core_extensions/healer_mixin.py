@@ -15,6 +15,11 @@ from typing import Any, Dict, Optional, Set
 Logger = logging.getLogger(__name__)
 
 
+def healer_mixin():
+    """Healer mixin function for compatibility"""
+    pass
+
+
 class HealerMixin:
     """
     Mixin that provides healing functionality to agents.

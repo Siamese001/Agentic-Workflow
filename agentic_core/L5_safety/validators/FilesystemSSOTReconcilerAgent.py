@@ -71,7 +71,7 @@ from typing import Any
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.self_diagnosis_mixin import self_diagnosis_mixin
+from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
 # Use correct MCP mixin location
@@ -291,12 +291,13 @@ class FilesystemSSOTReconcilerAgent(
             return False, self._create_rejected_result(proposals, "Reconciliation aborted by user")
 
     async def enforce_gospel(
-        self, auto_apply: bool = False, interactive: bool = True
+        self, auto_apply: bool = False, interactive: bool = True, target_territory: str | None = None
     ) -> dict[str, Any]:
         """Main entry point: Align filesystem to match the Gospel (blueprint)."""
-        Logger.info("Starting SSOT Gospel Enforcement scan...")
+        scope_msg = f"Targeting: {target_territory}" if target_territory else "Global Scan"
+        Logger.info(f"Starting SSOT Gospel Enforcement scan... ({scope_msg})")
 
-        await self._scan_filesystem()
+        await self._scan_filesystem(target_territory=target_territory)
         await self._scan_agents()
 
         current_blueprint = self._load_current_blueprint()
@@ -328,17 +329,28 @@ class FilesystemSSOTReconcilerAgent(
         Logger.info("Dry-run mode - proposals generated but not applied")
         return self._create_rejected_result(proposals, "Set auto_apply=True to apply changes")
 
-    async def _scan_filesystem(self) -> None:
+    async def _scan_filesystem(self, target_territory: str | None = None) -> None:
         """
-        Scan actual folder structure in agentic_core, apps_*, tests.
-
-        Discovers:
-        - L1 subfolders (e.g., agentic_core/L0_maintenance)
-        - L2 subfolders (e.g., agentic_core/L0_maintenance/scripts)
+        Scan actual folder structure with strict scope targeting.
+        
+        Args:
+            target_territory: If provided, restricts discovery to the relevant root folder.
         """
-        Logger.info("Scanning filesystem structure...")
+        # CRITICAL ANALYSIS: Universal scanning on 6000+ files causes timeout.
+        # We must decouple scan depth from repo size by targeting specific roots.
+        Logger.info(f"Scanning filesystem structure (Scope: {target_territory or 'Universal'})...")
 
-        roots_to_scan = ["agentic_core", "apps_shared", "apps_rg", "apps_lic", "tests"]
+        # [STRICT SCOPE] Filter roots based on target territory
+        if target_territory:
+            from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
+            # Logic: If territory is a root (apps_lic), scan only that. Else target agentic_core.
+            if target_territory in SOVEREIGN_TERRITORIES and target_territory != "agentic_core":
+                roots_to_scan = [target_territory]
+            else:
+                roots_to_scan = ["agentic_core"]
+            Logger.info(f"Filesystem scan restricted to roots: {roots_to_scan}")
+        else:
+            roots_to_scan = ["agentic_core", "apps_shared", "apps_rg", "apps_lic", "tests"]
 
         for root in roots_to_scan:
             root_path = self.project_root / root

@@ -26,7 +26,8 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_TERRITORIES,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.utils.core_extensions.healer_mixin import healer_mixin
+from agentic_core.utils.core_extensions.healer_mixin import healer_mixin, HealerMixin
+
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO').upper())

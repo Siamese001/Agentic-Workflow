@@ -590,20 +590,37 @@ class LocationAgent(SovereignBaseAgent):
 
         return valid_files, violations
 
-    def run(self, files: list[Path] = None) -> list[tuple[Path, str]]:
+    def run(self, files: list[Path] = None, target_territory: str | None = None) -> list[tuple[Path, str]]:
         """
         Full location compliance scan.
         Returns all violations (Missing roots + per-file).
         Suitable as first-stage gatekeeper in orchestrator.
+
+        Args:
+            files: Optional manual file list.
+            target_territory: If provided, discovers files strictly in this scope (Performance fix).
         """
         all_violations: list[tuple[Path, str]] = []
 
-        # 1. Check sovereign root existence
+        # 1. Check sovereign root existence (Global, fast)
         all_violations.extend(self.validate_sovereign_roots())
 
-        # 2. Scan files (using SovereignIndex for performance)
+        # 2. Scan files (Scoped Discovery vs Global Scan)
         if files is None:
-            files = _get_python_files(self.project_root)
+            if target_territory:
+                # [STRICT SCOPE] Discover only files in the target territory path
+                target_path = self.project_root / "agentic_core" / target_territory
+                if not target_path.exists() and (self.project_root / target_territory).exists():
+                     target_path = self.project_root / target_territory
+                
+                if target_path.exists():
+                    from agentic_core.utils.ssot_discovery import get_python_files
+                    files = list(get_python_files(target_path))
+                    Logger.info(f"[LocationAgent] TARGETED DISCOVERY: {len(files)} files in {target_territory}")
+                else:
+                    files = []
+            else:
+                files = _get_python_files(self.project_root)
 
         _, file_violations = self.enforce_void_compliance(files)
         all_violations.extend(file_violations)
