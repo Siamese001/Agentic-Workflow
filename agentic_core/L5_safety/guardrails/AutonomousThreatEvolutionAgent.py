@@ -52,7 +52,7 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self.log_path: Path = Path("observability/logs/threat_detections.json")
         self.evolution_interval: int = 3600
         self.running: bool = True
-        self.confidence_threshold: float = 0.78
+        self.confidence_threshold: float = 0.75
 
     async def run(self) -> dict[str, Any]:
         """Standardized entry point for L6 Coordinator"""

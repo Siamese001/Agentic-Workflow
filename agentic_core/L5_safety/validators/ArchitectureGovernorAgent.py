@@ -151,7 +151,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
             self._cognitive_agent = CognitiveDispositionAgent(
                 project_root=self.project_root,
-                confidence_threshold=0.7,  # Auto-execute at 70% confidence
+                confidence_threshold=0.75,  # Auto-execute at > 0.75 confidence (unified threshold)
             )
         return self._cognitive_agent
 

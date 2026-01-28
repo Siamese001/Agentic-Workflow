@@ -27,7 +27,7 @@ class DispositionDecision:
 class CognitiveDispositionAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """AI-Powered Architectural Triage Agent via Sovereign Gateway."""
 
-    def __init__(self, project_root: Path | None = None, confidence_threshold: float = 0.8):
+    def __init__(self, project_root: Path | None = None, confidence_threshold: float = 0.75):
         super().__init__()
         self.project_root = project_root or Path.cwd()
         self.confidence_threshold = confidence_threshold

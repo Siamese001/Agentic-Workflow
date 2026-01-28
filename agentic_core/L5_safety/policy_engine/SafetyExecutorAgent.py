@@ -81,7 +81,7 @@ class ExecutorConfig:
     enable_integrity_gates: bool = True
     enable_safety_checks: bool = True
     block_on_high_severity: bool = True
-    safety_score_threshold: float = 0.7
+    safety_score_threshold: float = 0.75
     max_execution_time_ms: float = 30000
     audit_all_executions: bool = True
 

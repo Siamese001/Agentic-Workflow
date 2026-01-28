@@ -320,7 +320,7 @@ class SelfUpdatingSafetyEngine:
     async def _generate_new_rules_if_needed(self):
         """Generate new rules based on detected patterns."""
         for pattern in self.threat_patterns.values():
-            if pattern.confidence_score < 0.7:
+            if pattern.confidence_score <= 0.75:
                 continue
 
             if pattern.detection_count < 5:

@@ -120,6 +120,14 @@ repos:
         pass_filenames: false
         always_run: true
 
+      - id: check-test-structure
+        name: Test Structure Validation (Enforce Depth-3 SSOT)
+        entry: python
+        args: [ops_scripts/governance/check_test_structure.py]
+        language: python
+        pass_filenames: false
+        always_run: true
+
       - id: sovereign-lockdown-verification
         name: Sovereign Lockdown Verification (Phase 7)
         entry: python
