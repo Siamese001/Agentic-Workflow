@@ -116,11 +116,13 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
     # STRUCTURE CREATION
     # ========================================================================
 
-    def create_missing_structure(self) -> dict[str, Any]:
+    def create_missing_structure(self, target_territory: str | None = None) -> dict[str, Any]:
         """
         Create missing L2 (Layer) and L3 (Sub-territory) directories.
 
         Detection-First: Always scans and counts violations, only heals if healing_enabled=True.
+
+        [HARDENED] Accepts target_territory to optimize scoped creation.
 
         Hierarchy: Project Root (L0) → agentic_core (L1) → Layer Folders (L2, e.g., L1_cognition)
                    → Sub-territories (L3, e.g., thought_engine)
@@ -136,20 +138,35 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         approved_layers_l2 = SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", [])
 
         for layer_l2_name in approved_layers_l2:
+            # [SCOPED] Skip unrelated layers
+            if target_territory and target_territory != layer_l2_name:
+                 # Check if target is L3 nested in this L2
+                 expected_l3 = set(CORE_SUBFOLDER_MAP.get(layer_l2_name, []))
+                 if target_territory not in expected_l3:
+                     continue
+
             layer_l2_path = self.project_root / "agentic_core" / layer_l2_name
             if not layer_l2_path.exists():
-                results["violations_found"] += 1
-                Logger.warning(f"   [!] MISSING L2 LAYER: agentic_core/{layer_l2_name}")
-                if self.healing_enabled:
-                    self._create_dir_with_init(
-                        layer_l2_path, results, f"agentic_core/{layer_l2_name}"
-                    )
-                continue
+                # Only create L2 if it matches target or we are in global mode
+                if not target_territory or target_territory == layer_l2_name:
+                    results["violations_found"] += 1
+                    Logger.warning(f"   [!] MISSING L2 LAYER: agentic_core/{layer_l2_name}")
+                    if self.healing_enabled:
+                        self._create_dir_with_init(
+                            layer_l2_path, results, f"agentic_core/{layer_l2_name}"
+                        )
+                # If parent L2 doesn't exist and we are scoped to something else, we might skip
+                if not layer_l2_path.exists():
+                    continue
 
             # L3 Sub-territories (thought_engine, guardrails, etc.)
             expected_territories_l3 = set(CORE_SUBFOLDER_MAP.get(layer_l2_name, []))
             if not expected_territories_l3:
                 continue
+
+            # [SCOPED] Filter L3 targets
+            if target_territory and target_territory in expected_territories_l3:
+                expected_territories_l3 = {target_territory}
 
             actual_l3 = {
                 p.name for p in layer_l2_path.iterdir() if p.is_dir() and not p.name.startswith(".")
@@ -557,11 +574,13 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
     # DEPTH ENFORCEMENT (from HierarchyEnforcerAgent)
     # ========================================================================
 
-    def enforce_depth_rules(self) -> dict[str, Any]:
+    def enforce_depth_rules(self, target_territory: str | None = None) -> dict[str, Any]:
         """
         Enforce depth rules and archive violations.
 
         Detection-First: Always scans and counts violations, only heals if healing_enabled=True.
+
+        [HARDENED] Accepts target_territory to skip unrelated roots.
 
         Returns:
             Dict with counts of archived files by category and violations found
@@ -578,23 +597,30 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
             "HierarchyAgent: Performing Depth-Precision audit (agentic_core=3, apps=2, tests=2)..."
         )
 
-        # Enforce apps_* depth
-        apps_count = self._enforce_apps_depth()
-        results["violations_found"] += apps_count
-        if self.healing_enabled:
-            results["apps_archived"] = apps_count
+        # If target_territory is specified (e.g., prompt_governance), depth rules for apps/tests are irrelevant
+        # Only enforce universal depth if inside agentic_core
+        # Depth enforcement is usually global hygiene. We will skip apps/tests if targeting a core module.
 
-        # Enforce tests depth
-        tests_count = self._enforce_tests_depth()
-        results["violations_found"] += tests_count
-        if self.healing_enabled:
-            results["tests_archived"] = tests_count
+        # [SCOPED] Skip apps depth if targeting core
+        if not target_territory or target_territory.startswith("apps_"):
+            apps_count = self._enforce_apps_depth()
+            results["violations_found"] += apps_count
+            if self.healing_enabled:
+                results["apps_archived"] = apps_count
 
-        # Enforce universal depth (non-Python files)
-        universal_count = self._enforce_universal_depth()
-        results["violations_found"] += universal_count
-        if self.healing_enabled:
-            results["universal_archived"] = universal_count
+        # [SCOPED] Skip tests depth if targeting core/apps
+        if not target_territory or target_territory == "tests":
+            tests_count = self._enforce_tests_depth()
+            results["violations_found"] += tests_count
+            if self.healing_enabled:
+                results["tests_archived"] = tests_count
+
+        # Universal depth (agentic_core)
+        if not target_territory or not (target_territory.startswith("apps_") or target_territory == "tests"):
+            universal_count = self._enforce_universal_depth()
+            results["violations_found"] += universal_count
+            if self.healing_enabled:
+                results["universal_archived"] = universal_count
 
         if results["violations_found"] > 0:
             Logger.info(
@@ -1003,6 +1029,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         execute: bool = False,
         dry_run: bool = True,
         auto_approve: bool = False,
+        target_territory: str | None = None,
         **kwargs,
     ) -> dict[str, Any]:
         """
@@ -1015,6 +1042,8 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
             purge_orphans: Purge orphaned files
             auto_approve: If True, bypasses interactive user confirmation for moves.
                           USE WITH CAUTION - intended for CI/automated enforcement.
+            target_territory: If specified, scope healing to this territory only
+                              (e.g., "prompt_governance" -> agentic_core/prompt_governance)
 
         Returns:
             Comprehensive results dictionary
@@ -1027,23 +1056,39 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
             self._auto_approve = True
         else:
             self._auto_approve = False
+
+        # Store target_territory for scoped operations
+        self._target_territory = target_territory
+        if target_territory:
+            Logger.info(f"[HierarchyAgent] Scoped to territory: {target_territory}")
+
         print("=" * 80)
         print(f"HIERARCHY AGENT - {'DRY RUN' if not self.healing_enabled else 'ACTIVE'}")
+        if target_territory:
+            print(f"SCOPED TO: {target_territory}")
         print("=" * 80)
 
         results = {"structure": {}, "relocation": {}, "depth": {}, "purge": {}, "summary": {}}
 
         if create_structure:
-            results["structure"] = self.create_missing_structure()
+            # [FIX] Pass target_territory
+            results["structure"] = self.create_missing_structure(target_territory)
 
         if relocate_files:
-            results["relocation"] = self.relocate_misplaced_files()
+            # [FIX] Pass target_territory
+            results["relocation"] = self.relocate_misplaced_files(target_territory)
 
         if enforce_depth:
-            results["depth"] = self.enforce_depth_rules()
+            # [FIX] Pass target_territory
+            results["depth"] = self.enforce_depth_rules(target_territory)
 
         if purge_orphans:
-            results["purge"] = self.purge_orphaned_files()
+            # [FIX] Skip global orphan purge if scoped, or implement scoped purge
+            if target_territory:
+                Logger.info("[HierarchyAgent] Skipping global orphan purge in scoped mode to protect out-of-scope assets.")
+                results["purge"] = {"purged": 0, "violations_found": 0}
+            else:
+                results["purge"] = self.purge_orphaned_files()
 
         # Summary
         total_violations = (
