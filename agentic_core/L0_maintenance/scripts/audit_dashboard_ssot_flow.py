@@ -24,7 +24,7 @@ import json
 import sys
 from pathlib import Path
 
-project_root = Path(__file__).parent.parent
+project_root = Path(__file__).parent.parent.parent.parent
 
 print("\n" + "=" * 70)
 print("DASHBOARD SSOT AUDIT")
@@ -41,7 +41,7 @@ discovery_file = project_root / "agent_discovery_full.json"
 dashboard_data_file = (
     project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
 )
-ssot_file = project_root / "scripts" / "dashboard_ssot_definitions.py"
+ssot_file = project_root / "agentic_core" / "L0_maintenance" / "scripts" / "dashboard_ssot_definitions.py"
 
 files_exist = {
     "agent_discovery_full.json": discovery_file.exists(),
@@ -65,7 +65,7 @@ print("AUDIT 2: SSOT Definitions Consistency")
 print("=" * 70)
 
 # Import SSOT definitions
-sys.path.insert(0, str(project_root / "scripts"))
+sys.path.insert(0, str(project_root / "agentic_core" / "L0_maintenance" / "scripts"))
 from dashboard_ssot_definitions import (
     COL_CANONICAL_INHERITANCE,
     COL_CODE_QUALITY,
@@ -75,7 +75,7 @@ from dashboard_ssot_definitions import (
     COL_HEAL_CAP,
     COL_HEALTH,
     COL_INVOCATION,
-    COL_SCHEMA,
+    COL_SCHEMA_STRICTNESS,
     COL_TEST,
     COL_TYPED,
     FIELD_DOCUMENTED_PCT,
@@ -98,7 +98,7 @@ required_columns = [
     COL_COMPLEXITY_HEALTH,
     COL_TYPED,
     COL_DOCUMENTED,
-    COL_SCHEMA,
+    COL_SCHEMA_STRICTNESS,
     COL_CANONICAL_INHERITANCE,
     COL_CODE_QUALITY,
     COL_HEALTH,
