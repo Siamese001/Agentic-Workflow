@@ -11,10 +11,11 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from apps_lic.shared.core.agent_base import LICAgentBase
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class CampaignBalanceAgent(LICAgentBase):
+class CampaignBalanceAgent(SubatomicTestingMixin, LICAgentBase):
     """
     Sovereign Campaign Balance Validator.
 

@@ -9,12 +9,13 @@ import logging
 import uuid
 
 from apps_lic.shared.core.agent_base import LICAgentBase
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class LicHealingOrchestratorAgent(LICAgentBase):
+class LicHealingOrchestratorAgent(SubatomicTestingMixin, LICAgentBase):
     """
     Sovereign LIC Healing Orchestrator.
     Coordinates domain-specific recovery actions for the LIC ecosystem.

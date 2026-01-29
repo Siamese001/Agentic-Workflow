@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 RgTemplateOptimizerAgent - Extracted for one-class-per-file pattern.
@@ -17,7 +18,7 @@ class OutreachAgent:
 
 
 @dataclass
-class LicTemplateOptimizerAgent(SovereignBaseAgent):
+class LicTemplateOptimizerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Optimizes message templates for engagement."""
 
     async def execute(self) -> None:

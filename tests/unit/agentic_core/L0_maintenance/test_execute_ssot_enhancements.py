@@ -10,6 +10,7 @@ Run with:
 
 import pytest
 import sys
+import os
 import tempfile
 from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
@@ -18,6 +19,195 @@ from datetime import datetime
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+# Import the classes we need to test
+from agentic_core.L0_maintenance.scripts.execute_ssot import (
+    AutonomousDecisionEngine,
+    ConfidenceScore,
+    ASTCodeQualityValidator,
+    validate_territory_input,
+    ReconciliationViolation
+)
+
+
+class TestSafetyMechanisms:
+    """CRITICAL: Test safety guards for cycles and resource exhaustion."""
+
+    def test_cycle_detection_hard_stop(self):
+        """
+        Verify that recursive healing calls are blocked immediately.
+        Requirement: Must return False and specific error message.
+        """
+        # Use the enhanced version with cycle detection
+        from agentic_core.L0_maintenance.scripts.execute_ssot import AutonomousDecisionEngine as EnhancedEngine
+        
+        engine = EnhancedEngine(enable_llm=False)
+        
+        # 1. First call - OK
+        proceed, _ = engine.should_proceed_with_healing(
+            ConfidenceScore(1.0, "Perfect"), agent_name="Agent_A"
+        )
+        assert proceed is True, "First call should pass"
+        
+        # 2. Recursive call (Same Agent) - BLOCK
+        proceed, msg = engine.should_proceed_with_healing(
+            ConfidenceScore(1.0, "Perfect"), agent_name="Agent_A"
+        )
+        assert proceed is False, "Recursive call must be blocked"
+        assert "cycle detected" in msg.lower(), "Error message must indicate cycle"
+
+    def test_healing_budget_exhaustion(self):
+        """
+        Verify global healing budget prevents runaway processes.
+        Requirement: Stop after N operations.
+        """
+        from agentic_core.L0_maintenance.scripts.execute_ssot import AutonomousDecisionEngine as EnhancedEngine
+        
+        engine = EnhancedEngine(enable_llm=False)
+        engine._max_healing_operations = 2
+        
+        # Consume budget
+        engine.should_proceed_with_healing(ConfidenceScore(1.0, ""), agent_name="Agent_1")
+        engine.should_proceed_with_healing(ConfidenceScore(1.0, ""), agent_name="Agent_2")
+        
+        # Exceed budget
+        proceed, msg = engine.should_proceed_with_healing(
+            ConfidenceScore(1.0, ""), agent_name="Agent_3"
+        )
+        assert proceed is False
+        assert "budget exceeded" in msg.lower()
+
+    def test_territory_validation_security_fuzzing(self):
+        """
+        Fuzz territory input to ensure security against injection/traversal.
+        """
+        from agentic_core.L0_maintenance.scripts.execute_ssot import validate_territory_input
+        
+        inputs = [
+            ("valid_territory", True),
+            ("../etc/passwd", False),   # Traversal
+            ("/root/hack", False),      # Absolute path
+            ("valid; rm -rf /", False), # Shell injection attempt
+            ("a" * 101, False),         # Buffer overflow attempt
+            ("valid_123", True)
+        ]
+        
+        for inp, expected in inputs:
+            valid, msg = validate_territory_input(inp)
+            assert valid == expected, f"Failed security check for: {inp}"
+
+
+class TestASTValidator:
+    """Verify code quality analysis and memory safety."""
+
+    def test_detect_missing_types(self, tmp_path):
+        """Ensure missing type hints are caught."""
+        from agentic_core.L0_maintenance.scripts.execute_ssot import ASTCodeQualityValidator
+        
+        f = tmp_path / "dirty.py"
+        f.write_text("def bad_func(x): return x")
+        
+        validator = ASTCodeQualityValidator(tmp_path)
+        res = validator.check_file_quality(f)
+        
+        assert res['violations_count'] == 1
+        assert res['violations'][0]['type'] == 'MISSING_TYPE_HINT'
+
+    def test_memory_safety_guard(self, tmp_path):
+        """
+        Verify that massive files are rejected to prevent OOM.
+        Requirement: Must return error, not crash.
+        """
+        from agentic_core.L0_maintenance.scripts.execute_ssot import ASTCodeQualityValidator
+        
+        f = tmp_path / "massive.py"
+        # Create dummy large file (1.1MB)
+        f.write_text("x = 1\n" * 200_000)
+        
+        validator = ASTCodeQualityValidator(tmp_path)
+        # Verify write size
+        assert os.path.getsize(f) > 1_000_000
+        
+        res = validator.check_file_quality(f)
+        assert "error" in res
+        assert "too large" in res['error'], "Must reject large files"
+
+
+class TestSemanticIntelligence:
+    """Verify decision engine scoring logic."""
+
+    def test_confidence_calculation_bounds(self):
+        """
+        Verify confidence score never exceeds 1.0 or drops below 0.0.
+        Requirement: Mathematical correctness.
+        """
+        engine = AutonomousDecisionEngine(enable_llm=False)
+        
+        # Max inputs
+        conf = engine.calculate_healing_confidence(
+            violations_count=0,
+            violation_types=["NAMING_ERROR"], 
+            territory="prompt_governance",    
+            historical_success_rate=1.0
+        )
+        assert 0.0 <= conf.value <= 1.0, f"Score out of bounds: {conf.value}"
+
+    def test_semantic_jaccard_scoring(self):
+        """Verify Jaccard similarity logic."""
+        engine = AutonomousDecisionEngine(enable_llm=False)
+        
+        # Partial match
+        score = engine._calculate_semantic_similarity(
+            "user_auth_controller", 
+            ["user_controller", "auth_service"]
+        )
+        assert score > 0.0, "Should detect similarity"
+        
+        # No match
+        score = engine._calculate_semantic_similarity(
+            "banana_bread",
+            ["rocket_science"]
+        )
+        assert score == 0.0
+
+
+class TestReconciliationViolation:
+    """Verify structured violation data model."""
+
+    def test_violation_serialization(self):
+        """Test violation to_dict conversion."""
+        from agentic_core.L0_maintenance.scripts.execute_ssot import ReconciliationViolation
+        
+        violation = ReconciliationViolation(
+            is_valid=False,
+            message="Test violation",
+            drift_type="NAMING",
+            file_path=Path("/test/file.py"),
+            severity=7
+        )
+        
+        data = violation.to_dict()
+        assert data["is_valid"] is False
+        assert data["message"] == "Test violation"
+        assert data["drift_type"] == "NAMING"
+        assert data["file_path"] == "/test/file.py"
+        assert data["severity"] == 7
+
+    def test_violation_optional_fields(self):
+        """Test violation with minimal required fields."""
+        from agentic_core.L0_maintenance.scripts.execute_ssot import ReconciliationViolation
+        
+        violation = ReconciliationViolation(
+            is_valid=True,
+            message="OK"
+        )
+        
+        data = violation.to_dict()
+        assert data["is_valid"] is True
+        assert data["message"] == "OK"
+        assert data["drift_type"] is None
+        assert data["file_path"] is None
+        assert data["severity"] == 5  # Default value
 
 
 class TestConfidenceScoring:

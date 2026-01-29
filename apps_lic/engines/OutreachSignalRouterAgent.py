@@ -9,6 +9,7 @@ Provides self-healing capabilities for outreach campaigns:
 
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from enum import Enum
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -73,7 +74,7 @@ class OutreachHealingResult:
     final_campaign: dict[str, Any]
 
 
-class OutreachSignalRouterAgent(SovereignBaseAgent):
+class OutreachSignalRouterAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Routes signals to appropriate agents."""
 
     SIGNAL_TO_AGENTS = {

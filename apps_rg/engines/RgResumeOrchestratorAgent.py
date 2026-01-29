@@ -14,6 +14,7 @@ from typing import Any
 """Brief description of functionality and purpose."""
 
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 from apps_rg.shared.core.agent_base import RGAgentBase
 
@@ -34,7 +35,7 @@ _logger = logging.getLogger(__name__)
 
 # NAMING FIXED: RgResumeOrchestratorAgent → RgResumeOrchestratorAgent
 @dataclass
-class RgResumeOrchestratorAgent(RGAgentBase):
+class RgResumeOrchestratorAgent(SubatomicTestingMixin, RGAgentBase):
     """Orchestrate the multi-hop resume generation workflow."""
 
     master_resume: dict[str, Any] = field(default_factory=dict)

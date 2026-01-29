@@ -1,4 +1,5 @@
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from dataclasses import dataclass
 
 """
@@ -17,7 +18,7 @@ class OutreachAgent:
 
 
 @dataclass
-class MessageComplianceAgent(SovereignBaseAgent):
+class MessageComplianceAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Ensures message compliance with regulations and best practices.
 

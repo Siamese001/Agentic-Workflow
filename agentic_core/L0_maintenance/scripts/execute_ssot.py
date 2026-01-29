@@ -60,7 +60,7 @@ except ImportError:
     HEAL_RESULT_SCHEMA = {}
 
 try:
-    from agentic_core.base_agents.healer_interface import LegacyAgentAdapter, HealerProtocol
+    from agentic_core.base_agents.HealerProtocol import LegacyAgentAdapter, HealerProtocol
 except ImportError:
     # Fallback for bootstrapping scenarios
     class HealerProtocol:
