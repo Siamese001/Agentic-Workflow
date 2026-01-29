@@ -1,0 +1,19 @@
+{
+    "timestamp": "2026-01-29T12:21:12.715304",
+    "audit_id": "49c2e821-cf36-4c1c-8a04-933b91c574bc",
+    "structural_summary": {
+        "total_violations": 0,
+        "total_errors": 0,
+        "violation_details": [],
+        "roots_scanned": [
+            "agentic_core\\prompt_governance"
+        ]
+    },
+    "drift_violations": [],
+    "stats": {
+        "violations_found": 0,
+        "violations_fixed": 0,
+        "errors": 0,
+        "drift_detected": 0
+    }
+}
