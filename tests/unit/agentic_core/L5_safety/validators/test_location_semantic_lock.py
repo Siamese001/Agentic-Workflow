@@ -46,7 +46,7 @@ sys.modules["agentic_core.L5_safety.validators.LocationValidatorAgent"] = mock_v
 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
 
-class test_location_semantic_lock:
+class TestLocationSemanticLock:
     """
     Verifies the [CONSTITUTIONAL OVERRIDE 2026-01-22] in LocationAgent.
     Ensures BaseAgents are rejected if not in base_agents/.
