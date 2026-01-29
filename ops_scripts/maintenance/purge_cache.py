@@ -2,63 +2,177 @@
 """
 Repository Cache Purge Utility
 
-Recursively deletes all Python cache artifacts and temporary files
-to ensure clean repository state across branches and commits.
+Hardened cache purge specifically for Windows environments and deep agentic architectures.
+Traverses the root directory to find and destroy all __pycache__ instances with SSOT compliance.
 """
 
 import os
 import shutil
+import pathlib
+import logging
+import argparse
 from pathlib import Path
 
+# Configure logging for Windows environments
+logging.basicConfig(level=logging.WARNING, format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
 
-def purge_repository_cache(target_path=None):
-    """Recursively deletes artifacts, skipping large ignored directories."""
-    root_dir = Path(target_path) if target_path else Path(__file__).parent.parent.parent
-    # SSOT: Ignore massive or unauthorized root folders
-    ignore_dirs = {".git", ".venv", "venv", "env", "data", "archives"}
 
-    removed_count = 0
+def get_project_root():
+    """
+    SSOT-approved method to get project root directory.
+    Uses the agentic_core structure as the canonical reference point.
+    """
+    current_file = pathlib.Path(__file__).resolve()
+    
+    # Navigate from ops_scripts/maintenance/ to root (2 levels up)
+    root_dir = current_file.parents[2]
+    
+    # Verify we're at the correct root by checking for agentic_core
+    if not (root_dir / "agentic_core").exists():
+        raise RuntimeError(f"Project root validation failed. Expected agentic_core at {root_dir}")
+    
+    return root_dir
+
+
+def purge_all_pycache(quiet=False, extended=False):
+    """
+    Hardened cache purge specifically for Windows environments and deep agentic architectures.
+    Traverses the root directory to find and destroy all __pycache__ instances.
+    """
+    # SSOT-approved method of anchoring to the project root directory.
+    current_file = pathlib.Path(__file__).resolve()
+    root_dir = current_file.parents[2] 
+    
+    # Define targets based on extended flag
+    targets = ['__pycache__']
+    if extended:
+        targets.extend(['.pytest_cache', '.mypy_cache', '.ruff_cache'])
+    
+    count = 0
+    # Logic: Search for any directory in targets, excluding envs and git
+    for target in targets:
+        for p in root_dir.rglob(target):
+            if any(part in p.parts for part in ['.venv', 'env', '.git']):
+                continue
+                
+            try:
+                if p.is_dir():
+                    shutil.rmtree(p, ignore_errors=False)
+                    count += 1
+                    if not quiet:
+                        print(f"Removed: {p.relative_to(root_dir)}")
+            except PermissionError:
+                if not quiet:
+                    logging.warning(f"Permission denied: {p}. File likely locked. Skipping...")
+            except FileNotFoundError:
+                pass 
+            except Exception as e:
+                if not quiet:
+                    logging.error(f"Failed to delete {p}: {e}")
+            
+    if not quiet:
+        print(f"Purged {count} cache directories across {root_dir.name}.")
+
+    return count
+
+
+def purge_all_cache():
+    """
+    Extended cache purge that handles multiple cache types beyond just __pycache__.
+    Includes .pytest_cache, .mypy_cache, .ruff_cache, and temporary files.
+    """
+    try:
+        root_dir = get_project_root()
+    except RuntimeError as e:
+        logger.error(f"Failed to determine project root: {e}")
+        return 0
+    
+    cache_patterns = {
+        '__pycache__',
+        '.pytest_cache', 
+        '.mypy_cache',
+        '.ruff_cache',
+        '.coverage',
+        '.tox',
+        'htmlcov',
+        '.sovereign_healing_backup'
+    }
+    
+    temp_patterns = {'temp_', 'tmp_'}
+    
+    count = 0
     error_count = 0
-
-    print(f"Purging artifacts in {root_dir}...")
-
-    for root, dirs, files in os.walk(root_dir):
-        # Prune ignored directories in-place for sub-second performance
-        dirs[:] = [d for d in dirs if d not in ignore_dirs]
-        current_path = Path(root)
-
-        for d in list(dirs):
-            if d in (
-                "__pycache__",
-                ".pytest_cache",
-                ".mypy_cache",
-                ".ruff_cache",
-                ".sovereign_healing_backup",
-            ) or d.startswith("temp_"):
-                dir_path = current_path / d
-                try:
-                    shutil.rmtree(dir_path)
-                    print(f"Removed directory: {dir_path.relative_to(root_dir)}")
-                    removed_count += 1
-                    dirs.remove(d)
-                except Exception as e:
-                    print(f"WARNING: Could not remove {dir_path}: {e}")
-                    error_count += 1
-
-        for f in files:
-            if f.endswith((".pyc", ".pyo")):
-                file_path = current_path / f
-                try:
-                    file_path.unlink()
-                    print(f"Removed file: {file_path.relative_to(root_dir)}")
-                    removed_count += 1
-                except Exception as e:
-                    print(f"WARNING: Could not remove {file_path}: {e}")
-                    error_count += 1
-
-    print(f"Cleanup complete: {removed_count} items removed, {error_count} errors")
-    return removed_count, error_count
+    
+    # Purge cache directories
+    for pattern in cache_patterns:
+        for p in root_dir.rglob(pattern):
+            if '.venv' in p.parts or 'env' in p.parts or '.git' in p.parts:
+                continue
+                
+            try:
+                if p.is_dir():
+                    shutil.rmtree(p, ignore_errors=False)
+                    count += 1
+                    print(f"Removed cache: {p.relative_to(root_dir)}")
+            except PermissionError:
+                logger.warning(f"Permission denied: {p}. Skipping...")
+                error_count += 1
+            except FileNotFoundError:
+                pass
+            except Exception as e:
+                logger.error(f"Failed to delete {p}: {e}")
+                error_count += 1
+    
+    # Purge temporary directories
+    for p in root_dir.rglob('*'):
+        if not p.is_dir():
+            continue
+            
+        if '.venv' in p.parts or 'env' in p.parts or '.git' in p.parts:
+            continue
+            
+        if any(p.name.startswith(temp_pattern) for temp_pattern in temp_patterns):
+            try:
+                shutil.rmtree(p, ignore_errors=False)
+                count += 1
+                print(f"Removed temp: {p.relative_to(root_dir)}")
+            except PermissionError:
+                logger.warning(f"Permission denied: {p}. Skipping...")
+                error_count += 1
+            except FileNotFoundError:
+                pass
+            except Exception as e:
+                logger.error(f"Failed to delete {p}: {e}")
+                error_count += 1
+    
+    # Purge .pyc and .pyo files
+    for p in root_dir.rglob('*.pyc'):
+        if '.venv' in p.parts or 'env' in p.parts or '.git' in p.parts:
+            continue
+            
+        try:
+            p.unlink()
+            count += 1
+            print(f"Removed file: {p.relative_to(root_dir)}")
+        except Exception as e:
+            logger.error(f"Failed to delete {p}: {e}")
+            error_count += 1
+    
+    print(f"Purged {count} cache items across {root_dir.name}.")
+    if error_count > 0:
+        print(f"Encountered {error_count} errors during cleanup.")
+    
+    return count
 
 
 if __name__ == "__main__":
-    purge_repository_cache()
+    # CRITICAL ANALYSIS: Adding argparse allows the pre-commit hook to run silently
+    # while manual maintenance remains verbose and supports 'extended' cleaning.
+    parser = argparse.ArgumentParser(description="Hardened Cache Purge Utility")
+    parser.add_argument("--quiet", action="store_true", help="Suppress output (ideal for hooks)")
+    parser.add_argument("--all", action="store_true", help="Purge pytest, mypy, and ruff caches as well")
+    args = parser.parse_args()
+    
+    # Use the new purge_all_pycache function with argparse support
+    purge_all_pycache(quiet=args.quiet, extended=args.all)

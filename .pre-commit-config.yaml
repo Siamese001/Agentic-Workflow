@@ -145,9 +145,12 @@ repos:
         always_run: true
 
       - id: purge-cache
-        name: Purge Python Cache (Performance Optimization)
-        entry: python
-        args: [ops_scripts/maintenance/purge_cache.py]
+        name: Hardened Pycache Purge
+        entry: python ops_scripts/maintenance/purge_cache.py --quiet
         language: python
-        pass_filenames: false
+        # VIOLATION: Running on every file is inefficient for a global purge script.
+        # FIX: Set always_run to True and pass_filenames to False to run once per commit.
         always_run: true
+        pass_filenames: false
+        stages: [commit]
+        description: "Enforces repository hygiene by purging all __pycache__ folders before commit."
