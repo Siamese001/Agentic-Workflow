@@ -12,7 +12,7 @@ from pathlib import Path
 
 def purge_repository_cache(target_path=None):
     """Recursively deletes artifacts, skipping large ignored directories."""
-    root_dir = Path(target_path) if target_path else Path(__file__).parent.parent
+    root_dir = Path(target_path) if target_path else Path(__file__).parent.parent.parent
     # SSOT: Ignore massive or unauthorized root folders
     ignore_dirs = {".git", ".venv", "venv", "env", "data", "archives"}
     

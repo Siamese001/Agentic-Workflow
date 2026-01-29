@@ -139,7 +139,7 @@ repos:
       - id: purge-cache
         name: Purge Python Cache (Performance Optimization)
         entry: python
-        args: [scripts/purge_cache.py]
+        args: [ops_scripts/maintenance/purge_cache.py]
         language: python
         pass_filenames: false
         always_run: true
