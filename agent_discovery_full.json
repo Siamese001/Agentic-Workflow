@@ -413,9 +413,9 @@
   },
   {
     "class_name": "DomainPlannerAgent",
-    "path": "apps_lic\\legacy_archive\\DomainPlannerAgent.py",
-    "layer": "Apps",
-    "territory": "Apps Lic/Engines",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\DomainPlannerAgent.py",
+    "layer": "L3",
+    "territory": "L3 Orchestration/Workflow Engines",
     "category": "GenericAgent",
     "inheritance": [
       "BaseAgent"
@@ -2274,7 +2274,7 @@
   },
   {
     "class_name": "HistorianAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\HistorianAgent.py",
+    "path": "agentic_core\\L2_execution\\tool_registry\\HistorianAgent.py",
     "layer": "L2",
     "territory": "L2 Execution/Runners",
     "category": "Validator",
@@ -2451,7 +2451,7 @@
   },
   {
     "class_name": "ToolsmithAgent",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\ToolsmithAgent.py",
+    "path": "agentic_core\\L2_execution\\tool_registry\\ToolsmithAgent.py",
     "layer": "L2",
     "territory": "L2 Execution/Runners",
     "category": "Executor",
