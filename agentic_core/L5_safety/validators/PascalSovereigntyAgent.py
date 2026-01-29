@@ -165,7 +165,15 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         return 0 if (not self.validate_only or total_violations == 0) else 1
 
     def classify_file(self, path: Path) -> FileType:
-        """Analyze file AST to determine architectural role with strict test exemptions."""
+        """
+        Analyze file AST to determine architectural role with strict test exemptions.
+
+        CRITICAL ANALYSIS:
+        Hardened definition of 'AGENT':
+        1. Class name ends in 'Agent'.
+        2. Inherits from *Agent.
+        3. [NEW] Resides in a structural 'agents/' or 'validators/' directory.
+        """
         # --- EXEMPTION PATCH: TESTS ---
         # Critical Analysis: Preserving Pytest Discovery. Renaming test_*.py to PascalCase
         # would render the CI/CD pipeline blind as pytest would ignore the files.
@@ -202,6 +210,10 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         has_class = False
         is_agent = False
 
+        # [HARDENED] Structural Location Check
+        # If the file is in an 'agents' or 'validators' folder, it IS an agent contextually.
+        is_structural_agent = "agents" in path.parts or "validators" in path.parts
+
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 has_class = True
@@ -216,6 +228,9 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         if is_agent:
             return "AGENT"
         elif has_class:
+            # [HARDENED] Enforce Agent suffix if structurally located in agent territory
+            if is_structural_agent:
+                return "AGENT"
             return "CLASS"
         else:
             return "UTILITY"
@@ -468,6 +483,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
             classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
             if not classes:
                 return None
+            # [HARDENED] Heuristic: The primary class often matches the filename.
             primary = classes[0]
             stem_clean = path.stem.replace("_", "").lower()
             for cls_name in classes:
@@ -475,8 +491,11 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                     primary = cls_name
                     break
             target_name = primary
+            
+            # [HARDENED] Enforce Suffix
             if file_type == "AGENT" and not target_name.endswith("Agent"):
                 target_name += "Agent"
+                
             return f"{target_name}.py"
         except:
             return None
@@ -489,12 +508,25 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set[str] | None = None,
+        target_territory: str | None = None,
+        auto_approve: bool = True,
+        **kwargs,
     ) -> dict[str, int]:
         """
         Standard healing interface for execute_ssot.py integration.
 
         This method provides the canonical healing interface that integrates
         with the HealerMixin chain and execute_ssot.py orchestration.
+
+        Args:
+            dry_run: If True, only propose changes without applying them
+            execute: If True, apply changes (overrides dry_run)
+            depth: Current recursion depth for cycle detection
+            max_depth: Maximum recursion depth allowed
+            _call_path: Set of agent IDs already in call path (cycle detection)
+            target_territory: If specified, scope healing to this territory only
+                              (e.g., "prompt_governance" -> agentic_core/prompt_governance)
+            auto_approve: If True, skip interactive prompts (for CI/automated runs)
         """
         if _call_path is None:
             _call_path = set()
@@ -508,9 +540,23 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         # Configure healing mode
         self.dry_run = dry_run and not execute
 
+        # Determine scan root based on target_territory
+        # [HARDENED] Support both absolute paths and relative territory names
+        if target_territory:
+            if (self.project_root / "agentic_core" / target_territory).exists():
+                scan_root = self.project_root / "agentic_core" / target_territory
+            elif (self.project_root / target_territory).exists():
+                scan_root = self.project_root / target_territory
+            else:
+                print(f"[WARNING] Territory path does not exist: {target_territory}")
+                return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1}
+            print(f"[SOVEREIGNTY] Scoped to territory: {target_territory}")
+        else:
+            scan_root = self.project_root
+
         try:
-            # Execute the sovereignty audit
-            exit_code = self._orchestrate_audit(self.project_root)
+            # Execute the sovereignty audit on the scoped root
+            exit_code = self._orchestrate_audit(scan_root)
 
             # Calculate violations based on stats
             total_violations = sum(self.stats["violations"].values())

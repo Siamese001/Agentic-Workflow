@@ -266,6 +266,44 @@ def get_python_files(
     return python_files
 
 
+def get_data_files(
+    project_root: Path | None = None, 
+    extensions: list[str] | None = None,
+    exclude_patterns: list[str] | None = None
+) -> list[Path]:
+    """
+    Get all data files from the project with specified extensions.
+
+    Args:
+        project_root: Project root path.
+        extensions: File extensions to include (e.g., [".json", ".md"]).
+        exclude_patterns: Patterns to exclude (e.g., ['test_', '__pycache__']).
+
+    Returns:
+        List of Path objects for data files.
+    """
+    if project_root is None:
+        project_root = get_validated_project_root()
+
+    if extensions is None:
+        extensions = [".json", ".md", ".yaml", ".yml", ".toml", ".txt"]
+    
+    if exclude_patterns is None:
+        exclude_patterns = ["__pycache__", ".pyc", "test_", "mock_"]
+
+    data_files = []
+
+    for ext in extensions:
+        for data_file in project_root.rglob(f"*{ext}"):
+            # Apply exclusions
+            if any(pattern in str(data_file) for pattern in exclude_patterns):
+                continue
+
+            data_files.append(data_file)
+
+    return data_files
+
+
 def invalidate_cache() -> None:
     """Invalidate the discovery cache to force reload on next access."""
     global _discovery_cache, _cache_timestamp
@@ -281,5 +319,6 @@ __all__ = [
     "get_agent_names",
     "get_healers",
     "get_python_files",
+    "get_data_files",
     "invalidate_cache",
 ]

@@ -28,6 +28,7 @@ import time
 import builtins
 import atexit  # [HARDENED] For guaranteed state cleanup
 import stat  # [HARDENED] For permission bits
+import platform
 import subprocess
 from subprocess import DEVNULL
 from functools import wraps
@@ -449,6 +450,62 @@ class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
             return [], ConfidenceScore(value=0.5, reasoning=f"CDA error: {str(e)}")
 
 
+class SovereignDecisionEngine(EnhancedAutonomousDecisionEngine):
+    """
+    [HARDENED] Sovereign Decision Engine with strict token-based access control.
+    Synthesizes patterns from PascalSovereigntyAgent for cycle detection and resource protection.
+    """
+    def __init__(
+        self,
+        enable_llm: bool = False,
+        state_mgr: Optional["RuntimeStateManager"] = None,
+        enable_cda: bool = False,
+    ):
+        super().__init__(enable_llm, state_mgr, enable_cda)
+        self._sovereignty_token: str | None = None
+        self._operation_stack: list[str] = []
+        self._max_stack_depth = 10  # Prevent infinite recursion
+        self._atomic_lock = False
+
+    def request_sovereignty_token(self, agent_name: str, operation: str) -> bool:
+        """
+        Request permission to perform a state-mutating operation.
+        Enforces atomic locking and stack depth limits.
+        """
+        if self._atomic_lock:
+            logging.warning(f"Sovereignty DENIED for {agent_name}: Atomic lock active")
+            return False
+            
+        if len(self._operation_stack) >= self._max_stack_depth:
+            logging.critical(f"Sovereignty DENIED for {agent_name}: Stack depth exceeded ({len(self._operation_stack)})")
+            return False
+
+        # Cycle detection
+        op_signature = f"{agent_name}:{operation}"
+        if op_signature in self._operation_stack:
+            logging.warning(f"Sovereignty DENIED for {agent_name}: Cycle detected {op_signature}")
+            return False
+
+        self._operation_stack.append(op_signature)
+        self._atomic_lock = True
+        self._sovereignty_token = f"SOV_{int(time.time())}_{agent_name}"
+        return True
+
+    def release_sovereignty_token(self, agent_name: str, success: bool = True) -> None:
+        """Release the lock after operation completion."""
+        if not self._atomic_lock:
+            return
+            
+        if self._operation_stack:
+            self._operation_stack.pop()
+            
+        self._atomic_lock = False
+        self._sovereignty_token = None
+        
+        if not success:
+            logging.warning(f"Sovereignty released with FAILURE status for {agent_name}")
+
+
 # ============================================================================
 # ENHANCED RUNTIME STATE MANAGER
 # ============================================================================
@@ -473,6 +530,58 @@ class RuntimeStateManager:
         except Exception as e:
             logging.error(f"State Manager Self-Test Failed: {e}")
             return False
+
+
+# ============================================================================
+# PRE-FLIGHT VALIDATION LAYER (HARDENED)
+# ============================================================================
+
+
+class PreFlightValidator:
+    """
+    [HARDENED] Comprehensive environment and integrity checks before mission start.
+    Ported logic from PascalSovereigntyAgent.verify_environment.
+    """
+    def __init__(self, project_root: Path):
+        self.project_root = project_root
+
+    def run_checks(self) -> tuple[bool, list[str]]:
+        errors = []
+        
+        # 1. Windows Long Paths
+        if platform.system() == "Windows":
+            try:
+                import winreg
+                key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem")
+                val, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
+                if val != 1:
+                    errors.append("Windows LongPathsEnabled is NOT active (Set to 1 in Registry)")
+            except Exception as e:
+                errors.append(f"Could not verify Windows LongPathsEnabled: {e}")
+
+        # 2. Critical Directory Structure
+        required_dirs = ["agentic_core", "agentic_core/L5_safety", "agentic_core/prompt_governance"]
+        for d in required_dirs:
+            if not (self.project_root / d).exists():
+                errors.append(f"Critical directory missing: {d}")
+
+        # 3. Write Permissions
+        try:
+            test_file = self.project_root / ".write_test"
+            test_file.touch()
+            test_file.unlink()
+        except OSError:
+            errors.append("Project root is not writable")
+
+        return len(errors) == 0, errors
+
+    def validate_agent_integrity(self, agents: dict[str, Any]) -> list[str]:
+        """Verify all loaded agents adhere to the HealerProtocol."""
+        integrity_errors = []
+        for name, agent in agents.items():
+            if not hasattr(agent, "heal") or not callable(agent.heal):
+                integrity_errors.append(f"Agent {name} violates HealerProtocol (missing heal method)")
+        return integrity_errors
 
 
 # ============================================================================
@@ -556,152 +665,93 @@ def with_retry(max_retries=3, delay=1.0):
 def execute_phase2_reconciliation(
     agents: dict[str, Any],
     territory: str,
-    decision_engine: AutonomousDecisionEngine,
+    decision_engine: SovereignDecisionEngine,  # [HARDENED] Updated type
     state_mgr: RuntimeStateManager,
     plan: dict[str, Any],
     dry_run: bool = False,
     **kwargs,
 ):
     """
-    PHASE 2: EXECUTE HEALING
+    PHASE 2: EXECUTE HEALING (HARDENED)
     Critical Path: Modifications occur here. Must strictly adhere to decision engine.
+    Enhanced with atomic operations and sovereignty patterns from PascalSovereigntyAgent.
     Returns: Dict conforming to HEAL_RESULT_SCHEMA
     """
     reconciliation_log = []
     failed_fixes = []
-    violations_found = len(plan.get("violations_found", []))
-    violations_fixed = 0
-    errors = 0
-    skipped = 0
 
-    # Initialize Reconciliation Manifest for telemetry
-    manifest = ReconciliationManifest(
-        mission_id=f"SSOT_{territory}_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
-        territory=territory,
-        start_time=datetime.now().isoformat(),
-        violations_found=violations_found,
-    )
-
-    # 1. Validation of Plan Integrity
-    if not plan.get("violations_found"):
+    if not plan or not plan.get("violations_found"):
         logging.info("Phase 2: No violations to reconcile.")
-        # Store manifest in state for telemetry
-        state_mgr.state["reconciliation_manifest"] = manifest.finalize()
-        state_mgr.save()
         return {
-            "violations_found": violations_found,
+            "violations_found": 0,
             "violations_fixed": 0,
-            "status": "SKIPPED",
+            "status": "skipped",
             "errors": 0,
-            "skipped": 1,
-            "modifications": [],
-            "failures": [],
-            "manifest": manifest.finalize(),
+            "skipped": 0,
+            "execution_time_ms": 0.0,
+            "error_message": None,
         }
 
+    logging.info(f"Phase 2: Attempting to reconcile {len(plan['violations_found'])} violations...")
+
     for violation in plan["violations_found"]:
-        # [SAFETY] Double-check Decision Engine before write
-        # Even if Phase 1 found it, we re-verify confidence context
+        agent_name = violation.get("suggested_agent", "Unknown")
+        file_path = violation.get("file")
+        violation_type = violation.get("type", "UNKNOWN")
+
         confidence = decision_engine.calculate_healing_confidence(
-            violations_count=1,
-            violation_types=[violation.get("type", "UNKNOWN")],
-            territory=territory,
+            violations_count=1, violation_types=[violation_type], territory=territory
         )
 
-        manifest.confidence_scores.append(confidence.value)
-
-        # [SAFETY] Hard Gate: Cycle & Budget Check
-        agent_name = violation.get("suggested_agent", "Unknown")
         allowed, reason = decision_engine.should_proceed_with_healing(confidence, agent_name)
-
         if not allowed:
-            logging.warning(f"Skipping fix for {violation.get('file')}: {reason}")
-            failure_entry = {
-                "violation": violation,
-                "reason": reason,
-                "confidence": confidence.value,
-            }
-            failed_fixes.append(failure_entry)
-            manifest.add_failure(failure_entry)
+            logging.warning(f"Skipping fix for {file_path}: {reason}")
+            failed_fixes.append({"violation": violation, "reason": reason, "status": "blocked"})
             continue
 
         if dry_run:
-            dry_run_entry = {
-                "action": "would_fix",
-                "target": violation.get("file"),
-                "agent": agent_name,
-                "confidence": confidence.value,
-            }
-            reconciliation_log.append(dry_run_entry)
-            manifest.add_modification({**dry_run_entry, "success": True})
-            skipped += 1
+            reconciliation_log.append({"action": "would_fix", "target": file_path, "agent": agent_name})
             continue
 
-        # Execute Fix via Agent
+        if not decision_engine.request_sovereignty_token(agent_name, violation_type):
+            failed_fixes.append(
+                {"violation": violation, "reason": "Sovereignty Token Denied", "status": "locked"}
+            )
+            continue
+
         try:
             agent = agents.get(agent_name)
             if not agent:
-                raise ValueError(f"Agent {agent_name} not found in registry")
+                raise ValueError(f"Agent {agent_name} not found")
 
-            # [TELEMETRY] Track active state
-            state_mgr.update_agent(agent_name, "Executing Fix")
+            state_mgr.update_agent(agent_name, f"Executing Fix: {violation_type}")
 
-            # Defensive execution
             fix_result = agent.heal(violation)
+            if not isinstance(fix_result, dict):
+                fix_result = {"raw_output": str(fix_result)}
 
-            # Track successful modification
-            modification_entry = {
-                "action": "fix_applied",
-                "target": violation.get("file"),
-                "agent": agent_name,
-                "confidence": confidence.value,
-                "result": fix_result,
-                "success": True,
-            }
-            reconciliation_log.append(modification_entry)
-            manifest.add_modification(modification_entry)
-            violations_fixed += 1
+            fix_result["target"] = file_path
+            fix_result["agent"] = agent_name
 
-            # Update budget consumption
-            manifest.budget_consumed += 1
+            if fix_result.get("success", True) is False:
+                raise RuntimeError(f"Agent reported failure: {fix_result.get('error', 'Unknown')}")
+
+            reconciliation_log.append(fix_result)
+            decision_engine.release_sovereignty_token(agent_name, success=True)
 
         except Exception as e:
-            logging.error(f"Fix failed for {agent_name}: {e}")
-            failure_entry = {
-                "violation": violation,
-                "error": str(e),
-                "confidence": confidence.value,
-            }
-            failed_fixes.append(failure_entry)
-            manifest.add_failure(failure_entry)
-            errors += 1
-
-    # Finalize manifest
-    final_manifest = manifest.finalize()
-
-    # Store manifest in state for telemetry
-    state_mgr.state["reconciliation_manifest"] = final_manifest
-    state_mgr.save()
-
-    # Determine status based on results
-    if errors > 0:
-        status = "ERROR"
-    elif violations_fixed == violations_found:
-        status = "PASS"
-    elif violations_fixed > 0:
-        status = "PARTIAL"
-    else:
-        status = "FAIL"
+            logging.error(f"Fix failed for {agent_name} on {file_path}: {e}")
+            failed_fixes.append({"violation": violation, "error": str(e), "status": "execution_error"})
+            decision_engine.release_sovereignty_token(agent_name, success=False)
 
     return {
-        "violations_found": violations_found,
-        "violations_fixed": violations_fixed,
-        "status": status,
-        "errors": errors,
-        "skipped": skipped,
-        "modifications": reconciliation_log,
-        "failures": failed_fixes,
-        "manifest": final_manifest,
+        "violations_found": len(plan["violations_found"]),
+        "violations_fixed": len(reconciliation_log),
+        "status": "success" if not failed_fixes else "partial_success",
+        "errors": len(failed_fixes),
+        "skipped": 0,
+        "execution_time_ms": 0.0,
+        "error_message": None if not failed_fixes else f"{len(failed_fixes)} fixes failed",
     }
 
 
@@ -710,103 +760,8 @@ def execute_phase2_reconciliation(
 # ============================================================================
 
 
-@standard_heal
-def execute_phase3_final_validation(
-    agents: dict[str, Any],
-    territory: str,
-    original_violations: list[dict],
-    decision_engine: AutonomousDecisionEngine | None = None,
-    state_mgr: RuntimeStateManager | None = None,
-    dry_run: bool = False,
-    **kwargs,
-):
-    """
-    PHASE 3: POST-MORTEM VALIDATION
-    Verifies that 'fixed' files now pass AST and SSOT checks.
-    Returns: Dict conforming to HEAL_RESULT_SCHEMA
-    """
-    if dry_run:
-        return {
-            "violations_found": 0,
-            "violations_fixed": 0,
-            "status": "SKIPPED",
-            "errors": 0,
-            "skipped": 1,
-            "message": "Dry run - validation skipped",
-            "remaining_violations": [],
-            "verification_timestamp": datetime.now().isoformat(),
-            "telemetry": {},
-        }
-
-    remaining_issues = []
-    validator = ASTCodeQualityValidator(Path(os.getcwd()))
-
-    # Track validation telemetry
-    validation_telemetry = {
-        "files_checked": 0,
-        "files_passed": 0,
-        "files_failed": 0,
-        "ast_violations": 0,
-        "syntax_errors": 0,
-        "start_time": datetime.now().isoformat(),
-    }
-
-    for v in original_violations:
-        fpath = v.get("file")
-        if not fpath or not os.path.exists(fpath):
-            continue
-
-        validation_telemetry["files_checked"] += 1
-
-        # 1. AST Quality Check on Modified Files
-        quality_report = validator.check_file_quality(Path(fpath))
-
-        if quality_report.get("error"):
-            # Syntax error detected
-            remaining_issues.append(
-                {
-                    "type": "SYNTAX_ERROR",
-                    "file": fpath,
-                    "message": quality_report["error"],
-                    "severity": "critical",
-                }
-            )
-            validation_telemetry["syntax_errors"] += 1
-            validation_telemetry["files_failed"] += 1
-        elif quality_report.get("violations"):
-            # AST violations detected
-            remaining_issues.extend(quality_report["violations"])
-            validation_telemetry["ast_violations"] += len(quality_report["violations"])
-            validation_telemetry["files_failed"] += 1
-        else:
-            # File passed validation
-            validation_telemetry["files_passed"] += 1
-
-    # 2. Re-run Territory Scan (Simplified)
-    # In full implementation, we re-run the ReconcilerAgent here
-
-    validation_telemetry["end_time"] = datetime.now().isoformat()
-    validation_telemetry["status"] = "clean" if not remaining_issues else "drift_detected"
-
-    # Store validation telemetry in state
-    if state_mgr:
-        state_mgr.state["validation_telemetry"] = validation_telemetry
-        state_mgr.save()
-
-    # Return according to HEAL_RESULT_SCHEMA
-    violations_found = len(remaining_issues)
-    status = "PASS" if violations_found == 0 else "FAIL"
-
-    return {
-        "violations_found": violations_found,
-        "violations_fixed": 0,  # Validation doesn't fix, only detects
-        "status": status,
-        "errors": validation_telemetry["syntax_errors"],
-        "skipped": 0,
-        "remaining_violations": remaining_issues,
-        "verification_timestamp": datetime.now().isoformat(),
-        "telemetry": validation_telemetry,
-    }
+# [REMOVED DUPLICATE] execute_phase3_final_validation removed. 
+# Usage consolidated to execute_phase3_validation at line 1273.
 
 
 # ============================================================================
@@ -1036,7 +991,7 @@ class RuntimeStateManager:
 # ============================================================================
 
 
-def list_available_agents(project_root: Path, dedupe: bool = True) -> list[tuple[str, str]]:
+def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> list[tuple[str, str]]:
     """Hybrid agent discovery: prefer cached JSON, fallback to live scan."""
     agents = []
     json_path = project_root / AGENT_DISCOVERY_JSON
@@ -1151,119 +1106,6 @@ def list_available_agents(project_root: Path, dedupe: bool = True) -> list[tuple
     if dedupe:
         agents = sorted(set(agents), key=lambda x: x[0])
     return agents
-
-
-# ============================================================================
-# PHASE 2: RECONCILIATION (The Dangerous Phase)
-# ============================================================================
-@standard_heal
-@with_retry(max_retries=2)
-def execute_phase2_reconciliation(
-    agents: dict[str, Any],
-    territory: str,
-    decision_engine: AutonomousDecisionEngine,
-    state_mgr: RuntimeStateManager,
-    plan: dict[str, Any],
-    dry_run: bool = False,
-    **kwargs,
-):
-    """
-    PHASE 2: EXECUTE HEALING
-
-    CRITICAL ANALYSIS:
-    This function acts as the 'Sovereign Executioner'. It must NOT blindly follow Phase 1's plan.
-    It re-interrogates the Decision Engine for every single violation to ensure:
-    1. Global Healing Budget hasn't been exhausted mid-run.
-    2. Cycles haven't formed during the execution of previous fixes.
-    3. The agent is still healthy and responsive.
-
-    Args:
-        plan (dict): The output from Phase 1 containing 'violations_found'.
-    """
-    reconciliation_log = []
-    failed_fixes = []
-
-    # 1. Validation of Plan Integrity
-    if not plan or not plan.get("violations_found"):
-        logging.info("Phase 2: No violations to reconcile.")
-        return {
-            "violations_found": 0,
-            "violations_fixed": 0,
-            "status": "skipped",
-            "errors": 0,
-            "skipped": 0,
-            "execution_time_ms": 0.0,
-            "error_message": None
-        }
-
-    logging.info(f"Phase 2: Attempting to reconcile {len(plan['violations_found'])} violations...")
-
-    for violation in plan["violations_found"]:
-        # [CRITICAL] Double-check Decision Engine before write
-        # Even if Phase 1 found it, we re-verify context (budget/cycles may have changed)
-        violation_type = violation.get("type", "UNKNOWN")
-        agent_name = violation.get("suggested_agent", "Unknown")
-        file_path = violation.get("file")
-
-        confidence = decision_engine.calculate_healing_confidence(
-            violations_count=1, violation_types=[violation_type], territory=territory
-        )
-
-        # [SAFETY] Hard Gate: Cycle & Budget Check
-        allowed, reason = decision_engine.should_proceed_with_healing(confidence, agent_name)
-
-        if not allowed:
-            logging.warning(f"Skipping fix for {file_path}: {reason}")
-            failed_fixes.append(
-                {"violation": violation, "reason": reason, "status": "blocked_by_safety"}
-            )
-            continue
-
-        if dry_run:
-            reconciliation_log.append(
-                {"action": "would_fix", "target": file_path, "agent": agent_name, "reason": reason}
-            )
-            continue
-
-        # Execute Fix via Agent
-        try:
-            agent = agents.get(agent_name)
-            if not agent:
-                raise ValueError(f"Agent {agent_name} not found in registry")
-
-            # [TELEMETRY] Track active state
-            state_mgr.update_agent(agent_name, f"Executing Fix: {violation_type}")
-
-            # Defensive execution with interface verification
-            if not hasattr(agent, "heal"):
-                raise AttributeError(f"Agent {agent_name} missing required 'heal' method")
-
-            # [EXECUTION]
-            fix_result = agent.heal(violation)
-
-            # Normalize result if agent didn't use @standard_heal (legacy support)
-            if not isinstance(fix_result, dict):
-                fix_result = {"raw_output": str(fix_result)}
-
-            fix_result["target"] = file_path
-            fix_result["agent"] = agent_name
-            reconciliation_log.append(fix_result)
-
-        except Exception as e:
-            logging.error(f"Fix failed for {agent_name} on {file_path}: {e}")
-            failed_fixes.append(
-                {"violation": violation, "error": str(e), "status": "execution_error"}
-            )
-
-    return {
-        "violations_found": len(plan["violations_found"]),
-        "violations_fixed": len(reconciliation_log),
-        "status": "success" if not failed_fixes else "partial_success",
-        "errors": len(failed_fixes),
-        "skipped": 0,
-        "execution_time_ms": 0.0,
-        "error_message": None if not failed_fixes else f"{len(failed_fixes)} fixes failed"
-    }
 
 
 # ============================================================================
@@ -1523,8 +1365,8 @@ def execute_phase2_alignment_impl(
 
 
 @with_retry(max_retries=3)
-def execute_phase3_validation(agents, territory, state_mgr):
-    """PHASE 3: ARCHITECTURAL VALIDATION (Retriable)"""
+def execute_phase3_architectural_validation(agents, territory, state_mgr):
+    """PHASE 3: ARCHITECTURAL VALIDATION (Retriable) - renamed to avoid shadowing execute_phase3_validation"""
     return execute_phase3_validation_impl(agents, territory, state_mgr)
 
 
@@ -2024,6 +1866,16 @@ Examples:
     )
     args = parser.parse_args()
 
+    # [HARDENED] 0. Pre-Flight Validation
+    validator = PreFlightValidator(project_root)
+    env_ok, env_errors = validator.run_checks()
+    if not env_ok:
+        logger.critical("🛑 PRE-FLIGHT CHECK FAILED:")
+        for err in env_errors:
+            logger.error(f"  - {err}")
+        if not args.list_agents:
+            sys.exit(1)
+
     # [ULTRA-HARDENED] Validate user-supplied territory name format via regex
     if args.territory and not re.match(r"^[A-Za-z0-9_]+$", args.territory):
         parser.error("Invalid territory name: only alphanumeric and underscores allowed.")
@@ -2102,26 +1954,28 @@ Examples:
 
     # 3. Initialize Sovereign State & Agents
     state_mgr = RuntimeStateManager(project_root)
-
+    
+    
     # [SOVEREIGN DEFAULT] Resolve 'Active-by-Default' logic across the orchestration chain
     enable_llm = not args.disable_llm
     dry_run = args.dry_run or args.validate
     auto_approve = not args.interactive
-
+    
     # [NEW] Enable CognitiveDispositionAgent if requested
     enable_cda = getattr(args, "enable_cda", False)
-
-    decision_engine = EnhancedAutonomousDecisionEngine(
+    
+    # [HARDENED] Use Sovereign Decision Engine instead of standard Enhanced engine
+    decision_engine = SovereignDecisionEngine(
         enable_llm=enable_llm, state_mgr=state_mgr, enable_cda=enable_cda
     )
-
+    
     logger.info("🏛️ UNIFIED SOVEREIGN PROTOCOL STARTED")
     logger.info(f"  Mode: {'AUTONOMOUS' if not args.manual else 'MANUAL'}")
     logger.info(f"  LLM: {'ENABLED' if enable_llm else 'DISABLED'}")
     logger.info(f"  CDA: {'ENABLED' if enable_cda else 'DISABLED'}")
     logger.info(f"  HEALING: {'ACTIVE' if not dry_run else 'DRY-RUN'}")
     logger.info(f"  APPROVAL: {'AUTO' if auto_approve else 'INTERACTIVE'}")
-
+    
     try:
         from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
             FilesystemSSOTReconcilerAgent,
@@ -2136,6 +1990,9 @@ Examples:
         # [ADDED] Integrated Sovereignty Guardians
         from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
         from agentic_core.L5_safety.validators.RootHygieneAgent import RootHygieneAgent
+        
+        # [ADDED]
+        from agentic_core.prompt_governance.agents.ConversationalRepairAgent import ConversationalRepairAgent
 
         agents = {
             "reconciler": FilesystemSSOTReconcilerAgent,
@@ -2143,11 +2000,18 @@ Examples:
             "hierarchy": HierarchyAgent,
             "arch_governor": ArchitectureGovernorAgent,
             "system_architect": SystemArchitectAgent,
-            # [ADDED]
             "pascal_sovereignty": PascalSovereigntyAgent,
             "root_hygiene": RootHygieneAgent,
+            # [ADDED] Registered ConversationalRepairAgent
+            "conversational_repair": ConversationalRepairAgent, 
         }
-        logger.info("✅ All agents loaded successfully including Sovereignty Guardians")
+        logger.info(" All agents loaded successfully including Sovereignty Guardians")
+        
+        integrity_errors = validator.validate_agent_integrity(agents)
+        if integrity_errors:
+            logger.warning("⚠️ Agent Integrity Warnings:")
+            for err in integrity_errors:
+                logger.warning(f"  - {err}")
     except ImportError as e:
         logger.critical(f"Failed to load Sovereign Agents: {e}")
         sys.exit(1)
@@ -2324,7 +2188,7 @@ Examples:
                             )
 
                         # Phase 3: Validation (Legacy)
-                        gov, arch = execute_phase3_validation(agents, territory, state_mgr)
+                        gov, arch = execute_phase3_architectural_validation(agents, territory, state_mgr)
 
                         # Persist full work to state
                         state_mgr.state["compliance_report"] = gov
@@ -2522,141 +2386,8 @@ class GracefulExitHandler:
         # but for now we rely on the loop completing the current atomic fix.
 
 
-# ============================================================================
-# FINAL ORCHESTRATOR
-# ============================================================================
-def main():
-    parser = argparse.ArgumentParser(description="Autonomous SSOT Execution Engine")
-    parser.add_argument(
-        "--territory", required=True, help="Target directory/domain to enforce SSOT on"
-    )
-    parser.add_argument(
-        "--dry-run", action="store_true", help="Simulate fixes without modifying files"
-    )
-    parser.add_argument(
-        "--enable-llm", action="store_true", help="Enable LLM semantic overrides (Cost money)"
-    )
-    parser.add_argument(
-        "--max-budget", type=int, default=100, help="Maximum healing operations allowed"
-    )
-    args = parser.parse_args()
-
-    # [SAFETY] Input Validation
-    if args.territory:
-        is_valid, msg = validate_territory_input(args.territory)
-        if not is_valid:
-            parser.error(msg)
-
-    # Setup State & Signals
-    state_mgr = RuntimeStateManager(PROJECT_ROOT)
-    exit_handler = GracefulExitHandler(state_mgr)
-
-    # Initialize Engine
-    decision_engine = AutonomousDecisionEngine(enable_llm=args.enable_llm, state_mgr=state_mgr)
-    decision_engine._max_healing_operations = args.max_budget
-
-    try:
-        logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-        print(f"[*] SSOT Engine Initialized (PID: {os.getpid()})")
-
-        # MISSION START
-        state_mgr.start_mission("SSOT_EXECUTION", ["Discovery", "Reconciliation", "Validation"])
-
-        # 1. LOAD AGENTS
-        agents = load_agents(PROJECT_ROOT)
-        if not agents:
-            logging.error("No compatible agents found. Aborting.")
-            sys.exit(1)
-
-        # 2. PHASE 1: DISCOVERY
-        if exit_handler.kill_now:
-            state_mgr.finish_mission("aborted_by_user")
-            sys.exit(0)
-
-        print(f"\n[*] --- PHASE 1: DISCOVERY ({args.territory}) ---")
-        p1_results = execute_phase1_discovery(
-            agents=agents,
-            territory=args.territory,
-            decision_engine=decision_engine,
-            state_mgr=state_mgr,
-            dry_run=args.dry_run,
-        )
-
-        violation_count = len(p1_results.get("violations_found", []))
-        print(f"    > Found {violation_count} violations")
-
-        if violation_count == 0:
-            print("✅ System clean. No actions needed.")
-            state_mgr.finish_mission("clean")
-            sys.exit(0)
-
-        # 3. PHASE 2: RECONCILIATION
-        if exit_handler.kill_now:
-            sys.exit(0)
-
-        print(f"\n[*] --- PHASE 2: RECONCILIATION (Dry Run: {args.dry_run}) ---")
-        p2_results = execute_phase2_reconciliation(
-            agents=agents,
-            territory=args.territory,
-            decision_engine=decision_engine,
-            state_mgr=state_mgr,
-            plan=p1_results,
-            dry_run=args.dry_run,
-        )
-
-        fixed_count = len(p2_results.get("modifications", []))
-        failed_count = len(p2_results.get("failures", []))
-        print(f"    > Fixed: {fixed_count} | Failed/Skipped: {failed_count}")
-
-        # 4. PHASE 3: VALIDATION
-        if exit_handler.kill_now:
-            sys.exit(0)
-
-        print("\n[*] --- PHASE 3: VALIDATION ---")
-        p3_results = execute_phase3_validation(
-            agents=agents,
-            territory=args.territory,
-            original_violations=p1_results["violations_found"],
-            dry_run=args.dry_run,
-        )
-
-        final_status = p3_results.get("status", "unknown")
-        print(f"    > Final Status: {final_status}")
-
-        # 5. REPORTING
-        report_path = PROJECT_ROOT / f"ssot_report_{int(datetime.now().timestamp())}.json"
-
-        # [ENHANCEMENT] Detailed Metadata for Analysis Tool
-        report = {
-            "meta": {
-                "timestamp": datetime.now().isoformat(),
-                "territory": args.territory,
-                "dry_run": args.dry_run,
-                "args": vars(args),
-                "agents_loaded": list(agents.keys()),
-                "config": {"max_budget": args.max_budget, "llm_enabled": args.enable_llm},
-            },
-            "phase1": p1_results,
-            "phase2": p2_results,  # Contains the 'ReconciliationManifest' data
-            "phase3": p3_results,
-        }
-
-        with open(report_path, "w") as f:
-            json.dump(report, f, indent=2, default=str)
-
-        print(f"\n[*] Full report written to: {report_path}")
-        # [ENHANCEMENT] Hint for next step
-        print(
-            f"[*] To verify this plan, run: python agentic_core/L0_maintenance/scripts/verify_manifest.py {report_path}"
-        )
-
-    except Exception as e:
-        state_mgr.finish_mission("failed")
-        logging.critical(f"SSOT Mission Critical Failure: {e}")
-        traceback.print_exc()
-        sys.exit(1)
-    finally:
-        state_mgr.finish_mission("completed")
+# [REMOVED DUPLICATE] main_legacy removed to resolve dual-main entry point confusion.
+# The unified main() function below is the single source of truth.
 
 
 if __name__ == "__main__":

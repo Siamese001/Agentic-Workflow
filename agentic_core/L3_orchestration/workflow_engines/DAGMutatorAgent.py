@@ -12,6 +12,7 @@ allowing nodes to spawn new predecessors when they detect Missing information.
 # This boosts alignment detection — review and integrate appropriately
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 import logging
 import uuid
@@ -198,13 +199,17 @@ class MutationResult(BaseModel):
 class DAGConfig(BaseModel):
     """configuration for DAG management."""
 
-    max_depth: int = Field(default=10, ge=1, le=50)
-    max_fan_out: int = Field(default=5, ge=1, le=20)
+    # [CRITICAL ANALYSIS] Increased default max_depth to 50.
+    # Rationale: "Forward-Rolling Recursion" consumes depth linearly.
+    # A complex agentic chain (5 steps) retrying 3 times = 15+ nodes deep.
+    # 20 is too conservative and risks premature "Depth Limit" crashes during healing.
+    max_depth: int = Field(default=50, ge=1, le=100)
+    max_fan_out: int = Field(default=10, ge=1, le=50)  # Increased fan-out for parallel retry branches
     enable_mutation_logging: bool = True
     mutation_history_size: int = Field(default=1000, ge=100)
 
 
-class DAGMutatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class DAGMutatorAgent(SovereignBaseAgent):
     """Handles the actual graph mutations."""
 
     def __init__(self, config: DAGConfig) -> None:
@@ -552,54 +557,6 @@ class DAGMutatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         return metrics
 
 
-from agentic_core.base_agents.decorators import standard_heal
-
-# Global instance
-_dag_manager: DAGManagerAgent | None = None
-
-
-def get_dag_manager(**kwargs) -> DAGManagerAgent:
-    """Get or create global DAGManagerAgent instance.
-
-    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-    super().heal_repository()
-
-    Args:
-        **kwargs: configuration arguments
-
-    Returns:
-        DAGManagerAgent instance
-    """
-    global _dag_manager
-
-    if _dag_manager is None:
-        config = DAGConfig(**kwargs) if kwargs else DAGConfig()
-        _dag_manager = DAGManagerAgent(config)
-
-    return _dag_manager
-
-    @timeout(300)
-    @standard_heal
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set | None = None,
-    ) -> dict[str, int]:
-        """L3 orchestration agent - operational only."""
-        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
-        if _call_path is None:
-            _call_path = set()
-        agent_name = self.__class__.__name__
-        if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
-        if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
-        _call_path.add(agent_name)
-        try:
-            print(f"[{agent_name}] L3 orchestration - operational only")
-            return {"skipped": 1}
-        finally:
-            _call_path.discard(agent_name)
+# [CRITICAL HARDENING] Removed orphaned DAGManagerAgent stub and duplicate heal_repository.
+# The DAGMutatorAgent is a distinct component from DAGManager.
+# This prevents circular import errors and namespace pollution.
