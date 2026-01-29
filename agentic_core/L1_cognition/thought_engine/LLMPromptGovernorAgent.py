@@ -35,7 +35,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class LLMPromptGovernorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class LLMPromptGovernorAgent(SovereignBaseAgent):
     """
     Centralized prompt governance for all LLM interactions.
 
