@@ -22,6 +22,7 @@ Non-responsibilities:
 """
 
 import logging
+import os
 import re
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -71,8 +72,9 @@ class AdaptiveRecoveryLoop:  # Placeholder for AdaptiveRecoveryLoop
                 "temperature": self.current_temperature,
             }
         )
-        # Simple retry logic for placeholder
-        if self.current_temperature < 1.0:
+        # Simple retry logic for placeholder using environment temperature
+        max_temp = float(os.getenv("VALIDATION_TEMPERATURE", "0.6"))
+        if self.current_temperature < max_temp:
             self.current_temperature += 0.1
             return type("Recovery", (object,), {"should_retry": True})()
         return type("Recovery", (object,), {"should_retry": False})()
@@ -84,10 +86,14 @@ class AdaptiveRecoveryLoop:  # Placeholder for AdaptiveRecoveryLoop
 @dataclass
 # NAMING FIXED: SectionIntegratorConfig → SectionIntegratorConfig
 class SectionIntegratorConfig:
-    """TODO: Add docstring."""
+    """[HARDENED] Environment-aware configuration for section integration."""
 
-    max_similarity_threshold: float = 0.75
-    TEMPERATURE: float = 0.6  # Fixed: Changed FLOAT to float
+    max_similarity_threshold: float = Field(
+        default_factory=lambda: float(os.getenv("VALIDATION_MAX_SIMILARITY_THRESHOLD", "0.75"))
+    )
+    TEMPERATURE: float = Field(
+        default_factory=lambda: float(os.getenv("VALIDATION_TEMPERATURE", "0.6"))
+    )
     max_attempts: int = 3
 
 

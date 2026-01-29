@@ -8,6 +8,7 @@ and Claim confidence scoring to ensure maximum output quality.
 
 import hashlib
 import logging
+import os
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -20,34 +21,67 @@ Logger = logging.getLogger(__name__)
 class SignalQuality(Enum):
     """Signal quality levels."""
 
-    EXCELLENT = "excellent"  # >= 0.9
-    HIGH = "high"  # >= 0.75
-    GOOD = "good"  # >= 0.6
-    MARGINAL = "marginal"  # >= 0.4
-    POOR = "poor"  # < 0.4
+    EXCELLENT = "excellent"  # >= SIGNAL_EXCELLENT_MIN
+    HIGH = "high"  # >= SIGNAL_HIGH_MIN
+    GOOD = "good"  # >= SIGNAL_GOOD_MIN
+    MARGINAL = "marginal"  # >= SIGNAL_MARGINAL_MIN
+    POOR = "poor"  # < SIGNAL_MARGINAL_MIN
 
 
 @dataclass
 class QualityThresholds:
-    """Strict quality thresholds for different aspects."""
+    """[HARDENED] Environment-aware quality thresholds for different aspects."""
 
-    # Composite score thresholds
-    EXCELLENT_MIN: float = 0.9
-    HIGH_MIN: float = 0.75
-    GOOD_MIN: float = 0.6
-    MARGINAL_MIN: float = 0.4
+    # Composite score thresholds - sourced from .env
+    @property
+    def EXCELLENT_MIN(self) -> float:
+        return float(os.getenv("SIGNAL_EXCELLENT_MIN", "0.9"))
 
-    # Individual component thresholds
-    MIN_RELEVANCE: float = 0.7  # Increased from 0.5
-    MIN_AUTHORITY: float = 0.6  # Increased from 0.4
-    MIN_SPECIFICITY: float = 0.5  # Increased from 0.3
-    MIN_COHERENCE: float = 0.6  # Increased from 0.4
+    @property
+    def HIGH_MIN(self) -> float:
+        return float(os.getenv("SIGNAL_HIGH_MIN", "0.75"))
 
-    # Content quality thresholds
-    MAX_HALLUCINATION_RISK: float = 0.2
-    MIN_FACT_VERIFICATION: float = 0.8
-    MAX_REPETITION_RATIO: float = 0.3
-    MIN_CLAIM_CONFIDENCE: float = 0.7
+    @property
+    def GOOD_MIN(self) -> float:
+        return float(os.getenv("SIGNAL_GOOD_MIN", "0.6"))
+
+    @property
+    def MARGINAL_MIN(self) -> float:
+        return float(os.getenv("SIGNAL_MARGINAL_MIN", "0.4"))
+
+    # Individual component thresholds - sourced from .env
+    @property
+    def MIN_RELEVANCE(self) -> float:
+        return float(os.getenv("SIGNAL_MIN_RELEVANCE", "0.7"))
+
+    @property
+    def MIN_AUTHORITY(self) -> float:
+        return float(os.getenv("SIGNAL_MIN_AUTHORITY", "0.6"))
+
+    @property
+    def MIN_SPECIFICITY(self) -> float:
+        return float(os.getenv("SIGNAL_MIN_SPECIFICITY", "0.5"))
+
+    @property
+    def MIN_COHERENCE(self) -> float:
+        return float(os.getenv("SIGNAL_MIN_COHERENCE", "0.6"))
+
+    # Content quality thresholds - sourced from .env
+    @property
+    def MAX_HALLUCINATION_RISK(self) -> float:
+        return float(os.getenv("SIGNAL_MAX_HALLUCINATION_RISK", "0.2"))
+
+    @property
+    def MIN_FACT_VERIFICATION(self) -> float:
+        return float(os.getenv("SIGNAL_MIN_FACT_VERIFICATION", "0.8"))
+
+    @property
+    def MAX_REPETITION_RATIO(self) -> float:
+        return float(os.getenv("SIGNAL_MAX_REPETITION_RATIO", "0.3"))
+
+    @property
+    def MIN_CLAIM_CONFIDENCE(self) -> float:
+        return float(os.getenv("SIGNAL_MIN_CLAIM_CONFIDENCE", "0.7"))
 
 
 @dataclass
@@ -680,8 +714,9 @@ class signal_enhancer:
         for pattern in claim_patterns:
             matches = re.findall(pattern, content, re.IGNORECASE)
             for match in matches:
-                # Simplified analysis
-                confidence = 0.7 if "according to" in match.lower() else 0.5
+                # Simplified analysis using environment thresholds
+                default_confidence = float(os.getenv("SIGNAL_MIN_CLAIM_CONFIDENCE", "0.7"))
+                confidence = default_confidence if "according to" in match.lower() else 0.5
                 verifiable = "according to" in match.lower() or "study" in match.lower()
 
                 Claim = ClaimAnalysis(

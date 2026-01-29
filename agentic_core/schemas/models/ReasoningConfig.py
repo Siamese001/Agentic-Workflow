@@ -32,7 +32,7 @@ class ModelProvider(str, Enum):
 
 
 class ModelConfig(BaseModel):
-    """configuration for LLM model parameters."""
+    """[HARDENED] Environment-aware configuration for LLM model parameters."""
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -41,8 +41,14 @@ class ModelConfig(BaseModel):
         default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4o"),
         description="LLM model name"
     )
-    temperature: float = Field(default=0.7, ge=0.0, le=2.0)
-    max_tokens: int = Field(default=2000, ge=1, le=32000)
+    temperature: float = Field(
+        default_factory=lambda: float(os.getenv("OPENAI_TEMPERATURE", "0.7")),
+        ge=0.0, le=2.0
+    )
+    max_tokens: int = Field(
+        default_factory=lambda: int(os.getenv("OPENAI_MAX_TOKENS", "2000")),
+        ge=1, le=32000
+    )
     top_p: float = Field(default=0.95, ge=0.0, le=1.0)
     frequency_penalty: float = Field(default=0.0, ge=-2.0, le=2.0)
     presence_penalty: float = Field(default=0.0, ge=-2.0, le=2.0)
@@ -55,7 +61,7 @@ class ModelConfig(BaseModel):
 
 
 class RAGConfig(BaseModel):
-    """configuration for Retrieval-Augmented Generation."""
+    """[HARDENED] Environment-aware configuration for Retrieval-Augmented Generation."""
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -63,7 +69,10 @@ class RAGConfig(BaseModel):
     vector_store_path: str = "data/vector_store"
     embedding_model: str = "text-embedding-3-large"
     max_context_documents: int = Field(default=5, ge=1, le=50)
-    similarity_threshold: float = Field(default=0.8, ge=0.0, le=1.0)
+    similarity_threshold: float = Field(
+        default_factory=lambda: float(os.getenv("RAG_SIMILARITY_THRESHOLD", "0.8")),
+        ge=0.0, le=1.0
+    )
     rerank_enabled: bool = True
     rerank_model: str = "rerank-multilingual-v3.0"
     cache_enabled: bool = True
@@ -75,12 +84,15 @@ class RAGConfig(BaseModel):
 
 
 class GovernorConfig(BaseModel):
-    """configuration for governance and safety controls."""
+    """[HARDENED] Environment-aware configuration for governance and safety controls."""
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     safety_enabled: bool = True
-    safety_threshold: float = Field(default=0.95, ge=0.0, le=1.0)
+    safety_threshold: float = Field(
+        default_factory=lambda: float(os.getenv("GOVERNOR_SAFETY_THRESHOLD", "0.95")),
+        ge=0.0, le=1.0
+    )
     content_filter_enabled: bool = True
     pii_detection_enabled: bool = True
     bias_detection_enabled: bool = True

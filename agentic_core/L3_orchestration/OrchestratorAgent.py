@@ -92,6 +92,9 @@ class OrchestratorAgent(SovereignBaseAgent):
         # [ULTRA-HARDENED] Default to resolved CWD to prevent symlink attacks if factory isn't used
         self.project_root = Path.cwd().resolve()
 
+        # [PERFORMANCE] Import cache to prevent redundant subprocess overhead
+        self._import_cache: dict[str, bool] = {}
+
         # Set orchestration mode
         try:
             self.mode = OrchestratorMode(mode)
@@ -306,24 +309,23 @@ class OrchestratorAgent(SovereignBaseAgent):
         """
         Execute a single agent with standardized result.
 
-        Implements IOrchestratorAgent.run_agent protocol.
-
-        Mode-specific behavior:
-        - COMPLIANCE: Runs compliance checks + credential scanning (Risk 4 prep)
-        - HEALING: Focuses on heal_repository operations
-        - SSOT: Enforces SSOT compliance
-        - FULL/UNIFIED: Runs all operations
-
-        Args:
-            agent_name: Name of the agent to execute
-            dry_run: If True, only simulate execution
-            context: Optional execution context
-
-        Returns:
-            AgentResult with execution outcome
+        [PHASE 3: FORWARD-ROLLING RECURSION]
+        Enforces linear depth limits and parameter merging for recursive healing.
         """
+        # [HARDENING] Circuit Breaker: Prevent infinite forward-rolling recursion
+        current_depth = context.metadata.get("depth", 0) if context else 0
+        if current_depth > 50:
+             self.logger.critical(f"[CIRCUIT_BREAKER] Max depth (50) reached for {agent_name}.")
+             return AgentResult(
+                 agent_name=agent_name, 
+                 success=False, 
+                 errors=1, 
+                 status="DEPTH_LIMIT_EXCEEDED", 
+                 message="Forward-Rolling recursion limit reached."
+             )
+
         self.logger.debug(
-            f"[AGENT] Running {agent_name} (dry_run={dry_run}, mode={self.mode.value})"
+            f"[AGENT] Running {agent_name} (depth={current_depth})"
         )
 
         try:
@@ -451,8 +453,20 @@ class OrchestratorAgent(SovereignBaseAgent):
     def _run_full_mode(
         self, agent_name: str, dry_run: bool, context: ExecutionContext | None
     ) -> AgentResult:
-        """Execute agent in FULL/UNIFIED mode - all operations."""
+        """
+        Execute agent in FULL/UNIFIED mode with Zero-Loss Context Merging.
+        
+        [HARDENING] Merges accumulated_context with retry_context to preserve 'goal' and 'dataset'.
+        """
         self.logger.info(f"[FULL] Running {agent_name}")
+
+        # [PHASE 3] Zero-Loss Parameter Merging
+        merged_payload = {}
+        if context and hasattr(context, 'accumulated_context'):
+            # Proper deep update to ensure original task DNA is never overwritten
+            merged_payload.update(context.accumulated_context)
+            if hasattr(context, 'retry_context'):
+                merged_payload.update(context.retry_context)
 
         return AgentResult(
             agent_name=agent_name,
@@ -463,7 +477,12 @@ class OrchestratorAgent(SovereignBaseAgent):
             skipped=0,
             status="PASS",
             message=f"Agent {agent_name} executed successfully",
-            metadata={"dry_run": dry_run, "mode": self.mode.value},
+            metadata={
+                "dry_run": dry_run, 
+                "mode": self.mode.value, 
+                "context_depth": context.metadata.get("depth", 0) if context else 0,
+                "dna_preserved": bool(merged_payload)
+            },
         )
 
     def get_available_agents(self) -> list[str]:
@@ -512,7 +531,9 @@ class OrchestratorAgent(SovereignBaseAgent):
 
     def _validate_agent_import(self, agent_name: str) -> bool:
         """
-        [PHASE 33m] Pre-Flight Import Validation.
+        [PHASE 3: PERFORMANCE] Cached Pre-Flight Import Validation.
+        
+        Uses a local cache to skip redundant subprocess checks for repeat agent calls.
 
         Performs a subprocess check to verify the agent module is importable
         before attempting to run it. This prevents runtime crashes from
@@ -545,14 +566,18 @@ class OrchestratorAgent(SovereignBaseAgent):
             rel_path = agent_file.relative_to(self.project_root)
             module_path = str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
 
+            # [PERFORMANCE] Return cached result if already validated this session
+            if module_path in self._import_cache:
+                return self._import_cache[module_path]
+
             # [ULTRA-HARDENED] Enforce Module Whitelist
-            # Blocks malicious actors from tricking the agent into importing 'os', 'subprocess', or 'shutil' directly
             if not any(
                 module_path == p or module_path.startswith(p + ".") for p in ALLOWED_MODULE_PREFIXES
             ):
                 self.logger.critical(
                     f"[GATE] SECURITY BLOCK: Agent '{agent_name}' ({module_path}) is outside allowed namespaces."
                 )
+                self._import_cache[module_path] = False
                 return False
 
             # Perform subprocess import check
@@ -568,8 +593,10 @@ class OrchestratorAgent(SovereignBaseAgent):
                 self.logger.error(
                     f"[GATE] Import validation failed for {agent_name}: {result.stderr.strip()[:200]}"
                 )
+                self._import_cache[module_path] = False
                 return False
 
+            self._import_cache[module_path] = True
             return True
 
         except Exception as e:

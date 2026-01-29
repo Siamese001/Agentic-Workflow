@@ -231,9 +231,9 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
     },
     "archives": {
         "depth": 2,
-        "purpose": "Historical artifacts and deprecated code.",
-        "subfolders": [],
-        "volatile": True,
+        "purpose": "Canonical repository for deprecated agents and transaction artifacts.",
+        "subfolders": ["agents", "compliance_reports", "backups"],
+        "volatile": False,
     },
     "data": {
         "depth": 2,

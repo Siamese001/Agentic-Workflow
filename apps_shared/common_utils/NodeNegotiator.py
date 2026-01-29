@@ -7,6 +7,7 @@ collaboration between hops.
 
 import asyncio
 import logging
+import os
 import time
 import uuid
 from datetime import datetime
@@ -48,13 +49,22 @@ class NegotiationRound(BaseModel):
 
 
 class NegotiationConfig(BaseModel):
-    """configuration for negotiation protocol."""
+    """[HARDENED] Environment-aware configuration for negotiation protocol."""
 
-    max_rounds: int = Field(default=2, ge=1, le=5)
+    max_rounds: int = Field(
+        default_factory=lambda: int(os.getenv("NEGOTIATION_MAX_ROUNDS", "2")),
+        ge=1, le=5
+    )
     max_message_length: int = Field(default=1000, ge=100, le=10000)
-    response_timeout: float = Field(default=30.0, ge=5.0, le=300.0)
+    response_timeout: float = Field(
+        default_factory=lambda: float(os.getenv("NEGOTIATION_RESPONSE_TIMEOUT", "30.0")),
+        ge=5.0, le=300.0
+    )
     enable_persistence: bool = True
-    auto_resolve_threshold: float = Field(default=0.8, ge=0.0, le=1.0)
+    auto_resolve_threshold: float = Field(
+        default_factory=lambda: float(os.getenv("NEGOTIATION_AUTO_RESOLVE_THRESHOLD", "0.8")),
+        ge=0.0, le=1.0
+    )
 
 
 class NegotiationResult(BaseModel):
