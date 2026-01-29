@@ -1,5 +1,6 @@
-import pickle
 import inspect
+import pickle
+
 from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
 

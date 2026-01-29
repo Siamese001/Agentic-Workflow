@@ -3,6 +3,7 @@ apps_lic/engines/k3_message_architect.py
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any
 

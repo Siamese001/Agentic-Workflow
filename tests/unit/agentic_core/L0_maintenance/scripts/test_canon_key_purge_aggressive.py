@@ -13,10 +13,11 @@ completely eradicated from the codebase. It uses multiple verification strategie
 CRITICAL: All tests must pass with 100% success rate to certify complete eradication.
 """
 
-import pytest
 import importlib
 import sys
 from pathlib import Path
+
+import pytest
 
 
 class TestGlobalCanonKeyPurge:
@@ -59,8 +60,9 @@ class TestGlobalCanonKeyPurge:
         """
         Verify LocationAgent operates without key logic.
         """
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
         from pathlib import Path
+
+        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
         project_root = Path(".").resolve()
         agent = LocationAgent(project_root)
@@ -145,11 +147,11 @@ class TestGlobalCanonKeyPurge:
         Verify territory-based healing system works without Canon Keys.
         """
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            DEFAULT_CORE_HEALING_TERRITORY,
-            DEFAULT_APP_HEALING_TARGET,
-            CORE_TERRITORY_KEYWORDS,
-            SOVEREIGN_REGISTRY,
             AST_DOMAIN_HIT_THRESHOLD,
+            CORE_TERRITORY_KEYWORDS,
+            DEFAULT_APP_HEALING_TARGET,
+            DEFAULT_CORE_HEALING_TERRITORY,
+            SOVEREIGN_REGISTRY,
             TERRITORY_MISMATCH_THRESHOLD,
         )
 
@@ -180,14 +182,14 @@ class TestGlobalCanonKeyPurge:
         Verify AST-based territory scoring system is fully functional.
         """
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            APP_RG_AST_TERMS,
             APP_LIC_AST_TERMS,
-            APP_RG_VARIABLE_TERMS,
-            APP_LIC_VARIABLE_TERMS,
-            APP_RG_STRING_TERMS,
             APP_LIC_STRING_TERMS,
-            VARIABLE_HIT_WEIGHT,
+            APP_LIC_VARIABLE_TERMS,
+            APP_RG_AST_TERMS,
+            APP_RG_STRING_TERMS,
+            APP_RG_VARIABLE_TERMS,
             STRING_HIT_WEIGHT,
+            VARIABLE_HIT_WEIGHT,
         )
 
         # All AST term sets should be populated

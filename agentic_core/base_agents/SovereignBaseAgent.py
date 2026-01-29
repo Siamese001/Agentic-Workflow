@@ -21,21 +21,21 @@ MRO HARDENING:
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any
 from pathlib import Path
+from typing import Any
 
-from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
-from agentic_core.L5_safety.validators.validator_mixin import ValidatorMixin
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.base_agents.audit_trail_mixin import AuditTrailMixin
-from agentic_core.domain.HealerError import SovereignError, ConfigurationError
-from agentic_core.domain.CoreIntegrityVerifier import CoreIntegrityVerifier, emergency_shutdown
+from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.config.config_mixin import ConfigMixin
-from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
+from agentic_core.domain.CoreIntegrityVerifier import CoreIntegrityVerifier, emergency_shutdown
+from agentic_core.domain.HealerError import ConfigurationError, SovereignError
 from agentic_core.L2_execution.mcp.embedding_mixin import EmbeddingMixin
+from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
 from agentic_core.L5_safety.validators.healing_strategy_mixin import HealingStrategyMixin
+from agentic_core.L5_safety.validators.validator_mixin import ValidatorMixin
 
 logger = logging.getLogger(__name__)
 
@@ -185,7 +185,7 @@ class SovereignBaseAgent(
     def heal(self, violation: dict[str, Any], **kwargs) -> dict[str, Any]:
         """
         Default interface compliance for the Healer Protocol.
-        
+
         Satisfies the PreFlightValidator requirement for all 150+ agents.
         Specific agents (like CanonBaseAgent) must override this for active healing.
 
@@ -200,7 +200,7 @@ class SovereignBaseAgent(
             "status": "skipped",
             "reason": "default_base_implementation",
             "handler": self.__class__.__name__,
-            "violation_id": violation.get("id", "unknown")
+            "violation_id": violation.get("id", "unknown"),
         }
 
 

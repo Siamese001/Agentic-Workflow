@@ -5,26 +5,26 @@ Enforces "Clean Root" policy with AST-based Test Taxonomy and Zombie Code detect
 Uses ARTIFACT_ROUTING_MAP, TEST_TYPE_SIGNALS, LEGACY_AST_SIGNALS from structure_blueprint.py.
 """
 
+import ast
 import json
 import re
 import shutil
-import ast
-from pathlib import Path
-from typing import Any
-from dataclasses import dataclass
 
 # Import the SSOT routing configuration
 import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 sys.path.append(str(Path(__file__).parent / "agentic_core" / "L5_safety" / "validators"))
 from structure_blueprint import (
     ARTIFACT_ROUTING_MAP,
+    AST_PLACEMENT_SIGNALS,
+    LEGACY_AST_SIGNALS,
     ROOT_ALLOWED_PATTERNS,
     ROOT_PROTECTED_FILES,
-    get_validated_project_root,
     TEST_TYPE_SIGNALS,
-    LEGACY_AST_SIGNALS,
-    AST_PLACEMENT_SIGNALS,
+    get_validated_project_root,
 )
 
 

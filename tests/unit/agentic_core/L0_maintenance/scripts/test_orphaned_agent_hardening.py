@@ -4,10 +4,11 @@ Mandatory Discovery & Layer Testing for Orphaned Agent Hardening
 Tests to verify that "unknown layer" and "orphaned agent" issues are fully resolved and cannot regress.
 """
 
-import pytest
-import sys
 import json
+import sys
 from pathlib import Path
+
+import pytest
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent

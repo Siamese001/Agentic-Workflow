@@ -4,11 +4,12 @@ Enforces architectural integrity at the AST level to prevent crashes from broken
 """
 
 from __future__ import annotations
+
 import ast
 import logging
 import os
-import sys
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 

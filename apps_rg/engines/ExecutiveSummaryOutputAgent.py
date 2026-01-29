@@ -11,12 +11,13 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
+# Previous: from runtime.config import ReasoningConfig
+from agentic_core.schemas.models.reasoning_config import ReasoningConfig
+
 # [Diff Start: Fix Inheritance and Config]
 # Previous: from agent_core.agent import Agent
 from apps_rg.shared.core.agent_base import RGAgentBase
 
-# Previous: from runtime.config import ReasoningConfig
-from agentic_core.schemas.models.reasoning_config import ReasoningConfig
 # [Diff End]
 
 

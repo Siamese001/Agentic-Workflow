@@ -4,12 +4,11 @@ test_sovereign_heal_compliance.py - Verify Interface Compliance.
 Ensures SovereignBaseAgent and its subclasses satisfy the PreFlightValidator
 requirements for the 'heal' method.
 """
-import pytest
-from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
+
 class TestSovereignHealCompliance:
-    
     def test_base_agent_has_heal_method(self):
         """Verify the method exists on the base class."""
         agent = SovereignBaseAgent()
@@ -20,10 +19,10 @@ class TestSovereignHealCompliance:
         """Verify the method accepts correct args and returns dict."""
         agent = SovereignBaseAgent()
         violation_mock = {"id": "V-101", "desc": "Test Violation"}
-        
+
         # Should accept violation and kwargs
         result = agent.heal(violation_mock, extra_param=True)
-        
+
         assert isinstance(result, dict), "heal() must return a dictionary"
         assert result["status"] == "skipped", "Default status should be 'skipped'"
         assert result["handler"] == "SovereignBaseAgent", "Handler should identify itself"
@@ -31,11 +30,12 @@ class TestSovereignHealCompliance:
 
     def test_inheritance_propagation(self):
         """Verify subclasses inherit the default behavior."""
+
         class GenericWorkerAgent(SovereignBaseAgent):
             pass
-            
+
         worker = GenericWorkerAgent()
         result = worker.heal({"id": "V-102"})
-        
+
         assert result["status"] == "skipped"
         assert result["handler"] == "GenericWorkerAgent"  # Should identify subclass

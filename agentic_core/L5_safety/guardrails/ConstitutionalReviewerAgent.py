@@ -2,10 +2,9 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator
 from __future__ import annotations
+
 # This boosts alignment detection — review and integrate appropriately
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 from agentic_core.base_agents.timeout_decorator import timeout
 
 """Constitutional Reviewer Agent - Performs final constitutional review of the output."""
@@ -13,7 +12,6 @@ from agentic_core.base_agents.timeout_decorator import timeout
 import json
 
 from agentic_core.L5_safety.validators.decorators import standard_heal
-
 
 # ------------------------------------------------------------------
 # REMOVED: Local stub BaseAgent definition (technical debt)

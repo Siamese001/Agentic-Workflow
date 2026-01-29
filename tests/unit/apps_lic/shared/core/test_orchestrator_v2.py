@@ -3,12 +3,13 @@ Unit tests for HOPOrchestratorAgent (V2).
 Verifies linear flow, factual retry loops, and creative retry loops.
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
+from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
-from apps_lic.shared.core.agent_base import LICAgentBase
 
 
 class MockAgent(LICAgentBase):

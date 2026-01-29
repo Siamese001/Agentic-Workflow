@@ -5,7 +5,6 @@ No inline BaseModel definitions allowed outside schemas/.
 
 import logging
 
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 

@@ -2,17 +2,18 @@
 scripts/simulate_sovereign_workflow.py
 """
 
-import sys
 import logging
+import sys
 from pathlib import Path
 
 # Ensure path visibility
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import Sovereign Agents
-from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
-from apps_lic.engines.BiasDetectorAgent import BiasDetectorSpecialist
 from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier
+from apps_lic.engines.BiasDetectorAgent import BiasDetectorSpecialist
+
+from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
 
 # Setup Console Logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")

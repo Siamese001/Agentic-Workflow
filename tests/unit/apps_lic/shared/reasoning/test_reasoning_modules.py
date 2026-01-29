@@ -4,10 +4,10 @@ Ensures bounds enforcement and logic correctness.
 """
 
 import pytest
+from apps_lic.shared.reasoning.toggles import ReasoningToggles
 from pydantic import ValidationError
 
 from apps_lic.shared.reasoning.cot import expand_thought_process
-from apps_lic.shared.reasoning.toggles import ReasoningToggles
 
 
 class TestReasoningToggles:

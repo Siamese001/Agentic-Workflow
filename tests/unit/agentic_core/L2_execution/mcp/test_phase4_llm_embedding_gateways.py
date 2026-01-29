@@ -8,10 +8,11 @@ Tests TC-PHASE4-001 through TC-PHASE4-004:
 - Embedding cache behavior
 """
 
-import pytest
-from unittest.mock import patch
-import sys
 import os
+import sys
+from unittest.mock import patch
+
+import pytest
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -79,8 +80,9 @@ class TestSovereignLLMGateway:
         - len(log) <= 5 (Not 10)
         - Oldest entries pruned (FIFO rotation)
         """
-        from agentic_core.L2_execution.mcp.SovereignLLMGateway import get_llm_gateway
         from unittest import mock
+
+        from agentic_core.L2_execution.mcp.SovereignLLMGateway import get_llm_gateway
 
         # Set config limit via env
         with mock.patch.dict(os.environ, {"SOVEREIGN_MAX_AUDIT_LOG_SIZE": "5"}):
@@ -259,8 +261,9 @@ class TestEmbeddingSovereignAgent:
 
     def test_embedding_audit_fifo_rotation(self):
         """Test FIFO rotation in embedding audit log."""
-        from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import get_embedding_gateway
         from unittest import mock
+
+        from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import get_embedding_gateway
 
         with mock.patch.dict(os.environ, {"SOVEREIGN_MAX_AUDIT_LOG_SIZE": "5"}):
             gateway = get_embedding_gateway()

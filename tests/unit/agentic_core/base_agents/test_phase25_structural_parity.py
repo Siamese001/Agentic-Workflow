@@ -5,12 +5,13 @@ tests/test_phase25_structural_parity.py
 BLOCKING RELEASE CRITERIA: 100% pass rate required for deployment.
 """
 
-import pytest
 import asyncio
-import time
 import sys
+import time
 from pathlib import Path
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent
@@ -24,8 +25,9 @@ with patch(
     return_value=True,
 ):
     with patch("agentic_core.domain.sovereign_lock.emergency_shutdown", MagicMock()):
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
         from apps_lic.shared.core.agent_base import LICAgentBase
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
 
 # =============================================================================
 # FIXTURES

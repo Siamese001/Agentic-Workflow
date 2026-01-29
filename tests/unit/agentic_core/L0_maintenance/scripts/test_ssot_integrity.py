@@ -6,9 +6,10 @@ MANDATORY: 100% PASS REQUIREMENT.
 Validates that base_agents is the ONLY source of truth for agent DNA.
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 
 class TestSSOTFinalization:

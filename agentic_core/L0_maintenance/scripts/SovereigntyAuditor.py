@@ -10,9 +10,9 @@ Rationale:
     3. Confirming the internal class name matches the filename.
 """
 
-import sys
 import ast
 import importlib.util
+import sys
 from pathlib import Path
 
 # Ensure repo root is in sys.path
@@ -21,8 +21,8 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
-    APPS_RG_DIR,
     APPS_LIC_DIR,
+    APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
 from agentic_core.utils.ssot_discovery import get_python_files

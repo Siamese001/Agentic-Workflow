@@ -15,12 +15,12 @@ Re-exported from L5_safety for backwards compatibility.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.validators.structure_blueprint import PROJECT_ROOT_METADATA
-from typing import Any
 from fnmatch import fnmatch
 from pathlib import Path
+from typing import Any
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L5_safety.validators.structure_blueprint import PROJECT_ROOT_METADATA
 
 TREE_SITTER_AVAILABLE = False  # Stub - tree-sitter not required for tests
 
@@ -75,19 +75,19 @@ class NamingAgent(SovereignBaseAgent):
             # Extract violation data
             target = violation.get("file")
             v_type = violation.get("type", "")
-            
+
             if not target:
                 return {"status": "skipped", "reason": "No target file specified"}
-                
+
             # For naming violations, we typically need manual review
             # Return a compliant response that satisfies the contract
             return {
                 "status": "manual_required",
                 "reason": "Naming violations require manual review",
                 "suggested_action": f"Review naming conventions for {target}",
-                "confidence": 0.8
+                "confidence": 0.8,
             }
-            
+
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
@@ -116,15 +116,15 @@ class NamingAgent(SovereignBaseAgent):
     def analyze_placement(self, code: str) -> PlacementResult:
         """Analyze code and suggest file placement."""
         return PlacementResult()
-    
+
     def validate_prefix_location_match(self, path: Path) -> list:
         """Stub method for prefix-location validation."""
         return []
-    
+
     def scan_repository_duplicates(self) -> dict:
         """Stub method for duplicate scanning."""
         return {}
-    
+
     def move_to_canonical_location(self, path: Path, dry_run: bool = True) -> dict:
         """Stub method for canonical moves."""
         return {"moved": False, "reason": "Stub implementation"}

@@ -3,10 +3,11 @@ RAG Architecture Validation Tests
 Tests all 5 mandatory test cases (RAG-001 to RAG-005) for the unified RAG interface
 """
 
-import os
-import pytest
 import asyncio
+import os
 from unittest.mock import Mock, patch
+
+import pytest
 
 
 class TestRAGArchitectureValidation:
@@ -17,10 +18,10 @@ class TestRAGArchitectureValidation:
         RAG-001: Interface Compliance
         Verify SovereignRagOrchestratorAgent explicitly inherits IRagProvider.
         """
+        from agentic_core.L3_orchestration.interfaces.IRagProvider import IRagProvider
         from agentic_core.L3_orchestration.workflow_engines.SovereignRagOrchestratorAgent import (
             SovereignRagOrchestratorAgent,
         )
-        from agentic_core.L3_orchestration.interfaces.IRagProvider import IRagProvider
 
         # Instantiate agent
         agent = SovereignRagOrchestratorAgent()

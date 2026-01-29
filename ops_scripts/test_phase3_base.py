@@ -20,9 +20,9 @@ def test_base_engine_initialization():
     print("\n1. Testing BaseRGEngine initialization...")
 
     try:
+        from apps_rg.domain.config.schemas import RGAgentSpecs
         from apps_rg.engines.base.base_resume_engine import BaseRGEngine
         from apps_rg.engines.base.sovereign_context import SovereignContext
-        from apps_rg.domain.config.schemas import RGAgentSpecs
         from apps_rg.shared.reasoning.toggles import ReasoningToggles
 
         ctx = SovereignContext()

@@ -8,9 +8,10 @@ Tests TC-INTEG-001 through TC-INTEG-003:
 """
 
 import os
-import pytest
-from unittest import mock
 import sys
+from unittest import mock
+
+import pytest
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -21,8 +22,8 @@ class TestLLMGatewayConfigIntegration:
 
     def setup_method(self):
         """Reset singletons before each test."""
-        from agentic_core.L2_execution.mcp.SovereignLLMGateway import SovereignLLMGateway
         from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.L2_execution.mcp.SovereignLLMGateway import SovereignLLMGateway
 
         SovereignLLMGateway.reset_instance()
         SovereignConfigManager.reset_instance()
@@ -33,8 +34,8 @@ class TestLLMGatewayConfigIntegration:
 
     def teardown_method(self):
         """Clean up singletons after each test."""
-        from agentic_core.L2_execution.mcp.SovereignLLMGateway import SovereignLLMGateway
         from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.L2_execution.mcp.SovereignLLMGateway import SovereignLLMGateway
 
         SovereignLLMGateway.reset_instance()
         SovereignConfigManager.reset_instance()
@@ -115,10 +116,10 @@ class TestHealingOrchestratorConfigIntegration:
 
     def setup_method(self):
         """Reset singletons before each test."""
+        from agentic_core.config.SovereignConfigManager import SovereignConfigManager
         from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
             HealingSovereignOrchestrator,
         )
-        from agentic_core.config.SovereignConfigManager import SovereignConfigManager
 
         HealingSovereignOrchestrator.reset_instance()
         SovereignConfigManager.reset_instance()
@@ -128,10 +129,10 @@ class TestHealingOrchestratorConfigIntegration:
 
     def teardown_method(self):
         """Clean up singletons after each test."""
+        from agentic_core.config.SovereignConfigManager import SovereignConfigManager
         from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
             HealingSovereignOrchestrator,
         )
-        from agentic_core.config.SovereignConfigManager import SovereignConfigManager
 
         HealingSovereignOrchestrator.reset_instance()
         SovereignConfigManager.reset_instance()
@@ -172,8 +173,8 @@ class TestValidatorOrchestratorConfigIntegration:
 
     def setup_method(self):
         """Reset singletons before each test."""
-        from agentic_core.L5_safety.validators.ValidatorOrchestrator import ValidatorOrchestrator
         from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.L5_safety.validators.ValidatorOrchestrator import ValidatorOrchestrator
 
         ValidatorOrchestrator.reset_instance()
         SovereignConfigManager.reset_instance()
@@ -182,8 +183,8 @@ class TestValidatorOrchestratorConfigIntegration:
 
     def teardown_method(self):
         """Clean up singletons after each test."""
-        from agentic_core.L5_safety.validators.ValidatorOrchestrator import ValidatorOrchestrator
         from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.L5_safety.validators.ValidatorOrchestrator import ValidatorOrchestrator
 
         ValidatorOrchestrator.reset_instance()
         SovereignConfigManager.reset_instance()
@@ -222,8 +223,8 @@ class TestEmbeddingAgentConfigIntegration:
 
     def setup_method(self):
         """Reset singletons before each test."""
-        from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import EmbeddingSovereignAgent
         from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import EmbeddingSovereignAgent
 
         EmbeddingSovereignAgent.reset_instance()
         SovereignConfigManager.reset_instance()
@@ -232,8 +233,8 @@ class TestEmbeddingAgentConfigIntegration:
 
     def teardown_method(self):
         """Clean up singletons after each test."""
-        from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import EmbeddingSovereignAgent
         from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import EmbeddingSovereignAgent
 
         EmbeddingSovereignAgent.reset_instance()
         SovereignConfigManager.reset_instance()

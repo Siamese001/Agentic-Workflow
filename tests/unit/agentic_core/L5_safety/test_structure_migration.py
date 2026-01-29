@@ -4,10 +4,11 @@ VERIFICATION TEST SUITE FOR STRUCTURE MIGRATION
 Tests the scripts/ -> ops_scripts/ migration and log placement rules.
 """
 
-import pytest
 import shutil
 import tempfile
 from pathlib import Path
+
+import pytest
 
 
 class TestStructureMigration:

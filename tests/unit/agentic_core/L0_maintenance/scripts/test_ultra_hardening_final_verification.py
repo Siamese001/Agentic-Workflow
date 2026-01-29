@@ -4,10 +4,11 @@ Aggressive verification of total Canon Key eradication and Metadata Locking.
 Target: 100% Pass across all structural and immutability constraints.
 """
 
-import pytest
 import collections.abc
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent

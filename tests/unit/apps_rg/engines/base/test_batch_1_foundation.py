@@ -3,10 +3,11 @@ Batch 1 Test Suite - Foundation & Command
 Tests for base_resume_engine.py and resume_orchestrator_engine.py
 """
 
-import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
 import sys
 from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 

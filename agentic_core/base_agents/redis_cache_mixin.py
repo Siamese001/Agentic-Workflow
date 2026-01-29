@@ -24,6 +24,7 @@ from agentic_core.config.feature_flags import (
     GRACEFUL_DEGRADATION,
     USE_REDIS_CACHE,
 )
+
 # from agentic_core.observability.cache_metrics import get_cache_metrics  # Optional metrics - commented out
 
 
@@ -114,10 +115,11 @@ class RedisCacheMixin:
             return None
         if self._redis_client is None:
             try:
+                from pathlib import Path
+
                 from agentic_core.L5_safety.validators.RedisSovereignAgent import (
                     RedisSovereignAgent,
                 )
-                from pathlib import Path
 
                 # Retrieve the singleton instance
                 root = Path(__file__).resolve().parents[3]  # Adjusted for utils location

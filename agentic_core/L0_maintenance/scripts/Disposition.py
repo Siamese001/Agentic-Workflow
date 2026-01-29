@@ -8,9 +8,10 @@ on agentic_core/base_agents/ to eliminate entropy and establish the Final Sovere
 
 import ast
 import json
-from pathlib import Path
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+
 import networkx as nx
 
 

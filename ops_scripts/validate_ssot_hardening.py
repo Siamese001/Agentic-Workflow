@@ -4,9 +4,9 @@ SSOT Hardening Validation Script
 Demonstrates and validates all critical hardening features.
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 from unittest.mock import patch
 
 # Configure logging

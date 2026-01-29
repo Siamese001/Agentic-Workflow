@@ -9,8 +9,8 @@ from __future__ import annotations
 import functools
 import logging
 import signal
-from typing import Any, TypeVar, cast
 from collections.abc import Callable
+from typing import Any, TypeVar, cast
 
 Logger = logging.getLogger(__name__)
 

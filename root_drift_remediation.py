@@ -18,8 +18,8 @@ PHASE 3: VERIFICATION
 - Validates structure compliance
 """
 
-import shutil
 import re
+import shutil
 from pathlib import Path
 from re import Pattern
 

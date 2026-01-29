@@ -13,6 +13,7 @@ Usage:
 """
 
 from __future__ import annotations
+
 import ast
 import sys
 from pathlib import Path
@@ -22,10 +23,9 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.validators.CanonDependencySentinelAgent import (
-    InitializationIntegrityVisitor,
     ArchitectureDNAVisitor,
+    InitializationIntegrityVisitor,
 )
-
 
 # Test Cases
 COMPLIANT_AGENT = """

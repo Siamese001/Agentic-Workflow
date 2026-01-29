@@ -7,7 +7,6 @@ active voice) across all generated text in both Resume and Outreach engines.
 import logging
 import re
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -3,11 +3,12 @@ Aggressive verification of total Canon Key eradication and Metadata Locking.
 Target: 100% Pass across all structural and immutability constraints.
 """
 
-import pytest
 import collections.abc
+import sys
 from collections.abc import Mapping
 from pathlib import Path
-import sys
+
+import pytest
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent
@@ -16,8 +17,8 @@ sys.path.insert(0, str(project_root / "agentic_core"))
 
 try:
     from L5_safety.validators import structure_blueprint
-    from utils.discovery_parser import AGENT_METADATA, load_hardened_agent_metadata
     from L5_safety.validators.LocationAgent import LocationAgent
+    from utils.discovery_parser import AGENT_METADATA, load_hardened_agent_metadata
 except ImportError as e:
     pytest.skip(f"Required modules not available: {e}", allow_module_level=True)
 

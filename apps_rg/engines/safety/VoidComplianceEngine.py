@@ -8,9 +8,10 @@ Writes 'compliance_audit'.
 """
 
 from __future__ import annotations
-from typing import Any
+
 import logging
 from pathlib import Path
+from typing import Any
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
 

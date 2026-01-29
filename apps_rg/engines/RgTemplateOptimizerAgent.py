@@ -6,10 +6,11 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass
 
-from apps_rg.shared.core.agent_base import RGAgentBase
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_rg.shared.core.agent_base import RGAgentBase
 
 
 @dataclass

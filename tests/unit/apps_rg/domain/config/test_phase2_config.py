@@ -8,19 +8,20 @@ Tests the configuration layer and context integration:
 - BaseRGEngine telemetry wrapper
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add project root to path for imports BEFORE any app imports
 project_root = Path(__file__).parent.parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from apps_rg.domain.config.schemas import OrchestrationTopology, AgentSpec
 from apps_rg.domain.config.loader import SovereignConfigLoader
-from apps_rg.engines.base.sovereign_context import SovereignContext
+from apps_rg.domain.config.schemas import AgentSpec, OrchestrationTopology
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
+from apps_rg.engines.base.sovereign_context import SovereignContext
 
 
 def test_schema_validation_success():

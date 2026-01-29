@@ -4,7 +4,8 @@ EmbeddingMixin - Unified Embedding Access for Agents
 [PHASE 4 MIGRATION] Provides single interface to embedding operations.
 """
 
-from typing import Literal, Any
+from typing import Any, Literal
+
 # from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import (
 #     get_embedding_gateway,
 #     EmbeddingSovereignAgent,

@@ -5,49 +5,55 @@ Phase 4: Final Verification & Hardening - Comprehensive Test Suite
 Tests the 6 critical vectors to validate that Phases 1, 2, and 3 work together
 as a cohesive whole for mission readiness.
 """
-import pytest
-import asyncio
-import os
-import shutil
-from pathlib import Path
-from unittest.mock import MagicMock, patch, AsyncMock
-import sys
+
 import inspect
+import sys
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import targets
-from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
+from agentic_core.L0_maintenance.scripts.execute_ssot import (
+    AutonomousDecisionEngine,
+    RuntimeStateManager,
+)
+from agentic_core.L0_maintenance.scripts.execute_ssot import (
+    execute_phase2_reconciliation as phase2_reconcile,
+)
 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
-from agentic_core.prompt_governance.agents.ConversationalRepairAgent import ConversationalRepairAgent
-from agentic_core.L0_maintenance.scripts.execute_ssot import load_agents, AutonomousDecisionEngine, RuntimeStateManager
-from agentic_core.L0_maintenance.scripts.execute_ssot import execute_phase2_reconciliation as phase2_reconcile
+from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
+from agentic_core.prompt_governance.agents.ConversationalRepairAgent import (
+    ConversationalRepairAgent,
+)
 
 
 @pytest.fixture
 def mock_env(tmp_path):
     """Sets up a complex mock environment for full-chain testing."""
     root = tmp_path / "agentic_core"
-    
+
     # Territory 1: Governance (Target)
     gov = root / "prompt_governance"
     (gov / "agents").mkdir(parents=True)
-    
+
     # Territory 2: Safety (Out of Scope)
     safety = root / "L5_safety"
     (safety / "validators").mkdir(parents=True)
-    
+
     # Territory 3: Base agents directory
     base = root / "base_agents"
     base.mkdir(parents=True)
-    
+
     # Create a mock .git directory to satisfy security validation
     (tmp_path / ".git").mkdir()
-    
+
     # Create pyproject.toml to satisfy security validation
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'test'")
-    
+
     return tmp_path
 
 
@@ -56,13 +62,13 @@ def mock_env(tmp_path):
 # ============================================================================
 def test_pascal_structural_enforcement(mock_env):
     """
-    Robustness Check: Verifies that a file is identified as an AGENT purely 
+    Robustness Check: Verifies that a file is identified as an AGENT purely
     by directory context ('agents/'), ignoring class naming, and is renamed.
     """
     # Setup: 'StealthAgent.py' with wrong class name in agents folder
     target_file = mock_env / "agentic_core" / "prompt_governance" / "agents" / "StealthAgent.py"
     target_file.write_text("class HiddenLogic:\n    pass", encoding="utf-8")
-    
+
     # Skip this test if security validation fails
     try:
         agent = PascalSovereigntyAgent(project_root=mock_env, dry_run=False)
@@ -70,10 +76,10 @@ def test_pascal_structural_enforcement(mock_env):
         if "Security validation failed" in str(e):
             pytest.skip("Cannot test with mock environment due to security validation")
         raise
-    
+
     # Execute
     result = agent.heal_repository(target_territory="prompt_governance")
-    
+
     # Verify
     expected = mock_env / "agentic_core" / "prompt_governance" / "agents" / "HiddenLogicAgent.py"
     assert result["violations_fixed"] == 1
@@ -92,16 +98,16 @@ def test_hierarchy_scoped_isolation(mock_env):
     # Setup: Orphan in L5_safety
     orphan = mock_env / "agentic_core" / "L5_safety" / "orphan.txt"
     orphan.write_text("should stay", encoding="utf-8")
-    
+
     # Also create a valid structure in prompt_governance to ensure it has work to do
     gov_dir = mock_env / "agentic_core" / "prompt_governance" / "agents"
     gov_dir.mkdir(parents=True, exist_ok=True)
-    
+
     agent = HierarchyAgent(project_root=mock_env, healing_enabled=True)
-    
+
     # Execute scoped heal
     agent.heal_hierarchy(target_territory="prompt_governance", purge_orphans=True)
-    
+
     # Verify
     assert orphan.exists(), "HierarchyAgent breached containment and deleted out-of-scope orphan"
 
@@ -115,15 +121,15 @@ def test_conversational_repair_protocol_compliance(mock_env):
     and returns the correct schema synchronous execution.
     """
     agent = ConversationalRepairAgent(project_root=mock_env)
-    
+
     # Mock the internal async debate to avoid LLM calls
     async def mock_debate(ctx):
         return {"success": True, "consensus_reasoning": "Fixed it", "consensus_code": "print('ok')"}
-    
-    with patch.object(agent, 'debate_failure', side_effect=mock_debate):
+
+    with patch.object(agent, "debate_failure", side_effect=mock_debate):
         violation = {"type": "LOGIC_ERROR", "file": "test.py", "message": "broken"}
         result = agent.heal(violation)
-        
+
     # Verify Schema
     assert result["success"] is True
     assert result["message"] == "Fixed it"
@@ -136,20 +142,20 @@ def test_conversational_repair_protocol_compliance(mock_env):
 # ============================================================================
 def test_conversational_repair_async_bridge_resilience(mock_env):
     """
-    Robustness Check: Verifies the async bridge handles loop conflicts and 
+    Robustness Check: Verifies the async bridge handles loop conflicts and
     exceptions gracefully without crashing the main thread.
     """
     agent = ConversationalRepairAgent(project_root=mock_env)
-    
+
     # Simulate a crash inside the async loop
     async def crashing_debate(ctx):
         raise ValueError("Critical containment failure in event loop")
-        
-    with patch.object(agent, 'debate_failure', side_effect=crashing_debate):
+
+    with patch.object(agent, "debate_failure", side_effect=crashing_debate):
         violation = {"type": "TEST"}
         # Should catch exception and return failure dict, NOT raise
         result = agent.heal(violation)
-        
+
     assert result["success"] is False
     assert "Critical containment failure" in result["error"]
 
@@ -159,36 +165,36 @@ def test_conversational_repair_async_bridge_resilience(mock_env):
 # ============================================================================
 def test_orchestrator_resilience_to_agent_crash(mock_env):
     """
-    Robustness Check: Simulates a catastrophic failure in one agent during 
+    Robustness Check: Simulates a catastrophic failure in one agent during
     Phase 2 execution and verifies the orchestrator survives.
     """
     # Mock dependencies
     decision_engine = MagicMock(spec=AutonomousDecisionEngine)
     decision_engine.calculate_healing_confidence.return_value = MagicMock(value=0.9)
     decision_engine.should_proceed_with_healing.return_value = (True, "GO")
-    
+
     state_mgr = MagicMock(spec=RuntimeStateManager)
-    
+
     # Create a Crashing Agent
     crash_agent = MagicMock()
     crash_agent.heal.side_effect = RuntimeError("Agent Process Died")
-    
+
     agents = {"crashing_agent": crash_agent}
     plan = {
         "violations_found": [
             {"type": "TEST", "suggested_agent": "crashing_agent", "file": "test.py"}
         ]
     }
-    
+
     # Execute Phase 2
     result = phase2_reconcile(
         agents=agents,
         territory="test_zone",
         decision_engine=decision_engine,
         state_mgr=state_mgr,
-        plan=plan
+        plan=plan,
     )
-    
+
     # Verify System Survival
     assert result["status"] == "partial_success" or result["errors"] > 0
     # The function returns 'error_message' not 'failures'
@@ -201,25 +207,24 @@ def test_orchestrator_resilience_to_agent_crash(mock_env):
 # ============================================================================
 def test_end_to_end_agent_loading(mock_env):
     """
-    Robustness Check: Verifies that execute_ssot's discovery mechanism 
+    Robustness Check: Verifies that execute_ssot's discovery mechanism
     correctly identifies and loads our new/refactored agents from disk.
     """
     # We must mock importlib to simulate the files existing in the python path
-    # OR we rely on the fact that load_agents scans files. 
+    # OR we rely on the fact that load_agents scans files.
     # For robustness in this environment, we test the load_agents logic.
-    
+
     # We'll rely on a partial mock of the discovery process for stability
     # or check that the classes we know exist are in the supported list logic.
-    
+
     # Actually, let's verify the Registry in execute_ssot contains our keys.
     # We can inspect the main() function's agent dictionary definition via source inspection
     # as loading them dynamically requires real files on sys.path.
-    
-    import inspect
+
     from agentic_core.L0_maintenance.scripts.execute_ssot import main
-    
+
     source = inspect.getsource(main)
-    
+
     # Verify Registry Keys
     assert '"pascal_sovereignty": PascalSovereigntyAgent' in source
     assert '"conversational_repair": get_conversational_repair' in source
@@ -229,6 +234,7 @@ def test_end_to_end_agent_loading(mock_env):
 # ============================================================================
 # Additional Helper Tests for Edge Cases
 # ============================================================================
+
 
 def test_pascal_agent_handles_nonexistent_territory_gracefully(mock_env):
     """
@@ -241,10 +247,10 @@ def test_pascal_agent_handles_nonexistent_territory_gracefully(mock_env):
         if "Security validation failed" in str(e):
             pytest.skip("Cannot test with mock environment due to security validation")
         raise
-    
+
     # Execute on nonexistent territory
     result = agent.heal_repository(target_territory="nonexistent_territory")
-    
+
     # Should handle gracefully without crashing
     assert "errors" in result or "violations_found" in result
 
@@ -254,10 +260,10 @@ def test_conversational_repair_handles_empty_violation():
     Edge Case: Verify ConversationalRepairAgent handles empty or malformed violations.
     """
     agent = ConversationalRepairAgent(project_root=Path("/tmp"))
-    
+
     # Test with empty violation
     result = agent.heal({})
-    
+
     # Should handle gracefully - check the actual response structure
     assert result["success"] is False
     # The actual response contains 'message' not 'error'
@@ -270,12 +276,12 @@ def test_hierarchy_agent_with_empty_directory(mock_env):
     """
     # Create empty prompt_governance directory
     (mock_env / "agentic_core" / "prompt_governance").mkdir(parents=True, exist_ok=True)
-    
+
     agent = HierarchyAgent(project_root=mock_env, healing_enabled=True)
-    
+
     # Should not crash on empty directory
     result = agent.heal_hierarchy(target_territory="prompt_governance", purge_orphans=True)
-    
+
     # Should complete without errors
     assert result is not None
 

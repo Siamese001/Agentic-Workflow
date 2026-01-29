@@ -4,8 +4,9 @@ MANDATORY: 100% PASS REQUIRED. Validates Phase 1-3 Execution.
 Tests for LIC Sovereign Purity as defined in SOVEREIGN_FOUNDATION_REPORT.md
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 # Get the project root (parent of tests/)
 PROJECT_ROOT = Path(__file__).parent.parent

@@ -5,14 +5,13 @@ ConfigurationSecurityGuardrail: Consolidated configuration and secrets managemen
 Merges: SecureConfigManager, SecureCheckpointManager, mcp_sovereign, l5_policy
 """
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 import logging
 import re
 from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 logger = logging.getLogger(__name__)
 

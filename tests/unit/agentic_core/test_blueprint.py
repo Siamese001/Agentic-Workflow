@@ -1,11 +1,12 @@
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 
 sys.path.insert(
     0, os.path.join(os.path.dirname(__file__), "../../agentic_core/L5_safety/validators")
 )
-from structure_blueprint import is_path_allowed, SOVEREIGN_TERRITORIES
+from structure_blueprint import SOVEREIGN_TERRITORIES, is_path_allowed
 
 
 class TestUnifiedSovereignRegistry:

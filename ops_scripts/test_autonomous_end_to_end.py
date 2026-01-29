@@ -50,9 +50,10 @@ def test_autonomous_mode_propagation():
 
 def test_autonomous_void_violation_handling():
     """Test that void violations are handled autonomously without prompts."""
-    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-    import tempfile
     import shutil
+    import tempfile
+
+    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
     print("\n🧪 Testing autonomous void violation handling...")
 
@@ -133,9 +134,10 @@ def test_mission_script_configuration():
 
 def test_confidence_scoring():
     """Test the confidence scoring for autonomous decisions."""
-    from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
-    import tempfile
     import shutil
+    import tempfile
+
+    from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
 
     print("\n🧪 Testing confidence scoring algorithm...")
 

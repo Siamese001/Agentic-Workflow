@@ -2,11 +2,11 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import ast
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
 

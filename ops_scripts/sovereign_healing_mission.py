@@ -7,16 +7,16 @@ Scans the repository for generic utilities hiding in domain folders
 and upgrades them to apps_shared/utils under strict circuit breaker limits.
 """
 
-import sys
 import logging
+import sys
 from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 from agentic_core.L4_state.validation_context.RuntimeStateGuard import RuntimeStateGuard
+from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
 # Configure Logging
 logging.basicConfig(

@@ -1,6 +1,6 @@
-from pathlib import Path
-from dataclasses import is_dataclass
 import sys
+from dataclasses import is_dataclass
+from pathlib import Path
 
 # Ensure path visibility
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -14,8 +14,8 @@ class TestRGSovereignSocket:
 
     def test_rg_base_inheritance(self):
         """Verify RGAgentBase inherits from SovereignBaseAgent."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
 
         # MRO Verification: RGAgentBase -> SovereignBaseAgent -> object
         assert issubclass(RGAgentBase, SovereignBaseAgent), "RGAgentBase disconnected from Core!"
@@ -50,8 +50,8 @@ class TestRGSovereignSocket:
 
     def test_content_strategy_inheritance(self):
         """Verify ContentStrategyAgent connects to the bridge."""
-        from apps_rg.engines.ContentStrategyAgent import ContentStrategyAgent
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
+        from apps_rg.engines.ContentStrategyAgent import ContentStrategyAgent
 
         assert issubclass(ContentStrategyAgent, RGAgentBase)
         agent = ContentStrategyAgent()

@@ -7,8 +7,9 @@ Checks for forbidden phrases and metric density.
 """
 
 from __future__ import annotations
-from typing import Any
+
 import logging
+from typing import Any
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
 

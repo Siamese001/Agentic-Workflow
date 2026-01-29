@@ -8,9 +8,10 @@ import socket
 import sys
 from pathlib import Path
 
+from agentic_core.utils.security import safe_popen
+
 # Import SSOT for dashboard directory - NO HARDCODING
 from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR
-from agentic_core.utils.security import safe_popen
 
 REPORTS_DIR = Path(__file__).parent.parent / DASHBOARD_DIR
 PORT = 8000

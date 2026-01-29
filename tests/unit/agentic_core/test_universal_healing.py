@@ -5,10 +5,10 @@ Tests that all agents in execute_ssot.py receive proper healing signals
 through the unified confidence-based decision engine.
 """
 
-import unittest
 import sys
-from unittest.mock import MagicMock, patch
+import unittest
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent
@@ -61,8 +61,8 @@ class TestUniversalHealing(unittest.TestCase):
         try:
             from agentic_core.L0_maintenance.scripts.execute_ssot import (
                 execute_phase1_discovery_impl,
+                logger,
             )
-            from agentic_core.L0_maintenance.scripts.execute_ssot import logger
 
             # Mock the logger to capture calls
             with patch("agentic_core.L0_maintenance.scripts.execute_ssot.logger") as mock_logger:
@@ -338,8 +338,9 @@ class TestUniversalHealing(unittest.TestCase):
 
         # Import the certificate generation function
         try:
-            from agentic_core.L0_maintenance.scripts.execute_ssot import execute_phase5_final_impl
             from datetime import datetime
+
+            from agentic_core.L0_maintenance.scripts.execute_ssot import execute_phase5_final_impl
 
             # Setup mock state manager with compliance scores
             self.mock_state_mgr.state = {"compliance_scores": {"test_territory": 0.85}}

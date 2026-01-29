@@ -4,23 +4,23 @@ Description: Updated aggressive integration testing for Phase 2 (Write) and Phas
 Updated to work with @standard_heal decorator schema.
 """
 
-import pytest
-from pathlib import Path
-from unittest.mock import MagicMock, patch
-from datetime import datetime
-
 # Import the modules we're testing
 import sys
+from datetime import datetime
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 from agentic_core.L0_maintenance.scripts.execute_ssot import (
-    execute_phase2_reconciliation,
-    execute_phase3_final_validation,
     AutonomousDecisionEngine,
-    RuntimeStateManager,
     ConfidenceScore,
     ReconciliationManifest,
+    RuntimeStateManager,
+    execute_phase2_reconciliation,
+    execute_phase3_final_validation,
 )
 
 

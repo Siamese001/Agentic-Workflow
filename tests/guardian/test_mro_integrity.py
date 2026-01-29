@@ -31,7 +31,9 @@ def _module_name_from_path(project_root: Path, file_path: Path) -> str:
     return ".".join(rel.parts)
 
 
-def _import_discovered_modules(project_root: Path) -> tuple[list[Any], list[tuple[str, BaseException]]]:
+def _import_discovered_modules(
+    project_root: Path,
+) -> tuple[list[Any], list[tuple[str, BaseException]]]:
     modules: list[Any] = []
     errors: list[tuple[str, BaseException]] = []
 
@@ -231,7 +233,11 @@ def test_mixin_naming_convention_and_inheritance():
         rel_root = os.path.relpath(root, project_root)
 
         # Skip non-source / historical folders
-        if rel_root.startswith("archives") or rel_root.startswith("tests") or rel_root.startswith(".git"):
+        if (
+            rel_root.startswith("archives")
+            or rel_root.startswith("tests")
+            or rel_root.startswith(".git")
+        ):
             dirs[:] = []
             continue
 
@@ -306,7 +312,9 @@ def test_sovereign_seal_integrity(monkeypatch: pytest.MonkeyPatch):
     try:
         from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 
-        sealed_instances.append(("apps_lic.engines.HOP1ProfileAnalysisAgent", HOP1ProfileAnalysisAgent()))
+        sealed_instances.append(
+            ("apps_lic.engines.HOP1ProfileAnalysisAgent", HOP1ProfileAnalysisAgent())
+        )
     except Exception:
         pass
 
@@ -338,7 +346,9 @@ def test_sovereign_seal_integrity(monkeypatch: pytest.MonkeyPatch):
         if hasattr(agent, "config"):
             try:
                 agent.config = None
-                failures.append(f"{name}: Sovereign seal failed to block existing attribute mutation")
+                failures.append(
+                    f"{name}: Sovereign seal failed to block existing attribute mutation"
+                )
             except AttributeError:
                 pass
 

@@ -8,8 +8,8 @@ Final Consolidation Script - The End of Sprawl
 
 import os
 import re
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 

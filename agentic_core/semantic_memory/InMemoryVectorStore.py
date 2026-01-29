@@ -2,6 +2,7 @@
 # Strategy: Naive Cosine Similarity in Python (slow but correct for unit tests)
 
 import math
+
 from agentic_core.semantic_memory.interfaces import BaseVectorStore
 from agentic_core.semantic_memory.models import MemoryItem, MemoryQuery
 

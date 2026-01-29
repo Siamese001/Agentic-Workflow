@@ -157,6 +157,7 @@ class TestNoCircularLocationImports:
             from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
                 L1CognitionBaseAgent,
             )
+
             from agentic_core.L5_safety.validators.LocationValidatorAgent import (
                 LocationValidatorAgent,
             )

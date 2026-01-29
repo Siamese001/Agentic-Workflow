@@ -6,10 +6,10 @@ usage: python scripts/rg_migrate_structure.py
 """
 
 import json
-import shutil
+import logging
 import os
 import re
-import logging
+import shutil
 from pathlib import Path
 
 # Configure logging

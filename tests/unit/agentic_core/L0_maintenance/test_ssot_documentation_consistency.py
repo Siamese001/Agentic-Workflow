@@ -4,9 +4,10 @@ Description: Enforces that the Operational Runbook matches the actual code imple
 Mandate: 100% Pass.
 """
 
-import pytest
 import re
 from pathlib import Path
+
+import pytest
 
 # Define paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent

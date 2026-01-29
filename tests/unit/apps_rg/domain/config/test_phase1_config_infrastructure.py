@@ -3,12 +3,12 @@ Test Suite for Phase 1: Configuration Infrastructure.
 Verifies schemas, default values, and singleton loading.
 """
 
-import pytest
 import json
-from unittest.mock import patch, mock_open
+from unittest.mock import mock_open, patch
 
-from apps_rg.domain.config.schemas import RGAgentSpecs, AgentSpec, OrchestratorConfig
+import pytest
 from apps_rg.domain.config.loader import load_rg_specs, reload_config
+from apps_rg.domain.config.schemas import AgentSpec, OrchestratorConfig, RGAgentSpecs
 
 
 def test_rg_agent_specs_defaults():

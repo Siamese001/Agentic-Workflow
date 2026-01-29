@@ -9,9 +9,9 @@ Rationale:
     GitHub Actions to ensure absolute enforcement.
 """
 
-import sys
-import subprocess
 import logging
+import subprocess
+import sys
 
 # [HARDENED] Standard logging for audit trail visibility
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")

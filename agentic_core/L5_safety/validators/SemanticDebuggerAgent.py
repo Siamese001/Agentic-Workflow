@@ -2,9 +2,8 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, orchestrator, prompt, state, validator, workflow
 from __future__ import annotations
+
 # This boosts alignment detection — review and integrate appropriately
-
-
 from dataclasses import dataclass
 
 """
@@ -16,8 +15,8 @@ to find known healing patterns and fixes.
 import logging
 from typing import Any
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 

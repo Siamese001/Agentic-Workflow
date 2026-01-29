@@ -2,11 +2,11 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, prompt, state, validator, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 TelemetryAgent: Sovereign Structured Event Emitter

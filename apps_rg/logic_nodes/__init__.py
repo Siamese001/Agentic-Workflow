@@ -2,18 +2,18 @@
 Maintains structural parity with apps_lic.
 """
 
-from .rg_flow_router import RGFlowRouter, RGFlowOutput, ResumeFlowResult
 from .resume_section_node import (
+    IndustryExtractionResult,
     ResumeSectionNode,
     ResumeSectionOutput,
     RoleExtractionResult,
-    IndustryExtractionResult,
     SectionAnalysisResult,
 )
+from .rg_flow_router import ResumeFlowResult, RGFlowOutput, RGFlowRouter
 from .skill_extractor_node import (
-    SkillExtractorNode,
     SkillAnalysisOutput,
     SkillExtractionResult,
+    SkillExtractorNode,
     SkillGapResult,
     SkillMatchResult,
 )

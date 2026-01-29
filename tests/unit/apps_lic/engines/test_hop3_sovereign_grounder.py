@@ -4,9 +4,10 @@ HOP-3 Sovereign Grounder Test Suite.
 MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf execution.
 """
 
-from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
 
 
 class TestHOP3SovereignGrounder:

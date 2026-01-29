@@ -4,8 +4,8 @@ Phase 4 Domain Expansion Test Runner.
 Runs the Phase 4 tests directly, bypassing pytest configuration issues.
 """
 
-import sys
 import asyncio
+import sys
 from pathlib import Path
 
 # Add project root to path
@@ -21,8 +21,8 @@ def run_tests():
 
     from apps_rg.engines.base.sovereign_context import SovereignContext
     from apps_rg.engines.generation.k9_gap_closure_engine import GapClosureEngine
-    from apps_rg.engines.refinement.weight_adjustment_engine import WeightAdjustmentEngine
     from apps_rg.engines.refinement.content_optimizer_engine import ContentOptimizerEngine
+    from apps_rg.engines.refinement.weight_adjustment_engine import WeightAdjustmentEngine
 
     passed = 0
     failed = 0

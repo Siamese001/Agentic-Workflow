@@ -1,8 +1,9 @@
 # tests/unit/test_dual_gate_remediation.py
 
 import os
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 
 class test_dual_gate_remediation:
@@ -91,8 +92,8 @@ class TestEndToEndNoPrompts:
     @patch("builtins.input")
     def test_hierarchy_agent_execute_no_input_called(self, mock_input, setup_env, tmp_path):
         """HierarchyAgent should never call input() when env vars are set."""
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
         ArchivalGatekeeper.reset_instance()
 

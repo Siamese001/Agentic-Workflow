@@ -13,9 +13,8 @@ from typing import TYPE_CHECKING
 from config.config import DATA_DIR
 
 if TYPE_CHECKING:
-    from config.config import CompetitiveAnalysisConfig
-
     from apps_shared.rag.hardening.models import MasterResumeIndex, RAGMission, ThematicAnalysis
+    from config.config import CompetitiveAnalysisConfig
 
 # --- LOGIC: Load the 'Recipe Book' (prompts.json) at startup ---
 try:

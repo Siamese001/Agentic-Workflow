@@ -8,21 +8,22 @@ and Safety (ATS). It defines the full Sovereign Pipeline.
 """
 
 from __future__ import annotations
-from typing import Any
-from dataclasses import dataclass, field
+
 import logging
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
-from apps_rg.shared.core.trace_registry import TraceRegistry
+from apps_rg.engines.generation.k9_gap_closure_engine import GapClosureEngine
 
 # Import ALL Hardened Engines
 from apps_rg.engines.hops.hop1_clerk_engine import ClerkExtractionEngine
 from apps_rg.engines.hops.hop2_enrichment_engine import DataEnrichmentEngine
-from apps_rg.engines.generation.k9_gap_closure_engine import GapClosureEngine
 from apps_rg.engines.refinement.content_optimizer_engine import ContentOptimizerEngine
 from apps_rg.engines.refinement.section_ranker_engine import SectionRankerEngine
 from apps_rg.engines.safety.ats_compatibility_engine import ATSCompatibilityEngine
+from apps_rg.shared.core.trace_registry import TraceRegistry
 
 Logger = logging.getLogger(__name__)
 

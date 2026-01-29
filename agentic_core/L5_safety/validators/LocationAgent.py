@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -97,8 +98,8 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         False
     """
     from agentic_core.L5_safety.validators.structure_blueprint import (
-        get_validated_project_root,
         SOVEREIGN_TERRITORIES,
+        get_validated_project_root,
     )
 
     # Auto-detect project root if not provided
@@ -148,14 +149,15 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
     return True
 
 
+from fnmatch import fnmatch
+
 from agentic_core.L5_safety.validators.structure_blueprint import (
     APP_SPECIFIC_TARGET_SUBFOLDER,
     AST_DOMAIN_HIT_THRESHOLD,  # Flexible depth exemptions (Option A)
-    ROOT_PROTECTED_FILES,
     PROJECT_ROOT_METADATA,  # [ENHANCED] Imported for smart routing
+    ROOT_PROTECTED_FILES,
     get_validated_project_root,
 )
-from fnmatch import fnmatch
 
 # Optional prompt registry for meta-learning
 try:
@@ -170,7 +172,6 @@ except ImportError:
 
 
 from agentic_core.base_agents.timeout_decorator import timeout
-
 
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
 
@@ -590,9 +591,7 @@ class LocationAgent(SovereignBaseAgent):
 
         return valid_files, violations
 
-    def run(
-        self, files: list[Path] = None, target_territory: str | None = None
-    ) -> dict[str, Any]:
+    def run(self, files: list[Path] = None, target_territory: str | None = None) -> dict[str, Any]:
         """
         Full location compliance scan.
         Returns comprehensive scan results including violations and file statistics.
@@ -626,19 +625,23 @@ class LocationAgent(SovereignBaseAgent):
                     files = []
                     for ext, file_list in all_files_dict.items():
                         files.extend(file_list)
-                    
+
                     # Store file statistics
                     file_stats = {
                         "total_files": len(files),
-                        "file_types": {ext: len(file_list) for ext, file_list in all_files_dict.items()},
-                        "territory": target_territory
+                        "file_types": {
+                            ext: len(file_list) for ext, file_list in all_files_dict.items()
+                        },
+                        "territory": target_territory,
                     }
-                    
+
                     # Log file type breakdown
                     total_files = len(files)
                     file_types = {ext: len(file_list) for ext, file_list in all_files_dict.items()}
-                    file_types_str = ", ".join([f"{ext}: {count}" for ext, count in sorted(file_types.items())])
-                    
+                    file_types_str = ", ".join(
+                        [f"{ext}: {count}" for ext, count in sorted(file_types.items())]
+                    )
+
                     Logger.info(
                         f"[LocationAgent] COMPREHENSIVE DISCOVERY: {total_files} files in {target_territory} ({file_types_str})"
                     )
@@ -650,24 +653,26 @@ class LocationAgent(SovereignBaseAgent):
                 file_stats = {
                     "total_files": len(files),
                     "file_types": {".py": len(files)},
-                    "territory": "global"
+                    "territory": "global",
                 }
 
         valid_files, file_violations = self.enforce_void_compliance(files)
         all_violations.extend(file_violations)
 
         # Update file stats with compliance results
-        file_stats.update({
-            "valid_files": len(valid_files),
-            "violations_found": len(file_violations),
-            "compliance_rate": len(valid_files) / len(files) * 100 if files else 100.0
-        })
+        file_stats.update(
+            {
+                "valid_files": len(valid_files),
+                "violations_found": len(file_violations),
+                "compliance_rate": len(valid_files) / len(files) * 100 if files else 100.0,
+            }
+        )
 
         return {
             "violations": all_violations,
             "file_stats": file_stats,
             "files_processed": files,
-            "valid_files": valid_files
+            "valid_files": valid_files,
         }
 
     # SUPPLEMENTED FROM FilesystemAgent — enhances backup + cleanup capability — merged 2025-12-30
@@ -1257,11 +1262,11 @@ class LocationAgent(SovereignBaseAgent):
                             app_rg, app_lic, terr_scores = self._recompute_ast_scores(tree)
 
                             # [HARDENING] PERSISTENT GLOBAL CANDIDATE DETECTION
-                            from agentic_core.L5_safety.validators.structure_blueprint import (
-                                HEALING_CONFIG,
-                            )
                             from agentic_core.L4_state.validation_context.RuntimeStateGuard import (
                                 RuntimeStateGuard,
+                            )
+                            from agentic_core.L5_safety.validators.structure_blueprint import (
+                                HEALING_CONFIG,
                             )
 
                             # Initialize Guard (Singleton behavior scoped to agent instance)
@@ -1971,19 +1976,19 @@ class LocationAgent(SovereignBaseAgent):
     def heal(self, violation: dict) -> dict:
         """
         Heal a single location violation.
-        
+
         This method is required by execute_ssot.py and provides the interface
         for the autonomous healing system. It converts the violation dict
         to the format expected by cleanup_violations and returns a standardized
         result.
-        
+
         Args:
             violation: Dict containing violation details with keys:
                 - file: Path to the violating file (str or Path)
                 - message: Description of the violation
                 - type: Type of violation (optional)
                 - suggested_action: Suggested fix (optional)
-        
+
         Returns:
             Dict with healing result following HEAL_RESULT_SCHEMA:
                 - success: bool indicating if healing succeeded
@@ -1996,86 +2001,85 @@ class LocationAgent(SovereignBaseAgent):
                 - execution_time_ms: time taken in milliseconds
         """
         import time
-        from datetime import datetime
-        
+
         start_time = time.time()
-        
+
         # Extract violation details
-        file_path = violation.get('file')
+        file_path = violation.get("file")
         if not file_path:
             return {
-                'success': False,
-                'violations_fixed': 0,
-                'violations_found': 0,
-                'message': 'No file path in violation',
-                'error': 'Missing file path in violation',
-                'execution_time_ms': 0,
-                'agent': self.__class__.__name__
+                "success": False,
+                "violations_fixed": 0,
+                "violations_found": 0,
+                "message": "No file path in violation",
+                "error": "Missing file path in violation",
+                "execution_time_ms": 0,
+                "agent": self.__class__.__name__,
             }
-        
+
         # Convert to Path if needed
         if isinstance(file_path, str):
             file_path = Path(file_path)
-        
-        message = violation.get('message', 'Location violation')
-        
+
+        message = violation.get("message", "Location violation")
+
         try:
             # Use existing cleanup_violations method
             cleanup_results = self.cleanup_violations([(file_path, message)], dry_run=False)
-            
+
             if cleanup_results and len(cleanup_results) > 0:
                 result = cleanup_results[0]
-                applied = result.get('applied', False)
-                error = result.get('error')
-                
+                applied = result.get("applied", False)
+                error = result.get("error")
+
                 return {
-                    'success': applied and not error,
-                    'violations_fixed': 1 if applied and not error else 0,
-                    'violations_found': 1,
-                    'message': result.get('action_taken', 'Location violation processed'),
-                    'target': str(file_path),
-                    'agent': self.__class__.__name__,
-                    'error': error,
-                    'execution_time_ms': int((time.time() - start_time) * 1000),
-                    'action_taken': result.get('action_taken'),
-                    'new_path': result.get('new_path')
+                    "success": applied and not error,
+                    "violations_fixed": 1 if applied and not error else 0,
+                    "violations_found": 1,
+                    "message": result.get("action_taken", "Location violation processed"),
+                    "target": str(file_path),
+                    "agent": self.__class__.__name__,
+                    "error": error,
+                    "execution_time_ms": int((time.time() - start_time) * 1000),
+                    "action_taken": result.get("action_taken"),
+                    "new_path": result.get("new_path"),
                 }
             else:
                 return {
-                    'success': False,
-                    'violations_fixed': 0,
-                    'violations_found': 1,
-                    'message': 'No cleanup result returned',
-                    'target': str(file_path),
-                    'agent': self.__class__.__name__,
-                    'error': 'No cleanup result returned',
-                    'execution_time_ms': int((time.time() - start_time) * 1000)
+                    "success": False,
+                    "violations_fixed": 0,
+                    "violations_found": 1,
+                    "message": "No cleanup result returned",
+                    "target": str(file_path),
+                    "agent": self.__class__.__name__,
+                    "error": "No cleanup result returned",
+                    "execution_time_ms": int((time.time() - start_time) * 1000),
                 }
-                
+
         except Exception as e:
             Logger.error(f"Error healing location violation for {file_path}: {e}")
             return {
-                'success': False,
-                'violations_fixed': 0,
-                'violations_found': 1,
-                'message': f'Failed to heal location violation: {str(e)}',
-                'target': str(file_path),
-                'agent': self.__class__.__name__,
-                'error': str(e),
-                'execution_time_ms': int((time.time() - start_time) * 1000)
+                "success": False,
+                "violations_fixed": 0,
+                "violations_found": 1,
+                "message": f"Failed to heal location violation: {str(e)}",
+                "target": str(file_path),
+                "agent": self.__class__.__name__,
+                "error": str(e),
+                "execution_time_ms": int((time.time() - start_time) * 1000),
             }
-    
+
     def heal_violations(self, violations: list, auto_approve: bool = True) -> dict:
         """
         Heal multiple location violations.
-        
+
         This method is called by execute_ssot.py when the LocationAgent
         has detected violations and the decision engine has approved healing.
-        
+
         Args:
             violations: List of violation tuples (Path, message) or violation dicts
             auto_approve: If True, automatically apply fixes without confirmation
-        
+
         Returns:
             Dict with healing summary:
                 - healed: number of violations successfully healed
@@ -2085,15 +2089,16 @@ class LocationAgent(SovereignBaseAgent):
                 - details: list of individual results
         """
         import time
-        from datetime import datetime
-        
+
         start_time = time.time()
         total_violations = len(violations)
         healed_count = 0
         details = []
-        
-        Logger.info(f"LocationAgent healing {total_violations} violations (auto_approve={auto_approve})")
-        
+
+        Logger.info(
+            f"LocationAgent healing {total_violations} violations (auto_approve={auto_approve})"
+        )
+
         # Convert all violations to consistent format
         violation_list = []
         for v in violations:
@@ -2102,57 +2107,63 @@ class LocationAgent(SovereignBaseAgent):
                 violation_list.append((v[0], v[1]))
             elif isinstance(v, dict):
                 # Dict format
-                file_path = v.get('file')
-                message = v.get('message', 'Location violation')
+                file_path = v.get("file")
+                message = v.get("message", "Location violation")
                 if file_path:
-                    violation_list.append((Path(file_path) if isinstance(file_path, str) else file_path, message))
+                    violation_list.append(
+                        (Path(file_path) if isinstance(file_path, str) else file_path, message)
+                    )
             else:
                 Logger.warning(f"Skipping invalid violation format: {v}")
-        
+
         try:
             # Use existing cleanup_violations method
             cleanup_results = self.cleanup_violations(violation_list, dry_run=not auto_approve)
-            
+
             for i, result in enumerate(cleanup_results):
-                if result.get('applied', False):
+                if result.get("applied", False):
                     healed_count += 1
-                    details.append({
-                        'violation_index': i,
-                        'status': 'healed',
-                        'action': result.get('action_taken', 'Unknown action'),
-                        'file': str(result.get('file_path', 'Unknown file'))
-                    })
+                    details.append(
+                        {
+                            "violation_index": i,
+                            "status": "healed",
+                            "action": result.get("action_taken", "Unknown action"),
+                            "file": str(result.get("file_path", "Unknown file")),
+                        }
+                    )
                 else:
-                    details.append({
-                        'violation_index': i,
-                        'status': 'failed' if result.get('error') else 'skipped',
-                        'error': result.get('error'),
-                        'file': str(result.get('file_path', 'Unknown file'))
-                    })
-            
+                    details.append(
+                        {
+                            "violation_index": i,
+                            "status": "failed" if result.get("error") else "skipped",
+                            "error": result.get("error"),
+                            "file": str(result.get("file_path", "Unknown file")),
+                        }
+                    )
+
             execution_time = int((time.time() - start_time) * 1000)
             success = healed_count == total_violations
-            
+
             return {
-                'healed': healed_count,
-                'total': total_violations,
-                'success': success,
-                'message': f'Healed {healed_count}/{total_violations} location violations',
-                'execution_time_ms': execution_time,
-                'details': details,
-                'auto_approve': auto_approve
+                "healed": healed_count,
+                "total": total_violations,
+                "success": success,
+                "message": f"Healed {healed_count}/{total_violations} location violations",
+                "execution_time_ms": execution_time,
+                "details": details,
+                "auto_approve": auto_approve,
             }
-            
+
         except Exception as e:
             Logger.error(f"Error in heal_violations: {e}")
             return {
-                'healed': 0,
-                'total': total_violations,
-                'success': False,
-                'message': f'Failed to heal violations: {str(e)}',
-                'execution_time_ms': int((time.time() - start_time) * 1000),
-                'error': str(e),
-                'details': []
+                "healed": 0,
+                "total": total_violations,
+                "success": False,
+                "message": f"Failed to heal violations: {str(e)}",
+                "execution_time_ms": int((time.time() - start_time) * 1000),
+                "error": str(e),
+                "details": [],
             }
 
 

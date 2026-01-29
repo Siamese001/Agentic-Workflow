@@ -5,8 +5,9 @@ MANDATORY: 100% PASS REQUIREMENT for Windsurf Execution.
 Verifies that 'LICAgentBase' is now the sovereign standard.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 # Get repo root (tests/ is one level down from repo root)
 REPO_ROOT = Path(__file__).resolve().parent.parent

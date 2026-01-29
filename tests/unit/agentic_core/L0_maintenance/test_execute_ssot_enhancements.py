@@ -8,11 +8,12 @@ Run with:
     pytest tests/unit/agentic_core/L0_maintenance/test_execute_ssot_enhancements.py -v
 """
 
-import pytest
-import sys
 import os
+import sys
 from pathlib import Path
 from unittest.mock import patch
+
+import pytest
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
@@ -20,11 +21,11 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import the classes we need to test
 from agentic_core.L0_maintenance.scripts.execute_ssot import (
+    ASTCodeQualityValidator,
     AutonomousDecisionEngine,
     ConfidenceScore,
-    ASTCodeQualityValidator,
-    validate_territory_input,
     ReconciliationViolation,
+    validate_territory_input,
 )
 
 
@@ -363,8 +364,9 @@ class TestRuntimeStateManager:
 
     def test_atomic_save(self, tmp_path):
         """Test that state is saved atomically."""
-        from agentic_core.L0_maintenance.scripts.execute_ssot import RuntimeStateManager
         import json
+
+        from agentic_core.L0_maintenance.scripts.execute_ssot import RuntimeStateManager
 
         state_mgr = RuntimeStateManager(tmp_path)
         state_mgr.state["test_key"] = "test_value"
@@ -384,8 +386,9 @@ class TestNonInteractiveGuard:
 
     def test_guard_blocks_input(self):
         """Test that guard blocks input() calls."""
-        from agentic_core.L0_maintenance.scripts.execute_ssot import NonInteractiveGuard
         import builtins
+
+        from agentic_core.L0_maintenance.scripts.execute_ssot import NonInteractiveGuard
 
         original_input = builtins.input
 
@@ -400,8 +403,9 @@ class TestNonInteractiveGuard:
 
     def test_guard_inactive_allows_input(self):
         """Test that inactive guard allows input() calls."""
-        from agentic_core.L0_maintenance.scripts.execute_ssot import NonInteractiveGuard
         import builtins
+
+        from agentic_core.L0_maintenance.scripts.execute_ssot import NonInteractiveGuard
 
         original_input = builtins.input
 
@@ -545,8 +549,9 @@ class TestAgentDiscovery:
 
     def test_list_available_agents_from_cache(self, tmp_path):
         """Test agent discovery from cached JSON."""
-        from agentic_core.L0_maintenance.scripts.execute_ssot import list_available_agents
         import json
+
+        from agentic_core.L0_maintenance.scripts.execute_ssot import list_available_agents
 
         # Create mock discovery cache
         cache_data = [
@@ -566,8 +571,9 @@ class TestAgentDiscovery:
 
     def test_list_available_agents_deduplication(self, tmp_path):
         """Test that duplicate agents are removed."""
-        from agentic_core.L0_maintenance.scripts.execute_ssot import list_available_agents
         import json
+
+        from agentic_core.L0_maintenance.scripts.execute_ssot import list_available_agents
 
         # Create mock discovery cache with duplicates
         cache_data = [
@@ -585,8 +591,9 @@ class TestAgentDiscovery:
 
     def test_list_available_agents_rejects_invalid_modules(self, tmp_path):
         """Test that invalid module paths are rejected."""
-        from agentic_core.L0_maintenance.scripts.execute_ssot import list_available_agents
         import json
+
+        from agentic_core.L0_maintenance.scripts.execute_ssot import list_available_agents
 
         # Create mock discovery cache with invalid paths
         cache_data = [

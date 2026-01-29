@@ -1,8 +1,8 @@
-import unittest
-from pathlib import Path
-import tempfile
 import shutil
 import sys
+import tempfile
+import unittest
+from pathlib import Path
 
 # Add project root to path for imports
 current_file = Path(__file__).resolve()
@@ -125,8 +125,8 @@ class TestTerritoryIntegrity(unittest.TestCase):
 
     def test_ultra_scan_logging(self):
         """Test 5: Verify ultra scan produces correct logging output."""
-        import logging
         import io
+        import logging
 
         # Capture log output
         log_capture = io.StringIO()

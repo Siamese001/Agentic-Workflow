@@ -17,16 +17,16 @@ Typical usage:
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.utils.security import safe_git_execute
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
 @dataclass

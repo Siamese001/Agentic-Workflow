@@ -8,17 +8,16 @@ ARCHITECTURAL HARDENING:
 - Clear separation: Constitution = SSOT, Registry = Runtime tracking
 """
 
-import json
-from dataclasses import dataclass
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 import hashlib
+import json
 import logging
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import numpy as np
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 

@@ -3,15 +3,16 @@ Batch 6 Test Suite - Safety Domain
 Tests for void_compliance_engine.py and ats_compatibility_engine.py
 """
 
-import pytest
-from unittest.mock import MagicMock, patch
 import sys
 from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from apps_rg.engines.safety.void_compliance_engine import VoidComplianceEngine
 from apps_rg.engines.safety.ats_compatibility_engine import ATSCompatibilityEngine
+from apps_rg.engines.safety.void_compliance_engine import VoidComplianceEngine
 
 
 @pytest.mark.asyncio

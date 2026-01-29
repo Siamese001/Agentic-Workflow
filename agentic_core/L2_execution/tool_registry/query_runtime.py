@@ -1,11 +1,12 @@
-import time
-import random
-import functools
 import concurrent.futures
-from typing import Any
+import functools
+import random
+import time
 from collections.abc import Callable
-from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
+from typing import Any
+
 from rich.console import Console
+from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
 # Approved SSOT: Singleton console to prevent terminal character interleaving
 _console = Console()

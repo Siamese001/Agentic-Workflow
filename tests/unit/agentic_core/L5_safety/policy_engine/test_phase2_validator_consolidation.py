@@ -29,15 +29,9 @@ import pytest
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
-    RuleSet,
-    CodeValidatorAgent,
-    ViolationType,
-    create_legacy_syntax_validator,
-)
 from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
-    StructureViolationType,
     StructureValidatorAgent,
+    StructureViolationType,
     create_legacy_gravity_validator,
     extract_layer_from_import,
     extract_layer_from_path,
@@ -46,6 +40,13 @@ from apps_lic.shared.validation.AppContentValidatorAgent import (
     AppContentValidatorAgent,
     ContentViolationType,
     create_legacy_message_diversity_validator,
+)
+
+from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
+    CodeValidatorAgent,
+    RuleSet,
+    ViolationType,
+    create_legacy_syntax_validator,
 )
 
 
@@ -444,13 +445,14 @@ class test_registry_mapping:
     def test_phase2_validator_mapping_exists(self):
         """Phase 2 validator mapping should be defined."""
         # Import the mapping function directly to avoid SubAtomicRegistryAgent import issues
-        from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
-            CodeValidatorAgent,
-        )
         from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
             StructureValidatorAgent,
         )
         from apps_lic.shared.validation.AppContentValidatorAgent import AppContentValidatorAgent
+
+        from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
+            CodeValidatorAgent,
+        )
 
         # Define expected mapping (mirrors what's in SubAtomicRegistryAgent)
         expected_mapping = {

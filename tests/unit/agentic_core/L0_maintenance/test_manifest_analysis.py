@@ -4,8 +4,10 @@ Description: Tests for the Dry-Run Verification Tool.
 Mandate: 100% Pass.
 """
 
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 from agentic_core.L0_maintenance.scripts.verify_manifest import analyze_impact
 
 

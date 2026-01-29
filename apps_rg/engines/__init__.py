@@ -8,6 +8,17 @@ the Sovereign Architecture pattern.
 
 from __future__ import annotations
 
+from apps_shared.common_utils.multi_provider_clients import Provider
+
+# [Diff Start: Export AgentExecutor]
+from .AgentExecutor import (
+    AgentConfig,
+    AgentExecutor,
+    AgentMessage,
+    AgentResponse,
+    create_agent_executor,
+)
+
 # V2.5 Compliant Agents - All inherit from RGAgentBase
 from .ATSCompatibilityAgent import ATSCompatibilityAgent
 from .BrandComplianceAgent import BrandComplianceAgent
@@ -15,30 +26,21 @@ from .CampaignPlannerAgent import CampaignPlannerAgent
 from .ContentQualityAgent import ContentQualityAgent, TestPilot
 from .ContentStrategyAgent import ContentStrategyAgent
 from .FactCheckAgent import FactCheckAgent
+from .hardened_openai_executor import HardenedOpenAIExecutor
+from .HardenedAnthropicExecutor import HardenedAnthropicExecutor
 from .ProactiveAgent import ProactiveAgent
 from .RgHealingOrchestratorAgent import RgHealingOrchestratorAgent
 from .RgReflectionAgent import RgReflectionAgent
 from .RgResumeOrchestratorAgent import RgResumeOrchestratorAgent
 from .RgStrategicPlannerAgent import RgStrategicPlannerAgent
 from .RgTemplateOptimizerAgent import RgTemplateOptimizerAgent
-from .SectionBalanceAgent import SectionBalanceAgent
 
 # Core Engine Components
 from .Router import HardenedRouter as Router
-from .HardenedAnthropicExecutor import HardenedAnthropicExecutor
-from .hardened_openai_executor import HardenedOpenAIExecutor
+from .schema import ProviderType, RouteConfig, RouterConfig, RouteResult, RoutingTier
+from .SectionBalanceAgent import SectionBalanceAgent
 from .strategist_biowriter import StrategistBioWriter
-from .schema import RouterConfig, RouteResult, ProviderType, RouteConfig, RoutingTier
 
-# [Diff Start: Export AgentExecutor]
-from .AgentExecutor import (
-    AgentExecutor,
-    AgentConfig,
-    AgentMessage,
-    AgentResponse,
-    create_agent_executor,
-)
-from apps_shared.common_utils.multi_provider_clients import Provider
 # [Diff End]
 
 __all__ = [

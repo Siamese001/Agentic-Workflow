@@ -27,13 +27,13 @@ except ImportError:
         pattern: str
         type: str
         scope: str
-    
+
     @dataclass
     class InjectionMatch:
         pattern: str
         matched: bool
         confidence: float
-    
+
     InjectionPattern = str
     InjectionScope = str
     InjectionType = str
@@ -429,7 +429,6 @@ class PromptInjectionLoader:
 
         # Use prompt assembler for semantic fencing (lazy import)
         try:
-
             enhanced = assemble_prompt(
                 role="Assistant",
                 objective="Follow all instructions precisely",

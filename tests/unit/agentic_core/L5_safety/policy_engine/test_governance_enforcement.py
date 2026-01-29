@@ -4,8 +4,9 @@ Rationale: Verifies the hardened Governance agents (StructuralValidator, Gravity
 """
 
 import pytest
+
+from agentic_core.L5_safety.gravity.GravityLeakRepairAgent import GravityFix, GravityLeakRepairAgent
 from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import StructuralValidatorAgent
-from agentic_core.L5_safety.gravity.GravityLeakRepairAgent import GravityLeakRepairAgent, GravityFix
 
 
 @pytest.fixture

@@ -6,7 +6,8 @@
 from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID, uuid4
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class BaseEntity(BaseModel):
@@ -106,8 +107,9 @@ class AgentConfig(BaseEntity):
         Validate agent name format.
         HARDENED: Added validation to prevent injection.
         """
-        from pydantic_core import PydanticCustomError
         import re
+
+        from pydantic_core import PydanticCustomError
 
         if not v or not v.strip():
             raise PydanticCustomError(

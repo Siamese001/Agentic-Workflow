@@ -8,8 +8,8 @@ import ast
 import hashlib
 import json
 import logging
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from dataclasses import dataclass, field, asdict
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")

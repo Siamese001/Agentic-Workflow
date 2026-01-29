@@ -5,10 +5,9 @@ Scans agentic_core for all healer agents and generates an "Impotence Report"
 identifying agents that detect violations but cannot fix them.
 """
 
-from pathlib import Path
-from dataclasses import dataclass
-from dataclasses import field
 import ast
+from dataclasses import dataclass, field
+from pathlib import Path
 
 
 @dataclass

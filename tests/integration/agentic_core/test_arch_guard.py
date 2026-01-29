@@ -8,10 +8,11 @@ Architecture Guard (ArchGuard) - Sprawl Prevention Suite
 [PHASE 21 HARDENED] Structure Locking to prevent sprawl creep.
 """
 
-import os
 import ast
-import pytest
+import os
 from pathlib import Path
+
+import pytest
 
 # Project Root
 ROOT_DIR = Path(__file__).parent.parent.parent

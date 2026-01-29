@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """L3 Orchestration: Sovereign MCP router — Eternal Integration

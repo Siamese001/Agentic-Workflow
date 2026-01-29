@@ -4,8 +4,8 @@ Phase 2 Configuration & Base Integration Test Runner.
 Runs the Phase 2 tests directly, bypassing pytest configuration issues.
 """
 
-import sys
 import asyncio
+import sys
 from pathlib import Path
 
 # Add project root to path
@@ -19,10 +19,10 @@ def run_tests():
     print("PHASE 2 CONFIGURATION & BASE INTEGRATION TESTS")
     print("=" * 70)
 
-    from apps_rg.domain.config.schemas import OrchestrationTopology, AgentSpec
     from apps_rg.domain.config.loader import SovereignConfigLoader
-    from apps_rg.engines.base.sovereign_context import SovereignContext
+    from apps_rg.domain.config.schemas import AgentSpec, OrchestrationTopology
     from apps_rg.engines.base.base_resume_engine import BaseRGEngine
+    from apps_rg.engines.base.sovereign_context import SovereignContext
 
     passed = 0
     failed = 0

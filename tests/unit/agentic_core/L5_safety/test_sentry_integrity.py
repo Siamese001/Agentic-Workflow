@@ -3,8 +3,9 @@ file: tests/governance/test_sentry_integrity.py
 description: Verifies that no test files exist outside of the mirrored hierarchy.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow").resolve()
 

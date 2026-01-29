@@ -4,11 +4,11 @@ Verifies heuristic logic matches legacy behavior within V2 architecture.
 """
 
 import pytest
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 
 from apps_lic.domain.config.loader import load_agent_specs
 from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
-from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 @pytest.fixture

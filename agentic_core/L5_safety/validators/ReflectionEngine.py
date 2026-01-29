@@ -2,6 +2,7 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, healer, memory, orchestrator
 from __future__ import annotations
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -69,7 +70,7 @@ class ReflectionConfig(BaseModel):
     llm_provider: str = "openai"
     llm_model: str = Field(
         default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
-        description="Cost-effective model for reflection"
+        description="Cost-effective model for reflection",
     )
     timeout: float = Field(default=30.0, ge=1.0)
 

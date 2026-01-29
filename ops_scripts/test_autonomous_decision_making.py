@@ -3,9 +3,9 @@ Test script to verify autonomous decision-making in LocationHealerAgent.
 Ensures the agent can make intelligent choices without user prompts.
 """
 
+import shutil
 import sys
 import tempfile
-import shutil
 from pathlib import Path
 
 # Add project root to path

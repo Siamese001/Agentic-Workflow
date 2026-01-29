@@ -8,11 +8,9 @@ MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf exec
 """
 
 import pytest
-
 from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
-
 
 # =============================================================================
 # FIXTURES: Mock Agents for Integration Testing

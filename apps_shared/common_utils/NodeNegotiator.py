@@ -12,7 +12,6 @@ import time
 import uuid
 from datetime import datetime
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -52,18 +51,19 @@ class NegotiationConfig(BaseModel):
     """[HARDENED] Environment-aware configuration for negotiation protocol."""
 
     max_rounds: int = Field(
-        default_factory=lambda: int(os.getenv("NEGOTIATION_MAX_ROUNDS", "2")),
-        ge=1, le=5
+        default_factory=lambda: int(os.getenv("NEGOTIATION_MAX_ROUNDS", "2")), ge=1, le=5
     )
     max_message_length: int = Field(default=1000, ge=100, le=10000)
     response_timeout: float = Field(
         default_factory=lambda: float(os.getenv("NEGOTIATION_RESPONSE_TIMEOUT", "30.0")),
-        ge=5.0, le=300.0
+        ge=5.0,
+        le=300.0,
     )
     enable_persistence: bool = True
     auto_resolve_threshold: float = Field(
         default_factory=lambda: float(os.getenv("NEGOTIATION_AUTO_RESOLVE_THRESHOLD", "0.8")),
-        ge=0.0, le=1.0
+        ge=0.0,
+        le=1.0,
     )
 
 

@@ -120,11 +120,11 @@ class TestInstinctiveBypass:
 
     def test_instinctive_bypass_cached(self):
         """[Phase 20] Verify recall_or_execute returns cached result without executing."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
-            SemanticCacheManager,
-        )
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
         )
 
         # Reset singleton and mixin state
@@ -163,11 +163,11 @@ class TestInstinctiveBypass:
 
     def test_instinctive_bypass_miss_executes(self):
         """[Phase 20] Verify recall_or_execute executes on cache miss."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
-            SemanticCacheManager,
-        )
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
         )
 
         # Reset singleton and mixin state
@@ -212,11 +212,11 @@ class TestDNASegregation:
 
     def test_dna_segregation_different_agents(self):
         """[Phase 20] Verify different agents use different namespaces."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
-            SemanticCacheManager,
-        )
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
         )
 
         # Reset singleton and mixin state
@@ -331,11 +331,11 @@ class TestLobotomyResilience:
 
     def test_lobotomy_resilience_execution_continues(self):
         """[Phase 20] Verify execution continues when memory is unavailable."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
-            SemanticCacheManager,
-        )
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
         )
 
         # Reset singleton and mixin state
@@ -467,11 +467,11 @@ class TestCircuitBreaker:
 
     def test_circuit_breaker_activates_on_failure(self):
         """[Phase 20] Verify circuit breaker activates when Hive Mind unavailable."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
-            SemanticCacheManager,
-        )
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
         )
 
         # Reset state
@@ -1108,14 +1108,15 @@ class TestMetaLearningKGIntegration:
 
     def test_mixin_kg_connection_on_init(self):
         """[Phase 20+] Verify KG connection is established on agent init."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
-            SemanticCacheManager,
-        )
         from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
+
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
         )
 
         # Reset state
@@ -1155,14 +1156,15 @@ class TestMetaLearningKGIntegration:
 
     def test_mixin_reflect_on_execution(self):
         """[Phase 20+] Verify reflect_on_execution creates KG entries."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
-            SemanticCacheManager,
-        )
         from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
+
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
         )
 
         # Reset state
@@ -1208,14 +1210,15 @@ class TestMetaLearningKGIntegration:
 
     def test_mixin_add_architectural_observation(self):
         """[Phase 20+] Verify architectural observations are recorded."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
-            SemanticCacheManager,
-        )
         from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
+
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
         )
 
         # Reset state
@@ -1259,14 +1262,15 @@ class TestMetaLearningKGIntegration:
 
     def test_mixin_kg_resilient_mode(self):
         """[Phase 20+] Verify KG unavailability doesn't crash agent."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
-            SemanticCacheManager,
-        )
         from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
+
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
+        )
+        from agentic_core.L4_state.memory.SemanticCacheManager import (
+            SemanticCacheManager,
         )
 
         # Reset state

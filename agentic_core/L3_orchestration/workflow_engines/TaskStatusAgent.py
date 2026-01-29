@@ -21,12 +21,13 @@ Usage:
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Optional
+from typing import Any
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 
 logger = logging.getLogger(__name__)
@@ -102,9 +103,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
 
     # Callbacks for custom handling
     on_retry_spawned: Callable[[str, str, int], None] | None = field(default=None)
-    on_max_retries_exceeded: Callable[[str, RetryContext], None] | None = field(
-        default=None
-    )
+    on_max_retries_exceeded: Callable[[str, RetryContext], None] | None = field(default=None)
 
     def __post_init__(self) -> None:
         """Initialize the orchestrator."""
@@ -231,9 +230,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
 
             # Callback
             if self.on_retry_spawned:
-                self.on_retry_spawned(
-                    failed_node_id, new_node_id, retry_ctx.attempt_number
-                )
+                self.on_retry_spawned(failed_node_id, new_node_id, retry_ctx.attempt_number)
 
             logger.info(
                 f"Spawned retry node {new_node_id} for {failed_node_id} "
@@ -267,7 +264,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
         # We merge retry_context on top of accumulated_context.
         base_params = retry_context.accumulated_context.copy()
         retry_params = retry_context.to_parameters()
-        
+
         # Merge strategies: Retry params take precedence for control flags,
         # but we must preserve original task data.
         final_params = {**base_params, **retry_params}
@@ -277,7 +274,9 @@ class RecursiveOrchestrator(SovereignBaseAgent):
             hop_function=retry_function,
             parameters=final_params,
             priority=1,  # Higher priority for retries
-            retry_policy={"max_attempts": 0} # [SAFETY] Prevent internal retries on the new node, rely on Orchestrator
+            retry_policy={
+                "max_attempts": 0
+            },  # [SAFETY] Prevent internal retries on the new node, rely on Orchestrator
         )
 
         # Create mutation request
@@ -326,7 +325,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
             # depending on serialization state in the DAGManager.
             node_data = self.dag_manager.graph.nodes.get(node_id, {})
             hop_spec = node_data.get("hop_spec")
-            
+
             if hasattr(hop_spec, "hop_function"):
                 return hop_spec.hop_function
             elif isinstance(hop_spec, dict):
@@ -363,10 +362,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
 
     def get_all_active_retries(self) -> dict[str, dict[str, Any]]:
         """Get all active retry contexts."""
-        return {
-            node_id: self.get_retry_status(node_id)
-            for node_id in self.retry_contexts
-        }
+        return {node_id: self.get_retry_status(node_id) for node_id in self.retry_contexts}
 
     @timeout(120)
     @standard_heal
@@ -410,13 +406,9 @@ class RecursiveOrchestrator(SovereignBaseAgent):
                             del self.retry_contexts[node_id]
 
             if orphaned:
-                metrics["violations_found"] = metrics.get("violations_found", 0) + len(
-                    orphaned
-                )
+                metrics["violations_found"] = metrics.get("violations_found", 0) + len(orphaned)
                 if execute and not dry_run:
-                    metrics["violations_fixed"] = metrics.get(
-                        "violations_fixed", 0
-                    ) + len(orphaned)
+                    metrics["violations_fixed"] = metrics.get("violations_fixed", 0) + len(orphaned)
                 logger.info(f"Found {len(orphaned)} orphaned retry contexts")
 
             # Verify DAG acyclicity if manager exists

@@ -9,9 +9,10 @@ USAGE:
     python scripts/maintenance/fix_heal_schema_violations.py --dry-run
 """
 
-from pathlib import Path
 import argparse
 import re
+from pathlib import Path
+
 import yaml
 
 

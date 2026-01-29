@@ -4,7 +4,6 @@ Verifies immutability, tracing, and persistence logic.
 """
 
 import pytest
-
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.manifest_manager import ManifestManager
 from apps_lic.shared.core.trace_registry import TraceRegistry

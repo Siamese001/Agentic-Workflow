@@ -6,9 +6,10 @@ Test suite for ToolsmithAgent
 Generated automatically to achieve 100% test coverage.
 """
 
-import pytest
-from unittest.mock import patch
 from pathlib import Path
+from unittest.mock import patch
+
+import pytest
 
 # Import the agent
 try:

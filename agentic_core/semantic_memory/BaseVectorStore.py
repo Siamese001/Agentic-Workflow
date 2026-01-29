@@ -2,6 +2,7 @@
 # Strategy: Decouple business logic from specific DB vendors (Pinecone, Redis)
 
 from abc import ABC, abstractmethod
+
 from agentic_core.semantic_memory.models import MemoryItem, MemoryQuery
 
 

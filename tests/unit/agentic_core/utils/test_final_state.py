@@ -18,6 +18,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.utils.backup_manager import BackupManager
+
 from agentic_core.utils.project_root import get_project_root
 from agentic_core.utils.ssot_discovery import get_python_files
 

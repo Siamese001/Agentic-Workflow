@@ -3,18 +3,19 @@ Sovereign Migration Test Suite
 Validates the 51-file migration to Sovereign V2.5 Architecture
 """
 
+from unittest.mock import mock_open, patch
+
 import pytest
-from unittest.mock import patch, mock_open
+from apps_rg.domain.knowledge_base import FROZEN_SNAPSHOT
+from apps_rg.engines.hops.hop1_clerk_engine import ClerkExtractionEngine, ClerkInput
 
 # Import engines to test
 from apps_rg.engines.orchestration.resume_orchestrator_engine import (
-    ResumeOrchestratorEngine,
     OrchestratorInput,
+    ResumeOrchestratorEngine,
     WorkflowState,
 )
-from apps_rg.engines.safety.void_compliance_engine import VoidComplianceEngine, ComplianceInput
-from apps_rg.engines.hops.hop1_clerk_engine import ClerkExtractionEngine, ClerkInput
-from apps_rg.domain.knowledge_base import FROZEN_SNAPSHOT
+from apps_rg.engines.safety.void_compliance_engine import ComplianceInput, VoidComplianceEngine
 
 
 def test_void_compliance_police():
@@ -145,8 +146,8 @@ def test_base_engine_mixins():
 
 def test_enrichment_canonicalization():
     """Verify HOP2 enrichment engine canonicalizes verbs and removes duplicates."""
-    from apps_rg.engines.hops.hop2_enrichment_engine import EnrichmentEngine, EnrichmentInput
     from apps_rg.engines.hops.hop1_clerk_engine import ClerkOutput, ExperienceSection
+    from apps_rg.engines.hops.hop2_enrichment_engine import EnrichmentEngine, EnrichmentInput
 
     engine = EnrichmentEngine()
 

@@ -4,8 +4,8 @@ Simple Verification Script for Universal Healing Implementation
 Quick verification that the patch is correctly applied.
 """
 
-import sys
 import re
+import sys
 from pathlib import Path
 
 

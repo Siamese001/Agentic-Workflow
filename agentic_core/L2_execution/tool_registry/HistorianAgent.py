@@ -2,10 +2,17 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
+
+import logging
+
+from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.healer_mixin import HealerMixin
+
 # This boosts alignment detection — review and integrate appropriately
-
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+
+Logger = logging.getLogger(__name__)
 
 """Brief description of functionality and purpose."""
 
@@ -49,7 +56,7 @@ except ImportError:
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class HistorianAgent(SovereignBaseAgent):
+class HistorianAgent(SubatomicTestingMixin, SovereignBaseAgent, HealerMixin):
     """
     ROLE: Records all validation events to a Markdown log file.
     """
@@ -70,7 +77,7 @@ class HistorianAgent(SovereignBaseAgent):
     def record_event(self, agent: str, status: str, details: str) -> Any:
         """Execute record_event operation."""
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-        entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\nfrom agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.base_agents.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n"
+        entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\n"
 
         # Atomic append - Note: Consider migrating to async file I/O for high-scale environments
         try:
@@ -81,11 +88,25 @@ class HistorianAgent(SovereignBaseAgent):
         except OSError as e:
             print(f"   [!] Historian failed to write: {e}")
 
+    @standard_heal
     def heal_repository(
         self, dry_run=True, execute=False, depth=0, max_depth=3, _call_path=None, **kwargs
     ) -> dict:
-        """Standardized healing signature with signal propagation."""
-        return super().heal_repository(dry_run, execute, depth, max_depth, _call_path, **kwargs)
+        """L2 execution agent - historian operational only."""
+        super().heal_repository(dry_run, execute, depth, max_depth, _call_path, **kwargs)
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L2 execution - historian operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
 
 # Legacy class removed 2026-01-06 - use standalone GitAgent.py

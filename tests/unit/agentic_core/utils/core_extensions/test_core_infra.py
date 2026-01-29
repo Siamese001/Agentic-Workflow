@@ -6,10 +6,11 @@ Tests the hardened core infrastructure:
 - TraceRegistry: Span-based tracing with latency tracking
 """
 
-import pytest
-import time
 import sys
+import time
 from pathlib import Path
+
+import pytest
 
 # Add project root to path for imports BEFORE any app imports
 project_root = Path(__file__).parent.parent.parent

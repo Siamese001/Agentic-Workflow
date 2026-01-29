@@ -7,7 +7,6 @@ requires retrieval from the vector database or can be handled from context.
 import logging
 import re
 
-
 logger = logging.getLogger(__name__)
 
 

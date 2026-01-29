@@ -10,11 +10,11 @@ Rationale:
 
 import ast
 import logging
+import os
 import re
 import shutil
-import threading
-import os
 import tempfile
+import threading
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path

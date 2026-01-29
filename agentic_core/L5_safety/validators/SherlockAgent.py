@@ -2,12 +2,12 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import asyncio
 from dataclasses import dataclass
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
 
@@ -32,6 +32,7 @@ except ImportError:
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 from agentic_core.schemas.models.anomaly_report import AnomalyReport
+
 from agentic_core.base_agents.decorators import standard_heal
 
 

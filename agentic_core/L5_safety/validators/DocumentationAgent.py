@@ -11,11 +11,10 @@ Validates docstring presence in classes and functions.
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 import ast
 from dataclasses import dataclass
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
 
 

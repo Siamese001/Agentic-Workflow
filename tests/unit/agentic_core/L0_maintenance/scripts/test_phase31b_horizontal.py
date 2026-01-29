@@ -1,6 +1,7 @@
 """Test script for Phase 31b Horizontal Boundary Detection."""
 
 from pathlib import Path
+
 from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
 agent = ArchitectureGovernorAgent(project_root=Path("."))

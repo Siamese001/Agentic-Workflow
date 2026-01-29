@@ -4,11 +4,11 @@ Path: tests/unit/agentic_core/L0_maintenance/test_sovereignty_gold_master.py
 Purpose: Final validation suite for PascalSovereigntyFixer with relative imports
 """
 
-import unittest
 import re
+import sys
+import unittest
 from pathlib import Path
 from unittest.mock import Mock
-import sys
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parents[5]

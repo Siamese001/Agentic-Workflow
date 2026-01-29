@@ -24,8 +24,9 @@ try:
         create_multi_provider_router,
     )
     from data.sdks_mcps.client_wrappers.anthropic_client import create_anthropic_client
-    from data.sdks_mcps.client_wrappers.openai_client import create_openai_client
     from data.sdks_mcps.client_wrappers.vertex_client import create_vertex_client
+
+    from data.sdks_mcps.client_wrappers.openai_client import create_openai_client
 except ImportError as e:
     logger.error(f"Import error: {e}")
 

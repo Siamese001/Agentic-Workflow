@@ -4,9 +4,9 @@ Implements the 'Transactional State' pattern from v61.27.10.
 Prevents state corruption by requiring cryptographic signatures for commits.
 """
 
-from typing import Any
-from copy import deepcopy
 import logging
+from copy import deepcopy
+from typing import Any
 
 logger = logging.getLogger(__name__)
 

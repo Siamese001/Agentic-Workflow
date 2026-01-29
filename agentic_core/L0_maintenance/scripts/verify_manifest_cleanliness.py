@@ -5,8 +5,8 @@ Executes full_agent_discovery.py and validates that deleted legacy bases
 are absent from the resulting JSON manifest.
 """
 
-import os
 import json
+import os
 import sys
 from pathlib import Path
 

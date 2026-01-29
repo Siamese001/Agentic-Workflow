@@ -4,18 +4,19 @@ Ultra-Hardened Protocol Test Suite - Coverage Gap Resolution
 Tests Resource Exhaustion, File Permissions, and Logging Verification
 """
 
-import unittest
 import json
 import os
-import tempfile
 import stat
+import tempfile
+import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, call, patch
+
 from agentic_core.L0_maintenance.scripts.execute_ssot import (
-    NonInteractiveGuard,
-    with_retry,
-    RuntimeStateManager,
     RUNTIME_STATE_FILE,
+    NonInteractiveGuard,
+    RuntimeStateManager,
+    with_retry,
 )
 
 

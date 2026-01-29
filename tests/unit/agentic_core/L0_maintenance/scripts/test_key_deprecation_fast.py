@@ -3,9 +3,11 @@ Fast, targeted test suite for Key 5 and Key 28 deprecation.
 Avoids the slow os.walk() approach in favor of targeted searches.
 """
 
-import pytest
 import json
 from pathlib import Path
+
+import pytest
+
 from agentic_core.L5_safety.validators.structure_blueprint import SAFETY_VALIDATION_REGISTRY
 
 

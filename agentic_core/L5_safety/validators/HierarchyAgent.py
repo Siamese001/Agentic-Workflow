@@ -2,12 +2,12 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 from dataclasses import dataclass
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 HierarchyAgent - Unified Hierarchy Management
@@ -30,6 +30,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.gravity.mission_utils import (
     get_best_target_l1,
@@ -46,7 +47,6 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_TERRITORIES,
     VARIABLE_DEPTH_SUBFOLDERS,
 )
-from agentic_core.base_agents.timeout_decorator import timeout
 
 # [MISSION AUDIT] Standardized logging for L4 Ledger consumption
 logging.basicConfig(level=logging.INFO)
@@ -140,10 +140,10 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         for layer_l2_name in approved_layers_l2:
             # [SCOPED] Skip unrelated layers
             if target_territory and target_territory != layer_l2_name:
-                 # Check if target is L3 nested in this L2
-                 expected_l3 = set(CORE_SUBFOLDER_MAP.get(layer_l2_name, []))
-                 if target_territory not in expected_l3:
-                     continue
+                # Check if target is L3 nested in this L2
+                expected_l3 = set(CORE_SUBFOLDER_MAP.get(layer_l2_name, []))
+                if target_territory not in expected_l3:
+                    continue
 
             layer_l2_path = self.project_root / "agentic_core" / layer_l2_name
             if not layer_l2_path.exists():
@@ -616,7 +616,9 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
                 results["tests_archived"] = tests_count
 
         # Universal depth (agentic_core)
-        if not target_territory or not (target_territory.startswith("apps_") or target_territory == "tests"):
+        if not target_territory or not (
+            target_territory.startswith("apps_") or target_territory == "tests"
+        ):
             universal_count = self._enforce_universal_depth()
             results["violations_found"] += universal_count
             if self.healing_enabled:
@@ -1085,7 +1087,9 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         if purge_orphans:
             # [FIX] Skip global orphan purge if scoped, or implement scoped purge
             if target_territory:
-                Logger.info("[HierarchyAgent] Skipping global orphan purge in scoped mode to protect out-of-scope assets.")
+                Logger.info(
+                    "[HierarchyAgent] Skipping global orphan purge in scoped mode to protect out-of-scope assets."
+                )
                 results["purge"] = {"purged": 0, "violations_found": 0}
             else:
                 results["purge"] = self.purge_orphaned_files()
@@ -1214,19 +1218,19 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         try:
             target = violation.get("file")
             v_type = violation.get("type", "")
-            
+
             if not target:
                 return {"status": "skipped", "reason": "No target specified"}
-                
+
             # For hierarchy violations, delegate to existing heal_hierarchy logic
             # Since heal_hierarchy expects different params, return manual_required
             return {
                 "status": "manual_required",
                 "reason": "Hierarchy restructuring requires careful execution",
                 "suggested_action": f"Run heal_repository() for {target}",
-                "confidence": 0.8
+                "confidence": 0.8,
             }
-            
+
         except Exception as e:
             return {"status": "error", "error": str(e)}
 

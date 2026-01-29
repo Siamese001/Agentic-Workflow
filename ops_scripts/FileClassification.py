@@ -6,8 +6,8 @@ Performs AST-level analysis of apps_lic/ to enforce Sovereign Specialist pattern
 
 import ast
 import json
-from pathlib import Path
 from dataclasses import dataclass, field
+from pathlib import Path
 
 
 @dataclass

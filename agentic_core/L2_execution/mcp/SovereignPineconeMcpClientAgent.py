@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -12,7 +13,6 @@ import logging
 from typing import Any
 
 # ARCHIVED IMPORT REMOVED - dependency no longer available
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
 

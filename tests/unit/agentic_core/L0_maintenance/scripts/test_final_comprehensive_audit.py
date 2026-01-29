@@ -6,6 +6,7 @@ REMOVED: All legacy 'l3_', 'l2_', 'l1_' variable prefixes.
 """
 
 from __future__ import annotations
+
 import os
 import sys
 from pathlib import Path
@@ -33,15 +34,16 @@ def test_case_1_signal_saturation_sweep():
     print("=" * 70)
 
     try:
-        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
-            L3OrchestrationBaseAgent,
+        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
+            L1CognitionBaseAgent,
         )
         from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import (
             L2ExecutionBaseAgent,
         )
-        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
-            L1CognitionBaseAgent,
+        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
+            L3OrchestrationBaseAgent,
         )
+
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Step 1: Create Orchestrator (top of chain)
@@ -224,14 +226,14 @@ def test_case_3_depth_constraint_persistence():
     print("=" * 70)
 
     try:
-        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
-            L3OrchestrationBaseAgent,
+        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
+            L1CognitionBaseAgent,
         )
         from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import (
             L2ExecutionBaseAgent,
         )
-        from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
-            L1CognitionBaseAgent,
+        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
+            L3OrchestrationBaseAgent,
         )
 
         # Step 1: Test with max_depth=2

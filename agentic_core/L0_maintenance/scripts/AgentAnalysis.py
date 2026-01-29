@@ -1,6 +1,5 @@
+from dataclasses import dataclass, field
 from pathlib import Path
-from dataclasses import dataclass
-from dataclasses import field
 
 #!/usr/bin/env python3
 """

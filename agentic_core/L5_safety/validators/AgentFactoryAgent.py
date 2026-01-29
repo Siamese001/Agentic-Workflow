@@ -2,14 +2,12 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
+
 # This boosts alignment detection — review and integrate appropriately
-
-
 # TODO: GRAVITY VIOLATION AUTO-HEALED
 # Downstream imports removed — move shared logic to apps_shared or sovereign utils
 # Original violation: GRAVITY VIOLATION: Upstream 'agentic_core' imports downstream roots: ['apps_shared']. Move shared logic to apps_shared or sovereign utils.
 # Removed: apps_shared.base_agents.canon_base_agent_interface (moved to agentic_core.utils.core_extensions)
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """

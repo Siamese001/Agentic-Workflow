@@ -3,8 +3,8 @@ scripts/fix_legacy_agents_for_certification.py
 Fix all legacy agents to inherit from SovereignBaseAgent for final certification
 """
 
-import sys
 import re
+import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))

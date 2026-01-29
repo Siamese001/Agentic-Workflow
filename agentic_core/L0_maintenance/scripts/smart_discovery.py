@@ -20,12 +20,13 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
+from agentic_core.utils.security import safe_execute
+
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     SCRIPTS_DIR,
 )
-from agentic_core.utils.security import safe_execute
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON

@@ -3,10 +3,11 @@ Batch 2 Test Suite - HOP Domain
 Tests for hop1_clerk_engine.py and hop2_enrichment_engine.py
 """
 
-import pytest
-from unittest.mock import MagicMock
 import sys
 from pathlib import Path
+from unittest.mock import MagicMock
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 

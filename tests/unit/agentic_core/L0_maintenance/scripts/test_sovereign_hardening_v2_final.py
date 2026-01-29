@@ -1,15 +1,16 @@
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add the agentic_core path to import structure_blueprint
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core" / "L5_safety" / "validators"))
 
 from structure_blueprint import (
-    has_forbidden_layer_prefix,
-    is_broken_backup_file,
-    is_app_specific_file,
     FORBIDDEN_LAYER_PREFIXES,
+    has_forbidden_layer_prefix,
+    is_app_specific_file,
+    is_broken_backup_file,
 )
 
 # [CRITICAL ANALYSIS] Junior AI tests often ignore the 'Gravity' of the SSOT.

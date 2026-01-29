@@ -1,7 +1,7 @@
-import os
-import shutil
 import json
 import logging
+import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -10,6 +10,7 @@ PROJECT_ROOT = Path(os.getcwd())
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.discovery import AgentRegistry
+
 from agentic_core.L0_maintenance.security.ManifestGuardian import ManifestGuardian
 
 # Configure logging

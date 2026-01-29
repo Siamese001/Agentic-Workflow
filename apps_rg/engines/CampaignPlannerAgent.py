@@ -3,11 +3,12 @@ apps_rg/engines/CampaignPlannerAgent.py
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-import logging
 
-from apps_rg.shared.core.agent_base import RGAgentBase
+import logging
+from dataclasses import dataclass, field
+
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_rg.shared.core.agent_base import RGAgentBase
 
 Logger = logging.getLogger(__name__)
 

@@ -34,8 +34,8 @@ class TestResourceConcurrency(unittest.TestCase):
         """10+ agents requesting budget simultaneously without race conditions."""
         from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import (
             AllocationStatus,
-            ResourceType,
             ResourceManagerAgent,
+            ResourceType,
         )
 
         manager = ResourceManagerAgent()
@@ -88,8 +88,8 @@ class TestBudgetHardCap(unittest.TestCase):
         """Agent execution is strictly halted when budget reaches 100% exhaustion."""
         from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import (
             AllocationStatus,
-            ResourceType,
             ResourceManagerAgent,
+            ResourceType,
         )
 
         manager = ResourceManagerAgent()
@@ -161,8 +161,8 @@ class TestEnforcerSSOTSync(unittest.TestCase):
     def test_enforcer_ssot_sync(self):
         """Any refactor made by the enforcer is immediately updated in SSOT registry."""
         from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import (
-            EnforcementConfig,
             CodeEnforcerAgent,
+            EnforcementConfig,
         )
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -242,8 +242,8 @@ class TestNamingLawCompliance(unittest.TestCase):
     def test_naming_law_compliance(self):
         """Force-rename any class not adhering to [Name]Agent suffix standard."""
         from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import (
-            StructureViolationType,
             StructureEnforcerAgent,
+            StructureViolationType,
         )
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -291,8 +291,8 @@ class TestGravityImportBlock(unittest.TestCase):
     def test_gravity_import_block(self):
         """Reject imports that bypass the defined layer hierarchy (e.g., L2 importing L5)."""
         from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import (
-            StructureViolationType,
             StructureEnforcerAgent,
+            StructureViolationType,
         )
 
         enforcer = StructureEnforcerAgent()

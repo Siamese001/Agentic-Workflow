@@ -91,8 +91,8 @@ class TestPhase2SingleASTPass(unittest.TestCase):
     def test_single_ast_pass_efficiency(self):
         """Verify single-pass is faster than multiple passes."""
         from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
-            RuleSet,
             CodeValidatorAgent,
+            RuleSet,
         )
 
         # Create test file
@@ -145,8 +145,8 @@ class TestPhase3ResourceConcurrency(unittest.TestCase):
         """10+ agents requesting budget simultaneously."""
         from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import (
             ResourceConfig,
-            ResourceType,
             ResourceManagerAgent,
+            ResourceType,
         )
 
         config = ResourceConfig(
@@ -186,8 +186,8 @@ class TestPhase3BudgetHardCap(unittest.TestCase):
         """Execution halted at 100% exhaustion."""
         from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import (
             ResourceConfig,
-            ResourceType,
             ResourceManagerAgent,
+            ResourceType,
         )
 
         config = ResourceConfig(enable_hard_caps=True)
@@ -208,8 +208,8 @@ class TestPhase3SovereigntyProtection(unittest.TestCase):
     def test_sovereignty_protection(self):
         """Block L3/L4 modifying L5 without exception."""
         from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import (
-            EnforcementConfig,
             CodeEnforcerAgent,
+            EnforcementConfig,
         )
 
         config = EnforcementConfig(enable_sovereignty=True)
@@ -255,8 +255,8 @@ class TestPhase4DeadlockDetection(unittest.TestCase):
     def test_deadlock_detection(self):
         """Correctly identify circular wait conditions."""
         from agentic_core.L5_safety.policy_engine.CodeDetectorAgent import (
-            DetectionType,
             CodeDetectorAgent,
+            DetectionType,
         )
 
         detector = CodeDetectorAgent()
@@ -325,8 +325,8 @@ class TestPhase4ImportHealerPrecision(unittest.TestCase):
     def test_import_healer_precision(self):
         """Fix broken imports without breaking functional code."""
         from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
-            HealerConfig,
             CodeHealerAgent,
+            HealerConfig,
         )
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
@@ -360,8 +360,8 @@ class TestPhase4ModelRoutingCostLogic(unittest.TestCase):
     def test_model_routing_cost_logic(self):
         """Route by complexity and cost."""
         from agentic_core.L2_execution.execution_bridge.ModelRouterAgent import (
-            TaskComplexity,
             ModelRouterAgent,
+            TaskComplexity,
         )
 
         router = ModelRouterAgent()

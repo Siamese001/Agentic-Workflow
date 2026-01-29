@@ -15,9 +15,9 @@ Rationale:
 
 import shutil
 import sys
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-from dataclasses import dataclass, field
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
@@ -201,53 +201,59 @@ class RootHygieneAgent(SovereignBaseAgent):
     def scan_root_violations(self, target_territory: str = None) -> dict[str, Any]:
         """
         [SSOT INTEGRATION] Scan for root hygiene violations.
-        
+
         Args:
             target_territory: Specific territory to scan (ignored - always scans root)
-            
+
         Returns:
             Dict with violations list for SSOT aggregation
         """
         violations = []
-        
+
         # Check for illegal root scripts directory
         root_scripts = self.project_root / "scripts"
         if root_scripts.exists():
-            violations.append({
-                "type": "ILLEGAL_ROOT_SCRIPTS",
-                "file": str(root_scripts),
-                "message": "Illegal 'scripts/' directory in project root",
-                "severity": "high",
-                "recommended_action": "Move scripts to ops_scripts/ or agentic_core/L0_maintenance/scripts/",
-                "confidence": 0.9
-            })
-            
+            violations.append(
+                {
+                    "type": "ILLEGAL_ROOT_SCRIPTS",
+                    "file": str(root_scripts),
+                    "message": "Illegal 'scripts/' directory in project root",
+                    "severity": "high",
+                    "recommended_action": "Move scripts to ops_scripts/ or agentic_core/L0_maintenance/scripts/",
+                    "confidence": 0.9,
+                }
+            )
+
         # Check for illegal coverage_html directory
         coverage_html = self.project_root / "coverage_html"
         if coverage_html.exists():
-            violations.append({
-                "type": "ILLEGAL_COVERAGE_HTML",
-                "file": str(coverage_html),
-                "message": "Illegal 'coverage_html/' directory in project root",
-                "severity": "medium",
-                "recommended_action": "Move coverage_html to reports/coverage_html/",
-                "confidence": 0.8
-            })
-            
+            violations.append(
+                {
+                    "type": "ILLEGAL_COVERAGE_HTML",
+                    "file": str(coverage_html),
+                    "message": "Illegal 'coverage_html/' directory in project root",
+                    "severity": "medium",
+                    "recommended_action": "Move coverage_html to reports/coverage_html/",
+                    "confidence": 0.8,
+                }
+            )
+
         # Check for other common root violations
         illegal_patterns = ["__pycache__", ".pytest_cache", "node_modules", ".venv", "venv"]
         for pattern in illegal_patterns:
             illegal_dir = self.project_root / pattern
             if illegal_dir.exists() and illegal_dir.is_dir():
-                violations.append({
-                    "type": "ILLEGAL_CACHE_DIR",
-                    "file": str(illegal_dir),
-                    "message": f"Illegal cache directory '{pattern}' in project root",
-                    "severity": "low",
-                    "recommended_action": f"Add {pattern} to .gitignore and remove from root",
-                    "confidence": 0.6
-                })
-                
+                violations.append(
+                    {
+                        "type": "ILLEGAL_CACHE_DIR",
+                        "file": str(illegal_dir),
+                        "message": f"Illegal cache directory '{pattern}' in project root",
+                        "severity": "low",
+                        "recommended_action": f"Add {pattern} to .gitignore and remove from root",
+                        "confidence": 0.6,
+                    }
+                )
+
         return {"violations": violations}
 
     def heal(self, violation: dict) -> dict:

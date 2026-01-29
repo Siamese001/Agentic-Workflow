@@ -2,8 +2,8 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
 
+# This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Implementation for AutonomicMonitorAgent."""
@@ -16,8 +16,8 @@ from typing import Any
 from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types import (
     AlertSeverity,
     HealthAlert,
-    health_metrics,
     HealthStatus,
+    health_metrics,
 )
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

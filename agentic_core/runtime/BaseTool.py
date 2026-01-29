@@ -3,6 +3,7 @@
 
 from abc import ABC, abstractmethod
 from collections.abc import Callable
+
 from pydantic import BaseModel, Field
 
 

@@ -41,8 +41,8 @@ def test_global_injection_capabilities():
 def test_no_circular_imports():
     """Verify that importing BaseAgent doesn't crash due to Gateway cycles."""
     # Import in specific order to test for circular dependencies
-    from agentic_core.L2_execution.mcp.SovereignLLMGateway import SovereignLLMGateway
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.L2_execution.mcp.SovereignLLMGateway import SovereignLLMGateway
 
     # If we got here, imports worked.
     assert SovereignLLMGateway is not None

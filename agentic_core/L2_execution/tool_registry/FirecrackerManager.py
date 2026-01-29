@@ -2,6 +2,7 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, orchestrator, prompt, state, workflow
 from __future__ import annotations
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -17,10 +18,10 @@ from agentic_core.L2_execution.tool_registry.firecracker_manager_types import (
     VMProvider,
     VMStatus,
 )
+from agentic_core.utils.security import safe_execute
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.security import safe_execute
 
 Logger: Any = logging.getLogger(__name__)
 

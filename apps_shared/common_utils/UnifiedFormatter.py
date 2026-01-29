@@ -7,7 +7,6 @@ engines can use, eliminating the need for separate format_* modules.
 import json
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

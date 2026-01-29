@@ -32,10 +32,10 @@ import os
 import random
 import time
 import uuid
+from collections.abc import Generator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any
-from collections.abc import Generator
 
 Logger = logging.getLogger(__name__)
 

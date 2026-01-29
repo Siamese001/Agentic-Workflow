@@ -3,8 +3,8 @@ Direct test runner for Phase 2: Core Enhancements.
 Tests Reasoning Toggles and Trace Registry persistence.
 """
 
-import sys
 import json
+import sys
 import tempfile
 from pathlib import Path
 
@@ -162,8 +162,9 @@ def test_trace_registry_performance_metrics():
     print("\n6. Testing TraceRegistry performance metrics...")
 
     try:
-        from apps_rg.shared.core.trace_registry import TraceRegistry
         import time
+
+        from apps_rg.shared.core.trace_registry import TraceRegistry
 
         registry = TraceRegistry()
         span_id = registry.start_span("perf_mission", "perf_agent", "perf_operation")

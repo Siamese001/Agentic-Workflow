@@ -16,7 +16,7 @@ def validate_knowledge_base():
     print("1. KNOWLEDGE BASE VALIDATION")
     print("-" * 60)
 
-    from apps_rg.domain.knowledge_base import FROZEN_SNAPSHOT, get_prompt, get_node_config
+    from apps_rg.domain.knowledge_base import FROZEN_SNAPSHOT, get_node_config, get_prompt
 
     print(f"✅ Knowledge base version: {FROZEN_SNAPSHOT.version}")
     print(f"✅ Total prompts: {len(FROZEN_SNAPSHOT.prompts)}")
@@ -115,8 +115,8 @@ def validate_orchestrator():
     print("-" * 60)
 
     from apps_rg.engines.orchestration.resume_orchestrator_engine import (
-        ResumeOrchestratorEngine,
         OrchestratorInput,
+        ResumeOrchestratorEngine,
         WorkflowState,
     )
 
@@ -154,7 +154,7 @@ def validate_void_compliance():
     print("5. VOID COMPLIANCE VALIDATION")
     print("-" * 60)
 
-    from apps_rg.engines.safety.void_compliance_engine import VoidComplianceEngine, ComplianceInput
+    from apps_rg.engines.safety.void_compliance_engine import ComplianceInput, VoidComplianceEngine
 
     engine = VoidComplianceEngine()
 

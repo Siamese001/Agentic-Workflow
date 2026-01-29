@@ -5,10 +5,10 @@ from __future__ import annotations
 import importlib
 import json
 import logging
+from collections.abc import Callable
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Dict
-from collections.abc import Callable
 
 logger = logging.getLogger("mcp")
 

@@ -201,8 +201,8 @@ class TestSovereignASTCompliance:
         """
         # Verify the audit script can detect consolidation opportunities
         # This test verifies the audit mechanism works, not specific file existence
-        from pathlib import Path
         import json
+        from pathlib import Path
 
         audit_results_path = Path("logs/audit_apps_lic_ast_results.json")
 

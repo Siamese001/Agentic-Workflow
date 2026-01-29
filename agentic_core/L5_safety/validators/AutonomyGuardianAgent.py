@@ -2,8 +2,8 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: prompt, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
 
+# This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -18,14 +18,15 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
+from agentic_core.prompt_governance.renderer import DashboardRenderer
+
+from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
-from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
-from agentic_core.prompt_governance.renderer import DashboardRenderer
-from agentic_core.base_agents.timeout_decorator import timeout
 
 log = logging.getLogger(__name__)
 

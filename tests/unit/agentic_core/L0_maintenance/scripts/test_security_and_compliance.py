@@ -1,17 +1,19 @@
-import pytest
-import os
 import json
+import os
 import sys
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+import pytest
+
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
+from dataclasses import dataclass
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_maintenance.scripts.compliance_gate import check_compliance
 from agentic_core.L0_maintenance.security.ManifestGuardian import ManifestGuardian
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from dataclasses import dataclass
 
 # --- TEST FIXTURES ---
 

@@ -6,10 +6,10 @@ Verifies Vector-First strategy, RAG fallback, and V2 architecture compliance.
 from unittest.mock import MagicMock
 
 import pytest
-
-from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
 
 # --- Fixtures ---
 

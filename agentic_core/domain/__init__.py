@@ -4,25 +4,25 @@ HARDENED: Consolidated exception hierarchy with SSOT compliance
 """
 
 # Export core entities
-from .BaseEntity import BaseEntity, AgentConfig
-
-# Export consolidated exception hierarchy (SSOT)
-from .SovereignError import (
-    SovereignError,
-    HealerError,
-    CircularDependencyError,
-    ConfigurationError,
-    StructuralError,
-    HygieneError,
-    IntegrityError,
-    ValidationError,
-    ResourceNotFoundError,
-    SecurityViolationError,
-)
+from .BaseEntity import AgentConfig, BaseEntity
 
 # Export core contracts
 from .CoreIntegrityVerifier import CoreIntegrityVerifier
 from .LegacyArtifacts import LegacyArtifacts
+
+# Export consolidated exception hierarchy (SSOT)
+from .SovereignError import (
+    CircularDependencyError,
+    ConfigurationError,
+    HealerError,
+    HygieneError,
+    IntegrityError,
+    ResourceNotFoundError,
+    SecurityViolationError,
+    SovereignError,
+    StructuralError,
+    ValidationError,
+)
 
 # Public API
 __all__ = [

@@ -4,7 +4,7 @@ Ensures the "brain transplant" was successful and data is structurally sound.
 """
 
 import pytest
-from apps_rg.domain.knowledge_base import FROZEN_SNAPSHOT, get_prompt, get_node_config
+from apps_rg.domain.knowledge_base import FROZEN_SNAPSHOT, get_node_config, get_prompt
 
 
 def test_critical_prompt_variables():

@@ -8,7 +8,6 @@ unverifiable content is filtered out to ensure only high-signal content is used.
 import logging
 import re
 
-
 logger = logging.getLogger(__name__)
 
 

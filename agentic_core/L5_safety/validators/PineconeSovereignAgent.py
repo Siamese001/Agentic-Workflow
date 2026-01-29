@@ -2,11 +2,11 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: orchestrator, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
 """
@@ -24,13 +24,13 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from pinecone import Pinecone
-
-from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
+from pinecone import Pinecone
+
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 
 
 @dataclass

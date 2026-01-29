@@ -25,14 +25,14 @@ Typical usage:
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 import logging
 import re
 from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L1_cognition.P1_interfaces import ActionRequest
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger: logging.Logger = logging.getLogger(__name__)
 

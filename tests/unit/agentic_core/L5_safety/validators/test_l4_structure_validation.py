@@ -11,8 +11,8 @@ Tests the L4 SSOT definitions in structure_blueprint.py:
 Run: python scripts/test_l4_structure_validation.py
 """
 
-import sys
 import os
+import sys
 
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
@@ -82,8 +82,8 @@ def test_3_l4_map_has_required_folders() -> tuple[bool, str]:
 def test_4_l4_approved_folders_match_map() -> tuple[bool, str]:
     """Test 4: Verify L4_APPROVED_FOLDERS matches L4_SUBFOLDER_MAP keys."""
     from agentic_core.L5_safety.validators.structure_blueprint import (
-        L4_SUBFOLDER_MAP,
         L4_APPROVED_FOLDERS,
+        L4_SUBFOLDER_MAP,
     )
 
     # Extract folder names from approved paths

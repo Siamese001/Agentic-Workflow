@@ -7,6 +7,7 @@ Validates that the Sovereign Root (Layer 0) does not import:
 
 This prevents the 'God Object' Anti-Pattern.
 """
+
 import ast
 import sys
 from pathlib import Path
@@ -25,6 +26,7 @@ FORBIDDEN_IMPORTS = [
     "archives.void_violations",
 ]
 
+
 def check_imports(file_path: Path) -> list[str]:
     if not file_path.exists():
         return [f"CRITICAL: Target file {file_path} not found."]
@@ -35,7 +37,7 @@ def check_imports(file_path: Path) -> list[str]:
         return [f"Syntax Error in {file_path}: {e}"]
 
     violations = []
-    
+
     for node in ast.walk(tree):
         # Check 'import X'
         if isinstance(node, ast.Import):
@@ -50,19 +52,22 @@ def check_imports(file_path: Path) -> list[str]:
             for forbidden in FORBIDDEN_IMPORTS:
                 if forbidden in module:
                     violations.append(f"Line {node.lineno}: Forbidden import source '{module}'")
-            
+
             # Check the specific names being imported
             for alias in node.names:
                 for forbidden in FORBIDDEN_IMPORTS:
                     if forbidden in alias.name:
-                        violations.append(f"Line {node.lineno}: Forbidden import '{alias.name}' from '{module}'")
+                        violations.append(
+                            f"Line {node.lineno}: Forbidden import '{alias.name}' from '{module}'"
+                        )
 
     return violations
+
 
 def main():
     print(f"Checking Layer Separation for: {TARGET_FILE}")
     violations = check_imports(TARGET_FILE)
-    
+
     if violations:
         print("\n[!] ARCHITECTURE VIOLATION DETECTED")
         print("    SovereignBaseAgent must NOT depend on downstream layers.")
@@ -71,9 +76,10 @@ def main():
             print(f"    - {v}")
         print("-" * 50)
         sys.exit(1)
-    
+
     print("[OK] Layer Separation Verified. SovereignBaseAgent is pure.")
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

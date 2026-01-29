@@ -2,7 +2,9 @@
 # Validation: Enforces vector consistency and metadata schemas
 
 from typing import Any
+
 from pydantic import BaseModel, Field, field_validator
+
 from agentic_core.domain.entities import BaseEntity
 
 

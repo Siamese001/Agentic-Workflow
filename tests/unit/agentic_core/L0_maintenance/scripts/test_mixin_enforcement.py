@@ -4,10 +4,10 @@ Path: tests/unit/agentic_core/L0_maintenance/test_mixin_enforcement.py
 Purpose: Validates that mixins are actively renamed to snake_case
 """
 
+import sys
 import unittest
 from pathlib import Path
 from unittest.mock import Mock
-import sys
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parents[5]

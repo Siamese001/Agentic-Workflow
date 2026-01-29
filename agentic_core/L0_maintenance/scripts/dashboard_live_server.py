@@ -14,11 +14,11 @@ import signal
 import sys
 from pathlib import Path
 
+from agentic_core.utils.security import safe_execute
 from livereload import Server
 
 # Import SSOT for dashboard directory - NO HARDCODING
 from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR
-from agentic_core.utils.security import safe_execute
 
 # Project root (adjust if script location changes)
 PROJECT_ROOT = Path(__file__).parent.parent

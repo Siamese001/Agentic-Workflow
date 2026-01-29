@@ -5,10 +5,11 @@ MANDATORY: 100% PASS REQUIREMENT.
 The 'Big Bang' Test: Verifies that LIC, RG, and Core coexist peacefully.
 """
 
-import pytest
-from pathlib import Path
-from dataclasses import is_dataclass
 import sys
+from dataclasses import is_dataclass
+from pathlib import Path
+
+import pytest
 
 # Ensure path visibility
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -99,6 +100,7 @@ class TestGlobalSystemIntegrity:
         """
         # Test LIC Agent Base compliance
         from apps_lic.shared.core.agent_base import LICAgentBase
+
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Verify inheritance chain
@@ -114,8 +116,8 @@ class TestGlobalSystemIntegrity:
         """
         Verify MRO Root Injection Pattern is working correctly.
         """
-        from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 
         # Create agent instance
         agent = HOP1ProfileAnalysisAgent()
@@ -182,6 +184,7 @@ class TestGlobalSystemIntegrity:
         Verify LIC and RG domains maintain isolation while sharing core.
         """
         from apps_lic.shared.core.agent_base import LICAgentBase
+
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
 
         # Both should inherit from SovereignBaseAgent but maintain domain specifics

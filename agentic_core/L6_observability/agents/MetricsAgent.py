@@ -2,11 +2,11 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, prompt, workflow
 from __future__ import annotations
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 # This boosts alignment detection — review and integrate appropriately
-
-
 from dataclasses import dataclass
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 MetricsAgent: Sovereign observability Metrics Collector

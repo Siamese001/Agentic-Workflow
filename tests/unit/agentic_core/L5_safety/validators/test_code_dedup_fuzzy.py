@@ -1,7 +1,7 @@
 """Dry-run test for enhanced CodeDeduplicationAgent with fuzzy structural matching."""
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -9,7 +9,6 @@ sys.path.insert(0, str(project_root))
 
 # ARCHIVED: CodeDeduplicationAgent import removed
 from agentic_core.L5_safety.validators.CodeDeduplicationAgent import CodeDeduplicationAgent
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )

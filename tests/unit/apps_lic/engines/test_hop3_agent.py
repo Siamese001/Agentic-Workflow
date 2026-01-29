@@ -7,11 +7,11 @@ import json
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
-
 from apps_lic.domain.config.schemas import SenderGroundingConfig
-from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
 
 # --- Mock Data ---
 

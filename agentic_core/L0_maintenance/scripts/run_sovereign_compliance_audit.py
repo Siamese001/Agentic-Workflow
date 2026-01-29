@@ -6,8 +6,8 @@ Runs CodeValidatorAgent and StructureEnforcerAgent across the policy_engine
 directory to verify sovereign namespace compliance.
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).resolve().parents[3]

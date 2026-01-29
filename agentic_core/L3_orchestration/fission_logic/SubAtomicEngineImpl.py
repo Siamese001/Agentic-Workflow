@@ -7,8 +7,8 @@ STRICT COMPLIANCE: Uses SovereignLLMGateway singleton.
 import logging
 import os
 
-from agentic_core.L2_execution.mcp.SovereignLLMGateway import get_llm_gateway
 from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import get_embedding_gateway
+from agentic_core.L2_execution.mcp.SovereignLLMGateway import get_llm_gateway
 
 Logger = logging.getLogger(__name__)
 
@@ -46,10 +46,10 @@ class SubAtomicEngineImpl:
                 }
 
             response = await self.llm_gateway.generate(
-                prompt=full_prompt, 
-                provider="google", 
+                prompt=full_prompt,
+                provider="google",
                 model=os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro"),
-                generation_config=gen_config
+                generation_config=gen_config,
             )
             return response["content"]
         except Exception as e:

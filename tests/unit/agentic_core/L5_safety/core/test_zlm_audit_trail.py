@@ -1,8 +1,8 @@
 # TC-ZLM-06: Verify audit trail logging
 # Verifies that ArchivalGatekeeper logs operations to archival_audit.jsonl
 
-import os
 import json
+import os
 from pathlib import Path
 
 
@@ -14,6 +14,7 @@ def test_audit_trail_logging(tmp_path):
 
     try:
         from agentic_core.L5_safety.validators.ssot_relocator import SSOTRelocator
+
         from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 
         # Reset gatekeeper singleton

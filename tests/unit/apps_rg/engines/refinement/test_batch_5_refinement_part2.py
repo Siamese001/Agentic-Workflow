@@ -3,10 +3,11 @@ Batch 5 Test Suite - Refinement Domain Part 2
 Tests for section_ranker_engine.py and template_optimizer_engine.py
 """
 
-import pytest
-from unittest.mock import MagicMock
 import sys
 from pathlib import Path
+from unittest.mock import MagicMock
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 

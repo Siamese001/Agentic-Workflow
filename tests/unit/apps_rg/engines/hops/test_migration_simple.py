@@ -2,9 +2,10 @@
 Simplified Migration Test - Core functionality validation
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add apps_rg to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -94,8 +95,8 @@ def test_clerk_engine_structure():
 
 def test_enrichment_engine_structure():
     """Test EnrichmentEngine structure."""
-    from apps_rg.engines.hops.hop2_enrichment_engine import EnrichmentEngine, EnrichmentInput
     from apps_rg.engines.hops.hop1_clerk_engine import ClerkOutput, ExperienceSection
+    from apps_rg.engines.hops.hop2_enrichment_engine import EnrichmentEngine, EnrichmentInput
 
     engine = EnrichmentEngine()
 
@@ -120,7 +121,7 @@ def test_enrichment_engine_structure():
 
 def test_void_compliance_structure():
     """Test VoidComplianceEngine structure."""
-    from apps_rg.engines.safety.void_compliance_engine import VoidComplianceEngine, ComplianceInput
+    from apps_rg.engines.safety.void_compliance_engine import ComplianceInput, VoidComplianceEngine
 
     engine = VoidComplianceEngine()
 
@@ -134,8 +135,8 @@ def test_void_compliance_structure():
 def test_orchestrator_structure():
     """Test ResumeOrchestratorEngine structure."""
     from apps_rg.engines.orchestration.resume_orchestrator_engine import (
-        ResumeOrchestratorEngine,
         OrchestratorInput,
+        ResumeOrchestratorEngine,
         WorkflowState,
     )
 

@@ -6,17 +6,17 @@ Acts as a safety gate to ensure the "Canon" stays aligned with the filesystem.
 """
 
 import asyncio
-import time
 import logging
 import os
+import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from dataclasses import dataclass
 
 # Required for File System Watching
 try:
-    from watchdog.observers import Observer
     from watchdog.events import FileSystemEventHandler
+    from watchdog.observers import Observer
 except ImportError:
     Observer = object
     FileSystemEventHandler = object

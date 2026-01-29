@@ -16,8 +16,9 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 

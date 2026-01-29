@@ -4,9 +4,10 @@ Refactored from rg_contact_research_executor.py
 """
 
 from __future__ import annotations
-from typing import Any
+
 import logging
 import re
+from typing import Any
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
 

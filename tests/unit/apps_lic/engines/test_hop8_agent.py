@@ -3,13 +3,15 @@ Unit tests for HOP8QAReportAgent (V2).
 Verifies aggregation, scoring, and file generation.
 """
 
-import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
-from apps_lic.engines.HOP8QAReportAgent import HOP8QAReportAgent
+
+import pytest
+from apps_lic.domain.config.schemas import QAReportConfig
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
-from apps_lic.domain.config.schemas import QAReportConfig
+
+from apps_lic.engines.HOP8QAReportAgent import HOP8QAReportAgent
 
 
 @pytest.fixture

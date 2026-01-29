@@ -12,10 +12,11 @@ Test Coverage:
 - Hardened root directory constants verification
 """
 
-import pytest
-from pathlib import Path
-import sys
 import ast
+import sys
+from pathlib import Path
+
+import pytest
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent  # Go up from scripts to Agentic-Workflow root

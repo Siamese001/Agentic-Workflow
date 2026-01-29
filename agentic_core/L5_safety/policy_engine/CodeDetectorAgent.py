@@ -9,12 +9,13 @@ Rationale:
 
 #!/usr/bin/env python3
 from __future__ import annotations
+
 import ast
+import json
 import logging
 import re
 import threading
-import json
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path

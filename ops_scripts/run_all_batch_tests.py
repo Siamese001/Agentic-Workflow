@@ -3,8 +3,8 @@
 Run all 6-batch test suites and validate 100% pass rate
 """
 
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 # Add apps_rg to path

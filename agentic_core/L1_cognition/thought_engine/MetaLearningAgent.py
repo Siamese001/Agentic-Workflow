@@ -8,13 +8,14 @@ Restored: 2026-01-13 | Version: 2.1.0 (With Telemetry)
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # from agentic_core.utils.sovereign_index import SovereignIndex  # Archived - not needed
 

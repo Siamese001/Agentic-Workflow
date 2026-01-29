@@ -14,15 +14,14 @@ Consolidates hygiene checks:
 Territory: agentic_core/L5_safety/validators/
 """
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
-import re
 import os
+import re
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.decorators import standard_heal
 

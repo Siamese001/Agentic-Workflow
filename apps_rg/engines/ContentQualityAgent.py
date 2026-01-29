@@ -14,14 +14,15 @@ This module contains all specialized agents for autonomous resume generation:
 """
 
 from __future__ import annotations
+
 import json
 import re
 from dataclasses import dataclass
 from typing import Any
 
-from apps_rg.shared.core.agent_base import RGAgentBase
-from apps_rg.logic_nodes.skill_extractor_node import SkillExtractorNode
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_rg.logic_nodes.skill_extractor_node import SkillExtractorNode
+from apps_rg.shared.core.agent_base import RGAgentBase
 
 
 @dataclass

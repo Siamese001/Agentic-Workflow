@@ -1,7 +1,8 @@
 from __future__ import annotations
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
 

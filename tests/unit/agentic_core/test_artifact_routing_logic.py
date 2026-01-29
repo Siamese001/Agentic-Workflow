@@ -1,6 +1,7 @@
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add the path to import structure_blueprint
 sys.path.insert(

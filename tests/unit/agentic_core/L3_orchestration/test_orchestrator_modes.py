@@ -10,8 +10,8 @@ from unittest.mock import patch
 import pytest
 
 from agentic_core.L3_orchestration.OrchestratorAgent import (
-    OrchestratorMode,
     OrchestratorAgent,
+    OrchestratorMode,
 )
 
 

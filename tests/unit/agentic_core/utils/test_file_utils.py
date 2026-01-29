@@ -7,8 +7,8 @@ Tests for agentic_core/utils/file_utils.py
 All tests must pass 100% before proceeding to Phase 2.2.
 """
 
-import sys
 import json
+import sys
 from pathlib import Path
 
 # Add project root to path
@@ -19,24 +19,24 @@ import pytest
 
 try:
     from agentic_core.utils.file_utils import (
-        safe_read_file,
-        safe_write_file,
-        safe_read_json,
-        safe_write_json,
-        safe_read_lines,
-        file_exists,
         ensure_directory,
+        file_exists,
+        safe_read_file,
+        safe_read_json,
+        safe_read_lines,
+        safe_write_file,
+        safe_write_json,
     )
 except ImportError:
     # Fallback to archived location for legacy tests
     from archives.location_violations.file_utils import (
-        safe_read_file,
-        safe_write_file,
-        safe_read_json,
-        safe_write_json,
-        safe_read_lines,
-        file_exists,
         ensure_directory,
+        file_exists,
+        safe_read_file,
+        safe_read_json,
+        safe_read_lines,
+        safe_write_file,
+        safe_write_json,
     )
 
 

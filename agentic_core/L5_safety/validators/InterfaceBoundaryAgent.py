@@ -3,8 +3,9 @@
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from dataclasses import dataclass
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
 """
@@ -24,10 +25,10 @@ import ast
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.utils.ssot_discovery import get_python_files
 
 

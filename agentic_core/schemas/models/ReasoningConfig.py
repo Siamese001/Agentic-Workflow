@@ -12,8 +12,6 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 
 import os
-from typing import Annotated, Any, Literal
-
 from enum import Enum
 from typing import ClassVar
 
@@ -38,16 +36,13 @@ class ModelConfig(BaseModel):
 
     Provider: ModelProvider = ModelProvider.OPENAI
     model_name: str = Field(
-        default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4o"),
-        description="LLM model name"
+        default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4o"), description="LLM model name"
     )
     temperature: float = Field(
-        default_factory=lambda: float(os.getenv("OPENAI_TEMPERATURE", "0.7")),
-        ge=0.0, le=2.0
+        default_factory=lambda: float(os.getenv("OPENAI_TEMPERATURE", "0.7")), ge=0.0, le=2.0
     )
     max_tokens: int = Field(
-        default_factory=lambda: int(os.getenv("OPENAI_MAX_TOKENS", "2000")),
-        ge=1, le=32000
+        default_factory=lambda: int(os.getenv("OPENAI_MAX_TOKENS", "2000")), ge=1, le=32000
     )
     top_p: float = Field(default=0.95, ge=0.0, le=1.0)
     frequency_penalty: float = Field(default=0.0, ge=-2.0, le=2.0)
@@ -70,8 +65,7 @@ class RAGConfig(BaseModel):
     embedding_model: str = "text-embedding-3-large"
     max_context_documents: int = Field(default=5, ge=1, le=50)
     similarity_threshold: float = Field(
-        default_factory=lambda: float(os.getenv("RAG_SIMILARITY_THRESHOLD", "0.8")),
-        ge=0.0, le=1.0
+        default_factory=lambda: float(os.getenv("RAG_SIMILARITY_THRESHOLD", "0.8")), ge=0.0, le=1.0
     )
     rerank_enabled: bool = True
     rerank_model: str = "rerank-multilingual-v3.0"
@@ -91,7 +85,8 @@ class GovernorConfig(BaseModel):
     safety_enabled: bool = True
     safety_threshold: float = Field(
         default_factory=lambda: float(os.getenv("GOVERNOR_SAFETY_THRESHOLD", "0.95")),
-        ge=0.0, le=1.0
+        ge=0.0,
+        le=1.0,
     )
     content_filter_enabled: bool = True
     pii_detection_enabled: bool = True
@@ -100,9 +95,9 @@ class GovernorConfig(BaseModel):
     max_requests_per_minute: int = Field(default=100, ge=1, le=10000)
     allowed_models: list[str] = Field(
         default_factory=lambda: [
-            os.getenv("OPENAI_MODEL", "gpt-4o"), 
-            "gpt-4o-mini", 
-            os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022")
+            os.getenv("OPENAI_MODEL", "gpt-4o"),
+            "gpt-4o-mini",
+            os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022"),
         ]
     )
 

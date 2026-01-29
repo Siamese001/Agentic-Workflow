@@ -19,9 +19,9 @@ EXIT CODES:
     1 - Protected files modified without override
 """
 
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 PROTECTED_FILES = [
     "agentic_core/L5_safety/core/ArchivalGatekeeper.py",

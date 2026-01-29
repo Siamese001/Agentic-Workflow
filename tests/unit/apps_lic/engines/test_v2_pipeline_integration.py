@@ -5,12 +5,13 @@ Verifies end-to-end execution with ImmutableStagingBuffer and TraceRegistry.
 Requirement: 100% Pass Rate for Production Readiness.
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
+from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
 
 # V2 Core Imports
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
 
 # Agent Imports
 from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent

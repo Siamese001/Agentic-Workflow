@@ -4,11 +4,13 @@ HOP-2 Sovereign Strategist Test Suite (v2.5).
 MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf execution.
 """
 
-import pytest
 from unittest.mock import MagicMock
-from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
+
+import pytest
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
 
 
 class TestHOP2SovereignStrategist:

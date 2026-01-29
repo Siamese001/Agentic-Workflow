@@ -2,17 +2,16 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, healer, memory
 from __future__ import annotations
+
 # This boosts alignment detection — review and integrate appropriately
-
-
 import time
 import uuid
 from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
-
 from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # Gravity-safe imports for active interventions

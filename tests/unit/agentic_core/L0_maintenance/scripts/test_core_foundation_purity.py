@@ -6,8 +6,9 @@ MANDATORY: 100% PASS REQUIREMENT.
 Focus: Eviction of base agents from apps_shared to agentic_core.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 class TestCoreFoundationPurity:

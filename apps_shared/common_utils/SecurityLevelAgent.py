@@ -1,4 +1,3 @@
-
 """
 Intelligence & Strategic Analysis Module - Phase 6 Implementation
 
@@ -9,6 +8,7 @@ This module provides advanced intelligence capabilities:
 - OmniContext: Global context management and semantic retrieval
 - OrchestratorAgent: Multi-phase execution with convergence
 """
+
 import asyncio
 import hashlib
 import json
@@ -23,9 +23,9 @@ try:
         L3SubatomicTestingMixin,
     )
 except ImportError:
+
     class L3SubatomicTestingMixin:
         pass
-
 
 
 class SecurityLevel(Enum):

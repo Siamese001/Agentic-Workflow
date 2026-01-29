@@ -9,10 +9,10 @@ we prevent 'Junior' agents from modifying agent fingerprints or capability flags
 preventing state-drift attacks. This strictly enforces the read-only nature of the discovery manifest.
 """
 
-from typing import Any, Final
-from collections.abc import Mapping
 import json
+from collections.abc import Mapping
 from pathlib import Path
+from typing import Any, Final
 
 
 class AgentListMapping(Mapping[str, Any]):

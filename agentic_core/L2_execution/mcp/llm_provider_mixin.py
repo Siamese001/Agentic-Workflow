@@ -4,8 +4,9 @@ LLMProviderMixin - Unified LLM Access for Agents
 [PHASE 4 MIGRATION] Provides single interface to all LLM providers.
 """
 
-from typing import Literal, Any
-from agentic_core.L2_execution.mcp.SovereignLLMGateway import get_llm_gateway, SovereignLLMGateway
+from typing import Any, Literal
+
+from agentic_core.L2_execution.mcp.SovereignLLMGateway import SovereignLLMGateway, get_llm_gateway
 
 Provider = Literal["openai", "anthropic", "google"]
 

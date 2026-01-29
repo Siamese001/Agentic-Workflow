@@ -5,9 +5,10 @@ MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf exec
 """
 
 import pytest
-from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 
 
 class TestHOP1SpecialistGatekeeper:

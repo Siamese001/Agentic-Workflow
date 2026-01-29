@@ -5,10 +5,10 @@ Status: 100% Pass Required
 Rationale: Verifies that the new exemption logic correctly ignores test files.
 """
 
-import unittest
-from unittest.mock import patch
-from pathlib import Path
 import sys
+import unittest
+from pathlib import Path
+from unittest.mock import patch
 
 # Add root to path
 sys.path.append(str(Path(__file__).parent.parent))

@@ -2,11 +2,11 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Sovereign Action Plane Implementation.
 
@@ -19,11 +19,12 @@ import subprocess
 import time
 from typing import Any
 
+from agentic_core.shared.interfaces import ActionRequest, ActionResult, IActionPlane
+
+from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import (
     SCRIPTS_DIR,
 )
-from agentic_core.shared.interfaces import ActionRequest, ActionResult, IActionPlane
-from agentic_core.base_agents.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 

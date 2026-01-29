@@ -1,9 +1,10 @@
 # TESTS DEPTH VIOLATION — 2026-01-18 05:21:41
 # tests\mixins\test_rate_limit_mixin.py was depth 3, MUST be 2.
 
-import unittest
 import asyncio
-from agentic_core.utils.core_extensions.rate_limit_mixin import RateLimitMixin, RateLimitExceeded
+import unittest
+
+from agentic_core.utils.core_extensions.rate_limit_mixin import RateLimitExceeded, RateLimitMixin
 
 
 class RateLimitedAgent(RateLimitMixin):

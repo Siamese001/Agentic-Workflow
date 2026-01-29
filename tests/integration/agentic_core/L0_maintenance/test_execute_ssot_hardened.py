@@ -1,11 +1,12 @@
 """
 File: tests/integration/agentic_core/L0_maintenance/test_execute_ssot_hardened.py
 """
-import pytest
+
 from unittest.mock import MagicMock
+
 from agentic_core.L0_maintenance.scripts.execute_ssot import (
-    execute_phase2_reconciliation,
     SovereignDecisionEngine,
+    execute_phase2_reconciliation,
 )
 
 
@@ -27,9 +28,7 @@ def test_phase2_atomic_rollback():
 
     agents = {"CrashAgent": MockHealer("CrashAgent", fail=True)}
     plan = {
-        "violations_found": [
-            {"type": "TEST", "suggested_agent": "CrashAgent", "file": "test.py"}
-        ]
+        "violations_found": [{"type": "TEST", "suggested_agent": "CrashAgent", "file": "test.py"}]
     }
 
     # Engine mocks
@@ -62,9 +61,7 @@ def test_phase2_sovereignty_denial():
 
     agents = {"GoodAgent": MockHealer("GoodAgent")}
     plan = {
-        "violations_found": [
-            {"type": "TEST", "suggested_agent": "GoodAgent", "file": "test.py"}
-        ]
+        "violations_found": [{"type": "TEST", "suggested_agent": "GoodAgent", "file": "test.py"}]
     }
 
     engine.calculate_healing_confidence = MagicMock(return_value=MagicMock(value=0.9))

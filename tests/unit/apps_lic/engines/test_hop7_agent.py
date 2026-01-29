@@ -3,12 +3,14 @@ Unit tests for HOP7GateDecisionAgent (V2).
 Ensures failure classification and workflow direction logic.
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
-from apps_lic.engines.HOP7GateDecisionAgent import HOP7GateDecisionAgent
+
+import pytest
+from apps_lic.domain.config.schemas import GateConfig
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
-from apps_lic.domain.config.schemas import GateConfig
+
+from apps_lic.engines.HOP7GateDecisionAgent import HOP7GateDecisionAgent
 
 
 @pytest.fixture

@@ -9,10 +9,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    CORE_SUBFOLDER_MAP,
-    APPS_RG_SUBFOLDER_MAP,
     APPS_LIC_SUBFOLDER_MAP,
+    APPS_RG_SUBFOLDER_MAP,
     APPS_SHARED_SUBFOLDER_MAP,
+    CORE_SUBFOLDER_MAP,
     SEMANTIC_L2_REGISTRY,
 )
 

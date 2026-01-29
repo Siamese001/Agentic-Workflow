@@ -7,16 +7,16 @@ This test validates the Fat Engine violation fixes by demonstrating that:
 3. No monolithic logic remains in engines
 """
 
-from unittest.mock import Mock, patch
-import sys
 import os
+import sys
+from unittest.mock import Mock, patch
 
 # Add the project root to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
-from apps_rg.logic_nodes.rg_flow_router import RGFlowRouter, RGFlowOutput
 from apps_rg.logic_nodes.resume_section_node import ResumeSectionNode, ResumeSectionOutput
-from apps_rg.logic_nodes.skill_extractor_node import SkillExtractorNode, SkillAnalysisOutput
+from apps_rg.logic_nodes.rg_flow_router import RGFlowOutput, RGFlowRouter
+from apps_rg.logic_nodes.skill_extractor_node import SkillAnalysisOutput, SkillExtractorNode
 
 
 class TestLogicNodesExist:

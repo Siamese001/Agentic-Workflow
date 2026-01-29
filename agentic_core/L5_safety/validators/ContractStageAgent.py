@@ -10,10 +10,10 @@ Renamed from CognitiveContractValidatorAgent to avoid naming collision with L1 c
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import logging
 from typing import Any
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 logger = logging.getLogger(__name__)
 

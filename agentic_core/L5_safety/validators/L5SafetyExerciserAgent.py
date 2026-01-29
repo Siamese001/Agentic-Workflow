@@ -2,21 +2,21 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, state, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
     has_forbidden_layer_prefix,
     is_broken_backup_file,
 )
-from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 
 
 # Lazy imports — gravity-safe (same/downstream L5)

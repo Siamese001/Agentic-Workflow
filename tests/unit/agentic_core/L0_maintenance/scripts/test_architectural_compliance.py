@@ -5,9 +5,9 @@ description: Aggressive testing of the audit tool to ensure zero false negatives
 
 import ast
 import os
+import shutil
 import sys
 import tempfile
-import shutil
 
 # Dynamic path resolution to import the script without installing it as a package
 # Assuming we are running from project root

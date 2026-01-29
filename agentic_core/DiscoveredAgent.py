@@ -11,6 +11,7 @@ import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
 from agentic_core.utils.ssot_discovery import get_python_files
 
 logger = logging.getLogger(__name__)

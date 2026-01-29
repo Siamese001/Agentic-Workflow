@@ -12,19 +12,21 @@ Test Coverage:
 - LocationAgent keyless logic (logic purge validation)
 """
 
-import pytest
 import collections.abc
+import sys
 from collections.abc import Mapping
 from pathlib import Path
-import sys
+
+import pytest
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 # Import the modules to test
-import agentic_core.L5_safety.validators.structure_blueprint as structure_blueprint
 from agentic_core.utils.discovery_parser import AGENT_METADATA, load_hardened_agent_metadata
+
+import agentic_core.L5_safety.validators.structure_blueprint as structure_blueprint
 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
 

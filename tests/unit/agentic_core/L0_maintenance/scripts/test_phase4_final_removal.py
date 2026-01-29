@@ -13,8 +13,8 @@ Verifies that:
 Run: python scripts/test_phase4_final_removal.py
 """
 
-import os
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -194,11 +194,11 @@ class TestPhase4_FinalRemoval:
             from agentic_core.L3_orchestration.OrchestratorAgent import (
                 OrchestratorAgent,
             )
-            from agentic_core.L5_safety.validators.CredentialScannerAgent import (
-                CredentialScannerAgent,
-            )
             from agentic_core.L4_state.validation_context.CheckpointManagerAgent import (
                 CheckpointManagerAgent,
+            )
+            from agentic_core.L5_safety.validators.CredentialScannerAgent import (
+                CredentialScannerAgent,
             )
 
             # Test instantiation

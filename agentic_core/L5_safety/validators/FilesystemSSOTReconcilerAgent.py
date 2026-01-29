@@ -163,18 +163,18 @@ class FilesystemSSOTReconcilerAgent(
         try:
             target = violation.get("file")
             v_type = violation.get("type", "")
-            
+
             if not target:
                 return {"status": "skipped", "reason": "No target specified"}
-                
+
             # For SSOT violations, we typically need to reconcile filesystem with blueprint
             return {
                 "status": "manual_required",
                 "reason": "SSOT reconciliation requires blueprint alignment",
                 "suggested_action": f"Reconcile {target} with structure blueprint",
-                "confidence": 0.9
+                "confidence": 0.9,
             }
-            
+
         except Exception as e:
             return {"status": "error", "error": str(e)}
 

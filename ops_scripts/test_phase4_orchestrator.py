@@ -20,10 +20,10 @@ def test_orchestrator_initialization():
     print("\n1. Testing orchestrator initialization...")
 
     try:
+        from apps_rg.engines.base.sovereign_context import SovereignContext
         from apps_rg.engines.orchestration.resume_orchestrator_engine import (
             ResumeOrchestratorEngine,
         )
-        from apps_rg.engines.base.sovereign_context import SovereignContext
 
         ctx = SovereignContext()
         orch = ResumeOrchestratorEngine(ctx, mission_id="test_mission")
@@ -51,10 +51,10 @@ def test_global_safety_limits():
     print("\n2. Testing global safety limits...")
 
     try:
+        from apps_rg.engines.base.sovereign_context import SovereignContext
         from apps_rg.engines.orchestration.resume_orchestrator_engine import (
             ResumeOrchestratorEngine,
         )
-        from apps_rg.engines.base.sovereign_context import SovereignContext
 
         ctx = SovereignContext()
         orch = ResumeOrchestratorEngine(ctx, mission_id="test_limits")
@@ -75,10 +75,10 @@ def test_persistent_tracing_integration():
     print("\n3. Testing persistent tracing integration...")
 
     try:
+        from apps_rg.engines.base.sovereign_context import SovereignContext
         from apps_rg.engines.orchestration.resume_orchestrator_engine import (
             ResumeOrchestratorEngine,
         )
-        from apps_rg.engines.base.sovereign_context import SovereignContext
         from apps_rg.shared.core.trace_registry import TraceRegistry
 
         ctx = SovereignContext()
@@ -104,10 +104,10 @@ def test_cyclic_validation_toggle():
     print("\n4. Testing cyclic validation toggle...")
 
     try:
+        from apps_rg.engines.base.sovereign_context import SovereignContext
         from apps_rg.engines.orchestration.resume_orchestrator_engine import (
             ResumeOrchestratorEngine,
         )
-        from apps_rg.engines.base.sovereign_context import SovereignContext
 
         ctx = SovereignContext()
         orch = ResumeOrchestratorEngine(ctx, mission_id="test_toggle")
@@ -150,10 +150,10 @@ def test_feedback_mechanism():
     print("\n6. Testing feedback mechanism...")
 
     try:
+        from apps_rg.engines.base.sovereign_context import SovereignContext
         from apps_rg.engines.orchestration.resume_orchestrator_engine import (
             ResumeOrchestratorEngine,
         )
-        from apps_rg.engines.base.sovereign_context import SovereignContext
 
         ctx = SovereignContext()
         orch = ResumeOrchestratorEngine(ctx, mission_id="test_feedback")

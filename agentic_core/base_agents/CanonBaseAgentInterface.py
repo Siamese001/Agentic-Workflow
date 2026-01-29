@@ -6,6 +6,7 @@ Core interface protocol for sovereign agent architecture.
 """
 
 from __future__ import annotations
+
 from typing import Any, Protocol
 
 

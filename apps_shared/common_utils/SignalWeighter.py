@@ -7,7 +7,6 @@ outreach and resume generation.
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

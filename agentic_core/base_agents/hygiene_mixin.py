@@ -3,10 +3,12 @@ unified_hygiene_mixin.py - HARDENED: Unified code hygiene validation
 """
 
 from __future__ import annotations
+
 import hashlib
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-from dataclasses import dataclass, field
+
 from agentic_core.domain.exceptions import HygieneError
 from agentic_core.L5_safety.validators.decorators import standard_heal
 

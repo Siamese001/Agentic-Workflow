@@ -271,6 +271,7 @@ class TestTieredProcessorIntegration:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
+
         from agentic_core.L5_safety.cognition.TieredBatchProcessor import (
             TieredBatchProcessor,
         )
@@ -297,6 +298,7 @@ class TestTieredProcessorIntegration:
         from agentic_core.L5_safety.cognition.SemanticCacheManager import (
             SemanticCacheManager,
         )
+
         from agentic_core.L5_safety.cognition.TieredBatchProcessor import (
             TieredBatchProcessor,
         )
@@ -341,6 +343,7 @@ class TestTieredProcessorIntegration:
         from agentic_core.L5_safety.cognition.SemanticCacheManager import (
             SemanticCacheManager,
         )
+
         from agentic_core.L5_safety.cognition.TieredBatchProcessor import (
             TieredBatchProcessor,
         )
