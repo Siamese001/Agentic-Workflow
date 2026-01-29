@@ -15,7 +15,7 @@ from dataclasses import dataclass
 import logging
 from typing import Any
 
-from agentic_core.L1_cognition.P1_interfaces import ICognitivePlane, PlanningRequest, PlanningResult
+# from agentic_core.L1_cognition.P1_interfaces import ICognitivePlane, PlanningRequest, PlanningResult  # Missing interfaces
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 try:
@@ -26,7 +26,7 @@ try:
 except ImportError:
     pass
 
-Logger: Any = logging.getLogger(__name__)
+LOGGER: Any = logging.getLogger(__name__)
 
 
 class AgentInfo(SovereignBaseAgent):
@@ -93,7 +93,7 @@ def _run_self_tests() -> dict:
 
 
 @dataclass
-class SovereignCognitivePlaneAgent(SovereignBaseAgent, ICognitivePlane):
+class SovereignCognitivePlaneAgent(SovereignBaseAgent):
     """Sovereign cognitive plane with in-memory agent registry and L5 streaming."""
 
     def __init__(
@@ -141,7 +141,7 @@ class SovereignCognitivePlaneAgent(SovereignBaseAgent, ICognitivePlane):
 
     def _initialize_agents(self) -> Any:
         """Initialize agents in memory."""
-        for agent in SOVEREIGN_AGENTS:
+        for agent in sovereign_agents:
             self._agents[agent.name] = agent
             LOGGER.info(f"Registered sovereign agent: {agent.name}")
 

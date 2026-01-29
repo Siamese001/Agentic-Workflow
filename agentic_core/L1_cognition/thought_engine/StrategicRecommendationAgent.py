@@ -36,7 +36,7 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class StrategicRecommendationAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class StrategicRecommendationAgent(SovereignBaseAgent):
     """
     L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.
 

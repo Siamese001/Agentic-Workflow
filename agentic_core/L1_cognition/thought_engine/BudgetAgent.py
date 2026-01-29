@@ -22,7 +22,7 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 
 # Sovereign Agent for token budget tracking and complexity management
 @dataclass
-class BudgetAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class BudgetAgent(SovereignBaseAgent):
     """
     Budget enforcement agent for code complexity management.
 
