@@ -1,4 +1,5 @@
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from dataclasses import dataclass
 
 """
@@ -23,7 +24,7 @@ class HealerMixin:
 
 
 @dataclass
-class MessageDiversityValidatorAgent(SovereignBaseAgent):
+class MessageDiversityValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Prevent repetitive messages using cosine similarity
     FEATURE 1.3 from SUPREME_SPELL

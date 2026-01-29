@@ -297,6 +297,7 @@ class OutreachMemoryPersistence:
 
     def retrieve(self, key: str) -> Any | None:
         """Retrieve a value from agentic_core.semantic_memory."""
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
         entry = self._memory.get(key)
         if entry:
             return entry.get("value")
@@ -312,7 +313,7 @@ class OutreachMemoryPersistence:
         self._save()
 
 
-class OutreachLearningAgent(SovereignBaseAgent):
+class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Learning agent for outreach campaigns.
 

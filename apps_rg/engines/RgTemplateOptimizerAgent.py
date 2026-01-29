@@ -9,10 +9,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from apps_rg.shared.core.agent_base import RGAgentBase
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class RgTemplateOptimizerAgent(RGAgentBase):
+class RgTemplateOptimizerAgent(SubatomicTestingMixin, RGAgentBase):
     """
     Optimizes template selection based on job description.
 

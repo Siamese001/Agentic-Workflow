@@ -12,10 +12,11 @@ from dataclasses import dataclass
 from typing import Any
 
 from apps_rg.shared.core.agent_base import RGAgentBase
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class ATSCompatibilityAgent(RGAgentBase):
+class ATSCompatibilityAgent(SubatomicTestingMixin, RGAgentBase):
     """
     Validates ATS (Applicant Tracking System) compatibility.
 

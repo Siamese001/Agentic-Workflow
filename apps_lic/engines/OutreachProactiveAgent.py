@@ -1,4 +1,5 @@
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from typing import Any
 from dataclasses import dataclass
 
@@ -27,7 +28,7 @@ class OutreachAgent:
 
 
 @dataclass
-class OutreachProactiveAgent(SovereignBaseAgent):
+class OutreachProactiveAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Agent that proactively identifies and executes outreach tasks.
 
