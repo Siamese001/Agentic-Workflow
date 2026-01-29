@@ -22,7 +22,7 @@ from typing import Any
 from agentic_core.L1_cognition.thought_engine.ValidationProtocol import ValidationProtocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -30,7 +30,7 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO").upper())
 Logger = logging.getLogger(__name__)
 
 
-class CanonBaseAgent(HealerMixin):
+class CanonBaseAgent(SovereignBaseAgent):
     """
     Base class for all Canon validation agents.
 
@@ -157,8 +157,20 @@ class CanonBaseAgent(HealerMixin):
             name: Agent name (defaults to class name).
             layer: Optional layer identifier for logging.
         """
-        self.ctx = context
+        # Initialize required dataclass fields
+        from pathlib import Path
+        self.project_root = Path.cwd()
+        self._initialized = False
+        self._security_validator = None
         self.name = name or self.__class__.__name__
+        
+        # Call dataclass __post_init__ manually
+        try:
+            self.__post_init__()
+        except AttributeError:
+            pass
+        
+        self.ctx = context
         self.layer = layer
 
     def can_run(self) -> bool:
@@ -392,7 +404,11 @@ class CanonBaseAgent(HealerMixin):
         Returns:
             Dict with keys: violations, fixed, errors, skipped.
         """
-        super().heal_repository()
+        # Call parent heal_repository if it exists
+        try:
+            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        except AttributeError:
+            pass
 
         if _call_path is None:
             _call_path = set()
