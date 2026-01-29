@@ -1,7 +1,7 @@
 {
   "status": "completed",
-  "start_time": "2026-01-28T21:57:39.725221",
-  "end_time": "2026-01-28T21:58:10.241131",
+  "start_time": "2026-01-29T07:59:21.319495",
+  "end_time": "2026-01-29T07:59:50.400240",
   "current_agent": null,
   "current_layer": "L5 - Compliance",
   "agents_order": [
@@ -10,124 +10,124 @@
   "completed_agents": [
     {
       "agent": "FilesystemSSOTReconcilerAgent",
-      "time": "2026-01-28T21:57:40.222371",
+      "time": "2026-01-29T07:59:21.822795",
       "success": true,
       "details": "Drift violations: 0"
     },
     {
       "agent": "LocationAgent",
-      "time": "2026-01-28T21:57:41.572912",
+      "time": "2026-01-29T07:59:25.654931",
       "success": true,
-      "details": "Violations: 5 | Conf: 0.62 (no heal method)"
+      "details": "Violations: 6 | Conf: 0.60 (no heal method)"
     },
     {
       "agent": "HierarchyAgent",
-      "time": "2026-01-28T21:57:41.604272",
+      "time": "2026-01-29T07:59:25.689695",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-01-28T21:57:56.013811",
+      "time": "2026-01-29T07:59:38.243126",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "SystemArchitectAgent",
-      "time": "2026-01-28T21:58:10.021758",
+      "time": "2026-01-29T07:59:50.186400",
       "success": true,
       "details": "Architecture Valid"
     },
     {
       "agent": "SovereignCertifier",
-      "time": "2026-01-28T21:58:10.229954",
+      "time": "2026-01-29T07:59:50.387674",
       "success": true,
       "details": "Certificate Issued"
     }
   ],
   "events": [
     {
-      "time": "2026-01-28T21:57:39.725221",
+      "time": "2026-01-29T07:59:21.319495",
       "type": "info",
       "message": "Mission started: Unified Protocol: Territory Scan: prompt_governance"
     },
     {
-      "time": "2026-01-28T21:57:40.183571",
+      "time": "2026-01-29T07:59:21.785282",
       "type": "domain_start",
       "message": "Entering Domain: prompt_governance"
     },
     {
-      "time": "2026-01-28T21:57:40.184355",
+      "time": "2026-01-29T07:59:21.786095",
       "type": "agent_start",
       "message": "\u2192 Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-01-28T21:57:40.222371",
+      "time": "2026-01-29T07:59:21.822795",
       "type": "agent_end",
       "message": "\u2713 Completed FilesystemSSOTReconcilerAgent"
     },
     {
-      "time": "2026-01-28T21:57:40.234010",
+      "time": "2026-01-29T07:59:21.831819",
       "type": "agent_start",
       "message": "\u2192 Executing LocationAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-28T21:57:41.571375",
+      "time": "2026-01-29T07:59:25.653674",
       "type": "decision",
       "message": "Location Healing: LLM Override"
     },
     {
-      "time": "2026-01-28T21:57:41.572912",
+      "time": "2026-01-29T07:59:25.654931",
       "type": "agent_end",
       "message": "\u2713 Completed LocationAgent"
     },
     {
-      "time": "2026-01-28T21:57:41.585673",
+      "time": "2026-01-29T07:59:25.672324",
       "type": "agent_start",
       "message": "\u2192 Executing HierarchyAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-28T21:57:41.604272",
+      "time": "2026-01-29T07:59:25.689695",
       "type": "agent_end",
       "message": "\u2713 Completed HierarchyAgent"
     },
     {
-      "time": "2026-01-28T21:57:41.615552",
+      "time": "2026-01-29T07:59:25.704987",
       "type": "decision",
       "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-01-28T21:57:41.616570",
+      "time": "2026-01-29T07:59:25.707459",
       "type": "warning",
       "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-01-28T21:57:41.617601",
+      "time": "2026-01-29T07:59:25.707981",
       "type": "agent_start",
       "message": "\u2192 Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-28T21:57:56.013811",
+      "time": "2026-01-29T07:59:38.243126",
       "type": "agent_end",
       "message": "\u2713 Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-01-28T21:57:56.026115",
+      "time": "2026-01-29T07:59:38.256281",
       "type": "agent_start",
       "message": "\u2192 Executing SystemArchitectAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-28T21:58:10.021758",
+      "time": "2026-01-29T07:59:50.186753",
       "type": "agent_end",
       "message": "\u2713 Completed SystemArchitectAgent"
     },
     {
-      "time": "2026-01-28T21:58:10.054129",
+      "time": "2026-01-29T07:59:50.217483",
       "type": "agent_start",
       "message": "\u2192 Executing SovereignCertifier (L5 - Compliance)"
     },
     {
-      "time": "2026-01-28T21:58:10.229954",
+      "time": "2026-01-29T07:59:50.387674",
       "type": "agent_end",
       "message": "\u2713 Completed SovereignCertifier"
     }
@@ -144,7 +144,7 @@
     "recent_experiences": []
   },
   "compliance_scores": {
-    "prompt_governance": 0.6160000000000001
+    "prompt_governance": 0.6013333333333334
   },
   "decisions_made": [],
   "compliance_report": {
@@ -164,10 +164,6 @@
   "current_territory": "prompt_governance",
   "location_violations": [
     [
-      "C:\\Git\\Agentic-Workflow\\.sovereign_healing_backup",
-      "Missing sovereign root: .sovereign_healing_backup"
-    ],
-    [
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardTestSuite.py",
       "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'def test_' for destination agentic_core/L0_maintenance/scripts"
     ],
@@ -182,6 +178,209 @@
     [
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\audit_registry_linkages.py",
       "ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports"
+    ],
+    [
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\version_registry\\registry.json",
+      "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'import ' for destination docs/reports"
+    ],
+    [
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\registry\\registry.json.backup",
+      "BROKEN BACKUP FILE: Remove stale backup file"
     ]
-  ]
+  ],
+  "location_scan_result": {
+    "violations": [
+      [
+        "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardTestSuite.py",
+        "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'def test_' for destination agentic_core/L0_maintenance/scripts"
+      ],
+      [
+        "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\SovereignPromptRenderer.py",
+        "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'class Sovereign' for destination agentic_core/L0_maintenance/scripts"
+      ],
+      [
+        "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\tests_golden_state_test_datasets.py",
+        "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'def test_' for destination agentic_core/L0_maintenance/scripts"
+      ],
+      [
+        "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\audit_registry_linkages.py",
+        "ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports"
+      ],
+      [
+        "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\version_registry\\registry.json",
+        "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'import ' for destination docs/reports"
+      ],
+      [
+        "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\registry\\registry.json.backup",
+        "BROKEN BACKUP FILE: Remove stale backup file"
+      ]
+    ],
+    "file_stats": {
+      "total_files": 78,
+      "file_types": {
+        ".py": 24,
+        ".jinja": 51,
+        ".json": 2,
+        ".backup": 1
+      },
+      "territory": "prompt_governance",
+      "valid_files": 72,
+      "violations_found": 6,
+      "compliance_rate": 92.3
+    },
+    "files_processed": [
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\ConversationalRepairAgent.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardRenderer.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardTestSuite.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\GovernanceHub.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\InjectionDetector.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\PIIScrubber.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\PitchGenerator.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\PromptAssembler.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\PromptEntry.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\PromptOptimizer.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\PromptRegistryAgent.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\SovereignPromptRenderer.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\tests_golden_state_test_datasets.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\__init__.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\audit_registry_linkages.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\detect_template_drift.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\dry_run_compiler.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\FileIntent.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\harden_templates.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\ImportViolationVisitor.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\synchronize_registry_hashes.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\TemplateRenderVisitor.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\version_registry\\cleanup_duplicates.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\version_registry\\__init__.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\adversarial_escalation.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\adversarial_self_test.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\agent_prioritization.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\autonomous_mission_resume.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\convergence_planning.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\emergent_capability_discovery.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\evolution_directive.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\immune_response.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\meta_agent_activation.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\meta_convergence_forecast.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\meta_coordination_directive.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\prompt_selection.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\red_team_governance.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\red_team_scope_validator.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\self_reflection.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\sovereign_convergence_orchestrator.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\sovereign_orchestrator.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\agent_autonomy_law.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\anomaly_detection_response.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\async_compatibility.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\autonomous_decision_tree.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\code_healing.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\context_memory_synthesis.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\cot_jailbreak.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\cross_layer_coordination.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\dead_code_elimination.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\docstring_enrichment.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\encoded_payload_base64.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\encoded_payload_leetspeak.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\encoded_payload_rot13.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\file_placement.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\fission_planning.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\goal_decomposition_planning.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\gravity_compliance.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\gravity_dynamic_conversion.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\gravity_repair.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\import_optimization.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\indirect_attack.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\jailbreak_classic.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\multilingual_jailbreak.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\multi_agent_consensus.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\naming_law.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\naming_precision.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\predictive_failure_prevention.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\prompt_injection_payload.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\reasoning_chain.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\recursive_override.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\recursive_override_staged.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\subatomic_healing_context.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\token_smuggling.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\type_inference.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\registry\\registry.json",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\version_registry\\registry.json",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\registry\\registry.json.backup"
+    ],
+    "valid_files": [
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\ConversationalRepairAgent.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardRenderer.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\GovernanceHub.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\InjectionDetector.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\PIIScrubber.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\PitchGenerator.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\PromptAssembler.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\PromptEntry.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\PromptOptimizer.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\PromptRegistryAgent.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\__init__.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\detect_template_drift.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\dry_run_compiler.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\FileIntent.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\harden_templates.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\ImportViolationVisitor.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\synchronize_registry_hashes.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\TemplateRenderVisitor.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\version_registry\\cleanup_duplicates.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\version_registry\\__init__.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\adversarial_escalation.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\adversarial_self_test.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\agent_prioritization.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\autonomous_mission_resume.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\convergence_planning.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\emergent_capability_discovery.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\evolution_directive.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\immune_response.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\meta_agent_activation.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\meta_convergence_forecast.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\meta_coordination_directive.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\prompt_selection.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\red_team_governance.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\red_team_scope_validator.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\self_reflection.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\sovereign_convergence_orchestrator.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\sovereign_orchestrator.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\agent_autonomy_law.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\anomaly_detection_response.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\async_compatibility.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\autonomous_decision_tree.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\code_healing.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\context_memory_synthesis.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\cot_jailbreak.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\cross_layer_coordination.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\dead_code_elimination.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\docstring_enrichment.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\encoded_payload_base64.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\encoded_payload_leetspeak.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\encoded_payload_rot13.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\file_placement.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\fission_planning.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\goal_decomposition_planning.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\gravity_compliance.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\gravity_dynamic_conversion.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\gravity_repair.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\import_optimization.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\indirect_attack.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\jailbreak_classic.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\multilingual_jailbreak.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\multi_agent_consensus.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\naming_law.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\naming_precision.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\predictive_failure_prevention.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\prompt_injection_payload.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\reasoning_chain.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\recursive_override.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\recursive_override_staged.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\subatomic_healing_context.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\token_smuggling.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\type_inference.jinja",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\registry\\registry.json"
+    ]
+  }
 }

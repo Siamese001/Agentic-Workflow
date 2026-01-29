@@ -592,17 +592,20 @@ class LocationAgent(SovereignBaseAgent):
 
     def run(
         self, files: list[Path] = None, target_territory: str | None = None
-    ) -> list[tuple[Path, str]]:
+    ) -> dict[str, Any]:
         """
         Full location compliance scan.
-        Returns all violations (Missing roots + per-file).
-        Suitable as first-stage gatekeeper in orchestrator.
+        Returns comprehensive scan results including violations and file statistics.
 
         Args:
             files: Optional manual file list.
             target_territory: If provided, discovers files strictly in this scope (Performance fix).
+
+        Returns:
+            Dictionary with violations, file statistics, and scan metadata.
         """
         all_violations: list[tuple[Path, str]] = []
+        file_stats = {}
 
         # 1. Check sovereign root existence (Global, fast)
         all_violations.extend(self.validate_sovereign_roots())
@@ -616,21 +619,56 @@ class LocationAgent(SovereignBaseAgent):
                     target_path = self.project_root / target_territory
 
                 if target_path.exists():
-                    from agentic_core.utils.ssot_discovery import get_python_files
+                    from agentic_core.utils.ssot_discovery import get_all_files
 
-                    files = list(get_python_files(target_path))
+                    all_files_dict = get_all_files(target_path)
+                    # Flatten all files into a single list
+                    files = []
+                    for ext, file_list in all_files_dict.items():
+                        files.extend(file_list)
+                    
+                    # Store file statistics
+                    file_stats = {
+                        "total_files": len(files),
+                        "file_types": {ext: len(file_list) for ext, file_list in all_files_dict.items()},
+                        "territory": target_territory
+                    }
+                    
+                    # Log file type breakdown
+                    total_files = len(files)
+                    file_types = {ext: len(file_list) for ext, file_list in all_files_dict.items()}
+                    file_types_str = ", ".join([f"{ext}: {count}" for ext, count in sorted(file_types.items())])
+                    
                     Logger.info(
-                        f"[LocationAgent] TARGETED DISCOVERY: {len(files)} files in {target_territory}"
+                        f"[LocationAgent] COMPREHENSIVE DISCOVERY: {total_files} files in {target_territory} ({file_types_str})"
                     )
                 else:
                     files = []
+                    file_stats = {"total_files": 0, "file_types": {}, "territory": target_territory}
             else:
                 files = _get_python_files(self.project_root)
+                file_stats = {
+                    "total_files": len(files),
+                    "file_types": {".py": len(files)},
+                    "territory": "global"
+                }
 
-        _, file_violations = self.enforce_void_compliance(files)
+        valid_files, file_violations = self.enforce_void_compliance(files)
         all_violations.extend(file_violations)
 
-        return all_violations
+        # Update file stats with compliance results
+        file_stats.update({
+            "valid_files": len(valid_files),
+            "violations_found": len(file_violations),
+            "compliance_rate": len(valid_files) / len(files) * 100 if files else 100.0
+        })
+
+        return {
+            "violations": all_violations,
+            "file_stats": file_stats,
+            "files_processed": files,
+            "valid_files": valid_files
+        }
 
     # SUPPLEMENTED FROM FilesystemAgent — enhances backup + cleanup capability — merged 2025-12-30
     # [SSOT FIX 2026-01-19] Changed from .sovereign_healing_backup to archives/healing_backups

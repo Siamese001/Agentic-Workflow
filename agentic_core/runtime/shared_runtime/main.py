@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 
 """Brief description of functionality and purpose."""
 
@@ -12,6 +13,13 @@ from agentic_core.runtime.P1_core.runtime_bootstrapper import runtime_bootstrapp
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
+
 
 async def main() -> Any:
     """
@@ -22,7 +30,7 @@ async def main() -> Any:
         "budget_limit": 25.0,
         "allowed_tools": ["read_file", "search_web", "run_python"],
         "mission_scope": "system_refactoring",
-        "model_name": "gemini-2.0-flash",
+        "model_name": os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro"),
     }
     bootstrapper: Any = runtime_bootstrapper(config)
     try:

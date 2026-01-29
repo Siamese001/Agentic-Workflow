@@ -21,6 +21,7 @@ LAYERS:
 
 from dataclasses import dataclass, field
 from enum import Enum
+import os
 from typing import Any
 
 
@@ -361,7 +362,7 @@ class instructional_injection_mixin:
         tool_output: str = "",
         source: str = "",
         priority_order: str = "RAG > QA > Draft",
-        model: str = "gemini-2.0-flash",
+        model: str = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"),
     ) -> str:
         """Inject tooling layer patterns (16-20)."""
         if tool_output:

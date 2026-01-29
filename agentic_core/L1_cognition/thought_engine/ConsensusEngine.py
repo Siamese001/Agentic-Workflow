@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 
 """Brief description of functionality and purpose."""
 
@@ -22,17 +23,17 @@ class ConsensusEngine:
     CRITICAL_KEYWORDS: Any = ["hack", "delete /", "malware", "drop table"]
     MAJORITY_THRESHOLD: Any = 0.66
     MODEL_CHECK_CONFIG: Any = {
-        "gpt-5.1": {
+        os.getenv("OPENAI_MODEL", "gpt-4o"): {
             "keywords": ["broken", "infinite loop"],
-            "reason": "GPT-5.1 Thinking: Detected functional regression or infinite loop risk.",
+            "reason": "OPENAI_MODEL Thinking: Detected functional regression or infinite loop risk.",
         },
-        "claude-sonnet-4-5": {
+        os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022"): {
             "keywords": ["unsafe", "race condition"],
-            "reason": "Claude Sonnet 4.5 Analysis: Identified potential race condition or unsafe memory access.",
+            "reason": "ANTHROPIC_MODEL Analysis: Identified potential race condition or unsafe memory access.",
         },
-        "gemini-3-pro": {
+        os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro"): {
             "keywords": ["contradiction", "hallucination"],
-            "reason": "Gemini 3 Pro Deep Think: Found contradiction with known context or library definitions.",
+            "reason": "GEMINI_PRO_MODEL Deep Think: Found contradiction with known context or library definitions.",
         },
     }
 
@@ -44,7 +45,11 @@ class ConsensusEngine:
             providers: A list of model names to be used as jurors.
         """
         if providers is None:
-            providers = ["gpt-5.1", "claude-sonnet-4-5", "gemini-3-pro"]
+            providers = [
+                os.getenv("OPENAI_MODEL", "gpt-4o"),
+                os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022"),
+                os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro"),
+            ]
         self.providers = providers
         self.threshold = ConsensusEngine.MAJORITY_THRESHOLD
 

@@ -7,6 +7,7 @@ Analyzes job descriptions to extract key skills, requirements, and cultural fit 
 """
 import json
 import logging
+import os
 from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
@@ -78,7 +79,7 @@ def _build_analysis_prompt(self: Any, JobDescription: str) -> str:
 
 def _generate_with_gemini(self: Any, prompt: str, temperature: float) -> str:
     """Generate response using Google Gemini."""
-    genai.GenerativeModel("gemini-1.5-flash")
+    genai.GenerativeModel(os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"))
     generation_config = genai.types.GenerationConfig(temperature=temperature)
     model.generate_content(prompt, generation_config=generation_config)
     return response.text

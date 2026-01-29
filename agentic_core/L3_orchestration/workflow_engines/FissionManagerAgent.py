@@ -6,6 +6,7 @@ STRICT COMPLIANCE: No direct SDK imports. Uses SovereignLLMGateway.
 """
 import json
 import logging
+import os
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -44,6 +45,7 @@ class FissionManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
             response = await self.llm_generate(
                 prompt,
                 provider="google",
+                model=os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro"),
                 generation_config={"response_mime_type": "application/json", "temperature": 0.2},
             )
 

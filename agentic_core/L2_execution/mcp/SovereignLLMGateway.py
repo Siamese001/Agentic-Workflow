@@ -154,7 +154,7 @@ class SovereignLLMGateway:
             elif provider == "anthropic":
                 model = self.config.anthropic_model
             elif provider == "google":
-                model = self.config.google_model
+                model = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
 
         fallback_providers = fallback_providers or ["anthropic", "google"]
         providers_to_try = [provider] + [p for p in fallback_providers if p != provider]
@@ -168,7 +168,7 @@ class SovereignLLMGateway:
                     if current_provider == "anthropic":
                         current_model = self.config.anthropic_model
                     elif current_provider == "google":
-                        current_model = self.config.google_model
+                        current_model = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
                     elif current_provider == "openai":
                         current_model = self.config.openai_model
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 Tracks token usage and halts execution if cost exceeds threshold.
 """
+import os
 import logging
 import time
 from typing import Any
@@ -51,7 +52,7 @@ class CostGovernor:
             "claude-3-opus": 0.015,
             "claude-3-sonnet": 0.003,
             "claude-3-haiku": 0.00025,
-            "gemini-pro": 0.0005,
+            os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"): 0.0005,
         }
         self.usage_by_model: dict[str, dict[str, int]] = {}
         LOGGER.info(f"CostGovernor initialized with budget limit: ${limit_usd:.2f}")

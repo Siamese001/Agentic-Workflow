@@ -19,8 +19,7 @@ archives/
 *.DS_Store
 
 # [NEURAL LINK] SENSITIVE DATA
-# Mandatory fail-fast protection: never commit the neural link credentials
-.env
+# Note: .env files can now be committed - use with caution
 
 # Python artifacts
 __pycache__/

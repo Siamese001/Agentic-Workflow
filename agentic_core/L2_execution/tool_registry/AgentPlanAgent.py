@@ -6,6 +6,7 @@ StructuredEngine - Intent to Plan Converter
 [PHASE 8 REFACTOR] Uses SovereignLLMGateway.
 """
 import logging
+import os
 from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -33,11 +34,11 @@ class StructuredEngine(SovereignBaseAgent):
         try:
             # Use Google Gemini by default for planning (fast/long context)
             resp = await self.llm_generate(
-                prompt, provider="google", model=self.config.google_model
+                prompt, provider="google", model=os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
             )
 
             return AgentPlan(
-                reasoning=f"Planned via {self.config.google_model}",
+                reasoning=f"Planned via {os.getenv('GEMINI_MODEL', 'gemini-3-flash-preview')}",
                 tool_calls=[{"name": "example_tool", "args": {}}],
             )
         except Exception as e:

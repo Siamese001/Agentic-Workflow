@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 
 """Brief description of functionality and purpose."""
 
@@ -22,7 +23,7 @@ _logger = logging.getLogger(__name__)
 class RagConfig:
     """Enhanced configuration for resilient web RAG system."""
 
-    _model: str = "gemini-1.5-flash"
+    _model: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"))
     _max_tokens: int = 4000
     _temperature: float = 0.7
     _phase1_min_searches: int = 15
