@@ -37,6 +37,13 @@ from datetime import datetime
 from typing import Any, Optional
 from dataclasses import dataclass, field
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
+
 # [ETERNAL UTF-8] Force Windows consoles to handle unicode symbols (From Canon)
 if sys.platform.startswith("win"):
     # [ULTRA-HARDENED] Replace shell command with direct subprocess call to eliminate injection vectors
@@ -1221,10 +1228,11 @@ def execute_phase1_discovery_impl(
         return drift_report, []
 
     violations = []
+    location_scan_result = {}
     if territory_path.exists():
-        files = list(territory_path.rglob("*.py"))
-        logger.info(f"Scanning {len(files)} files in {territory_path.relative_to(Path.cwd())}")
-        violations = location_validator.run(files=files) or []
+        # Let LocationAgent do comprehensive file discovery
+        location_scan_result = location_validator.run(target_territory=territory) or {}
+        violations = location_scan_result.get("violations", [])
     else:
         logger.warning(f"Territory path does not exist: {territory_path}")
 
@@ -1263,6 +1271,7 @@ def execute_phase1_discovery_impl(
 
     # [DETAILED TRACKING] Store actual LocationAgent violations for final report
     state_mgr.state["location_violations"] = violations
+    state_mgr.state["location_scan_result"] = location_scan_result
 
     # [AUTO-HEALING] If confidence is high enough, trigger LocationAgent healing
     if len(violations) > 0:
@@ -1303,7 +1312,7 @@ def execute_phase1_discovery_impl(
             "LocationAgent", True, f"Violations: 0 | Conf: {confidence.value:.2f}"
         )
 
-    return drift_report, violations
+    return drift_report, violations, location_scan_result
 
 
 @with_retry(max_retries=3)
@@ -1524,7 +1533,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr):
             "severity": "medium",
             "recommended_action": action,
             "llm_triggered": False,  # LocationAgent doesn't trigger LLM
-            "confidence": state_mgr.state["compliance_scores"].get(territory, 0.0),
+            "confidence": round(state_mgr.state["compliance_scores"].get(territory, 0.0), 3),
         }
         all_violations.append(violation_dict)
 
@@ -1549,6 +1558,9 @@ def execute_phase5_final_impl(agents, territory, state_mgr):
 
     # Build detailed decision log with LLM status
     decisions_made = state_mgr.state.get("decisions_made", [])
+    
+    # Get location scan result from state manager
+    location_scan_result = state_mgr.state.get("location_scan_result", {})
 
     detailed_cert = {
         "meta": {
@@ -1558,7 +1570,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr):
             "sovereignty_level": "L5",
         },
         "metrics": {
-            "confidence_score": confidence_avg,
+            "confidence_score": round(confidence_avg, 3),
             "violation_count": violation_count,
             "drift_count": drift_count,
             "errors": compliance_report.get("stats", {}).get("errors", 0),
@@ -1576,28 +1588,66 @@ def execute_phase5_final_impl(agents, territory, state_mgr):
         ],
     }
 
+    # Add comprehensive file statistics
+    file_stats = location_scan_result.get("file_stats", {})
+    # Format compliance rate to one decimal place
+    if "compliance_rate" in file_stats:
+        file_stats["compliance_rate"] = round(file_stats["compliance_rate"], 1)
+    detailed_cert["file_scan_stats"] = file_stats
+
     # Add violations to file log
     files_affected = set()
     for v in all_violations:  # Use all_violations instead of violations
         files_affected.add(v.get("file", "unknown"))
 
     detailed_cert["governance_log"]["files_processed"] = list(files_affected)
+    detailed_cert["governance_log"]["scan_summary"] = {
+        "total_files_scanned": file_stats.get("total_files", 0),
+        "files_with_violations": len(files_affected),
+        "files_compliant": file_stats.get("valid_files", 0),
+        "compliance_rate": round(file_stats.get("compliance_rate", 0), 1),
+        "file_types": file_stats.get("file_types", {})
+    }
 
     # Generate Markdown Executive Summary
+    file_stats = location_scan_result.get("file_stats", {})
+    total_files = file_stats.get("total_files", 0)
+    compliance_rate = file_stats.get("compliance_rate", 0)
+    file_types = file_stats.get("file_types", {})
+    
     markdown_summary = [
         f"# 🛡️ Sovereign Compliance Report: {territory}",
         f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | **Status:** {status}",
         "",
         "## 📊 Executive Summary",
         "",
-        f"* **Confidence Score:** {confidence_avg:.4f}",
+        f"* **Confidence Score:** {confidence_avg:.1%}",
         f"* **Violations Detected:** {violation_count}",
         f"* **Integrity Drift:** {drift_count}",
         f"* **Violations Fixed:** {detailed_cert['metrics']['violations_fixed']}",
         "",
-        "## 🚨 Violations Detected",
+        "## 📁 Scan Scope",
         "",
+        f"* **Total Files Scanned:** {total_files}",
+        f"* **Files Compliant:** {file_stats.get('valid_files', 0)}",
+        f"* **Files with Violations:** {len(files_affected)}",
+        f"* **Compliance Rate:** {compliance_rate:.1f}%",
+        "",
+        "### File Types Analyzed",
+        ""
     ]
+    
+    # Add file type breakdown
+    if file_types:
+        for ext, count in sorted(file_types.items()):
+            ext_display = ext if ext else "(no extension)"
+            markdown_summary.append(f"* **{ext_display}:** {count} files")
+    
+    markdown_summary.extend([
+        "",
+        "## 🚨 Violations Detected",
+        ""
+    ])
 
     # Add detailed violations table
     if violation_count > 0:
@@ -1627,10 +1677,15 @@ def execute_phase5_final_impl(agents, territory, state_mgr):
             v_severity = violation.get("severity", "medium")
             v_llm = "Yes" if violation.get("llm_triggered", False) else "No"
             v_conf = violation.get("confidence", 0.0)
+            # Convert to percentage if it's a decimal (0-1) or keep as is if already percentage
+            if v_conf <= 1.0:
+                v_conf_display = f"{v_conf:.1%}"
+            else:
+                v_conf_display = f"{v_conf:.1f}%"
             v_action = violation.get("recommended_action", "Review")[:30] + "..."
 
             markdown_summary.append(
-                f"| {idx} | {v_type} | `{v_file}` | {issue} | {v_severity} | {v_llm} | {v_conf:.2f} | {v_action} |"
+                f"| {idx} | {v_type} | `{v_file}` | {issue} | {v_severity} | {v_llm} | {v_conf_display} | {v_action} |"
             )
     else:
         markdown_summary.append("*No violations detected - territory is compliant.*")
@@ -1651,8 +1706,14 @@ def execute_phase5_final_impl(agents, territory, state_mgr):
         llm_triggered = confidence <= 0.75
         outcome = "PROCEED" if decision.get("decision", False) else "SKIP"
         context = decision.get("reason", "Unknown")
+        # Format confidence as percentage
+        if confidence <= 1.0:
+            conf_display = f"{confidence:.1%}"
+        else:
+            conf_display = f"{confidence:.1f}%"
+        
         markdown_summary.append(
-            f"| {context} | {confidence:.2f} | {'Yes' if llm_triggered else 'No'} | {outcome} |"
+            f"| {context} | {conf_display} | {'Yes' if llm_triggered else 'No'} | {outcome} |"
         )
 
     # Print JSON Manifest
@@ -2105,7 +2166,7 @@ Examples:
                 try:
                     # [UNIVERSAL HEALING] Unified Execution Phase
                     # All agents now receive the 'Heal' signal if confidence is met
-                    p1_drift, p1_loc = execute_phase1_discovery(
+                    p1_drift, p1_loc, p1_scan_result = execute_phase1_discovery(
                         agents, territory, decision_engine, state_mgr, dry_run, auto_approve
                     )
 

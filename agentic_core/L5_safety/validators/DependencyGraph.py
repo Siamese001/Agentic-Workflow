@@ -283,7 +283,9 @@ class ValidationContext:
     successful_traces: list[str] = field(default_factory=list)
 
     # Infrastructure
-    model_id: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-2.0-flash"))
+    model_id: str = field(
+        default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+    )
     _client: Any = field(default=None, init=False)
     intelligence_enabled: bool = field(default=False, init=False)
 

@@ -13,6 +13,7 @@ work before passing it downstream, preventing hallucination cascades.
 
 import json
 import logging
+import os
 import time
 from collections.abc import Callable
 from typing import Any
@@ -66,7 +67,10 @@ class ReflectionConfig(BaseModel):
     confidence_threshold: float = Field(default=0.75, ge=0.0, le=1.0)
     enable_regex_cache: bool = True
     llm_provider: str = "openai"
-    llm_model: str = "gpt-4o-mini"  # Cost-effective model
+    llm_model: str = Field(
+        default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+        description="Cost-effective model for reflection"
+    )
     timeout: float = Field(default=30.0, ge=1.0)
 
 

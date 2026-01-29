@@ -11,6 +11,8 @@ EXTRACTED FROM: apps_rg/L3_orchestration/orchestrate_resume_generation.py
 CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 
+import os
+from typing import Annotated, Any, Literal
 
 from enum import Enum
 from typing import ClassVar
@@ -35,7 +37,10 @@ class ModelConfig(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     Provider: ModelProvider = ModelProvider.OPENAI
-    model_name: str = "gpt-4o"
+    model_name: str = Field(
+        default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4o"),
+        description="LLM model name"
+    )
     temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     max_tokens: int = Field(default=2000, ge=1, le=32000)
     top_p: float = Field(default=0.95, ge=0.0, le=1.0)
@@ -82,7 +87,11 @@ class GovernorConfig(BaseModel):
     audit_logging_enabled: bool = True
     max_requests_per_minute: int = Field(default=100, ge=1, le=10000)
     allowed_models: list[str] = Field(
-        default_factory=lambda: ["gpt-4o", "gpt-4o-mini", "claude-3-5-sonnet"]
+        default_factory=lambda: [
+            os.getenv("OPENAI_MODEL", "gpt-4o"), 
+            "gpt-4o-mini", 
+            os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022")
+        ]
     )
 
     @model_validator(mode="after")

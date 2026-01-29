@@ -37,10 +37,11 @@ class SovereignConfigManager:
     DEFAULT_MAX_HEALING_ATTEMPTS: int = 3
     DEFAULT_CACHE_TTL: int = 86400  # 24 Hours
 
-    # Model Defaults (Phase 4)
+    # Model Defaults (Phase 4) - Now sourced from environment
     DEFAULT_OPENAI_MODEL: str = "gpt-4o"
     DEFAULT_ANTHROPIC_MODEL: str = "claude-3-5-sonnet-20241022"
-    DEFAULT_GOOGLE_MODEL: str = "gemini-1.5-pro"
+    DEFAULT_GOOGLE_MODEL: str = "gemini-3-flash-preview"
+    DEFAULT_GOOGLE_PRO_MODEL: str = "gemini-2.5-pro"
     DEFAULT_EMBEDDING_MODEL: str = "text-embedding-3-small"
 
     # Dimensions (Phase 4)
@@ -100,7 +101,11 @@ class SovereignConfigManager:
 
     @property
     def google_model(self) -> str:
-        return self.get_str("GOOGLE_MODEL", self.DEFAULT_GOOGLE_MODEL)
+        return self.get_str("GEMINI_MODEL", self.DEFAULT_GOOGLE_MODEL)
+
+    @property
+    def google_pro_model(self) -> str:
+        return self.get_str("GEMINI_PRO_MODEL", self.DEFAULT_GOOGLE_PRO_MODEL)
 
 
 # Singleton Accessor

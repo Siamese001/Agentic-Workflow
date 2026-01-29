@@ -304,6 +304,44 @@ def get_data_files(
     return data_files
 
 
+def get_all_files(
+    project_root: Path | None = None, 
+    exclude_patterns: list[str] | None = None
+) -> dict[str, list[Path]]:
+    """
+    Get all files from the project, grouped by file type.
+
+    Args:
+        project_root: Project root path.
+        exclude_patterns: Patterns to exclude (e.g., ['__pycache__', '.pyc']).
+
+    Returns:
+        Dictionary with file extensions as keys and lists of Path objects as values.
+    """
+    if project_root is None:
+        project_root = get_validated_project_root()
+
+    if exclude_patterns is None:
+        exclude_patterns = ["__pycache__", ".pyc"]
+
+    all_files = {}
+    
+    # Get all files recursively
+    for file_path in project_root.rglob("*"):
+        if file_path.is_file():
+            # Apply exclusions
+            if any(pattern in str(file_path) for pattern in exclude_patterns):
+                continue
+                
+            # Group by extension
+            ext = file_path.suffix.lower()
+            if ext not in all_files:
+                all_files[ext] = []
+            all_files[ext].append(file_path)
+    
+    return all_files
+
+
 def invalidate_cache() -> None:
     """Invalidate the discovery cache to force reload on next access."""
     global _discovery_cache, _cache_timestamp
@@ -320,5 +358,6 @@ __all__ = [
     "get_healers",
     "get_python_files",
     "get_data_files",
+    "get_all_files",
     "invalidate_cache",
 ]
