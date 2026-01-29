@@ -32,15 +32,15 @@ Added autonomous decision-making system:
 ```python
 def _autonomous_void_violation_resolution():
     confidence_score = _calculate_subfolder_confidence(unknown_subfolder, existing_subfolders)
-    
+
     if confidence_score >= 0.8:
         # HIGH CONFIDENCE: Create new subfolder and update SSOT
         return _autonomous_create_subfolder(...)
-    
+
     elif confidence_score >= 0.5:
         # MEDIUM CONFIDENCE: Relocate to best matching existing subfolder
         return _autonomous_relocate_to_subfolder(...)
-    
+
     else:
         # LOW CONFIDENCE: Archive to prevent misplacement
         return _heal_via_archiving(...)

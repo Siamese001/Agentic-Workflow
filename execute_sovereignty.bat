@@ -1,8 +1,8 @@
 :: File: execute_sovereignty.bat
 :: Path: C:\Git\Agentic-Workflow\execute_sovereignty.bat
 :: Status: New Deployment Harness
-:: Rationale: 
-::    With 640 violations detected, a raw execution is dangerous. 
+:: Rationale:
+::    With 640 violations detected, a raw execution is dangerous.
 ::    This script enforces a mandatory "Test -> Dry-Run -> Ack" pipeline.
 
 @echo off

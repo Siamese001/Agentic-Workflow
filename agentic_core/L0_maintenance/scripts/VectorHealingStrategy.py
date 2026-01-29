@@ -22,7 +22,6 @@ def _get_pinecone_client():
 
 
 # from _mcp_client import get_pinecone_mcp_client  # Commented out - appears to be incomplete/broken import
-from agentic_core.config.blueprint_sovereign.sovereign_config_1 import OrchestratorConfig
 from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

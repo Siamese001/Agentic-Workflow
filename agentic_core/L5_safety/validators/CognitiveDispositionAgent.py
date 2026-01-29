@@ -38,14 +38,14 @@ class DispositionDecision:
 
 class CognitiveDispositionAgent(SovereignBaseAgent):
     """AI-Powered Architectural Triage Agent via Sovereign Gateway.
-    
+
     DEPRECATION STATUS: KEEP - This agent is actively used and valuable.
-    
+
     USAGE:
     - Integrated in execute_ssot.py with --enable-cda flag
     - Enhances decision making with cognitive analysis
     - Provides intelligent violation triage
-    
+
     FUTURE ENHANCEMENTS:
     - Add more sophisticated violation pattern recognition
     - Integrate with more LLM providers
@@ -57,13 +57,13 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         super().__init__()
         self.project_root = project_root or Path.cwd()
         self.confidence_threshold = confidence_threshold
-        
+
         # [ENHANCEMENT] Track analytics for future improvements
         self.analytics = {
             "analyses_performed": 0,
             "cache_hits": 0,
             "average_confidence": 0.0,
-            "action_distribution": {}
+            "action_distribution": {},
         }
 
         self.layer_map = {
@@ -81,7 +81,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
     ) -> DispositionDecision:
         """Analyze violation using Native LLM Gateway."""
         context = context or {}
-        
+
         # [ANALYTICS] Track usage
         self.analytics["analyses_performed"] += 1
 
@@ -112,15 +112,19 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                 reason=data.get("reason", "Parsed from LLM"),
                 confidence=float(data.get("confidence", 0.0)),
             )
-            
+
             # [ANALYTICS] Track action distribution and confidence
             action = decision.action
-            self.analytics["action_distribution"][action] = self.analytics["action_distribution"].get(action, 0) + 1
-            
+            self.analytics["action_distribution"][action] = (
+                self.analytics["action_distribution"].get(action, 0) + 1
+            )
+
             # Update average confidence
             total = self.analytics["analyses_performed"]
             current_avg = self.analytics["average_confidence"]
-            self.analytics["average_confidence"] = ((current_avg * (total - 1)) + decision.confidence) / total
+            self.analytics["average_confidence"] = (
+                (current_avg * (total - 1)) + decision.confidence
+            ) / total
 
             await self.cache_set(cache_key, decision.__dict__, ttl=3600)
 
@@ -129,16 +133,17 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         except Exception as e:
             Logger.error(f"CDA Analysis failed: {e}")
             return DispositionDecision(action="MANUAL_REVIEW", reason=f"Error: {e}")
-    
+
     def get_analytics(self) -> dict:
         """Get usage analytics for the CognitiveDispositionAgent.
-        
+
         Returns:
             dict: Analytics data including usage statistics and performance metrics
         """
         return {
             **self.analytics,
-            "cache_hit_rate": self.analytics["cache_hits"] / max(self.analytics["analyses_performed"], 1),
+            "cache_hit_rate": self.analytics["cache_hits"]
+            / max(self.analytics["analyses_performed"], 1),
             "project_root": str(self.project_root),
             "confidence_threshold": self.confidence_threshold,
         }

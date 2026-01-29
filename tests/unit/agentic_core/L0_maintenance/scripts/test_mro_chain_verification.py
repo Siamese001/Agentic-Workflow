@@ -60,8 +60,6 @@ def test_healer_mixin_init_chain():
     print("\n[TEST 2] HealerMixin __init__ Chain...")
 
     try:
-        from agentic_core.base_agents.healer_mixin import healer_mixin
-
         # Track init calls
         init_calls = []
 

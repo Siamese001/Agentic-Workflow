@@ -41,7 +41,7 @@ from typing import Any
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.L5_safety.gravity.unified_validator import UnifiedSSOTValidator
-from scripts.purge_cache import purge_repository_cache # Integrated Maintenance Hook
+from scripts.purge_cache import purge_repository_cache  # Integrated Maintenance Hook
 
 
 @dataclass
@@ -201,7 +201,7 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, SovereignBaseAgent, L0Maint
         # L0 HARDENING: Automated cache purge before validation to ensure clean state
         print("SOVEREIGN PRE-FLIGHT: Purging temporary artifacts...")
         purge_repository_cache(target_path=self.root)
-        
+
         staged_files = self.get_staged_files()
 
         if not staged_files:

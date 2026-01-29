@@ -11,7 +11,7 @@ agentic_core/knowledge/
 ├── types.py                    # Document and chunk types (25 lines)
 └── document_loaders/           # Document processing components
     ├── CsvDocumentLoader.py    # CSV document processing
-    ├── PDFDocumentLoader.py    # PDF document processing  
+    ├── PDFDocumentLoader.py    # PDF document processing
     ├── ResearchCache.py        # Research caching system
     ├── SovereignRAGManagerAgent.py # RAG management agent
     ├── TextDocumentLoader.py   # Text document processing
@@ -199,7 +199,7 @@ data/
 # Current: Good structure, minimal changes needed
 "knowledge": [
     "document_loaders",    # Document processing components
-    "types",              # Knowledge data types  
+    "types",              # Knowledge data types
     "rag",                # RAG systems (new)
     "processing"          # Knowledge processing pipelines (new)
 ]

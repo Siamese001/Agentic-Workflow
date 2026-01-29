@@ -8,7 +8,7 @@
 
 Successfully executed the **Sovereign Namespace Migration**, transitioning from a **Defensive Posture** (coexisting with legacy code via "Unified" prefixes) to a **Sovereign Posture** (defining the single source of truth).
 
-**Result:** 
+**Result:**
 - **11 agents physically relocated** ✅
 - **10 agents semantically renamed** (stripped "Unified" prefix) ✅
 - **91 files refactored** (imports and class references updated) ✅
@@ -79,9 +79,9 @@ This is proper namespace hygiene: the superior implementation claims the canonic
 1. **Path Updates (Imports):**
    ```python
    # L5 Safety
-   from agentic_core.L5_safety.unified.* 
+   from agentic_core.L5_safety.unified.*
    → from agentic_core.L5_safety.policy_engine.*
-   
+
    # L2 Execution
    from agentic_core.L2_execution.unified.*
    → from agentic_core.L2_execution.execution_bridge.*

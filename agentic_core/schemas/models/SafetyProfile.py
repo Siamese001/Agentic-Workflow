@@ -12,13 +12,13 @@ class SafetyProfile(BaseModel):
 
     # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
     model_config = ConfigDict(frozen=True, extra="forbid")
-    
+
     safety_tier: str = Field(
         default="standard", description="Safety tier: standard | strict | relaxed | debug"
     )
     pii_detection_enabled: bool = Field(default=True, description="PII detection toggle")
     policy_engine_enabled: bool = Field(default=True, description="Policy engine toggle")
-    
+
     @field_validator("safety_tier")
     @classmethod
     def validate_safety_tier(cls, v: str) -> str:

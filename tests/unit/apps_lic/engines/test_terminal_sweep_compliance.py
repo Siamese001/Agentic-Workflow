@@ -57,7 +57,9 @@ class test_terminal_sweep_compliance:
         )
 
         # V12 files should be in legacy
-        assert not (engines_path / "utils_lic_v12.py").exists(), "utils_lic_v12.py should be in legacy/"
+        assert not (engines_path / "utils_lic_v12.py").exists(), (
+            "utils_lic_v12.py should be in legacy/"
+        )
 
         # Refactored files should be in legacy
         assert not (engines_path / "OutreachEngineRefactored.py").exists(), (

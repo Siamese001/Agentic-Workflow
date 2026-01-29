@@ -7,15 +7,37 @@ and messages.
 
 import json
 import logging
+from dataclasses import dataclass
 
 from .instructional_injections import get_instructional_injections, get_required_injections
-    InjectionConfig,
-    InjectionMatch,
-    InjectionPattern,
-    InjectionScope,
-    InjectionType,
-    MicroStage,
-)
+
+try:
+    from agentic_core.L5_safety.validators.prompt_governance_types import (
+        InjectionConfig,
+        InjectionMatch,
+        InjectionPattern,
+        InjectionScope,
+        InjectionType,
+        MicroStage,
+    )
+except ImportError:
+    # Fallback classes
+    @dataclass
+    class InjectionConfig:
+        pattern: str
+        type: str
+        scope: str
+    
+    @dataclass
+    class InjectionMatch:
+        pattern: str
+        matched: bool
+        confidence: float
+    
+    InjectionPattern = str
+    InjectionScope = str
+    InjectionType = str
+    MicroStage = str
 
 logger = logging.getLogger(__name__)
 

@@ -220,10 +220,14 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
                 target_roots = [target_territory]
             else:
                 target_roots = ["agentic_core"]
-            Logger.info(f"HierarchyAgent: 🎯 TARGETED SCAN: {target_territory} -> Roots: {target_roots}")
+            Logger.info(
+                f"HierarchyAgent: 🎯 TARGETED SCAN: {target_territory} -> Roots: {target_roots}"
+            )
         else:
             # Universal Scope: Iterate through all roots defined in SOVEREIGN_TERRITORIES
-            target_roots = [r for r in SOVEREIGN_TERRITORIES.keys() if (self.project_root / r).exists()]
+            target_roots = [
+                r for r in SOVEREIGN_TERRITORIES.keys() if (self.project_root / r).exists()
+            ]
             Logger.info(f"HierarchyAgent: 🌍 Universal Scope active: {len(target_roots)} roots")
 
         Logger.info(
@@ -261,7 +265,9 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         self, agentic_core_path: Path, results: dict[str, Any]
     ) -> None:
         """Enforce strictly defined L2 structure for agentic_core."""
-        approved_layers_l2 = set(SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", []))
+        approved_layers_l2 = set(
+            SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", [])
+        )
 
         # Phase 1: Find all non-approved Layer (L2) folders
         actual_layers_l2 = {
@@ -397,7 +403,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
     ) -> None:
         """Relocate a single file to approved L2 layer."""
         from agentic_core.L5_safety.validators.structure_blueprint import check_forbidden_signals
-        
+
         try:
             # ARTIFACT ROUTING NEGATIVE LOGIC CHECK
             # Prevent files with forbidden extensions/keywords from being relocated
@@ -405,7 +411,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
                 content = None
                 if py_file.exists() and py_file.stat().st_size < 1_000_000:
                     content = py_file.read_text(encoding="utf-8", errors="ignore")
-                
+
                 rejection_reason = check_forbidden_signals(py_file.name, content)
                 if rejection_reason:
                     Logger.warning(
@@ -415,7 +421,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
                     return
             except Exception:
                 pass  # Non-blocking
-            
+
             target_layer_l2 = get_best_target_l1(bad_layer_l2, approved_layers_l2)
             target_path = agentic_core_path / target_layer_l2
             target_territory_l3 = get_best_target_l2(target_layer_l2, py_file.name)
@@ -491,7 +497,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
     ) -> None:
         """Relocate a single file to approved L3 territory."""
         from agentic_core.L5_safety.validators.structure_blueprint import check_forbidden_signals
-        
+
         try:
             # ARTIFACT ROUTING NEGATIVE LOGIC CHECK
             # Prevent files with forbidden extensions/keywords from being relocated
@@ -499,7 +505,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
                 content = None
                 if py_file.exists() and py_file.stat().st_size < 1_000_000:
                     content = py_file.read_text(encoding="utf-8", errors="ignore")
-                
+
                 rejection_reason = check_forbidden_signals(py_file.name, content)
                 if rejection_reason:
                     Logger.warning(
@@ -509,7 +515,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
                     return
             except Exception:
                 pass  # Non-blocking
-            
+
             target_territory_l3 = get_best_target_l2(layer_l2_name, bad_territory_l3)
             target_path = layer_l2_path / target_territory_l3
             target_path.mkdir(parents=True, exist_ok=True)
@@ -1173,15 +1179,15 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         """
         [ULTRA-HARDENED] Universal Root Purge.
         Flags EVERY file in the territory root. Nothing is allowed to sit at L3 root.
-        
+
         Detects:
         1. Forbidden folders at project root (scripts/, logs/, coverage_html/)
         2. .archived files at project root (should be in archives/)
         3. Files sitting in territory root instead of SSOT subfolders
-        
+
         Args:
             target_territory: If specified, scans territory root for structural violations
-            
+
         Returns:
             Dict with violations found and details
         """
@@ -1197,7 +1203,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         # Phase 1: Traditional project root scanning
         if not target_territory:
             Logger.info("HierarchyAgent: Scanning project root directory for SSOT violations...")
-            
+
             # 1. Check for forbidden folders at root
             for item in self.project_root.iterdir():
                 if item.is_dir() and item.name in self.FORBIDDEN_ROOT_FOLDERS:
@@ -1223,16 +1229,26 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         # Phase 2: Territory root violation scanning (Ultra-hardened)
         if target_territory:
             search_path = self.project_root / "agentic_core" / target_territory
-            Logger.info(f"HierarchyAgent: 🎯 ULTRA SCAN: Territory root violations in {target_territory}")
-            
+            Logger.info(
+                f"HierarchyAgent: 🎯 ULTRA SCAN: Territory root violations in {target_territory}"
+            )
+
             if not search_path.exists():
                 results["errors"].append(f"Territory path not found: {search_path}")
                 return results
 
             # Approved subfolders for prompt_governance per Blueprint
             # meta_prompts, templates, scripts, version_registry, agents, registry
-            approved_subs = {"meta_prompts", "templates", "scripts", "version_registry", "agents", "registry", "__pycache__"}
-            
+            approved_subs = {
+                "meta_prompts",
+                "templates",
+                "scripts",
+                "version_registry",
+                "agents",
+                "registry",
+                "__pycache__",
+            }
+
             for item in search_path.iterdir():
                 # Flag any file sitting at the root level of the territory
                 if item.is_file() and item.name not in {".gitkeep", "__init__.py"}:
@@ -1242,11 +1258,13 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
                         "type": "STRUCTURE",
                         "message": f"File '{item.name}' sitting in {target_territory} root. Must be in SSOT subfolder.",
                         "severity": "ERROR",
-                        "territory": target_territory
+                        "territory": target_territory,
                     }
                     results["territory_root_files"].append(violation)
                     results["violations_found"] += 1
-                    Logger.warning(f"   [!] TERRITORY ROOT FILE: {item.name} in {target_territory}/")
+                    Logger.warning(
+                        f"   [!] TERRITORY ROOT FILE: {item.name} in {target_territory}/"
+                    )
 
         # Phase 3: Check for duplicate folders (original logic preserved)
         # [SSOT UPDATE] scripts/ and logs/ allowed at root. Only flag if they contain conflicting content?

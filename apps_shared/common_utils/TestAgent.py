@@ -253,8 +253,6 @@ def test_attribute_collision():
 
     # Check MCPHardenedMixin uses _mcp_ prefix
     try:
-        from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import mcp_hardened_mixin
-
         mcp_attrs = [attr for attr in dir(MCPHardenedMixin) if attr.startswith("_mcp_")]
         expected_mcp = [
             "_mcp_audit_log",
@@ -284,8 +282,6 @@ def test_attribute_collision():
     # Check HealerMixin uses _healer_ prefix
     try:
         import inspect
-
-        from agentic_core.base_agents.healer_mixin import healer_mixin
 
         source = inspect.getsource(HealerMixin.__init__)
 

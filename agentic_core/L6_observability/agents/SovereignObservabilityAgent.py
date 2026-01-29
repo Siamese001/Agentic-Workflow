@@ -8,7 +8,6 @@ import json
 import random
 from typing import Any
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
 from agentic_core.base_agents.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
@@ -16,8 +15,6 @@ from agentic_core.L4_state.validation_context.context_propagation_mixin import (
     ContextPropagationMixin,
 )
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.event_emission_mixin import SovereignEvent
-from agentic_core.base_agents.redis_cache_mixin import redis_cache_mixin
 
 
 class SovereignObservabilityAgent(

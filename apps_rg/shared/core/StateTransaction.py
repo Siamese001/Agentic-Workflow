@@ -16,8 +16,6 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, TypeVar
 
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
-from agentic_core.base_agents.healer_mixin import healer_mixin
 
 Logger = logging.getLogger(__name__)
 T = TypeVar("T")

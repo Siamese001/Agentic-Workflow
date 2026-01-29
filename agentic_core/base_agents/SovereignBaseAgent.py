@@ -30,7 +30,6 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
 from agentic_core.base_agents.audit_trail_mixin import AuditTrailMixin
 from agentic_core.domain.HealerError import SovereignError, ConfigurationError
 from agentic_core.domain.CoreIntegrityVerifier import CoreIntegrityVerifier, emergency_shutdown
-from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.config.config_mixin import ConfigMixin

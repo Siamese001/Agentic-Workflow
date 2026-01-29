@@ -8,12 +8,29 @@ import asyncio
 import json
 import logging
 import time
+from dataclasses import dataclass
+from pydantic import BaseModel, Field
 
-
-    CircuitBreakerConfig,
-    CircuitBreakerFactory,
-    CircuitOpenError,
-)
+try:
+    from agentic_core.L5_safety.validators.circuit_breaker_types import (
+        CircuitBreakerConfig,
+        CircuitBreakerFactory,
+        CircuitOpenError,
+    )
+except ImportError:
+    # Fallback implementations
+    @dataclass
+    class CircuitBreakerConfig:
+        failure_threshold: int = 5
+        timeout_seconds: int = 60
+    
+    class CircuitBreakerFactory:
+        @staticmethod
+        def create(config):
+            return lambda func: func
+    
+    class CircuitOpenError(Exception):
+        pass
 
 logger = logging.getLogger(__name__)
 

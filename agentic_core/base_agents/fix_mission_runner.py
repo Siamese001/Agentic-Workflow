@@ -22,7 +22,9 @@ def fix_mission_runner() -> Any:
     for _i, line in enumerate(lines):
         if "from ops_scripts.CanonValidator" in line:
             if not skip_until_blank:
-                new_lines.append("    # GRAVITY FIX: Removed all ops_scripts.CanonValidator imports\n")
+                new_lines.append(
+                    "    # GRAVITY FIX: Removed all ops_scripts.CanonValidator imports\n"
+                )
                 new_lines.append(
                     "    # These agents need to be moved to agentic_core or refactored\n"
                 )

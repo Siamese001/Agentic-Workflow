@@ -126,9 +126,7 @@ def test_orchestrator_ssot():
         # Test unified mode
         orchestrator = get_orchestrator("unified")
         if isinstance(orchestrator, OrchestratorAgent):
-            test_pass(
-                "UNIFIED_MODE", "get_orchestrator('unified') returns OrchestratorAgent"
-            )
+            test_pass("UNIFIED_MODE", "get_orchestrator('unified') returns OrchestratorAgent")
         else:
             test_fail("UNIFIED_MODE", f"Wrong type: {type(orchestrator)}")
 
@@ -138,9 +136,7 @@ def test_orchestrator_ssot():
             orchestrator = get_orchestrator("healing")
 
             if isinstance(orchestrator, OrchestratorAgent):
-                test_pass(
-                    "HEALING_MODE", "get_orchestrator('healing') returns OrchestratorAgent"
-                )
+                test_pass("HEALING_MODE", "get_orchestrator('healing') returns OrchestratorAgent")
             else:
                 test_fail("HEALING_MODE", f"Wrong type: {type(orchestrator)}")
 

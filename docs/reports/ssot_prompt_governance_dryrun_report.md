@@ -1,7 +1,7 @@
 # SSOT Compliance Protocol Dry Run Report
 ## Territory: prompt_governance
-**Date:** January 27, 2026  
-**Execution Time:** ~6 minutes (06:09:58 - 06:16:46)  
+**Date:** January 27, 2026
+**Execution Time:** ~6 minutes (06:09:58 - 06:16:46)
 **Status:** ❌ FAILED - Excessive Location Violations
 
 ---
@@ -44,7 +44,7 @@ The FilesystemSSOTReconcilerAgent detected several structural drift issues:
 
 #### Drift Detection Results:
 - **Missing folders:** 0
-- **Unauthorized folders:** 0  
+- **Unauthorized folders:** 0
 - **Structure violations:** 0
 
 ### Agent Boot Sequence

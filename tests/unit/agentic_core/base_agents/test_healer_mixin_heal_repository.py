@@ -18,7 +18,6 @@ sys.path.insert(0, str(project_root))
 from typing import Any
 
 from agentic_core.L3_orchestration.interfaces import ExecutionContext, IOrchestratorAgent
-from agentic_core.base_agents.healer_mixin import healer_mixin
 
 
 def test_healer_mixin_has_heal_repository():

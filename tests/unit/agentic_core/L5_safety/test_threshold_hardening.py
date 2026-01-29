@@ -12,7 +12,11 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L0_maintenance.scripts.execute_ssot import ConfidenceScore, AutonomousDecisionEngine
+from agentic_core.L0_maintenance.scripts.execute_ssot import (
+    ConfidenceScore,
+    AutonomousDecisionEngine,
+)
+
 
 class TestThresholdHardening(unittest.TestCase):
     def setUp(self):
@@ -60,35 +64,36 @@ class TestThresholdHardening(unittest.TestCase):
         proceed, reason = self.engine.should_proceed_with_healing(score)
         self.assertTrue(proceed)
         self.assertIn("MEDIUM CONFIDENCE", reason)
-        
+
         # Test exactly 0.8 (should be HIGH)
         score = ConfidenceScore(value=0.8, reasoning="Exact boundary")
         proceed, reason = self.engine.should_proceed_with_healing(score)
         self.assertTrue(proceed)
         self.assertIn("HIGH CONFIDENCE", reason)
-        
+
         # Test just below 0.7 (should trigger LLM)
         score = ConfidenceScore(value=0.699, reasoning="Just below boundary")
         proceed, reason = self.engine.should_proceed_with_healing(score)
         self.assertTrue(proceed)
         self.assertIn("LLM Override", reason)
-        
+
         print("✅ PASS: Exact Boundary Conditions")
 
     def test_decision_tracking(self):
         """Test 6: Verify decisions are properly tracked."""
         score = ConfidenceScore(value=0.85, reasoning="Test tracking")
         initial_count = len(self.engine.decisions_made)
-        
+
         proceed, reason = self.engine.should_proceed_with_healing(score)
-        
+
         self.assertEqual(len(self.engine.decisions_made), initial_count + 1)
         last_decision = self.engine.decisions_made[-1]
-        self.assertEqual(last_decision['confidence'], 0.85)
-        self.assertTrue(last_decision['decision'])
-        self.assertIn("HIGH CONFIDENCE", last_decision['reason'])
-        
+        self.assertEqual(last_decision["confidence"], 0.85)
+        self.assertTrue(last_decision["decision"])
+        self.assertIn("HIGH CONFIDENCE", last_decision["reason"])
+
         print("✅ PASS: Decision Tracking")
+
 
 if __name__ == "__main__":
     print("🧪 Running Threshold Hardening Test Suite")

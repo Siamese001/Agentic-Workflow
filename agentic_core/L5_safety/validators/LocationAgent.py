@@ -99,7 +99,6 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
     from agentic_core.L5_safety.validators.structure_blueprint import (
         get_validated_project_root,
         SOVEREIGN_TERRITORIES,
-        FORBIDDEN_LAYER_PREFIXES,
     )
 
     # Auto-detect project root if not provided
@@ -125,7 +124,6 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
     root_folder = parts[0]
 
     # 2. Root folder must be whitelisted (in SOVEREIGN_TERRITORIES)
-    from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
     if root_folder not in SOVEREIGN_TERRITORIES:
         return False
 
@@ -140,6 +138,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
 
     # 5. Forbidden numbered folder pattern check (^\d+_)
     import re
+
     forbidden_pattern = re.compile(r"^\d+_")
     for part in parts:
         if forbidden_pattern.match(part):
@@ -272,8 +271,9 @@ class LocationAgent(SovereignBaseAgent):
     def _get_healer(self):
         """Get LocationHealerAgent with autonomous mode preserved."""
         from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+
         healer = LocationHealerAgent(project_root=self.project_root)
-        if hasattr(self, '_autonomous_mode'):
+        if hasattr(self, "_autonomous_mode"):
             healer._autonomous_mode = self._autonomous_mode
         return healer
 
@@ -590,7 +590,9 @@ class LocationAgent(SovereignBaseAgent):
 
         return valid_files, violations
 
-    def run(self, files: list[Path] = None, target_territory: str | None = None) -> list[tuple[Path, str]]:
+    def run(
+        self, files: list[Path] = None, target_territory: str | None = None
+    ) -> list[tuple[Path, str]]:
         """
         Full location compliance scan.
         Returns all violations (Missing roots + per-file).
@@ -611,12 +613,15 @@ class LocationAgent(SovereignBaseAgent):
                 # [STRICT SCOPE] Discover only files in the target territory path
                 target_path = self.project_root / "agentic_core" / target_territory
                 if not target_path.exists() and (self.project_root / target_territory).exists():
-                     target_path = self.project_root / target_territory
-                
+                    target_path = self.project_root / target_territory
+
                 if target_path.exists():
                     from agentic_core.utils.ssot_discovery import get_python_files
+
                     files = list(get_python_files(target_path))
-                    Logger.info(f"[LocationAgent] TARGETED DISCOVERY: {len(files)} files in {target_territory}")
+                    Logger.info(
+                        f"[LocationAgent] TARGETED DISCOVERY: {len(files)} files in {target_territory}"
+                    )
                 else:
                     files = []
             else:
@@ -1212,10 +1217,14 @@ class LocationAgent(SovereignBaseAgent):
                             )
                             # Recompute AST scores for root-cause move
                             app_rg, app_lic, terr_scores = self._recompute_ast_scores(tree)
-                            
+
                             # [HARDENING] PERSISTENT GLOBAL CANDIDATE DETECTION
-                            from agentic_core.L5_safety.validators.structure_blueprint import HEALING_CONFIG
-                            from agentic_core.L4_state.validation_context.RuntimeStateGuard import RuntimeStateGuard
+                            from agentic_core.L5_safety.validators.structure_blueprint import (
+                                HEALING_CONFIG,
+                            )
+                            from agentic_core.L4_state.validation_context.RuntimeStateGuard import (
+                                RuntimeStateGuard,
+                            )
 
                             # Initialize Guard (Singleton behavior scoped to agent instance)
                             if not hasattr(self, "state_guard"):
@@ -1229,22 +1238,27 @@ class LocationAgent(SovereignBaseAgent):
                             shared_upgrade_count = self.state_guard.get_metric("upgrade_count", 0)
 
                             # 1. Check if file is significant enough to score (Dust Threshold)
-                            with open(path, 'r') as f:
+                            with open(path) as f:
                                 if len(f.readlines()) < HEALING_CONFIG["dust_threshold"]:
-                                    return # Skip boilerplate/noise
+                                    return  # Skip boilerplate/noise
 
                             # 2. Check Circuit Breaker before shared upgrade
                             if (app_rg + app_lic) < AST_DOMAIN_HIT_THRESHOLD * 0.5:
-                                if shared_upgrade_count >= HEALING_CONFIG["max_shared_upgrades_per_run"]:
-                                    Logger.error(f"CIRCUIT BREAKER TRIPPED: Shared upgrade limit reached at {path}")
+                                if (
+                                    shared_upgrade_count
+                                    >= HEALING_CONFIG["max_shared_upgrades_per_run"]
+                                ):
+                                    Logger.error(
+                                        f"CIRCUIT BREAKER TRIPPED: Shared upgrade limit reached at {path}"
+                                    )
                                     return
 
                                 target = self.project_root / "apps_shared" / "utils" / path.name
                                 move_result = self.safe_move(path, target, dry_run=False)
-                                
+
                                 # Atomic State Update via Guard
                                 self.state_guard.increment_metric("upgrade_count")
-                                
+
                                 additional_moves.append(move_result)
                             elif (app_rg + app_lic) >= AST_DOMAIN_HIT_THRESHOLD * 0.8:
                                 dominant = "apps_rg" if app_rg >= app_lic else "apps_lic"
@@ -1445,7 +1459,7 @@ class LocationAgent(SovereignBaseAgent):
                 if kw in filename_lower:
                     # Weak check, but better than nothing for things like "setup_final.py"
                     return folder
-        
+
         return None
 
     def cleanup_violations(
@@ -1519,12 +1533,12 @@ class LocationAgent(SovereignBaseAgent):
             # If the file is in the project root but not whitelisted, try to route it
             is_root_file = file_path.parent == self.project_root
             routed = False
-            
+
             if is_root_file and "not in ROOT_WHITELIST" in msg:
                 target_root = self._determine_target_root_from_metadata(file_path.name)
                 if target_root:
                     target_path = self.project_root / target_root / file_path.name
-                    
+
                     # Safety check: ensure target root exists or create it (if allowed)
                     target_dir = self.project_root / target_root
                     if not target_dir.exists():

@@ -23,11 +23,9 @@ from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0Mainten
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import adaptive_execution_mixin
 
 # Sovereign Hardening Mixins – Phase 35
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.self_diagnosis_mixin import self_diagnosis_mixin
 
 
 @dataclass

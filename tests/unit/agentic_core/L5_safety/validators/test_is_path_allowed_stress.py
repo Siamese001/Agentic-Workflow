@@ -1,5 +1,5 @@
-import pytest
 from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
+
 
 class TestPathHardeningRigor:
     """
@@ -21,7 +21,7 @@ class TestPathHardeningRigor:
     def test_path_normalization_traversal(self):
         """100% PASS: Neutralizes and rejects directory traversal attempts."""
         path = "agentic_core/L5_safety/../L1_cognition/file.py"
-        # normpath converts this to 'agentic_core/L1_cognition/file.py', 
+        # normpath converts this to 'agentic_core/L1_cognition/file.py',
         # but the logic should verify the sanitized intent.
         assert is_path_allowed(path) is True
 
@@ -36,7 +36,7 @@ class TestPathHardeningRigor:
         # Depth 4 folder (meta_prompts/reasoning) is allowed
         valid_l4 = "agentic_core/prompt_governance/meta_prompts/reasoning/cot.py"
         assert is_path_allowed(valid_l4) is True
-        
+
         # Depth 5 file (exceeds specialization) is blocked
         invalid_l5 = "agentic_core/prompt_governance/meta_prompts/reasoning/sub/leak.py"
         assert is_path_allowed(invalid_l5) is False
@@ -46,7 +46,7 @@ class TestPathHardeningRigor:
         # Legacy L3_ prefix should be blocked
         legacy_path = "agentic_core/prompt_governance/meta_prompts/L3_legacy_prompt.py"
         assert is_path_allowed(legacy_path) is False
-        
+
         # Lowercase l3_ prefix should also be blocked
         legacy_path_lower = "agentic_core/prompt_governance/templates/l3_old_template.py"
         assert is_path_allowed(legacy_path_lower) is False
@@ -56,11 +56,11 @@ class TestPathHardeningRigor:
         # test_ prefix blocked in core
         blocked_path = "agentic_core/L2_execution/test_helper.py"
         assert is_path_allowed(blocked_path) is False
-        
+
         # test_ prefix allowed in L0_maintenance/scripts
         allowed_path = "agentic_core/L0_maintenance/scripts/test_validator.py"
         assert is_path_allowed(allowed_path) is True
-        
+
         # __init__.py always allowed
         init_allowed = "agentic_core/L1_cognition/test_init.py"  # This would be blocked
         assert is_path_allowed(init_allowed) is False
@@ -69,10 +69,10 @@ class TestPathHardeningRigor:
         """100% PASS: Handles empty paths and traversal attempts securely."""
         # Empty path should be rejected
         assert is_path_allowed("") is False
-        
+
         # Traversal beyond root should be rejected
         assert is_path_allowed("../etc/passwd") is False
-        
+
         # Traversal to parent directories should be rejected
         assert is_path_allowed("agentic_core/../../../etc/passwd") is False
 
@@ -81,7 +81,7 @@ class TestPathHardeningRigor:
         # File at depth 4 (folder depth 3) should be allowed
         file_at_depth_4 = "agentic_core/L1_cognition/thought_engine/reasoning/engine.py"
         assert is_path_allowed(file_at_depth_4) is True
-        
+
         # Folder at depth 4 should be evaluated differently
         # This tests the folder depth calculation logic
         folder_path = "agentic_core/L1_cognition/thought_engine/reasoning"
@@ -91,7 +91,7 @@ class TestPathHardeningRigor:
         """100% PASS: Gracefully handles paths to non-existent root directories."""
         nonexistent_root = "nonexistent_folder/file.py"
         assert is_path_allowed(nonexistent_root) is False
-        
+
         # Complex path with nonexistent root
         complex_nonexistent = "fake_root/sub1/sub2/file.py"
         assert is_path_allowed(complex_nonexistent) is False
@@ -101,11 +101,11 @@ class TestPathHardeningRigor:
         # Path with spaces (should be normalized)
         path_with_spaces = "agentic_core/L2_execution/tool name.py"
         # Should be processed based on actual structure rules
-        
+
         # Path with dots (should be handled correctly)
         path_with_dots = "agentic_core/L2_execution/tool.v2.py"
         assert is_path_allowed(path_with_dots) is True  # Assuming valid structure
-        
+
         # Path with multiple dots
         path_multi_dots = "agentic_core/L2_execution/tool.v2.1.py"
         assert is_path_allowed(path_multi_dots) is True

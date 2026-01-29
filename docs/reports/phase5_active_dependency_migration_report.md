@@ -8,7 +8,7 @@
 
 Successfully migrated all active dependencies from legacy agents (`ImportAgent`, `ImportLockAgent`, `BiasAuditorAgent`) to their Unified counterparts. All three legacy agent files have been deleted after comprehensive refactoring across 9 files.
 
-**Result:** 
+**Result:**
 - **3 legacy agents deleted** ✅
 - **9 files refactored** ✅
 - **0 broken imports** ✅
@@ -48,7 +48,7 @@ Successfully migrated all active dependencies from legacy agents (`ImportAgent`,
 
 #### File: `agentic_core/L5_safety/validators/HealingStrategy.py`
 **Lines:** 228-234
-**Change:** 
+**Change:**
 ```python
 # OLD
 from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent

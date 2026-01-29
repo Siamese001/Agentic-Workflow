@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 StructureHealerAgent - Structure Healing & Repair
@@ -117,24 +116,24 @@ class StructureHealerAgent(SovereignBaseAgent):
     ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Wraps heal_all to provide the standard Sovereign interface.
         """
         # Update config based on args
         self._agent_config.dry_run = dry_run
-        
+
         actions = []
         # Similar to CodeHealer, we expect a file_path in kwargs or handle project-wide
         # For now, if file_path is provided, we heal it.
         target_file = kwargs.get("file_path")
         if target_file:
             actions = self.heal_all(Path(target_file))
-        
+
         return {
             "violations": len(actions),
             "fixed": len([a for a in actions if a.applied]),
             "errors": 0,
-            "actions": [str(a) for a in actions]
+            "actions": [str(a) for a in actions],
         }
 
     def heal_all(self, file_path: Path) -> list[StructureHealingAction]:

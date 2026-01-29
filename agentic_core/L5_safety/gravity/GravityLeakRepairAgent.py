@@ -35,7 +35,7 @@ import shutil
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -163,7 +163,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
         return fixes
 
-    def apply_fix(self, fix: 'GravityFix', dry_run: bool = True) -> Dict[str, Any]:
+    def apply_fix(self, fix: GravityFix, dry_run: bool = True) -> dict[str, Any]:
         """
         Apply a gravity fix to a file using Atomic Write Safety.
         """
@@ -177,30 +177,30 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
             # Read original
             content = fix.file_path.read_text(encoding="utf-8")
-            
+
             # Apply logic
             new_content = content.replace(fix.old_import, fix.new_import)
-            
+
             if new_content == content:
                 return {"status": "no_change", "fix_type": fix.fix_type}
 
             # [ATOMIC WRITE HARDENING]
             temp_fd, temp_path = tempfile.mkstemp(dir=fix.file_path.parent, text=True)
             try:
-                with os.fdopen(temp_fd, 'w', encoding='utf-8') as tf:
+                with os.fdopen(temp_fd, "w", encoding="utf-8") as tf:
                     tf.write(new_content)
-                
+
                 # Create backup
                 backup_dir = self.project_root / "archives" / "healing_backups" / "gravity"
                 backup_dir.mkdir(parents=True, exist_ok=True)
                 backup_path = backup_dir / f"{fix.file_path.name}.{int(os.times().system)}.bak"
                 shutil.copy2(fix.file_path, backup_path)
-                
+
                 # Atomic Swap
                 os.replace(temp_path, fix.file_path)
                 self.logger.info(f"[FIXED] {fix.file_path.name} (Backup: {backup_path.name})")
                 return {"status": "fixed", "fix_type": fix.fix_type}
-                
+
             except Exception as write_err:
                 # Cleanup temp on failure
                 if os.path.exists(temp_path):
@@ -247,7 +247,10 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 StructuralValidatorAgent,
             )
 
-            from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import StructureConfig
+            from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+                StructureConfig,
+            )
+
             config = StructureConfig(project_root=self.project_root)
             enforcer = StructuralValidatorAgent(config=config)
             results = enforcer.validate_structure(self.project_root)
@@ -281,20 +284,20 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         fixes_applied = 0
 
         for v in violations[:10]:  # Limit to first 10 for safety
-            if hasattr(v, 'file_path'):
+            if hasattr(v, "file_path"):
                 fix = self.analyze_violation(
                     file_path=v.file_path,
-                    import_statement=getattr(v, 'import_statement', ''),
-                    file_layer=getattr(v, 'source_layer', ''),
-                    import_layer=getattr(v, 'target_layer', ''),
+                    import_statement=getattr(v, "import_statement", ""),
+                    file_layer=getattr(v, "source_layer", ""),
+                    import_layer=getattr(v, "target_layer", ""),
                 )
             else:
                 # Legacy dict format
                 fix = self.analyze_violation(
-                    file_path=v.get('file_path'),
-                    import_statement=v.get('import_statement', ''),
-                    file_layer=v.get('file_layer', ''),
-                    import_layer=v.get('import_layer', ''),
+                    file_path=v.get("file_path"),
+                    import_statement=v.get("import_statement", ""),
+                    file_layer=v.get("file_layer", ""),
+                    import_layer=v.get("import_layer", ""),
                 )
 
             fix_summary[fix.fix_type] += 1

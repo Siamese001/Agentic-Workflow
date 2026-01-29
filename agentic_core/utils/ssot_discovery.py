@@ -11,10 +11,10 @@ USAGE:
         get_agents_by_layer,
         get_agent_by_name,
     )
-    
+
     # Get all agent paths
     paths = get_agent_paths(project_root)
-    
+
     # Get agents filtered by layer
     l5_agents = get_agents_by_layer(project_root, "L5")
 
@@ -22,47 +22,46 @@ SSOT PRINCIPLE:
     All agent discovery should use this module instead of rglob scans.
     The agent_discovery_full.json is the Single Source of Truth.
 """
+
 from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     get_validated_project_root,
 )
-from archives.location_violations.file_utils import safe_read_file, safe_write_file
 
 Logger = logging.getLogger(__name__)
 
 # Cache for discovery data to avoid repeated file reads
-_discovery_cache: Dict[str, Any] = {}
+_discovery_cache: dict[str, Any] = {}
 _cache_timestamp: float = 0.0
 
 
 def load_agent_discovery(
-    project_root: Optional[Path] = None,
-    force_reload: bool = False
-) -> List[Dict[str, Any]]:
+    project_root: Path | None = None, force_reload: bool = False
+) -> list[dict[str, Any]]:
     """
     Load agent discovery data from SSOT JSON file.
-    
+
     Args:
         project_root: Project root path. If None, uses get_validated_project_root().
         force_reload: If True, bypass cache and reload from disk.
-        
+
     Returns:
         List of agent discovery entries.
     """
     global _discovery_cache, _cache_timestamp
-    
+
     if project_root is None:
         project_root = get_validated_project_root()
-    
+
     discovery_path = project_root / AGENT_DISCOVERY_JSON
     cache_key = str(discovery_path)
-    
+
     # Check cache validity
     if not force_reload and cache_key in _discovery_cache:
         # Check if file was modified
@@ -72,16 +71,16 @@ def load_agent_discovery(
                 return _discovery_cache[cache_key]
         except OSError:
             pass
-    
+
     # Load from disk
     if not discovery_path.exists():
         Logger.warning(f"[SSOT] Discovery file not found: {discovery_path}")
         return []
-    
+
     try:
-        with open(discovery_path, 'r', encoding='utf-8') as f:
+        with open(discovery_path, encoding="utf-8") as f:
             data = json.load(f)
-        
+
         # Normalize to list format
         if isinstance(data, list):
             agents = data
@@ -90,148 +89,145 @@ def load_agent_discovery(
         else:
             Logger.warning(f"[SSOT] Unexpected data format: {type(data)}")
             agents = []
-        
+
         # Update cache
         _discovery_cache[cache_key] = agents
         _cache_timestamp = discovery_path.stat().st_mtime
-        
+
         Logger.debug(f"[SSOT] Loaded {len(agents)} agents from discovery JSON")
         return agents
-        
+
     except Exception as e:
         Logger.error(f"[SSOT] Failed to load discovery JSON: {e}")
         return []
 
 
 def get_agent_paths(
-    project_root: Optional[Path] = None,
-    exclude_patterns: Optional[List[str]] = None
-) -> List[Path]:
+    project_root: Path | None = None, exclude_patterns: list[str] | None = None
+) -> list[Path]:
     """
     Get all agent file paths from SSOT.
-    
+
     Args:
         project_root: Project root path.
         exclude_patterns: Patterns to exclude (e.g., ['test_', 'mock_']).
-        
+
     Returns:
         List of Path objects for agent files.
     """
     if project_root is None:
         project_root = get_validated_project_root()
-    
+
     if exclude_patterns is None:
         exclude_patterns = []
-    
+
     agents = load_agent_discovery(project_root)
     paths = []
-    
+
     for agent in agents:
         path_str = agent.get("path", "")
         if not path_str:
             continue
-        
+
         # Apply exclusions
         if any(pattern in path_str for pattern in exclude_patterns):
             continue
-        
+
         agent_path = project_root / path_str
         if agent_path.exists():
             paths.append(agent_path)
-    
+
     return paths
 
 
 def get_agents_by_layer(
-    project_root: Optional[Path] = None,
-    layer: str = None
-) -> List[Dict[str, Any]]:
+    project_root: Path | None = None, layer: str = None
+) -> list[dict[str, Any]]:
     """
     Get agents filtered by layer (L0-L6).
-    
+
     Args:
         project_root: Project root path.
         layer: Layer to filter by (e.g., "L5", "L3").
-        
+
     Returns:
         List of agent entries matching the layer.
     """
     agents = load_agent_discovery(project_root)
-    
+
     if layer is None:
         return agents
-    
+
     return [
-        agent for agent in agents
+        agent
+        for agent in agents
         if agent.get("layer", "").upper() == layer.upper()
         or layer.upper() in agent.get("path", "").upper()
     ]
 
 
-def get_agent_by_name(
-    project_root: Optional[Path] = None,
-    name: str = None
-) -> Optional[Dict[str, Any]]:
+def get_agent_by_name(project_root: Path | None = None, name: str = None) -> dict[str, Any] | None:
     """
     Get a specific agent by name.
-    
+
     Args:
         project_root: Project root path.
         name: Agent name to find.
-        
+
     Returns:
         Agent entry or None if not found.
     """
     if name is None:
         return None
-    
+
     agents = load_agent_discovery(project_root)
-    
+
     for agent in agents:
         if agent.get("name", "") == name:
             return agent
         if agent.get("class_name", "") == name:
             return agent
-    
+
     return None
 
 
-def get_agent_names(project_root: Optional[Path] = None) -> Set[str]:
+def get_agent_names(project_root: Path | None = None) -> set[str]:
     """
     Get set of all agent names from SSOT.
-    
+
     Args:
         project_root: Project root path.
-        
+
     Returns:
         Set of agent names.
     """
     agents = load_agent_discovery(project_root)
     names = set()
-    
+
     for agent in agents:
         if "name" in agent:
             names.add(agent["name"])
         if "class_name" in agent:
             names.add(agent["class_name"])
-    
+
     return names
 
 
-def get_healers(project_root: Optional[Path] = None) -> List[Dict[str, Any]]:
+def get_healers(project_root: Path | None = None) -> list[dict[str, Any]]:
     """
     Get all healer agents from SSOT.
-    
+
     Args:
         project_root: Project root path.
-        
+
     Returns:
         List of healer agent entries.
     """
     agents = load_agent_discovery(project_root)
-    
+
     return [
-        agent for agent in agents
+        agent
+        for agent in agents
         if agent.get("has_healing", False)
         or agent.get("is_healer", False)
         or "Healer" in agent.get("name", "")
@@ -240,34 +236,33 @@ def get_healers(project_root: Optional[Path] = None) -> List[Dict[str, Any]]:
 
 
 def get_python_files(
-    project_root: Optional[Path] = None,
-    exclude_patterns: Optional[List[str]] = None
-) -> List[Path]:
+    project_root: Path | None = None, exclude_patterns: list[str] | None = None
+) -> list[Path]:
     """
     Get all Python files from the project.
-    
+
     Args:
         project_root: Project root path.
         exclude_patterns: Patterns to exclude (e.g., ['test_', '__pycache__']).
-        
+
     Returns:
         List of Path objects for Python files.
     """
     if project_root is None:
         project_root = get_validated_project_root()
-    
+
     if exclude_patterns is None:
-        exclude_patterns = ['__pycache__', '.pyc', 'test_', 'mock_']
-    
+        exclude_patterns = ["__pycache__", ".pyc", "test_", "mock_"]
+
     python_files = []
-    
+
     for py_file in project_root.rglob("*.py"):
         # Apply exclusions
         if any(pattern in str(py_file) for pattern in exclude_patterns):
             continue
-        
+
         python_files.append(py_file)
-    
+
     return python_files
 
 

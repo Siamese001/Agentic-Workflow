@@ -7,10 +7,10 @@ Objective:
     3. execute `git mv`.
     4. Update imports using Tokenization (Zero-Risk of string corruption).
 """
+
 import os
 import re
 from pathlib import Path
-from typing import List, Tuple, Set
 
 # --- CONFIGURATION ---
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -41,14 +41,33 @@ VERB_PATTERN = re.compile(
 
 # Expanded Protection: partial matches allowed
 PROTECTED_SUBSTRINGS = (
-    "Agent", "Orchestrator", "Validator", "Factory", "Registry", "Engine", 
-    "Model", "schema", "Config", "Exception", "Client", "Service", "Manager",
-    "router", "Fusion", "Pipeline", "Wrapper", "Adapter", "Context", "Architect"
+    "Agent",
+    "Orchestrator",
+    "Validator",
+    "Factory",
+    "Registry",
+    "Engine",
+    "Model",
+    "schema",
+    "Config",
+    "Exception",
+    "Client",
+    "Service",
+    "Manager",
+    "router",
+    "Fusion",
+    "Pipeline",
+    "Wrapper",
+    "Adapter",
+    "Context",
+    "Architect",
 )
 
+
 def to_snake_case(name: str) -> str:
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
 
 def get_project_file_map() -> dict:
     """Builds a map of {filename: Path} once to avoid repeated rglob calls."""
@@ -64,50 +83,54 @@ def get_project_file_map() -> dict:
                     file_map[f] = Path(root) / f
     return file_map
 
-def get_targets(file_map: dict) -> List[Path]:
-    if not SKIPPED_LOG.exists(): return []
-    with open(SKIPPED_LOG, 'r') as f:
+
+def get_targets(file_map: dict) -> list[Path]:
+    if not SKIPPED_LOG.exists():
+        return []
+    with open(SKIPPED_LOG) as f:
         lines = [line.strip() for line in f if line.strip()]
-    
+
     files = []
     for line in lines:
         # Clean up Windsurf tags and log suffixes
-        line = re.sub(r'\\s*', '', line)
+        line = re.sub(r"\\s*", "", line)
         if ":" in line:
             fname = line.split(":")[0].strip()
         else:
             fname = line.split(" ")[0].strip()
-            
+
         if fname in file_map:
             files.append(file_map[fname])
-            
+
     return sorted(list(set(files)))
 
-def update_imports_tokenized(renames: List[Tuple[Path, str]]):
+
+def update_imports_tokenized(renames: list[tuple[Path, str]]):
     """
-    Safely updates imports using scoped regex. 
+    Safely updates imports using scoped regex.
     Only modifies lines that start with import/from statements.
     """
     print("\n[Phase 2] Updating Imports (Tokenized Safety)...")
     rename_map = {p.stem: Path(n).stem for p, n in renames}
-    
+
     count = 0
     # We can reuse the file_map keys to find files to update
     for root, dirs, files in os.walk(ROOT_DIR):
         dirs[:] = [d for d in dirs if d not in QUARANTINED_DIRS]
         for file in files:
-            if not file.endswith(".py"): continue
+            if not file.endswith(".py"):
+                continue
             path = Path(root) / file
-            
+
             try:
-                content_str = path.read_text(encoding='utf-8')
+                content_str = path.read_text(encoding="utf-8")
                 if not any(old in content_str for old in rename_map):
                     continue
 
                 lines = content_str.splitlines(keepends=True)
                 new_lines = []
                 file_modified = False
-                
+
                 for line in lines:
                     # Scoped Regex: Only modify lines that look like imports
                     if re.match(r"^\s*(import|from)\b", line):
@@ -116,47 +139,48 @@ def update_imports_tokenized(renames: List[Tuple[Path, str]]):
                                 line = re.sub(rf"\b{old}\b", new, line)
                                 file_modified = True
                     new_lines.append(line)
-                
+
                 if file_modified:
-                    with open(path, 'w', encoding='utf-8') as f:
+                    with open(path, "w", encoding="utf-8") as f:
                         f.writelines(new_lines)
                     count += 1
 
-            except Exception as e:
+            except Exception:
                 pass
-                
+
     print(f"  Modified {count} files.")
+
 
 def main():
     file_map = get_project_file_map()
-    print(f"[*] Starting Phase 2 Analysis...")
+    print("[*] Starting Phase 2 Analysis...")
     targets = get_targets(file_map)
     print(f"[*] Loaded {len(targets)} candidates from skipped log.")
-    
+
     rename_queue = []
-    
+
     for file_path in targets:
         name = file_path.name
         stem = file_path.stem
-        
+
         # Priority Rule: Protected Substring (Stronger than verb)
         # matches "CanonValidatorEngineZlm" because "Engine" is in it
         if any(sub in name for sub in PROTECTED_SUBSTRINGS):
             continue
-            
+
         # Action Rule: Expanded Verb List
         if VERB_PATTERN.match(stem):
             new_name = to_snake_case(stem) + ".py"
             rename_queue.append((file_path, new_name))
             continue
-            
+
         # Fallback: Files starting with "Test" or "Fix" not caught above
         if stem.startswith("Test") or stem.startswith("Fix"):
-             new_name = to_snake_case(stem) + ".py"
-             rename_queue.append((file_path, new_name))
+            new_name = to_snake_case(stem) + ".py"
+            rename_queue.append((file_path, new_name))
 
     print(f"\n[Phase 2] Identifying {len(rename_queue)} actionable renames.")
-    
+
     if not rename_queue:
         print("No actions found.")
         return
@@ -165,14 +189,16 @@ def main():
     success = 0
     for old, new_name in rename_queue:
         new_path = old.parent / new_name
-        if new_path.exists(): continue
-        
+        if new_path.exists():
+            continue
+
         if os.system(f'git mv "{old}" "{new_path}"') == 0:
             print(f"  [OK] {old.name} -> {new_name}")
             success += 1
-            
+
     if success > 0:
         update_imports_tokenized(rename_queue)
+
 
 if __name__ == "__main__":
     main()

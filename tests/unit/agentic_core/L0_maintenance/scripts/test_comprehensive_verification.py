@@ -15,7 +15,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.config import DEFAULT_EXCLUDE_DIRS, HEALING_CONFIG, SOVEREIGN_REGISTRY
 from agentic_core.utils.backup_manager import BackupManager
-from agentic_core.base_agents.healer_mixin import healer_mixin
 from agentic_core.utils.ssot_discovery import get_python_files
 
 

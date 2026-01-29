@@ -73,7 +73,9 @@ class LegacyArtifacts:
 
     # SALVAGED REGEX: From OutreachEngineRefactored.py (Phase 29)
     # Used for detecting company placeholders in outreach messages
-    COMPANY_PLACEHOLDER_PATTERN: Final[Pattern] = re.compile(r"\[COMPANY\]|\{company\}|\bPLACEHOLDER\b")
+    COMPANY_PLACEHOLDER_PATTERN: Final[Pattern] = re.compile(
+        r"\[COMPANY\]|\{company\}|\bPLACEHOLDER\b"
+    )
 
     # SALVAGED REGEX: From ProfileAnalysisAgent.py (Phase 29)
     # Used for detecting weak opening phrases in professional messages

@@ -12,8 +12,6 @@ from typing import Any
 from pathlib import Path
 import json
 
-from agentic_core.L2_execution.mcp.MCPHardenedMixin import mcp_hardened_mixin
-
 
 @dataclass
 class TraceRegistry(MCPHardenedMixin):

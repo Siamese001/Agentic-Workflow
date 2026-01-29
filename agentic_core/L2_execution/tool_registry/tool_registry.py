@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Dynamic Tool Registry for Runtime Tool Discovery
 
@@ -8,38 +9,45 @@ rather than being hardcoded with a fixed set of tools.
 import inspect
 import json
 import logging
-import re
-import time
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Protocol
+from typing import Any
+from collections.abc import Callable
 import numpy as np
+
 Logger: Any = logging.getLogger(__name__)
+
 
 @dataclass
 class ToolDefinition:
     """Definition of a tool in the registry."""
+
     name: str
     description: str
     function: Callable
-    parameters: Dict[str, Any]
-    tags: List[str] = field(default_factory=list)
-    category: str = 'general'
-    embedding: Optional[List[float]] = None
+    parameters: dict[str, Any]
+    tags: list[str] = field(default_factory=list)
+    category: str = "general"
+    embedding: list[float] | None = None
     usage_count: int = 0
     success_rate: float = 1.0
+
 
 # Alias for consistency
 ToolDefinition = ToolDefinition
 
+
 @dataclass
 class ToolMatch:
     """A matched tool for a Task."""
+
     tool: ToolDefinition
     relevance_score: float
     reason: str
 
+
 # Alias for consistency
 ToolMatch = ToolMatch
+
 
 class tool_registry:
     """
@@ -48,7 +56,7 @@ class tool_registry:
     Uses semantic similarity to match Task descriptions to tool capabilities.
     """
 
-    def __init__(self, embedder, enable_caching: bool=True):
+    def __init__(self, embedder, enable_caching: bool = True):
         """
         Initialize the tool registry.
 
@@ -58,12 +66,20 @@ class tool_registry:
         """
         self.embedder = embedder
         self.enable_caching = enable_caching
-        self.tools: Dict[str, ToolDefinition] = {}
-        self._embedding_matrix: Optional[np.ndarray] = None
-        self._tool_names: List[str] = []
-        LOGGER.info('Tool registry initialized')
+        self.tools: dict[str, ToolDefinition] = {}
+        self._embedding_matrix: np.ndarray | None = None
+        self._tool_names: list[str] = []
+        LOGGER.info("Tool registry initialized")
 
-    def register(self, name: str, func: Callable, description: str, parameters: Optional[Dict[str, Any]]=None, tags: Optional[List[str]]=None, category: str='general') -> None:
+    def register(
+        self,
+        name: str,
+        func: Callable,
+        description: str,
+        parameters: dict[str, Any] | None = None,
+        tags: list[str] | None = None,
+        category: str = "general",
+    ) -> None:
         """
         Register a tool in the registry.
 
@@ -76,16 +92,29 @@ class tool_registry:
             category: Tool category
         """
         if name in self.tools:
-            LOGGER.warning(f'Tool {name} already registered, overwriting')
+            LOGGER.warning(f"Tool {name} already registered, overwriting")
         if not description:
             description: Any = self._generate_description_from_func(func)
         if not parameters:
             parameters: Any = self._generate_parameters_from_func(func)
-        tool: Any = ToolDefinition(name=name, description=description, function=func, parameters=parameters, tags=tags or [], category=category)
+        tool: Any = ToolDefinition(
+            name=name,
+            description=description,
+            function=func,
+            parameters=parameters,
+            tags=tags or [],
+            category=category,
+        )
         self.tools[name] = tool
-        LOGGER.info(f'Registered tool: {name} ({category})')
+        LOGGER.info(f"Registered tool: {name} ({category})")
 
-    async def find_tools_for_task(self, task_description: str, max_tools: int=5, min_relevance: float=0.6, categories: Optional[List[str]]=None) -> List[ToolMatch]:
+    async def find_tools_for_task(
+        self,
+        task_description: str,
+        max_tools: int = 5,
+        min_relevance: float = 0.6,
+        categories: list[str] | None = None,
+    ) -> list[ToolMatch]:
         """
         Find tools relevant to a Task using semantic search.
 
@@ -109,7 +138,9 @@ class tool_registry:
             if categories and tool.category not in categories:
                 continue
             tool_vec: Any = self._embedding_matrix[i]
-            similarity: Any = np.dot(task_vec, tool_vec) / (np.linalg.norm(task_vec) * np.linalg.norm(tool_vec))
+            similarity: Any = np.dot(task_vec, tool_vec) / (
+                np.linalg.norm(task_vec) * np.linalg.norm(tool_vec)
+            )
             if similarity >= min_relevance:
                 reason: Any = self._generate_match_reason(task_description, tool, similarity)
                 matches.append(ToolMatch(tool=tool, relevance_score=similarity, reason=reason))
@@ -120,7 +151,7 @@ class tool_registry:
         """Ensure tool embeddings are computed."""
         if self._embedding_matrix is not None:
             return
-        LOGGER.debug('Computing tool embeddings...')
+        LOGGER.debug("Computing tool embeddings...")
         embeddings = []
         tool_names = []
         for tool in self.tools.values():
@@ -131,7 +162,7 @@ class tool_registry:
             tool.embedding = embedding
         self._embedding_matrix = np.array(embeddings)
         self._tool_names = tool_names
-        LOGGER.debug(f'Computed embeddings for {len(embeddings)} tools')
+        LOGGER.debug(f"Computed embeddings for {len(embeddings)} tools")
 
     def _generate_match_reason(self, Task: str, tool: ToolDefinition, similarity: float) -> str:
         """Generate a reason why this tool matches the Task."""
@@ -139,21 +170,23 @@ class tool_registry:
         desc_lower = tool.description.lower()
         name_lower = tool.name.lower()
         reasons = []
-        if any((word in desc_lower for word in task_lower.split())):
-            reasons.append('description contains Task keywords')
-        if any((word in name_lower for word in task_lower.split())):
-            reasons.append('name matches Task keywords')
-        if 'file' in task_lower and tool.category == 'filesystem':
-            reasons.append('file operation tool')
-        elif 'api' in task_lower and tool.category == 'network':
-            reasons.append('API communication tool')
-        elif 'data' in task_lower and tool.category == 'analysis':
-            reasons.append('data analysis tool')
+        if any(word in desc_lower for word in task_lower.split()):
+            reasons.append("description contains Task keywords")
+        if any(word in name_lower for word in task_lower.split()):
+            reasons.append("name matches Task keywords")
+        if "file" in task_lower and tool.category == "filesystem":
+            reasons.append("file operation tool")
+        elif "api" in task_lower and tool.category == "network":
+            reasons.append("API communication tool")
+        elif "data" in task_lower and tool.category == "analysis":
+            reasons.append("data analysis tool")
         if not reasons:
-            reasons.append(f'semantic similarity ({similarity:.2f})')
-        return '; '.join(reasons)
+            reasons.append(f"semantic similarity ({similarity:.2f})")
+        return "; ".join(reasons)
 
-    async def get_tool_recommendations(self, Task: str, context: Optional[Dict[str, Any]]=None) -> str:
+    async def get_tool_recommendations(
+        self, Task: str, context: dict[str, Any] | None = None
+    ) -> str:
         """
         Get natural language tool recommendations for a Task.
 
@@ -166,30 +199,32 @@ class tool_registry:
         """
         matches: Any = await self.find_tools_for_task(Task)
         if not matches:
-            return 'No specific tools found for this Task.\n                . You may need to implement a custom solution.\n                .'
+            return "No specific tools found for this Task.\n                . You may need to implement a custom solution.\n                ."
         Recommendation: Any = f"Recommended tools for '{Task}':\n\n"
         for i, match in enumerate(matches, 1):
             tool: Any = match.tool
-            Recommendation += f'{i}. {tool.name}\n'
-            Recommendation += f'   Description: {tool.description}\n'
-            Recommendation += f'   Relevance: {match.relevance_score:.2f}\n'
-            Recommendation += f'   Reason: {match.reason}\n'
+            Recommendation += f"{i}. {tool.name}\n"
+            Recommendation += f"   Description: {tool.description}\n"
+            Recommendation += f"   Relevance: {match.relevance_score:.2f}\n"
+            Recommendation += f"   Reason: {match.reason}\n"
             if tool.parameters:
-                Recommendation += f'   Parameters: {json.dumps(tool.parameters, indent=6)}\n'
-            Recommendation += '\n'
+                Recommendation += f"   Parameters: {json.dumps(tool.parameters, indent=6)}\n"
+            Recommendation += "\n"
         return Recommendation
 
-    def get_tool(self, name: str) -> Optional[ToolDefinition]:
+    def get_tool(self, name: str) -> ToolDefinition | None:
         """Get a tool by name."""
         return self.tools.get(name)
 
-    def list_tools(self, category: Optional[str]=None, tags: Optional[List[str]]=None) -> List[ToolDefinition]:
+    def list_tools(
+        self, category: str | None = None, tags: list[str] | None = None
+    ) -> list[ToolDefinition]:
         """List all tools, optionally filtered."""
         tools_list: Any = list(self.tools.values())
         if category:
             tools_list: Any = [t for t in tools_list if t.category == category]
         if tags:
-            tools_list: Any = [t for t in tools_list if any((tag in t.tags for tag in tags))]
+            tools_list: Any = [t for t in tools_list if any(tag in t.tags for tag in tags)]
         return tools_list
 
     def update_tool_stats(self, name: str, success: bool) -> Any:
@@ -207,33 +242,51 @@ class tool_registry:
         """Generate description from function docstring."""
         if func.__doc__:
             return func.__doc__.strip()
-        return f'Function: {func.__name__}'
+        return f"Function: {func.__name__}"
 
-    def _generate_parameters_from_func(self, func: Callable) -> Dict[str, Any]:
+    def _generate_parameters_from_func(self, func: Callable) -> dict[str, Any]:
         """Generate parameter schema from function signature."""
         sig = inspect.signature(func)
         parameters_schema = {}
         for name, param in sig.parameters.items():
-            param_info = {'type': 'unknown'}
+            param_info = {"type": "unknown"}
             if param.annotation != inspect.Parameter.empty:
-                param_info['type'] = str(param.annotation)
+                param_info["type"] = str(param.annotation)
             if param.default == inspect.Parameter.empty:
-                param_info['required'] = True
+                param_info["required"] = True
             else:
-                param_info['default'] = str(param.default)
+                param_info["default"] = str(param.default)
             parameters_schema[name] = param_info
         return parameters_schema
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get registry statistics."""
         categories_count: Any = {}
         for tool in self.tools.values():
             categories_count[tool.category] = categories_count.get(tool.category, 0) + 1
-        return {'total_tools': len(self.tools), 'categories': categories_count, 'most_used': max(self.tools.values(), key=lambda t: t.usage_count).name if self.tools else None, 'avg_success_rate': np.mean([t.success_rate for t in self.tools.values()]) if self.tools else 0.0}
+        return {
+            "total_tools": len(self.tools),
+            "categories": categories_count,
+            "most_used": max(self.tools.values(), key=lambda t: t.usage_count).name
+            if self.tools
+            else None,
+            "avg_success_rate": np.mean([t.success_rate for t in self.tools.values()])
+            if self.tools
+            else 0.0,
+        }
 
-predefined_tool_categories: Any = {'filesystem': 'File and directory operations', 'network': 'Network and API communication', 'analysis': 'Data analysis and processing', 'utility': 'General utility functions', 'mcp': 'Model Context Protocol tools', 'ai': 'AI/ML related tools'}
 
-def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
+predefined_tool_categories: Any = {
+    "filesystem": "File and directory operations",
+    "network": "Network and API communication",
+    "analysis": "Data analysis and processing",
+    "utility": "General utility functions",
+    "mcp": "Model Context Protocol tools",
+    "ai": "AI/ML related tools",
+}
+
+
+def ast_analysis(code: str, mode: str = "audit_classes") -> dict[str, Any]:
     """AST tool — analyze Python code for patterns (e.g., snake_case classes).
 
     Args:
@@ -253,36 +306,36 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
     if mode == "audit_classes":
         # Count snake_case vs PascalCase classes
         snake_classes = sum(
-            1 for node in ast.walk(tree)
-            if isinstance(node, ast.ClassDef) and (node.name[0].islower() or '_' in node.name)
+            1
+            for node in ast.walk(tree)
+            if isinstance(node, ast.ClassDef) and (node.name[0].islower() or "_" in node.name)
         )
         pascal_classes = sum(
-            1 for node in ast.walk(tree)
-            if isinstance(node, ast.ClassDef) and node.name[0].isupper() and '_' not in node.name
+            1
+            for node in ast.walk(tree)
+            if isinstance(node, ast.ClassDef) and node.name[0].isupper() and "_" not in node.name
         )
         return {
             "snake_classes": snake_classes,
             "pascal_classes": pascal_classes,
-            "total_classes": snake_classes + pascal_classes
+            "total_classes": snake_classes + pascal_classes,
         }
 
     elif mode == "extract_names":
         # Extract all class names
-        class_names = [
-            node.name for node in ast.walk(tree)
-            if isinstance(node, ast.ClassDef)
-        ]
+        class_names = [node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
         return {"class_names": class_names, "count": len(class_names)}
 
     elif mode == "check_snake_case":
         # Check if any snake_case classes exist
         has_violations = any(
-            isinstance(node, ast.ClassDef) and (node.name[0].islower() or '_' in node.name)
+            isinstance(node, ast.ClassDef) and (node.name[0].islower() or "_" in node.name)
             for node in ast.walk(tree)
         )
         return {"has_snake_case": has_violations}
 
     return {"error": "invalid_mode", "message": f"Unknown mode: {mode}"}
+
 
 # =============================================================================
 # CODE TRANSFORMATION ENGINE (CTE) — Phase 1 Tool
@@ -290,7 +343,7 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
 # ARCHIVED: code_transform import removed
 
 
-def code_transform_tool(args: CodeTransformArgs) -> Dict[str, Any]:
+def code_transform_tool(args: CodeTransformArgs) -> dict[str, Any]:
     """
     Deterministic AST-based code transformation tool.
 
@@ -324,7 +377,7 @@ def code_transform_tool(args: CodeTransformArgs) -> Dict[str, Any]:
 
 
 # Add CTE to predefined categories
-predefined_tool_categories['code_manipulation'] = 'AST-based code transformation tools'
+predefined_tool_categories["code_manipulation"] = "AST-based code transformation tools"
 
 
 # =============================================================================
@@ -332,14 +385,11 @@ predefined_tool_categories['code_manipulation'] = 'AST-based code transformation
 # =============================================================================
 from agentic_core.L2_execution.tool_registry.tools.DependencyGraph import (
     DependencyGraphArgs,
-    GraphOperation,
     DependencyGraph,
-    quick_cycles,
-    quick_impact,
 )
 
 
-def dependency_graph_tool(args: DependencyGraphArgs) -> Dict[str, Any]:
+def dependency_graph_tool(args: DependencyGraphArgs) -> dict[str, Any]:
     """
     Dependency graph analysis tool for import/call relationships.
 
@@ -370,7 +420,7 @@ def dependency_graph_tool(args: DependencyGraphArgs) -> Dict[str, Any]:
 
 
 # Add DGA to predefined categories
-predefined_tool_categories['analysis'] = 'Code analysis and dependency tools'
+predefined_tool_categories["analysis"] = "Code analysis and dependency tools"
 
 
 # =============================================================================
@@ -379,7 +429,7 @@ predefined_tool_categories['analysis'] = 'Code analysis and dependency tools'
 # ARCHIVED: diff_generator import removed
 
 
-def diff_generator_tool(args: DiffGeneratorArgs) -> Dict[str, Any]:
+def diff_generator_tool(args: DiffGeneratorArgs) -> dict[str, Any]:
     """
     Diff/patch generation tool for reviewable changes.
 
@@ -407,7 +457,7 @@ def diff_generator_tool(args: DiffGeneratorArgs) -> Dict[str, Any]:
     return generate_diff(args)
 
 
-def create_tool_registry(embedder: Any, enable_caching: bool=True) -> tool_registry:
+def create_tool_registry(embedder: Any, enable_caching: bool = True) -> tool_registry:
     """
     Factory function to create a tool registry.
 

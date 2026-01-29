@@ -41,11 +41,15 @@ class TestCanonKeyRemoval:
             )
 
             # Verify agentic_core exists in the Unified Schema
-            assert "agentic_core" in SOVEREIGN_TERRITORIES, "agentic_core layer missing from SOVEREIGN_TERRITORIES"
-            
+            assert "agentic_core" in SOVEREIGN_TERRITORIES, (
+                "agentic_core layer missing from SOVEREIGN_TERRITORIES"
+            )
+
             # Verify L5_safety is registered as a subfolder under agentic_core
             agentic_core_subs = SOVEREIGN_TERRITORIES["agentic_core"].get("subfolders", {})
-            assert "L5_safety" in agentic_core_subs, "L5_safety subfolder missing from agentic_core in SOVEREIGN_TERRITORIES"
+            assert "L5_safety" in agentic_core_subs, (
+                "L5_safety subfolder missing from agentic_core in SOVEREIGN_TERRITORIES"
+            )
 
             self.passed += 1
             print("✅ test_ssot_registry_integrity PASSED")
@@ -57,8 +61,6 @@ class TestCanonKeyRemoval:
     def test_safety_logic_ported(self):
         """Verify SafetyInspector Logic exists in Mixin (Zero Loss)."""
         try:
-            from agentic_core.base_agents.HealerMixin import healer_mixin
-
             # Create a mock agent with HealerMixin
             class MockAgent(HealerMixin):
                 def __init__(self):
@@ -92,7 +94,6 @@ class TestCanonKeyRemoval:
     def test_validate_canon_key_router(self):
         """Verify the SSOT validation router works."""
         try:
-            from agentic_core.base_agents.HealerMixin import healer_mixin
 
             class MockAgent(HealerMixin):
                 def __init__(self):
@@ -124,7 +125,7 @@ class TestCanonKeyRemoval:
             target_file = (
                 PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "CanonBaseAgent.py"
             )
-            
+
             # Skip test if file is already deleted (Legacy extinction)
             if not target_file.exists():
                 self.passed += 1

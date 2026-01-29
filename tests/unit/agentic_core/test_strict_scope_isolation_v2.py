@@ -4,7 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
+from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
+    FilesystemSSOTReconcilerAgent,
+)
 from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
 

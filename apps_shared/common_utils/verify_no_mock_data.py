@@ -11,11 +11,18 @@ Comprehensive verification that all mock data has been eliminated:
 """
 
 import re
+from pathlib import Path
 
 # Import SSOT for dashboard directory - NO HARDCODING
-    DASHBOARD_DIR,
-    get_validated_project_root,
-)
+try:
+    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+        DASHBOARD_DIR,
+        get_validated_project_root,
+    )
+except ImportError:
+    DASHBOARD_DIR = "docs/dashboards"
+    def get_validated_project_root():
+        return Path.cwd()
 
 
 def verify_no_mock_data():

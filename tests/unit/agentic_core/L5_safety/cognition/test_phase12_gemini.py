@@ -2,6 +2,7 @@
 
 Tests for LLM JSON parsing, failure fallback, and hybrid priority.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -39,9 +40,9 @@ class TestLLMJsonParsing:
         agent = CognitiveDispositionAgent()
 
         # JSON wrapped in markdown
-        markdown_response = '''```json
+        markdown_response = """```json
 {"action": "ARCHIVE", "target_path": "archives/orphan_files", "reason": "Unclear purpose", "confidence": 0.6}
-```'''
+```"""
 
         decision = agent._parse_llm_json_response(markdown_response)
 
@@ -73,7 +74,9 @@ class TestLLMJsonParsing:
         agent = CognitiveDispositionAgent()
 
         # JSON with invalid action
-        json_response = '{"action": "INVALID_ACTION", "target_path": "somewhere", "confidence": 0.5}'
+        json_response = (
+            '{"action": "INVALID_ACTION", "target_path": "somewhere", "confidence": 0.5}'
+        )
 
         decision = agent._parse_llm_json_response(json_response)
 
@@ -247,11 +250,17 @@ class TestSubsetTestScript:
 
     def test_subset_script_exists(self):
         """[Phase 12] Verify test_cognitive_subset.py script exists."""
-        script_path = Path(__file__).parent.parent.parent / "scripts" / "maintenance" / "test_cognitive_subset.py"
+        script_path = (
+            Path(__file__).parent.parent.parent
+            / "scripts"
+            / "maintenance"
+            / "test_cognitive_subset.py"
+        )
 
         # Try to import
         try:
             import scripts.maintenance.test_cognitive_subset as subset_script
+
             assert hasattr(subset_script, "run_subset_test")
         except ImportError:
             # Check file exists

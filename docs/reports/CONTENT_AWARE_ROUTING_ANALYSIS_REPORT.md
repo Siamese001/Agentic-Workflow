@@ -2,8 +2,8 @@
 
 ## Evaluation of Proposed Strategies Against Existing Agent Capabilities
 
-**Date**: January 27, 2026  
-**Analyst**: Cascade  
+**Date**: January 27, 2026
+**Analyst**: Cascade
 **Scope**: Overlap analysis between proposed Content-Aware Routing strategies and existing Agentic-Workflow capabilities
 
 ---
@@ -57,7 +57,7 @@ The proposed Content-Aware Routing strategies represent a **significant architec
 ```python
 # Static whitelist approach
 ROOT_PROTECTED_FILES: frozenset[str] = {
-    "pyproject.toml", "README.md", "agent_discovery_full.json", 
+    "pyproject.toml", "README.md", "agent_discovery_full.json",
     # ... ~20 core infrastructure files
 }
 ```
@@ -174,7 +174,7 @@ ROOT_PROTECTED_FILES: frozenset[str] = {
 ```python
 # Extend existing ROOT_PROTECTED_FILES to inverted logic
 ROOT_IMMUTABLE_WHITELIST = frozenset({
-    "pyproject.toml", "README.md", ".gitignore", 
+    "pyproject.toml", "README.md", ".gitignore",
     # ... existing core files
 })
 
@@ -190,10 +190,10 @@ def is_unclaimed_baggage(file_path: Path) -> bool:
 class ContentAnalyzer:
     def analyze_markdown(self, file_path: Path) -> dict:
         """Parse markdown for semantic signatures."""
-        
+
     def analyze_json(self, file_path: Path) -> dict:
         """Parse JSON for structure patterns."""
-        
+
     def classify_artifact(self, file_path: Path) -> str:
         """Return target location based on content."""
 ```

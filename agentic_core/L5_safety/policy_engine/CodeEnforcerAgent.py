@@ -124,22 +124,17 @@ class CodeEnforcerAgent(SovereignBaseAgent):
     ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-            
+
         Returns:
             Dict with healing summary
         """
         # Enforcer agents enforce rules; active healing is delegated to Healer agents
         # though auto-fix logic exists in validate_file for some rules
-        return {
-            'violations_found': 0,
-            'violations_fixed': 0,
-            'errors': 0,
-            'skipped': 0
-        }
+        return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
 
     def __init__(
         self,
@@ -402,7 +397,9 @@ class CodeEnforcerAgent(SovereignBaseAgent):
         """Synchronize with SSOT registry."""
         with self._lock:
             if not self._agent_config.ssot_registry_path:
-                self._agent_config.ssot_registry_path = self.project_root / "agent_discovery_full.json"
+                self._agent_config.ssot_registry_path = (
+                    self.project_root / "agent_discovery_full.json"
+                )
 
             if self._agent_config.ssot_registry_path.exists():
                 import json

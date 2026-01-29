@@ -2,6 +2,7 @@ import unittest
 from apps_lic.tools.canon_validator import CanonValidator
 from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 
+
 class TestCanonValidator(unittest.TestCase):
     """
     MANDATORY: 100% Pass Required.
@@ -25,9 +26,10 @@ class TestCanonValidator(unittest.TestCase):
         """
         Edge Case: Verify Validator catches MRO deviations.
         """
-        class BadAgent: 
+
+        class BadAgent:
             pass
-            
+
         with self.assertRaises(TypeError) as cm:
             CanonValidator._check_mro(BadAgent)
         self.assertIn("MRO Violation", str(cm.exception))
@@ -37,22 +39,25 @@ class TestCanonValidator(unittest.TestCase):
         """
         Edge Case: Verify Validator catches agents that forgot to seal.
         """
+
         # Mock class that mimics LICAgentBase but forgets to seal
         class UnsealedAgent(HOP1ProfileAnalysisAgent):
             def __post_init__(self):
                 # Skip the parent's __post_init__ which would seal the agent
                 # Just call the grandparent to avoid seal engagement
                 from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+
                 LICAgentBase.__post_init__(self)
-                
+
         try:
             # This should fail because the agent isn't sealed
             CanonValidator._check_seal_contract(UnsealedAgent)
             self.fail("Validator should have caught unsealed agent")
         except RuntimeError as e:
             self.assertIn("Sovereign Seal not engaged", str(e))
-            
+
         print("SUCCESS: Validator caught Unsealed Agent (Simulated).")
+
 
 if __name__ == "__main__":
     unittest.main()

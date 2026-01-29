@@ -14,9 +14,7 @@ def purge_legacy_artifacts() -> None:
     required_rescues = ["CompetitorReconAgent.py", "StackModernizationAgent.py"]
     for agent in required_rescues:
         if not os.path.exists(os.path.join(ssot_dir, agent)):
-            print(
-                f"CRITICAL STOP: {agent} missing from canonical SSOT engines/ folder."
-            )
+            print(f"CRITICAL STOP: {agent} missing from canonical SSOT engines/ folder.")
             print("Executing forced healing to resolve path mismatch.")
             sys.exit(1)
 

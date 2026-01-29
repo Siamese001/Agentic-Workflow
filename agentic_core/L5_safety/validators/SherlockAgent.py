@@ -154,4 +154,3 @@ Return ONLY the python code for {primary}.
 
 # Legacy classes removed 2026-01-06 - use standalone TestPilotAgent.py and ToolsmithAgent.py
 # from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin

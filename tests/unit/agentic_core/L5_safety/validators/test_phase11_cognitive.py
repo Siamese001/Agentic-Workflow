@@ -2,6 +2,7 @@
 
 Tests for cognitive agent integration, gravity fallback, and disposition decision structure.
 """
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -23,6 +24,7 @@ class TestCognitiveAgentIntegration:
     def reset_singleton(self):
         """Reset singleton before each test."""
         from agentic_core.utils.sovereign_scanner import SovereignScanner
+
         SovereignScanner.reset_instance()
         yield
         SovereignScanner.reset_instance()
@@ -134,6 +136,7 @@ class TestGravityFallbackToCognition:
     def reset_singleton(self):
         """Reset singleton before each test."""
         from agentic_core.utils.sovereign_scanner import SovereignScanner
+
         SovereignScanner.reset_instance()
         yield
         SovereignScanner.reset_instance()
@@ -392,6 +395,7 @@ class TestPhase11Integration:
     def reset_singleton(self):
         """Reset singleton before each test."""
         from agentic_core.utils.sovereign_scanner import SovereignScanner
+
         SovereignScanner.reset_instance()
         yield
         SovereignScanner.reset_instance()

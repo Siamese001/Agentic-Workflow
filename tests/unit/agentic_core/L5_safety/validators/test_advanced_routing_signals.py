@@ -1,5 +1,9 @@
-import pytest
-from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES, is_app_specific_file, get_correct_app_path
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    SOVEREIGN_TERRITORIES,
+    is_app_specific_file,
+    get_correct_app_path,
+)
+
 
 class TestAdvancedRoutingHardening:
     """
@@ -12,8 +16,10 @@ class TestAdvancedRoutingHardening:
         """100% PASS: Ensures .jinja files with system_prompt content route to meta_prompts."""
         # Signature: Contains 'sovereign_instruction' or 'persona_definition'
         content = "{% block instructions %} sovereign_instruction: Act as SSOT... {% endblock %}"
-        signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/prompt_governance/meta_prompts"]
-        
+        signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
+            "agentic_core/prompt_governance/meta_prompts"
+        ]
+
         # Verify content-aware signal exists
         assert "sovereign_instruction" in signals["keyword_signals"]
         assert "persona_definition" in signals["keyword_signals"]
@@ -23,8 +29,10 @@ class TestAdvancedRoutingHardening:
     def test_registry_lockfile_dna(self):
         """100% PASS: Ensures JSON manifests with 'checksum_manifest' route to version_registry."""
         # Signature: DNA includes 'registry_version' and 'checksum_manifest'
-        signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/prompt_governance/version_registry"]
-        
+        signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
+            "agentic_core/prompt_governance/version_registry"
+        ]
+
         assert "registry_version" in signals["json_keys"]
         assert "checksum_manifest" in signals["json_keys"]
         assert signals["weight"] == 10  # Specificity over generic data/logs
@@ -33,8 +41,10 @@ class TestAdvancedRoutingHardening:
     def test_persona_base_class_gravity(self):
         """100% PASS: Validates that classes inheriting from BasePersona route to meta_prompts."""
         content = "class ArchitectPersona(BasePersona): pass"
-        signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/prompt_governance/meta_prompts"]
-        
+        signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
+            "agentic_core/prompt_governance/meta_prompts"
+        ]
+
         assert "BasePersona" in signals["base_classes"]
         assert ".*Persona.*" in signals["class_patterns"]
 
@@ -43,16 +53,18 @@ class TestAdvancedRoutingHardening:
         """100% PASS: Ensures rg_ scripts found in core are flagged for apps_rg/scripts."""
         filename = "rg_resume_builder.py"
         # Current logic in LocationAgent uses get_correct_app_path()
-        
+
         assert is_app_specific_file(filename) is True
-        assert get_correct_app_path(filename) == "apps_rg/engines" # SSOT target
+        assert get_correct_app_path(filename) == "apps_rg/engines"  # SSOT target
 
     # --- TEST 5: The "Validation Context Spike" (L4 State Capture) ---
     def test_validation_context_routing_accuracy(self):
         """100% PASS: Ensures ValidationContext classes route to L4_state/validation_context."""
         # Signature: base_classes includes 'ValidationContext'
-        signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/L4_state/validation_context"]
-        
+        signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
+            "agentic_core/L4_state/validation_context"
+        ]
+
         assert "ValidationContext" in signals["base_classes"]
         assert ".*Context.*" in signals["class_patterns"]
         assert signals["weight"] == 8
@@ -61,9 +73,12 @@ class TestAdvancedRoutingHardening:
     def test_prompt_utility_vs_l0_maintenance(self):
         """100% PASS: Ensures specialized prompt scripts beat L0 generic utility weights."""
         # L0 generic scripts have a weight of 9. Prompt scripts have 12.
-        prompt_script_signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/prompt_governance/scripts"]
-        l0_generic_weight = 9 # Constant from blueprint audit
-        
-        assert prompt_script_signals["weight"] > l0_generic_weight, \
+        prompt_script_signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
+            "agentic_core/prompt_governance/scripts"
+        ]
+        l0_generic_weight = 9  # Constant from blueprint audit
+
+        assert prompt_script_signals["weight"] > l0_generic_weight, (
             "CRITICAL FAILURE: Specialized prompt scripts will be lost to L0 Maintenance gravity."
+        )
         assert "jinja2" in prompt_script_signals["content_signals"]["imports"]

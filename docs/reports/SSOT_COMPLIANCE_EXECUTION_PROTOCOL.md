@@ -38,7 +38,7 @@ except ImportError as e:
 # Import all required agents in execution order
 try:
     from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
-    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent  
+    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
     from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
     from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent
     from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
@@ -173,9 +173,9 @@ print(f"  Orphaned agents: {len(governance_report['orphaned_agents'])}")
 
 logger.info("🛡️ ARCHITECTURE GOVERNANCE RESULTS:")
 
-violations_count = (len(governance_report['layer_violations']) + 
+violations_count = (len(governance_report['layer_violations']) +
                     len(governance_report['naming_violations']))
-                    
+
 if violations_count > 0:
     logger.error(f"❌ FOUND {violations_count} ARCHITECTURE VIOLATIONS")
 else:
@@ -219,15 +219,15 @@ if healing_plan['requires_healing']:
     print(f"  Naming fixes: {len(healing_plan['naming_fixes'])}")
     print(f"  Structure fixes: {len(healing_plan['structure_fixes'])}")
     print(f"  Import fixes: {len(healing_plan['import_fixes'])}")
-    
+
     logger.info("🔧 HEALING PLAN GENERATED:")
     logger.info(f"  Naming fixes: {len(healing_plan['naming_fixes'])}")
-    
+
     healing_confirmation = input("Execute healing plan? (y/N): ")
     if healing_confirmation.lower() == 'y':
         healing_result = arch_governor.execute_healing_plan(healing_plan)
         logger.info(f"✅ Healing completed: {healing_result['success']}")
-        
+
         # Re-verify immediately after healing
         post_heal_audit = arch_governor.comprehensive_territory_audit(["prompt_governance"])
         if post_heal_audit['violations']:
@@ -265,7 +265,7 @@ drift_resolved = len(final_drift_check.get('violations', [])) == 0
 if not drift_resolved:
     logger.critical("❌ FINAL VALIDATION FAILED: DRIFT STILL EXISTS")
     sys.exit(1)
-    
+
 logger.info("✅ Territory secured and compliant.")
 ```
 
@@ -283,7 +283,7 @@ compliance_certificate = {
     'architecturally_compliant': final_location_check['overall_compliant'],
     'agents_executed': [
         'FilesystemSSOTReconcilerAgent',
-        'LocationAgent', 
+        'LocationAgent',
         'HierarchyAgent',
         'ArchitectureGovernorAgent',
         'SystemArchitectAgent'
@@ -304,7 +304,7 @@ print(json.dumps(compliance_certificate, indent=2))
 # Execute same sequence for all other territories
 territories = [
     'agentic_core/base_agents',
-    'agentic_core/L1_cognition', 
+    'agentic_core/L1_cognition',
     'agentic_core/L2_execution',
     'agentic_core/L3_orchestration',
     'agentic_core/L4_state',

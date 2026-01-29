@@ -12,7 +12,6 @@ import json
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 import hashlib
 import logging
@@ -93,7 +92,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
 
     def __init__(self, placement_validator=None) -> None:
         """Initialize the instance.
-        
+
         HARDENING:
         1. Syncs with immutable Constitution on startup.
         2. Uses injected placement_validator to avoid L5 upward coupling.
@@ -102,7 +101,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
         self._content_cache: dict[str, str] = {}  # cache for content hashing
         self.similarity_threshold = SIMILARITY_THRESHOLD
         self.embedding_model = EMBEDDING_MODEL
-        
+
         # Dependency Injection for placement validation (Anti-Gravity)
         self.validator = placement_validator or _default_placement_validator
 
@@ -112,23 +111,23 @@ class PromptRegistryAgent(SovereignBaseAgent):
             Logger.warning(f"PromptRegistry placement violation: {reason}")
 
         self._load_registry()
-        
+
         # HARDENING: Sync with immutable Constitution
         if CONSTITUTION_AVAILABLE:
             self._sync_with_constitution()
 
     def _sync_with_constitution(self) -> None:
         """Sync runtime registry with immutable Constitution.
-        
+
         HARDENING: Ensures runtime state reflects canonical prompt definitions.
         This is a one-way sync: Constitution -> Registry (never reverse).
         """
         if not CONSTITUTION_AVAILABLE:
             return
-            
+
         constitution = get_constitution()
         Logger.info(f"Syncing registry with {len(constitution.prompts)} canonical prompts")
-        
+
         # Sync canonical prompts from Constitution
         for prompt_key, prompt_entry in constitution.prompts.items():
             # Check if this prompt is already registered
@@ -137,7 +136,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
                 self.register_prompt(
                     template_name=prompt_key,
                     version=prompt_entry.version,
-                    purpose=f"Canonical prompt from Constitution",
+                    purpose="Canonical prompt from Constitution",
                     territory="constitution",
                     active=True,
                     author="PromptConstitution",

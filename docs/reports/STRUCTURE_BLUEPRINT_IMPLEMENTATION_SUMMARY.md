@@ -15,7 +15,7 @@ Successfully implemented all recommendations from both analysis documents into t
 
 ### **2. Core Subfolder Strategy (Context-Dependent)**
 - **L2_execution**: Added `core` subfolder ✅
-- **L5_safety**: Kept `core` subfolder ✅  
+- **L5_safety**: Kept `core` subfolder ✅
 - **L6_observability**: Added `core` subfolder ✅
 - **Other domains**: No core (simpler domains) ✅
 

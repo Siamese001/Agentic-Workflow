@@ -280,11 +280,13 @@ class HealerMixin:
         if key_id in SAFETY_VALIDATION_REGISTRY:
             rule = SAFETY_VALIDATION_REGISTRY[key_id]
             method_name = rule.get("method")
-            
+
             if not hasattr(self, method_name):
-                Logger.warning(f"HealerMixin missing implementation for {method_name} (Key {key_id})")
+                Logger.warning(
+                    f"HealerMixin missing implementation for {method_name} (Key {key_id})"
+                )
                 return True, []
-            
+
             validator = getattr(self, method_name)
             try:
                 return validator(context)

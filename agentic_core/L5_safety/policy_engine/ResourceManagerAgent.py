@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 ResourceManagerAgent - Thread-Safe Resource Management
@@ -126,11 +125,11 @@ class ResourceManagerAgent(SovereignBaseAgent):
     ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Args:
             dry_run: If True, only report violations without fixing
             execute: If True, apply fixes
-            
+
         Returns:
             Dict with healing summary
         """

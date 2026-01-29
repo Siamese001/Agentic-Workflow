@@ -2102,7 +2102,7 @@ def check_compliance_gate(agents: list[dict], parse_errors: list[str]) -> int:
     log.info("=" * 80)
     if issues:
         log.error(f"Compliance Violation Detected in L-Architecture: {issues}")
-        # Calculate weighted compliance score: 
+        # Calculate weighted compliance score:
         # $C = 1 - \frac{V}{A}$ where $V$ is violations and $A$ is total agents.
         score = 1 - (len(issues) / len(agents))
         log.info(f"Final Compliance Score: {score:.4f}")

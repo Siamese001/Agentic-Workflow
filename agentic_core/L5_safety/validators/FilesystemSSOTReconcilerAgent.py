@@ -291,7 +291,10 @@ class FilesystemSSOTReconcilerAgent(
             return False, self._create_rejected_result(proposals, "Reconciliation aborted by user")
 
     async def enforce_gospel(
-        self, auto_apply: bool = False, interactive: bool = True, target_territory: str | None = None
+        self,
+        auto_apply: bool = False,
+        interactive: bool = True,
+        target_territory: str | None = None,
     ) -> dict[str, Any]:
         """Main entry point: Align filesystem to match the Gospel (blueprint)."""
         scope_msg = f"Targeting: {target_territory}" if target_territory else "Global Scan"
@@ -332,7 +335,7 @@ class FilesystemSSOTReconcilerAgent(
     async def _scan_filesystem(self, target_territory: str | None = None) -> None:
         """
         Scan actual folder structure with strict scope targeting.
-        
+
         Args:
             target_territory: If provided, restricts discovery to the relevant root folder.
         """
@@ -343,6 +346,7 @@ class FilesystemSSOTReconcilerAgent(
         # [STRICT SCOPE] Filter roots based on target territory
         if target_territory:
             from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
+
             # Logic: If territory is a root (apps_lic), scan only that. Else target agentic_core.
             if target_territory in SOVEREIGN_TERRITORIES and target_territory != "agentic_core":
                 roots_to_scan = [target_territory]

@@ -22,11 +22,11 @@ def analyze_file_content(file_path):
     """Parse AST and extract semantic structure - CRITICAL for accuracy"""
     with open(file_path) as f:
         tree = ast.parse(f.read())
-    
+
     classes = []
     functions = []
     constants = []
-    
+
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
             classes.append({
@@ -41,7 +41,7 @@ def analyze_file_content(file_path):
             for target in node.targets:
                 if isinstance(target, ast.Name) and target.id.isupper():
                     constants.append(target.id)
-    
+
     return {'classes': classes, 'functions': functions, 'constants': constants}
 ```
 
@@ -51,23 +51,23 @@ def classify_file_intent(analysis):
     """Classify based on CONTENT, not filename - LESSON LEARNED"""
     classes = analysis['classes']
     functions = analysis['functions']
-    
+
     # PRIMARY LOGIC: Class Export Detection
     if len(classes) == 1 and classes[0]['has_methods']:
         if classes[0]['is_agent']:
             return "Primary Agent Export", 0.95  # HIGH confidence
         else:
             return "Primary Class Export", 0.75  # MEDIUM confidence
-    
+
     elif functions and not classes:
         return "Utility Module", 0.90  # HIGH confidence
-    
+
     elif len(classes) > 1 and functions:
         return "Mixed Content", 0.50  # LOW confidence - MANUAL REVIEW
-    
+
     elif constants and not classes and not functions:
         return "Data/Config Module", 0.85  # HIGH confidence
-    
+
     else:
         return "Unclassified", 0.30  # VERY LOW confidence
 ```
@@ -76,17 +76,17 @@ def classify_file_intent(analysis):
 ```python
 def validate_naming_compliance(filename, intent, confidence):
     """Cross-reference naming with semantic intent - CRITICAL VALIDATION"""
-    
+
     # Detect naming convention
     if filename.replace('.py', '').replace('_', '').isalpha():
         if filename[0].isupper():
             naming = "PascalCase"
         else:
             naming = "snake_case"
-    
+
     # CORE VALIDATION RULES
     violations = []
-    
+
     # Rule 1: Primary Class/Agent exports MUST be in PascalCase files
     if "Primary Class Export" in intent and naming != "PascalCase":
         violations.append({
@@ -94,23 +94,23 @@ def validate_naming_compliance(filename, intent, confidence):
             'severity': "HIGH",
             'rationale': f"Primary class export found in snake_case file. Violates: 'PascalCase files should contain primary class/agent exports'"
         })
-    
-    # Rule 2: Utility modules MUST be in snake_case files  
+
+    # Rule 2: Utility modules MUST be in snake_case files
     if "Utility Module" in intent and naming != "snake_case":
         violations.append({
-            'type': "UTILITY_IN_PASCAL_CASE", 
+            'type': "UTILITY_IN_PASCAL_CASE",
             'severity': "HIGH",
             'rationale': f"Utility module found in PascalCase file. Violates: 'snake_case files should contain utilities/scripts'"
         })
-    
+
     # Rule 3: Mixed content requires manual review
     if "Mixed Content" in intent:
         violations.append({
             'type': "MIXED_CONTENT",
-            'severity': "MEDIUM", 
+            'severity': "MEDIUM",
             'rationale': "Mixed classes and functions requires architectural decision"
         })
-    
+
     return violations, confidence < 0.8  # Flag low confidence for manual review
 ```
 
@@ -147,7 +147,7 @@ DISPOSITION TABLE:
 
 **CRITICAL SUCCESS CRITERIA**:
 - ✅ Must detect `pii.py` violation (primary class in snake_case file)
-- ✅ Must detect `injection.py` violation (primary class in snake_case file)  
+- ✅ Must detect `injection.py` violation (primary class in snake_case file)
 - ✅ Must detect `middleware.py` violation (primary class in snake_case file)
 - ✅ Must flag mixed content files for manual review
 - ✅ Must provide confidence scores for each classification

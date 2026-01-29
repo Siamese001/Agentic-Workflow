@@ -40,7 +40,7 @@ def __init__(self, message: str, error_code: str = "SOVEREIGN_ERROR"):
 # AFTER (Standard Exception behavior preserved)
 def __init__(self, message: str, error_code: str = "SOVEREIGN_ERROR"):
     super().__init__(message)  # Critical: Maintain standard Exception behavior
-    self.message = message 
+    self.message = message
     self.error_code = error_code
 ```
 
@@ -91,7 +91,7 @@ COMPANY_PLACEHOLDER_PATTERN: Final[Pattern] = re.compile(r"\[COMPANY\]|\{company
 ### Identity Protection
 
 - ✅ **Name Field**: Frozen (`frozen=True`) - Identity immutable
-- ✅ **Role Field**: Frozen (`frozen=True`) - Identity immutable  
+- ✅ **Role Field**: Frozen (`frozen=True`) - Identity immutable
 - ✅ **ID Field**: Frozen (`frozen=True`) - UUID identity protected
 - ✅ **Created At**: Frozen (`frozen=True`) - Audit timestamp immutable
 

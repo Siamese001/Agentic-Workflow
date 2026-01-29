@@ -2,10 +2,10 @@
 agentic_core/L0_maintenance/scripts/test_phase3_base_class_archiving.py
 -----------------------------------------------------------------------
 FIX: Implements Functional Naming.
-REMOVED: 'test_l3_inheritance', 'test_l2_inheritance' etc. renamed to 
+REMOVED: 'test_l3_inheritance', 'test_l2_inheritance' etc. renamed to
          'test_orchestration_inheritance', 'test_execution_inheritance'.
 """
-import inspect
+
 import sys
 from pathlib import Path
 
@@ -59,25 +59,35 @@ class TestPhase3_BaseClassArchiving:
         """Legacy layer-specific base agents should be consolidated into SovereignBaseAgent."""
         try:
             from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-            
+
             # Verify SovereignBaseAgent is the SSOT
             assert SovereignBaseAgent is not None
-            
+
             # Legacy base agents (L1-L6) should NOT exist as separate files
             # This is the expected state after Phase 3 consolidation
             legacy_paths = [
-                PROJECT_ROOT / "agentic_core" / "L1_cognition" / "thought_engine" / "L1CognitionBaseAgent.py",
+                PROJECT_ROOT
+                / "agentic_core"
+                / "L1_cognition"
+                / "thought_engine"
+                / "L1CognitionBaseAgent.py",
                 PROJECT_ROOT / "agentic_core" / "L2_execution" / "L2ExecutionBaseAgent.py",
-                PROJECT_ROOT / "agentic_core" / "L3_orchestration" / "workflow_engines" / "L3OrchestrationBaseAgent.py",
+                PROJECT_ROOT
+                / "agentic_core"
+                / "L3_orchestration"
+                / "workflow_engines"
+                / "L3OrchestrationBaseAgent.py",
             ]
-            
+
             # Count how many legacy files still exist (should be 0 after full consolidation)
             existing_legacy = [p for p in legacy_paths if p.exists()]
-            
+
             if len(existing_legacy) == 0:
                 print("  ✓ All legacy base agents consolidated")
             else:
-                print(f"  ⚠ {len(existing_legacy)} legacy base agent files still exist (may be tombstones)")
+                print(
+                    f"  ⚠ {len(existing_legacy)} legacy base agent files still exist (may be tombstones)"
+                )
 
             self.passed += 1
             print("✅ test_legacy_base_agents_consolidated PASSED")
@@ -91,12 +101,16 @@ class TestPhase3_BaseClassArchiving:
         try:
             # Check if CanonBaseAgent exists in expected locations
             canon_paths = [
-                PROJECT_ROOT / "agentic_core" / "L2_execution" / "tool_registry" / "CanonBaseAgent.py",
+                PROJECT_ROOT
+                / "agentic_core"
+                / "L2_execution"
+                / "tool_registry"
+                / "CanonBaseAgent.py",
                 PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "CanonBaseAgent.py",
             ]
-            
+
             existing = [p for p in canon_paths if p.exists()]
-            
+
             if len(existing) > 0:
                 print(f"  ✓ Found {len(existing)} CanonBaseAgent file(s)")
 
@@ -106,7 +120,6 @@ class TestPhase3_BaseClassArchiving:
             self.failed += 1
             self.errors.append(f"test_canon_base_agent_exists: {e}")
             print(f"❌ test_canon_base_agent_exists FAILED: {e}")
-
 
     def run_all(self):
         """Run all tests."""

@@ -103,7 +103,7 @@ def is_excepted_from_key(self, file_path: str, key: int) -> bool:
 
 **Zero Ghost References Found:**
 - ✅ No `CANON_KEY_EXCEPTIONS` references
-- ✅ No `ACTIVE_CANON_KEYS` references  
+- ✅ No `ACTIVE_CANON_KEYS` references
 - ✅ No `CANON_KEY_TO_FOLDER_MAP` references
 - ✅ No `is_excepted_from_key` methods
 

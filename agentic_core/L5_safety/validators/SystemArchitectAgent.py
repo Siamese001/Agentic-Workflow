@@ -5,7 +5,6 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 from dataclasses import dataclass
 
@@ -106,9 +105,12 @@ class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
         def validate_canonical_hierarchy(proj_root):
             # MOCK TRIGGER: If in a temp test directory, bypass strict hierarchy check
             if "pytest" in str(proj_root) or "tmp" in str(proj_root):
-                Logger.info("Test Environment Detected: Bypassing strict HierarchyAgent validation.")
+                Logger.info(
+                    "Test Environment Detected: Bypassing strict HierarchyAgent validation."
+                )
                 return []
             from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+
             return HierarchyAgent(proj_root).validate_hierarchy()
 
         project_root: Any = Path(self.ctx.project_root or os.getcwd()).resolve()
@@ -147,13 +149,14 @@ class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
     def validate_core_architecture(self, target_path: str) -> dict[str, Any]:
         """
         Validate architecture for a specific path with strict scoping.
-        
+
         Checks:
         - Circular dependencies (Scoped)
         - Layer violations (L3 -> L5)
         - Import validity
         """
         import ast
+
         target = self.project_root / target_path
         if not target.exists():
             return {"valid": False, "error": f"Target not found: {target_path}"}
@@ -162,15 +165,17 @@ class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
         # If targeting a core component, we only care about agentic_core dependencies.
         # We explicitly EXCLUDE apps_* from the graph build to prevent 6000+ file scan.
         if "agentic_core" in target_path:
-             scan_root = self.project_root / "agentic_core"
+            scan_root = self.project_root / "agentic_core"
         else:
-             scan_root = target  # Fallback for app-level scans
+            scan_root = target  # Fallback for app-level scans
 
-        Logger.info(f"SystemArchitect: Building scoped dependency graph for {target_path} (Scan root: {scan_root.name})")
-        
+        Logger.info(
+            f"SystemArchitect: Building scoped dependency graph for {target_path} (Scan root: {scan_root.name})"
+        )
+
         # Inline Scoped Graph Building (O(M) where M is files in scope)
         python_files = [p for p in scan_root.rglob("*.py")]
-        
+
         # 1. Map files to module names
         module_map = {}
         for p in python_files:
@@ -180,7 +185,7 @@ class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
                 module_map[p] = mod
             except ValueError:
                 continue
-        
+
         # 2. Build Graph (AST Parse)
         dependency_graph = {}
         # Initialize all known modules in graph
@@ -213,13 +218,13 @@ class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
 
             # Only check neighbors that are in our scoped module map (ignore external libs)
             for neighbor in dependency_graph.get(current, []):
-                # Handle package imports (e.g. x.y.z -> x.y) if exact match missing? 
+                # Handle package imports (e.g. x.y.z -> x.y) if exact match missing?
                 # For strictness, we check exact module match in this scope.
                 if neighbor not in dependency_graph:
                     continue
-                
+
                 if neighbor in path_set:
-                    cycle = path_stack[path_stack.index(neighbor):]
+                    cycle = path_stack[path_stack.index(neighbor) :]
                     circular_dependencies.append(" -> ".join(cycle + [neighbor]))
                 elif neighbor not in visited:
                     dfs(neighbor)
@@ -235,7 +240,7 @@ class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
             "valid": len(circular_dependencies) == 0,
             "imports_valid": True,
             "circular_dependencies": circular_dependencies,
-            "files_scanned": len(python_files)
+            "files_scanned": len(python_files),
         }
 
     def check_no_deep_nesting(self) -> tuple[bool, list[str]]:

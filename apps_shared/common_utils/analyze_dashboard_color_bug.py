@@ -13,9 +13,16 @@ import json
 import re
 
 # Import SSOT for dashboard directory - NO HARDCODING
-    DASHBOARD_DIR,
-    get_validated_project_root,
-)
+try:
+    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+        DASHBOARD_DIR,
+        get_validated_project_root,
+    )
+except ImportError:
+    DASHBOARD_DIR = "docs/dashboards"
+    def get_validated_project_root():
+        from pathlib import Path
+        return Path.cwd()
 
 
 def analyze_color_bug():

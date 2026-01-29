@@ -1,7 +1,7 @@
 # Artifact Routing Negative Logic Implementation
 
-**Date:** 2026-01-27  
-**Status:** ✅ COMPLETED  
+**Date:** 2026-01-27
+**Status:** ✅ COMPLETED
 **Agents Updated:** LocationValidatorAgent, HierarchyAgent
 
 ## Problem Statement
@@ -38,8 +38,8 @@ Added two new functions after line 1617:
 
 ### 2. LocationValidatorAgent Integration
 
-**File:** `agentic_core/L5_safety/validators/LocationValidatorAgent.py`  
-**Method:** `_validate_filename_patterns()`  
+**File:** `agentic_core/L5_safety/validators/LocationValidatorAgent.py`
+**Method:** `_validate_filename_patterns()`
 **Lines:** 298-318
 
 ```python
@@ -55,7 +55,7 @@ try:
                 content = file_path.read_text(encoding="utf-8", errors="ignore")
             except Exception:
                 pass  # Content check is optional
-    
+
     rejection_reason = check_forbidden_signals(file_path.name, content)
     if rejection_reason:
         return (
@@ -73,8 +73,8 @@ except Exception:
 
 ### 3. HierarchyAgent Integration
 
-**File:** `agentic_core/L5_safety/validators/HierarchyAgent.py`  
-**Methods:** `_relocate_file_to_l2()`, `_relocate_file_to_l3()`  
+**File:** `agentic_core/L5_safety/validators/HierarchyAgent.py`
+**Methods:** `_relocate_file_to_l2()`, `_relocate_file_to_l3()`
 **Lines:** 389-402, 483-496
 
 ```python
@@ -84,7 +84,7 @@ try:
     content = None
     if py_file.exists() and py_file.stat().st_size < 1_000_000:
         content = py_file.read_text(encoding="utf-8", errors="ignore")
-    
+
     rejection_reason = check_forbidden_signals(py_file.name, content)
     if rejection_reason:
         Logger.warning(
@@ -109,18 +109,18 @@ For each destination in ARTIFACT_ROUTING_MAP:
      - file_extensions (e.g., [".md", ".json"])
      - naming_patterns (e.g., r".*report.*")
      - content_signals (headers, keywords)
-  
+
   2. IF positive match found:
      a. Check NEGATIVE signals (HARD REJECT):
         - forbidden_extensions (e.g., [".py", ".js"])
         - forbidden_keywords (e.g., ["def ", "class "])
-     
+
      b. IF forbidden signal found:
         → REJECT with reason
-     
+
      c. ELSE:
         → ACCEPT with destination
-  
+
   3. IF no positive match:
      → Continue to next destination
 ```
@@ -155,19 +155,19 @@ For each destination in ARTIFACT_ROUTING_MAP:
 ## Example Scenarios
 
 ### Scenario 1: Code File Misclassified as Report
-**Before:** `audit_report.py` with `def main():` would be accepted  
+**Before:** `audit_report.py` with `def main():` would be accepted
 **After:** ❌ REJECTED - "Forbidden extension .py for destination docs/reports"
 
 ### Scenario 2: Markdown with Code Content
-**Before:** `findings.md` with `class MyClass:` would be accepted  
+**Before:** `findings.md` with `class MyClass:` would be accepted
 **After:** ❌ REJECTED - "Forbidden keyword 'class ' for destination docs/reports"
 
 ### Scenario 3: Legitimate Python Script
-**Before:** `util_script.py` with `def main():` would be accepted  
+**Before:** `util_script.py` with `def main():` would be accepted
 **After:** ✅ ACCEPTED - Matches positive signals for scripts/, no forbidden signals
 
 ### Scenario 4: Clean Report
-**Before:** `audit_results.md` with `# Assessment Report` would be accepted  
+**Before:** `audit_results.md` with `# Assessment Report` would be accepted
 **After:** ✅ ACCEPTED - Matches positive signals, no forbidden signals
 
 ## Performance Considerations

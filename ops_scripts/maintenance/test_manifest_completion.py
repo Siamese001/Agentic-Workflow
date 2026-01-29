@@ -12,6 +12,7 @@ from pathlib import Path
 
 MANIFEST_PATH = Path("docs/reports/reconciliation_manifest.json")
 
+
 class TestManifestCompletion:
     def test_all_high_priority_resolved(self):
         """
@@ -19,19 +20,20 @@ class TestManifestCompletion:
         """
         if not MANIFEST_PATH.exists():
             pytest.fail("Manifest not found")
-            
-        with open(MANIFEST_PATH, "r") as f:
+
+        with open(MANIFEST_PATH) as f:
             manifest = json.load(f)
-            
+
         high_priority = manifest.get("high_priority_files", [])
         pending = [f for f in high_priority if f.get("status") == "PENDING"]
-        
+
         if pending:
             print("\n[FAIL] The following files are still PENDING:")
             for p in pending:
                 print(f"  - {p['file']}")
-                
+
         assert len(pending) == 0, f"Incomplete Migration! {len(pending)} files pending."
+
 
 if __name__ == "__main__":
     pytest.main([__file__])

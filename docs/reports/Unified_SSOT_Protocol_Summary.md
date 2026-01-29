@@ -133,7 +133,7 @@ class ConfidenceScore:
     value: float  # 0.0 to 1.0
     reasoning: str
     factors: Dict[str, float]
-    
+
     @property
     def is_high_confidence(self) -> bool
     def is_medium_confidence(self) -> bool
@@ -277,8 +277,8 @@ def list_available_agents(project_root, dedupe=True) -> List[Tuple[str, str]]
 ## 🔧 Command-Line Interface
 
 ```
-usage: execute_ssot.py [-h] [--territory TERRITORY] [--domains] 
-                       [--agent AGENT] [--list-agents] [--enable-llm] 
+usage: execute_ssot.py [-h] [--territory TERRITORY] [--domains]
+                       [--agent AGENT] [--list-agents] [--enable-llm]
                        [--manual]
 
 Unified Sovereign Compliance Protocol v4.0

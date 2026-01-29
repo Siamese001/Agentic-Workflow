@@ -41,7 +41,9 @@ discovery_file = project_root / "agent_discovery_full.json"
 dashboard_data_file = (
     project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
 )
-ssot_file = project_root / "agentic_core" / "L0_maintenance" / "scripts" / "dashboard_ssot_definitions.py"
+ssot_file = (
+    project_root / "agentic_core" / "L0_maintenance" / "scripts" / "dashboard_ssot_definitions.py"
+)
 
 files_exist = {
     "agent_discovery_full.json": discovery_file.exists(),

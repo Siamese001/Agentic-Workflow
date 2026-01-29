@@ -15,7 +15,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from jinja2 import Environment, FileSystemLoader, StrictUndefined, TemplateNotFound, select_autoescape
+from jinja2 import (
+    Environment,
+    FileSystemLoader,
+    StrictUndefined,
+    TemplateNotFound,
+    select_autoescape,
+)
 
 
 @dataclass
@@ -95,7 +101,10 @@ class SovereignPromptRenderer:
         optional_vars = set()
         description = "No description provided"
 
-        schema_match = re.search(r"\{#\s*SCHEMA:\s*required_vars=\[([^\]]*)\](?:,\s*optional_vars=\[([^\]]*)\])?\s*#\}", content)
+        schema_match = re.search(
+            r"\{#\s*SCHEMA:\s*required_vars=\[([^\]]*)\](?:,\s*optional_vars=\[([^\]]*)\])?\s*#\}",
+            content,
+        )
         if schema_match:
             required_str = schema_match.group(1).strip()
             if required_str:
@@ -186,13 +195,9 @@ class SovereignPromptRenderer:
             rendered = template.render(**full_context)
             return rendered.strip() + "\n"
         except TemplateNotFound:
-            raise TemplateNotFound(
-                f"Template '{template_name}' not found in {self.template_root}"
-            )
+            raise TemplateNotFound(f"Template '{template_name}' not found in {self.template_root}")
         except Exception as e:
-            raise RuntimeError(
-                f"[PROMPT RENDERING FAILURE] Template '{template_name}': {e}"
-            )
+            raise RuntimeError(f"[PROMPT RENDERING FAILURE] Template '{template_name}': {e}")
 
     def render_tagentic(
         self,
@@ -220,9 +225,7 @@ class SovereignPromptRenderer:
         try:
             base = self.env.get_template(f"../meta_prompts/{base_template}").render(**context)
         except TemplateNotFound:
-            raise TemplateNotFound(
-                f"Meta-prompt '{base_template}' not found in meta_prompts/"
-            )
+            raise TemplateNotFound(f"Meta-prompt '{base_template}' not found in meta_prompts/")
         except Exception as e:
             raise RuntimeError(f"[META-PROMPT FAILURE] {base_template}: {e}")
 

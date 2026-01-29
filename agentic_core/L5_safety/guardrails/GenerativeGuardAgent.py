@@ -27,8 +27,6 @@ from typing import Any
 # GRAVITY FIXED (Upward Leak): from agentic_core.base_agents.mcp_hardened_mixin import mcp_hardened_mixin
 _mod = importlib.import_module("agentic_core.L5_safety.guardrails.mcp_hardened_mixin")
 MCPHardenedMixin = _mod.MCPHardenedMixin
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import subatomic_testing_mixin
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import mcp_hardened_mixin
 
 # Import CanonBaseAgentInterface
 try:

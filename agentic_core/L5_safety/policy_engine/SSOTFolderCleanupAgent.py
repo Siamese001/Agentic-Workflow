@@ -1,6 +1,5 @@
 from __future__ import annotations
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 [PHASE 24] SSOT Folder Cleanup Agent - Automated SSOT Compliance Enforcement.
@@ -155,6 +154,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         """Lazy-load ArchivalGatekeeper."""
         if self._archival_gatekeeper is None:
             from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+
             self._archival_gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
         return self._archival_gatekeeper
 

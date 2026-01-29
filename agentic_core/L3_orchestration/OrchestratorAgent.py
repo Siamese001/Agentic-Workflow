@@ -40,14 +40,9 @@ from agentic_core.L5_safety.validators.structure_blueprint import get_validated_
 Logger = logging.getLogger(__name__)
 
 # [ULTRA-HARDENED] Whitelist of allowed module prefixes for dynamic imports.
-# This mirrors the L5 execute_ssot.py security standard to prevent 
+# This mirrors the L5 execute_ssot.py security standard to prevent
 # arbitrary code execution during agent discovery/import.
-ALLOWED_MODULE_PREFIXES = (
-    "agentic_core",
-    "apps_shared",
-    "apps_lic",
-    "apps_rg"
-)
+ALLOWED_MODULE_PREFIXES = ("agentic_core", "apps_shared", "apps_lic", "apps_rg")
 
 
 def get_consolidated_orchestrator(project_root: Path | None = None) -> OrchestratorAgent:
@@ -549,10 +544,12 @@ class OrchestratorAgent(SovereignBaseAgent):
             agent_file = Path(agent_path)
             rel_path = agent_file.relative_to(self.project_root)
             module_path = str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
-            
+
             # [ULTRA-HARDENED] Enforce Module Whitelist
             # Blocks malicious actors from tricking the agent into importing 'os', 'subprocess', or 'shutil' directly
-            if not any(module_path == p or module_path.startswith(p + ".") for p in ALLOWED_MODULE_PREFIXES):
+            if not any(
+                module_path == p or module_path.startswith(p + ".") for p in ALLOWED_MODULE_PREFIXES
+            ):
                 self.logger.critical(
                     f"[GATE] SECURITY BLOCK: Agent '{agent_name}' ({module_path}) is outside allowed namespaces."
                 )

@@ -25,7 +25,7 @@ class LegacyArtifacts:
     WEAK_OPENING_PATTERNS: dict[str, Pattern] = field(
         default_factory=lambda: {...}  # Allocation on every access
     )
-    
+
     @classmethod
     def get_weak_opening_match(cls, text: str) -> str | None:
         instance = cls()  # Unnecessary instance creation
@@ -68,7 +68,7 @@ class LegacyArtifacts:
 ### All 7 Security Tests PASSED
 
 1. **✅ test_circular_import_pattern_security** - ReDoS protection verified
-2. **✅ test_unclosed_string_pattern_precision** - Precise syntax error matching  
+2. **✅ test_unclosed_string_pattern_precision** - Precise syntax error matching
 3. **✅ test_company_placeholder_pattern_boundaries** - Fixed boundary matching
 4. **✅ test_weak_opening_patterns_case_insensitive** - Case-insensitive detection working
 5. **✅ test_critical_placeholder_boundaries** - Fixed TODO/TBD boundary matching
@@ -106,7 +106,7 @@ CRITICAL_PLACEHOLDERS: Final[dict[str, Pattern]] = {...}
 class LegacyArtifacts:
     # Class attributes remain for other artifacts
     CIRCULAR_IMPORT_PATTERN: Final[Pattern] = re.compile(...)
-    
+
     # Optimized methods use module constants
     @classmethod
     def get_weak_opening_match(cls, text: str) -> str | None:

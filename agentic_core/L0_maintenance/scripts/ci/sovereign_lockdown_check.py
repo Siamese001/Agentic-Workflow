@@ -1,4 +1,5 @@
 from pathlib import Path
+
 #!/usr/bin/env python3
 """
 [PHASE 7/8] Sovereign Lockdown Check - CI/CD Entrypoint.

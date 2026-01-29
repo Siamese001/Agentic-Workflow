@@ -66,11 +66,11 @@ def _atomic_persist(self):
         # 1. Write to temp
         with open(temp_path, 'w') as f:
             json.dump(self._state_cache, f, indent=4)
-        
+
         # 2. Create backup of current valid state
         if self.state_path.exists():
             shutil.copy(self.state_path, self.backup_path)
-            
+
         # 3. Atomic rename (replace)
         os.replace(temp_path, self.state_path)
     except Exception as e:

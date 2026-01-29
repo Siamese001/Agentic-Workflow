@@ -1,13 +1,24 @@
-
-"""
-Fix all Unicode emojis in Python files to ASCII equivalents.
+"""Fix all Unicode emojis in Python files to ASCII equivalents.
 Prevents Windows encoding issues.
 """
 
-    AGENTIC_CORE_DIR,
-)
+from pathlib import Path
+from typing import Any
 
-emoji_map: Any = {
+try:
+    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+        AGENTIC_CORE_DIR,
+        APPS_SHARED_DIR,
+        get_python_files,
+    )
+except ImportError:
+    AGENTIC_CORE_DIR = Path("agentic_core")
+    APPS_SHARED_DIR = Path("apps_shared")
+    
+    def get_python_files(directory):
+        return directory.rglob("*.py")
+
+EMOJI_MAP = {
     "✅": "[OK]",
     "⚠️": "[!]",
     "🔧": "[+]",
@@ -34,10 +45,10 @@ def fix_emojis_in_file(file_path: str) -> bool:
     """Replace all emojis in a file with ASCII equivalents."""
     try:
         with open(file_path, encoding="utf-8") as f:
-            content: Any = f.read()
-        original_content: Any = content
+            content = f.read()
+        original_content = content
         for emoji, replacement in EMOJI_MAP.items():
-            content: Any = content.replace(emoji, replacement)
+            content = content.replace(emoji, replacement)
         if content != original_content:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
@@ -49,19 +60,17 @@ def fix_emojis_in_file(file_path: str) -> bool:
         return False
 
 
-def main() -> Any:
+def main() -> None:
     """Find and fix all Python files with emojis."""
-    root: Any = Path("c:/Git/Agentic-Workflow")
-    targets: Any = [root / AGENTIC_CORE_DIR, root / APPS_SHARED_DIR]
-    fixed_count: Any = 0
+    root = Path.cwd()
+    targets = [root / AGENTIC_CORE_DIR, root / APPS_SHARED_DIR]
+    fixed_count = 0
     for target_dir in targets:
         if not target_dir.exists():
             continue
-        # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
-
-    for py_file in get_python_files(target_dir):
-        if fix_emojis_in_file(str(py_file)):
-            fixed_count += 1
+        for py_file in get_python_files(target_dir):
+            if fix_emojis_in_file(str(py_file)):
+                fixed_count += 1
     print(f"\n[*] Fixed {fixed_count} files")
 
 

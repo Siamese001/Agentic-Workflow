@@ -6,11 +6,18 @@ import argparse
 import logging
 import os
 import shutil
+from typing import Any
 
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-)
+try:
+    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+        AGENTIC_CORE_DIR,
+        SCRIPTS_DIR,
+        TESTS_DIR,
+    )
+except ImportError:
+    AGENTIC_CORE_DIR = "agentic_core"
+    SCRIPTS_DIR = "ops_scripts"
+    TESTS_DIR = "tests"
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 Logger: Any = logging.getLogger(__name__)

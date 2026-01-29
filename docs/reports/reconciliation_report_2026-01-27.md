@@ -1,6 +1,6 @@
 # Sovereign Audit & Alignment Reconciliation Report
 
-**Date:** 2026-01-27  
+**Date:** 2026-01-27
 **Status:** ✅ PASS - All 18+ stress tests passing
 
 ---
@@ -63,7 +63,7 @@ LAYER_FORBIDDEN_IMPORTS = {
     "L1_cognition": frozenset({"L2_execution", "L3_orchestration", "L4_state", "L5_safety"}),
     "L2_execution": frozenset({"L1_cognition", "L3_orchestration", "L5_safety"}),
     "L3_orchestration": frozenset({"L5_safety"}),
-    
+
     # App-layer horizontal isolation (NEW)
     "apps_shared": frozenset({"apps_rg", "apps_lic"}),  # Shared must be independent
     "apps_rg": frozenset({"apps_lic"}),  # Apps are horizontally isolated

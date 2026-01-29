@@ -2,6 +2,7 @@
 Comprehensive test suite for CodeDeduplicationAgent with all fixes applied.
 Tests all phases: initialization, self-tests, duplicate detection, and performance.
 """
+
 from pathlib import Path
 import sys
 import time
@@ -12,22 +13,9 @@ sys.path.insert(0, str(project_root))
 # ARCHIVED IMPORT REMOVED - dependency no longer available
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-    DASHBOARD_DIR,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-    get_validated_project_root,
 )
-from agentic_core.utils.sovereign_index import SovereignIndex
+
 
 def run_all_tests():
     """Execute comprehensive test suite."""
@@ -45,7 +33,7 @@ def run_all_tests():
         agent = CodeDeduplicationAgent(similarity_threshold=0.98, min_lines=8)
         assert agent.threshold == 0.98
         assert agent.min_lines == 8
-        assert hasattr(agent, '_block_similarity')
+        assert hasattr(agent, "_block_similarity")
         print("  ✓ Agent initialized with correct parameters")
         print(f"  ✓ Threshold: {agent.threshold:.0%}")
         print(f"  ✓ Tree-sitter: {'Available' if agent.ts_parser else 'Fallback to AST'}")
@@ -104,6 +92,7 @@ def run_all_tests():
         sample_dir = project_root / AGENTIC_CORE_DIR / "L2_execution"
         # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         python_files = [str(f) for f in get_python_files(sample_dir)][:15]
 
         start_time = time.time()
@@ -153,9 +142,12 @@ def run_all_tests():
     print("=" * 80)
 
     validations = [
-        ("✓ Tree-sitter initialization working", agent.ts_parser is not None and len(agent.errors) == 0),
+        (
+            "✓ Tree-sitter initialization working",
+            agent.ts_parser is not None and len(agent.errors) == 0,
+        ),
         ("✓ Fuzzy matching threshold at 98%", agent.threshold == 0.98),
-        ("✓ _block_similarity() method exists", hasattr(agent, '_block_similarity')),
+        ("✓ _block_similarity() method exists", hasattr(agent, "_block_similarity")),
         ("✓ _normalize_code() bug fixed", True),  # Verified in test 4
         ("✓ Exact structural grouping implemented", True),  # Verified in test 5
         ("✓ Performance optimization applied", True),  # Verified by fast execution
@@ -183,6 +175,7 @@ def run_all_tests():
         print(f"❌ {tests_total - tests_passed} TEST(S) FAILED")
         print("=" * 80)
         return False
+
 
 if __name__ == "__main__":
     success = run_all_tests()

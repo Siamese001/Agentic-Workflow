@@ -17,8 +17,6 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from typing import Any
 
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import mcp_hardened_mixin
-
 
 @dataclass
 class NervousSystemAgent(

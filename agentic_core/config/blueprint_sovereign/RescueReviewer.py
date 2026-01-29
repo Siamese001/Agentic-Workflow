@@ -111,7 +111,9 @@ class RescueReviewer:
                 # Use territory-based healing instead of canon keys
                 suggested_territory = DEFAULT_CORE_HEALING_TERRITORY
                 sig_count = sum(1 for s in CANON_SIGNALS if s in content.lower())
-                print(f"         SUGGESTION: {territory} (Conf: {conf:.2f}) -> {suggested_territory}")
+                print(
+                    f"         SUGGESTION: {territory} (Conf: {conf:.2f}) -> {suggested_territory}"
+                )
                 Verdict: Any = "MANUAL_REVIEW"
                 if (
                     auto_home

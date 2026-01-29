@@ -104,7 +104,8 @@ def refactor_mission_orchestrator(file_path: Path) -> bool:
             content, "from agentic_core.L5_safety.validators.LocationAgent import LocationAgent"
         )
         content = remove_static_import(
-            content, "from agentic_core.L5_safety.policy_engine.CodeHealerAgent import create_legacy_import_healer"
+            content,
+            "from agentic_core.L5_safety.policy_engine.CodeHealerAgent import create_legacy_import_healer",
         )
 
         # The functions already use dynamic imports inside, so we're done

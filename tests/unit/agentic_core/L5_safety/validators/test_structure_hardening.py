@@ -4,6 +4,7 @@ Verifies that 'Junior AI' cannot accidentally mutate core registries.
 
 [HARDENING] 2026-01-26: Validates immutable type annotations and frozenset usage.
 """
+
 import pytest
 import re
 import sys
@@ -31,16 +32,16 @@ class TestStructureHardening:
         # 1. SOVEREIGN_REGISTRY - verify it exists and is dict-like at runtime
         assert hasattr(sb, "SOVEREIGN_REGISTRY")
         assert isinstance(sb.SOVEREIGN_REGISTRY, dict)  # Mapping at runtime is dict
-        
+
         # 2. SUBFOLDER_MAPS - verify they exist and are dict-like
         maps_to_check = [
             "CORE_SUBFOLDER_MAP",
             "APPS_RG_SUBFOLDER_MAP",
             "APPS_LIC_SUBFOLDER_MAP",
             "APPS_SHARED_SUBFOLDER_MAP",
-            "TESTS_L2_SUBFOLDER_MAP"
+            "TESTS_L2_SUBFOLDER_MAP",
         ]
-        
+
         for map_name in maps_to_check:
             val = getattr(sb, map_name)
             assert isinstance(val, dict), f"{map_name} must be a dict (typed as Mapping)"
@@ -65,7 +66,7 @@ class TestStructureHardening:
             "FORBIDDEN_APP_MODULES",
             "L4_APPROVED_FOLDERS",
         ]
-        
+
         for name in frozen_registries:
             val = getattr(sb, name, None)
             assert val is not None, f"{name} not found in structure_blueprint"
@@ -77,7 +78,9 @@ class TestStructureHardening:
         """
         assert hasattr(sb, "LAYER_FORBIDDEN_IMPORTS")
         for k, v in sb.LAYER_FORBIDDEN_IMPORTS.items():
-            assert isinstance(v, frozenset), f"Value for {k} in LAYER_FORBIDDEN_IMPORTS must be frozenset"
+            assert isinstance(v, frozenset), (
+                f"Value for {k} in LAYER_FORBIDDEN_IMPORTS must be frozenset"
+            )
 
     def test_naming_convention_structure(self):
         """
@@ -86,11 +89,11 @@ class TestStructureHardening:
         """
         conventions = sb.NAMING_CONVENTIONS
         required_keys = {"pattern", "description", "examples", "anti_examples"}
-        
+
         for key, rules in conventions.items():
             missing = required_keys - set(rules.keys())
             assert not missing, f"Naming convention '{key}' missing keys: {missing}"
-            
+
             # Verify regex compilation
             try:
                 re.compile(rules["pattern"])
@@ -106,7 +109,9 @@ class TestStructureHardening:
         docs_meta = sb.DOCS_SUBFOLDER_METADATA
         assert "technical" in docs_meta
         assert "archive" in docs_meta
-        assert len(docs_meta) == 5, f"DOCS_SUBFOLDER_METADATA incomplete or corrupted, got {len(docs_meta)} keys"
+        assert len(docs_meta) == 5, (
+            f"DOCS_SUBFOLDER_METADATA incomplete or corrupted, got {len(docs_meta)} keys"
+        )
 
     def test_path_safety_logic(self):
         """
@@ -114,13 +119,13 @@ class TestStructureHardening:
         """
         # Case 1: No prefix needed
         assert sb.safe_prefixed_filename("healing", "healing_agent.py") == "healing_agent.py"
-        
+
         # Case 2: Prefix needed
         assert sb.safe_prefixed_filename("healing", "agent.py") == "healing_agent.py"
-        
+
         # Case 3: Empty prefix
         assert sb.safe_prefixed_filename("", "agent.py") == "agent.py"
-        
+
         # Case 4: Already has prefix - returns unchanged
         assert sb.safe_prefixed_filename("core", "core_logic.py") == "core_logic.py"
 
@@ -141,7 +146,7 @@ class TestStructureHardening:
         assert hasattr(sb, "PROJECT_ROOT_METADATA")
         assert hasattr(sb, "DATA_SUBFOLDER_METADATA")
         assert hasattr(sb, "DOCS_SUBFOLDER_METADATA")
-        
+
         # Verify they are dict-like
         assert isinstance(sb.PROJECT_ROOT_SUBFOLDERS, dict)
         assert isinstance(sb.PROJECT_ROOT_METADATA, dict)

@@ -15,7 +15,6 @@ from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.shared.core.TraceRegistry import TraceRegistry
 from apps_lic.domain.config import load_agent_specs
 from apps_lic.logic_nodes.K1Router import K1Router
-from agentic_core.base_agents.SubatomicTestingMixin import subatomic_testing_mixin
 
 
 @dataclass
@@ -38,7 +37,9 @@ class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
         Enforce Sovereign Seal (Runtime Immutability).
         """
         if getattr(self, "_sealed", False):
-            raise AttributeError(f"Sovereign Seal Active: Cannot modify '{name}' on {self.__class__.__name__}")
+            raise AttributeError(
+                f"Sovereign Seal Active: Cannot modify '{name}' on {self.__class__.__name__}"
+            )
         super().__setattr__(name, value)
 
     def __getstate__(self) -> dict[str, Any]:
@@ -63,17 +64,19 @@ class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
         super().__post_init__()
 
         # Critical Analysis: Verify State Injection
-        if not getattr(self, 'config', None):
-             raise RuntimeError(f"CRITICAL: {self.__class__.__name__} failed to inherit Sovereign Config.")
-        
+        if not getattr(self, "config", None):
+            raise RuntimeError(
+                f"CRITICAL: {self.__class__.__name__} failed to inherit Sovereign Config."
+            )
+
         # Load domain-specific agent specs
         self.agent_specs = load_agent_specs()
-        
+
         # Integration of the new Logic Node
         self.router = K1Router(
             config=self.config.__dict__ if hasattr(self, "config") and self.config else {}
         )
-        
+
         # Engage Sovereign Seal
         object.__setattr__(self, "_sealed", True)
 

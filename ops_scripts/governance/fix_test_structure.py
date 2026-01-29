@@ -14,17 +14,17 @@ Rules:
 import ast
 import shutil
 from pathlib import Path
-from typing import Optional
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 TESTS_ROOT = PROJECT_ROOT / "tests"
 
-def analyze_test_imports(file_path: Path) -> Optional[str]:
+
+def analyze_test_imports(file_path: Path) -> str | None:
     """Analyze test file to determine which domain it belongs to based on imports."""
     try:
         content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(content)
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
@@ -48,41 +48,44 @@ def analyze_test_imports(file_path: Path) -> Optional[str]:
                         return "apps_shared"
     except Exception:
         pass
-    
+
     return None
+
 
 def fix_test_structure():
     """Move misplaced test files to correct locations."""
     print("[AUTO-FIX] Moving misplaced test files to correct locations...")
-    
+
     moved_count = 0
     error_count = 0
-    
+
     # Process both unit and integration tests
     for test_type in ["unit", "integration"]:
         test_dir = TESTS_ROOT / test_type
         if not test_dir.exists():
             continue
-            
+
         print(f"\n--- Processing {test_type} tests ---")
-        
+
         for item in test_dir.iterdir():
             if item.is_file() and item.name.startswith("test_") and item.name.endswith(".py"):
                 # Skip allowed files
                 if item.name in {"__init__.py", "conftest.py"}:
                     continue
-                    
+
                 # Determine target domain
                 domain = analyze_test_imports(item)
                 if not domain:
                     # Default to agentic_core if we can't determine
                     domain = "agentic_core"
-                    print(f"  [WARNING] Could not determine domain for {item.name}, defaulting to {domain}")
-                
+                    print(
+                        f"  [WARNING] Could not determine domain for {item.name}, defaulting to {domain}"
+                    )
+
                 # Create target directory
                 target_dir = test_dir / domain
                 target_dir.mkdir(parents=True, exist_ok=True)
-                
+
                 # Move file
                 target_path = target_dir / item.name
                 try:
@@ -92,9 +95,10 @@ def fix_test_structure():
                 except Exception as e:
                     print(f"  [ERROR] Could not move {item.name}: {e}")
                     error_count += 1
-    
+
     print(f"\n[AUTO-FIX] Complete: {moved_count} files moved, {error_count} errors")
     return moved_count, error_count
+
 
 if __name__ == "__main__":
     fix_test_structure()

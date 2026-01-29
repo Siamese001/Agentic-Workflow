@@ -7,10 +7,8 @@ Verifies that cognitive logic (Keys 17, 19) has been properly migrated.
 UPDATED: Removed legacy CANON_VALIDATION_REGISTRY checks.
 """
 
-import ast
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 # Add project root to path (go up 4 levels: scripts -> L0_maintenance -> agentic_core -> project_root)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
@@ -30,10 +28,10 @@ class TestPhase1_5_CognitiveMigration:
     def test_healer_mixin_exists(self):
         """HealerMixin must exist and be importable."""
         try:
-            from agentic_core.utils.core_extensions.healer_mixin import healer_mixin
-
             assert HealerMixin is not None, "HealerMixin should be importable"
-            assert hasattr(HealerMixin, "heal_repository"), "HealerMixin should have heal_repository"
+            assert hasattr(HealerMixin, "heal_repository"), (
+                "HealerMixin should have heal_repository"
+            )
 
             self.passed += 1
             print("✅ test_healer_mixin_exists PASSED")
@@ -45,18 +43,10 @@ class TestPhase1_5_CognitiveMigration:
     def test_healer_mixin_has_core_methods(self):
         """HealerMixin must have core healing methods."""
         try:
-            from agentic_core.utils.core_extensions.healer_mixin import healer_mixin
-
             # Check core methods exist
-            assert hasattr(HealerMixin, "heal_repository"), (
-                "HealerMixin missing heal_repository"
-            )
-            assert hasattr(HealerMixin, "enable_healing"), (
-                "HealerMixin missing enable_healing"
-            )
-            assert hasattr(HealerMixin, "disable_healing"), (
-                "HealerMixin missing disable_healing"
-            )
+            assert hasattr(HealerMixin, "heal_repository"), "HealerMixin missing heal_repository"
+            assert hasattr(HealerMixin, "enable_healing"), "HealerMixin missing enable_healing"
+            assert hasattr(HealerMixin, "disable_healing"), "HealerMixin missing disable_healing"
 
             self.passed += 1
             print("✅ test_healer_mixin_has_core_methods PASSED")
@@ -73,6 +63,7 @@ class TestPhase1_5_CognitiveMigration:
                 from agentic_core.L5_safety.validators.structure_blueprint import (
                     CANON_VALIDATION_REGISTRY,
                 )
+
                 # If it exists but is empty or doesn't have keys 17/19, that's also OK
                 has_legacy_keys = 17 in CANON_VALIDATION_REGISTRY or 19 in CANON_VALIDATION_REGISTRY
                 if has_legacy_keys:

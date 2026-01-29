@@ -69,7 +69,7 @@
 #### **High-Confidence Changes (Already Simplified)**
 
 1. **L5_safety**: Keep actual 7 → add `scripts` = **8 subfolders**
-2. **L6_observability**: Keep actual 4 → add `scripts` = **5 subfolders**  
+2. **L6_observability**: Keep actual 4 → add `scripts` = **5 subfolders**
 3. **L3_orchestration**: Keep actual 3 → add `scripts` = **4 subfolders**
 
 #### **Moderate Changes Needed**
@@ -151,7 +151,7 @@ CORE_SUBFOLDER_MAP: Any = {
 
 ## ⚠️ Key Insight
 
-**The actual structure is already well-optimized!** 
+**The actual structure is already well-optimized!**
 - Developers have naturally simplified complex domains
 - Blueprint was overly ambitious
 - Best approach: **formalize the existing efficient structure**

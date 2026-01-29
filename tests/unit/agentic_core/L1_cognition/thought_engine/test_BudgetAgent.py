@@ -6,6 +6,7 @@
 Test suite for BudgetAgent
 Generated automatically to improve test coverage.
 """
+
 import pytest
 import sys
 from pathlib import Path
@@ -19,38 +20,38 @@ from agentic_core.L1_cognition.thought_engine.BudgetAgent import BudgetAgent
 
 class TestBudgetAgent:
     """Test suite for BudgetAgent."""
-    
+
     @pytest.fixture
     def agent(self):
         """Create agent instance for testing."""
         return BudgetAgent()
-    
+
     def test_instantiation(self, agent):
         """Test that agent can be instantiated."""
         assert agent is not None
         assert isinstance(agent, BudgetAgent)
-    
+
     def test_has_heal_repository(self, agent):
         """Test that agent has heal_repository method."""
-        assert hasattr(agent, 'heal_repository')
-        assert callable(getattr(agent, 'heal_repository'))
-    
+        assert hasattr(agent, "heal_repository")
+        assert callable(agent.heal_repository)
+
     def test_heal_repository_dry_run(self, agent):
         """Test heal_repository in dry-run mode."""
         result = agent.heal_repository(dry_run=True, execute=False)
         assert isinstance(result, dict)
-        assert 'violations' in result or 'fixed' in result
-    
+        assert "violations" in result or "fixed" in result
+
     def test_mcp_hardened(self, agent):
         """Test that agent has MCP hardening."""
         # Check for MCPHardenedMixin in MRO
         mro_classes = [cls.__name__ for cls in type(agent).__mro__]
-        assert 'MCPHardenedMixin' in mro_classes, f"Agent should have MCPHardenedMixin in MRO"
-    
+        assert "MCPHardenedMixin" in mro_classes, "Agent should have MCPHardenedMixin in MRO"
+
     def test_class_name(self, agent):
         """Test that agent has correct class name."""
-        assert agent.__class__.__name__ == 'BudgetAgent'
-    
+        assert agent.__class__.__name__ == "BudgetAgent"
+
     # Add more specific tests based on agent methods
     # TODO: Expand with agent-specific test cases
 
