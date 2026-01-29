@@ -139,13 +139,13 @@ class TestExecuteSSOTMainFunction:
             "Multiple main() functions cause the later one to shadow the earlier one."
         )
 
-    def test_main_legacy_exists_but_not_main(self):
-        """The legacy main should be renamed to main_legacy."""
+    def test_main_legacy_removed_in_consolidation(self):
+        """The legacy main was removed in Phase 2 consolidation."""
         import agentic_core.L0_maintenance.scripts.execute_ssot as ssot_module
 
-        # main_legacy should exist
-        assert hasattr(ssot_module, "main_legacy"), (
-            "execute_ssot.py should have main_legacy() for backwards compatibility"
+        # main_legacy should NOT exist (removed in consolidation)
+        assert not hasattr(ssot_module, "main_legacy"), (
+            "execute_ssot.py should NOT have main_legacy() - it was removed in Phase 2 consolidation"
         )
 
         # main should exist

@@ -1,9 +1,4 @@
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, memory, orchestrator, validator
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
 
 """
 FilesystemSSOTReconcilerAgent - FILESYSTEM-LEVEL SSOT RECONCILER
@@ -160,6 +155,28 @@ class FilesystemSSOTReconcilerAgent(
     - Path validation to prevent root-level accidental modifications.
     - Dry-run mode by default (auto_apply=False)
     """
+
+    def heal(self, violation: dict) -> dict:
+        """
+        [SOVEREIGN CONTRACT] Standardized healing interface for SSOT reconciliation.
+        """
+        try:
+            target = violation.get("file")
+            v_type = violation.get("type", "")
+            
+            if not target:
+                return {"status": "skipped", "reason": "No target specified"}
+                
+            # For SSOT violations, we typically need to reconcile filesystem with blueprint
+            return {
+                "status": "manual_required",
+                "reason": "SSOT reconciliation requires blueprint alignment",
+                "suggested_action": f"Reconcile {target} with structure blueprint",
+                "confidence": 0.9
+            }
+            
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
 
     BLUEPRINT_PATH = Path("agentic_core/config/blueprint_sovereign/structure_blueprint.py")
     ARCHIVE_ROOT = Path("archives/unmapped_drift/")

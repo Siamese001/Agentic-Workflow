@@ -85,6 +85,57 @@ class ConversationalRepairAgent(SovereignBaseAgent):
             "consensus_reasoning": content,
         }
 
+    def scan_violations(self, target_territory: str = None) -> dict[str, Any]:
+        """
+        [SSOT INTEGRATION] Scan for conversational violations in target territory.
+        
+        Args:
+            target_territory: Specific territory to scan (optional)
+            
+        Returns:
+            Dict with violations list for SSOT aggregation
+        """
+        self.log_info(f"Scanning for conversational violations in territory: {target_territory or 'all'}")
+        
+        violations = []
+        
+        # Example violation detection logic
+        project_root = self.project_root or Path(".")
+        
+        if target_territory:
+            scan_path = project_root / "agentic_core" / target_territory
+        else:
+            scan_path = project_root / "agentic_core"
+            
+        if not scan_path.exists():
+            return {"violations": violations}
+            
+        # Scan for common conversational issues
+        for file_path in scan_path.rglob("*.py"):
+            try:
+                content = file_path.read_text(encoding="utf-8")
+                
+                # Check for hardcoded prompts that should be templated
+                if '"""' in content and "prompt" in content.lower():
+                    lines = content.split('\n')
+                    for i, line in enumerate(lines, 1):
+                        if 'prompt' in line.lower() and '"""' in line and len(line) > 100:
+                            violations.append({
+                                "type": "HARDCODED_PROMPT",
+                                "file": str(file_path),
+                                "line": i,
+                                "message": f"Hardcoded prompt detected at line {i}",
+                                "severity": "medium",
+                                "recommended_action": "Consider moving to template system",
+                                "confidence": 0.7
+                            })
+                            
+            except Exception as e:
+                self.log_warning(f"Could not scan {file_path}: {e}")
+                
+        self.log_info(f"Found {len(violations)} conversational violations")
+        return {"violations": violations}
+
     async def _query_llm(self, prompt: str) -> str:
         """Internal helper using native gateway."""
         resp = await self.llm_generate(prompt, provider="openai")

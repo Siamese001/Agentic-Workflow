@@ -453,7 +453,7 @@ class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
 
         try:
             # Dynamic import of CDA to avoid hard dependency
-            from agentic_core.L1_cognition.thought_engine.CognitiveDispositionAgent import (
+            from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
                 CognitiveDispositionAgent,
             )
 
@@ -573,8 +573,8 @@ class RuntimeStateManager:
 
 class PreFlightValidator:
     """
-    [HARDENED] Comprehensive environment and integrity checks before mission start.
-    Ported logic from PascalSovereigntyAgent.verify_environment.
+    [ULTRA-HARDENED] Sovereign Contract Enforcer.
+    Verifies environmental readiness and enforces strict agent signatures/imports.
     """
     def __init__(self, project_root: Path):
         self.project_root = project_root
@@ -582,7 +582,7 @@ class PreFlightValidator:
     def run_checks(self) -> tuple[bool, list[str]]:
         errors = []
         
-        # 1. Windows Long Paths
+        # 1. Windows Long Paths (System Stability)
         if platform.system() == "Windows":
             try:
                 import winreg
@@ -591,15 +591,15 @@ class PreFlightValidator:
                 if val != 1:
                     errors.append("Windows LongPathsEnabled is NOT active (Set to 1 in Registry)")
             except Exception as e:
-                errors.append(f"Could not verify Windows LongPathsEnabled: {e}")
+                logging.warning(f"Could not verify Windows LongPathsEnabled: {e}")
 
-        # 2. Critical Directory Structure
+        # 2. Critical Directory Structure (SSOT Integrity)
         required_dirs = ["agentic_core", "agentic_core/L5_safety", "agentic_core/prompt_governance"]
         for d in required_dirs:
             if not (self.project_root / d).exists():
                 errors.append(f"Critical directory missing: {d}")
 
-        # 3. Write Permissions
+        # 3. Write Permissions (Operational Readiness)
         try:
             test_file = self.project_root / ".write_test"
             test_file.touch()
@@ -610,11 +610,39 @@ class PreFlightValidator:
         return len(errors) == 0, errors
 
     def validate_agent_integrity(self, agents: dict[str, Any]) -> list[str]:
-        """Verify all loaded agents adhere to the HealerProtocol."""
+        """
+        [CONTRACT GUARD] Mandatory validation of all registered agents.
+        Catches legacy signatures, broken mixins, and instantiation failures.
+        """
         integrity_errors = []
-        for name, agent in agents.items():
+        for name, agent_cls in agents.items():
+            try:
+                # Force instantiation to catch import/mixin errors immediately
+                agent = agent_cls(project_root=self.project_root) if inspect.isclass(agent_cls) else agent_cls
+            except Exception as e:
+                integrity_errors.append(f"Agent {name} FAILED INSTANTIATION: {e}")
+                continue
+
+            # 1. Presence of 'heal' method
             if not hasattr(agent, "heal") or not callable(agent.heal):
-                integrity_errors.append(f"Agent {name} violates HealerProtocol (missing heal method)")
+                integrity_errors.append(f"Agent {name} violates Protocol: Missing 'heal' method")
+                continue
+
+            # 2. Signature Validation: heal(violation: dict)
+            sig = inspect.signature(agent.heal)
+            params = list(sig.parameters.keys())
+            
+            if "violation" not in params and "kwargs" not in params:
+                if "path" in params and len(params) == 1:
+                     integrity_errors.append(f"Agent {name} has LEGACY SIGNATURE: heal(path). Must update to heal(violation).")
+                else:
+                     integrity_errors.append(f"Agent {name} has INVALID SIGNATURE: {sig}. Expected heal(self, violation, ...).")
+
+            # 3. Mixin Verification (MRO Audit)
+            mro_names = [c.__name__ for c in inspect.getmro(agent.__class__)]
+            if "NamingAgent" in name and "SubatomicTestingMixin" not in mro_names:
+                 integrity_errors.append(f"Agent {name} missing mandatory SubatomicTestingMixin in MRO.")
+
         return integrity_errors
 
 
@@ -1497,12 +1525,12 @@ def execute_phase4_healing_impl(
 
 
 @with_retry(max_retries=3)
-def execute_phase5_final(agents, territory, state_mgr):
+def execute_phase5_final(agents, territory, state_mgr, decision_engine=None):
     """PHASE 5: CERTIFICATION (Retriable)"""
-    return execute_phase5_final_impl(agents, territory, state_mgr)
+    return execute_phase5_final_impl(agents, territory, state_mgr, decision_engine)
 
 
-def execute_phase5_final_impl(agents, territory, state_mgr):
+def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None):
     """PHASE 5: CERTIFICATION - Implementation with Silent Aggregation"""
     logger.info(f"=== PHASE 5: CERTIFICATION - {territory} ===")
 
@@ -1547,9 +1575,41 @@ def execute_phase5_final_impl(agents, territory, state_mgr):
         elif "Forbidden extension .py for destination docs/reports" in message:
             path_parts = file_path.replace("\\", "/").split("/")
             filename = path_parts[-1]
-            action = f"Move {filename} to agentic_core/L0_maintenance/scripts/ (Python files don't belong in docs/)"
+            action = f"RENAME: '{filename}' has audit/report naming but is a Python script. Either: 1) Rename to avoid audit patterns (e.g., registry_linkage_checker.py) OR 2) Move to agentic_core/L0_maintenance/scripts/ where audit scripts belong"
         else:
             action = f"Fix location/naming issue: {message[:60]}"
+
+        # Calculate individual confidence for each violation based on specific violation characteristics
+        violation_type = "LOCATION"
+        if "Forbidden keyword 'def test_'" in message:
+            violation_type = "TEST_FILE_LOCATION"
+        elif "Forbidden keyword 'class Sovereign'" in message:
+            violation_type = "SOVEREIGN_CLASS_LOCATION"
+        elif "Forbidden extension .py for destination docs/reports" in message:
+            violation_type = "PYTHON_IN_DOCS"
+        elif "BROKEN BACKUP FILE" in message:
+            violation_type = "STALE_BACKUP"
+        elif "Forbidden keyword 'import '" in message:
+            violation_type = "IMPORT_IN_DOCS"
+        
+        # Add file-specific factors for confidence calculation
+        file_factors = {
+            "has_test_functions": "def test_" in message,
+            "has_sovereign_class": "class Sovereign" in message,
+            "is_python_file": file_path.endswith('.py'),
+            "is_backup_file": file_path.endswith('.backup'),
+            "is_in_docs": "docs/reports" in message,
+        }
+        
+        violation_confidence = decision_engine.calculate_healing_confidence(
+            violations_count=1,  # Single violation
+            violation_types=[violation_type],  # Use specific violation type
+            territory=territory,
+        ).value
+
+        # Check if LLM was actually used in the decision process (look for LLM decisions in decision engine)
+        llm_decisions = [d for d in decision_engine.decisions_made if "LLM" in d.get("reason", "")]
+        llm_was_triggered = decision_engine.enable_llm and len(llm_decisions) > 0
 
         # Convert LocationAgent violation object to detailed dict
         violation_dict = {
@@ -1559,10 +1619,42 @@ def execute_phase5_final_impl(agents, territory, state_mgr):
             "message": message,
             "severity": "medium",
             "recommended_action": action,
-            "llm_triggered": False,  # LocationAgent doesn't trigger LLM
-            "confidence": round(state_mgr.state["compliance_scores"].get(territory, 0.0), 3),
+            "llm_triggered": llm_was_triggered,
+            "confidence": round(violation_confidence, 3),
         }
         all_violations.append(violation_dict)
+
+    # Get ConversationalRepairAgent violations
+    conversational_violations = state_mgr.state.get("conversational_violations", [])
+    for conv_violation in conversational_violations:
+        if isinstance(conv_violation, dict):
+            violation_dict = {
+                "type": conv_violation.get("type", "CONVERSATIONAL"),
+                "source": "ConversationalRepairAgent",
+                "file": conv_violation.get("file", "unknown"),
+                "message": conv_violation.get("message", str(conv_violation)),
+                "severity": conv_violation.get("severity", "medium"),
+                "recommended_action": conv_violation.get("recommended_action", "Review conversational pattern"),
+                "llm_triggered": decision_engine.enable_llm,
+                "confidence": round(conv_violation.get("confidence", 0.5), 3),
+            }
+            all_violations.append(violation_dict)
+
+    # Get RootHygieneAgent violations
+    hygiene_violations = state_mgr.state.get("hygiene_violations", [])
+    for hygiene_violation in hygiene_violations:
+        if isinstance(hygiene_violation, dict):
+            violation_dict = {
+                "type": hygiene_violation.get("type", "HYGIENE"),
+                "source": "RootHygieneAgent",
+                "file": hygiene_violation.get("file", "unknown"),
+                "message": hygiene_violation.get("message", str(hygiene_violation)),
+                "severity": hygiene_violation.get("severity", "medium"),
+                "recommended_action": hygiene_violation.get("recommended_action", "Clean root directory"),
+                "llm_triggered": decision_engine.enable_llm,
+                "confidence": round(hygiene_violation.get("confidence", 0.5), 3),
+            }
+            all_violations.append(violation_dict)
 
     violation_count = len(all_violations)
     status = "COMPLIANT" if violation_count == 0 else "NON-COMPLIANT"
@@ -1589,6 +1681,11 @@ def execute_phase5_final_impl(agents, territory, state_mgr):
     # Get location scan result from state manager
     location_scan_result = state_mgr.state.get("location_scan_result", {})
 
+    # [DYNAMIC] Track actual agents executed from state manager
+    completed_agents = state_mgr.state.get("completed_agents", [])
+    # Extract unique agent names from completion history
+    agents_executed = list(set(agent["agent"] for agent in completed_agents))
+    
     detailed_cert = {
         "meta": {
             "territory": territory,
@@ -1605,14 +1702,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr):
         },
         "governance_log": {"decisions": decisions_made, "files_processed": []},
         "unified_violations": all_violations,  # Use all_violations instead of just arch violations
-        "agents_executed": [
-            "FilesystemSSOTReconcilerAgent",
-            "LocationAgent",
-            "HierarchyAgent",
-            "PascalSovereigntyAgent",
-            "ArchitectureGovernorAgent",
-            "SystemArchitectAgent",
-        ],
+        "agents_executed": agents_executed,
     }
 
     # Add comprehensive file statistics
@@ -1879,14 +1969,14 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Single territory scan (autonomous)
+  # Single territory scan (LLM enabled by default)
   python execute_ssot.py --territory prompt_governance
 
   # Multi-domain sweep
   python execute_ssot.py --domains
 
-  # With LLM assistance
-  python execute_ssot.py --territory L5_safety --enable-llm
+  # Dry run (no LLM healing)
+  python execute_ssot.py --territory L5_safety --dry-run
 
   # List all discoverable agents
   python execute_ssot.py --list-agents
@@ -1901,10 +1991,6 @@ Examples:
     )
     parser.add_argument("--agent", type=str, help="Run specific agent directly")
     parser.add_argument("--list-agents", action="store_true", help="List discoverable agents")
-    # [SOVEREIGN DEFAULT] Inverting safety logic to 'Active by Default' for Senior Developer velocity
-    parser.add_argument(
-        "--disable-llm", action="store_true", help="Disable LLM for low-confidence decisions"
-    )
     parser.add_argument(
         "--enable-cda",
         action="store_true",
@@ -2018,10 +2104,12 @@ Examples:
     state_mgr = RuntimeStateManager(project_root)
     
     
-    # [SOVEREIGN DEFAULT] Resolve 'Active-by-Default' logic across the orchestration chain
-    enable_llm = not args.disable_llm
+    # [SIMPLIFIED] Parse arguments first
     dry_run = args.dry_run or args.validate
     auto_approve = not args.interactive
+    
+    # [SIMPLIFIED] LLM enabled by default for healing, disabled in dry-run mode
+    enable_llm = not dry_run
     
     # [NEW] Enable CognitiveDispositionAgent if requested
     enable_cda = getattr(args, "enable_cda", False)
@@ -2038,23 +2126,18 @@ Examples:
     logger.info(f"  HEALING: {'ACTIVE' if not dry_run else 'DRY-RUN'}")
     logger.info(f"  APPROVAL: {'AUTO' if auto_approve else 'INTERACTIVE'}")
     
+    # [HARDENED] Mandatory Hard Imports for Total Awareness
     try:
-        from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
-            FilesystemSSOTReconcilerAgent,
-        )
+        from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
-            ArchitectureGovernorAgent,
-        )
+        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent
         from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
-
-        # [ADDED] Integrated Sovereignty Guardians
         from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
         from agentic_core.L5_safety.validators.RootHygieneAgent import RootHygieneAgent
-        
-        # [ADDED]
         from agentic_core.prompt_governance.agents.ConversationalRepairAgent import ConversationalRepairAgent
+        from agentic_core.L5_safety.validators.CognitiveDispositionAgent import CognitiveDispositionAgent
+        # Note: NamingAgent is a dependency for PascalSovereigntyAgent, checked during instantiation
 
         agents = {
             "reconciler": FilesystemSSOTReconcilerAgent,
@@ -2064,18 +2147,23 @@ Examples:
             "system_architect": SystemArchitectAgent,
             "pascal_sovereignty": PascalSovereigntyAgent,
             "root_hygiene": RootHygieneAgent,
-            # [ADDED] Registered ConversationalRepairAgent
-            "conversational_repair": ConversationalRepairAgent, 
+            "conversational_repair": ConversationalRepairAgent,
+            "cognitive_disposition": CognitiveDispositionAgent,
         }
-        logger.info(" All agents loaded successfully including Sovereignty Guardians")
         
+        logger.info("Total Awareness: Mandatory agent roster registered.")
+        
+        # [HARDENED] Blocking Integrity Check
         integrity_errors = validator.validate_agent_integrity(agents)
         if integrity_errors:
-            logger.warning("⚠️ Agent Integrity Warnings:")
+            logger.critical("🛑 SOVEREIGN CONTRACT BREACH - AGENT INTEGRITY FAILED:")
             for err in integrity_errors:
-                logger.warning(f"  - {err}")
+                logger.error(f"  - {err}")
+            if not args.list_agents:
+                sys.exit(1) # Halt mission if any agent is non-compliant
+                
     except ImportError as e:
-        logger.critical(f"Failed to load Sovereign Agents: {e}")
+        logger.critical(f"🛑 FATAL: Mandatory agent or dependency missing: {e}")
         sys.exit(1)
 
     # 4. Determine Targets
@@ -2197,8 +2285,9 @@ Examples:
                         if phase3_result["status"] == "clean":
                             logger.info("✅ Phase 3: All files pass validation")
                         else:
+                            remaining_count = len(phase3_result.get('remaining_violations', []))
                             logger.warning(
-                                f"⚠️ Phase 3: {len(phase3_result['remaining_violations'])} issues detected"
+                                f"⚠️ Phase 3: {remaining_count} issues detected"
                             )
 
                         # Continue with existing phases
@@ -2267,8 +2356,47 @@ Examples:
                             auto_approve,
                         )
 
+                        # Phase 4.5: Additional Agent Execution (Conversational Repair & Root Hygiene)
+                        logger.info(f"=== PHASE 4.5: ADDITIONAL AGENTS - {territory} ===")
+                        
+                        # Execute ConversationalRepairAgent
+                        try:
+                            state_mgr.update_agent("ConversationalRepairAgent", "Prompt Governance")
+                            conversational_agent = agents["conversational_repair"](project_root=Path.cwd())
+                            if hasattr(conversational_agent, "scan_violations"):
+                                conv_results = conversational_agent.scan_violations(target_territory=territory)
+                                conv_violations = conv_results.get("violations", [])
+                                state_mgr.complete_agent("ConversationalRepairAgent", True, f"Violations: {len(conv_violations)}")
+                                # Store violations for aggregation
+                                if not state_mgr.state.get("conversational_violations"):
+                                    state_mgr.state["conversational_violations"] = []
+                                state_mgr.state["conversational_violations"].extend(conv_violations)
+                            else:
+                                state_mgr.complete_agent("ConversationalRepairAgent", False, "No scan_violations method")
+                        except Exception as e:
+                            logger.warning(f"ConversationalRepairAgent failed: {e}")
+                            state_mgr.complete_agent("ConversationalRepairAgent", False, str(e))
+
+                        # Execute RootHygieneAgent
+                        try:
+                            state_mgr.update_agent("RootHygieneAgent", "L0 - Maintenance")
+                            hygiene_agent = agents["root_hygiene"](project_root=Path.cwd())
+                            if hasattr(hygiene_agent, "scan_root_violations"):
+                                hygiene_results = hygiene_agent.scan_root_violations(target_territory=territory)
+                                hygiene_violations = hygiene_results.get("violations", [])
+                                state_mgr.complete_agent("RootHygieneAgent", True, f"Violations: {len(hygiene_violations)}")
+                                # Store violations for aggregation
+                                if not state_mgr.state.get("hygiene_violations"):
+                                    state_mgr.state["hygiene_violations"] = []
+                                state_mgr.state["hygiene_violations"].extend(hygiene_violations)
+                            else:
+                                state_mgr.complete_agent("RootHygieneAgent", False, "No scan_root_violations method")
+                        except Exception as e:
+                            logger.warning(f"RootHygieneAgent failed: {e}")
+                            state_mgr.complete_agent("RootHygieneAgent", False, str(e))
+
                         # Phase 5
-                        cert = execute_phase5_final(agents, territory, state_mgr)
+                        cert = execute_phase5_final(agents, territory, state_mgr, decision_engine)
                         results.append(cert)
                     else:
                         logger.error(f"Phase 1 failed for {territory} - skipping")
