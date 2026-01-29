@@ -16,12 +16,14 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
 import hashlib
-from apps_lic.engines.HOP8QAReportAgent import HOP8QAReportAgent
-from apps_lic.engines.HOP9IntegrationAgent import HOP9IntegrationAgent
+
+import pytest
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from apps_lic.engines.HOP8QAReportAgent import HOP8QAReportAgent
+from apps_lic.engines.HOP9IntegrationAgent import HOP9IntegrationAgent
 
 
 class TestFinalityAndIntegration:

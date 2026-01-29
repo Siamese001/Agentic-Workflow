@@ -8,7 +8,6 @@ import logging
 import sys
 from datetime import datetime
 
-
 Logger: Any = logging.getLogger(__name__)
 
 

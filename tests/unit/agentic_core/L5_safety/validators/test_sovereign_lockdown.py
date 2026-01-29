@@ -8,10 +8,12 @@ Rationale:
     be bypassed by simply ignoring error messages.
 """
 
-import pytest
-import subprocess
 import os
+import subprocess
 from pathlib import Path
+
+import pytest
+
 from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
 

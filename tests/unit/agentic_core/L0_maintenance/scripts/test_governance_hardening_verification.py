@@ -51,9 +51,11 @@ def test_1_signal_saturation_sweep():
     result = RESULTS["test_1_signal_saturation"]
 
     try:
-        from agentic_core.L5_safety.validators.context import ValidationContext
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from dataclasses import dataclass
+
+        from agentic_core.L5_safety.validators.context import ValidationContext
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Create a concrete test agent
         @dataclass
@@ -193,8 +195,9 @@ def test_3_depth_constraint_cycle():
     result = RESULTS["test_3_depth_cycle"]
 
     try:
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from dataclasses import dataclass
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Create a test agent that tracks call depth
         @dataclass
@@ -330,8 +333,9 @@ def test_4_mro_integrity():
     result = RESULTS["test_4_mro"]
 
     try:
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from dataclasses import dataclass
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Create a direct SovereignBaseAgent instance
         @dataclass
@@ -459,6 +463,7 @@ def test_5_asynchronous_deadlock_prevention():
 
     try:
         import asyncio
+
         from agentic_core.L5_safety.validators.context import ValidationContext
 
         @dataclass

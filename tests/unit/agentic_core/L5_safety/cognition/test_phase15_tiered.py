@@ -60,6 +60,7 @@ class TestCheckpointClearingLogic:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
+
         from agentic_core.L5_safety.cognition.TieredBatchProcessor import (
             TieredBatchProcessor,
         )
@@ -84,6 +85,7 @@ class TestCheckpointClearingLogic:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
+
         from agentic_core.L5_safety.cognition.TieredBatchProcessor import (
             TieredBatchProcessor,
         )
@@ -146,6 +148,7 @@ class TestTieredBatchProcessor:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
+
         from agentic_core.L5_safety.cognition.TieredBatchProcessor import (
             TieredBatchProcessor,
         )
@@ -166,6 +169,7 @@ class TestTieredBatchProcessor:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
+
         from agentic_core.L5_safety.cognition.TieredBatchProcessor import (
             TieredBatchProcessor,
         )
@@ -188,6 +192,7 @@ class TestTieredBatchProcessor:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
+
         from agentic_core.L5_safety.cognition.TieredBatchProcessor import (
             TieredBatchProcessor,
         )

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
@@ -13,7 +14,6 @@ from pathlib import Path
 from typing import Any
 
 import redis
-
 from agentic_core.schemas.models.anomaly_report import AnomalyReport
 
 

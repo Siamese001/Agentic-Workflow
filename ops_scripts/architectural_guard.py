@@ -3,8 +3,8 @@ File: C:/Git/Agentic-Workflow/scripts/architectural_guard.py
 Context: Now that the 'common_utils' folder is purged of Agents, we must install an automated regression guard. This script acts as a CI/CD gatekeeper, scanning 'apps_shared/common_utils' for any re-introduction of Agentic logic (Executors, Orchestrators, or LLM clients) and failing the build if detected.
 """
 
-import os
 import ast
+import os
 import sys
 
 # SSOT: The forbidden zone for Agents

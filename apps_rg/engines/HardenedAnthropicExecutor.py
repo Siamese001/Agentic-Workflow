@@ -14,9 +14,10 @@ import logging
 import os
 from dataclasses import dataclass
 
-from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
 from agentic_core.base_agents.resilience_mixin import HardeningMixin, TokenLimitError
 from agentic_core.base_agents.telemetry import SystemTelemetry
+
+from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
 
 logger = logging.getLogger(__name__)
 

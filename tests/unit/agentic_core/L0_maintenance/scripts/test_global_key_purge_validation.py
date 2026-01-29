@@ -6,8 +6,9 @@ CRITICAL: A 100% pass rate is mandatory here to ensure no "Ghost Keys" remain
 in the logic flow.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 class TestGlobalKeyPurge:
@@ -122,9 +123,9 @@ class TestGlobalKeyPurge:
     def test_territory_based_healing_still_works(self):
         """Verify that territory-based healing logic works without canon keys."""
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            DEFAULT_CORE_HEALING_TERRITORY,
-            DEFAULT_APP_HEALING_TARGET,
             CORE_TERRITORY_KEYWORDS,
+            DEFAULT_APP_HEALING_TARGET,
+            DEFAULT_CORE_HEALING_TERRITORY,
             SOVEREIGN_REGISTRY,
         )
 
@@ -151,11 +152,11 @@ class TestGlobalKeyPurge:
     def test_ast_based_territory_scoring_intact(self):
         """Verify AST-based territory scoring system is intact."""
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            APP_RG_AST_TERMS,
             APP_LIC_AST_TERMS,
+            APP_RG_AST_TERMS,
             CORE_TERRITORY_KEYWORDS,
-            TERRITORY_MISMATCH_THRESHOLD,
             MIN_ALIGNMENT_SCORE,
+            TERRITORY_MISMATCH_THRESHOLD,
         )
 
         # Verify AST-based territory detection terms exist

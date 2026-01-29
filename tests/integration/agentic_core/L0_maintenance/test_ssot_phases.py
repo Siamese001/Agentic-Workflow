@@ -4,15 +4,17 @@ Description: Aggressive integration testing for Phase 2 (Write) and Phase 3 (Val
 Mandate: 100% Pass. Tests strictly enforce safety budgeting and error containment.
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
+
 from agentic_core.L0_maintenance.scripts.execute_ssot import (
+    ASTCodeQualityValidator,
+    AutonomousDecisionEngine,
+    ConfidenceScore,
+    RuntimeStateManager,
     execute_phase2_reconciliation,
     execute_phase3_validation,
-    AutonomousDecisionEngine,
-    RuntimeStateManager,
-    ConfidenceScore,
-    ASTCodeQualityValidator,
 )
 
 

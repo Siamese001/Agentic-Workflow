@@ -4,12 +4,13 @@ Implements 'Regeneration Engine' pattern from legacy system.
 Ensures output strictly adheres to min/max constraints.
 """
 
+import hashlib
+import logging
 from dataclasses import dataclass
 from typing import Any
-import logging
-import hashlib
-from .validation_gate import ValidationGate
+
 from .regeneration_engine import RegenerationEngine
+from .validation_gate import ValidationGate
 
 logger = logging.getLogger(__name__)
 

@@ -5,9 +5,10 @@ Tests for Phase 18: Buffer Forking, Global Safety Budget, Trace Persistence.
 Requirement: 100% Pass Rate for Sovereign Orchestration.
 """
 
-import pytest
 import json
 from unittest.mock import MagicMock
+
+import pytest
 from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
 from apps_lic.shared.core.trace_registry import TraceRegistry
 

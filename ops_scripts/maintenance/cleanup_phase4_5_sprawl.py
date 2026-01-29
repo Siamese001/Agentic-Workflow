@@ -6,8 +6,8 @@ This is critical to preventing accidental usage of deprecated legacy code.
 """
 
 import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 # Define project root (assuming script is in scripts/maintenance/)
 PROJECT_ROOT = Path(__file__).parent.parent.parent

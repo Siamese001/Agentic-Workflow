@@ -6,24 +6,24 @@ Tests all 5 phases with confidence-based decision making.
 100% pass rate required for deployment.
 """
 
-import pytest
 import sys
 from pathlib import Path
 from unittest.mock import Mock, patch
+
+import pytest
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L0_maintenance.scripts.execute_ssot_compliance_protocol import (
-    ConfidenceScore,
     AutonomousDecisionEngine,
+    ConfidenceScore,
     execute_phase0_validation,
     execute_phase1_discovery,
     execute_phase2_alignment,
     main,
 )
-
 
 # ============================================================================
 # TEST FIXTURES

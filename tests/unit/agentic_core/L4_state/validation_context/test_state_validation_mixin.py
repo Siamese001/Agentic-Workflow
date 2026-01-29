@@ -2,9 +2,10 @@
 # tests\mixins\test_state_validation_mixin.py was depth 3, MUST be 2.
 
 import unittest
+
 from agentic_core.utils.core_extensions.state_validation_mixin import (
-    StateValidationMixin,
     StateValidationError,
+    StateValidationMixin,
 )
 
 

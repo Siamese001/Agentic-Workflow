@@ -8,10 +8,10 @@ Context:
     - Verifies that no 'High Severity' safety violations were ignored.
 """
 
-import json
 import argparse
-import sys
+import json
 import logging
+import sys
 from pathlib import Path
 from typing import Any
 

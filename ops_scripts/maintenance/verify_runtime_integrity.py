@@ -10,10 +10,10 @@ Static analysis (ArchGuard) is not enough. We must prove that:
 Run this to confirm the system is truly production-ready.
 """
 
-import sys
 import logging
-from pathlib import Path
+import sys
 import traceback
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.append(str(PROJECT_ROOT))

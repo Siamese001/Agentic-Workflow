@@ -6,8 +6,9 @@ even if they currently reside in domain folders.
 """
 
 import ast
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 from agentic_core.L5_safety.validators.structure_blueprint import (

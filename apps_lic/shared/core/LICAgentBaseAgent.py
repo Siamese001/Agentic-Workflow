@@ -3,9 +3,10 @@ apps_lic/shared/core/agent_base.py - LIC Sovereign Bridge
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Any, Final
 from pathlib import Path
+from typing import Any, Final
 
 # CORE SOCKETING: Align with Phase 20 Hardened Standards
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent

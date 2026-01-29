@@ -19,11 +19,9 @@ import logging
 import os
 from typing import Any
 
-from agentic_core.L1_cognition.thought_engine.ValidationProtocol import ValidationProtocol
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
+from agentic_core.L1_cognition.thought_engine.ValidationProtocol import ValidationProtocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO").upper())
@@ -66,16 +64,17 @@ class CanonBaseAgent(SovereignBaseAgent):
         """
         if cls._registry_built:
             return
-        from agentic_core.canon_agents_core import SystemArchitect
-        from archives.void_violations.PatternEnforcerAgent import PatternEnforcerAgent
-        from archives.void_violations.DocumentationAgent import DocumentationAgent
-        from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
-        from archives.void_violations.BudgetAgent import BudgetAgent
-        from archives.void_violations.TypeMechanicAgent import TypeMechanicAgent
-        from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
-
         # GRAVITY FIXED (Intra-Core): Dynamic import for L2 dependency
         import importlib
+
+        from agentic_core.canon_agents_core import SystemArchitect
+        from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
+        from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
+
+        from archives.void_violations.BudgetAgent import BudgetAgent
+        from archives.void_violations.DocumentationAgent import DocumentationAgent
+        from archives.void_violations.PatternEnforcerAgent import PatternEnforcerAgent
+        from archives.void_violations.TypeMechanicAgent import TypeMechanicAgent
 
         _struct_mod = importlib.import_module(
             "agentic_core.L2_execution.tool_registry.StructuralEngineerAgent"
@@ -159,17 +158,18 @@ class CanonBaseAgent(SovereignBaseAgent):
         """
         # Initialize required dataclass fields
         from pathlib import Path
+
         self.project_root = Path.cwd()
         self._initialized = False
         self._security_validator = None
         self.name = name or self.__class__.__name__
-        
+
         # Call dataclass __post_init__ manually
         try:
             self.__post_init__()
         except AttributeError:
             pass
-        
+
         self.ctx = context
         self.layer = layer
 
@@ -406,7 +406,13 @@ class CanonBaseAgent(SovereignBaseAgent):
         """
         # Call parent heal_repository if it exists
         try:
-            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+            super().heal_repository(
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth,
+                max_depth=max_depth,
+                _call_path=_call_path,
+            )
         except AttributeError:
             pass
 

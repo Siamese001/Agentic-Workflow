@@ -7,9 +7,10 @@ Tests the Sovereign Data Flow pattern:
 - Orchestrator manages the flow without passing data directly
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add project root to path for imports BEFORE any app imports
 project_root = Path(__file__).parent.parent.parent
@@ -17,9 +18,9 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 from apps_rg.engines.base.sovereign_context import SovereignContext
-from apps_rg.engines.orchestration.resume_orchestrator_engine import ResumeOrchestratorEngine
 from apps_rg.engines.hops.hop1_clerk_engine import ClerkExtractionEngine
 from apps_rg.engines.hops.hop2_enrichment_engine import DataEnrichmentEngine
+from apps_rg.engines.orchestration.resume_orchestrator_engine import ResumeOrchestratorEngine
 
 
 @pytest.mark.asyncio

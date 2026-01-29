@@ -22,8 +22,9 @@ def test_sovereign_base_agent_init_chain():
     print("\n[TEST 1] SovereignBaseAgent __post_init__ Chain...")
 
     try:
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from dataclasses import dataclass
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Track init calls
         init_calls = []
@@ -209,8 +210,9 @@ def test_kwargs_propagation():
     print("\n[TEST 6] **kwargs Propagation...")
 
     try:
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from dataclasses import dataclass
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Track kwargs at each level
         kwargs_received = {}

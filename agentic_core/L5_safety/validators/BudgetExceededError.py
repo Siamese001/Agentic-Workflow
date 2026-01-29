@@ -4,8 +4,8 @@ from __future__ import annotations
 
 Tracks token usage and halts execution if cost exceeds threshold.
 """
-import os
 import logging
+import os
 import time
 from typing import Any
 

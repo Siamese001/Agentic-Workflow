@@ -1,7 +1,8 @@
-import pytest
 import inspect
-from pathlib import Path
 from dataclasses import is_dataclass
+from pathlib import Path
+
+import pytest
 
 
 class TestHardenedCoreSynthesis:
@@ -13,12 +14,12 @@ class TestHardenedCoreSynthesis:
         """Test that domain exceptions hierarchy exists and is correct."""
         try:
             from agentic_core.domain.exceptions import (
-                SovereignError,
-                HealerError,
                 CircularDependencyError,
                 ConfigurationError,
-                StructuralError,
+                HealerError,
                 HygieneError,
+                SovereignError,
+                StructuralError,
             )
 
             # Test inheritance hierarchy
@@ -243,8 +244,9 @@ class TestHardenedCoreSynthesis:
     def test_canonical_schema_compliance(self):
         """Test that heal_repository methods use canonical schema."""
         try:
-            from agentic_core.base_agents.healer_mixin import healer_mixin
             from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin
+
+            from agentic_core.base_agents.healer_mixin import healer_mixin
 
             # Test HealerMixin
             healer_method = HealerMixin.heal_repository
@@ -292,10 +294,11 @@ class TestHardenedCoreSynthesis:
     def test_error_boundary_integration(self):
         """Test that proper exception hierarchy is integrated."""
         try:
-            from agentic_core.domain.exceptions import HealerError, StructuralError, HygieneError
+            from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin
+
             from agentic_core.base_agents.healer_mixin import healer_mixin
             from agentic_core.base_agents.structural_healing_mixin import structural_healing_mixin
-            from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin
+            from agentic_core.domain.exceptions import HealerError, HygieneError, StructuralError
 
             # Test that mixins exist and have proper structure
             assert hasattr(HealerMixin, "heal_repository"), "HealerMixin missing heal_repository"

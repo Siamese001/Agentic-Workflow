@@ -6,9 +6,9 @@ L6 Conversational Repair & Multi-Agent Debate
 [PHASE 10 REFACTOR] Uses SovereignBaseAgent native LLM capabilities.
 [PHASE 3 INTEGRATION] Now compliant with HealerProtocol for SSOT orchestration.
 """
+import asyncio
 import json
 import logging
-import asyncio
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -37,12 +37,12 @@ class ConversationalRepairAgent(SovereignBaseAgent):
         Wraps async debate logic to repair violations dynamically.
         """
         self.log_info(f"Initiating repair for violation: {violation.get('type')}")
-        
+
         context = {
             "error": violation.get("message", "Unknown Error"),
             "file": str(violation.get("file", "unknown")),
             "violation_type": violation.get("type", "GENERAL"),
-            "severity": violation.get("severity", "medium")
+            "severity": violation.get("severity", "medium"),
         }
 
         try:
@@ -59,7 +59,7 @@ class ConversationalRepairAgent(SovereignBaseAgent):
                 "success": result.get("success", False),
                 "message": result.get("consensus_reasoning", ""),
                 "diff": result.get("consensus_code", ""),
-                "agent": "ConversationalRepairAgent"
+                "agent": "ConversationalRepairAgent",
             }
         except Exception as e:
             self.log_error(f"Conversational Repair failed: {e}")
@@ -70,7 +70,7 @@ class ConversationalRepairAgent(SovereignBaseAgent):
 
         # Example using native LLM call
         prompt = f"Analyze failure and provide python code fix: {json.dumps(failure_context)}"
-        
+
         # [HARDENED] Fallback if LLM unavailable
         try:
             response = await self.llm_generate(prompt, provider="openai")
@@ -88,51 +88,55 @@ class ConversationalRepairAgent(SovereignBaseAgent):
     def scan_violations(self, target_territory: str = None) -> dict[str, Any]:
         """
         [SSOT INTEGRATION] Scan for conversational violations in target territory.
-        
+
         Args:
             target_territory: Specific territory to scan (optional)
-            
+
         Returns:
             Dict with violations list for SSOT aggregation
         """
-        self.log_info(f"Scanning for conversational violations in territory: {target_territory or 'all'}")
-        
+        self.log_info(
+            f"Scanning for conversational violations in territory: {target_territory or 'all'}"
+        )
+
         violations = []
-        
+
         # Example violation detection logic
         project_root = self.project_root or Path(".")
-        
+
         if target_territory:
             scan_path = project_root / "agentic_core" / target_territory
         else:
             scan_path = project_root / "agentic_core"
-            
+
         if not scan_path.exists():
             return {"violations": violations}
-            
+
         # Scan for common conversational issues
         for file_path in scan_path.rglob("*.py"):
             try:
                 content = file_path.read_text(encoding="utf-8")
-                
+
                 # Check for hardcoded prompts that should be templated
                 if '"""' in content and "prompt" in content.lower():
-                    lines = content.split('\n')
+                    lines = content.split("\n")
                     for i, line in enumerate(lines, 1):
-                        if 'prompt' in line.lower() and '"""' in line and len(line) > 100:
-                            violations.append({
-                                "type": "HARDCODED_PROMPT",
-                                "file": str(file_path),
-                                "line": i,
-                                "message": f"Hardcoded prompt detected at line {i}",
-                                "severity": "medium",
-                                "recommended_action": "Consider moving to template system",
-                                "confidence": 0.7
-                            })
-                            
+                        if "prompt" in line.lower() and '"""' in line and len(line) > 100:
+                            violations.append(
+                                {
+                                    "type": "HARDCODED_PROMPT",
+                                    "file": str(file_path),
+                                    "line": i,
+                                    "message": f"Hardcoded prompt detected at line {i}",
+                                    "severity": "medium",
+                                    "recommended_action": "Consider moving to template system",
+                                    "confidence": 0.7,
+                                }
+                            )
+
             except Exception as e:
                 self.log_warning(f"Could not scan {file_path}: {e}")
-                
+
         self.log_info(f"Found {len(violations)} conversational violations")
         return {"violations": violations}
 

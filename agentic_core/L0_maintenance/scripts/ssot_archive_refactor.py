@@ -9,9 +9,9 @@ USAGE:
     python scripts/maintenance/ssot_archive_refactor.py --execute
 """
 
-from pathlib import Path
 import argparse
 import re
+from pathlib import Path
 
 
 def find_hardcoded_archives(file_path: Path) -> list[tuple[int, str]]:

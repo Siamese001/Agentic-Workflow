@@ -5,9 +5,10 @@ Tests for Phase 16: LIC-E001, LIC-E015, LIC-E008 Rule Enforcement.
 Requirement: 100% Pass Rate for Validation Gate.
 """
 
-from apps_lic.engines.HOP6ValidationAgent import HOP6ValidationAgent
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from apps_lic.engines.HOP6ValidationAgent import HOP6ValidationAgent
 
 
 class TestHOP6SpecialistValidation:

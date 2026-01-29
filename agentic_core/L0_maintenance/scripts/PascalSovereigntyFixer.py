@@ -9,10 +9,10 @@ Rationale:
 """
 
 import ast
-import re
-import sys
 import os
 import platform
+import re
+import sys
 import time
 from pathlib import Path
 from typing import Literal

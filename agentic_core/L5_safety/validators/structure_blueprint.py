@@ -10,10 +10,10 @@ CONSOLIDATED VERSION: Reduced redundancy while preserving all information.
 """
 import os
 import re
-from pathlib import Path
-from typing import Any, Final, TypedDict
-from re import Pattern
 from collections.abc import Mapping, Sequence
+from pathlib import Path
+from re import Pattern
+from typing import Any, Final, TypedDict
 
 # Lock down core mappings to prevent runtime mutation during mission execution
 # [CRITICAL ANALYSIS] Windsurf's initial attempt lacked static enforcement;

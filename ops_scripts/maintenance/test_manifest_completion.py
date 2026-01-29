@@ -7,8 +7,9 @@ Context: Verifies that all High Priority files are RESOLVED.
 """
 
 import json
-import pytest
 from pathlib import Path
+
+import pytest
 
 MANIFEST_PATH = Path("docs/reports/reconciliation_manifest.json")
 

@@ -2,13 +2,14 @@
 tests/test_lic_swarm_compliance.py
 """
 
-import pytest
 import importlib
-import pkgutil
 import inspect
-from pathlib import Path
-from dataclasses import is_dataclass
+import pkgutil
 import sys
+from dataclasses import is_dataclass
+from pathlib import Path
+
+import pytest
 
 # Ensure path visibility
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -26,6 +27,7 @@ class TestLICCompleteSwarmCompliance:
         and verify it adheres to the Sovereign Standard.
         """
         from apps_lic.shared.core.agent_base import LICAgentBase
+
         import apps_lic.engines as engine_pkg
 
         package_path = Path(engine_pkg.__file__).parent

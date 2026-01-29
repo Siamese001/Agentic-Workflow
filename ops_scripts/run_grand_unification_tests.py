@@ -3,8 +3,8 @@ Grand Unification Test Runner
 Runs comprehensive integration tests directly.
 """
 
-import sys
 import asyncio
+import sys
 from pathlib import Path
 
 # Add project root to path

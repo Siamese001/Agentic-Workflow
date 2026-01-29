@@ -6,7 +6,6 @@ Verifies the Bridge Pattern enforces tracing, config loading, and error handling
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from apps_lic.domain.config.schemas import AgentSpecs
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer

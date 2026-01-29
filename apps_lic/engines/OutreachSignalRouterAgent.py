@@ -8,15 +8,18 @@ Provides self-healing capabilities for outreach campaigns:
 """
 
 from __future__ import annotations
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from enum import Enum
+
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum
 from typing import TYPE_CHECKING
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 if TYPE_CHECKING:
     from apps_lic.shared.orchestrators import AppWorkflowOrchestratorAgent
+
     from apps_lic.engines.LeadQualityAgent import LeadQualityAgent
 
 

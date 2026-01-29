@@ -7,7 +7,6 @@ resume generation capabilities.
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -17,10 +17,10 @@ import ast
 import logging
 import os
 import re
-from typing import Any, Final
 from dataclasses import dataclass, field
+from typing import Any, Final
 
-from agentic_core.domain.HealerError import HealerError, CircularDependencyError
+from agentic_core.domain.HealerError import CircularDependencyError, HealerError
 from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import SAFETY_VALIDATION_REGISTRY
 

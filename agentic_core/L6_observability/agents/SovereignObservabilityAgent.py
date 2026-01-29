@@ -3,18 +3,18 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import json
 import random
 from typing import Any
 
+from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
 from agentic_core.L4_state.validation_context.context_propagation_mixin import (
     ContextPropagationMixin,
 )
-from agentic_core.base_agents.decorators import standard_heal
 
 
 class SovereignObservabilityAgent(

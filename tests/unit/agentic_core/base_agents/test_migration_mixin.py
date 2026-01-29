@@ -1,9 +1,10 @@
 # TESTS DEPTH VIOLATION — 2026-01-18 05:21:41
 # tests\mixins\test_migration_mixin.py was depth 3, MUST be 2.
 
-import unittest
 import logging
-from agentic_core.utils.core_extensions.migration_mixin import MigrationMixin, MigrationError
+import unittest
+
+from agentic_core.utils.core_extensions.migration_mixin import MigrationError, MigrationMixin
 
 
 class VersionedAgent(MigrationMixin):

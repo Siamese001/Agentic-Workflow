@@ -3,12 +3,13 @@ File: tests/e2e/agentic_core/L0_maintenance/test_ssot_e2e_reporting.py
 Description: End-to-End integration tests for SSOT reporting, state persistence, and multi-agent coordination.
 """
 
-import pytest
-import sys
 import json
 import os
+import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
@@ -16,10 +17,10 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L0_maintenance.scripts.execute_ssot import (
     AutonomousDecisionEngine,
-    RuntimeStateManager,
-    ReconciliationViolation,
-    execute_phase1_discovery,
     ConfidenceScore,
+    ReconciliationViolation,
+    RuntimeStateManager,
+    execute_phase1_discovery,
 )
 
 

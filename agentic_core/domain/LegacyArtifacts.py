@@ -3,11 +3,11 @@ agentic_core/domain/legacy_artifacts.py
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Final
-from re import Pattern
-import re
 
+import re
+from dataclasses import dataclass, field
+from re import Pattern
+from typing import Final
 
 # [PHASE 30 DEEP HARVEST: From ProfileAnalysisAgent.py]
 # Patterns identifying weak or passive voice openings in outreach

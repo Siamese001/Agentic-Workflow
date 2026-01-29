@@ -9,8 +9,8 @@ Checks for:
 """
 
 import json
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_JSON = PROJECT_ROOT / "agent_discovery_full.json"

@@ -4,8 +4,8 @@ LIC Vector Memory Store - ChromaDB-based vector store for research.
 Ported from: archives/legacy_lic/Agentic LIC/memory_LIC.py
 """
 
-from dataclasses import dataclass
 import hashlib
+from dataclasses import dataclass
 
 
 @dataclass

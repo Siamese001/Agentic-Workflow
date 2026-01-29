@@ -6,10 +6,10 @@ Ensures schemas define correct types and loader handles caching/validation.
 import json
 
 import pytest
+from apps_lic.domain.config.schemas import AgentSpecs
 from pydantic import ValidationError
 
 from apps_lic.domain.config.loader import load_agent_specs
-from apps_lic.domain.config.schemas import AgentSpecs
 
 
 class TestConfigInfrastructure:

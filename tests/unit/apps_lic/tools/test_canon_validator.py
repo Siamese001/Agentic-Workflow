@@ -1,5 +1,7 @@
 import unittest
+
 from apps_lic.tools.canon_validator import CanonValidator
+
 from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 
 

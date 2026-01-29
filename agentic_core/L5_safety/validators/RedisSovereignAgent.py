@@ -2,11 +2,11 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, orchestrator, prompt, validator, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
 """
@@ -20,9 +20,9 @@ from typing import Any
 import redis
 from redis.connection import ConnectionPool
 
-from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 
 
 # NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent

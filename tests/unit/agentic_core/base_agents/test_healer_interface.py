@@ -5,9 +5,9 @@ Mandate: 100% Pass.
 """
 
 from agentic_core.base_agents.HealerProtocol import (
-    LegacyAgentAdapter,
-    HealerAgentMixin,
     HEAL_RESULT_SCHEMA,
+    HealerAgentMixin,
+    LegacyAgentAdapter,
 )
 
 # --- MOCK LEGACY AGENTS ---

@@ -6,7 +6,6 @@ numbered system. Agents are identified by their function, not by numbers.
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

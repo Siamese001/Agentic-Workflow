@@ -2,11 +2,11 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 System Architect Agent - Core Architecture Validation
@@ -22,8 +22,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
 
 Logger = logging.getLogger(__name__)
 
@@ -47,9 +47,9 @@ class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
         Returns a 'manual_required' status to satisfy the protocol without risky auto-changes.
         """
         return {
-            "status": "manual_required", 
+            "status": "manual_required",
             "reason": "Architectural restructuring requires human approval.",
-            "suggested_action": f"Review {violation.get('file')} dependencies."
+            "suggested_action": f"Review {violation.get('file')} dependencies.",
         }
 
     def get_validation_keys(self) -> list[int]:
@@ -261,6 +261,7 @@ class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
         Tests folder requires exactly depth 3.
         """
         from pathlib import Path
+
         from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
 
         violations: Any = []

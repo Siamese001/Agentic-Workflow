@@ -24,6 +24,7 @@ SSOT PRINCIPLE:
 """
 
 from __future__ import annotations
+
 import json
 import logging
 from pathlib import Path
@@ -267,9 +268,9 @@ def get_python_files(
 
 
 def get_data_files(
-    project_root: Path | None = None, 
+    project_root: Path | None = None,
     extensions: list[str] | None = None,
-    exclude_patterns: list[str] | None = None
+    exclude_patterns: list[str] | None = None,
 ) -> list[Path]:
     """
     Get all data files from the project with specified extensions.
@@ -287,7 +288,7 @@ def get_data_files(
 
     if extensions is None:
         extensions = [".json", ".md", ".yaml", ".yml", ".toml", ".txt"]
-    
+
     if exclude_patterns is None:
         exclude_patterns = ["__pycache__", ".pyc", "test_", "mock_"]
 
@@ -305,8 +306,7 @@ def get_data_files(
 
 
 def get_all_files(
-    project_root: Path | None = None, 
-    exclude_patterns: list[str] | None = None
+    project_root: Path | None = None, exclude_patterns: list[str] | None = None
 ) -> dict[str, list[Path]]:
     """
     Get all files from the project, grouped by file type.
@@ -325,20 +325,20 @@ def get_all_files(
         exclude_patterns = ["__pycache__", ".pyc"]
 
     all_files = {}
-    
+
     # Get all files recursively
     for file_path in project_root.rglob("*"):
         if file_path.is_file():
             # Apply exclusions
             if any(pattern in str(file_path) for pattern in exclude_patterns):
                 continue
-                
+
             # Group by extension
             ext = file_path.suffix.lower()
             if ext not in all_files:
                 all_files[ext] = []
             all_files[ext].append(file_path)
-    
+
     return all_files
 
 

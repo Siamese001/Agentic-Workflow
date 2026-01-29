@@ -30,18 +30,19 @@ Logic:
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-# PHASE 2.1: L0 Structural Standardization
-from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.L5_safety.gravity.unified_validator import UnifiedSSOTValidator
 from scripts.purge_cache import purge_repository_cache  # Integrated Maintenance Hook
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
+# PHASE 2.1: L0 Structural Standardization
+from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 
 
 @dataclass

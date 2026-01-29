@@ -138,7 +138,7 @@ def test_topology_validation():
     print("\n5. Testing topology validation...")
 
     try:
-        from apps_rg.domain.config.schemas import OrchestrationTopology, AgentSpec
+        from apps_rg.domain.config.schemas import AgentSpec, OrchestrationTopology
 
         # Valid topology
         agent_spec = AgentSpec(name="TEST_AGENT", module_path="apps_rg.engines.test.TestEngine")

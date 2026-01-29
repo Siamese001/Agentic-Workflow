@@ -20,8 +20,10 @@ try:
     )
 except ImportError:
     DASHBOARD_DIR = "docs/dashboards"
+
     def get_validated_project_root():
         from pathlib import Path
+
         return Path.cwd()
 
 

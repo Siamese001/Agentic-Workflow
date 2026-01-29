@@ -4,14 +4,16 @@ Description: Tests for Dynamic Loading, Signal Handling, and Main Orchestration.
 Mandate: 100% Pass.
 """
 
-import pytest
 import signal
 import sys
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
+
 from agentic_core.L0_maintenance.scripts.execute_ssot import (
-    load_agents,
     GracefulExitHandler,
     RuntimeStateManager,
+    load_agents,
 )
 
 

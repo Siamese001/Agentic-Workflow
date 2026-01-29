@@ -13,9 +13,10 @@ Purpose: Fix intelligence gap between apps_shared vs apps_lic/apps_rg
 """
 
 import pytest
+
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_TERRITORIES,
     LAYER_FORBIDDEN_IMPORTS,
+    SOVEREIGN_TERRITORIES,
 )
 
 

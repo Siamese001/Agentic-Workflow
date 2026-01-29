@@ -4,11 +4,11 @@ Integration Parity Tests for Phase 4 Deep Integration
 Validates that execute_ssot.py has feature parity with Canon Validator
 """
 
-import unittest
 import json
+import shutil
 import sys
 import tempfile
-import shutil
+import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -17,10 +17,10 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L0_maintenance.scripts.execute_ssot import (
+    AutonomousDecisionEngine,
+    ConfidenceScore,
     RuntimeStateManager,
     try_summon_orchestrator,
-    ConfidenceScore,
-    AutonomousDecisionEngine,
 )
 
 

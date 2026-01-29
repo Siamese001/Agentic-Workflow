@@ -4,8 +4,8 @@ Verification Script for Universal Healing Implementation
 Tests the actual execute_ssot.py with the Universal Healing patch.
 """
 
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 

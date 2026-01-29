@@ -57,9 +57,9 @@ def test_manifest_guardian():
     print("\n🔍 Testing ManifestGuardian...")
 
     try:
-        import tempfile
         import json
         import os
+        import tempfile
 
         # Create temp environment
         with tempfile.TemporaryDirectory() as temp_dir:

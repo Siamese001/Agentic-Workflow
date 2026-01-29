@@ -7,12 +7,12 @@ Uses ARTIFACT_ROUTING_MAP from structure_blueprint.py for semantic routing decis
 
 import json
 import shutil
-from pathlib import Path
-from typing import Any
-from dataclasses import dataclass
 
 # Import the SSOT routing configuration
 import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 sys.path.append(str(Path(__file__).parent / "agentic_core" / "L5_safety" / "validators"))
 from structure_blueprint import (

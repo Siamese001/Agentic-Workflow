@@ -2,10 +2,11 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
 from __future__ import annotations
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-# This boosts alignment detection — review and integrate appropriately
 
+# This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Unified Guardrail Agent - Canonical Membrane Pattern
@@ -20,10 +21,10 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
 
+from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
-from agentic_core.base_agents.decorators import standard_heal
 
 
 class GuardrailResult(Enum):

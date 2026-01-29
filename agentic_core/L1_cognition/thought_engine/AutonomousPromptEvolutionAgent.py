@@ -2,16 +2,15 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
 from __future__ import annotations
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 # This boosts alignment detection — review and integrate appropriately
-
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
-
 from dataclasses import dataclass
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 AutonomousPromptEvolutionAgent: Optimizes prompt templates based on MetaLearning rewards.
@@ -27,7 +26,6 @@ import random
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-
 
 log = logging.getLogger(__name__)
 

@@ -2,14 +2,12 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
 from __future__ import annotations
+
 # This boosts alignment detection — review and integrate appropriately
-
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """

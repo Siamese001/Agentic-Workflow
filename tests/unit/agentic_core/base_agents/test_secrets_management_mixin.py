@@ -1,13 +1,14 @@
 # TESTS DEPTH VIOLATION — 2026-01-18 05:21:41
 # tests\mixins\test_secrets_management_mixin.py was depth 3, MUST be 2.
 
-import unittest
-import os
 import logging
+import os
+import unittest
 from unittest.mock import patch
+
 from agentic_core.utils.core_extensions.secrets_management_mixin import (
-    SecretsManagementMixin,
     SecretAccessError,
+    SecretsManagementMixin,
 )
 
 

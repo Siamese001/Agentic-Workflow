@@ -7,16 +7,18 @@ CRITICAL: This test suite must achieve 100% PASS to validate
 the final integrity lock implementation.
 """
 
-import pytest
 import collections.abc
+import sys
 from collections.abc import Mapping
 from pathlib import Path
-import sys
+
+import pytest
 
 # Add the project root to Python path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agentic_core.utils.discovery_parser import AGENT_METADATA
+
 from agentic_core.L5_safety.validators import structure_blueprint
 
 

@@ -279,8 +279,8 @@ class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
     def _validate_filename_patterns(self, file_path: Path) -> tuple[bool, str]:
         """Validate filename patterns for forbidden prefixes and backup files."""
         from agentic_core.L5_safety.validators.structure_blueprint import (
-            has_forbidden_layer_prefix,
             check_forbidden_signals,
+            has_forbidden_layer_prefix,
         )
 
         # Forbidden layer prefixes

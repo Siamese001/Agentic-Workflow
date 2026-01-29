@@ -8,7 +8,6 @@ ambiguity and demonstrate proper adherence.
 import json
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

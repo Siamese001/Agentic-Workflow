@@ -2,9 +2,8 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, memory, prompt, state, workflow
 from __future__ import annotations
+
 # This boosts alignment detection — review and integrate appropriately
-
-
 from dataclasses import dataclass
 
 """
@@ -31,10 +30,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,  # Comprehensive exclusion set (.git, venv, __pycache__, etc.)
 )
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.utils.ssot_discovery import get_python_files
 
 # Additional reporting-specific exclusions (stubs, backups)

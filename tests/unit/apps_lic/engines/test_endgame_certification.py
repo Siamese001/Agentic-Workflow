@@ -5,11 +5,12 @@ MANDATORY: 100% PASS REQUIREMENT.
 The Final Exam: Verifies Integrity, Telemetry, and Convergence.
 """
 
-import pytest
 import json
 import logging
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 # Ensure path visibility
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -26,6 +27,7 @@ class TestEndgameCertification:
         Verify that placing a 'dirty' file in the Core triggers a fatal crash.
         """
         from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier
+
         from agentic_core.domain.exceptions import ConfigurationError
 
         core_path = Path("agentic_core/base_agents")
@@ -80,9 +82,10 @@ class TestEndgameCertification:
         Verify that apps_lic and apps_rg are using the EXACT same base class memory address.
         This proves there is no 'Split-Brain'.
         """
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
         from apps_lic.shared.core.agent_base import LICAgentBase
+
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
 
         # Check Method Resolution Order
         rg_mro = RGAgentBase.mro()
@@ -205,9 +208,10 @@ class TestEndgameCertification:
         Complex multi-agent simulation where RG and LIC agents operate simultaneously,
         trigger a heal event, write to the Black Box, and pass the Integrity Lock check.
         """
-        from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
-        from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
         from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier
+
+        from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
+        from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
 
         # 1. Verify Integrity Lock is working
         assert CoreIntegrityVerifier.verify_core_integrity()

@@ -3,7 +3,6 @@ Prevents Windows encoding issues.
 """
 
 from pathlib import Path
-from typing import Any
 
 try:
     from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
@@ -14,9 +13,10 @@ try:
 except ImportError:
     AGENTIC_CORE_DIR = Path("agentic_core")
     APPS_SHARED_DIR = Path("apps_shared")
-    
+
     def get_python_files(directory):
         return directory.rglob("*.py")
+
 
 EMOJI_MAP = {
     "✅": "[OK]",

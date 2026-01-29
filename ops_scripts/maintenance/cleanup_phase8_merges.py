@@ -7,8 +7,8 @@ Cleanup Script - Phase 8 Manual Merges & Ghost Busting
 """
 
 import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 ARCHIVE_ROOT = (

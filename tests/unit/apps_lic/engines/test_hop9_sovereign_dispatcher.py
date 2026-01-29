@@ -4,11 +4,13 @@ HOP-9 Sovereign Dispatcher Test Suite.
 MANDATORY REQUIREMENT: All tests must achieve a 100% PASS RATE for Windsurf execution.
 """
 
-import pytest
 import hashlib
-from apps_lic.engines.HOP9IntegrationAgent import HOP9IntegrationAgent
+
+import pytest
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from apps_lic.engines.HOP9IntegrationAgent import HOP9IntegrationAgent
 
 
 class TestHOP9SovereignDispatcher:

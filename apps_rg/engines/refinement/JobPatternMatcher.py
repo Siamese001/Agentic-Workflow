@@ -4,9 +4,10 @@ Refactored from match_job_patterns.py
 """
 
 from __future__ import annotations
-from typing import Any
+
 import logging
 import re
+from typing import Any
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
 

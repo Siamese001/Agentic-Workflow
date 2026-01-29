@@ -14,7 +14,7 @@ import json
 import logging
 from pathlib import Path
 
-from .schemas import RGAgentSpecs, OrchestrationTopology, AgentSpec
+from .schemas import AgentSpec, OrchestrationTopology, RGAgentSpecs
 
 Logger = logging.getLogger(__name__)
 

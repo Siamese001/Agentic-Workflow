@@ -9,10 +9,10 @@ import asyncio
 import logging
 import os
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 # Import schemas from SSOT
 from agentic_core.schemas.models.consensus import ConsensusVerdict, ModelOpinion
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ class SupremeCourt(SovereignBaseAgent):
         models = [
             os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022"),
             os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro"),
-            os.getenv("OPENAI_MODEL", "gpt-4o")
+            os.getenv("OPENAI_MODEL", "gpt-4o"),
         ]
         persona_keys = list(self.personas.keys())
 
@@ -117,7 +117,9 @@ class SupremeCourt(SovereignBaseAgent):
 
         # Judge Call
         prompt = f"Analyze these {len(opinions)} opinions for goal: {goal}. Return JSON with 'consensus_score' (float) and 'reasoning' (str)."
-        resp = await self.llm_generate(prompt, provider="openai", model=os.getenv("OPENAI_MODEL", "gpt-4o"))
+        resp = await self.llm_generate(
+            prompt, provider="openai", model=os.getenv("OPENAI_MODEL", "gpt-4o")
+        )
 
         # Mock parse for stability
         return ConsensusVerdict(

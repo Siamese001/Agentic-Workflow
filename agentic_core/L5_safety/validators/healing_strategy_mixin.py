@@ -5,8 +5,8 @@ HealingStrategyMixin - Unified Healing Access for Agents
 """
 
 from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
-    get_healing_orchestrator,
     HealingSovereignOrchestrator,
+    get_healing_orchestrator,
 )
 
 

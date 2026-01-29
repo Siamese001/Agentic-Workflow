@@ -3,11 +3,11 @@ Performance benchmark to demonstrate the batch optimization improvement.
 Compares disk I/O count and execution time between batch and non-batch modes.
 """
 
-import tempfile
 import shutil
+import sys
+import tempfile
 import time
 from pathlib import Path
-import sys
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))

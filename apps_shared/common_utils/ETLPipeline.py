@@ -8,7 +8,6 @@ golden patterns from Pinecone to Redis.
 import logging
 import os
 
-
 logger = logging.getLogger(__name__)
 
 

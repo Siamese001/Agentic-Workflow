@@ -1,8 +1,8 @@
 # Governance Orchestrator
 # Strategy: Central hub for all safety checks
 
-from agentic_core.prompt_governance.PIIScrubber import PIIScrubber
 from agentic_core.prompt_governance.InjectionDetector import InjectionDetector
+from agentic_core.prompt_governance.PIIScrubber import PIIScrubber
 
 
 class GovernanceHub:

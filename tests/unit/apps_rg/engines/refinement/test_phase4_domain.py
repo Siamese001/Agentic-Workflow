@@ -7,9 +7,10 @@ Tests the Generation and Refinement engines:
 - Content Optimizer reads weights from Buffer, writes optimized content
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add project root to path for imports BEFORE any app imports
 project_root = Path(__file__).parent.parent.parent
@@ -18,8 +19,8 @@ if str(project_root) not in sys.path:
 
 from apps_rg.engines.base.sovereign_context import SovereignContext
 from apps_rg.engines.generation.k9_gap_closure_engine import GapClosureEngine
-from apps_rg.engines.refinement.weight_adjustment_engine import WeightAdjustmentEngine
 from apps_rg.engines.refinement.content_optimizer_engine import ContentOptimizerEngine
+from apps_rg.engines.refinement.weight_adjustment_engine import WeightAdjustmentEngine
 
 
 @pytest.mark.asyncio

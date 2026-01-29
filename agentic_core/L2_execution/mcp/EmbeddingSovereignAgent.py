@@ -10,17 +10,20 @@ EmbeddingSovereignAgent - Unified Embedding Gateway
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Any, Literal, TYPE_CHECKING
-import time
+
+import hashlib
 import logging
 import os
-import hashlib
+import time
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any, Literal
 
 if TYPE_CHECKING:
     pass
 
-from agentic_core.config.SovereignConfigManager import get_sovereign_config
+from agentic_core.base_agents.healer_mixin import HealerMixin
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -28,7 +31,7 @@ EmbeddingProvider = Literal["gemini", "openai"]
 
 
 @dataclass
-class EmbeddingSovereignAgent(SubatomicTestingMixin, "SovereignBaseAgent", RedisCacheMixin):
+class EmbeddingSovereignAgent(SubatomicTestingMixin, SovereignBaseAgent, HealerMixin):
     """
     Unified Embedding Gateway with Redis caching.
 
@@ -215,6 +218,31 @@ class EmbeddingSovereignAgent(SubatomicTestingMixin, "SovereignBaseAgent", Redis
         client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         response = client.embeddings.create(model="text-embedding-3-small", input=content)
         return response.data[0].embedding
+
+    @standard_heal
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
+        """L2 execution agent - embedding gateway operational only."""
+        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L2 execution - embedding gateway operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
 
 # Singleton accessor

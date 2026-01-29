@@ -69,9 +69,6 @@ def regenerate_data_only():
     print("=" * 70)
 
     # Import SSOT definitions
-    from agentic_core.L0_maintenance.scripts.territory_ssot_definitions import (
-        get_territory_sort_key,
-    )
     from agentic_core.L5_safety.validators.dashboard_ssot_definitions import (
         COL_CANONICAL_INHERITANCE,
         COL_CODE_QUALITY,
@@ -110,6 +107,10 @@ def regenerate_data_only():
         get_canonical_code_quality_score,
         get_canonical_health_score,
         is_l0_territory,
+    )
+
+    from agentic_core.L0_maintenance.scripts.territory_ssot_definitions import (
+        get_territory_sort_key,
     )
 
     # Load agent discovery

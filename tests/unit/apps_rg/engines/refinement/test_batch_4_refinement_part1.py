@@ -3,15 +3,16 @@ Batch 4 Test Suite - Refinement Domain Part 1
 Tests for weight_adjustment_engine.py and content_optimizer_engine.py
 """
 
-import pytest
-from unittest.mock import MagicMock
 import sys
 from pathlib import Path
+from unittest.mock import MagicMock
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from apps_rg.engines.refinement.weight_adjustment_engine import WeightAdjustmentEngine
 from apps_rg.engines.refinement.content_optimizer_engine import ContentOptimizerEngine
+from apps_rg.engines.refinement.weight_adjustment_engine import WeightAdjustmentEngine
 
 
 @pytest.mark.asyncio

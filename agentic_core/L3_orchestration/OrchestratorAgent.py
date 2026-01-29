@@ -25,17 +25,17 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.interfaces import (
     AgentResult,
     ExecutionContext,
     ExecutionPhase,
     MissionResult,
 )
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
 
 # [PHASE 2] SSOT Discovery Integration
 from agentic_core.utils.ssot_discovery import get_agent_paths
-from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
 
 Logger = logging.getLogger(__name__)
 
@@ -315,18 +315,16 @@ class OrchestratorAgent(SovereignBaseAgent):
         # [HARDENING] Circuit Breaker: Prevent infinite forward-rolling recursion
         current_depth = context.metadata.get("depth", 0) if context else 0
         if current_depth > 50:
-             self.logger.critical(f"[CIRCUIT_BREAKER] Max depth (50) reached for {agent_name}.")
-             return AgentResult(
-                 agent_name=agent_name, 
-                 success=False, 
-                 errors=1, 
-                 status="DEPTH_LIMIT_EXCEEDED", 
-                 message="Forward-Rolling recursion limit reached."
-             )
+            self.logger.critical(f"[CIRCUIT_BREAKER] Max depth (50) reached for {agent_name}.")
+            return AgentResult(
+                agent_name=agent_name,
+                success=False,
+                errors=1,
+                status="DEPTH_LIMIT_EXCEEDED",
+                message="Forward-Rolling recursion limit reached.",
+            )
 
-        self.logger.debug(
-            f"[AGENT] Running {agent_name} (depth={current_depth})"
-        )
+        self.logger.debug(f"[AGENT] Running {agent_name} (depth={current_depth})")
 
         try:
             # Mode-specific execution logic
@@ -455,17 +453,17 @@ class OrchestratorAgent(SovereignBaseAgent):
     ) -> AgentResult:
         """
         Execute agent in FULL/UNIFIED mode with Zero-Loss Context Merging.
-        
+
         [HARDENING] Merges accumulated_context with retry_context to preserve 'goal' and 'dataset'.
         """
         self.logger.info(f"[FULL] Running {agent_name}")
 
         # [PHASE 3] Zero-Loss Parameter Merging
         merged_payload = {}
-        if context and hasattr(context, 'accumulated_context'):
+        if context and hasattr(context, "accumulated_context"):
             # Proper deep update to ensure original task DNA is never overwritten
             merged_payload.update(context.accumulated_context)
-            if hasattr(context, 'retry_context'):
+            if hasattr(context, "retry_context"):
                 merged_payload.update(context.retry_context)
 
         return AgentResult(
@@ -478,10 +476,10 @@ class OrchestratorAgent(SovereignBaseAgent):
             status="PASS",
             message=f"Agent {agent_name} executed successfully",
             metadata={
-                "dry_run": dry_run, 
-                "mode": self.mode.value, 
+                "dry_run": dry_run,
+                "mode": self.mode.value,
                 "context_depth": context.metadata.get("depth", 0) if context else 0,
-                "dna_preserved": bool(merged_payload)
+                "dna_preserved": bool(merged_payload),
             },
         )
 
@@ -532,7 +530,7 @@ class OrchestratorAgent(SovereignBaseAgent):
     def _validate_agent_import(self, agent_name: str) -> bool:
         """
         [PHASE 3: PERFORMANCE] Cached Pre-Flight Import Validation.
-        
+
         Uses a local cache to skip redundant subprocess checks for repeat agent calls.
 
         Performs a subprocess check to verify the agent module is importable

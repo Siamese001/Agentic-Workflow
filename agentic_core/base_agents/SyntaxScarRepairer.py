@@ -3,11 +3,12 @@ fix_syntax_scars.py - HARDENED: Repair syntax errors with comprehensive safety
 """
 
 from __future__ import annotations
+
 import ast
 import logging
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from dataclasses import dataclass
 
 from agentic_core.domain.exceptions import HealerError
 

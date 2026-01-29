@@ -23,9 +23,9 @@ EXIT CODES:
     2 - Non-canonical keys found (strict mode - blocks commit)
 """
 
-from pathlib import Path
 import ast
 import sys
+from pathlib import Path
 
 CANONICAL_KEYS = {
     "violations_found",

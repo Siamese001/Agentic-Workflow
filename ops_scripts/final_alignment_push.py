@@ -6,7 +6,6 @@ Strategy: Comment out broken files to prevent import errors, allowing the system
 
 from pathlib import Path
 
-
 # Files that are fundamentally broken and should be moved to legacy
 LEGACY_FILES = [
     "LogReaderAgent.py",  # Syntax error - unmatched ')'

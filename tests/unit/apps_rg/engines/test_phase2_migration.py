@@ -3,9 +3,9 @@ File: C:/Git/Agentic-Workflow/tests/test_phase2_migration.py
 Context: Verifies that AgentExecutor is correctly moved to engines and can import its dependencies from the common_utils shim.
 """
 
-import unittest
-import sys
 import os
+import sys
+import unittest
 
 # Ensure root is in path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -20,7 +20,7 @@ class TestPhase2Migration(unittest.TestCase):
         Critical Check: Verify AgentExecutor can be imported from its new home.
         """
         try:
-            from apps_rg.engines import AgentExecutor, AgentConfig, Provider
+            from apps_rg.engines import AgentConfig, AgentExecutor, Provider
 
             # Verify it's the class we expect
             self.assertTrue(

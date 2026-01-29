@@ -3,11 +3,13 @@ structural_healing_mixin.py - HARDENED: Advanced structural healing capabilities
 """
 
 from __future__ import annotations
+
 import hashlib
 import shutil
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-from dataclasses import dataclass, field
+
 from agentic_core.domain.exceptions import StructuralError
 
 

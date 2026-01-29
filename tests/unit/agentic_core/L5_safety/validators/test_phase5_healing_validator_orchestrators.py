@@ -8,10 +8,11 @@ Tests TC-PHASE5-001 through TC-PHASE5-004:
 - Audit rotation (memory safety)
 """
 
-import pytest
-from unittest.mock import MagicMock
-import sys
 import os
+import sys
+from unittest.mock import MagicMock
+
+import pytest
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -98,10 +99,11 @@ class TestHealingSovereignOrchestrator:
         - Returns "failed" with reason "max_depth_exceeded"
         - Does not loop infinitely
         """
+        from unittest import mock
+
         from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
             get_healing_orchestrator,
         )
-        from unittest import mock
 
         with mock.patch.dict(os.environ, {"SOVEREIGN_MAX_HEALING_ATTEMPTS": "2"}):
             orchestrator = get_healing_orchestrator()
@@ -251,10 +253,11 @@ class TestValidatorOrchestrator:
         - Oldest entries pruned
         - Verifies memory safety
         """
+        from unittest import mock
+
         from agentic_core.L5_safety.validators.ValidatorOrchestrator import (
             get_validator_orchestrator,
         )
-        from unittest import mock
 
         with mock.patch.dict(os.environ, {"SOVEREIGN_MAX_AUDIT_LOG_SIZE": "5"}):
             orchestrator = get_validator_orchestrator()
@@ -275,11 +278,12 @@ class TestValidatorOrchestrator:
 
     def test_healing_audit_rotation(self):
         """Test FIFO rotation in healing orchestrator audit log."""
+        from unittest import mock
+
         from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
             HealingSovereignOrchestrator,
             get_healing_orchestrator,
         )
-        from unittest import mock
 
         HealingSovereignOrchestrator.reset_instance()
 

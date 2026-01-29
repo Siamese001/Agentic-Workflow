@@ -10,15 +10,15 @@ Ultra-Hardened Test Suite:
 - Validates path resolution hardening
 """
 
-import unittest
 import logging
+import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 from agentic_core.L3_orchestration.OrchestratorAgent import (
+    ALLOWED_MODULE_PREFIXES,
     OrchestratorAgent,
     get_consolidated_orchestrator,
-    ALLOWED_MODULE_PREFIXES,
 )
 
 # Disable logging for cleaner test output

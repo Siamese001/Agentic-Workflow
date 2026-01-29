@@ -5,9 +5,10 @@ Tests to ensure prompt_governance maintains Anti-Gravity compliance
 with zero upward import violations to higher layers.
 """
 
-import pytest
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent.parent

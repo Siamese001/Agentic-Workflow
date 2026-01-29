@@ -5,10 +5,10 @@ Status: 100% Pass Required (Updated for Registry Check)
 Rationale: Validates the class-based implementation of PascalSovereigntyFixer.
 """
 
-import unittest
-from unittest.mock import MagicMock, patch
-from pathlib import Path
 import sys
+import unittest
+from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 # Add root to path to import fixer
 sys.path.append(str(Path(__file__).parent.parent))

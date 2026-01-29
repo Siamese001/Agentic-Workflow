@@ -15,10 +15,9 @@ These tests ensure signature compatibility is maintained.
 """
 
 import inspect
-import pytest
 from pathlib import Path
-from typing import get_type_hints
-from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestHealSignatureCompatibility:
@@ -52,7 +51,6 @@ class TestHealSignatureCompatibility:
         from agentic_core.L5_safety.validators.PascalSovereigntyAgent import (
             PascalSovereigntyAgent,
         )
-        from pathlib import Path
 
         # Use actual project root to avoid security validation issues
         project_root = Path.cwd()
@@ -76,7 +74,6 @@ class TestHealSignatureCompatibility:
         from agentic_core.L5_safety.validators.PascalSovereigntyAgent import (
             PascalSovereigntyAgent,
         )
-        from pathlib import Path
 
         project_root = Path.cwd()
         agent = PascalSovereigntyAgent(project_root=project_root, dry_run=True)
@@ -153,8 +150,9 @@ class TestExecuteSSOTMainFunction:
 
     def test_main_imports_pascal_sovereignty_agent(self):
         """The main() function should import and use PascalSovereigntyAgent."""
-        from agentic_core.L0_maintenance.scripts.execute_ssot import main
         import inspect
+
+        from agentic_core.L0_maintenance.scripts.execute_ssot import main
 
         source = inspect.getsource(main)
 
@@ -178,7 +176,6 @@ class TestHealResultSchema:
         from agentic_core.L5_safety.validators.PascalSovereigntyAgent import (
             PascalSovereigntyAgent,
         )
-        from pathlib import Path
 
         project_root = Path.cwd()
         agent = PascalSovereigntyAgent(project_root=project_root, dry_run=True)
@@ -191,6 +188,7 @@ class TestHealResultSchema:
     def test_hierarchy_agent_heal_hierarchy_returns_valid_structure(self):
         """HierarchyAgent.heal_hierarchy must return a valid results dict."""
         import inspect
+
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
         # Verify signature instead of running (to avoid stdin issues in pytest)
@@ -219,8 +217,9 @@ class TestAgentInvocationChain:
             "root_hygiene",
         }
 
-        from agentic_core.L0_maintenance.scripts.execute_ssot import main
         import inspect
+
+        from agentic_core.L0_maintenance.scripts.execute_ssot import main
 
         source = inspect.getsource(main)
 
@@ -231,15 +230,14 @@ class TestAgentInvocationChain:
 
     def test_pascal_sovereignty_called_with_correct_params(self):
         """Verify PascalSovereigntyAgent is called with target_territory."""
-        from agentic_core.L0_maintenance.scripts.execute_ssot import main
         import inspect
+
+        from agentic_core.L0_maintenance.scripts.execute_ssot import main
 
         source = inspect.getsource(main)
 
         # Check the call pattern
-        assert "pascal.heal_repository(" in source, (
-            "main() must call pascal.heal_repository()"
-        )
+        assert "pascal.heal_repository(" in source, "main() must call pascal.heal_repository()"
         assert "target_territory=" in source, (
             "pascal.heal_repository() must be called with target_territory parameter"
         )
@@ -255,7 +253,6 @@ class TestTerritoryScoping:
         from agentic_core.L5_safety.validators.PascalSovereigntyAgent import (
             PascalSovereigntyAgent,
         )
-        from pathlib import Path
 
         project_root = Path.cwd()
         agent = PascalSovereigntyAgent(project_root=project_root, dry_run=True)
@@ -278,7 +275,6 @@ class TestCycleDetection:
         from agentic_core.L5_safety.validators.PascalSovereigntyAgent import (
             PascalSovereigntyAgent,
         )
-        from pathlib import Path
 
         project_root = Path.cwd()
         agent = PascalSovereigntyAgent(project_root=project_root, dry_run=True)

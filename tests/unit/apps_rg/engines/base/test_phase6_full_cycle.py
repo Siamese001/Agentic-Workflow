@@ -7,9 +7,10 @@ Tests the complete 5-HOP Sovereign Pipeline:
 - Content Quality engine feedback loop
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add project root to path for imports BEFORE any app imports
 project_root = Path(__file__).parent.parent.parent

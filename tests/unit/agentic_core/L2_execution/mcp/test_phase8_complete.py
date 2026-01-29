@@ -3,8 +3,9 @@ Phase 8 Complete Verification Tests
 Ensures ghosts are archived, merges resolved, and refactors use Sovereign Architecture.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 

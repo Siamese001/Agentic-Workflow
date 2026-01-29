@@ -3,19 +3,20 @@ Phase 3: Cryptographic Gates Test Suite
 Validates HMAC-SHA256 signatures and chain of custody for content validation.
 """
 
-import pytest
 import os
-from apps_rg.validation.validation_gate import ValidationGate
-from apps_rg.validation.word_count_enforcer import WordCountEnforcementEngine
-from apps_rg.logic_nodes.two_phase_generation_node import (
-    TwoPhaseGenerationNode,
-    BulletGenerationOutput,
-)
+
+import pytest
 from apps_rg.logic_nodes.thematic_analysis_node import (
-    ThematicAnalysisOutput,
     AuthenticityPatterns,
     CompetitiveIntelligence,
+    ThematicAnalysisOutput,
 )
+from apps_rg.logic_nodes.two_phase_generation_node import (
+    BulletGenerationOutput,
+    TwoPhaseGenerationNode,
+)
+from apps_rg.validation.validation_gate import ValidationGate
+from apps_rg.validation.word_count_enforcer import WordCountEnforcementEngine
 
 
 class TestPhase3CryptographicGates:

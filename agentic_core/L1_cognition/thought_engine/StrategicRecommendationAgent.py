@@ -21,8 +21,6 @@ Purpose:
 # Suggested keywords to add in docstring/code: engine, memory, state, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 import json
 import logging
 import re
@@ -31,6 +29,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 log = logging.getLogger(__name__)
 

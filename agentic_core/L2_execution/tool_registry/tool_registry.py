@@ -9,9 +9,10 @@ rather than being hardcoded with a fixed set of tools.
 import inspect
 import json
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
-from collections.abc import Callable
+
 import numpy as np
 
 Logger: Any = logging.getLogger(__name__)
@@ -384,8 +385,8 @@ predefined_tool_categories["code_manipulation"] = "AST-based code transformation
 # DEPENDENCY GRAPH ANALYZER (DGA) — Phase 2 Tool
 # =============================================================================
 from agentic_core.L2_execution.tool_registry.tools.DependencyGraph import (
-    DependencyGraphArgs,
     DependencyGraph,
+    DependencyGraphArgs,
 )
 
 

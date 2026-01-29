@@ -1,9 +1,9 @@
 # Main Execution Loop
 # Strategy: Orchestrates the Observe-Think-Act cycle with safety limits
 
+from agentic_core.patterns.base import BaseReasoningPattern
 from agentic_core.runtime.state import AgentState
 from agentic_core.runtime.tools import ToolRegistry
-from agentic_core.patterns.base import BaseReasoningPattern
 
 
 class AgentEngine:

@@ -46,7 +46,7 @@ def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         result = loop.run_until_complete(self.debate_failure(context))
     finally:
         loop.close()
-    
+
     return {
         "success": result.get("success", False),
         "message": result.get("consensus_reasoning", ""),
@@ -103,7 +103,7 @@ agents = {
 
 ```
 ConversationalRepairAgent (Isolated)
-├── async debate_failure() 
+├── async debate_failure()
 └── No SSOT integration
 ```
 
@@ -155,7 +155,7 @@ python -c "from agentic_core.L0_maintenance.scripts.execute_ssot import load_age
 
 ---
 
-**Status**: ✅ **PHASE 3 COMPLETE**  
-**Integration**: ✅ **ConversationalRepairAgent fully integrated with SSOT**  
-**Testing**: ✅ **12/12 tests passing**  
+**Status**: ✅ **PHASE 3 COMPLETE**
+**Integration**: ✅ **ConversationalRepairAgent fully integrated with SSOT**
+**Testing**: ✅ **12/12 tests passing**
 **Ready for Phase 4**: ✅ **Final verification and hardening**

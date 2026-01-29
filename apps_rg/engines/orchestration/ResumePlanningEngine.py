@@ -5,8 +5,9 @@ Now delegates to logic_nodes for deterministic logic extraction.
 """
 
 from __future__ import annotations
-from typing import Any
+
 import logging
+from typing import Any
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
 from apps_rg.logic_nodes.resume_section_node import ResumeSectionNode

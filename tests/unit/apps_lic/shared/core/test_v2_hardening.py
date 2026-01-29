@@ -5,9 +5,10 @@ Tests persistence, safety limits, and crash resilience.
 Requirement: 100% Pass Rate for Production Readiness.
 """
 
-import pytest
 import json
 from unittest.mock import patch
+
+import pytest
 from apps_lic.engines.HOPOrchestratorAgent import HOPOrchestratorAgent
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry

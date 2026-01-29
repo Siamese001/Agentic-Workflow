@@ -8,7 +8,6 @@ Follows the functional component pattern with proper logging.
 import logging
 from datetime import datetime
 
-
 logger = logging.getLogger(__name__)
 
 

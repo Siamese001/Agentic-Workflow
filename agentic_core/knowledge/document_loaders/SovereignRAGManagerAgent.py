@@ -8,11 +8,11 @@ Restored: 2026-01-13 | Version: 2.1.0 (Modernized)
 # Suggested keywords to add in docstring/code: engine, guardrail, prompt, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import logging
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
 from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
 

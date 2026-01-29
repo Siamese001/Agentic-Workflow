@@ -2,6 +2,7 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
 from __future__ import annotations
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -245,9 +246,6 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         try:
             from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
                 StructuralValidatorAgent,
-            )
-
-            from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
                 StructureConfig,
             )
 

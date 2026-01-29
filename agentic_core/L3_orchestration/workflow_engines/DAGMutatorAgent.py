@@ -11,9 +11,6 @@ allowing nodes to spawn new predecessors when they detect Missing information.
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-
 import logging
 import uuid
 from datetime import datetime
@@ -24,6 +21,7 @@ import networkx as nx
 from pydantic import BaseModel, Field, validator
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 
 if TYPE_CHECKING:
@@ -204,7 +202,9 @@ class DAGConfig(BaseModel):
     # A complex agentic chain (5 steps) retrying 3 times = 15+ nodes deep.
     # 20 is too conservative and risks premature "Depth Limit" crashes during healing.
     max_depth: int = Field(default=50, ge=1, le=100)
-    max_fan_out: int = Field(default=10, ge=1, le=50)  # Increased fan-out for parallel retry branches
+    max_fan_out: int = Field(
+        default=10, ge=1, le=50
+    )  # Increased fan-out for parallel retry branches
     enable_mutation_logging: bool = True
     mutation_history_size: int = Field(default=1000, ge=100)
 

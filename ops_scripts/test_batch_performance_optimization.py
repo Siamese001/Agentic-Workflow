@@ -3,8 +3,8 @@ Test script to verify batch performance optimization in RuntimeStateGuard.
 Ensures that increment_metric does NOT write to disk when inside a with block.
 """
 
-import tempfile
 import shutil
+import tempfile
 from pathlib import Path
 
 

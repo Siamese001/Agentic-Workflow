@@ -17,13 +17,13 @@ Purpose: Automated remediation of import violations using Dynamic Seal pattern
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.unified_validator import UnifiedSSOTValidator
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass

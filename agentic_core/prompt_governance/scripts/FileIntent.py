@@ -14,9 +14,9 @@ CRITICAL IMPROVEMENTS:
 import ast
 import re
 import sys
-from pathlib import Path
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 
 
 class FileIntent(Enum):

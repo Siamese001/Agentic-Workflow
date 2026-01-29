@@ -2,9 +2,9 @@
 Context: Comprehensive test suite to validate the Agent/Util separation. Verifies that old paths are dead, new paths are alive, and no stale imports exist in the blast radius.
 """
 
-import unittest
 import importlib
 import sys
+import unittest
 
 # Ensure root is in path for imports
 sys.path.append(r"C:\Git\Agentic-Workflow")
@@ -36,9 +36,10 @@ class TestRefactorIntegrity(unittest.TestCase):
         try:
             # Dynamic imports to verify runtime accessibility
             import apps_rg.engines.Router
-            import apps_rg.engines.HardenedAnthropicExecutor
-            import apps_rg.engines.strategist_biowriter
             import apps_rg.engines.schema  # The new dependency
+            import apps_rg.engines.strategist_biowriter
+
+            import apps_rg.engines.HardenedAnthropicExecutor
         except ImportError as e:
             self.fail(f"CRITICAL: Could not import Agent from new location: {e}")
 
@@ -47,8 +48,8 @@ class TestRefactorIntegrity(unittest.TestCase):
         Edge Case: Verify that moved agents inherit from the correct RGAgentBase,
         not the old or missing 'Agent' class.
         """
-        from apps_rg.engines.strategist_biowriter import StrategistBioWriter
         from agentic_core.base_agents.agent_base import RGAgentBase
+        from apps_rg.engines.strategist_biowriter import StrategistBioWriter
 
         # Instantiate with mocks to check MRO
         agent_instance = StrategistBioWriter(config=None, reasoning=None)
@@ -87,7 +88,7 @@ class TestRefactorIntegrity(unittest.TestCase):
         """
         Verify that schema.py provides the required types
         """
-        from apps_rg.engines.schema import RouterConfig, ProviderType
+        from apps_rg.engines.schema import ProviderType, RouterConfig
 
         # Test that the types can be instantiated
         config = RouterConfig()

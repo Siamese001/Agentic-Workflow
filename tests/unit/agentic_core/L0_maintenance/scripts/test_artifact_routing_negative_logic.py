@@ -6,16 +6,16 @@ Validates that forbidden_extensions and forbidden_keywords are properly enforced
 by LocationValidatorAgent and HierarchyAgent.
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    validate_artifact_routing,
     check_forbidden_signals,
+    validate_artifact_routing,
 )
 
 

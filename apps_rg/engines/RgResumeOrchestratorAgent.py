@@ -13,9 +13,8 @@ from typing import Any
 
 """Brief description of functionality and purpose."""
 
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-
+from agentic_core.base_agents.timeout_decorator import timeout
 from apps_rg.shared.core.agent_base import RGAgentBase
 
 _logger = logging.getLogger(__name__)

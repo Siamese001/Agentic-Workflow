@@ -4,8 +4,8 @@ Aggressive unit tests for unified confidence threshold logic.
 Verifies that ALL confidence logic uses strictly > 0.75 for high confidence.
 """
 
-import unittest
 import sys
+import unittest
 from pathlib import Path
 
 # Add the project root and scripts path to sys.path for import

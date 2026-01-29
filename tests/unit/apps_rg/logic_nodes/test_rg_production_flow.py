@@ -5,9 +5,9 @@ K.0 (Thematic) -> Routing -> Two-Phase Gen -> Enforcement (Sign) -> Airlock -> S
 """
 
 from apps_rg.core.sovereign_context import SovereignContext
-from apps_rg.logic_nodes.thematic_analysis_node import ThematicAnalysisNode
-from apps_rg.logic_nodes.rg_flow_router import RGFlowRouter
 from apps_rg.logic_nodes.resume_section_node import ResumeSectionNode
+from apps_rg.logic_nodes.rg_flow_router import RGFlowRouter
+from apps_rg.logic_nodes.thematic_analysis_node import ThematicAnalysisNode
 
 
 class TestRGProductionFlow:

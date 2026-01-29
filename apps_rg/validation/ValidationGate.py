@@ -4,8 +4,8 @@ Implements the 'Gate Signature' pattern from v61.27.10.
 Ensures no content flows downstream without cryptographic proof of validation.
 """
 
-import hmac
 import hashlib
+import hmac
 import json
 import os
 from typing import Any

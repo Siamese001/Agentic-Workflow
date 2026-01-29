@@ -9,12 +9,13 @@ Rationale:
 
 import pytest
 
+from agentic_core.L5_safety.policy_engine.CodeDetectorAgent import CodeDetectorAgent, DetectorConfig
+
 # Sovereignty Guardians from L5_safety
 from agentic_core.L5_safety.policy_engine.ComplexityAnalyzerAgent import (
     ComplexityAnalyzerAgent,
     ComplexityConfig,
 )
-from agentic_core.L5_safety.policy_engine.CodeDetectorAgent import CodeDetectorAgent, DetectorConfig
 
 
 @pytest.fixture

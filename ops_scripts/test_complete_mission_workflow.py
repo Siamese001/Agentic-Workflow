@@ -20,8 +20,8 @@ def test_complete_mission_workflow():
     print("=" * 70)
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
         from agentic_core.L4_state.validation_context.RuntimeStateGuard import RuntimeStateGuard
+        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
         # 1. Initialize Mission Control
         print("\n📡 1. INITIALIZING MISSION CONTROL...")

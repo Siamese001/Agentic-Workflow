@@ -7,6 +7,7 @@ Phase B: Synthesize Overview (Thematic Framing)
 
 from dataclasses import dataclass
 from typing import Any
+
 from apps_rg.logic_nodes.thematic_analysis_node import ThematicAnalysisOutput
 from apps_rg.validation.word_count_enforcer import WordCountEnforcementEngine
 

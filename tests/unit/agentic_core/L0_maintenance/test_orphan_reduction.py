@@ -3,8 +3,9 @@ file: tests/migration/test_orphan_reduction.py
 description: Verifies that AST Realignment successfully reduced the orphan count.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ORPHAN_ROOT = PROJECT_ROOT / "tests/__orphans__"

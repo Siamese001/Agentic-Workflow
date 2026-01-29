@@ -4,10 +4,11 @@ Mandatory Discovery Layer Testing Procedures
 Tests to ensure the discovery process is as hardened as the governance layer.
 """
 
-import pytest
-import sys
 import json
+import sys
 from pathlib import Path
+
+import pytest
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent

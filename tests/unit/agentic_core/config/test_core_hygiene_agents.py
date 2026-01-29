@@ -13,6 +13,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
 
 from agentic_core.config.core_hygiene_agents import (
     CORE_HYGIENE_AGENTS,
@@ -21,7 +22,6 @@ from agentic_core.config.core_hygiene_agents import (
     get_tier_agents,
     is_mandatory_agent,
 )
-from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
 
 
 class TestCoreHygieneAgentRegistry:

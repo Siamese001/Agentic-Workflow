@@ -2,6 +2,7 @@
 # Strategy: Track provenance (source) to allow citations later
 
 from pydantic import Field
+
 from agentic_core.domain.entities import BaseEntity
 
 

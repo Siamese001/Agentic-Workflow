@@ -4,8 +4,8 @@ Archives 11 critical duplicate files identified in DUPLICATE_FILES_REPORT.md
 """
 
 import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 ARCHIVE_ROOT = (

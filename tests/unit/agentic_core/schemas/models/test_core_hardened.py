@@ -11,18 +11,19 @@ Test suite validating hardening applied in Phases 3-4:
 Coverage: 100% PASS STATUS GUARANTEED
 """
 
-import pytest
 from unittest.mock import AsyncMock, patch
+
+import pytest
+from agentic_core.patterns.base import BaseReasoningPattern
 from pydantic import ValidationError
 
 # Import hardened components
 from agentic_core.schemas.models.ReasoningConfig import (
-    ReasoningConfig,
+    GovernorConfig,
     ModelConfig,
     RAGConfig,
-    GovernorConfig,
+    ReasoningConfig,
 )
-from agentic_core.patterns.base import BaseReasoningPattern
 
 
 class TestReasoningConfigHardening:

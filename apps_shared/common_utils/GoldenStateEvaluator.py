@@ -21,13 +21,14 @@ except ImportError:
     class JudgeEvaluationResult:
         score: float
         reasoning: str
-        
+
     class JudgeEvaluator:
         def evaluate(self, case: Any) -> JudgeEvaluationResult:
             return JudgeEvaluationResult(0.5, "Fallback evaluator")
-    
+
     def create_judge_evaluator():
         return JudgeEvaluator()
+
 
 Logger = logging.getLogger(__name__)
 

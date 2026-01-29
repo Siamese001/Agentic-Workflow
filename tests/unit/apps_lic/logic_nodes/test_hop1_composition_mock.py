@@ -3,8 +3,8 @@ Targeted Mock Test for HOP1 Composition.
 Directly tests the router creation logic without complex inheritance mocking.
 """
 
-import unittest
 import sys
+import unittest
 from pathlib import Path
 
 # Add project root to Python path

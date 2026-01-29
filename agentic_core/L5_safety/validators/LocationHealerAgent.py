@@ -22,6 +22,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.config.blueprint_sovereign.registry import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.location_constants import (
@@ -33,7 +34,6 @@ from agentic_core.L5_safety.validators.location_constants import (
 from agentic_core.L5_safety.validators.location_utils import (
     compute_module_path,
 )
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 

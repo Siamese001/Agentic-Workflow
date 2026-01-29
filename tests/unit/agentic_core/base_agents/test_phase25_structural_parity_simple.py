@@ -1,9 +1,10 @@
-import pytest
 import asyncio
-import time
 import sys
+import time
 from pathlib import Path
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent

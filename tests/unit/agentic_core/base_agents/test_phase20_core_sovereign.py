@@ -7,9 +7,10 @@ Validates the Final Sovereign Engine after Phase 20 synthesis operations.
 """
 
 import ast
-import pytest
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 # Add the project root to Python path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -92,8 +93,9 @@ class TestCoreLogicSynthesis:
     def test_contract_adherence(self):
         """Verify SovereignBaseAgent implements the full Canon interface."""
         try:
-            from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
             from agentic_core.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+
+            from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
             # Check inheritance
             assert issubclass(SovereignBaseAgent, CanonBaseAgentInterface), (

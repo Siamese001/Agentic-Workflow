@@ -15,13 +15,13 @@ Composable Rules:
 - immune_response: Automated threat response
 """
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 import re
 import time
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 class ThreatLevel(Enum):

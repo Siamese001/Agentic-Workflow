@@ -34,10 +34,11 @@ except ImportError:
     APPS_LIC_DIR = Path("apps_lic")
     APPS_RG_DIR = Path("apps_rg")
     APPS_SHARED_DIR = Path("apps_shared")
-    
+
     def get_python_files(directory):
         """Fallback implementation to get Python files."""
         return directory.rglob("*.py")
+
 
 PROJECT_ROOT = Path(__file__).parent.parent
 

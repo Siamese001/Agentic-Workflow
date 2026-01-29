@@ -3,9 +3,11 @@ Mirrors the k1_router pattern from apps_lic but for Resume Generation domain.
 """
 
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from typing import Any
+
 from .thematic_analysis_node import ThematicAnalysisNode, ThematicAnalysisOutput
 
 logger = logging.getLogger(__name__)

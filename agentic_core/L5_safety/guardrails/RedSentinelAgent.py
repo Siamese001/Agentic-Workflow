@@ -22,8 +22,6 @@ Typical usage:
 # Suggested keywords to add in docstring/code: engine, orchestrator, state, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 import json
 import logging
 import os
@@ -32,6 +30,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: logging.Logger = logging.getLogger(__name__)

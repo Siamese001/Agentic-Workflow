@@ -1,0 +1,23 @@
+============================================================
+GUARDIAN ARCHITECTURAL HEALTH REPORT
+============================================================
+Generated: 2026-01-29 16:57:26
+Exit Status: FAIL
+
+EXECUTION SUMMARY:
+  Total Tests Run: 1
+  Passed: 0
+  Failed: 1
+  Skipped: 0
+
+FAILED GATES:
+  ❌ Import Safety: 1 test(s)
+     - tests/guardian/test_import_safety.py::TestImportSafety::test_zombie_reference_check
+
+ARCHITECTURAL HEALTH: ⚠️  COMPROMISED
+Architectural violations detected.
+Please review failed tests and remediate issues.
+
+RECOMMENDED ACTIONS:
+  - Resolve import errors and circular dependencies
+============================================================

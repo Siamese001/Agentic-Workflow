@@ -5,9 +5,10 @@ Comprehensive system integration tests that verify the Sovereign architecture
 functions as a cohesive organism.
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add project root to path for imports BEFORE any app imports
 project_root = Path(__file__).parent.parent.parent
@@ -16,7 +17,6 @@ if str(project_root) not in sys.path:
 
 from apps_rg.engines.base.sovereign_context import SovereignContext
 from apps_rg.engines.orchestration.resume_orchestrator_engine import ResumeOrchestratorEngine
-
 
 # 🛡️ MANDATORY: 100% Test Pass Rate Required for Deployment
 

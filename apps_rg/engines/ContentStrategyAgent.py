@@ -3,10 +3,11 @@ apps_rg/engines/ContentStrategyAgent.py
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 
-from apps_rg.shared.core.agent_base import RGAgentBase
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_rg.shared.core.agent_base import RGAgentBase
 
 
 @dataclass

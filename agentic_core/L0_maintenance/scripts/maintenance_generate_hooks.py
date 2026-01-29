@@ -7,6 +7,7 @@ that calls this specific path.
 """
 
 from __future__ import annotations
+
 import sys
 from pathlib import Path
 
@@ -15,8 +16,8 @@ project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L0_maintenance.scripts.generate_hooks import (
-    sync_pre_commit,
     generate_sovereign_list,
+    sync_pre_commit,
 )
 
 if __name__ == "__main__":

@@ -14,28 +14,28 @@ Tests cover:
 Total: 60 tests
 """
 
-import pytest
-import sys
 import json
+import sys
 from pathlib import Path
 from unittest.mock import Mock, patch
+
+import pytest
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L0_maintenance.scripts.execute_ssot import (
-    ConfidenceScore,
     AutonomousDecisionEngine,
+    ConfidenceScore,
     RuntimeStateManager,
-    list_available_agents,
     execute_phase1_discovery,
     execute_phase2_alignment,
     execute_phase3_validation,
     execute_phase4_healing,
     execute_phase5_final,
+    list_available_agents,
 )
-
 
 # ============================================================================
 # TEST FIXTURES

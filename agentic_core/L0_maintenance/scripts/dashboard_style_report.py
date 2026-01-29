@@ -1,8 +1,8 @@
 """Generate agent report in dashboard table style with territory/sub-territory rows."""
 
 import json
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 with open(PROJECT_ROOT / "agent_discovery_full.json") as f:

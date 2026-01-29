@@ -8,7 +8,6 @@ Phase 2 - Resilient Routing Layer
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

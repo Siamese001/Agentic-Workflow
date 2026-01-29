@@ -1,4 +1,4 @@
-from structure_blueprint import is_path_allowed, SOVEREIGN_TERRITORIES, get_correct_app_path
+from structure_blueprint import SOVEREIGN_TERRITORIES, get_correct_app_path, is_path_allowed
 
 
 class TestGlobalIntelligenceRigor:

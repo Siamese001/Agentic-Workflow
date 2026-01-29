@@ -5,8 +5,9 @@ MANDATORY: 100% PASS REQUIREMENT for Windsurf Execution.
 Focus: Namespace Purity, Legacy Elimination, Specialist Upgrade Verification.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 # Get repo root (tests/ is one level down from repo root)
 REPO_ROOT = Path(__file__).resolve().parent.parent

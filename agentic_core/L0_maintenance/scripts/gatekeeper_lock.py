@@ -16,11 +16,11 @@ BYPASS METHODS:
     2. Set environment variable: GATEKEEPER_BYPASS=1
 """
 
-from pathlib import Path
 import argparse
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 PROTECTED_FILES = ["agentic_core/L5_safety/core/ArchivalGatekeeper.py"]
 OVERRIDE_TOKEN = "[SECURITY-OVERRIDE]"

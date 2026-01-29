@@ -14,8 +14,8 @@ def test_hierarchy_agent_auto_approve_bypass(tmp_path):
     os.environ["ARCHIVE_BATCH_ACCEPT"] = "1"
 
     try:
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
         # Reset gatekeeper singleton
         ArchivalGatekeeper.reset_instance()

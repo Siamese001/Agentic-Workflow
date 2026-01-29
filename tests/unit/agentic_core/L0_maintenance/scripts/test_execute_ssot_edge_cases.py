@@ -20,9 +20,9 @@ Tests cover:
 15. Multi-territory processing
 """
 
-import unittest
 import sys
 import tempfile
+import unittest
 from pathlib import Path
 
 # Add project root to Python path
@@ -32,10 +32,10 @@ if str(project_root) not in sys.path:
 
 try:
     from agentic_core.L0_maintenance.scripts.execute_ssot import (
-        ConfidenceScore,
         AutonomousDecisionEngine,
-        RuntimeStateManager,
+        ConfidenceScore,
         NonInteractiveGuard,
+        RuntimeStateManager,
         with_retry,
     )
 

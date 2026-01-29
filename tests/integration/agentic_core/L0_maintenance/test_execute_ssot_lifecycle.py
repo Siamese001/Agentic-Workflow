@@ -11,13 +11,13 @@ and creates directories in a real temporary environment, confirming the
 "Healing Always On" doctrine functions outside of mocks.
 """
 
-import unittest
-import sys
-import shutil
-import tempfile
 import os
+import shutil
+import sys
+import tempfile
+import unittest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 # Import the target module - robust import handling required for integration tests
 # Path: tests/integration/agentic_core/L0_maintenance/ -> need 5 parents to get to project root

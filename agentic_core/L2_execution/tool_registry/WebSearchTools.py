@@ -9,7 +9,6 @@ import json
 import logging
 from typing import Any
 
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 Logger: Any = logging.getLogger("ActionRegistry.WebSearch")

@@ -8,25 +8,27 @@ Every test must pass to prove validate_assignment, field validators, and excepti
 consolidation were properly implemented.
 """
 
-import pytest
-from uuid import uuid4
 from datetime import datetime, timezone
-from pydantic import ValidationError as PydanticValidationError
+from uuid import uuid4
+
+import pytest
 from agentic_core.domain.entities import AgentConfig
-from agentic_core.domain.SovereignError import (
-    SovereignError,
-    HealerError,
-    ConfigurationError,
-    CircularDependencyError,
-    StructuralError,
-    HygieneError,
-    IntegrityError,
-    ValidationError,
-    ResourceNotFoundError,
-    SecurityViolationError,
-)
+from pydantic import ValidationError as PydanticValidationError
+
 from agentic_core.domain.exceptions import AgenticCoreError
 from agentic_core.domain.LegacyArtifacts import LegacyArtifacts
+from agentic_core.domain.SovereignError import (
+    CircularDependencyError,
+    ConfigurationError,
+    HealerError,
+    HygieneError,
+    IntegrityError,
+    ResourceNotFoundError,
+    SecurityViolationError,
+    SovereignError,
+    StructuralError,
+    ValidationError,
+)
 
 
 class TestEntityImmutabilityAndAssignmentValidation:

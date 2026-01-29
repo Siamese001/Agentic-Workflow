@@ -2,10 +2,11 @@
 # Structured JSON Logging Setup
 # Strategy: Centralized formatter to ensure observability
 
+import json
 import logging
 import sys
-import json
 from datetime import datetime, timezone
+
 from agentic_core.config.settings import get_settings
 
 

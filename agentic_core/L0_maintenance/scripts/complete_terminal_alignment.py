@@ -3,8 +3,8 @@
 Complete Terminal Alignment - Fix all remaining import errors.
 """
 
-from pathlib import Path
 import re
+from pathlib import Path
 
 
 def add_missing_imports_comprehensive(file_path: Path) -> bool:

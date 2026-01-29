@@ -10,14 +10,13 @@ to measure performance latency and token usage.
 
 from __future__ import annotations
 
-import time
 import json
 import logging
+import time
 from dataclasses import dataclass, field
-from typing import Any
-from pathlib import Path
 from datetime import datetime
-
+from pathlib import Path
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 

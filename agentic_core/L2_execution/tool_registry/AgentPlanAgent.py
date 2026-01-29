@@ -8,6 +8,7 @@ StructuredEngine - Intent to Plan Converter
 import logging
 import os
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)

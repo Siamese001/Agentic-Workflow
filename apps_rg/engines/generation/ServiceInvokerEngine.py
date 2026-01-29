@@ -7,9 +7,10 @@ HARDENING: Updates to use SovereignContext and TraceRegistry for cost tracking.
 """
 
 from __future__ import annotations
-from typing import Any
+
 import logging
 import time
+from typing import Any
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
 

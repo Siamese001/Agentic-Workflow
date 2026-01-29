@@ -9,6 +9,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass
+
 from pydantic import BaseModel, Field
 
 try:
@@ -23,14 +24,15 @@ except ImportError:
     class CircuitBreakerConfig:
         failure_threshold: int = 5
         timeout_seconds: int = 60
-    
+
     class CircuitBreakerFactory:
         @staticmethod
         def create(config):
             return lambda func: func
-    
+
     class CircuitOpenError(Exception):
         pass
+
 
 logger = logging.getLogger(__name__)
 

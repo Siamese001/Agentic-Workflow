@@ -5,8 +5,9 @@ This test validates that the Canon Key system has been completely eradicated
 from the filesystem by scanning for any remaining references.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 class TestCanonKeyFilesystemPurge:

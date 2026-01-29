@@ -3,14 +3,15 @@ Batch 3 Test Suite - Generation Domain
 Tests for k9_gap_closure_engine.py and service_invoker_engine.py
 """
 
-import pytest
-from unittest.mock import AsyncMock, MagicMock
 import sys
 from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from apps_rg.engines.generation.k9_gap_closure_engine import GapClosureEngine, CompetencyItem
+from apps_rg.engines.generation.k9_gap_closure_engine import CompetencyItem, GapClosureEngine
 from apps_rg.engines.generation.service_invoker_engine import ServiceInvokerEngine
 
 

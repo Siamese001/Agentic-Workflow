@@ -46,8 +46,8 @@ try:
         ClaimAnalysis,
         QualityThresholds,
         SignalAssessment,
-        signal_enhancer,
         SignalQuality,
+        signal_enhancer,
     )
 except ImportError:
     signal_enhancer = None

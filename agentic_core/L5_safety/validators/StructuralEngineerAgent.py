@@ -2,11 +2,11 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: healer, memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Structural Engineer Agent - Code Structure Validation
@@ -26,10 +26,9 @@ import ast
 import os
 from typing import Any
 
-from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30

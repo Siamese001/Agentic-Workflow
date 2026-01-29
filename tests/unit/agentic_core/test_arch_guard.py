@@ -3,9 +3,9 @@ File: C:/Git/Agentic-Workflow/tests/test_arch_guard.py
 Context: Verifies the effectiveness of the Architectural Guard. We simulate an "attack" by creating a dummy Agent file in the utils folder and asserting that the guard script detects it and fails.
 """
 
-import unittest
 import os
 import sys
+import unittest
 
 # Add the project root to Python path to import scripts
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

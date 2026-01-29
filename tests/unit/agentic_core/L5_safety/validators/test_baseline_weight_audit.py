@@ -4,6 +4,7 @@ Ensures no generic utility script exceeds weight 9 per Global Weight Standard.
 """
 
 import pytest
+
 from agentic_core.L5_safety.validators.structure_blueprint import AST_PLACEMENT_SIGNALS
 
 

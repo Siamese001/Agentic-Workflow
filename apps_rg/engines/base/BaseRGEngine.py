@@ -3,13 +3,15 @@ Base Resume Agent - Foundation for all RG Sovereign V2.5 Engines
 """
 
 import logging
-from typing import Any
 from abc import ABC, abstractmethod
+from typing import Any
+
 from pydantic import BaseModel
 
 # Import mixins - fall back to stubs if not available
 try:
     from agentic_core.base_agents.mcp_hardened_mixin import mcp_hardened_mixin
+
     from agentic_core.base_agents.healer_mixin import healer_mixin
 
     MIXINS_AVAILABLE = True

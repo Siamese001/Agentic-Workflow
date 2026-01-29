@@ -11,7 +11,7 @@ from pathlib import Path
 
 # Try to import Jinja2 - should be available in the environment
 try:
-    from jinja2 import Environment, FileSystemLoader, TemplateSyntaxError, TemplateError
+    from jinja2 import Environment, FileSystemLoader, TemplateError, TemplateSyntaxError
 except ImportError:
     print("ERROR: Jinja2 not installed. Run: pip install jinja2")
     sys.exit(1)

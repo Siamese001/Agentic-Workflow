@@ -5,9 +5,10 @@ Tests for Phase 15: K.3, K.5A, K.5, K.7 Integration.
 Requirement: 100% Pass Rate for LIC Specialist Assembly.
 """
 
-from apps_lic.engines.HOP5GenerationAgent import HOP5GenerationAgent
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from apps_lic.engines.HOP5GenerationAgent import HOP5GenerationAgent
 
 
 class TestHOP5SpecialistAssembly:

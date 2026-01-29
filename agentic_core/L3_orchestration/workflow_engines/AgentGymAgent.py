@@ -5,14 +5,15 @@ FIX: Implements Functional Naming for imports.
 """
 
 from __future__ import annotations
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import logging
 import time
 from collections.abc import Awaitable, Callable
 from typing import Any
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # [FIX] Use Functional Naming alias for imports
 try:

@@ -3,8 +3,9 @@ file: tests/migration/test_final_audit.py
 description: Final audit of the file counts to ensure no data loss during Phase 7/8.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow").resolve()
 

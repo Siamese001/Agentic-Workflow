@@ -5,8 +5,10 @@ Verifies that root files are correctly routed using PROJECT_ROOT_METADATA patter
 [SMART ROUTING] 2026-01-26: Validates metadata-driven file routing logic.
 """
 
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
 

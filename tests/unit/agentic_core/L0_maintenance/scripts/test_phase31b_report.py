@@ -3,8 +3,9 @@
 import sys
 
 sys.path.insert(0, ".")
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+
 from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
 agent = ArchitectureGovernorAgent(project_root=Path("."))

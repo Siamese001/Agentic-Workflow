@@ -2,10 +2,10 @@
 scripts/scour_and_seal_legacy.py
 """
 
-import os
 import ast
-import shutil
+import os
 import re
+import shutil
 from pathlib import Path
 
 # Target root directories

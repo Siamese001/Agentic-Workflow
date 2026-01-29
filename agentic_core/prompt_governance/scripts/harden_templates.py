@@ -6,10 +6,10 @@ Automatically applies standardized headers to all unhardened Jinja templates
 in the prompt_governance directory structure.
 """
 
+import argparse
 import os
 import re
 import sys
-import argparse
 from pathlib import Path
 
 

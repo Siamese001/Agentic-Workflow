@@ -2,12 +2,12 @@
 scripts/generate_certificate.py
 """
 
-import sys
 import importlib
-import pkgutil
 import inspect
-from pathlib import Path
+import pkgutil
+import sys
 from dataclasses import is_dataclass
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 

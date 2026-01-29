@@ -5,16 +5,18 @@
 
 # Import the master exception hierarchy
 from .SovereignError import (
-    SovereignError as AgenticCoreError,
-    HealerError,
     CircularDependencyError,
     ConfigurationError,
-    StructuralError,
+    HealerError,
     HygieneError,
     IntegrityError,
-    ValidationError,
     ResourceNotFoundError,
     SecurityViolationError,
+    StructuralError,
+    ValidationError,
+)
+from .SovereignError import (
+    SovereignError as AgenticCoreError,
 )
 
 # Re-export for backward compatibility while maintaining SSOT

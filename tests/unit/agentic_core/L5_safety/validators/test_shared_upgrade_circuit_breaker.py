@@ -6,8 +6,9 @@ when the upgrade limit is exceeded, and that dust threshold
 guards against insignificant files.
 """
 
+from unittest.mock import Mock, mock_open, patch
+
 import pytest
-from unittest.mock import Mock, patch, mock_open
 
 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 from agentic_core.L5_safety.validators.structure_blueprint import (

@@ -6,8 +6,9 @@ description: |
     Mandatory Pass: 100%
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 def get_map_file_path():

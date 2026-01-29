@@ -73,7 +73,6 @@ def main():
 
     try:
         import uvicorn
-
         from agentic_core.L6_observability.api.runtime_api import app
 
         uvicorn.run(

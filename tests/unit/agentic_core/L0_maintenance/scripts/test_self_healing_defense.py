@@ -1,19 +1,21 @@
-import pytest
-import os
 import json
-import time
-import tempfile
+import os
 import shutil
-from pathlib import Path
-from unittest.mock import patch, Mock
 
 # Add project root to path for imports
 import sys
+import tempfile
+import time
+from pathlib import Path
+from unittest.mock import Mock, patch
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.L0_maintenance.security.ManifestGuardian import ManifestGuardian
 from agentic_core.L0_maintenance.boot.boot_sequence import BootSequence
+
+from agentic_core.L0_maintenance.security.ManifestGuardian import ManifestGuardian
 
 # Expected sealed checksum from finalization
 SEALED_CHECKSUM = "0083147a0297d06f9149cb0dffd4d00ce3f34e014160f2a2b8e9a55f42ab0e58"

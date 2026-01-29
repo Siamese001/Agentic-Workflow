@@ -4,17 +4,17 @@ Hardened Protocol Test Suite
 Tests atomic write integrity, path resolution robustness, crash recovery, and malformed data resilience.
 """
 
-import unittest
 import json
 import tempfile
+import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 # Import target classes (assuming in path)
 from agentic_core.L0_maintenance.scripts.execute_ssot import (
+    RUNTIME_STATE_FILE,
     RuntimeStateManager,
     list_available_agents,
-    RUNTIME_STATE_FILE,
 )
 
 

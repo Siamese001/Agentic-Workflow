@@ -2,11 +2,11 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 from dataclasses import dataclass
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 GitAgent - L6 GitOps & Remote Synchronization
@@ -22,8 +22,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.utils.security import safe_git_execute
+
+from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 

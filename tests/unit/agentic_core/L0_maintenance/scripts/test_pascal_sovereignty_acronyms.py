@@ -5,10 +5,10 @@ Purpose: Validates acronym-aware snake_case conversion for mixins
 """
 
 import re
+import sys
 import unittest
 from pathlib import Path
 from unittest.mock import Mock
-import sys
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parents[5]

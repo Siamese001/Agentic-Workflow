@@ -8,9 +8,9 @@ Rationale:
     before every commit, ensuring 'The 3 Laws' are never broken again.
 """
 
-import sys
 import os
 import stat
+import sys
 from pathlib import Path
 
 # Locate Repo Root

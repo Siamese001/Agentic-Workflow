@@ -2,17 +2,15 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail
 from __future__ import annotations
+
+from dataclasses import dataclass
+
 # This boosts alignment detection — review and integrate appropriately
-
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
-from dataclasses import dataclass
 
 #!/usr/bin/env python3
 """
@@ -27,11 +25,10 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.validators.decorators import standard_heal
-
 # 2. THIRDPARTY (Gravity-ordered)
 # [Note: No thirdparty needed for base logic to prevent bootstrap failure]
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30

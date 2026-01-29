@@ -74,8 +74,9 @@ def test_heal_repository_return_type_consistency():
     """
     print("\n[TEST 2] heal_repository Return Type Consistency...")
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from dataclasses import dataclass
+
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
 
@@ -119,8 +120,9 @@ def test_diamond_inheritance_stability():
     """
     print("\n[TEST 3] Diamond Inheritance Stability...")
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from dataclasses import dataclass
+
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
 
@@ -157,8 +159,9 @@ def test_double_init_prevention():
     """
     print("\n[TEST 4] Double Initialization Prevention...")
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from dataclasses import dataclass
+
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
         init_count = 0
@@ -195,8 +198,9 @@ def test_cycle_detection():
     """
     print("\n[TEST 5] Cycle Detection in heal_repository...")
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from dataclasses import dataclass
+
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
 
@@ -229,8 +233,9 @@ def test_max_depth_termination():
     """
     print("\n[TEST 6] Max Depth Termination...")
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from dataclasses import dataclass
+
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
 
@@ -261,8 +266,9 @@ def test_mixin_state_access_during_init():
     """
     print("\n[TEST 7] State Container Exists Before __post_init__...")
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from dataclasses import dataclass, fields
+
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
         # Verify _state and _call_path are dataclass fields

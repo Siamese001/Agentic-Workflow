@@ -6,8 +6,8 @@ METHOD: AST parsing with source reconstruction.
 SAFETY: Verifies syntax before writing.
 """
 
-import os
 import ast
+import os
 import re
 from pathlib import Path
 

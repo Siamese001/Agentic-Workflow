@@ -11,11 +11,14 @@ Key Assertions:
 4. Max retry limits are enforced
 """
 
-import pytest
-import networkx as nx
-from unittest.mock import MagicMock, patch
 from dataclasses import dataclass, field
 from typing import Any
+
+import networkx as nx
+import pytest
+from agentic_core.L3_orchestration.workflow_engines.RecursiveOrchestrator import (
+    RetryContext,
+)
 
 from agentic_core.L3_orchestration.workflow_engines.DAGMutatorAgent import (
     DAGConfig,
@@ -23,11 +26,6 @@ from agentic_core.L3_orchestration.workflow_engines.DAGMutatorAgent import (
     HopSpec,
     MutationAction,
     MutationResult,
-)
-from agentic_core.L3_orchestration.workflow_engines.RecursiveOrchestrator import (
-    RecursiveOrchestrator,
-    RetryContext,
-    TaskStatus,
 )
 
 
@@ -225,15 +223,15 @@ class TestLoopUnrolling:
         for i in range(3):
             result = orchestrator.handle_task_failure(
                 failed_node_id=current_node,
-                failure_reason=f"Failure #{i+1}: validation error",
+                failure_reason=f"Failure #{i + 1}: validation error",
             )
 
-            assert result["success"] is True, f"Retry {i+1} should succeed"
+            assert result["success"] is True, f"Retry {i + 1} should succeed"
 
             # CRITICAL: Check acyclicity after EVERY mutation
-            assert nx.is_directed_acyclic_graph(
-                manager.graph
-            ), f"DAG became cyclic after retry {i+1}!"
+            assert nx.is_directed_acyclic_graph(manager.graph), (
+                f"DAG became cyclic after retry {i + 1}!"
+            )
 
             current_node = result["new_node_id"]
             retry_count += 1
@@ -320,9 +318,7 @@ class TestLoopUnrolling:
         manager = MockDAGManager(config=config)
         manager.add_node("coder_v1", "code_generation")
 
-        orchestrator = MockRecursiveOrchestrator(
-            dag_manager=manager, max_retry_attempts=10
-        )
+        orchestrator = MockRecursiveOrchestrator(dag_manager=manager, max_retry_attempts=10)
 
         current_node = "coder_v1"
         spawn_count = 0
@@ -331,7 +327,7 @@ class TestLoopUnrolling:
         for i in range(10):
             result = orchestrator.handle_task_failure(
                 failed_node_id=current_node,
-                failure_reason=f"Failure #{i+1}",
+                failure_reason=f"Failure #{i + 1}",
             )
 
             if not result["success"]:
@@ -369,9 +365,9 @@ class TestLoopUnrolling:
         predecessors_of_step_2 = set(nx.ancestors(manager.graph, "step_2"))
 
         for pred in predecessors_of_step_2:
-            assert not manager.graph.has_edge(
-                new_node, pred
-            ), f"Backward edge detected: {new_node} -> {pred}"
+            assert not manager.graph.has_edge(new_node, pred), (
+                f"Backward edge detected: {new_node} -> {pred}"
+            )
 
         # Verify topological order is valid
         try:
@@ -395,7 +391,7 @@ class TestLoopUnrolling:
         for i in range(3):
             result = orchestrator.handle_task_failure(
                 failed_node_id=current,
-                failure_reason=f"Error {i+1}",
+                failure_reason=f"Error {i + 1}",
             )
             current = result["new_node_id"]
             nodes.append(current)
@@ -403,9 +399,9 @@ class TestLoopUnrolling:
         # Verify linear chain structure (unrolled loop)
         # coder_v1 -> retry_1 -> retry_2 -> retry_3
         for i in range(len(nodes) - 1):
-            assert manager.graph.has_edge(
-                nodes[i], nodes[i + 1]
-            ), f"Missing edge {nodes[i]} -> {nodes[i+1]}"
+            assert manager.graph.has_edge(nodes[i], nodes[i + 1]), (
+                f"Missing edge {nodes[i]} -> {nodes[i + 1]}"
+            )
 
         # Verify it's a simple path (no branching in this case)
         assert manager.graph.number_of_edges() == len(nodes) - 1

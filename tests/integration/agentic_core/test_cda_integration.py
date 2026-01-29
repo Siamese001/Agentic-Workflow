@@ -3,12 +3,12 @@
 Test suite for CognitiveDispositionAgent integration in execute_ssot.py
 """
 
-import sys
 import os
+import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -28,8 +28,8 @@ class TestCDAIntegration(unittest.TestCase):
         try:
             from agentic_core.L0_maintenance.scripts.execute_ssot import (
                 EnhancedAutonomousDecisionEngine,
+                RuntimeStateManager,
             )
-            from agentic_core.L0_maintenance.scripts.execute_ssot import RuntimeStateManager
 
             state_mgr = RuntimeStateManager(self.project_root)
 
@@ -119,6 +119,7 @@ class TestCDAIntegration(unittest.TestCase):
         """Test async cognitive analysis with mocked CDA"""
         try:
             import asyncio
+
             from agentic_core.L0_maintenance.scripts.execute_ssot import (
                 EnhancedAutonomousDecisionEngine,
             )
@@ -157,8 +158,9 @@ class TestCDAIntegration(unittest.TestCase):
     def test_command_line_argument_parsing(self):
         """Test that --enable-cda argument is properly parsed"""
         try:
-            from agentic_core.L0_maintenance.scripts.execute_ssot import main
             import argparse
+
+            from agentic_core.L0_maintenance.scripts.execute_ssot import main
 
             # Mock sys.argv to test argument parsing
             with patch("sys.argv", ["execute_ssot.py", "--enable-cda", "--territory", "test"]):
@@ -232,8 +234,8 @@ class TestCDALiveIntegration(unittest.TestCase):
         try:
             from agentic_core.L0_maintenance.scripts.execute_ssot import (
                 EnhancedAutonomousDecisionEngine,
+                RuntimeStateManager,
             )
-            from agentic_core.L0_maintenance.scripts.execute_ssot import RuntimeStateManager
 
             state_mgr = RuntimeStateManager(self.project_root)
             engine = EnhancedAutonomousDecisionEngine(

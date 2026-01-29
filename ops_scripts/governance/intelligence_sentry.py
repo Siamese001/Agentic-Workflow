@@ -8,8 +8,8 @@ description: |
     4. Rewrites imports from 'from src.agentic_core' or 'from core' to 'from agentic_core'.
 """
 
-import shutil
 import re
+import shutil
 from pathlib import Path
 
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow").resolve()

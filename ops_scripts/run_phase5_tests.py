@@ -4,8 +4,8 @@ Phase 5 Governance Test Runner.
 Runs the Phase 5 tests directly, bypassing pytest configuration issues.
 """
 
-import sys
 import asyncio
+import sys
 from pathlib import Path
 
 # Add project root to path

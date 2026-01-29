@@ -6,11 +6,12 @@ to competitive threats.
 """
 
 from __future__ import annotations
+
 import logging
-from datetime import datetime
-from dataclasses import dataclass
-from typing import Any
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any
 
 logger = logging.getLogger(__name__)
 

@@ -7,7 +7,6 @@ performance, and brand compliance across all engines.
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -6,16 +6,16 @@ Verifies rule-based routing logic and V2 architecture compliance.
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from apps_lic.domain.config.schemas import (
     RouteConditions,
     RouteConstraints,
     RouteDef,
     RoutingConfig,
 )
-from apps_lic.engines.HOP4RoutingAgent import HOP4RoutingAgent
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from apps_lic.engines.HOP4RoutingAgent import HOP4RoutingAgent
 
 # --- Fixtures ---
 

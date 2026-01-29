@@ -5,9 +5,10 @@ Verifies that 'Zombie' folders are dead and parity is enforced.
 [RECONCILIATION] 2026-01-26: Validates eviction rules and structural consistency.
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add project root to path for imports
 project_root = Path(__file__).resolve().parents[2]

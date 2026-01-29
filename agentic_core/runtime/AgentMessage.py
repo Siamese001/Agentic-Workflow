@@ -1,9 +1,10 @@
 # Agent Execution State
 # Strategy: Immutable-ish state tracking for the execution loop
 
-from typing import Any
-from pydantic import BaseModel, Field
 from datetime import datetime, timezone
+from typing import Any
+
+from pydantic import BaseModel, Field
 
 
 class AgentMessage(BaseModel):

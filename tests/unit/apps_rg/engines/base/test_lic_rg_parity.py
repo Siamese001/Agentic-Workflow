@@ -3,17 +3,17 @@ Comprehensive Test Suite for LIC-RG Architecture Parity.
 Tests all critical gaps identified in the comparison.
 """
 
-import pytest
 import json
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+import pytest
+from agentic_core.utils.core_extensions.trace_registry import TraceRegistry
+from apps_rg.domain.config.loader import load_rg_specs, reload_config
+from apps_rg.engines.base.base_resume_engine import BaseRGEngine
 from apps_rg.engines.base.sovereign_context import SovereignContext
 from apps_rg.engines.orchestration.resume_orchestrator_engine import ResumeOrchestratorEngine
-from apps_rg.engines.base.base_resume_engine import BaseRGEngine
-from apps_rg.domain.config.loader import load_rg_specs, reload_config
 from apps_rg.shared.reasoning.toggles import get_toggles
-from agentic_core.utils.core_extensions.trace_registry import TraceRegistry
 
 
 class TestConfigurationParity:

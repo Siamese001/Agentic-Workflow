@@ -9,9 +9,10 @@ SovereignConfigManager - Centralized configuration Management
 """
 
 from __future__ import annotations
-from dataclasses import dataclass
-import os
+
 import logging
+import os
+from dataclasses import dataclass
 
 # Setup basic logger since we can't depend on complex agent loggers here
 Logger = logging.getLogger("SovereignConfig")

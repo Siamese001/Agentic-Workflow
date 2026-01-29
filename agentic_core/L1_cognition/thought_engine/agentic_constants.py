@@ -2,6 +2,7 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, orchestrator, prompt, state, workflow
 from __future__ import annotations
+
 # This boosts alignment detection — review and integrate appropriately
 
 

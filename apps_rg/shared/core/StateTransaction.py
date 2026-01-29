@@ -16,7 +16,6 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, TypeVar
 
-
 Logger = logging.getLogger(__name__)
 T = TypeVar("T")
 

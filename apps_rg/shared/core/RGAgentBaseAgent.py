@@ -3,9 +3,10 @@ apps_rg/shared/core/agent_base.py - Red Group Sovereign Bridge
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Any, Final
 from pathlib import Path
+from typing import Any, Final
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 

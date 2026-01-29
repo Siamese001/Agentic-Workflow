@@ -13,7 +13,6 @@ from typing import Any
 
 from apps_rg.shared.core.agent_base import RGAgentBase as Agent
 
-
 logger = logging.getLogger(__name__)
 
 

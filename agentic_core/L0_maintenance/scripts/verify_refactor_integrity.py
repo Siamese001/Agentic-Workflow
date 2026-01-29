@@ -9,8 +9,8 @@ Objective:
 Strict Mode: ON
 """
 
-import sys
 import re
+import sys
 from pathlib import Path
 
 # --- CONFIGURATION ---

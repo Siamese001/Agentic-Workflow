@@ -2,6 +2,7 @@
 # Strategy: Simulate reasoning without a live LLM for architectural testing
 
 from typing import Any
+
 from agentic_core.patterns.base import BaseReasoningPattern
 from agentic_core.runtime.state import AgentState
 from agentic_core.runtime.tools import ToolRegistry

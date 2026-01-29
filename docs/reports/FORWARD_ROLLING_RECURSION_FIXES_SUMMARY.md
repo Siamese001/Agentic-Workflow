@@ -14,7 +14,7 @@ Successfully implemented critical hardening fixes for the "Forward-Rolling Recur
   - Prevents circular import errors and namespace pollution
   - DAGMutatorAgent is now a distinct component from DAGManager
 
-### 2. RecursiveOrchestrator.py  
+### 2. RecursiveOrchestrator.py
 **Changes Applied:**
 - **Parameter Merging Hardening**: Fixed critical bug where original parameters were overwritten
   - Now properly merges `accumulated_context` with `retry_context` parameters
@@ -33,7 +33,7 @@ Successfully implemented critical hardening fixes for the "Forward-Rolling Recur
 Created `tests/unit/agentic_core/L3/test_recursive_orchestrator.py` with 8 critical tests:
 
 1. **Forward-Rolling Recursion Spawns Successor** - Verifies SPAWN_SUCCESSOR mutations (not cycles)
-2. **Circuit Breaker Max Depth** - Ensures infinite loops are impossible via retry limits  
+2. **Circuit Breaker Max Depth** - Ensures infinite loops are impossible via retry limits
 3. **State Persistence Across Generations** - Confirms failure reasons accumulate in context
 4. **Cleanup on Success** - Verifies memory is freed after successful loop completion
 5. **Parameter Merging Preserves Original Data** - Tests original parameters aren't lost
@@ -67,7 +67,7 @@ All critical tests pass, confirming the fixes work as intended.
 ## Impact
 These fixes ensure the L3 Orchestration layer can:
 - Handle complex agentic workflows with multiple retry cycles
-- Maintain DAG integrity under all mutation scenarios  
+- Maintain DAG integrity under all mutation scenarios
 - Preserve critical context and parameters across retry generations
 - Scale to deeper workflows without hitting artificial limits
 - Operate safely without risk of infinite loops or memory leaks

@@ -2,11 +2,11 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: memory, orchestrator, state, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import json
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
 
@@ -14,7 +14,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.prompt_governance.rendering.SovereignPromptRenderer import (
     get_sovereign_prompt_renderer,
 )
@@ -22,6 +21,7 @@ from agentic_core.prompt_governance.version_registry.PromptRegistry import regis
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 # Template content loading for registry
 TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"

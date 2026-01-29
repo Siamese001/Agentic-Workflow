@@ -25,6 +25,7 @@ from apps_shared.common_utils.observability_clients import (
     record_exception,
     set_span_attribute,
 )
+
 # [Diff End]
 
 logger = logging.getLogger(__name__)

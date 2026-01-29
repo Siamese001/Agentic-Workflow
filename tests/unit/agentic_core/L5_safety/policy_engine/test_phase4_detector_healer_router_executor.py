@@ -29,8 +29,8 @@ class TestDeadlockDetection(unittest.TestCase):
     def test_deadlock_detection(self):
         """Correctly identify circular wait conditions in multi-threaded test code."""
         from agentic_core.L5_safety.policy_engine.CodeDetectorAgent import (
-            DetectionType,
             CodeDetectorAgent,
+            DetectionType,
         )
 
         detector = CodeDetectorAgent()
@@ -76,8 +76,8 @@ class TestPromptInjectionBlock(unittest.TestCase):
     def test_prompt_injection_block(self):
         """Flag 100% of standard injection patterns in simulated user input."""
         from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import (
-            SafetyThreatType,
             SafetyDetectorAgent,
+            SafetyThreatType,
         )
 
         detector = SafetyDetectorAgent()
@@ -119,8 +119,8 @@ class TestImportHealerPrecision(unittest.TestCase):
     def test_import_healer_precision(self):
         """Fix broken relative imports and remove unused imports without breaking functional code."""
         from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
-            HealerConfig,
             CodeHealerAgent,
+            HealerConfig,
         )
 
         # Create test file with unused imports
@@ -170,9 +170,9 @@ class TestModelRoutingCostLogic(unittest.TestCase):
     def test_model_routing_cost_logic(self):
         """Route high-reasoning tasks to expensive models and basic tasks to cost-effective models."""
         from agentic_core.L2_execution.execution_bridge.ModelRouterAgent import (
+            ModelRouterAgent,
             ModelTier,
             TaskComplexity,
-            ModelRouterAgent,
         )
 
         router = ModelRouterAgent()

@@ -1,9 +1,10 @@
 # TESTS DEPTH VIOLATION — 2026-01-18 05:21:41
 # tests\mixins\test_batch_operation_mixin.py was depth 3, MUST be 2.
 
-import unittest
 import asyncio
 import time
+import unittest
+
 from agentic_core.utils.core_extensions.batch_operation_mixin import BatchOperationMixin
 
 

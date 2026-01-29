@@ -4,8 +4,8 @@ Phase 6 Full Cycle Test Runner.
 Runs the Phase 6 tests directly, bypassing pytest configuration issues.
 """
 
-import sys
 import asyncio
+import sys
 from pathlib import Path
 
 # Add project root to path
@@ -20,9 +20,9 @@ def run_tests():
     print("=" * 70)
 
     from apps_rg.engines.base.sovereign_context import SovereignContext
+    from apps_rg.engines.generation.service_invoker_engine import ServiceInvokerEngine
     from apps_rg.engines.orchestration.resume_orchestrator_engine import ResumeOrchestratorEngine
     from apps_rg.engines.quality.content_quality_engine import ContentQualityEngine
-    from apps_rg.engines.generation.service_invoker_engine import ServiceInvokerEngine
 
     passed = 0
     failed = 0

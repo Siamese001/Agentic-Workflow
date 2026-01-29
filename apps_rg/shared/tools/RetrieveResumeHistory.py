@@ -7,7 +7,6 @@ Generated: 2025-12-07T13:28:54.191301
 
 import logging
 
-
 Logger = logging.getLogger(__name__)
 
 

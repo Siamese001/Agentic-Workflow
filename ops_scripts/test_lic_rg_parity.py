@@ -80,8 +80,9 @@ def test_trace_registry_parity():
     print("\n3. Testing Trace Registry Parity...")
 
     try:
-        from apps_rg.shared.core.trace_registry import TraceRegistry
         import tempfile
+
+        from apps_rg.shared.core.trace_registry import TraceRegistry
 
         # Test persistence
         with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False) as f:
@@ -149,10 +150,10 @@ def test_orchestrator_parity():
     print("\n5. Testing Orchestrator Parity...")
 
     try:
+        from apps_rg.engines.base.sovereign_context import SovereignContext
         from apps_rg.engines.orchestration.resume_orchestrator_engine import (
             ResumeOrchestratorEngine,
         )
-        from apps_rg.engines.base.sovereign_context import SovereignContext
 
         ctx = SovereignContext()
         orch = ResumeOrchestratorEngine(ctx, mission_id="test_parity")
@@ -182,10 +183,10 @@ def test_gap_closure_validation():
 
     # Gap 1: Cyclic Retry Logic
     try:
+        from apps_rg.engines.base.sovereign_context import SovereignContext
         from apps_rg.engines.orchestration.resume_orchestrator_engine import (
             ResumeOrchestratorEngine,
         )
-        from apps_rg.engines.base.sovereign_context import SovereignContext
 
         ctx = SovereignContext()
         orch = ResumeOrchestratorEngine(ctx, mission_id="gap_test")
@@ -219,8 +220,9 @@ def test_gap_closure_validation():
 
     # Gap 3: Persistent Tracing
     try:
-        from apps_rg.shared.core.trace_registry import TraceRegistry
         import tempfile
+
+        from apps_rg.shared.core.trace_registry import TraceRegistry
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False) as f:
             trace_path = Path(f.name)
@@ -238,10 +240,10 @@ def test_gap_closure_validation():
 
     # Gap 4: Subatomic Testing
     try:
+        from apps_rg.engines.base.sovereign_context import SovereignContext
         from apps_rg.engines.orchestration.resume_orchestrator_engine import (
             ResumeOrchestratorEngine,
         )
-        from apps_rg.engines.base.sovereign_context import SovereignContext
 
         ctx = SovereignContext()
         orch = ResumeOrchestratorEngine(ctx, mission_id="gap_test")

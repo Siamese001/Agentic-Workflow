@@ -4,10 +4,10 @@ Description: Rigorous mock testing of the SSOT protocol execution flow to ensure
 fail-safes, logging, and hard stops function as designed.
 """
 
+import logging
+import sys
 import unittest
 from unittest.mock import MagicMock, patch
-import sys
-import logging
 
 # Mock the entire agentic_core module before testing logic
 sys.modules["agentic_core"] = MagicMock()

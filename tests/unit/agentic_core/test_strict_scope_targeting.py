@@ -1,10 +1,12 @@
-import pytest
 import time
 from pathlib import Path
+
+import pytest
+
+from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
     FilesystemSSOTReconcilerAgent,
 )
-from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
 # CRITICAL ANALYSIS: Windsurf's previous output overlooked the async nature of Reconciler.
 # These tests enforce asyncio compliance to ensure 100% pass parity in production.

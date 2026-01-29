@@ -7,11 +7,11 @@ Rationale:
     This tool finds these specific cases and reports them for manual adjudication.
 """
 
-import sys
-import os
 import ast
-from pathlib import Path
+import os
+import sys
 from collections import defaultdict
+from pathlib import Path
 
 # SSOT Integration
 try:

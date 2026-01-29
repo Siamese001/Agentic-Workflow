@@ -18,10 +18,10 @@ INTEGRATION:
 STATUS: PRODUCTION READY - Keep and enhance
 """
 
-from pathlib import Path
-from dataclasses import dataclass
 import json
 import logging
+from dataclasses import dataclass
+from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -160,13 +160,13 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
 
     def heal(self, violation: dict) -> dict:
         """Heal cognitive disposition violations using standard_heal decorator pattern.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - type: Type of violation (cognitive_disposition)
                 - path: Path to the violating file
                 - context: Additional context for the violation
-                
+
         Returns:
             Dictionary with healing results following standard_heal format:
                 - violations_fixed: Number of violations fixed
@@ -175,37 +175,48 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                 - skipped: Number of violations skipped
         """
         from agentic_core.base_agents.decorators import standard_heal
-        
+
         @standard_heal
         def _heal_cognitive_disposition(self, violation: dict) -> dict:
             """Internal heal method with standard_heal decorator."""
             path = violation.get("path", "")
             context = violation.get("context", {})
             violation_type = violation.get("type", "cognitive_disposition")
-            
+
             Logger.info(f"[COGNITIVE] Healing {violation_type} violation at {path}")
-            
+
             try:
                 # Use async analyze_violation method to get disposition decision
                 import asyncio
+
                 file_path = Path(path)
-                
+
                 # Get the decision from cognitive analysis
                 decision = asyncio.run(
                     self.analyze_violation_async(file_path, violation_type, context)
                 )
-                
+
                 if decision.confidence >= self.confidence_threshold:
                     action = decision.action.lower()
-                    
+
                     if action == "archive":
                         # Archive the file
-                        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+                        from agentic_core.L5_safety.core.ArchivalGatekeeper import (
+                            ArchivalGatekeeper,
+                        )
+
                         archivist = ArchivalGatekeeper(self.project_root)
-                        archivist.archive_file(file_path, reason=f"cognitive_disposition: {decision.reason}")
+                        archivist.archive_file(
+                            file_path, reason=f"cognitive_disposition: {decision.reason}"
+                        )
                         Logger.info(f"  Archived {path} based on cognitive analysis")
-                        return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
-                        
+                        return {
+                            "violations_fixed": 1,
+                            "violations_found": 1,
+                            "errors": 0,
+                            "skipped": 0,
+                        }
+
                     elif action == "move":
                         # Move the file to suggested location
                         target_path = decision.target_path
@@ -214,25 +225,47 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                             target.parent.mkdir(parents=True, exist_ok=True)
                             file_path.rename(target)
                             Logger.info(f"  Moved {path} -> {target_path}")
-                            return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+                            return {
+                                "violations_fixed": 1,
+                                "violations_found": 1,
+                                "errors": 0,
+                                "skipped": 0,
+                            }
                         else:
-                            Logger.warning(f"  No target path provided for move action")
-                            return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
-                            
+                            Logger.warning("  No target path provided for move action")
+                            return {
+                                "violations_fixed": 0,
+                                "violations_found": 1,
+                                "errors": 0,
+                                "skipped": 1,
+                            }
+
                     elif action == "ignore":
                         Logger.info(f"  Ignoring {path} based on cognitive analysis")
-                        return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
-                        
+                        return {
+                            "violations_fixed": 0,
+                            "violations_found": 1,
+                            "errors": 0,
+                            "skipped": 1,
+                        }
+
                     else:
                         Logger.warning(f"  Unknown cognitive action: {action}")
-                        return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+                        return {
+                            "violations_fixed": 0,
+                            "violations_found": 1,
+                            "errors": 0,
+                            "skipped": 1,
+                        }
                 else:
-                    Logger.warning(f"  Low confidence ({decision.confidence}) - requires manual review")
+                    Logger.warning(
+                        f"  Low confidence ({decision.confidence}) - requires manual review"
+                    )
                     return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
-                    
+
             except Exception as e:
                 Logger.error(f"  Error in cognitive healing: {e}")
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
-        
+
         # Call the internal heal method
         return _heal_cognitive_disposition(self, violation)

@@ -3,23 +3,24 @@ File: tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehens
 Description: Comprehensive 10-case test suite for enhanced SSOT execution, covering safety, LLM logic, and telemetry.
 """
 
-import pytest
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L0_maintenance.scripts.execute_ssot import (
+    ASTCodeQualityValidator,
     AutonomousDecisionEngine,
     ConfidenceScore,
-    ASTCodeQualityValidator,
-    validate_territory_input,
     ReconciliationViolation,
-    execute_phase1_discovery,
     RuntimeStateManager,
+    execute_phase1_discovery,
+    validate_territory_input,
 )
 
 

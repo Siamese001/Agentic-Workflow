@@ -3,8 +3,8 @@
 Demo script to showcase the CLI functionality of the SSOT Compliance Orchestrator
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add project root to Python path

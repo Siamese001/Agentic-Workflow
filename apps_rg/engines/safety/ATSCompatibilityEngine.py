@@ -8,10 +8,11 @@ Writes 'ats_report'. Triggers 'ATS_FAILURE'.
 """
 
 from __future__ import annotations
-from typing import Any
+
+import json
 import logging
 import re
-import json
+from typing import Any
 
 from apps_rg.engines.base.base_resume_engine import BaseRGEngine
 

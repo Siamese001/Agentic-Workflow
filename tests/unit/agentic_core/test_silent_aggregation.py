@@ -7,11 +7,11 @@ Verifies that the execute_ssot.py script implements the requirements:
 3. Markdown executive summary generation
 """
 
-import unittest
-from unittest.mock import MagicMock, patch
 import sys
+import unittest
 from io import StringIO
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))

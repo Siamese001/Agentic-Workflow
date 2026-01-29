@@ -14,8 +14,8 @@ This test suite ensures:
 
 from __future__ import annotations
 
-import inspect
 import importlib
+import inspect
 import pkgutil
 import sys
 from dataclasses import is_dataclass

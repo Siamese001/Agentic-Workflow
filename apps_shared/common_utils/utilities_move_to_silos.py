@@ -1,7 +1,7 @@
-
 """
 Enhanced cleanup script that moves files to sovereign silos
 """
+
 import argparse
 import logging
 import os
