@@ -122,15 +122,18 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                     if not self.dry_run:
                         self.stats["renamed"] += 1
                         self.stats["collisions_resolved"] += 1
-                    # Update in-memory tracker for subsequent import refactors
-                    dest = path.parent / new_name
-                    
-                    # Only update registry if the file wasn't deleted (duplicate merge)
-                    if dest.exists():
-                        self.file_registry[idx] = dest
-                    
-                    if not self.dry_run:
-                        self.stats["imports_fixed"] += self.update_imports(path.name, new_name)
+                        
+                        # [HARDENED] Update in-memory tracker AFTER successful file operation
+                        dest = path.parent / new_name
+                        
+                        # Only update registry if the file exists and wasn't deleted (duplicate merge)
+                        if dest.exists():
+                            self.file_registry[idx] = dest
+                            # Update imports only after registry is updated
+                            self.stats["imports_fixed"] += self.update_imports(path.name, new_name)
+                        else:
+                            # File was deleted due to duplicate content - remove from registry
+                            self.file_registry[idx] = None
             else:
                 self.stats["compliant"] += 1
 
@@ -260,6 +263,8 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         """
         Handles renaming with intelligent collision resolution.
         Returns True if the VIOLATION was resolved (either by rename, delete, or move).
+        
+        [HARDENED] Fixed race conditions, added verification, rollback, and proper Windows handling.
         """
         dest = src.parent / dest_name
         
@@ -271,19 +276,40 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
             print(f"  [PLAN] Rename {src.name} -> {dest_name}")
             return True
 
+        # [HARDENED] Verify source exists before proceeding
+        if not src.exists():
+            print(f"  [ERROR] Source file {src.name} does not exist")
+            return False
+
         # Case 1: Destination Conflict Detection
         is_collision = False
         if dest.exists():
             try:
-                # Resolve paths to handle case-insensitivity on Windows
-                if dest.resolve() != src.resolve():
+                # [HARDENED] Proper Windows case-insensitive path comparison
+                src_resolved = src.resolve()
+                dest_resolved = dest.resolve()
+                
+                # Check if they're the same file (case-insensitive on Windows)
+                if src_resolved == dest_resolved:
+                    print(f"  [INFO] Source and destination are the same file (case-insensitive match)")
+                    return False  # No action needed
+                else:
                     is_collision = True
-            except OSError:
+            except OSError as e:
+                print(f"  [WARNING] Could not resolve paths for comparison: {e}")
                 is_collision = True
 
         if is_collision:
             print(f"  [COLLISION] Target {dest_name} already exists. Analyzing content...")
             try:
+                # [HARDENED] Verify both files exist before reading
+                if not src.exists():
+                    print(f"  [ERROR] Source file disappeared during collision analysis")
+                    return False
+                if not dest.exists():
+                    print(f"  [ERROR] Destination file disappeared during collision analysis")
+                    return False
+                    
                 # Critical Analysis: Binary read ensures exact match without encoding issues.
                 src_content = src.read_bytes()
                 dest_content = dest.read_bytes()
@@ -291,31 +317,104 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                 if src_content == dest_content:
                     print(f"  [ANALYSIS] Files are IDENTICAL. Remediation: Deleting redundant violator.")
                     print(f"  [ACTION] DELETE {src.name}")
+                    
+                    # [HARDENED] Atomic delete with verification
                     src.unlink()
+                    
+                    # [HARDENED] Verify deletion succeeded
+                    if src.exists():
+                        print(f"  [ERROR] Failed to delete {src.name} - file still exists")
+                        return False
+                    
+                    print(f"  [SUCCESS] {src.name} deleted successfully")
                     return True # Violation resolved by deletion
+                    
                 else:
                     # Divergent content: Rename to .CONFLICT to preserve data
                     print(f"  [ANALYSIS] Files are DIFFERENT. Remediation: Preserving data via conflict rename.")
                     timestamp = int(time.time())
                     conflict_name = f"{dest_name}.CONFLICT_{timestamp}"
                     conflict_path = src.parent / conflict_name
+                    
+                    # [HARDENED] Check if conflict file already exists
+                    if conflict_path.exists():
+                        # Add microseconds to ensure uniqueness
+                        timestamp = int(time.time() * 1000000)
+                        conflict_name = f"{dest_name}.CONFLICT_{timestamp}"
+                        conflict_path = src.parent / conflict_name
                         
                     print(f"  [ACTION] RENAME {src.name} -> {conflict_name}")
+                    
+                    # [HARDENED] Atomic rename with verification
                     src.rename(conflict_path)
+                    
+                    # [HARDENED] Verify rename succeeded and source no longer exists
+                    if src.exists():
+                        print(f"  [ERROR] Failed to rename {src.name} - source still exists")
+                        return False
+                    if not conflict_path.exists():
+                        print(f"  [ERROR] Failed to rename {src.name} - conflict file not found")
+                        return False
+                        
+                    print(f"  [SUCCESS] {src.name} renamed to {conflict_name}")
                     return True # Violation resolved by moving aside
+                    
             except Exception as e:
                 print(f"  [ERROR] Failed to resolve collision: {e}")
+                # [HARDENED] Don't attempt rollback on collision - preserve existing files
                 return False
 
         # Case 2: Standard Rename (or Case-Only Rename)
+        temp_path = None
         try:
-            # Atomic temp shuffle for Windows case-sensitivity support
-            temp = src.parent / f"__temp_{src.name}"
+            # [HARDENED] Atomic temp shuffle for Windows case-sensitivity support
+            temp = src.parent / f"__temp_{int(time.time() * 1000000)}_{src.name}"
+            temp_path = temp
+            
+            # Step 1: Move source to temp
             src.rename(temp)
+            
+            # [HARDENED] Verify temp move succeeded
+            if not temp.exists():
+                print(f"  [ERROR] Failed to move {src.name} to temp location")
+                return False
+            if src.exists():
+                print(f"  [ERROR] Source {src.name} still exists after temp move")
+                return False
+            
+            # Step 2: Move temp to destination
             temp.rename(dest)
+            
+            # [HARDENED] Verify final rename succeeded
+            if not dest.exists():
+                print(f"  [ERROR] Failed to move temp to {dest_name}")
+                # Attempt rollback: restore from temp
+                if temp.exists():
+                    temp.rename(src)
+                    print(f"  [ROLLBACK] Restored {src.name} from temp")
+                return False
+            if temp.exists():
+                print(f"  [WARNING] Temp file still exists after rename - cleaning up")
+                try:
+                    temp.unlink()
+                except:
+                    pass  # Best effort cleanup
+            
+            print(f"  [SUCCESS] {src.name} -> {dest_name}")
             return True
-        except OSError as e:
+            
+        except Exception as e:
             print(f"  [ERROR] Rename failed: {e}")
+            
+            # [HARDENED] Attempt rollback if temp file exists
+            if temp_path and temp_path.exists():
+                try:
+                    temp_path.rename(src)
+                    print(f"  [ROLLBACK] Restored {src.name} from temp")
+                except Exception as rollback_error:
+                    print(f"  [CRITICAL] Rollback failed: {rollback_error}")
+                    print(f"  [CRITICAL] Manual intervention required - file may be at {temp_path}")
+            
             return False
 
     def get_compliant_name(self, path: Path, file_type: FileType) -> Optional[str]:
