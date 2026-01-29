@@ -1183,12 +1183,8 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             "stats": self.stats,
         }
 
-        report_path = self.audit_log_dir / f"audit_{report['timestamp'].replace(':', '-')}.json"
-        try:
-            with open(report_path, "w") as f:
-                json.dump(report, f, indent=4)
-        except Exception as e:
-            Logger.error(f"Failed to persist audit log: {e}")
+        # Audit logging removed - sovereign_audit files create unnecessary sprawl
+        # Compliance reports are handled by execute_ssot.py in logs/compliance_reports/
 
     # =========================================================================
     # PHASE 9: GOLDEN BASELINE CAPTURE & SSOT NORMALIZATION

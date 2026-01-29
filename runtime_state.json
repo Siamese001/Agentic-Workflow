@@ -1,7 +1,7 @@
 {
   "status": "completed",
-  "start_time": "2026-01-29T07:59:21.319495",
-  "end_time": "2026-01-29T07:59:50.400240",
+  "start_time": "2026-01-29T09:07:56.948039",
+  "end_time": "2026-01-29T09:08:18.967308",
   "current_agent": null,
   "current_layer": "L5 - Compliance",
   "agents_order": [
@@ -10,124 +10,124 @@
   "completed_agents": [
     {
       "agent": "FilesystemSSOTReconcilerAgent",
-      "time": "2026-01-29T07:59:21.822795",
+      "time": "2026-01-29T09:07:57.310983",
       "success": true,
       "details": "Drift violations: 0"
     },
     {
       "agent": "LocationAgent",
-      "time": "2026-01-29T07:59:25.654931",
+      "time": "2026-01-29T09:08:00.332613",
       "success": true,
       "details": "Violations: 6 | Conf: 0.60 (no heal method)"
     },
     {
       "agent": "HierarchyAgent",
-      "time": "2026-01-29T07:59:25.689695",
+      "time": "2026-01-29T09:08:00.368224",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-01-29T07:59:38.243126",
+      "time": "2026-01-29T09:08:09.605042",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "SystemArchitectAgent",
-      "time": "2026-01-29T07:59:50.186400",
+      "time": "2026-01-29T09:08:18.889100",
       "success": true,
       "details": "Architecture Valid"
     },
     {
       "agent": "SovereignCertifier",
-      "time": "2026-01-29T07:59:50.387674",
+      "time": "2026-01-29T09:08:18.954882",
       "success": true,
       "details": "Certificate Issued"
     }
   ],
   "events": [
     {
-      "time": "2026-01-29T07:59:21.319495",
+      "time": "2026-01-29T09:07:56.948039",
       "type": "info",
       "message": "Mission started: Unified Protocol: Territory Scan: prompt_governance"
     },
     {
-      "time": "2026-01-29T07:59:21.785282",
+      "time": "2026-01-29T09:07:57.278257",
       "type": "domain_start",
       "message": "Entering Domain: prompt_governance"
     },
     {
-      "time": "2026-01-29T07:59:21.786095",
+      "time": "2026-01-29T09:07:57.279287",
       "type": "agent_start",
       "message": "\u2192 Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-01-29T07:59:21.822795",
+      "time": "2026-01-29T09:07:57.310983",
       "type": "agent_end",
       "message": "\u2713 Completed FilesystemSSOTReconcilerAgent"
     },
     {
-      "time": "2026-01-29T07:59:21.831819",
+      "time": "2026-01-29T09:07:57.318943",
       "type": "agent_start",
       "message": "\u2192 Executing LocationAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-29T07:59:25.653674",
+      "time": "2026-01-29T09:08:00.328101",
       "type": "decision",
-      "message": "Location Healing: LLM Override"
+      "message": "Location Healing: LLM-ARBITRATED-FLASH (0.60)"
     },
     {
-      "time": "2026-01-29T07:59:25.654931",
+      "time": "2026-01-29T09:08:00.332613",
       "type": "agent_end",
       "message": "\u2713 Completed LocationAgent"
     },
     {
-      "time": "2026-01-29T07:59:25.672324",
+      "time": "2026-01-29T09:08:00.347766",
       "type": "agent_start",
       "message": "\u2192 Executing HierarchyAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-29T07:59:25.689695",
+      "time": "2026-01-29T09:08:00.368224",
       "type": "agent_end",
       "message": "\u2713 Completed HierarchyAgent"
     },
     {
-      "time": "2026-01-29T07:59:25.704987",
+      "time": "2026-01-29T09:08:00.382670",
       "type": "decision",
       "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-01-29T07:59:25.707459",
+      "time": "2026-01-29T09:08:00.383806",
       "type": "warning",
       "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-01-29T07:59:25.707981",
+      "time": "2026-01-29T09:08:00.383806",
       "type": "agent_start",
       "message": "\u2192 Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-29T07:59:38.243126",
+      "time": "2026-01-29T09:08:09.605042",
       "type": "agent_end",
       "message": "\u2713 Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-01-29T07:59:38.256281",
+      "time": "2026-01-29T09:08:09.617245",
       "type": "agent_start",
       "message": "\u2192 Executing SystemArchitectAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-29T07:59:50.186753",
+      "time": "2026-01-29T09:08:18.889100",
       "type": "agent_end",
       "message": "\u2713 Completed SystemArchitectAgent"
     },
     {
-      "time": "2026-01-29T07:59:50.217483",
+      "time": "2026-01-29T09:08:18.916981",
       "type": "agent_start",
       "message": "\u2192 Executing SovereignCertifier (L5 - Compliance)"
     },
     {
-      "time": "2026-01-29T07:59:50.387674",
+      "time": "2026-01-29T09:08:18.954882",
       "type": "agent_end",
       "message": "\u2713 Completed SovereignCertifier"
     }

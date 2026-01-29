@@ -1781,20 +1781,16 @@ def save_comprehensive_reports(
         reports_dir = project_root / "logs" / "compliance_reports"
         reports_dir.mkdir(parents=True, exist_ok=True)
 
-        # Generate timestamp for filenames
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-        # Save JSON Manifest
-        json_filename = f"compliance_report_{territory}_{timestamp}.json"
+        # Save only final files (no timestamped versions to reduce sprawl)
+        json_filename = f"compliance_report_{territory}.json"
+        md_filename = f"executive_summary_{territory}.md"
         json_path = reports_dir / json_filename
+        md_path = reports_dir / md_filename
 
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(detailed_cert, f, indent=2, default=str)
 
-        # Save Markdown Executive Summary
-        md_filename = f"executive_summary_{territory}_{timestamp}.md"
-        md_path = reports_dir / md_filename
-
+        # Save Markdown Executive Summary (using the md_path already defined above)
         with open(md_path, "w", encoding="utf-8") as f:
             f.write("\n".join(markdown_summary))
             if files_affected:
@@ -1804,31 +1800,9 @@ def save_comprehensive_reports(
             else:
                 f.write("\n\n*No files required remediation.*\n")
 
-        # Save latest symlink for easy access
-        latest_json = reports_dir / f"latest_compliance_{territory}.json"
-        latest_md = reports_dir / f"latest_summary_{territory}.md"
-
-        # Remove existing symlinks/files
-        if latest_json.exists():
-            latest_json.unlink()
-        if latest_md.exists():
-            latest_md.unlink()
-
-        # Create symlinks (or copy on Windows)
-        try:
-            latest_json.symlink_to(json_path)
-            latest_md.symlink_to(md_path)
-        except (OSError, NotImplementedError):
-            # Fallback for Windows or systems without symlink support
-            import shutil
-
-            shutil.copy2(json_path, latest_json)
-            shutil.copy2(md_path, latest_md)
-
-        logger.info("📁 Comprehensive reports saved:")
+        logger.info("📁 Final compliance reports saved:")
         logger.info(f"   JSON: {json_path.relative_to(project_root)}")
         logger.info(f"   Markdown: {md_path.relative_to(project_root)}")
-        logger.info(f"   Latest: {latest_json.relative_to(project_root)}")
 
     except Exception as e:
         logger.error(f"Failed to save comprehensive reports: {e}")
