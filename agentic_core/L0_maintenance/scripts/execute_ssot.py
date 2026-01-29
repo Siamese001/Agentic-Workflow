@@ -87,23 +87,33 @@ except ImportError:
 
 @dataclass
 class ConfidenceScore:
-    """Confidence score for autonomous healing decisions."""
+    """[HARDENED] Environment-aware confidence score for autonomous healing."""
 
     value: float  # 0.0 to 1.0
     reasoning: str
     factors: dict[str, float] = field(default_factory=dict)
 
     @property
+    def _high_threshold(self) -> float:
+        """Sourced from .env: SOVEREIGN_HIGH_CONFIDENCE (default: 0.75)"""
+        return float(os.getenv("SOVEREIGN_HIGH_CONFIDENCE", "0.75"))
+
+    @property
+    def _med_threshold(self) -> float:
+        """Sourced from .env: SOVEREIGN_MEDIUM_CONFIDENCE (default: 0.50)"""
+        return float(os.getenv("SOVEREIGN_MEDIUM_CONFIDENCE", "0.50"))
+
+    @property
     def is_high_confidence(self) -> bool:
-        return self.value > 0.75
+        return self.value > self._high_threshold
 
     @property
     def is_medium_confidence(self) -> bool:
-        return 0.5 <= self.value <= 0.75
+        return self._med_threshold <= self.value <= self._high_threshold
 
     @property
     def is_low_confidence(self) -> bool:
-        return self.value < 0.5
+        return self.value < self._med_threshold
 
 
 # ============================================================================
@@ -363,37 +373,54 @@ class AutonomousDecisionEngine:
             "reason": None,
         }
 
+        # [PHASE 4 FIX] High Confidence: Deterministic Sovereign Execution
         if confidence.is_high_confidence:
             self._healing_count += 1
             self._call_path.add(agent_name)
-            reason = f"AUTO-HEAL ({confidence.value:.2f})"
+            reason = f"SOVEREIGN-AUTO ({confidence.value:.2f})"
             decision_data["decision"] = True
             decision_data["reason"] = reason
             self.decisions_made.append(decision_data)
             return True, reason
 
+        # [PHASE 4 FIX] Medium Confidence: Standard Arbitration (Flash via .env)
         elif confidence.is_medium_confidence:
             if self.enable_llm:
+                target_model = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
                 self._healing_count += 1
                 self._call_path.add(agent_name)
-                reason = "LLM Override"
+                reason = f"LLM-ARBITRATED-FLASH ({confidence.value:.2f})"
                 decision_data["decision"] = True
                 decision_data["reason"] = reason
+                decision_data["model"] = target_model
                 self.decisions_made.append(decision_data)
                 return True, reason
             else:
-                reason = "Confidence too low"
+                reason = f"BLOCK: Confidence {confidence.value:.2f} requires LLM arbitration (Disabled)"
                 decision_data["decision"] = False
                 decision_data["reason"] = reason
                 self.decisions_made.append(decision_data)
                 return False, reason
 
-        # Low confidence - always blocked
-        reason = "Confidence too low"
-        decision_data["decision"] = False
-        decision_data["reason"] = reason
-        self.decisions_made.append(decision_data)
-        return False, reason
+        # [PHASE 4 FIX] Low Confidence: Advanced Reasoning Recovery (Pro via .env)
+        else:
+            if self.enable_llm:
+                target_model = os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro")
+                logger.warning(f"🚨 CRITICAL AMBIGUITY: Invoking Reasoning Model {target_model} for {agent_name}...")
+                self._healing_count += 1
+                self._call_path.add(agent_name)
+                reason = f"REASONING-RECOVERY-PRO ({confidence.value:.2f})"
+                decision_data["decision"] = True
+                decision_data["reason"] = reason
+                decision_data["model"] = target_model
+                self.decisions_made.append(decision_data)
+                return True, reason
+            else:
+                reason = f"BLOCK: Confidence {confidence.value:.2f} requires advanced reasoning (Disabled)"
+                decision_data["decision"] = False
+                decision_data["reason"] = reason
+                self.decisions_made.append(decision_data)
+                return False, reason
 
 
 # ============================================================================
