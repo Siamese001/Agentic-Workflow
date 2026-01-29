@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "territory": "prompt_governance",
+    "timestamp": "2026-01-29T07:21:03.200150",
+    "status": "NON-COMPLIANT",
+    "sovereignty_level": "L5"
+  },
+  "metrics": {
+    "confidence_score": 0.6600000000000001,
+    "violation_count": 4,
+    "drift_count": 0,
+    "errors": 0,
+    "violations_fixed": 0
+  },
+  "governance_log": {
+    "decisions": [],
+    "files_processed": [
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardTestSuite.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\audit_registry_linkages.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\tests_golden_state_test_datasets.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\SovereignPromptRenderer.py"
+    ]
+  },
+  "unified_violations": [
+    {
+      "type": "LOCATION",
+      "source": "LocationAgent",
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardTestSuite.py",
+      "message": "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'def test_' for destination agentic_core/L0_maintenance/scripts",
+      "severity": "medium",
+      "recommended_action": "Move DashboardTestSuite.py to tests/ directory (contains test functions)",
+      "llm_triggered": false,
+      "confidence": 0.6600000000000001
+    },
+    {
+      "type": "LOCATION",
+      "source": "LocationAgent",
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\SovereignPromptRenderer.py",
+      "message": "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'class Sovereign' for destination agentic_core/L0_maintenance/scripts",
+      "severity": "medium",
+      "recommended_action": "Move SovereignPromptRenderer.py to agentic_core/base_agents/ or agentic_core/L5_safety/",
+      "llm_triggered": false,
+      "confidence": 0.6600000000000001
+    },
+    {
+      "type": "LOCATION",
+      "source": "LocationAgent",
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\tests_golden_state_test_datasets.py",
+      "message": "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'def test_' for destination agentic_core/L0_maintenance/scripts",
+      "severity": "medium",
+      "recommended_action": "Move tests_golden_state_test_datasets.py to tests/ directory (contains test functions)",
+      "llm_triggered": false,
+      "confidence": 0.6600000000000001
+    },
+    {
+      "type": "LOCATION",
+      "source": "LocationAgent",
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\audit_registry_linkages.py",
+      "message": "ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports",
+      "severity": "medium",
+      "recommended_action": "Move audit_registry_linkages.py to agentic_core/L0_maintenance/scripts/ (Python files don't belong in docs/)",
+      "llm_triggered": false,
+      "confidence": 0.6600000000000001
+    }
+  ],
+  "agents_executed": [
+    "FilesystemSSOTReconcilerAgent",
+    "LocationAgent",
+    "HierarchyAgent",
+    "PascalSovereigntyAgent",
+    "ArchitectureGovernorAgent",
+    "SystemArchitectAgent"
+  ]
+}
