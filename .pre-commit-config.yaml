@@ -111,6 +111,15 @@ repos:
         pass_filenames: false
         always_run: true
 
+      - id: check-layer-separation
+        name: Enforce 3-Layer Architecture (Sovereign != Canon)
+        entry: python
+        args: [ops_scripts/governance/check_layer_separation.py]
+        language: python
+        pass_filenames: false
+        always_run: true
+        description: "Prevents 'God Object' drift by ensuring SovereignBaseAgent remains domain-agnostic."
+
       - id: test-hygiene-consolidation
         name: Test Hygiene Consolidation (Survivor Agent Protection)
         entry: pytest
@@ -148,8 +157,7 @@ repos:
         name: Hardened Pycache Purge
         entry: python ops_scripts/maintenance/purge_cache.py --quiet
         language: python
-        # VIOLATION: Running on every file is inefficient for a global purge script.
-        # FIX: Set always_run to True and pass_filenames to False to run once per commit.
+        # FIX APPLIED: Global purge runs once per commit, ignoring file arguments.
         always_run: true
         pass_filenames: false
         stages: [commit]
