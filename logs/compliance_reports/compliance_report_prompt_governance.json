@@ -1,7 +1,7 @@
 {
   "meta": {
     "territory": "prompt_governance",
-    "timestamp": "2026-01-29T07:59:06.383419",
+    "timestamp": "2026-01-29T09:08:18.929682",
     "status": "NON-COMPLIANT",
     "sovereignty_level": "L5"
   },
@@ -15,12 +15,12 @@
   "governance_log": {
     "decisions": [],
     "files_processed": [
-      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\registry\\registry.json.backup",
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\tests_golden_state_test_datasets.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\version_registry\\registry.json",
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\audit_registry_linkages.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\registry\\registry.json.backup",
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardTestSuite.py",
-      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\SovereignPromptRenderer.py",
-      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\version_registry\\registry.json"
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\SovereignPromptRenderer.py"
     ],
     "scan_summary": {
       "total_files_scanned": 78,
