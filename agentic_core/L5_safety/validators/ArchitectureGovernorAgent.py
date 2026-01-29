@@ -1587,3 +1587,71 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         except Exception as e:
             Logger.error(f"    [COGNITIVE] Error processing disposition: {e}")
             return False
+
+    def heal(self, violation: dict) -> dict:
+        """Heal architecture violations using standard_heal decorator pattern.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (naming, gravity, orphan, duplicate)
+                - path: Path to the violating file/directory
+                - severity: Severity level of the violation
+                
+        Returns:
+            Dictionary with healing results following standard_heal format:
+                - violations_fixed: Number of violations fixed
+                - violations_found: Total violations found
+                - errors: Number of errors encountered
+                - skipped: Number of violations skipped
+        """
+        from agentic_core.base_agents.decorators import standard_heal
+        
+        @standard_heal
+        def _heal_architecture_violation(self, violation: dict) -> dict:
+            """Internal heal method with standard_heal decorator."""
+            violation_type = violation.get("type", "unknown")
+            path = violation.get("path", "")
+            
+            Logger.info(f"[ARCH_GOVERNOR] Healing {violation_type} violation at {path}")
+            
+            # Handle different violation types
+            if violation_type == "naming":
+                # Fix naming convention violations
+                if not path.endswith("Agent.py") and path.endswith(".py"):
+                    new_path = path.replace(".py", "Agent.py")
+                    try:
+                        Path(path).rename(new_path)
+                        Logger.info(f"  Renamed {path} -> {new_path}")
+                        return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+                    except Exception as e:
+                        Logger.error(f"  Failed to rename {path}: {e}")
+                        return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+                        
+            elif violation_type == "gravity":
+                # Log gravity violations for manual review
+                Logger.warning(f"  Gravity violation at {path} - requires manual review")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+                
+            elif violation_type == "orphan":
+                # Archive orphaned files
+                from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+                archivist = ArchivalGatekeeper(self.project_root)
+                try:
+                    archivist.archive_file(Path(path), reason="orphaned_agent")
+                    Logger.info(f"  Archived orphaned file: {path}")
+                    return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+                except Exception as e:
+                    Logger.error(f"  Failed to archive {path}: {e}")
+                    return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+                    
+            elif violation_type == "duplicate":
+                # Log duplicate agents for manual review
+                Logger.warning(f"  Duplicate agent at {path} - requires manual review")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+                
+            else:
+                Logger.warning(f"  Unknown violation type: {violation_type}")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+        
+        # Call the internal heal method
+        return _heal_architecture_violation(self, violation)

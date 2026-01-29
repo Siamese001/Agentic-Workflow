@@ -1,13 +1,13 @@
 {
   "meta": {
     "territory": "prompt_governance",
-    "timestamp": "2026-01-29T09:08:18.929682",
+    "timestamp": "2026-01-29T13:03:59.786100",
     "status": "NON-COMPLIANT",
     "sovereignty_level": "L5"
   },
   "metrics": {
-    "confidence_score": 0.572,
-    "violation_count": 6,
+    "confidence_score": 0.484,
+    "violation_count": 8,
     "drift_count": 0,
     "errors": 0,
     "violations_fixed": 0
@@ -15,16 +15,18 @@
   "governance_log": {
     "decisions": [],
     "files_processed": [
-      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\tests_golden_state_test_datasets.py",
-      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\version_registry\\registry.json",
-      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\audit_registry_linkages.py",
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\registry\\registry.json.backup",
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardTestSuite.py",
-      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\SovereignPromptRenderer.py"
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\audit_registry_linkages.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\version_registry\\registry.json",
+      "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "C:\\Git\\Agentic-Workflow\\.sovereign_healing_backup",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\SovereignPromptRenderer.py",
+      "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\meta_prompts\\tests_golden_state_test_datasets.py"
     ],
     "scan_summary": {
       "total_files_scanned": 78,
-      "files_with_violations": 6,
+      "files_with_violations": 8,
       "files_compliant": 72,
       "compliance_rate": 92.3,
       "file_types": {
@@ -39,12 +41,22 @@
     {
       "type": "LOCATION",
       "source": "LocationAgent",
+      "file": "C:\\Git\\Agentic-Workflow\\.sovereign_healing_backup",
+      "message": "Missing sovereign root: .sovereign_healing_backup",
+      "severity": "medium",
+      "recommended_action": "Create directory: .sovereign_healing_backup",
+      "llm_triggered": false,
+      "confidence": 0.792
+    },
+    {
+      "type": "LOCATION",
+      "source": "LocationAgent",
       "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardTestSuite.py",
       "message": "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'def test_' for destination agentic_core/L0_maintenance/scripts",
       "severity": "medium",
       "recommended_action": "Move DashboardTestSuite.py to tests/ directory (contains test functions)",
       "llm_triggered": false,
-      "confidence": 0.601
+      "confidence": 0.792
     },
     {
       "type": "LOCATION",
@@ -54,7 +66,7 @@
       "severity": "medium",
       "recommended_action": "Move SovereignPromptRenderer.py to agentic_core/base_agents/ or agentic_core/L5_safety/",
       "llm_triggered": false,
-      "confidence": 0.601
+      "confidence": 0.792
     },
     {
       "type": "LOCATION",
@@ -64,7 +76,7 @@
       "severity": "medium",
       "recommended_action": "Move tests_golden_state_test_datasets.py to tests/ directory (contains test functions)",
       "llm_triggered": false,
-      "confidence": 0.601
+      "confidence": 0.792
     },
     {
       "type": "LOCATION",
@@ -72,9 +84,9 @@
       "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\scripts\\audit_registry_linkages.py",
       "message": "ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports",
       "severity": "medium",
-      "recommended_action": "Move audit_registry_linkages.py to agentic_core/L0_maintenance/scripts/ (Python files don't belong in docs/)",
+      "recommended_action": "RENAME: 'audit_registry_linkages.py' has audit/report naming but is a Python script. Either: 1) Rename to avoid audit patterns (e.g., registry_linkage_checker.py) OR 2) Move to agentic_core/L0_maintenance/scripts/ where audit scripts belong",
       "llm_triggered": false,
-      "confidence": 0.601
+      "confidence": 0.792
     },
     {
       "type": "LOCATION",
@@ -84,7 +96,7 @@
       "severity": "medium",
       "recommended_action": "Fix location/naming issue: ARTIFACT ROUTING VIOLATION: Forbidden keyword 'import ' for ",
       "llm_triggered": false,
-      "confidence": 0.601
+      "confidence": 0.968
     },
     {
       "type": "LOCATION",
@@ -94,16 +106,27 @@
       "severity": "medium",
       "recommended_action": "Fix location/naming issue: BROKEN BACKUP FILE: Remove stale backup file",
       "llm_triggered": false,
-      "confidence": 0.601
+      "confidence": 0.792
+    },
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "source": "RootHygieneAgent",
+      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "message": "Illegal cache directory '.pytest_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Add .pytest_cache to .gitignore and remove from root",
+      "llm_triggered": false,
+      "confidence": 0.6
     }
   ],
   "agents_executed": [
-    "FilesystemSSOTReconcilerAgent",
-    "LocationAgent",
-    "HierarchyAgent",
-    "PascalSovereigntyAgent",
+    "SystemArchitectAgent",
     "ArchitectureGovernorAgent",
-    "SystemArchitectAgent"
+    "HierarchyAgent",
+    "FilesystemSSOTReconcilerAgent",
+    "RootHygieneAgent",
+    "ConversationalRepairAgent",
+    "LocationAgent"
   ],
   "file_scan_stats": {
     "total_files": 78,

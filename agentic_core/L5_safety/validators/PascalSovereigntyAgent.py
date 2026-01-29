@@ -500,6 +500,89 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         except:
             return None
 
+    def heal(self, violation: dict) -> dict:
+        """Heal Pascal naming violations using standard_heal decorator pattern.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (naming)
+                - path: Path to the violating file
+                - severity: Severity level of the violation
+                
+        Returns:
+            Dictionary with healing results following standard_heal format:
+                - violations_fixed: Number of violations fixed
+                - violations_found: Total violations found
+                - errors: Number of errors encountered
+                - skipped: Number of violations skipped
+        """
+        from agentic_core.base_agents.decorators import standard_heal
+        
+        @standard_heal
+        def _heal_pascal_violation(self, violation: dict) -> dict:
+            """Internal heal method with standard_heal decorator."""
+            violation_type = violation.get("type", "naming")
+            path = violation.get("path", "")
+            
+            Logger.info(f"[PASCAL] Healing {violation_type} violation at {path}")
+            
+            if violation_type == "naming":
+                # Fix Pascal naming convention violations
+                file_path = Path(path)
+                
+                # Check if it's an agent that needs renaming
+                if file_path.suffix == ".py":
+                    stem = file_path.stem
+                    
+                    # If it doesn't follow Agent.py pattern
+                    if not stem.endswith("Agent"):
+                        # Determine correct naming based on content
+                        try:
+                            with open(file_path, 'r', encoding='utf-8') as f:
+                                content = f.read()
+                                
+                            # Check if it's actually an agent class
+                            if "class " in content and "Agent" in content:
+                                # Extract the actual class name
+                                import re
+                                class_match = re.search(r'class (\w+Agent)', content)
+                                if class_match:
+                                    class_name = class_match.group(1)
+                                    new_path = file_path.parent / f"{class_name}.py"
+                                    
+                                    if not new_path.exists():
+                                        file_path.rename(new_path)
+                                        Logger.info(f"  Renamed {path} -> {new_path}")
+                                        return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+                                    else:
+                                        Logger.warning(f"  Target {new_path} already exists")
+                                        return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+                                else:
+                                    # Add Agent suffix
+                                    new_path = file_path.parent / f"{stem}Agent.py"
+                                    if not new_path.exists():
+                                        file_path.rename(new_path)
+                                        Logger.info(f"  Renamed {path} -> {new_path}")
+                                        return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+                                    else:
+                                        Logger.warning(f"  Target {new_path} already exists")
+                                        return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+                            else:
+                                Logger.info(f"  File {path} is not an agent, skipping")
+                                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+                        except Exception as e:
+                            Logger.error(f"  Error processing {path}: {e}")
+                            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+                else:
+                    Logger.info(f"  Non-Python file {path}, skipping")
+                    return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+            else:
+                Logger.warning(f"  Unknown violation type: {violation_type}")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+        
+        # Call the internal heal method
+        return _heal_pascal_violation(self, violation)
+
     @standard_heal
     def heal_repository(
         self,

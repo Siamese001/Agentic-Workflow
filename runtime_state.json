@@ -1,7 +1,7 @@
 {
   "status": "completed",
-  "start_time": "2026-01-29T09:07:56.948039",
-  "end_time": "2026-01-29T09:08:18.967308",
+  "start_time": "2026-01-29T13:03:29.796085",
+  "end_time": "2026-01-29T13:03:59.811773",
   "current_agent": null,
   "current_layer": "L5 - Compliance",
   "agents_order": [
@@ -10,124 +10,156 @@
   "completed_agents": [
     {
       "agent": "FilesystemSSOTReconcilerAgent",
-      "time": "2026-01-29T09:07:57.310983",
+      "time": "2026-01-29T13:03:30.276723",
       "success": true,
       "details": "Drift violations: 0"
     },
     {
       "agent": "LocationAgent",
-      "time": "2026-01-29T09:08:00.332613",
+      "time": "2026-01-29T13:03:34.141552",
       "success": true,
-      "details": "Violations: 6 | Conf: 0.60 (no heal method)"
+      "details": "Violations: 7 | Conf: 0.55 (healing skipped)"
     },
     {
       "agent": "HierarchyAgent",
-      "time": "2026-01-29T09:08:00.368224",
+      "time": "2026-01-29T13:03:34.176713",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-01-29T09:08:09.605042",
+      "time": "2026-01-29T13:03:47.468683",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "SystemArchitectAgent",
-      "time": "2026-01-29T09:08:18.889100",
+      "time": "2026-01-29T13:03:59.553649",
       "success": true,
       "details": "Architecture Valid"
     },
     {
+      "agent": "ConversationalRepairAgent",
+      "time": "2026-01-29T13:03:59.687009",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "RootHygieneAgent",
+      "time": "2026-01-29T13:03:59.757243",
+      "success": true,
+      "details": "Violations: 1"
+    },
+    {
       "agent": "SovereignCertifier",
-      "time": "2026-01-29T09:08:18.954882",
+      "time": "2026-01-29T13:03:59.795834",
       "success": true,
       "details": "Certificate Issued"
     }
   ],
   "events": [
     {
-      "time": "2026-01-29T09:07:56.948039",
+      "time": "2026-01-29T13:03:29.796085",
       "type": "info",
-      "message": "Mission started: Unified Protocol: Territory Scan: prompt_governance"
+      "message": "Mission started: Unified Protocol: Default Scan"
     },
     {
-      "time": "2026-01-29T09:07:57.278257",
+      "time": "2026-01-29T13:03:30.235155",
       "type": "domain_start",
       "message": "Entering Domain: prompt_governance"
     },
     {
-      "time": "2026-01-29T09:07:57.279287",
+      "time": "2026-01-29T13:03:30.235155",
       "type": "agent_start",
       "message": "\u2192 Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-01-29T09:07:57.310983",
+      "time": "2026-01-29T13:03:30.276723",
       "type": "agent_end",
       "message": "\u2713 Completed FilesystemSSOTReconcilerAgent"
     },
     {
-      "time": "2026-01-29T09:07:57.318943",
+      "time": "2026-01-29T13:03:30.285894",
       "type": "agent_start",
       "message": "\u2192 Executing LocationAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-29T09:08:00.328101",
+      "time": "2026-01-29T13:03:34.141167",
       "type": "decision",
-      "message": "Location Healing: LLM-ARBITRATED-FLASH (0.60)"
+      "message": "Location Healing: BLOCK: Confidence 0.55 requires LLM arbitration (Disabled)"
     },
     {
-      "time": "2026-01-29T09:08:00.332613",
+      "time": "2026-01-29T13:03:34.141552",
       "type": "agent_end",
       "message": "\u2713 Completed LocationAgent"
     },
     {
-      "time": "2026-01-29T09:08:00.347766",
+      "time": "2026-01-29T13:03:34.156919",
       "type": "agent_start",
       "message": "\u2192 Executing HierarchyAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-29T09:08:00.368224",
+      "time": "2026-01-29T13:03:34.176713",
       "type": "agent_end",
       "message": "\u2713 Completed HierarchyAgent"
     },
     {
-      "time": "2026-01-29T09:08:00.382670",
+      "time": "2026-01-29T13:03:34.192193",
       "type": "decision",
-      "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+      "message": "Sovereignty Healing: BLOCK: Confidence 0.59 requires LLM arbitration (Disabled)"
     },
     {
-      "time": "2026-01-29T09:08:00.383806",
+      "time": "2026-01-29T13:03:34.192874",
       "type": "warning",
-      "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
+      "message": "Sovereignty healing skipped - BLOCK: Confidence 0.59 requires LLM arbitration (Disabled)"
     },
     {
-      "time": "2026-01-29T09:08:00.383806",
+      "time": "2026-01-29T13:03:34.193847",
       "type": "agent_start",
       "message": "\u2192 Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-29T09:08:09.605042",
+      "time": "2026-01-29T13:03:47.468683",
       "type": "agent_end",
       "message": "\u2713 Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-01-29T09:08:09.617245",
+      "time": "2026-01-29T13:03:47.483397",
       "type": "agent_start",
       "message": "\u2192 Executing SystemArchitectAgent (L5 - Safety)"
     },
     {
-      "time": "2026-01-29T09:08:18.889100",
+      "time": "2026-01-29T13:03:59.553649",
       "type": "agent_end",
       "message": "\u2713 Completed SystemArchitectAgent"
     },
     {
-      "time": "2026-01-29T09:08:18.916981",
+      "time": "2026-01-29T13:03:59.584546",
+      "type": "agent_start",
+      "message": "\u2192 Executing ConversationalRepairAgent (Prompt Governance)"
+    },
+    {
+      "time": "2026-01-29T13:03:59.687009",
+      "type": "agent_end",
+      "message": "\u2713 Completed ConversationalRepairAgent"
+    },
+    {
+      "time": "2026-01-29T13:03:59.698813",
+      "type": "agent_start",
+      "message": "\u2192 Executing RootHygieneAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-01-29T13:03:59.757243",
+      "type": "agent_end",
+      "message": "\u2713 Completed RootHygieneAgent"
+    },
+    {
+      "time": "2026-01-29T13:03:59.771667",
       "type": "agent_start",
       "message": "\u2192 Executing SovereignCertifier (L5 - Compliance)"
     },
     {
-      "time": "2026-01-29T09:08:18.954882",
+      "time": "2026-01-29T13:03:59.795834",
       "type": "agent_end",
       "message": "\u2713 Completed SovereignCertifier"
     }
@@ -144,7 +176,7 @@
     "recent_experiences": []
   },
   "compliance_scores": {
-    "prompt_governance": 0.6013333333333334
+    "prompt_governance": 0.5531428571428573
   },
   "decisions_made": [],
   "compliance_report": {
@@ -163,6 +195,10 @@
   },
   "current_territory": "prompt_governance",
   "location_violations": [
+    [
+      "C:\\Git\\Agentic-Workflow\\.sovereign_healing_backup",
+      "Missing sovereign root: .sovereign_healing_backup"
+    ],
     [
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardTestSuite.py",
       "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'def test_' for destination agentic_core/L0_maintenance/scripts"
@@ -190,6 +226,10 @@
   ],
   "location_scan_result": {
     "violations": [
+      [
+        "C:\\Git\\Agentic-Workflow\\.sovereign_healing_backup",
+        "Missing sovereign root: .sovereign_healing_backup"
+      ],
       [
         "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\agents\\DashboardTestSuite.py",
         "ARTIFACT ROUTING VIOLATION: Forbidden keyword 'def test_' for destination agentic_core/L0_maintenance/scripts"
@@ -382,5 +422,16 @@
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates\\type_inference.jinja",
       "C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\registry\\registry.json"
     ]
-  }
+  },
+  "conversational_violations": [],
+  "hygiene_violations": [
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "message": "Illegal cache directory '.pytest_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Add .pytest_cache to .gitignore and remove from root",
+      "confidence": 0.6
+    }
+  ]
 }

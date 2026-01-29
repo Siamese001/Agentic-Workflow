@@ -41,6 +41,17 @@ class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
     - Import structure, dependencies, architecture
     """
 
+    def heal(self, violation: dict) -> dict:
+        """
+        [SOVEREIGN CONTRACT] Architectural violations require manual review.
+        Returns a 'manual_required' status to satisfy the protocol without risky auto-changes.
+        """
+        return {
+            "status": "manual_required", 
+            "reason": "Architectural restructuring requires human approval.",
+            "suggested_action": f"Review {violation.get('file')} dependencies."
+        }
+
     def get_validation_keys(self) -> list[int]:
         """Return canon keys validated by this agent."""
         return list(range(40, 51))

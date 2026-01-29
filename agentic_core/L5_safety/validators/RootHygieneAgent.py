@@ -198,6 +198,89 @@ class RootHygieneAgent(SovereignBaseAgent):
                 target = maint_script_dir / "purge_cache.py"
                 shutil.move(str(purge_script), str(target))
 
+    def scan_root_violations(self, target_territory: str = None) -> dict[str, Any]:
+        """
+        [SSOT INTEGRATION] Scan for root hygiene violations.
+        
+        Args:
+            target_territory: Specific territory to scan (ignored - always scans root)
+            
+        Returns:
+            Dict with violations list for SSOT aggregation
+        """
+        violations = []
+        
+        # Check for illegal root scripts directory
+        root_scripts = self.project_root / "scripts"
+        if root_scripts.exists():
+            violations.append({
+                "type": "ILLEGAL_ROOT_SCRIPTS",
+                "file": str(root_scripts),
+                "message": "Illegal 'scripts/' directory in project root",
+                "severity": "high",
+                "recommended_action": "Move scripts to ops_scripts/ or agentic_core/L0_maintenance/scripts/",
+                "confidence": 0.9
+            })
+            
+        # Check for illegal coverage_html directory
+        coverage_html = self.project_root / "coverage_html"
+        if coverage_html.exists():
+            violations.append({
+                "type": "ILLEGAL_COVERAGE_HTML",
+                "file": str(coverage_html),
+                "message": "Illegal 'coverage_html/' directory in project root",
+                "severity": "medium",
+                "recommended_action": "Move coverage_html to reports/coverage_html/",
+                "confidence": 0.8
+            })
+            
+        # Check for other common root violations
+        illegal_patterns = ["__pycache__", ".pytest_cache", "node_modules", ".venv", "venv"]
+        for pattern in illegal_patterns:
+            illegal_dir = self.project_root / pattern
+            if illegal_dir.exists() and illegal_dir.is_dir():
+                violations.append({
+                    "type": "ILLEGAL_CACHE_DIR",
+                    "file": str(illegal_dir),
+                    "message": f"Illegal cache directory '{pattern}' in project root",
+                    "severity": "low",
+                    "recommended_action": f"Add {pattern} to .gitignore and remove from root",
+                    "confidence": 0.6
+                })
+                
+        return {"violations": violations}
+
+    def heal(self, violation: dict) -> dict:
+        """
+        [SOVEREIGN CONTRACT] Standardized healing interface for Hygiene.
+        """
+        target = violation.get("file") or violation.get("target")
+        v_type = violation.get("type", "").upper()
+
+        if not target and "CACHE" not in v_type:
+            return {"status": "skipped", "reason": "No target file specified"}
+
+        try:
+            if "CACHE" in v_type or "__PYCACHE__" in str(target).upper():
+                if hasattr(self, "purge_cache"):
+                    self.purge_cache()
+                    return {"status": "success", "action": "purged_cache"}
+                else:
+                    import shutil
+                    from pathlib import Path
+
+                    if target and Path(target).exists():
+                        if Path(target).is_dir():
+                            shutil.rmtree(target)
+                        else:
+                            Path(target).unlink()
+                        return {"status": "success", "action": f"deleted {target}"}
+
+            return {"status": "skipped", "reason": f"Unknown hygiene type: {v_type}"}
+
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
+
     @standard_heal
     def heal_repository(
         self,
