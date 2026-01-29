@@ -2,6 +2,7 @@
 
 Tests for Redis exact matching, Pinecone semantic matching, and cache miss behavior.
 """
+
 from __future__ import annotations
 
 import json
@@ -496,10 +497,7 @@ class TestThreadSafety:
             cache = SemanticCacheManager(api_key="test_key")
 
             with patch("google.genai.Client", side_effect=mock_client_init):
-                threads = [
-                    threading.Thread(target=cache._get_embedding_client)
-                    for _ in range(10)
-                ]
+                threads = [threading.Thread(target=cache._get_embedding_client) for _ in range(10)]
 
                 for t in threads:
                     t.start()

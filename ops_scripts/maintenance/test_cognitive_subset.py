@@ -9,10 +9,10 @@ all 2,160+ files.
 Usage:
     # Set API key first
     export GEMINI_API_KEY="your-api-key"
-    
+
     # Run subset test (default: 5 files)
     python scripts/maintenance/test_cognitive_subset.py
-    
+
     # Run with custom sample size
     python scripts/maintenance/test_cognitive_subset.py --sample 10
 
@@ -21,6 +21,7 @@ Exit Codes:
     1 - No API key found
     2 - Error during execution
 """
+
 from __future__ import annotations
 
 import argparse
@@ -40,16 +41,17 @@ Logger = logging.getLogger("CognitiveSubsetTest")
 def run_subset_test(sample_size: int = 5) -> int:
     """
     Run cognitive disposition test on a random subset of violations.
-    
+
     Args:
         sample_size: Number of files to test
-    
+
     Returns:
         Exit code (0=success, 1=no API key, 2=error)
     """
     # Load .env file first
     try:
         from dotenv import find_dotenv, load_dotenv
+
         env_file = find_dotenv(usecwd=True)
         if env_file:
             load_dotenv(env_file)
@@ -104,7 +106,11 @@ def run_subset_test(sample_size: int = 5) -> int:
             file_path = None
 
             if hasattr(v, "violation_type"):
-                v_type = v.violation_type.name if hasattr(v.violation_type, "name") else str(v.violation_type)
+                v_type = (
+                    v.violation_type.name
+                    if hasattr(v.violation_type, "name")
+                    else str(v.violation_type)
+                )
                 file_path = getattr(v, "file_path", None)
             elif isinstance(v, dict):
                 v_type = v.get("type", "")
@@ -147,12 +153,14 @@ def run_subset_test(sample_size: int = 5) -> int:
             Logger.info(f"    Reason: {decision.reason}")
             Logger.info(f"    Confidence: {decision.confidence * 100:.1f}%")
 
-            results.append({
-                "file": file_path.name,
-                "action": decision.action,
-                "target": decision.target_path,
-                "confidence": decision.confidence,
-            })
+            results.append(
+                {
+                    "file": file_path.name,
+                    "action": decision.action,
+                    "target": decision.target_path,
+                    "confidence": decision.confidence,
+                }
+            )
 
         # Summary
         Logger.info("")
@@ -180,6 +188,7 @@ def run_subset_test(sample_size: int = 5) -> int:
     except Exception as e:
         Logger.error(f"[ERROR] Execution Error: {e}")
         import traceback
+
         traceback.print_exc()
         return 2
 

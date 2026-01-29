@@ -15,7 +15,7 @@ Successfully updated `agentic_core/L5_safety/validators/structure_blueprint.py` 
 # Before
 "domain": ["entities", "models"],  # Domain-specific objects and data models
 
-# After  
+# After
 "domain": ["entities", "models", "exceptions"],  # Pure domain entities and business objects
 ```
 
@@ -131,7 +131,7 @@ The structure blueprint is updated, but the actual file migrations need to be pe
 
 #### **patterns/ Reorganization**
 1. **Create subdirectories**: `reasoning/`, `behavior/`, `interaction/`
-2. **Move existing files**: 
+2. **Move existing files**:
    - `base.py`, `react.py` → `reasoning/`
    - `agent_roles/*` → `behavior/`
 3. **Update imports**: Update all references to new locations
@@ -162,7 +162,7 @@ The structure blueprint is updated, but the actual file migrations need to be pe
 
 **Next Phase Requirements:**
 - ⏳ File migrations performed
-- ⏳ Import statements updated  
+- ⏳ Import statements updated
 - ⏳ Tests updated and passing
 - ⏳ Documentation updated
 

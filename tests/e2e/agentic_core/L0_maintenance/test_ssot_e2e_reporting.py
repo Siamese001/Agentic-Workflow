@@ -8,8 +8,7 @@ import sys
 import json
 import os
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
-from dataclasses import asdict
+from unittest.mock import patch, MagicMock
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
@@ -20,8 +19,9 @@ from agentic_core.L0_maintenance.scripts.execute_ssot import (
     RuntimeStateManager,
     ReconciliationViolation,
     execute_phase1_discovery,
-    ConfidenceScore
+    ConfidenceScore,
 )
+
 
 class TestSSOTE2EReporting:
     """
@@ -52,31 +52,39 @@ class TestSSOTE2EReporting:
         bad_file = tmp_path / "BadNaming.py"
         bad_file.write_text("print('violation')")
         mtime_initial = os.path.getmtime(bad_file)
-        
+
         # Mock an agent discovering this
         mock_agent = MagicMock()
         mock_agent.scan.return_value = [
             ReconciliationViolation(is_valid=False, message="Naming Error", file_path=bad_file)
         ]
-        
+
         # Execute Phase 1 in Dry Run - mock the implementation directly
-        with patch('agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl') as mock_impl:
+        with patch(
+            "agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl"
+        ) as mock_impl:
             mock_impl.return_value = {
-                'status': 'success',
-                'violations_found': [ReconciliationViolation(is_valid=False, message="Naming Error", file_path=bad_file).to_dict()]
+                "status": "success",
+                "violations_found": [
+                    ReconciliationViolation(
+                        is_valid=False, message="Naming Error", file_path=bad_file
+                    ).to_dict()
+                ],
             }
             results = execute_phase1_discovery(
-                agents={'MockAgent': mock_agent},
+                agents={"MockAgent": mock_agent},
                 territory="test_zone",
                 decision_engine=engine,
                 state_mgr=state_mgr,
-                dry_run=True
+                dry_run=True,
             )
-        
+
         # Assertions
-        assert len(results['violations_found']) > 0, "Should detect violation"
-        assert os.path.getmtime(bad_file) == mtime_initial, "File timestamp should not change in dry run"
-        assert results['status'] == 'success'
+        assert len(results["violations_found"]) > 0, "Should detect violation"
+        assert os.path.getmtime(bad_file) == mtime_initial, (
+            "File timestamp should not change in dry run"
+        )
+        assert results["status"] == "success"
 
     # =========================================================================
     # CASE 2: Multi-Violation Aggregation & Reporting
@@ -90,19 +98,16 @@ class TestSSOTE2EReporting:
         v1 = ReconciliationViolation(False, "Naming", drift_type="NAMING", severity=5)
         v2 = ReconciliationViolation(False, "Security", drift_type="SECURITY", severity=10)
         v3 = ReconciliationViolation(False, "Type", drift_type="TYPE_HINT", severity=3)
-        
+
         # Manually aggregate (simulating the collector logic)
-        report = {
-            "summary": {"total_violations": 0, "critical": 0},
-            "details": []
-        }
-        
+        report = {"summary": {"total_violations": 0, "critical": 0}, "details": []}
+
         for v in [v1, v2, v3]:
             report["details"].append(v.to_dict())
             report["summary"]["total_violations"] += 1
             if v.severity >= 9:
                 report["summary"]["critical"] += 1
-                
+
         # Assertions
         assert report["summary"]["total_violations"] == 3
         assert report["summary"]["critical"] == 1
@@ -121,15 +126,15 @@ class TestSSOTE2EReporting:
         sm1 = RuntimeStateManager(tmp_path)
         sm1.start_mission("Mission_Alpha", ["Agent_A", "Agent_B"])
         sm1.update_agent("Agent_A", "Scanning")
-        sm1.save() # Simulate periodic save
-        
+        sm1.save()  # Simulate periodic save
+
         # 2. "Crash" - Manually load state from file to simulate recovery
         state_file = tmp_path / "runtime_state.json"
         assert state_file.exists(), "State file should exist"
-        
+
         # Load the saved state
         saved_state = json.loads(state_file.read_text())
-        
+
         # 3. Verify State Recovery
         assert saved_state["current_agent"] == "Agent_A"
         assert saved_state["agents_order"] == ["Agent_A", "Agent_B"]
@@ -146,22 +151,23 @@ class TestSSOTE2EReporting:
         # Setup
         (tmp_path / "A").mkdir()
         (tmp_path / "B").mkdir()
-        
+
         file_a = tmp_path / "A/clean.py"
-        file_b = tmp_path / "B/dirty.py" # Has violation
-        
+        file_b = tmp_path / "B/dirty.py"  # Has violation
+
         file_a.write_text("pass")
         file_b.write_text("VIOLATION")
-        
+
         # Execute on A
         # We assume the implementation uses the territory arg to filter paths
         # This test validates the input validator/logic we added respects boundaries
-        
+
         # Verify validate_territory_input allows strictly "A"
         from agentic_core.L0_maintenance.scripts.execute_ssot import validate_territory_input
+
         valid, _ = validate_territory_input("A")
         assert valid
-        
+
         # In a real run, file_b would not be scanned.
         # Here we verify the engine logic doesn't cross streams if we pass filtered lists.
         # This is more of a logic check for the orchestrator.
@@ -178,18 +184,18 @@ class TestSSOTE2EReporting:
         # 1. High Confidence -> Auto-Heal
         c1 = ConfidenceScore(0.9, "Clear match")
         engine.should_proceed_with_healing(c1, "Agent1")
-        
+
         # 2. Low Confidence -> Deny
         c2 = ConfidenceScore(0.2, "Unknown")
         engine.should_proceed_with_healing(c2, "Agent2")
-        
+
         # 3. Medium w/ No LLM -> Deny
         c3 = ConfidenceScore(0.6, "Maybe")
         engine.should_proceed_with_healing(c3, "Agent3")
-        
+
         # Check history
-        # Note: The engine stores history in self._call_path for cycles, 
-        # but a real audit log would be in a separate list. 
+        # Note: The engine stores history in self._call_path for cycles,
+        # but a real audit log would be in a separate list.
         # Let's verify _call_path tracks the approvals.
         assert "Agent1" in engine._call_path
         assert "Agent2" not in engine._call_path
@@ -206,24 +212,26 @@ class TestSSOTE2EReporting:
         # Mock a broken agent
         broken_agent = MagicMock()
         broken_agent.run.side_effect = RuntimeError("Critical Agent Failure")
-        
+
         # Execute
-        with patch('agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl') as mock_impl:
+        with patch(
+            "agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl"
+        ) as mock_impl:
             # Simulate the impl catching the error
             mock_impl.return_value = {
                 "status": "partial_failure",
-                "errors": ["Critical Agent Failure"]
+                "errors": ["Critical Agent Failure"],
             }
-            
+
             result = execute_phase1_discovery(
-                agents={'Broken': broken_agent},
+                agents={"Broken": broken_agent},
                 territory="test",
                 decision_engine=engine,
-                state_mgr=state_mgr
+                state_mgr=state_mgr,
             )
-            
-            assert result['status'] == 'partial_failure'
-            assert "Critical Agent Failure" in result['errors']
+
+            assert result["status"] == "partial_failure"
+            assert "Critical Agent Failure" in result["errors"]
 
     # =========================================================================
     # CASE 7: Large Scale Telemetry Serialization
@@ -240,18 +248,19 @@ class TestSSOTE2EReporting:
                 message=f"Violation {i}",
                 drift_type="STRESS_TEST",
                 file_path=Path(f"/tmp/file_{i}.py"),
-                severity=i % 10
+                severity=i % 10,
             )
             violations.append(v.to_dict())
-            
+
         report = {"violations": violations}
-        
+
         # Measure serialization
         import time
+
         start = time.time()
         json_str = json.dumps(report)
         duration = time.time() - start
-        
+
         assert duration < 1.0, "Serialization of 1000 items should be sub-second"
         assert len(json_str) > 10000
 
@@ -264,12 +273,12 @@ class TestSSOTE2EReporting:
         Expected: Action is blocked.
         """
         score = ConfidenceScore(0.4, "Low confidence")
-        
+
         # Engine logic for low confidence returns False by default (Manual Review Required)
-        # In a real CLI, this would prompt input. 
+        # In a real CLI, this would prompt input.
         # Here we verify the engine returns False, effectively blocking it until implemented.
         proceed, msg = engine.should_proceed_with_healing(score, "AgentX")
-        
+
         assert proceed is False
         assert "Manual Review Required" in msg or "Confidence too low" in msg
 
@@ -283,17 +292,17 @@ class TestSSOTE2EReporting:
         """
         # 1. Detection
         violation = ReconciliationViolation(False, "Fix me", "SIMPLE", Path("x.py"))
-        
+
         # 2. Confidence Calculation - use high confidence scenario
         conf = engine.calculate_healing_confidence(
             violations_count=1,  # Low count = higher confidence
             violation_types=["NAMING"],  # High confidence pattern
-            territory="prompt_governance"  # Boosted territory
+            territory="prompt_governance",  # Boosted territory
         )
-        
+
         # 3. Decision
         approved, reason = engine.should_proceed_with_healing(conf, "FixerAgent")
-        
+
         # 4. Verification
         assert approved is True
         assert conf.value > 0.75  # Should be high confidence
@@ -313,10 +322,10 @@ class TestSSOTE2EReporting:
             ReconciliationViolation(False, "High", severity=9),
             ReconciliationViolation(False, "Crit", severity=10),
         ]
-        
+
         # Simulate filter
         critical_issues = [v for v in violations if v.severity >= 8]
-        
+
         assert len(critical_issues) == 2
         assert critical_issues[0].message == "High"
         assert critical_issues[1].message == "Crit"

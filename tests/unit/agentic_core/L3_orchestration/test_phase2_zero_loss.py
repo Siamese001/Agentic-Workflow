@@ -180,9 +180,7 @@ def test_tc8_discovery_integration():
     print("=" * 60)
 
     # Read the OrchestratorAgent source code
-    unified_path = (
-        PROJECT_ROOT / "agentic_core" / "L3_orchestration" / "OrchestratorAgent.py"
-    )
+    unified_path = PROJECT_ROOT / "agentic_core" / "L3_orchestration" / "OrchestratorAgent.py"
 
     if not unified_path.exists():
         print(f"❌ FAIL: OrchestratorAgent.py not found at {unified_path}")

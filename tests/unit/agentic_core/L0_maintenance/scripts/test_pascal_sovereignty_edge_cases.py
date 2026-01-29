@@ -3,12 +3,12 @@ Test Suite: PascalSovereigntyFixer Edge Cases
 Path: tests/unit/agentic_core/L0_maintenance/test_pascal_sovereignty_edge_cases.py
 Purpose: Validates ultra-precision regex and mixin standardization logic
 """
+
 import re
 import unittest
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 import sys
-import os
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parents[5]
@@ -30,18 +30,19 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         mock_path = Mock(spec=Path)
         mock_path.stem = "AuthMixin"
         mock_path.name = "AuthMixin.py"
-        
+
         compliant = self.fixer.get_compliant_name(mock_path, "MIXIN")
         # AuthMixin already ends with 'Mixin', converts to auth_mixin.py (not double suffix)
-        self.assertEqual(compliant, "auth_mixin.py", 
-                        "Should convert PascalCase Mixin to snake_case")
+        self.assertEqual(
+            compliant, "auth_mixin.py", "Should convert PascalCase Mixin to snake_case"
+        )
 
     def test_mixin_already_compliant(self):
         """Edge Case: Mixins already in snake_case_mixin.py format should not be renamed."""
         mock_path = Mock(spec=Path)
         mock_path.stem = "healer_mixin"
         mock_path.name = "healer_mixin.py"
-        
+
         compliant = self.fixer.get_compliant_name(mock_path, "MIXIN")
         self.assertIsNone(compliant, "Already compliant mixins should return None")
 
@@ -50,7 +51,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         mock_path = Mock(spec=Path)
         mock_path.stem = "cognitiveRecoveryMixin"
         mock_path.name = "cognitiveRecoveryMixin.py"
-        
+
         compliant = self.fixer.get_compliant_name(mock_path, "MIXIN")
         # Expected: cognitive_recovery_mixin_mixin.py (adds _mixin suffix)
         self.assertIsNotNone(compliant)
@@ -61,14 +62,16 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         old_mod = "old_module"
         new_mod = "NewModule"
         content = "import old_module as om\nfrom old_module import func"
-        
+
         # Use the actual regex patterns from the fixer
-        regex_import = re.compile(rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))")
+        regex_import = re.compile(
+            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+        )
         regex_from = re.compile(rf"(?P<prefix>from\s+){re.escape(old_mod)}(?P<suffix>\s+import)")
-        
+
         step1 = regex_import.sub(rf"\g<prefix>{new_mod}\g<suffix>", content)
         final = regex_from.sub(rf"\g<prefix>{new_mod}\g<suffix>", step1)
-        
+
         self.assertIn("import NewModule as om", final, "Should preserve 'as' alias")
         self.assertIn("from NewModule import func", final, "Should update 'from' import")
 
@@ -77,10 +80,12 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         old_mod = "old_tool"
         new_mod = "NewTool"
         content = "import old_tool, other_module, third_module"
-        
-        regex_import = re.compile(rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))")
+
+        regex_import = re.compile(
+            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+        )
         result = regex_import.sub(rf"\g<prefix>{new_mod}\g<suffix>", content)
-        
+
         self.assertIn("import NewTool,", result, "Should preserve comma separator")
         self.assertIn("other_module", result, "Should not affect other imports")
 
@@ -89,13 +94,15 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         old_mod = "tools"
         new_mod = "Tools"
         content = "from tools_v2 import func\nimport tools"
-        
+
         regex_from = re.compile(rf"(?P<prefix>from\s+){re.escape(old_mod)}(?P<suffix>\s+import)")
-        regex_import = re.compile(rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))")
-        
+        regex_import = re.compile(
+            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+        )
+
         step1 = regex_from.sub(rf"\g<prefix>{new_mod}\g<suffix>", content)
         final = regex_import.sub(rf"\g<prefix>{new_mod}\g<suffix>", step1)
-        
+
         self.assertIn("from tools_v2 import func", final, "Should NOT match tools_v2")
         self.assertIn("import Tools", final, "Should match exact 'tools'")
 
@@ -106,7 +113,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         mock_path.parts = ("agentic_core", "L0_maintenance", "scripts")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
-        
+
         ftype = self.fixer.classify_file(mock_path)
         self.assertEqual(ftype, "IGNORE", "execute_ssot.py should be in exclusion list")
 
@@ -117,7 +124,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         mock_path.parts = ("agentic_core", "L5_safety", "validators")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
-        
+
         ftype = self.fixer.classify_file(mock_path)
         self.assertEqual(ftype, "IGNORE", "structure_blueprint.py should be in exclusion list")
 
@@ -128,7 +135,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         mock_path.parts = ("apps_shared", "utils")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
-        
+
         ftype = self.fixer.classify_file(mock_path)
         self.assertEqual(ftype, "IGNORE", "tool_registry.py should be in exclusion list")
 
@@ -137,7 +144,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         mock_path = Mock(spec=Path)
         mock_path.stem = "run_all_tasks"
         mock_path.name = "run_all_tasks.py"
-        
+
         compliant = self.fixer.get_compliant_name(mock_path, "UTILITY")
         self.assertIsNone(compliant, "Utility files should not be renamed")
 
@@ -148,7 +155,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         mock_path.parts = ("tests", "unit", "agentic_core")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
-        
+
         ftype = self.fixer.classify_file(mock_path)
         self.assertEqual(ftype, "IGNORE", "Test files should always be ignored")
 
@@ -159,7 +166,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         mock_path.parts = ("tests", "fixtures")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
-        
+
         ftype = self.fixer.classify_file(mock_path)
         self.assertEqual(ftype, "IGNORE", "conftest.py should always be ignored")
 
@@ -170,7 +177,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         mock_path.parts = ("agentic_core", "L0_maintenance")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=100)
-        
+
         ftype = self.fixer.classify_file(mock_path)
         self.assertEqual(ftype, "IGNORE", "__init__.py should always be ignored")
 
@@ -181,13 +188,13 @@ class TestRegexPrecision(unittest.TestCase):
     def test_from_import_pattern(self):
         """Test 'from x import y' pattern matching."""
         pattern = re.compile(r"(?P<prefix>from\s+)old_module(?P<suffix>\s+import)")
-        
+
         test_cases = [
             ("from old_module import func", True),
             ("from old_module_v2 import func", False),
             ("from  old_module  import func", True),  # Multiple spaces
         ]
-        
+
         for content, should_match in test_cases:
             match = pattern.search(content)
             if should_match:
@@ -197,15 +204,17 @@ class TestRegexPrecision(unittest.TestCase):
 
     def test_import_as_pattern(self):
         """Test 'import x as y' pattern matching."""
-        pattern = re.compile(r"(?P<prefix>import\s+)old_module(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))")
-        
+        pattern = re.compile(
+            r"(?P<prefix>import\s+)old_module(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+        )
+
         test_cases = [
             ("import old_module", True),
             ("import old_module as om", True),
             ("import old_module, other", True),
             ("import old_module_v2", False),
         ]
-        
+
         for content, should_match in test_cases:
             match = pattern.search(content)
             if should_match:

@@ -4,6 +4,7 @@ scripts/verify_manifest_cleanliness.py
 Executes full_agent_discovery.py and validates that deleted legacy bases
 are absent from the resulting JSON manifest.
 """
+
 import os
 import json
 import sys
@@ -25,18 +26,18 @@ if not manifest_path.exists():
     print("[-] Manifest file was not generated.")
     sys.exit(1)
 
-with open(manifest_path, "r") as f:
+with open(manifest_path) as f:
     data = json.load(f)
 
 # 3. Define the blacklist (Deleted Agents)
 BLACKLIST = {
     "L1CognitionBaseAgent",
-    "L2ExecutionBaseAgent", 
+    "L2ExecutionBaseAgent",
     "L3OrchestrationBaseAgent",
     "L4StateBaseAgent",
     "L5SafetyBaseAgent",
     "L6ObservabilityBaseAgent",
-    "MaintenanceBaseAgent"
+    "MaintenanceBaseAgent",
 }
 
 # 4. Audit the manifest
@@ -46,7 +47,7 @@ violations = found_agents.intersection(BLACKLIST)
 print(f"[*] Total Agents Discovered: {len(found_agents)}")
 
 if violations:
-    print(f"[-] CRITICAL FAILURE: The following deleted agents are still in the manifest:")
+    print("[-] CRITICAL FAILURE: The following deleted agents are still in the manifest:")
     for v in violations:
         print(f"   - {v}")
     sys.exit(1)

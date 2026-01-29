@@ -382,6 +382,7 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
                     create_legacy_import_healer,
                 )
+
                 self._import_agent = create_legacy_import_healer()
             except ImportError:
                 pass

@@ -16,7 +16,6 @@ This is the transition from Defensive Posture (coexisting with legacy via "Unifi
 to Sovereign Posture (defining the single source of truth).
 """
 
-import os
 import re
 import shutil
 from pathlib import Path
@@ -26,16 +25,16 @@ def migrate_unified():
     """Performs physical migration, file renaming, and deep import refactoring."""
     # Logic: root is 3 levels up from L0_maintenance/scripts
     project_root = Path(__file__).resolve().parents[3]
-    
+
     # 1. PATH MAPPING configuration
     # legacy_path -> new_path
     PATH_MAPPING = {
         "agentic_core/L5_safety/unified": "agentic_core/L5_safety/policy_engine",
-        "agentic_core/L2_execution/unified": "agentic_core/L2_execution/execution_bridge"
+        "agentic_core/L2_execution/unified": "agentic_core/L2_execution/execution_bridge",
     }
 
     print(f"=== Starting Sovereign Namespace Migration at {project_root} ===")
-    print(f"[CHECKPOINT] Safety commit verified. Proceeding with atomic migration.")
+    print("[CHECKPOINT] Safety commit verified. Proceeding with atomic migration.")
     print()
 
     # Track statistics
@@ -52,7 +51,7 @@ def migrate_unified():
         if old_path.exists():
             print(f"[MIGRATION] Processing {old_rel} -> {new_rel}")
             new_path.mkdir(parents=True, exist_ok=True)
-            
+
             for item in old_path.iterdir():
                 if item.is_file() and item.suffix == ".py":
                     # Determine new filename (Strip 'Unified' prefix)
@@ -61,9 +60,9 @@ def migrate_unified():
                         new_filename = new_filename.replace("Unified", "", 1)
                         print(f"  [RENAME] {item.name} -> {new_filename}")
                         files_renamed += 1
-                    
+
                     dest = new_path / new_filename
-                    
+
                     # Move and Rename
                     if not dest.exists():
                         shutil.move(str(item), str(dest))
@@ -71,74 +70,88 @@ def migrate_unified():
                         print(f"  [MOVED] {item.name} -> {dest.relative_to(project_root)}")
                     else:
                         print(f"  [SKIP] {new_filename} already exists at destination")
-            
+
             # Cleanup old directory if empty (or only contains __pycache__)
             remaining_items = list(old_path.iterdir())
             remaining_files = [f for f in remaining_items if f.is_file()]
             remaining_dirs = [d for d in remaining_items if d.is_dir()]
-            
+
             # Remove __pycache__ if it exists
             for d in remaining_dirs:
                 if d.name == "__pycache__":
                     shutil.rmtree(d)
                     print(f"  [CLEANUP] Removed {d.relative_to(project_root)}")
-            
+
             # Try to remove directory if now empty
             if not any(old_path.iterdir()):
                 old_path.rmdir()
-                print(f"  [CLEANUP] Removed obsolete directory: {old_path.relative_to(project_root)}")
+                print(
+                    f"  [CLEANUP] Removed obsolete directory: {old_path.relative_to(project_root)}"
+                )
             else:
                 remaining = list(old_path.iterdir())
-                print(f"  [RETAIN] Directory still contains {len(remaining)} items: {[i.name for i in remaining]}")
+                print(
+                    f"  [RETAIN] Directory still contains {len(remaining)} items: {[i.name for i in remaining]}"
+                )
         else:
             print(f"[SKIP] {old_rel} does not exist")
 
     print()
     print("--- STEP 2: Deep Content Refactoring (Imports & Class Names) ---")
 
-    # Regex logic: 
+    # Regex logic:
     # 1. Update Paths: unified -> policy_engine/execution_bridge
     # 2. Update Classes: UnifiedCode -> Code
-    
+
     replacements = [
         # Path Updates (Imports) - L5
-        (re.compile(r'from agentic_core\.L5_safety\.unified\.'), 
-         'from agentic_core.L5_safety.policy_engine.'),
-        (re.compile(r'import agentic_core\.L5_safety\.unified\.'), 
-         'import agentic_core.L5_safety.policy_engine.'),
-        (re.compile(r'from agentic_core\.L5_safety\.unified import'), 
-         'from agentic_core.L5_safety.policy_engine import'),
-        
+        (
+            re.compile(r"from agentic_core\.L5_safety\.unified\."),
+            "from agentic_core.L5_safety.policy_engine.",
+        ),
+        (
+            re.compile(r"import agentic_core\.L5_safety\.unified\."),
+            "import agentic_core.L5_safety.policy_engine.",
+        ),
+        (
+            re.compile(r"from agentic_core\.L5_safety\.unified import"),
+            "from agentic_core.L5_safety.policy_engine import",
+        ),
         # Path Updates (Imports) - L2
-        (re.compile(r'from agentic_core\.L2_execution\.unified\.'), 
-         'from agentic_core.L2_execution.execution_bridge.'),
-        (re.compile(r'import agentic_core\.L2_execution\.unified\.'), 
-         'import agentic_core.L2_execution.execution_bridge.'),
-        (re.compile(r'from agentic_core\.L2_execution\.unified import'), 
-         'from agentic_core.L2_execution.execution_bridge import'),
-        
+        (
+            re.compile(r"from agentic_core\.L2_execution\.unified\."),
+            "from agentic_core.L2_execution.execution_bridge.",
+        ),
+        (
+            re.compile(r"import agentic_core\.L2_execution\.unified\."),
+            "import agentic_core.L2_execution.execution_bridge.",
+        ),
+        (
+            re.compile(r"from agentic_core\.L2_execution\.unified import"),
+            "from agentic_core.L2_execution.execution_bridge import",
+        ),
         # Class/Filename Semantic Stripping (High Signal)
         # Matches 'Unified' followed by an uppercase letter (Agent names)
         # Example: UnifiedCodeDetector -> CodeDetector
-        (re.compile(r'\bUnified([A-Z][a-zA-Z]+Agent)\b'), r'\1'),
+        (re.compile(r"\bUnified([A-Z][a-zA-Z]+Agent)\b"), r"\1"),
     ]
 
     for py_file in project_root.rglob("*.py"):
         # Safety skip
         if "archives" in str(py_file) or ".venv" in str(py_file) or "__pycache__" in str(py_file):
             continue
-        
+
         # Skip this migration script itself
         if py_file.name == Path(__file__).name:
             continue
-            
+
         try:
             content = py_file.read_text(encoding="utf-8")
             original_content = content
-            
+
             for pattern, replacement in replacements:
                 content = pattern.sub(replacement, content)
-                
+
             if content != original_content:
                 print(f"[REFACTOR] {py_file.relative_to(project_root)}")
                 py_file.write_text(content, encoding="utf-8")

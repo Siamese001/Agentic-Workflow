@@ -105,7 +105,6 @@ class TestInstructionalInjectionMixin:
 
     def test_healer_mixin_inherits_injection(self):
         """Verify HealerMixin inherits instructional_injection_mixin."""
-        from agentic_core.base_agents.healer_mixin import healer_mixin
         from agentic_core.base_agents.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
@@ -117,13 +116,11 @@ class TestInstructionalInjectionMixin:
         from agentic_core.base_agents.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
-        from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
         assert issubclass(SubatomicTestingMixin, instructional_injection_mixin)
 
     def test_mcp_hardened_mixin_inherits_injection(self):
         """Verify MCPHardenedMixin inherits instructional_injection_mixin."""
-        from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
         from agentic_core.base_agents.instructional_injection_mixin import (
             instructional_injection_mixin,
         )

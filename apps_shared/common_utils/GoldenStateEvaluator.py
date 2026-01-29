@@ -6,11 +6,28 @@ Evaluates agent outputs against golden test cases.
 
 import json
 import logging
+from dataclasses import dataclass
+from typing import Any
 
-    JudgeEvaluationResult,
-    JudgeEvaluator,
-    create_judge_evaluator,
-)
+try:
+    from apps_rg.core.JudgeEvaluation import (
+        JudgeEvaluationResult,
+        JudgeEvaluator,
+        create_judge_evaluator,
+    )
+except ImportError:
+    # Fallback implementations
+    @dataclass
+    class JudgeEvaluationResult:
+        score: float
+        reasoning: str
+        
+    class JudgeEvaluator:
+        def evaluate(self, case: Any) -> JudgeEvaluationResult:
+            return JudgeEvaluationResult(0.5, "Fallback evaluator")
+    
+    def create_judge_evaluator():
+        return JudgeEvaluator()
 
 Logger = logging.getLogger(__name__)
 

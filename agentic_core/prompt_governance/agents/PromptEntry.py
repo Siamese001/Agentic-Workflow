@@ -7,7 +7,6 @@ All structures are immutable to enforce contract integrity.
 """
 
 from dataclasses import dataclass, field
-from typing import Any
 
 
 @dataclass(frozen=True)
@@ -25,13 +24,15 @@ class PromptEntry:
 @dataclass(frozen=True)
 class PromptConstitution:
     """Immutable SSOT for all prompt definitions.
-    
+
     ARCHITECTURAL GUARANTEE: This class is frozen to prevent runtime mutations.
     All prompt modifications must go through PromptRegistryAgent's versioning system.
     """
 
     prompts: dict[str, PromptEntry] = field(default_factory=lambda: _build_prompt_registry())
-    directive_templates: dict[str, str] = field(default_factory=lambda: _build_directive_templates())
+    directive_templates: dict[str, str] = field(
+        default_factory=lambda: _build_directive_templates()
+    )
     persona_registry: dict[str, str] = field(default_factory=lambda: _build_persona_registry())
 
 
@@ -213,10 +214,10 @@ def _build_prompt_registry() -> dict[str, PromptEntry]:
 def _build_directive_templates() -> dict[str, str]:
     """Build immutable directive template registry. Called once at module load."""
     return {
-    "SHERLOCK_ROOT_CAUSE_ANALYSIS": "You are Sherlock, the Root Cause Analysis specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure to identify the root cause. Consider:\n- What exactly is failing?\n- Why is it failing?\n- What are the contributing factors?\n- What's the minimal fix needed?\n\nPROPOSAL:\nPropose a specific code fix that addresses the root cause.\nProvide clear, actionable Python code.",
-    "SAFETY_INSPECTOR_REVIEW": "You are SafetyInspectorAgent, the Security specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from a security perspective:\n- Are there any security vulnerabilities?\n- Could the fix introduce security issues?\n- Are there unsafe operations?\n- Is input validation needed?\n\nPROPOSAL:\nPropose a fix that maintains security best practices.\nEnsure no security regressions.",
-    "DEPENDENCY_SENTINEL_ANALYSIS": "You are DependencySentinelAgent, the Import/Dependency specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from a dependency perspective:\n- Are there Missing imports?\n- Are imports incorrectly ordered?\n- Are there circular dependencies?\n- Are external dependencies available?\n\nPROPOSAL:\nPropose a fix that resolves import/dependency issues.\nEnsure all imports are correct and available.",
-    "ARCHITECTURE_GOVERNOR_REVIEW": "You are ArchitectureGovernor, the Architecture Compliance specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from an architecture perspective:\n- Does this violate architectural rules?\n- Is the code properly structured?\n- Are naming conventions followed?\n- Is the file in the correct location?\n\nPROPOSAL:\nPropose a fix that maintains architectural integrity.\nEnsure compliance with all architectural laws.",
+        "SHERLOCK_ROOT_CAUSE_ANALYSIS": "You are Sherlock, the Root Cause Analysis specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure to identify the root cause. Consider:\n- What exactly is failing?\n- Why is it failing?\n- What are the contributing factors?\n- What's the minimal fix needed?\n\nPROPOSAL:\nPropose a specific code fix that addresses the root cause.\nProvide clear, actionable Python code.",
+        "SAFETY_INSPECTOR_REVIEW": "You are SafetyInspectorAgent, the Security specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from a security perspective:\n- Are there any security vulnerabilities?\n- Could the fix introduce security issues?\n- Are there unsafe operations?\n- Is input validation needed?\n\nPROPOSAL:\nPropose a fix that maintains security best practices.\nEnsure no security regressions.",
+        "DEPENDENCY_SENTINEL_ANALYSIS": "You are DependencySentinelAgent, the Import/Dependency specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from a dependency perspective:\n- Are there Missing imports?\n- Are imports incorrectly ordered?\n- Are there circular dependencies?\n- Are external dependencies available?\n\nPROPOSAL:\nPropose a fix that resolves import/dependency issues.\nEnsure all imports are correct and available.",
+        "ARCHITECTURE_GOVERNOR_REVIEW": "You are ArchitectureGovernor, the Architecture Compliance specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from an architecture perspective:\n- Does this violate architectural rules?\n- Is the code properly structured?\n- Are naming conventions followed?\n- Is the file in the correct location?\n\nPROPOSAL:\nPropose a fix that maintains architectural integrity.\nEnsure compliance with all architectural laws.",
         "MULTI_QUERY_GENERATION": 'You are the Sovereign Multi-Query Generator. \nGenerate 6-8 diverse versions of the query to capture different semantic facets.\n\nQuery: "{original_query}"\n\nOutput JSON array of expanded queries.',
         "QUERY_DECOMPOSITION": 'You are the Sovereign Query Decomposer. \nBreak this complex query into 3-5 atomic, independent sub-questions.\n\nQuery: "{query}"\n\nOutput JSON array of sub-queries.',
         "SEMANTIC_QUERY_EXPANSION": 'You are a semantic query expansion specialist. Given a user query, generate 5-8 expanded queries that capture:\n- Core intent\n- Specific technical terms\n- Broader context\n\nQuery: "{query}"\n\nOutput JSON array of expanded queries.',
@@ -240,7 +241,7 @@ _CONSTITUTION: PromptConstitution | None = None
 
 def get_constitution() -> PromptConstitution:
     """Get the immutable constitution singleton.
-    
+
     ARCHITECTURAL GUARANTEE: Returns a frozen dataclass that cannot be mutated.
     All runtime prompt modifications must go through PromptRegistryAgent.
     """
@@ -252,7 +253,7 @@ def get_constitution() -> PromptConstitution:
 
 def get_prompt(key: str) -> str:
     """Retrieve raw prompt content by key.
-    
+
     DEPRECATED: Use get_constitution().prompts[key].content instead.
     Maintained for backward compatibility only.
     """
@@ -263,7 +264,7 @@ def get_prompt(key: str) -> str:
 
 def get_template(template_id: str) -> str:
     """Retrieve a directive template by ID for runtime formatting.
-    
+
     DEPRECATED: Use get_constitution().directive_templates[template_id] instead.
     Maintained for backward compatibility only.
     """
@@ -275,7 +276,7 @@ def get_template(template_id: str) -> str:
 
 def get_persona(persona_id: str) -> str:
     """Retrieve a persona definition by ID.
-    
+
     DEPRECATED: Use get_constitution().persona_registry[persona_id] instead.
     Maintained for backward compatibility only.
     """

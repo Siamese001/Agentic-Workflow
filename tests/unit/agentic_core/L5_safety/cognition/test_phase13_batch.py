@@ -2,6 +2,7 @@
 
 Tests for batch checkpointing, rate limiting, and batch execution integration.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -156,11 +157,13 @@ class TestRateLimitingAdherence:
         cognitive = CognitiveDispositionAgent(project_root=clean_project)
 
         # Mock analyze_violation
-        cognitive.analyze_violation = MagicMock(return_value=DispositionDecision(
-            action="ARCHIVE",
-            target_path="archives",
-            confidence=0.5,
-        ))
+        cognitive.analyze_violation = MagicMock(
+            return_value=DispositionDecision(
+                action="ARCHIVE",
+                target_path="archives",
+                confidence=0.5,
+            )
+        )
 
         # Create processor with specific rate limit
         rate_limit = 1.5
@@ -201,6 +204,7 @@ class TestRateLimitingAdherence:
             from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
                 DispositionDecision,
             )
+
             return DispositionDecision(action="ARCHIVE", confidence=0.5)
 
         cognitive.analyze_violation = mock_analyze
@@ -241,6 +245,7 @@ class TestBatchExecutionIntegration:
     def reset_singleton(self):
         """Reset singleton before each test."""
         from agentic_core.utils.sovereign_scanner import SovereignScanner
+
         SovereignScanner.reset_instance()
         yield
         SovereignScanner.reset_instance()
@@ -269,9 +274,11 @@ class TestBatchExecutionIntegration:
         agent.violations = mock_violations
 
         # Mock heal_repository to return quickly
-        agent.heal_repository = MagicMock(return_value={
-            "violations_found": len(mock_violations),
-        })
+        agent.heal_repository = MagicMock(
+            return_value={
+                "violations_found": len(mock_violations),
+            }
+        )
 
         # Mock cognitive agent
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
@@ -313,9 +320,11 @@ class TestBatchExecutionIntegration:
         agent.violations = []
 
         # Mock heal_repository
-        agent.heal_repository = MagicMock(return_value={
-            "violations_found": 0,
-        })
+        agent.heal_repository = MagicMock(
+            return_value={
+                "violations_found": 0,
+            }
+        )
 
         result = agent.execute_cognitive_purge()
 
@@ -392,11 +401,17 @@ class TestPhase13Integration:
 
     def test_execute_script_exists(self):
         """[Phase 13] Verify execute_cognitive_purge.py script exists."""
-        script_path = Path(__file__).parent.parent.parent / "scripts" / "maintenance" / "execute_cognitive_purge.py"
+        script_path = (
+            Path(__file__).parent.parent.parent
+            / "scripts"
+            / "maintenance"
+            / "execute_cognitive_purge.py"
+        )
 
         # Try to import
         try:
             import scripts.maintenance.execute_cognitive_purge as purge_script
+
             assert hasattr(purge_script, "run_cognitive_purge")
         except ImportError:
             # Check file exists

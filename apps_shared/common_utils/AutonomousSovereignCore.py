@@ -6,6 +6,9 @@ Cross-layer orchestrator that coordinates autonomous responses across L1-L5.
 
 import asyncio
 from datetime import datetime
+from pathlib import Path
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -36,27 +39,49 @@ class AutonomousSovereignCore:
         self.running = True
 
         # Import autonomous improvements
-            create_adaptive_learning_engine,
-        )
-            create_proactive_resource_manager,
-        )
-            create_autonomous_execution_engine,
-        )
-            create_self_recovering_orchestrator,
-        )
+        try:
+            from ..L3_orchestration.engines.adaptive_learning import (
+                create_adaptive_learning_engine,
+            )
+        except ImportError:
+            create_adaptive_learning_engine = lambda: None
+            
+        try:
+            from ..L3_orchestration.engines.proactive_resources import (
+                create_proactive_resource_manager,
+            )
+        except ImportError:
+            create_proactive_resource_manager = lambda: None
+            
+        try:
+            from ..L3_orchestration.engines.autonomous_execution import (
+                create_autonomous_execution_engine,
+            )
+        except ImportError:
+            create_autonomous_execution_engine = lambda: None
+            
+        try:
+            from ..L3_orchestration.engines.self_recovering import (
+                create_self_recovering_orchestrator,
+            )
+        except ImportError:
+            create_self_recovering_orchestrator = lambda: None
 
         # GRAVITY FIXED: Dynamic imports for autonomous components
         try:
+            from ..L5_safety.gravity.autonomous_checkpoint import (
                 create_autonomous_checkpoint_manager,
             )
         except ImportError:
             create_autonomous_checkpoint_manager = lambda: None
         try:
+            from ..L5_safety.gravity.autonomous_state_guardian import (
                 create_autonomous_state_guardian,
             )
         except ImportError:
             create_autonomous_state_guardian = lambda: None
         try:
+            from ..L5_safety.gravity.self_updating_safety import (
                 create_self_updating_safety_engine,
             )
         except ImportError:

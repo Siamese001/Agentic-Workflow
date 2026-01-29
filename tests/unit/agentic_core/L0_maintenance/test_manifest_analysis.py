@@ -5,13 +5,11 @@ Mandate: 100% Pass.
 """
 
 import pytest
-import json
-import logging
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from agentic_core.L0_maintenance.scripts.verify_manifest import analyze_impact
 
+
 class TestManifestAnalysis:
-    
     @pytest.fixture
     def safe_report(self):
         """A standard, safe dry-run report."""
@@ -20,16 +18,16 @@ class TestManifestAnalysis:
             "phase1": {
                 "violations_found": [
                     {"type": "NAMING", "file": "a.py"},
-                    {"type": "IMPORT", "file": "b.py"}
+                    {"type": "IMPORT", "file": "b.py"},
                 ]
             },
             "phase2": {
                 "modifications": [
                     {"action": "would_fix", "target": "a.py", "agent": "Fixer"},
-                    {"action": "would_fix", "target": "b.py", "agent": "Fixer"}
+                    {"action": "would_fix", "target": "b.py", "agent": "Fixer"},
                 ],
-                "failures": []
-            }
+                "failures": [],
+            },
         }
 
     @pytest.fixture
@@ -37,16 +35,16 @@ class TestManifestAnalysis:
         """A report indicating mass deletion (unsafe)."""
         orphans = [{"type": "ORPHANED_FILE", "file": f"del_{i}.py"} for i in range(50)]
         mods = [{"action": "would_delete", "target": f"del_{i}.py"} for i in range(50)]
-        
+
         return {
             "meta": {"dry_run": True},
             "phase1": {"violations_found": orphans},
-            "phase2": {"modifications": mods, "failures": []}
+            "phase2": {"modifications": mods, "failures": []},
         }
 
     def test_analysis_passes_safe_run(self, safe_report):
         """Scenario: Normal operation should pass analysis."""
-        with patch('logging.info') as mock_info:
+        with patch("logging.info") as mock_info:
             result = analyze_impact(safe_report)
             assert result is True
             # Verify that impact analysis was logged
@@ -54,11 +52,13 @@ class TestManifestAnalysis:
 
     def test_analysis_flags_mass_deletion(self, dangerous_report):
         """Scenario: >10 orphans triggers warning."""
-        with patch('logging.warning') as mock_warning:
+        with patch("logging.warning") as mock_warning:
             result = analyze_impact(dangerous_report)
             assert result is False
             # Verify that mass deletion warning was logged
-            mock_warning.assert_any_call("🚨 MASS DELETION RISK: 50 orphan files identified for deletion.")
+            mock_warning.assert_any_call(
+                "🚨 MASS DELETION RISK: 50 orphan files identified for deletion."
+            )
 
     def test_analysis_flags_blast_radius(self):
         """Scenario: Too many files modified."""
@@ -67,22 +67,24 @@ class TestManifestAnalysis:
         report = {
             "meta": {"dry_run": True},
             "phase1": {"violations_found": []},
-            "phase2": {"modifications": mods, "failures": []}
+            "phase2": {"modifications": mods, "failures": []},
         }
-        
-        with patch('logging.warning') as mock_warning:
+
+        with patch("logging.warning") as mock_warning:
             result = analyze_impact(report)
             assert result is False
             # Verify that high blast radius warning was logged
-            mock_warning.assert_any_call("🚨 HIGH BLAST RADIUS: 100 files would be modified. Manual review required.")
+            mock_warning.assert_any_call(
+                "🚨 HIGH BLAST RADIUS: 100 files would be modified. Manual review required."
+            )
 
     def test_analysis_warns_on_live_run(self, safe_report):
         """Scenario: Analyzing a live run report should warn but might pass if metrics are ok."""
-        safe_report['meta']['dry_run'] = False
-        
-        with patch('logging.warning') as mock_warning:
+        safe_report["meta"]["dry_run"] = False
+
+        with patch("logging.warning") as mock_warning:
             result = analyze_impact(safe_report)
-            assert result is True # Still passes metrics, but warns
+            assert result is True  # Still passes metrics, but warns
             # Verify that live run warning was logged
             mock_warning.assert_any_call("⚠️  This report is from a LIVE RUN, not a dry-run.")
 
@@ -96,14 +98,14 @@ class TestManifestAnalysis:
                 "failures": [
                     {"status": "blocked_by_safety"},
                     {"status": "blocked_by_safety"},
-                    {"status": "other_error"}
-                ]
-            }
+                    {"status": "other_error"},
+                ],
+            },
         }
-        
-        with patch('logging.warning') as mock_warning:
+
+        with patch("logging.warning") as mock_warning:
             result = analyze_impact(report)
-            assert result is True # Still passes, but warns about budget blocks
+            assert result is True  # Still passes, but warns about budget blocks
             # Verify that budget block warning was logged
             mock_warning.assert_any_call("⚠️  2 actions were blocked by safety budget limits.")
 
@@ -112,10 +114,10 @@ class TestManifestAnalysis:
         empty_report = {
             "meta": {"dry_run": True},
             "phase1": {"violations_found": []},
-            "phase2": {"modifications": [], "failures": []}
+            "phase2": {"modifications": [], "failures": []},
         }
-        
-        with patch('logging.info') as mock_info:
+
+        with patch("logging.info") as mock_info:
             result = analyze_impact(empty_report)
             assert result is True
             # Verify that zero violations was logged
@@ -130,13 +132,13 @@ class TestManifestAnalysis:
                     {"type": "NAMING", "file": "a.py"},
                     {"type": "NAMING", "file": "b.py"},
                     {"type": "IMPORT", "file": "c.py"},
-                    {"type": "UNKNOWN", "file": "d.py"}
+                    {"type": "UNKNOWN", "file": "d.py"},
                 ]
             },
-            "phase2": {"modifications": [], "failures": []}
+            "phase2": {"modifications": [], "failures": []},
         }
-        
-        with patch('logging.info') as mock_info:
+
+        with patch("logging.info") as mock_info:
             result = analyze_impact(report)
             assert result is True
             # Verify type grouping
@@ -153,13 +155,13 @@ class TestManifestAnalysis:
                 "modifications": [
                     {"target": "file1.py"},  # Same file modified twice
                     {"target": "file1.py"},
-                    {"target": "file2.py"}   # Different file
+                    {"target": "file2.py"},  # Different file
                 ],
-                "failures": []
-            }
+                "failures": [],
+            },
         }
-        
-        with patch('logging.info') as mock_info:
+
+        with patch("logging.info") as mock_info:
             result = analyze_impact(report)
             assert result is True
             # Should count unique files (2), not total modifications (3)
@@ -172,16 +174,16 @@ class TestManifestAnalysis:
             "phase1": {"violations_found": []},
             "phase2": {
                 "modifications": [
-                    {"agent": "Fixer"},     # Same agent used twice
+                    {"agent": "Fixer"},  # Same agent used twice
                     {"agent": "Fixer"},
-                    {"agent": "Mover"},     # Different agent
-                    {"agent": "Cleaner"}    # Another different agent
+                    {"agent": "Mover"},  # Different agent
+                    {"agent": "Cleaner"},  # Another different agent
                 ],
-                "failures": []
-            }
+                "failures": [],
+            },
         }
-        
-        with patch('logging.info') as mock_info:
+
+        with patch("logging.info") as mock_info:
             result = analyze_impact(report)
             assert result is True
             # Should count unique agents (3), not total modifications (4)

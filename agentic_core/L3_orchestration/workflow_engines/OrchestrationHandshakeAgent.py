@@ -25,10 +25,11 @@ from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrc
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 
-class OrchestrationHandshakeAgent(SubatomicTestingMixin, SovereignBaseAgent, CoreOrchestrationAgent):
+class OrchestrationHandshakeAgent(
+    SubatomicTestingMixin, SovereignBaseAgent, CoreOrchestrationAgent
+):
     """
     Sovereign handshake protocol — now with deep L3 caching.
     Renamed from OrchestrationHandshake for consistent Agent suffix pattern.

@@ -16,7 +16,6 @@ Re-exported from L5_safety for backwards compatibility.
 # This boosts alignment detection — review and integrate appropriately
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L5_safety.validators.structure_blueprint import PROJECT_ROOT_METADATA
 from typing import Any
 from fnmatch import fnmatch
@@ -81,7 +80,7 @@ class NamingAgent(SubatomicTestingMixin, SovereignBaseAgent):
             for pattern in meta.get("file_patterns", []):
                 if fnmatch(name, pattern):
                     return True
-        
+
         # Default behavior (Stub)
         return True
 

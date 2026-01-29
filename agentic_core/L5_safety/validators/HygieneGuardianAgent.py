@@ -21,7 +21,7 @@ import os
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, List, Dict, Optional
+from typing import Any
 
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -31,7 +31,15 @@ MAX_FILENAME_WORDS = 5  # Enforcement for semantic conciseness
 MAX_TEST_FILENAME_WORDS = 8  # Allow more descriptive names for tests
 
 # Common noisy words to target for removal suggestions first
-REDUNDANT_TERMS = {'implementation', 'management', 'service', 'script', 'scripts', 'utility', 'utilities'}
+REDUNDANT_TERMS = {
+    "implementation",
+    "management",
+    "service",
+    "script",
+    "scripts",
+    "utility",
+    "utilities",
+}
 
 
 @dataclass
@@ -100,18 +108,18 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         self.dry_run = dry_run
         self.violations: list[HygieneViolation] = []
         self.agent_name = self.__class__.__name__
-        self.naming_violations: List[Dict] = []
+        self.naming_violations: list[dict] = []
 
         # Initialize ArchivalGatekeeper for safe file operations
         self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
-        
+
         # Naming convention rules
         self.rules = {
             "MAX_FILENAME_WORDS": MAX_FILENAME_WORDS,
             "MAX_TEST_FILENAME_WORDS": MAX_TEST_FILENAME_WORDS,
             "FORBIDDEN_PATTERNS": ["temp_", "test_v2", "final_final"],
             "CASE_CONVENTION": "snake_case_for_scripts",
-            "REDUNDANT_TERMS": REDUNDANT_TERMS
+            "REDUNDANT_TERMS": REDUNDANT_TERMS,
         }
 
     def _is_empty_file(self, file_path: Path) -> bool:
@@ -455,27 +463,43 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         if not self.dry_run:
             fixed_count = self._fix_violations()
             print(f"\n   [FIXED] {fixed_count} violations auto-fixed")
-    
-    def audit_naming_conventions(self) -> List[Dict]:
+
+        # Return canonical heal result for @standard_heal decorator
+        return {
+            "violations_found": len(self.violations),
+            "violations_fixed": fixed_count,
+            "errors": 0,
+            "skipped": 0,
+        }
+
+    def audit_naming_conventions(self) -> list[dict]:
         """
         Performs a deep audit of the repository's naming conventions,
         enforcing word-count limits and semantic density.
         """
         print(f"[*] Hygiene Guardian: Scanning {self.project_root} for naming violations...")
         self.naming_violations = []
-        ignored_dirs = {'.git', '__pycache__', 'venv', 'node_modules', '.idea', '.vscode', 'archives'}
-        
+        ignored_dirs = {
+            ".git",
+            "__pycache__",
+            "venv",
+            "node_modules",
+            ".idea",
+            ".vscode",
+            "archives",
+        }
+
         for root, dirs, files in os.walk(self.project_root):
             # Prune ignored directories in-place to prevent traversal
             dirs[:] = [d for d in dirs if d not in ignored_dirs]
-            
+
             for f in files:
                 if not f.endswith(".py") or f.startswith("__"):
                     continue
-                
+
                 path = Path(root) / f
                 self._check_filename_length(path)
-        
+
         return self.naming_violations
 
     def _check_filename_length(self, path: Path):
@@ -486,36 +510,38 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         """
         base_name = path.stem
         ext = path.suffix
-        
+
         # Advanced splitting: underscores, hyphens, and CamelCase lookaheads
         # 1. Replace hyphens with underscores
-        clean_name = base_name.replace('-', '_')
+        clean_name = base_name.replace("-", "_")
         # 2. Insert underscore before uppercase letters (CamelCase handling)
-        clean_name = re.sub(r'(?<!^)(?=[A-Z])', '_', clean_name)
-        
-        words = [w for w in clean_name.split('_') if w]  # Filter empty strings
+        clean_name = re.sub(r"(?<!^)(?=[A-Z])", "_", clean_name)
+
+        words = [w for w in clean_name.split("_") if w]  # Filter empty strings
         word_count = len(words)
-        
+
         # Context-aware limit
-        is_test = base_name.startswith('test_') or base_name.endswith('_test')
-        limit = self.rules["MAX_TEST_FILENAME_WORDS"] if is_test else self.rules["MAX_FILENAME_WORDS"]
-        
+        is_test = base_name.startswith("test_") or base_name.endswith("_test")
+        limit = (
+            self.rules["MAX_TEST_FILENAME_WORDS"] if is_test else self.rules["MAX_FILENAME_WORDS"]
+        )
+
         if word_count > limit:
             violation = {
                 "file": str(path.relative_to(self.project_root)),
                 "rule": "MAX_TEST_FILENAME_WORDS" if is_test else "MAX_FILENAME_WORDS",
                 "current_count": word_count,
                 "limit": limit,
-                "suggestion": self._generate_concise_suggestion(words, ext)
+                "suggestion": self._generate_concise_suggestion(words, ext),
             }
             self.naming_violations.append(violation)
             print(f"  [VIOLATION] {path.name}: {word_count} words exceeds limit of {limit}")
 
-    def _generate_concise_suggestion(self, words: List[str], ext: str) -> str:
+    def _generate_concise_suggestion(self, words: list[str], ext: str) -> str:
         """Proposes a concise alternative using semantic anchors and redundant term removal."""
         # Strategy 1: Remove known redundant terms
         filtered = [w for w in words if w.lower() not in self.rules["REDUNDANT_TERMS"]]
-        
+
         # If still too long, fallback to anchor strategy
         if len(filtered) > self.rules["MAX_FILENAME_WORDS"]:
             # Keep 2 start, 1 middle context, 1 end
@@ -523,7 +549,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             mid = len(filtered) // 2
             concise = filtered[:2] + [filtered[mid]] + filtered[-1:]
             return "_".join(concise).lower() + ext
-            
+
         return "_".join(filtered).lower() + ext
 
         # Return using canonical keys that @standard_heal decorator recognizes

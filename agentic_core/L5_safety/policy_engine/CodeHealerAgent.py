@@ -131,7 +131,9 @@ class CodeHealerAgent(SovereignBaseAgent):
         self._actions: list[HealingAction] = []
 
         if self._agent_config.backup_dir is None:
-            self._agent_config.backup_dir = self.project_root / "archives" / "healing_backups" / "code"
+            self._agent_config.backup_dir = (
+                self.project_root / "archives" / "healing_backups" / "code"
+            )
 
         Logger.info("CodeHealerAgent initialized")
 
@@ -140,17 +142,17 @@ class CodeHealerAgent(SovereignBaseAgent):
     ) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
-        
+
         Wraps heal_all to provide the standard Sovereign interface.
         """
         # Update config based on args
         self._agent_config.dry_run = dry_run
-        
+
         actions = []
         violations_found = 0
         violations_fixed = 0
         errors = 0
-        
+
         # In a real repository context, we would iterate over all relevant files.
         # For the agent interface, we assume the caller might pass a specific file
         # or we scan the project root.
@@ -159,12 +161,12 @@ class CodeHealerAgent(SovereignBaseAgent):
             actions = self.heal_all(Path(target_file))
             violations_found = len(actions)
             violations_fixed = len([a for a in actions if a.applied])
-        
+
         return {
-            'violations_found': violations_found,
-            'violations_fixed': violations_fixed,
-            'errors': errors,
-            'skipped': violations_found - violations_fixed - errors
+            "violations_found": violations_found,
+            "violations_fixed": violations_fixed,
+            "errors": errors,
+            "skipped": violations_found - violations_fixed - errors,
         }
 
     def atomic_write(self, file_path: Path, new_content: str) -> bool:
@@ -174,12 +176,12 @@ class CodeHealerAgent(SovereignBaseAgent):
         try:
             # 1. Create Temp File
             temp_fd, temp_path = tempfile.mkstemp(dir=file_path.parent, text=True)
-            with os.fdopen(temp_fd, 'w', encoding='utf-8') as tf:
+            with os.fdopen(temp_fd, "w", encoding="utf-8") as tf:
                 tf.write(new_content)
-            
+
             # 2. Create Backup
             self._backup_file(file_path)
-            
+
             # 3. Atomic Swap
             os.replace(temp_path, file_path)
             return True

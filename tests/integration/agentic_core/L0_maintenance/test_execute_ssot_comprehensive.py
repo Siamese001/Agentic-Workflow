@@ -5,10 +5,8 @@ Description: Comprehensive 10-case test suite for enhanced SSOT execution, cover
 
 import pytest
 import sys
-import os
-import tempfile
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
@@ -21,8 +19,9 @@ from agentic_core.L0_maintenance.scripts.execute_ssot import (
     validate_territory_input,
     ReconciliationViolation,
     execute_phase1_discovery,
-    RuntimeStateManager
+    RuntimeStateManager,
 )
+
 
 class TestComprehensiveSSOT:
     """
@@ -49,7 +48,7 @@ class TestComprehensiveSSOT:
         """
         score = ConfidenceScore(value=0.85, reasoning="Perfect match")
         proceed, reason = engine.should_proceed_with_healing(score, agent_name="Agent_High")
-        
+
         assert proceed is True, "High confidence should always proceed"
         assert "AUTO-HEAL" in reason
         assert "Agent_High" in engine._call_path, "Agent must be tracked for cycles"
@@ -64,7 +63,7 @@ class TestComprehensiveSSOT:
         """
         score = ConfidenceScore(value=0.60, reasoning="Partial match")
         proceed, reason = llm_engine.should_proceed_with_healing(score, agent_name="Agent_Med")
-        
+
         assert proceed is True, "Medium confidence with LLM should proceed"
         assert "LLM Override" in reason
 
@@ -75,7 +74,7 @@ class TestComprehensiveSSOT:
         """
         score = ConfidenceScore(value=0.60, reasoning="Partial match")
         proceed, reason = engine.should_proceed_with_healing(score, agent_name="Agent_Med_NoLLM")
-        
+
         assert proceed is False, "Medium confidence without LLM must fail"
         assert "Confidence too low" in reason
 
@@ -89,7 +88,7 @@ class TestComprehensiveSSOT:
         """
         score = ConfidenceScore(value=0.40, reasoning="Unknown error")
         proceed, reason = llm_engine.should_proceed_with_healing(score, agent_name="Agent_Low")
-        
+
         assert proceed is False, "Low confidence must always be blocked"
         assert "Confidence too low" in reason
 
@@ -102,13 +101,13 @@ class TestComprehensiveSSOT:
         Expected: Second call returns False with 'cycle detected'.
         """
         score = ConfidenceScore(value=0.9, reasoning="Looping")
-        
+
         # Call 1
         engine.should_proceed_with_healing(score, agent_name="RecursiveAgent")
-        
+
         # Call 2 (Cycle)
         proceed, reason = engine.should_proceed_with_healing(score, agent_name="RecursiveAgent")
-        
+
         assert proceed is False
         assert "cycle detected" in reason
         assert "SAFETY LOCK" in reason
@@ -123,15 +122,15 @@ class TestComprehensiveSSOT:
         """
         engine._max_healing_operations = 3
         score = ConfidenceScore(value=0.9, reasoning="Valid")
-        
+
         # Consume budget
         for i in range(3):
             proceed, _ = engine.should_proceed_with_healing(score, agent_name=f"Agent_{i}")
             assert proceed is True
-            
+
         # Attempt 4 (Budget Exceeded)
         proceed, reason = engine.should_proceed_with_healing(score, agent_name="Agent_Overflow")
-        
+
         assert proceed is False
         assert "Budget exceeded" in reason
 
@@ -144,17 +143,17 @@ class TestComprehensiveSSOT:
         Expected: Validator rejects paths, injections, and long strings.
         """
         threats = [
-            "../../etc/passwd",      # Path traversal
-            "/usr/bin/python",       # Absolute path
-            "valid; cat /flag",      # Shell injection style
-            "a" * 150,               # Buffer overflow attempt
-            "<script>alert(1)</script>" # Special chars
+            "../../etc/passwd",  # Path traversal
+            "/usr/bin/python",  # Absolute path
+            "valid; cat /flag",  # Shell injection style
+            "a" * 150,  # Buffer overflow attempt
+            "<script>alert(1)</script>",  # Special chars
         ]
-        
+
         for threat in threats:
             is_valid, msg = validate_territory_input(threat)
             assert is_valid is False, f"Failed to block threat: {threat}"
-            
+
         assert validate_territory_input("valid_territory_1")[0] is True
 
     # =========================================================================
@@ -174,10 +173,10 @@ def typed_function(x: int) -> int:
 """
         p = tmp_path / "test_types.py"
         p.write_text(bad_code)
-        
+
         validator = ASTCodeQualityValidator(tmp_path)
         report = validator.check_file_quality(p)
-        
+
         assert report["violations_count"] == 1
         assert report["violations"][0]["type"] == "MISSING_TYPE_HINT"
         assert "untyped_function" in report["violations"][0]["message"]
@@ -193,10 +192,10 @@ def typed_function(x: int) -> int:
         p = tmp_path / "massive.py"
         # Write > 1MB file
         p.write_text("x = 1\n" * 150_000)
-        
+
         validator = ASTCodeQualityValidator(tmp_path)
         report = validator.check_file_quality(p)
-        
+
         assert "error" in report
         assert "too large" in report["error"]
         assert report["violations"] == []
@@ -214,11 +213,11 @@ def typed_function(x: int) -> int:
             message="Drift Detected",
             drift_type="ORPHANED_FILE",
             file_path=Path("/tmp/test.py"),
-            severity=8
+            severity=8,
         )
-        
+
         data = violation.to_dict()
-        
+
         assert data["is_valid"] is False
         assert data["drift_type"] == "ORPHANED_FILE"
         assert data["severity"] == 8
@@ -235,22 +234,24 @@ def typed_function(x: int) -> int:
         # Mock dependencies
         mock_state = MagicMock(spec=RuntimeStateManager)
         mock_engine = MagicMock(spec=AutonomousDecisionEngine)
-        
+
         # Run Phase 1
-        with patch('agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl') as mock_impl:
+        with patch(
+            "agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl"
+        ) as mock_impl:
             # The impl returns raw data, decorator standardizes it
-            mock_impl.return_value = {"raw_data": "test"} 
-            
+            mock_impl.return_value = {"raw_data": "test"}
+
             result = execute_phase1_discovery(
-                agents=[], 
+                agents=[],
                 territory="test_zone",
                 decision_engine=mock_engine,
                 state_mgr=mock_state,
-                dry_run=True
+                dry_run=True,
             )
-            
+
             # Verify Standard Heal Schema keys are present
-            # Note: The actual schema depends on the imported base_agent, 
+            # Note: The actual schema depends on the imported base_agent,
             # but usually includes 'status', 'violations_found', etc.
             # Here we verify the decorator didn't crash and passed through
             assert result is not None

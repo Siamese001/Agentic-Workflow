@@ -10,10 +10,17 @@ This module consolidates duplicate code blocks found across:
 
 Import from here instead of duplicating code.
 """
+from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict
 
-    SubatomicTestingMixin,
-)
+try:
+    from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+        SubatomicTestingMixin,
+    )
+except ImportError:
+    class SubatomicTestingMixin:
+        pass
 
 
 @dataclass

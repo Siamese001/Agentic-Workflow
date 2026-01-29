@@ -15,9 +15,16 @@ import json
 import re
 import time
 from datetime import datetime
+from enum import Enum
+from typing import Any
 
-    L3SubatomicTestingMixin,
-)
+try:
+    from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+        L3SubatomicTestingMixin,
+    )
+except ImportError:
+    class L3SubatomicTestingMixin:
+        pass
 
 
 

@@ -5,7 +5,7 @@ import logging
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -42,7 +42,9 @@ class CapabilityGap(BaseModel):
     affected_scenarios: list[str] = Field(..., description="Scenarios affected by this gap")
     failure_count: int = Field(..., ge=0, description="Number of failures observed")
     severity: float = Field(..., ge=0.0, le=1.0, description="Severity score (0.0 to 1.0)")
-    evidence: list[str] = Field(default_factory=list, description="Evidence supporting the gap identification")
+    evidence: list[str] = Field(
+        default_factory=list, description="Evidence supporting the gap identification"
+    )
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
@@ -67,10 +69,16 @@ class Recommendation(BaseModel):
     recommendation_type: RecommendationType = Field(..., description="Type of recommendation")
     title: str = Field(..., description="Short title of the recommendation")
     description: str = Field(..., description="Detailed description of the recommendation")
-    addresses_gaps: list[str] = Field(..., description="List of gap IDs this recommendation addresses")
+    addresses_gaps: list[str] = Field(
+        ..., description="List of gap IDs this recommendation addresses"
+    )
     priority: float = Field(..., ge=0.0, le=1.0, description="Priority score (0.0 to 1.0)")
-    implementation_steps: list[str] = Field(default_factory=list, description="Steps to implement the recommendation")
-    estimated_impact: float = Field(default=0.0, ge=0.0, le=1.0, description="Estimated impact score (0.0 to 1.0)")
+    implementation_steps: list[str] = Field(
+        default_factory=list, description="Steps to implement the recommendation"
+    )
+    estimated_impact: float = Field(
+        default=0.0, ge=0.0, le=1.0, description="Estimated impact score (0.0 to 1.0)"
+    )
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
@@ -94,9 +102,15 @@ class AnalysisReport(BaseModel):
 
     report_id: str = Field(..., description="Unique identifier for the analysis report")
     agent_id: str = Field(..., description="ID of the analyzed agent")
-    gaps_identified: list[CapabilityGap] = Field(..., description="List of identified capability gaps")
-    recommendations: list[Recommendation] = Field(..., description="List of improvement recommendations")
-    overall_health_score: float = Field(..., ge=0.0, le=1.0, description="Overall health score (0.0 to 1.0)")
+    gaps_identified: list[CapabilityGap] = Field(
+        ..., description="List of identified capability gaps"
+    )
+    recommendations: list[Recommendation] = Field(
+        ..., description="List of improvement recommendations"
+    )
+    overall_health_score: float = Field(
+        ..., ge=0.0, le=1.0, description="Overall health score (0.0 to 1.0)"
+    )
     analysis_timestamp: float = Field(..., description="Timestamp of the analysis")
 
     def to_dict(self) -> dict[str, Any]:

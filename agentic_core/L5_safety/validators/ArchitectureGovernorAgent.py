@@ -54,7 +54,10 @@ from typing import Any
 # [PHASE 24] Integrate L0 Maintenance Capability
 from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
-from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent, get_python_files_fast
+from agentic_core.L5_safety.validators.PascalSovereigntyAgent import (
+    PascalSovereigntyAgent,
+    get_python_files_fast,
+)
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
 
@@ -90,19 +93,26 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         if isinstance(self.project_root, str):
             self.project_root = Path(self.project_root)
         self.violations: list[dict[str, Any]] = []
-        self.stats = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "drift_detected": 0}
+        self.stats = {
+            "violations_found": 0,
+            "violations_fixed": 0,
+            "errors": 0,
+            "drift_detected": 0,
+        }
         self.name = self.__class__.__name__
         self.python_files: list[str] = []
-        
+
         # Sovereign Data Locations for Phase 8
         self.baseline_dir = self.project_root / "agentic_core" / "config" / "baselines"
         self.audit_log_dir = self.project_root / "logs" / "sovereign_audit"
-        
+
         self._structure_validator = None  # Lazy-loaded
         self._gravity_repair_agent = None  # Lazy-loaded
         self._archival_gatekeeper = None  # Lazy-loaded
         self._cognitive_agent = None  # Lazy-loaded (Phase 11)
-        Logger.info(f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve}, ci_mode={self.ci_mode})")
+        Logger.info(
+            f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve}, ci_mode={self.ci_mode})"
+        )
 
     def _get_structure_validator(self):
         """Lazy-load StructuralValidatorAgent to avoid circular imports."""
@@ -208,7 +218,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             all_violations = []
 
             # [STRICT SCOPE] Filter SOVEREIGN_TERRITORIES to prevent audit bleed
-            from agentic_core.L5_safety.validators import structure_blueprint as _structure_blueprint
+            from agentic_core.L5_safety.validators import (
+                structure_blueprint as _structure_blueprint,
+            )
 
             sovereign_territories = _structure_blueprint.SOVEREIGN_TERRITORIES
 
@@ -217,7 +229,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     target_roots = [target_territory]
                 else:
                     target_roots = ["agentic_core"]
-                Logger.info(f"[{agent_name}] TARGETED AUDIT: {target_territory} (Roots: {target_roots})")
+                Logger.info(
+                    f"[{agent_name}] TARGETED AUDIT: {target_territory} (Roots: {target_roots})"
+                )
             else:
                 target_roots = list(sovereign_territories.keys())
 
@@ -240,17 +254,17 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         if "'Error'" in violation.message or "'Exception'" in violation.message:
                             continue
                         if "Error'" in violation.message or "Exception'" in violation.message:
-                             continue
+                            continue
 
                     violations_found += 1
-                    
+
                     # [FIX] Robustly handle violation types (Enum vs String) to prevent crashes
                     v_type_raw = getattr(violation, "violation_type", "UNKNOWN")
                     if hasattr(v_type_raw, "name"):
                         v_type_name = v_type_raw.name
                     else:
                         v_type_name = str(v_type_raw)
-                        
+
                     violation_dict = {
                         "type": v_type_name,
                         "file": str(violation.file_path) if violation.file_path else None,
@@ -311,8 +325,12 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             ssot_imports_updated = 0
             if not dry_run:
                 try:
-                    Logger.info(f"[{agent_name}] Initiating SSOT Folder Cleanup (dry_run={dry_run})...")
-                    janitor = SSOTFolderCleanupAgent(project_root=self.project_root, dry_run=dry_run)
+                    Logger.info(
+                        f"[{agent_name}] Initiating SSOT Folder Cleanup (dry_run={dry_run})..."
+                    )
+                    janitor = SSOTFolderCleanupAgent(
+                        project_root=self.project_root, dry_run=dry_run
+                    )
 
                     # Execute cleanup (or preview)
                     cleanup_stats = janitor.cleanup_repository()
@@ -372,52 +390,60 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         """
         Executes a comprehensive structural and naming audit with Phase 8 Drift Detection.
         In CI mode, this returns a non-zero-weighted success status.
-        
+
         Args:
             target_territories: [STRICT SCOPE] Optional list of specific paths/domains to audit.
         """
-        Logger.info(f"🚀 Starting Sovereign Audit (CI_MODE: {self.ci_mode}, SCOPE: {target_territories or 'GLOBAL'})")
-        
+        Logger.info(
+            f"🚀 Starting Sovereign Audit (CI_MODE: {self.ci_mode}, SCOPE: {target_territories or 'GLOBAL'})"
+        )
+
         # [EFFICIENCY] Logic consolidated to scan all L5 Guardians in one pass
         structural_results = self._orchestrate_guardian_scan(target_territories)
-        
+
         # [PHASE 8] Integrity Scan for Silent Drift
         # Only check drift if we are doing a global scan or if the drift checker supports partials
         # For now, we only run full drift check on global scans to prevent false positives on partials
         drift_violations = []
         if not target_territories:
             drift_violations = self._check_baseline_drift()
-        
+
         # 3. Aggregation
         total_violations = structural_results.get("total_violations", 0) + len(drift_violations)
-        
-        self.stats.update({
-            "violations_found": total_violations,
-            "drift_detected": len(drift_violations),
-            "errors": structural_results.get("total_errors", 0)
-        })
-        
+
+        self.stats.update(
+            {
+                "violations_found": total_violations,
+                "drift_detected": len(drift_violations),
+                "errors": structural_results.get("total_errors", 0),
+            }
+        )
+
         # [PHASE 8] Observability - Persist audit report
         self._persist_audit_report(structural_results, drift_violations)
-        
+
         # [SIGNAL] Define failure threshold
         success = self.stats["violations_found"] == 0 and self.stats["errors"] == 0
-        
+
         if self.ci_mode and not success:
-            Logger.critical(f"🛑 CI FAILURE: {self.stats['violations_found']} violations (Drift: {len(drift_violations)})")
-            
+            Logger.critical(
+                f"🛑 CI FAILURE: {self.stats['violations_found']} violations (Drift: {len(drift_violations)})"
+            )
+
         return {
             "success": success,
             "stats": self.stats,
             "violations": structural_results.get("violation_details", []),
-            "drift_violations": drift_violations
+            "drift_violations": drift_violations,
         }
 
-    def _orchestrate_guardian_scan(self, target_territories: list[str] | None = None) -> dict[str, Any]:
+    def _orchestrate_guardian_scan(
+        self, target_territories: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Orchestrate scanning of all L5 Guardians in one pass.
         Internal method for run_audit to consolidate scanning logic.
-        
+
         Now supports [STRICT SCOPE] targeting via target_territories.
         """
         total_violations = 0
@@ -434,7 +460,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     # Logic to resolve path (same as above, just ensuring it's robust)
                     p_core = self.project_root / "agentic_core" / t
                     p_root = self.project_root / t
-                    
+
                     if p_core.exists():
                         scan_targets.append(p_core)
                     elif p_root.exists():
@@ -460,19 +486,22 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 # [UNIFIED AUDIT] Ingest Physical Hierarchy Violations
                 try:
                     from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+
                     hierarchy = HierarchyAgent(project_root=self.project_root)
                     # Scan specifically for files sitting in the root that shouldn't be there
                     h_report = hierarchy.scan_root_violations(target_territory=root_name)
-                    
-                    for h_violation in h_report.get('violations', []):
+
+                    for h_violation in h_report.get("violations", []):
                         total_violations += 1
-                        violation_details.append({
-                            "type": "STRUCTURE",
-                            "file": h_violation.get('file'),
-                            "message": f"File sitting in territory root. Should be in SSOT subfolder.",
-                            "severity": "ERROR",
-                            "suggestion": f"Relocate to approved subfolder (agents/, registry/, etc.)"
-                        })
+                        violation_details.append(
+                            {
+                                "type": "STRUCTURE",
+                                "file": h_violation.get("file"),
+                                "message": "File sitting in territory root. Should be in SSOT subfolder.",
+                                "severity": "ERROR",
+                                "suggestion": "Relocate to approved subfolder (agents/, registry/, etc.)",
+                            }
+                        )
                 except Exception as e:
                     Logger.warning(f"Hierarchy cross-check failed for {root_name}: {e}")
 
@@ -483,17 +512,17 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         if "'Error'" in violation.message or "'Exception'" in violation.message:
                             continue
                         if "Error'" in violation.message or "Exception'" in violation.message:
-                             continue
+                            continue
 
                     total_violations += 1
-                    
+
                     # [FIX] Robustly handle violation types (Enum vs String) to prevent crashes
                     v_type_raw = getattr(violation, "violation_type", "UNKNOWN")
                     if hasattr(v_type_raw, "name"):
                         v_type_name = v_type_raw.name
                     else:
                         v_type_name = str(v_type_raw)
-                        
+
                     violation_dict = {
                         "type": v_type_name,
                         "file": str(violation.file_path) if violation.file_path else None,
@@ -513,7 +542,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             "total_violations": total_violations,
             "total_errors": total_errors,
             "violation_details": violation_details,
-            "roots_scanned": roots_scanned
+            "roots_scanned": roots_scanned,
         }
 
     def validate_layer_boundaries(self, file_path: Path) -> tuple[bool, str]:
@@ -1062,20 +1091,20 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         This represents the 'Gold Master' state of the repository.
         """
         Logger.info("📸 CAPTURING GOLDEN BASELINE...")
-        
+
         # 1. Initialize Manifest
         manifest = {
             "version": "1.0",
             "timestamp": datetime.utcnow().isoformat(),
             "audit_id": str(uuid.uuid4()),
-            "files": {}
+            "files": {},
         }
-        
+
         # 2. fast-scan the repository using the Phase 3 agent logic
         # We instantiate it temporarily just to use its optimized scanner
         scanner = PascalSovereigntyAgent(self.project_root)
         files = get_python_files_fast(self.project_root)
-        
+
         # 3. Calculate Hashes
         for file_path in files:
             try:
@@ -1085,16 +1114,16 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 manifest["files"][relative_path] = file_hash
             except Exception as e:
                 Logger.warning(f"Skipping file {file_path.name} in baseline: {e}")
-            
+
         # 4. Atomic Write
         self.baseline_dir.mkdir(parents=True, exist_ok=True)
         baseline_path = self.baseline_dir / "golden_baseline.json"
-        
+
         temp_path = baseline_path.with_suffix(".tmp")
-        with open(temp_path, 'w', encoding='utf-8') as f:
+        with open(temp_path, "w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=4)
         temp_path.replace(baseline_path)
-        
+
         Logger.info(f"✅ BASELINE CAPTURED: {len(manifest['files'])} files tracked.")
         return baseline_path
 
@@ -1104,57 +1133,59 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         if not baseline_path.exists():
             Logger.warning("⚠️ No Golden Baseline found. Skipping integrity check.")
             return []
-            
+
         violations = []
         try:
-            with open(baseline_path, 'r') as f:
+            with open(baseline_path) as f:
                 baseline = json.load(f)
-                
+
             # Check for Modified or Missing files
             for rel_path, expected_hash in baseline["files"].items():
                 full_path = self.project_root / rel_path
-                
+
                 if not full_path.exists():
-                    violations.append({
-                        "type": "MISSING_FILE", 
-                        "path": rel_path,
-                        "severity": "CRITICAL"
-                    })
+                    violations.append(
+                        {"type": "MISSING_FILE", "path": rel_path, "severity": "CRITICAL"}
+                    )
                     continue
-                    
+
                 current_hash = hashlib.sha256(full_path.read_bytes()).hexdigest()
                 if current_hash != expected_hash:
-                    violations.append({
-                        "type": "CONTENT_DRIFT", 
-                        "path": rel_path,
-                        "expected": expected_hash,
-                        "actual": current_hash,
-                        "severity": "CRITICAL"
-                    })
-            
+                    violations.append(
+                        {
+                            "type": "CONTENT_DRIFT",
+                            "path": rel_path,
+                            "expected": expected_hash,
+                            "actual": current_hash,
+                            "severity": "CRITICAL",
+                        }
+                    )
+
             # Check for Ghost Files (Files on disk but not in baseline)
             # (Optional: Can be expensive, omitted for speed in this iteration)
-            
+
         except Exception as e:
             Logger.error(f"Drift check failed: {e}")
-            
+
         return violations
 
-    def _persist_audit_report(self, structural_results: dict[str, Any], drift_violations: list[dict[str, Any]]) -> None:
+    def _persist_audit_report(
+        self, structural_results: dict[str, Any], drift_violations: list[dict[str, Any]]
+    ) -> None:
         """[PHASE 8] Saves immutable audit record."""
         self.audit_log_dir.mkdir(parents=True, exist_ok=True)
-        
+
         report = {
             "timestamp": datetime.utcnow().isoformat(),
             "audit_id": str(uuid.uuid4()),
             "structural_summary": structural_results,
             "drift_violations": drift_violations,
-            "stats": self.stats
+            "stats": self.stats,
         }
-        
-        report_path = self.audit_log_dir / f"audit_{report['timestamp'].replace(':','-')}.json"
+
+        report_path = self.audit_log_dir / f"audit_{report['timestamp'].replace(':', '-')}.json"
         try:
-            with open(report_path, 'w') as f:
+            with open(report_path, "w") as f:
                 json.dump(report, f, indent=4)
         except Exception as e:
             Logger.error(f"Failed to persist audit log: {e}")
@@ -1370,16 +1401,21 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
     # PHASE 11: COGNITIVE DISPOSITION - AI-POWERED TRIAGE
     # =========================================================================
 
-    def comprehensive_territory_audit(self, target_territories: list[str], check_layer_boundaries: bool = True, check_naming_conventions: bool = True) -> dict[str, Any]:
+    def comprehensive_territory_audit(
+        self,
+        target_territories: list[str],
+        check_layer_boundaries: bool = True,
+        check_naming_conventions: bool = True,
+    ) -> dict[str, Any]:
         """
         [HARDENED] Unified Compliance Audit.
         Aggregates output from Hierarchy, Location, and SystemArchitect agents into a single JSON manifest.
         """
         Logger.info(f"🎯 INITIATING UNIFIED AUDIT: {target_territories}")
-        
+
         # 1. Base Naming/Drift Audit
         audit_results = self.run_audit(target_territories=target_territories)
-        
+
         # Ensure violations list exists
         if "violations" not in audit_results:
             audit_results["violations"] = []
@@ -1387,41 +1423,47 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         # 2. Ingest Hierarchy (Physical Placement)
         try:
             from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+
             hierarchy = HierarchyAgent(project_root=self.project_root)
             for territory in target_territories:
                 h_report = hierarchy.scan_root_violations(target_territory=territory)
-                for v in h_report.get('violations', []):
-                    audit_results["violations"].append({
-                        "type": "STRUCTURE",
-                        "file": v.get('file'),
-                        "message": "File sitting in territory root; must be in SSOT subfolder.",
-                        "severity": "ERROR"
-                    })
+                for v in h_report.get("violations", []):
+                    audit_results["violations"].append(
+                        {
+                            "type": "STRUCTURE",
+                            "file": v.get("file"),
+                            "message": "File sitting in territory root; must be in SSOT subfolder.",
+                            "severity": "ERROR",
+                        }
+                    )
         except Exception as e:
             Logger.warning(f"Unified Audit: Hierarchy ingestion failed: {e}")
 
         # 3. Ingest System Architect (Circular Dependencies/Gravity)
         try:
             from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
+
             architect = SystemArchitectAgent(project_root=self.project_root)
             for territory in target_territories:
                 path = f"agentic_core/{territory}"
                 arch_report = architect.validate_core_architecture(path)
-                if not arch_report.get('imports_valid', True):
-                    for circ in arch_report.get('circular_dependencies', []):
-                        audit_results["violations"].append({
-                            "type": "GRAVITY",
-                            "file": territory,
-                            "message": f"Circular dependency detected: {circ}",
-                            "severity": "CRITICAL"
-                        })
+                if not arch_report.get("imports_valid", True):
+                    for circ in arch_report.get("circular_dependencies", []):
+                        audit_results["violations"].append(
+                            {
+                                "type": "GRAVITY",
+                                "file": territory,
+                                "message": f"Circular dependency detected: {circ}",
+                                "severity": "CRITICAL",
+                            }
+                        )
         except Exception as e:
             Logger.warning(f"Unified Audit: Architecture ingestion failed: {e}")
-            
+
         # Update Total Stats
         audit_results["stats"]["violations_found"] = len(audit_results["violations"])
         audit_results["target_territories"] = target_territories
-        
+
         return audit_results
 
     def generate_healing_plan(self, gov_report: dict[str, Any]) -> dict[str, Any]:
@@ -1430,7 +1472,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         Now recognizes STRUCTURE violations (Root Files) and GRAVITY violations.
         """
         Logger.info("🔧 Generating healing plan from governance report")
-        
+
         # [INTEGRATION] Analyze violation types
         violations = gov_report.get("violations", [])
         has_naming = any(v.get("type") == "NAMING" for v in violations)
@@ -1446,9 +1488,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             "target_territories": gov_report.get("target_territories", []),
             # Pass detailed breakdowns for the executor
             "naming_fixes": [v for v in violations if v.get("type") == "NAMING"],
-            "structure_fixes": [v for v in violations if v.get("type") == "STRUCTURE"]
+            "structure_fixes": [v for v in violations if v.get("type") == "STRUCTURE"],
         }
-        
+
         # Add specific healing actions
         if has_naming:
             plan["actions"].append("Rename Non-Compliant Agent Classes")
@@ -1456,13 +1498,13 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             plan["actions"].append("Relocate Root Files to SSOT Subfolders")
         if has_gravity:
             plan["actions"].append("Repair Circular Dependencies")
-            
+
         if not plan["actions"]:
             plan["actions"].append("No healing required - system is compliant")
-            
+
         Logger.info(f"Generated healing plan with {len(plan['actions'])} actions")
         return plan
-            
+
         Logger.info(f"Generated healing plan with {len(plan['actions'])} actions")
         return plan
 

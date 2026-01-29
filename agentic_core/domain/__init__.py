@@ -17,7 +17,7 @@ from .SovereignError import (
     IntegrityError,
     ValidationError,
     ResourceNotFoundError,
-    SecurityViolationError
+    SecurityViolationError,
 )
 
 # Export core contracts
@@ -27,22 +27,20 @@ from .LegacyArtifacts import LegacyArtifacts
 # Public API
 __all__ = [
     # Entities
-    'BaseEntity',
-    'AgentConfig',
-    
+    "BaseEntity",
+    "AgentConfig",
     # Exception Hierarchy (SSOT)
-    'SovereignError',
-    'HealerError',
-    'CircularDependencyError',
-    'ConfigurationError',
-    'StructuralError',
-    'HygieneError',
-    'IntegrityError',
-    'ValidationError',
-    'ResourceNotFoundError',
-    'SecurityViolationError',
-    
+    "SovereignError",
+    "HealerError",
+    "CircularDependencyError",
+    "ConfigurationError",
+    "StructuralError",
+    "HygieneError",
+    "IntegrityError",
+    "ValidationError",
+    "ResourceNotFoundError",
+    "SecurityViolationError",
     # Core Contracts
-    'CoreIntegrityVerifier',
-    'LegacyArtifacts'
+    "CoreIntegrityVerifier",
+    "LegacyArtifacts",
 ]

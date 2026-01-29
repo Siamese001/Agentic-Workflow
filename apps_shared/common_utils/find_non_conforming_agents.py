@@ -22,9 +22,16 @@ warnings.warn(
     stacklevel=2,
 )
 import ast
+from pathlib import Path
 
-    AGENTIC_CORE_DIR,
-)
+try:
+    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+        AGENTIC_CORE_DIR,
+        ARCHIVES_DIR,
+    )
+except ImportError:
+    AGENTIC_CORE_DIR = "agentic_core"
+    ARCHIVES_DIR = ".sovereign_healing_backup"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR

@@ -23,12 +23,10 @@ Environment:
 import os
 import json
 import ast
-import glob
 import time
 import sys
 from pathlib import Path
-from typing import List, Dict, Any, Optional
-from datetime import datetime
+from typing import Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -74,11 +72,11 @@ class PineconePopulator:
             "architecture-docs": 0,
             "healing-patterns": 0,
             "api-contracts": 0,
-            "config-blueprints": 0
+            "config-blueprints": 0,
         }
         print(f"✅ Initialized PineconePopulator for index: {PINECONE_INDEX_NAME}")
 
-    def batch_upsert(self, records: List[Dict[str, Any]], namespace: str):
+    def batch_upsert(self, records: list[dict[str, Any]], namespace: str):
         """
         Upserts records to Pinecone in batches.
 
@@ -91,10 +89,12 @@ class PineconePopulator:
             return
 
         for i in range(0, total, BATCH_SIZE):
-            batch = records[i:i + BATCH_SIZE]
+            batch = records[i : i + BATCH_SIZE]
             try:
                 self.index.upsert_records(namespace=namespace, records=batch)
-                print(f"  📤 Upserted batch {i//BATCH_SIZE + 1}/{(total + BATCH_SIZE - 1) // BATCH_SIZE} to '{namespace}'")
+                print(
+                    f"  📤 Upserted batch {i // BATCH_SIZE + 1}/{(total + BATCH_SIZE - 1) // BATCH_SIZE} to '{namespace}'"
+                )
             except Exception as e:
                 print(f"  ❌ Error upserting batch: {e}")
                 # Continue with next batch
@@ -107,25 +107,25 @@ class PineconePopulator:
     # -------------------------------------------------------------------------
     def process_agents(self):
         """Extract all agents from agent_discovery_full.json"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("📦 Processing Agents...")
-        print("="*60)
+        print("=" * 60)
 
         if not AGENT_DISCOVERY_FILE.exists():
             print(f"  ⚠️  {AGENT_DISCOVERY_FILE} not found. Skipping.")
             return
 
-        with open(AGENT_DISCOVERY_FILE, 'r', encoding='utf-8') as f:
+        with open(AGENT_DISCOVERY_FILE, encoding="utf-8") as f:
             data = json.load(f)
 
         records = []
         agents_list = data if isinstance(data, list) else data.get("agents", [])
 
         for agent in agents_list:
-            class_name = agent.get('class_name', 'Unknown')
-            description = agent.get('description', '').strip()
-            key_methods = agent.get('key_methods', [])
-            inheritance = agent.get('inheritance', [])
+            class_name = agent.get("class_name", "Unknown")
+            description = agent.get("description", "").strip()
+            key_methods = agent.get("key_methods", [])
+            inheritance = agent.get("inheritance", [])
 
             # Construct rich semantic content
             content = (
@@ -138,20 +138,22 @@ class PineconePopulator:
                 f"Inherits from: {', '.join(inheritance)}."
             )
 
-            records.append({
-                "_id": f"agent-{class_name}",
-                "content": content,  # This field is embedded by Pinecone
-                "class_name": class_name,
-                "layer": agent.get("layer", "Unknown"),
-                "territory": agent.get("territory", "Unknown"),
-                "category": agent.get("category", "Uncategorized"),
-                "path": agent.get("path", ""),
-                "has_healing": agent.get("has_healing", False),
-                "mcp_hardened": agent.get("mcp_hardened", False),
-                "has_tests": agent.get("has_tests", False),
-                "loc": agent.get("loc", 0),
-                "type": "agent_definition"
-            })
+            records.append(
+                {
+                    "_id": f"agent-{class_name}",
+                    "content": content,  # This field is embedded by Pinecone
+                    "class_name": class_name,
+                    "layer": agent.get("layer", "Unknown"),
+                    "territory": agent.get("territory", "Unknown"),
+                    "category": agent.get("category", "Uncategorized"),
+                    "path": agent.get("path", ""),
+                    "has_healing": agent.get("has_healing", False),
+                    "mcp_hardened": agent.get("mcp_hardened", False),
+                    "has_tests": agent.get("has_tests", False),
+                    "loc": agent.get("loc", 0),
+                    "type": "agent_definition",
+                }
+            )
 
         self.batch_upsert(records, "agents")
 
@@ -160,9 +162,9 @@ class PineconePopulator:
     # -------------------------------------------------------------------------
     def process_mixins(self):
         """Extract mixins from core_extensions directory"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("🔧 Processing Mixins...")
-        print("="*60)
+        print("=" * 60)
 
         records = []
 
@@ -171,12 +173,13 @@ class PineconePopulator:
             return
 
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for file_path in get_python_files(CORE_EXTENSIONS_DIR):
             if file_path.name.startswith("__"):
                 continue
 
             try:
-                with open(file_path, "r", encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     source = f.read()
                 tree = ast.parse(source)
             except (SyntaxError, UnicodeDecodeError) as e:
@@ -187,7 +190,8 @@ class PineconePopulator:
                 if isinstance(node, ast.ClassDef) and "Mixin" in node.name:
                     docstring = ast.get_docstring(node) or "No documentation available."
                     methods = [
-                        m.name for m in node.body
+                        m.name
+                        for m in node.body
                         if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef))
                         and not m.name.startswith("_")
                     ]
@@ -198,15 +202,17 @@ class PineconePopulator:
                         f"Public methods: {', '.join(methods[:10])}."
                     )
 
-                    records.append({
-                        "_id": f"mixin-{node.name}",
-                        "content": content,
-                        "name": node.name,
-                        "methods": json.dumps(methods[:20]),  # Store as JSON string
-                        "path": str(file_path.relative_to(PROJECT_ROOT)),
-                        "layer": "L0",
-                        "type": "mixin_definition"
-                    })
+                    records.append(
+                        {
+                            "_id": f"mixin-{node.name}",
+                            "content": content,
+                            "name": node.name,
+                            "methods": json.dumps(methods[:20]),  # Store as JSON string
+                            "path": str(file_path.relative_to(PROJECT_ROOT)),
+                            "layer": "L0",
+                            "type": "mixin_definition",
+                        }
+                    )
 
         self.batch_upsert(records, "mixins")
 
@@ -215,21 +221,22 @@ class PineconePopulator:
     # -------------------------------------------------------------------------
     def process_docs(self):
         """Extract markdown documentation from docs/ and root"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("📚 Processing Architecture Docs...")
-        print("="*60)
+        print("=" * 60)
 
         records = []
 
         # Phase 6: Use ssot_discovery instead of rglob for MD files
         from agentic_core.utils.ssot_discovery import get_markdown_files
+
         all_files = get_markdown_files(PROJECT_ROOT)
 
         for file_path in all_files:
             path_str = str(file_path)
 
             try:
-                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                with open(file_path, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
             except Exception as e:
                 print(f"  ⚠️  Skipping {file_path.name}: {e}")
@@ -240,10 +247,7 @@ class PineconePopulator:
 
             filename = file_path.name
             # Create summary embedding (first 1500 chars + filename)
-            embed_content = (
-                f"Document: {filename}. "
-                f"Content: {content[:1500]}"
-            )
+            embed_content = f"Document: {filename}. Content: {content[:1500]}"
 
             # Determine category from filename
             category = "general"
@@ -256,15 +260,17 @@ class PineconePopulator:
             elif "README" in filename.upper():
                 category = "readme"
 
-            records.append({
-                "_id": f"doc-{filename.replace('.', '_').replace(' ', '_')}",
-                "content": embed_content,
-                "filename": filename,
-                "path": str(file_path.relative_to(PROJECT_ROOT)),
-                "length": len(content),
-                "category": category,
-                "type": "documentation"
-            })
+            records.append(
+                {
+                    "_id": f"doc-{filename.replace('.', '_').replace(' ', '_')}",
+                    "content": embed_content,
+                    "filename": filename,
+                    "path": str(file_path.relative_to(PROJECT_ROOT)),
+                    "length": len(content),
+                    "category": category,
+                    "type": "documentation",
+                }
+            )
 
         self.batch_upsert(records, "architecture-docs")
 
@@ -273,9 +279,9 @@ class PineconePopulator:
     # -------------------------------------------------------------------------
     def process_healing(self):
         """Extract healing patterns from RCA docs and healing-related files"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("🩹 Processing Healing Patterns...")
-        print("="*60)
+        print("=" * 60)
 
         records = []
 
@@ -283,7 +289,7 @@ class PineconePopulator:
         rca_patterns = [
             PROJECT_ROOT / "*.md",
             DOCS_DIR / "**/*.md" if DOCS_DIR.exists() else None,
-            PROJECT_ROOT / "agentic_core" / "L6_observability" / "reports" / "*.md"
+            PROJECT_ROOT / "agentic_core" / "L6_observability" / "reports" / "*.md",
         ]
 
         rca_files = []
@@ -291,6 +297,7 @@ class PineconePopulator:
             if pattern:
                 # Absolute Zero: Use ssot_discovery instead of glob
                 from agentic_core.utils.ssot_discovery import get_python_files
+
                 if "*" in str(pattern):
                     rca_files.extend(list(get_python_files(pattern.parent)))
                 else:
@@ -302,11 +309,13 @@ class PineconePopulator:
 
             filename = file_path.name
             # Only process RCA and healing-related docs
-            if not any(kw in filename.upper() for kw in ["RCA", "FIX", "HEALING", "REPORT", "COMPLETE"]):
+            if not any(
+                kw in filename.upper() for kw in ["RCA", "FIX", "HEALING", "REPORT", "COMPLETE"]
+            ):
                 continue
 
             try:
-                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                with open(file_path, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
             except Exception:
                 continue
@@ -315,18 +324,17 @@ class PineconePopulator:
                 continue
 
             # Extract problem/solution pattern
-            embed_content = (
-                f"Healing Pattern: {filename}. "
-                f"Content: {content[:2000]}"
-            )
+            embed_content = f"Healing Pattern: {filename}. Content: {content[:2000]}"
 
-            records.append({
-                "_id": f"healing-{filename.replace('.', '_').replace(' ', '_')}",
-                "content": embed_content,
-                "source": filename,
-                "path": str(file_path.relative_to(PROJECT_ROOT)),
-                "type": "healing_pattern"
-            })
+            records.append(
+                {
+                    "_id": f"healing-{filename.replace('.', '_').replace(' ', '_')}",
+                    "content": embed_content,
+                    "source": filename,
+                    "path": str(file_path.relative_to(PROJECT_ROOT)),
+                    "type": "healing_pattern",
+                }
+            )
 
         self.batch_upsert(records, "healing-patterns")
 
@@ -335,9 +343,9 @@ class PineconePopulator:
     # -------------------------------------------------------------------------
     def process_api_contracts(self):
         """Extract method signatures from agentic_core classes"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("📋 Processing API Contracts...")
-        print("="*60)
+        print("=" * 60)
 
         records = []
 
@@ -347,11 +355,12 @@ class PineconePopulator:
 
         # Phase 4.1: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for file_path in get_python_files(AGENTIC_CORE_DIR):
             path_str = str(file_path)
 
             try:
-                with open(file_path, "r", encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     source = f.read()
                 tree = ast.parse(source)
             except (SyntaxError, UnicodeDecodeError):
@@ -371,7 +380,10 @@ class PineconePopulator:
                     for item in node.body:
                         if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
                             # Skip private methods except important ones
-                            if item.name.startswith("_") and item.name not in ["__init__", "__call__"]:
+                            if item.name.startswith("_") and item.name not in [
+                                "__init__",
+                                "__call__",
+                            ]:
                                 continue
 
                             # Build signature
@@ -403,16 +415,18 @@ class PineconePopulator:
                                 f"Documentation: {docstring[:300]}."
                             )
 
-                            records.append({
-                                "_id": f"contract-{class_name}-{item.name}",
-                                "content": content,
-                                "method": item.name,
-                                "class_name": class_name,
-                                "signature": signature,
-                                "layer": layer,
-                                "path": str(file_path.relative_to(PROJECT_ROOT)),
-                                "type": "api_contract"
-                            })
+                            records.append(
+                                {
+                                    "_id": f"contract-{class_name}-{item.name}",
+                                    "content": content,
+                                    "method": item.name,
+                                    "class_name": class_name,
+                                    "signature": signature,
+                                    "layer": layer,
+                                    "path": str(file_path.relative_to(PROJECT_ROOT)),
+                                    "type": "api_contract",
+                                }
+                            )
 
         # Deduplicate by _id (keep first occurrence)
         seen = set()
@@ -429,9 +443,9 @@ class PineconePopulator:
     # -------------------------------------------------------------------------
     def process_configs(self):
         """Extract SSOT configuration blueprints"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("⚙️  Processing Config Blueprints...")
-        print("="*60)
+        print("=" * 60)
 
         records = []
 
@@ -440,12 +454,13 @@ class PineconePopulator:
             return
 
         from agentic_core.utils.ssot_discovery import get_python_files
+
         for file_path in get_python_files(BLUEPRINT_DIR):
             if file_path.name.startswith("__"):
                 continue
 
             try:
-                with open(file_path, "r", encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
             except Exception:
                 continue
@@ -472,23 +487,25 @@ class PineconePopulator:
                 f"Content preview: {content[:1000]}"
             )
 
-            records.append({
-                "_id": f"config-{filename.replace('.', '_')}",
-                "content": embed_content,
-                "filename": filename,
-                "definitions": json.dumps(definitions[:30]),
-                "path": str(file_path.relative_to(PROJECT_ROOT)),
-                "type": "ssot_blueprint"
-            })
+            records.append(
+                {
+                    "_id": f"config-{filename.replace('.', '_')}",
+                    "content": embed_content,
+                    "filename": filename,
+                    "definitions": json.dumps(definitions[:30]),
+                    "path": str(file_path.relative_to(PROJECT_ROOT)),
+                    "type": "ssot_blueprint",
+                }
+            )
 
         self.batch_upsert(records, "config-blueprints")
 
     def run_all(self):
         """Execute all processing steps."""
         start_time = time.time()
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("🚀 STARTING SEMANTIC KNOWLEDGE INGESTION")
-        print("="*60)
+        print("=" * 60)
         print(f"Index: {PINECONE_INDEX_NAME}")
         print(f"Project Root: {PROJECT_ROOT}")
 
@@ -501,9 +518,9 @@ class PineconePopulator:
 
         duration = time.time() - start_time
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("✅ INGESTION COMPLETE")
-        print("="*60)
+        print("=" * 60)
         print(f"Duration: {duration:.2f} seconds")
         print("\nRecords per namespace:")
         total = 0
@@ -511,7 +528,7 @@ class PineconePopulator:
             print(f"  📁 {ns}: {count} records")
             total += count
         print(f"\n  📊 TOTAL: {total} records")
-        print("="*60)
+        print("=" * 60)
 
         return self.stats
 
@@ -529,6 +546,7 @@ def main():
     except Exception as e:
         print(f"❌ Fatal error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 

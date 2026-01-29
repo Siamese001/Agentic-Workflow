@@ -4,6 +4,7 @@ agentic_core/L0_maintenance/scripts/test_final_comprehensive_audit.py
 FIX: Implements Functional Naming (Orchestration/Execution/Cognition).
 REMOVED: All legacy 'l3_', 'l2_', 'l1_' variable prefixes.
 """
+
 from __future__ import annotations
 import os
 import sys
@@ -35,7 +36,9 @@ def test_case_1_signal_saturation_sweep():
         from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
             L3OrchestrationBaseAgent,
         )
-        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import (
+            L2ExecutionBaseAgent,
+        )
         from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
             L1CognitionBaseAgent,
         )
@@ -103,6 +106,7 @@ def test_case_1_signal_saturation_sweep():
     except Exception as e:
         print(f"\n❌ FAIL: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -223,7 +227,9 @@ def test_case_3_depth_constraint_persistence():
         from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
             L3OrchestrationBaseAgent,
         )
-        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import (
+            L2ExecutionBaseAgent,
+        )
         from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
             L1CognitionBaseAgent,
         )
@@ -237,7 +243,7 @@ def test_case_3_depth_constraint_persistence():
         result_d3 = orchestrator.heal_repository(
             dry_run=True, depth=3, max_depth=2, depth_test="level_3"
         )
-        
+
         if not result_d3.get("depth_limited"):
             print(f"❌ FAIL: Depth 3 should be limited. Got: {result_d3}")
             return False
@@ -250,10 +256,14 @@ def test_case_3_depth_constraint_persistence():
         executor = L2ExecutionBaseAgent(ctx=None)
         cognition = L1CognitionBaseAgent()
 
-        exec_result = executor.heal_repository(dry_run=True, depth=2, max_depth=2, layer_test="Execution")
+        exec_result = executor.heal_repository(
+            dry_run=True, depth=2, max_depth=2, layer_test="Execution"
+        )
         print(f"  Execution at depth 2: {exec_result}")
 
-        cog_result = cognition.heal_repository(dry_run=True, depth=2, max_depth=2, layer_test="Cognition")
+        cog_result = cognition.heal_repository(
+            dry_run=True, depth=2, max_depth=2, layer_test="Cognition"
+        )
         print(f"  Cognition at depth 2: {cog_result}")
 
         # Step 4: Verify depth counter increments
@@ -264,11 +274,11 @@ def test_case_3_depth_constraint_persistence():
         result_a = orchestrator.heal_repository(
             dry_run=True, depth=0, max_depth=3, _call_path=call_path, chain_test="agent_a"
         )
-        
+
         result_b = executor.heal_repository(
             dry_run=True, depth=1, max_depth=3, _call_path=call_path, chain_test="agent_b"
         )
-        
+
         result_c = cognition.heal_repository(
             dry_run=True, depth=2, max_depth=3, _call_path=call_path, chain_test="agent_c"
         )
@@ -287,15 +297,15 @@ def main():
     print("FINAL COMPREHENSIVE AUDIT VERIFICATION SUITE")
     print("138-Agent Mass Remediation Validation")
     print("=" * 70)
-    
+
     results = []
     results.append(test_case_1_signal_saturation_sweep())
     results.append(test_case_2_terminal_independence())
     results.append(test_case_3_depth_constraint_persistence())
-    
+
     passed = sum(results)
     total = len(results)
-    
+
     if passed == total:
         print("\n✅ ALL FINAL AUDIT TESTS PASSED - 100% SUCCESS")
         return 0

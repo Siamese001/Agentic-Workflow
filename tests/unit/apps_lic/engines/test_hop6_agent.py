@@ -36,9 +36,7 @@ class TestHOP6Validation:
         buffer.write_once("hop2_research", {"strategic_brief": "Artificial Intelligence roadmap"})
         buffer.write_once("hop3_sender_grounding", {})
 
-        with patch(
-            "apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs
-        ):
+        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP6ValidationAgent()
             agent.run_phase(buffer, registry)
 
@@ -63,9 +61,7 @@ class TestHOP6Validation:
         buffer.write_once("hop2_research", {"strategic_brief": ""})
         buffer.write_once("hop3_sender_grounding", {})
 
-        with patch(
-            "apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs
-        ):
+        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP6ValidationAgent()
             agent.run_phase(buffer, registry)
 
@@ -81,9 +77,7 @@ class TestHOP6Validation:
         """Verify crash on missing inputs."""
         buffer, registry = resources
 
-        with patch(
-            "apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs
-        ):
+        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP6ValidationAgent()
             with pytest.raises(RuntimeError):
                 agent.run_phase(buffer, registry)

@@ -60,7 +60,9 @@ class EvalResult(BaseModel):
     test_id: str = Field(..., description="ID of the executed test case")
     verdict: JudgeVerdict = Field(..., description="Judge verdict")
     raw_output: str = Field(..., description="Raw model output")
-    reasoning_trace: list[dict[str, Any]] = Field(default_factory=list, description="Reasoning trace")
+    reasoning_trace: list[dict[str, Any]] = Field(
+        default_factory=list, description="Reasoning trace"
+    )
 
 
 class GoldenCase(BaseModel):

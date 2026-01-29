@@ -13,16 +13,19 @@ root_dir = os.path.dirname(current_dir)
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 
-class TestPhase2Migration(unittest.TestCase):
 
+class TestPhase2Migration(unittest.TestCase):
     def test_01_agent_executor_importable_from_engines(self):
         """
         Critical Check: Verify AgentExecutor can be imported from its new home.
         """
         try:
             from apps_rg.engines import AgentExecutor, AgentConfig, Provider
+
             # Verify it's the class we expect
-            self.assertTrue(hasattr(AgentExecutor, 'execute'), "Imported AgentExecutor missing 'execute' method")
+            self.assertTrue(
+                hasattr(AgentExecutor, "execute"), "Imported AgentExecutor missing 'execute' method"
+            )
         except ImportError as e:
             self.fail(f"Phase 2 Fail: Could not import AgentExecutor from apps_rg.engines: {e}")
 
@@ -32,11 +35,11 @@ class TestPhase2Migration(unittest.TestCase):
         This tests the absolute import fixes.
         """
         from apps_rg.engines import AgentExecutor
-        
+
         executor = AgentExecutor()
         # triggering _get_default_model triggers the local import we fixed
         try:
-            # We wrap in try/except because we don't have real credentials, 
+            # We wrap in try/except because we don't have real credentials,
             # but we just want to see if the IMPORT fails
             executor._get_default_model()
         except ImportError as e:
@@ -51,11 +54,14 @@ class TestPhase2Migration(unittest.TestCase):
         """
         old_path = r"C:\Git\Agentic-Workflow\apps_shared\common_utils\AgentExecutor.py"
         if os.path.exists(old_path):
-            print(f"WARNING: Old file still exists at {old_path}. Please delete it manually to complete the refactor.")
-            # We don't fail here because the prompt implies generating diffs for the *new* state, 
+            print(
+                f"WARNING: Old file still exists at {old_path}. Please delete it manually to complete the refactor."
+            )
+            # We don't fail here because the prompt implies generating diffs for the *new* state,
             # actual deletion might happen via script.
         else:
             print("Cleanup verified: Old AgentExecutor.py is gone.")
+
 
 if __name__ == "__main__":
     unittest.main()

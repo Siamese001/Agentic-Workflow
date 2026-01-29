@@ -2,6 +2,7 @@
 
 Tests for terminal purge integrity, zero-loss ledger verification, and baseline drift prevention.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -23,6 +24,7 @@ class TestTerminalPurgeIntegrity:
     def reset_singleton(self):
         """Reset singleton before each test."""
         from agentic_core.utils.sovereign_scanner import SovereignScanner
+
         SovereignScanner.reset_instance()
         yield
         SovereignScanner.reset_instance()
@@ -48,15 +50,12 @@ class TestTerminalPurgeIntegrity:
                 "_raw_result": {
                     "violations_found": 2160,
                     "violations_fixed": 2160,
-                }
+                },
             }
 
         # After purge, lockdown should return clean
         def mock_lockdown():
-            return (True, {
-                "violations_found": 0,
-                "_raw_result": {"violations_found": 0}
-            })
+            return (True, {"violations_found": 0, "_raw_result": {"violations_found": 0}})
 
         agent.heal_repository = mock_heal
         agent.finalize_sovereign_lockdown = mock_lockdown
@@ -73,11 +72,17 @@ class TestTerminalPurgeIntegrity:
 
     def test_convergence_script_exists(self):
         """[Phase 10] Verify execute_convergence.py script exists."""
-        script_path = Path(__file__).parent.parent.parent / "scripts" / "maintenance" / "execute_convergence.py"
+        script_path = (
+            Path(__file__).parent.parent.parent
+            / "scripts"
+            / "maintenance"
+            / "execute_convergence.py"
+        )
 
         # Try to import the module
         try:
             import scripts.maintenance.execute_convergence as conv_script
+
             assert hasattr(conv_script, "run_terminal_convergence")
         except ImportError:
             # If import fails, check file exists
@@ -100,7 +105,7 @@ class TestTerminalPurgeIntegrity:
             return {
                 "violations_found": 0,
                 "violations_fixed": 0,
-                "_raw_result": {"violations_found": 0, "violations_fixed": 0}
+                "_raw_result": {"violations_found": 0, "violations_fixed": 0},
             }
 
         agent.heal_repository = mock_heal
@@ -125,6 +130,7 @@ class TestZeroLossLedgerVerification:
     def reset_singleton(self):
         """Reset singleton before each test."""
         from agentic_core.utils.sovereign_scanner import SovereignScanner
+
         SovereignScanner.reset_instance()
         yield
         SovereignScanner.reset_instance()
@@ -210,6 +216,7 @@ class TestBaselineDriftPrevention:
     def reset_singleton(self):
         """Reset singleton before each test."""
         from agentic_core.utils.sovereign_scanner import SovereignScanner
+
         SovereignScanner.reset_instance()
         yield
         SovereignScanner.reset_instance()
@@ -232,10 +239,7 @@ class TestBaselineDriftPrevention:
             call_count[0] += 1
             if call_count[0] == 1:
                 # Initial clean state
-                return {
-                    "violations_found": 0,
-                    "_raw_result": {"violations_found": 0}
-                }
+                return {"violations_found": 0, "_raw_result": {"violations_found": 0}}
             else:
                 # New violation detected
                 return {
@@ -244,8 +248,8 @@ class TestBaselineDriftPrevention:
                         "violations_found": 1,
                         "violations": [
                             {"type": "ORPHAN", "message": "LegacyAgent.py in unauthorized folder"}
-                        ]
-                    }
+                        ],
+                    },
                 }
 
         agent.heal_repository = mock_heal
@@ -277,10 +281,8 @@ class TestBaselineDriftPrevention:
                 "violations_found": 1,
                 "_raw_result": {
                     "violations_found": 1,
-                    "violations": [
-                        {"type": "ORPHAN", "message": "New orphan detected"}
-                    ]
-                }
+                    "violations": [{"type": "ORPHAN", "message": "New orphan detected"}],
+                },
             }
 
         agent.heal_repository = mock_heal
@@ -303,10 +305,8 @@ class TestBaselineDriftPrevention:
                 "violations_found": 1,
                 "_raw_result": {
                     "violations_found": 1,
-                    "violations": [
-                        {"type": "GRAVITY", "message": "L3 importing L5"}
-                    ]
-                }
+                    "violations": [{"type": "GRAVITY", "message": "L3 importing L5"}],
+                },
             }
 
         agent.heal_repository = mock_heal
@@ -330,6 +330,7 @@ class TestPhase10TerminalIntegration:
     def reset_singleton(self):
         """Reset singleton before each test."""
         from agentic_core.utils.sovereign_scanner import SovereignScanner
+
         SovereignScanner.reset_instance()
         yield
         SovereignScanner.reset_instance()
@@ -351,7 +352,7 @@ class TestPhase10TerminalIntegration:
             return {
                 "violations_found": 100,
                 "violations_fixed": 100,
-                "_raw_result": {"violations_found": 100, "violations_fixed": 100}
+                "_raw_result": {"violations_found": 100, "violations_fixed": 100},
             }
 
         def mock_lockdown():
@@ -385,7 +386,7 @@ class TestPhase10TerminalIntegration:
             return {
                 "violations_found": 0,
                 "violations_fixed": 0,
-                "_raw_result": {"violations_found": 0, "violations_fixed": 0}
+                "_raw_result": {"violations_found": 0, "violations_fixed": 0},
             }
 
         agent.heal_repository = mock_heal

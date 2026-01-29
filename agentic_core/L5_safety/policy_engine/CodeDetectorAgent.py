@@ -1,11 +1,12 @@
 """
 File: agentic_core/L5_safety/policy_engine/CodeDetectorAgent.py
-Rationale: 
+Rationale:
     L5 Sovereign Guardian for Code Purity.
     - Hardened inheritance (Standard SovereignBaseAgent).
     - Implements Atomic Snapshot comparison for Drift detection.
     - Standardized Severity enums for dashboard integration.
 """
+
 #!/usr/bin/env python3
 from __future__ import annotations
 import ast
@@ -17,13 +18,14 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, List, Dict, Optional
+from typing import Any
 
 # [HARDENED] Single inheritance source to prevent MRO conflicts
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
+
 
 class DetectionType(Enum):
     DEAD_CODE = auto()
@@ -32,21 +34,24 @@ class DetectionType(Enum):
     DEADLOCK = auto()
     MEMORY_LEAK = auto()
 
+
 class Severity(Enum):
     INFO = 0
     WARNING = 1
     ERROR = 2
     CRITICAL = 3
 
+
 @dataclass
 class Detection:
     detection_type: str  # String serialized for JSON
-    file_path: str       # String serialized for JSON
+    file_path: str  # String serialized for JSON
     line_number: int
     severity: str
     message: str
     details: dict = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+
 
 @dataclass
 class DetectorConfig:
@@ -55,9 +60,10 @@ class DetectorConfig:
     enable_method_change: bool = True
     enable_deadlock: bool = True
     enable_memory_leak: bool = True
-    baseline_path: Optional[Path] = None
-    ignore_patterns: List[str] = field(default_factory=lambda: ["test_", "_test.py", "conftest.py"])
-    project_root: Optional[Path] = None
+    baseline_path: Path | None = None
+    ignore_patterns: list[str] = field(default_factory=lambda: ["test_", "_test.py", "conftest.py"])
+    project_root: Path | None = None
+
 
 class CodeDetectorAgent(SovereignBaseAgent):
     """
@@ -66,23 +72,26 @@ class CodeDetectorAgent(SovereignBaseAgent):
     """
 
     LOCK_PATTERNS = [
-        r"\.acquire\(", r"threading\.Lock\(", r"threading\.RLock\(",
-        r"asyncio\.Lock\(", r"with\s+\w+_lock:"
+        r"\.acquire\(",
+        r"threading\.Lock\(",
+        r"threading\.RLock\(",
+        r"asyncio\.Lock\(",
+        r"with\s+\w+_lock:",
     ]
 
     MEMORY_LEAK_PATTERNS = [
-        r"__del__\s*\(", 
-        r"global\s+\w+\s*=\s*\[\]", 
-        r"\.append\([^)]+\)\s*$" # Naive unbounded list check
+        r"__del__\s*\(",
+        r"global\s+\w+\s*=\s*\[\]",
+        r"\.append\([^)]+\)\s*$",  # Naive unbounded list check
     ]
 
-    def __init__(self, config: Optional[DetectorConfig] = None):
+    def __init__(self, config: DetectorConfig | None = None):
         self._detector_config = config or DetectorConfig()
         self.project_root = self._detector_config.project_root or Path.cwd()
         self._lock = threading.RLock()
-        self._baseline: Dict[str, Any] = {}
-        self._detections: List[Detection] = []
-        
+        self._baseline: dict[str, Any] = {}
+        self._detections: list[Detection] = []
+
         # Load baseline if available
         if self._detector_config.baseline_path and self._detector_config.baseline_path.exists():
             try:
@@ -91,24 +100,26 @@ class CodeDetectorAgent(SovereignBaseAgent):
                 Logger.warning(f"Failed to load baseline: {e}")
 
     @standard_heal
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> Dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
         """
         Sovereign Interface.
         Detectors primarily REPORT. 'execute' mode can update baselines.
         """
         violations = self.run_full_scan()
-        
+
         # If execute is True, we might update the baseline snapshot
         if execute and self._detector_config.baseline_path:
             self._update_baseline()
-            
+
         return {
             "violations_found": len(violations),
             "violations_fixed": 0,
-            "report": [asdict(d) for d in violations]
+            "report": [asdict(d) for d in violations],
         }
 
-    def run_full_scan(self) -> List[Detection]:
+    def run_full_scan(self) -> list[Detection]:
         """Scans all Python files in project."""
         self._detections = []
         files = list(self.project_root.rglob("*.py"))
@@ -118,10 +129,11 @@ class CodeDetectorAgent(SovereignBaseAgent):
             self.detect_all(f)
         return self._detections
 
-    def detect_all(self, file_path: Path) -> List[Detection]:
+    def detect_all(self, file_path: Path) -> list[Detection]:
         """Run all enabled detections on a file."""
-        if not file_path.exists(): return []
-        
+        if not file_path.exists():
+            return []
+
         detections = []
         try:
             content = file_path.read_text(encoding="utf-8")
@@ -142,85 +154,92 @@ class CodeDetectorAgent(SovereignBaseAgent):
         return detections
 
     # [LOGIC PRESERVED FROM UPLOADED FILE, JUST TYPING UPDATED]
-    def detect_dead_code(self, file_path: Path, content: str) -> List[Detection]:
+    def detect_dead_code(self, file_path: Path, content: str) -> list[Detection]:
         detections = []
         try:
             tree = ast.parse(content)
             defined = set()
             used = set()
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
                     defined.add(node.name)
                 elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
                     used.add(node.id)
-            
+
             unused = defined - used
             for name in unused:
                 if name.startswith("_") or name in {"main", "run", "execute", "__init__", "setup"}:
                     continue
-                
+
                 # Find line number
                 lineno = 0
                 for node in ast.walk(tree):
-                    if hasattr(node, 'name') and node.name == name:
+                    if hasattr(node, "name") and node.name == name:
                         lineno = node.lineno
                         break
-                
-                detections.append(Detection(
-                    detection_type=DetectionType.DEAD_CODE.name,
-                    file_path=str(file_path),
-                    line_number=lineno,
-                    severity=Severity.WARNING.name,
-                    message=f"Potentially unused definition: {name}"
-                ))
+
+                detections.append(
+                    Detection(
+                        detection_type=DetectionType.DEAD_CODE.name,
+                        file_path=str(file_path),
+                        line_number=lineno,
+                        severity=Severity.WARNING.name,
+                        message=f"Potentially unused definition: {name}",
+                    )
+                )
         except SyntaxError:
             pass
         return detections
 
-    def detect_deadlocks(self, file_path: Path, content: str) -> List[Detection]:
+    def detect_deadlocks(self, file_path: Path, content: str) -> list[Detection]:
         detections = []
         lines = content.splitlines()
         locks = []
         for i, line in enumerate(lines, 1):
             if any(re.search(p, line) for p in self.LOCK_PATTERNS):
                 locks.append((i, line))
-        
+
         # Heuristic: Nested locks in close proximity
         if len(locks) >= 2:
-            for j in range(len(locks)-1):
+            for j in range(len(locks) - 1):
                 l1, txt1 = locks[j]
-                l2, txt2 = locks[j+1]
+                l2, txt2 = locks[j + 1]
                 if abs(l2 - l1) < 5 and "release" not in txt1 and "release" not in txt2:
-                     detections.append(Detection(
-                        detection_type=DetectionType.DEADLOCK.name,
-                        file_path=str(file_path),
-                        line_number=l1,
-                        severity=Severity.ERROR.name,
-                        message="Potential nested lock acquisition (Deadlock Risk)",
-                        details={"nested_lines": [l1, l2]}
-                    ))
+                    detections.append(
+                        Detection(
+                            detection_type=DetectionType.DEADLOCK.name,
+                            file_path=str(file_path),
+                            line_number=l1,
+                            severity=Severity.ERROR.name,
+                            message="Potential nested lock acquisition (Deadlock Risk)",
+                            details={"nested_lines": [l1, l2]},
+                        )
+                    )
         return detections
 
-    def detect_memory_leaks(self, file_path: Path, content: str) -> List[Detection]:
+    def detect_memory_leaks(self, file_path: Path, content: str) -> list[Detection]:
         detections = []
         lines = content.splitlines()
         for i, line in enumerate(lines, 1):
             for pattern in self.MEMORY_LEAK_PATTERNS:
                 if re.search(pattern, line):
-                    detections.append(Detection(
-                        detection_type=DetectionType.MEMORY_LEAK.name,
-                        file_path=str(file_path),
-                        line_number=i,
-                        severity=Severity.WARNING.name,
-                        message="Potential memory leak pattern",
-                        details={"pattern": pattern}
-                    ))
+                    detections.append(
+                        Detection(
+                            detection_type=DetectionType.MEMORY_LEAK.name,
+                            file_path=str(file_path),
+                            line_number=i,
+                            severity=Severity.WARNING.name,
+                            message="Potential memory leak pattern",
+                            details={"pattern": pattern},
+                        )
+                    )
         return detections
 
-    def detect_method_changes(self, file_path: Path, content: str) -> List[Detection]:
+    def detect_method_changes(self, file_path: Path, content: str) -> list[Detection]:
         # Requires baseline to be loaded
-        if not self._baseline: return []
+        if not self._baseline:
+            return []
         # Implementation placeholder - requires robust AST signature extraction
         # For now, return empty to prevent noise
         return []

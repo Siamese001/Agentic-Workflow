@@ -21,9 +21,13 @@ class ValidationResult(BaseModel):
     passed: bool = Field(..., description="Whether the validation passed")
     severity: str = Field(..., description="Severity level of the validation")
     message: str = Field(default="", description="Validation message")
-    details: dict[str, Any] = Field(default_factory=dict, description="Additional validation details")
-    timestamp: datetime.datetime = Field(default_factory=datetime.datetime.utcnow, description="Validation timestamp")
-    
+    details: dict[str, Any] = Field(
+        default_factory=dict, description="Additional validation details"
+    )
+    timestamp: datetime.datetime = Field(
+        default_factory=datetime.datetime.utcnow, description="Validation timestamp"
+    )
+
     @field_validator("severity")
     @classmethod
     def validate_severity(cls, v: str) -> str:
@@ -41,10 +45,14 @@ class ThematicAnalysis(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     themes: list[str] = Field(default_factory=list, description="List of identified themes")
-    confidence_scores: list[float] = Field(default_factory=list, description="Confidence scores for each theme")
+    confidence_scores: list[float] = Field(
+        default_factory=list, description="Confidence scores for each theme"
+    )
     dominant_theme: str | None = Field(default=None, description="Most dominant theme")
-    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional analysis metadata")
-    
+    metadata: dict[str, Any] = Field(
+        default_factory=dict, description="Additional analysis metadata"
+    )
+
     @field_validator("confidence_scores")
     @classmethod
     def validate_confidence_scores(cls, v: list[float]) -> list[float]:
@@ -62,11 +70,17 @@ class RagState(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     query: str = Field(default="", description="The original query")
-    retrieved_documents: list[dict[str, Any]] = Field(default_factory=list, description="Retrieved documents")
+    retrieved_documents: list[dict[str, Any]] = Field(
+        default_factory=list, description="Retrieved documents"
+    )
     context: str = Field(default="", description="Combined context for generation")
     response: str = Field(default="", description="Generated response")
-    retrieval_score: float = Field(default=0.0, ge=0.0, le=1.0, description="Retrieval relevance score")
-    generation_confidence: float = Field(default=0.0, ge=0.0, le=1.0, description="Generation confidence score")
+    retrieval_score: float = Field(
+        default=0.0, ge=0.0, le=1.0, description="Retrieval relevance score"
+    )
+    generation_confidence: float = Field(
+        default=0.0, ge=0.0, le=1.0, description="Generation confidence score"
+    )
     metadata: dict[str, Any] = Field(default_factory=dict, description="Additional RAG metadata")
 
 
@@ -78,11 +92,15 @@ class ImmutableStagingBuffer(BaseModel):
 
     data: dict[str, Any] = Field(default_factory=dict, description="Buffer data")
     version: int = Field(default=1, ge=1, description="Buffer version")
-    timestamp: datetime.datetime = Field(default_factory=datetime.datetime.utcnow, description="Buffer timestamp")
+    timestamp: datetime.datetime = Field(
+        default_factory=datetime.datetime.utcnow, description="Buffer timestamp"
+    )
     checksum: str | None = Field(default=None, description="Data checksum for integrity")
 
 
-def with_data(original_buffer: ImmutableStagingBuffer, new_data: dict[str, Any]) -> ImmutableStagingBuffer:
+def with_data(
+    original_buffer: ImmutableStagingBuffer, new_data: dict[str, Any]
+) -> ImmutableStagingBuffer:
     """Return a new buffer with updated data."""
     return ImmutableStagingBuffer(
         data={**original_buffer.data, **new_data},
@@ -95,6 +113,5 @@ def with_data(original_buffer: ImmutableStagingBuffer, new_data: dict[str, Any])
 def clear(original_buffer: ImmutableStagingBuffer) -> ImmutableStagingBuffer:
     """Return a new empty buffer."""
     return ImmutableStagingBuffer(
-        version=original_buffer.version + 1, 
-        timestamp=datetime.datetime.utcnow()
+        version=original_buffer.version + 1, timestamp=datetime.datetime.utcnow()
     )

@@ -11,9 +11,14 @@ This script:
 
 import json
 import re
+from pathlib import Path
 
-    AGENT_DISCOVERY_JSON,
-)
+try:
+    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+        AGENT_DISCOVERY_JSON,
+    )
+except ImportError:
+    AGENT_DISCOVERY_JSON = "agent_discovery_full.json"
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON

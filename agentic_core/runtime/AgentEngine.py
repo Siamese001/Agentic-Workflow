@@ -4,13 +4,10 @@
 from agentic_core.runtime.state import AgentState
 from agentic_core.runtime.tools import ToolRegistry
 from agentic_core.patterns.base import BaseReasoningPattern
-from agentic_core.domain.exceptions import AgenticCoreError
+
 
 class AgentEngine:
-    def __init__(self, 
-                 pattern: BaseReasoningPattern, 
-                 tools: ToolRegistry, 
-                 max_turns: int = 5):
+    def __init__(self, pattern: BaseReasoningPattern, tools: ToolRegistry, max_turns: int = 5):
         self.pattern = pattern
         self.tools = tools
         self.max_turns = max_turns
@@ -20,7 +17,7 @@ class AgentEngine:
         Executes the agent loop until completion or max_turns.
         """
         state = AgentState(task_id=task_id, user_input=user_input)
-        
+
         while not state.is_terminated:
             # 1. Check Limits
             if state.turn_count >= self.max_turns:

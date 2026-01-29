@@ -18,11 +18,12 @@ from apps_shared.common_utils.multi_provider_clients import (
     get_instructor_client,
     get_litellm_completion,
 )
+
 # Previous: from .observability_clients import (...)
 from apps_shared.common_utils.observability_clients import (
-    create_span, 
-    record_exception, 
-    set_span_attribute
+    create_span,
+    record_exception,
+    set_span_attribute,
 )
 # [Diff End]
 

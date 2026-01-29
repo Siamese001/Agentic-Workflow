@@ -2,8 +2,8 @@ import pytest
 from unittest.mock import MagicMock
 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
+
 class TestHierarchyAgentUpdates:
-    
     @pytest.fixture
     def mock_agent(self, tmp_path):
         return HierarchyAgent(project_root=tmp_path)
@@ -14,7 +14,7 @@ class TestHierarchyAgentUpdates:
         """
         assert "scripts" not in mock_agent.FORBIDDEN_ROOT_FOLDERS
         assert "logs" not in mock_agent.FORBIDDEN_ROOT_FOLDERS
-        
+
         # Ensure actual forbidden stuff remains
         assert "coverage_html" in mock_agent.FORBIDDEN_ROOT_FOLDERS
 
@@ -25,12 +25,12 @@ class TestHierarchyAgentUpdates:
         # Setup valid root folder
         (mock_agent.project_root / "scripts").mkdir()
         (mock_agent.project_root / "logs").mkdir()
-        
+
         # Setup invalid folder
         (mock_agent.project_root / "coverage_html").mkdir()
-        
+
         results = mock_agent.scan_root_violations()
-        
+
         # Should only flag coverage_html
         assert "scripts" not in results["forbidden_folders"]
         assert "logs" not in results["forbidden_folders"]
@@ -42,19 +42,21 @@ class TestHierarchyAgentUpdates:
         """
         # Mock the merge method to ensure it's not called for scripts
         mock_agent._merge_root_folder_to_ssot = MagicMock()
-        
+
         # Inject "scripts" into scan results to simulate a false positive (if logic wasn't fixed)
         # But since we fixed the logic, it shouldn't even call scan with violations.
         # Let's verify the heal method logic directly.
-        
-        mock_agent.scan_root_violations = MagicMock(return_value={
-            "violations_found": 1,
-            "forbidden_folders": ["coverage_html"], # Only bad stuff
-            "archived_files_at_root": []
-        })
-        
+
+        mock_agent.scan_root_violations = MagicMock(
+            return_value={
+                "violations_found": 1,
+                "forbidden_folders": ["coverage_html"],  # Only bad stuff
+                "archived_files_at_root": [],
+            }
+        )
+
         mock_agent.heal_root_violations(dry_run=True)
-        
+
         # Should NOT call merge for scripts
         calls = mock_agent._merge_root_folder_to_ssot.call_args_list
         for call in calls:

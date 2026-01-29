@@ -6,7 +6,6 @@ Context: Verifies the effectiveness of the Architectural Guard. We simulate an "
 import unittest
 import os
 import sys
-import tempfile
 
 # Add the project root to Python path to import scripts
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -15,8 +14,8 @@ from ops_scripts.architectural_guard import scan_for_violations
 # SSOT Path
 COMMON_UTILS = r"C:\Git\Agentic-Workflow\apps_shared\common_utils"
 
-class TestArchitecturalGuard(unittest.TestCase):
 
+class TestArchitecturalGuard(unittest.TestCase):
     def setUp(self):
         # Ensure directory exists
         os.makedirs(COMMON_UTILS, exist_ok=True)
@@ -42,7 +41,7 @@ class TestArchitecturalGuard(unittest.TestCase):
         """Test 1: Guard must flag files named *Executor.py"""
         self.create_dummy_violation("RogueExecutor.py", "x = 1")
         violations = scan_for_violations()
-        
+
         found = any("RogueExecutor.py" in v and "Filename Violation" in v for v in violations)
         self.assertTrue(found, "Guard failed to catch file with 'Executor' suffix")
 
@@ -54,17 +53,22 @@ class SneakyBot(Agent):
 """
         self.create_dummy_violation("sneaky_util.py", content)
         violations = scan_for_violations()
-        
+
         found = any("sneaky_util.py" in v and "Inheritance Violation" in v for v in violations)
         self.assertTrue(found, "Guard failed to catch class inheriting from 'Agent'")
 
     def test_guard_passes_clean_state(self):
         """Test 3: Guard must pass 100% when no violations exist"""
         # Ensure we didn't leave any trash from previous tests
-        self.tearDown() 
-        
+        self.tearDown()
+
         violations = scan_for_violations()
-        self.assertEqual(len(violations), 0, f"Guard found violations in what should be a clean state: {violations}")
+        self.assertEqual(
+            len(violations),
+            0,
+            f"Guard found violations in what should be a clean state: {violations}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

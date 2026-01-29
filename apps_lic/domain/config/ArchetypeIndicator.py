@@ -118,7 +118,7 @@ class AgentSpecs(BaseModel):
     qa_report_agent: QAReportConfig
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "AgentSpecs":
+    def from_dict(cls, data: dict[str, Any]) -> AgentSpecs:
         """Strict parsing of dictionary to AgentSpecs schema."""
         pa_data = data.get("profile_analysis_agent", {})
         indicators_data = pa_data.get("archetype_indicators", {})

@@ -1,5 +1,4 @@
 import os
-import sys
 import unittest
 
 
@@ -11,7 +10,9 @@ class FinalSystemIntegrityTest(unittest.TestCase):
 
     def test_legacy_void_compliance(self):
         """Case 1: Confirm the legacy_archive directory is physically gone."""
-        legacy_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "apps_lic", "legacy_archive")
+        legacy_path = os.path.join(
+            os.path.dirname(__file__), "..", "..", "..", "apps_lic", "legacy_archive"
+        )
         self.assertFalse(
             os.path.exists(legacy_path),
             "CRITICAL: Legacy Data Leak detected. Archive still exists.",
@@ -26,9 +27,7 @@ class FinalSystemIntegrityTest(unittest.TestCase):
             recon = CompetitorReconAgent()
             stack = StackModernizationAgent()
 
-            self.assertIsNotNone(
-                recon, "CompetitorReconAgent failed to instantiate from engines/"
-            )
+            self.assertIsNotNone(recon, "CompetitorReconAgent failed to instantiate from engines/")
             self.assertIsNotNone(
                 stack, "StackModernizationAgent failed to instantiate from engines/"
             )

@@ -52,8 +52,6 @@ def test_no_circular_imports():
 def test_mixin_resolution():
     """Verify methods resolve to correct mixins."""
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.L2_execution.mcp.llm_provider_mixin import llm_provider_mixin
-    from agentic_core.config.config_mixin import config_mixin
 
     # Check inheritance
     assert issubclass(SovereignBaseAgent, LLMProviderMixin), (

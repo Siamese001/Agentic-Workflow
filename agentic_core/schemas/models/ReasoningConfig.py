@@ -12,7 +12,6 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 
 
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import ClassVar
 
@@ -46,7 +45,7 @@ class ModelConfig(BaseModel):
     max_retries: int = Field(default=3, ge=0, le=10)
 
     @model_validator(mode="after")
-    def validate_invariants(self) -> "ModelConfig":
+    def validate_invariants(self) -> ModelConfig:
         return self
 
 
@@ -66,7 +65,7 @@ class RAGConfig(BaseModel):
     cache_ttl: int = Field(default=3600, ge=0, le=86400)
 
     @model_validator(mode="after")
-    def validate_invariants(self) -> "RAGConfig":
+    def validate_invariants(self) -> RAGConfig:
         return self
 
 
@@ -87,7 +86,7 @@ class GovernorConfig(BaseModel):
     )
 
     @model_validator(mode="after")
-    def validate_invariants(self) -> "GovernorConfig":
+    def validate_invariants(self) -> GovernorConfig:
         return self
 
 
@@ -104,22 +103,22 @@ class ReasoningConfig(BaseModel):
     max_reflexion_loops: int = Field(default=2, ge=0, le=10)
 
     # Section-specific configurations (ClassVars set after class definition)
-    K0_HEADLINE_CONFIG: ClassVar["ReasoningConfig" | None] = None
-    K1_EXECUTIVE_SUMMARY_CONFIG: ClassVar["ReasoningConfig" | None] = None
-    K5_UNIFY_BULLETS_CONFIG: ClassVar["ReasoningConfig" | None] = None
-    K5_UNIFY_OVERVIEW_CONFIG: ClassVar["ReasoningConfig" | None] = None
-    K6_IBM_BULLETS_CONFIG: ClassVar["ReasoningConfig" | None] = None
-    K6_IBM_OVERVIEW_CONFIG: ClassVar["ReasoningConfig" | None] = None
-    K8_EY_BULLETS_CONFIG: ClassVar["ReasoningConfig" | None] = None
-    K8_EY_OVERVIEW_CONFIG: ClassVar["ReasoningConfig" | None] = None
-    K9_EARLY_CAREER_BULLETS_CONFIG: ClassVar["ReasoningConfig" | None] = None
-    K9_EARLY_CAREER_OVERVIEW_CONFIG: ClassVar["ReasoningConfig" | None] = None
-    K2_SKILLS_CONFIG: ClassVar["ReasoningConfig" | None] = None
-    K10_COMPETENCIES_CONFIG: ClassVar["ReasoningConfig" | None] = None
-    DEFAULT: ClassVar["ReasoningConfig" | None] = None
+    K0_HEADLINE_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K1_EXECUTIVE_SUMMARY_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K5_UNIFY_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K5_UNIFY_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K6_IBM_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K6_IBM_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K8_EY_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K8_EY_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K9_EARLY_CAREER_BULLETS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K9_EARLY_CAREER_OVERVIEW_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K2_SKILLS_CONFIG: ClassVar[ReasoningConfig | None] = None
+    K10_COMPETENCIES_CONFIG: ClassVar[ReasoningConfig | None] = None
+    DEFAULT: ClassVar[ReasoningConfig | None] = None
 
     @model_validator(mode="after")
-    def validate_invariants(self) -> "ReasoningConfig":
+    def validate_invariants(self) -> ReasoningConfig:
         return self
 
 

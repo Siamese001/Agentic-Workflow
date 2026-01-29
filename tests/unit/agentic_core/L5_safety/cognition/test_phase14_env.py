@@ -2,6 +2,7 @@
 
 Tests for .env file loading, manual override priority, and graceful degradation.
 """
+
 from __future__ import annotations
 
 import os

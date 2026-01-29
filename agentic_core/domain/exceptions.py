@@ -14,19 +14,19 @@ from .SovereignError import (
     IntegrityError,
     ValidationError,
     ResourceNotFoundError,
-    SecurityViolationError
+    SecurityViolationError,
 )
 
 # Re-export for backward compatibility while maintaining SSOT
 __all__ = [
-    'AgenticCoreError',
-    'HealerError', 
-    'CircularDependencyError',
-    'ConfigurationError',
-    'StructuralError',
-    'HygieneError',
-    'IntegrityError',
-    'ValidationError',
-    'ResourceNotFoundError',
-    'SecurityViolationError'
+    "AgenticCoreError",
+    "HealerError",
+    "CircularDependencyError",
+    "ConfigurationError",
+    "StructuralError",
+    "HygieneError",
+    "IntegrityError",
+    "ValidationError",
+    "ResourceNotFoundError",
+    "SecurityViolationError",
 ]

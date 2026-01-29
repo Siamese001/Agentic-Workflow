@@ -26,7 +26,6 @@ with patch(
     with patch("agentic_core.domain.sovereign_lock.emergency_shutdown", MagicMock()):
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
         from apps_lic.shared.core.agent_base import LICAgentBase
-        from agentic_core.base_agents.pinecone_vector_mixin import pinecone_vector_mixin
 
 # =============================================================================
 # FIXTURES

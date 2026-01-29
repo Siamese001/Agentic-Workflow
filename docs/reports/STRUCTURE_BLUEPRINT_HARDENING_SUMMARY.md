@@ -19,7 +19,7 @@ from typing import Any, Dict, List, Optional, Protocol, Set, Union, Pattern, Tup
 ```python
 APP_SPECIFIC_PATTERNS: List[Pattern] = [
     re.compile(r'^rg_.*\.py$'),           # Resume Gen files
-    re.compile(r'^lic_.*\.py$'),          # LinkedIn Connector files  
+    re.compile(r'^lic_.*\.py$'),          # LinkedIn Connector files
     re.compile(r'^resume_.*\.py$'),       # Resume-related files
     re.compile(r'^outreach_.*\.py$'),     # Outreach-related files
     re.compile(r'^dispatch_(resume|outreach).*\.py$'),  # Dispatch tools

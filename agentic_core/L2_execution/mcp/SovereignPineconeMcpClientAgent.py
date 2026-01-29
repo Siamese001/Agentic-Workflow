@@ -12,7 +12,6 @@ import logging
 from typing import Any
 
 # ARCHIVED IMPORT REMOVED - dependency no longer available
-from agentic_core.config.blueprint_sovereign.sovereign_config_1 import OrchestratorConfig
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal

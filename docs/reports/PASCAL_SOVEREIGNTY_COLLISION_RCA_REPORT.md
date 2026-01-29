@@ -91,7 +91,7 @@ if temp_path and temp_path.exists():
 # [HARDENED] Update in-memory tracker AFTER successful file operation
 if not self.dry_run:
     dest = path.parent / new_name
-    
+
     # Only update registry if the file exists and wasn't deleted (duplicate merge)
     if dest.exists():
         self.file_registry[idx] = dest
@@ -128,7 +128,7 @@ Created `test_collision_standalone.py` with tests for:
 🛡️ Hardened Collision Resolution Test Suite
 ============================================================
 Test 1: Identical file collision ✅
-Test 2: Different file collision ✅  
+Test 2: Different file collision ✅
 Test 3: Standard rename ✅
 Test 4: Dry run mode ✅
 Test 5: Error recovery ✅
@@ -194,7 +194,7 @@ Test 5: Error recovery ✅
 The hardened PascalSovereigntyAgent now provides:
 
 - **Reliable collision resolution** with atomic operations
-- **Comprehensive error handling** with rollback capability  
+- **Comprehensive error handling** with rollback capability
 - **Windows compatibility** with proper case sensitivity handling
 - **Race condition prevention** with verified file registry updates
 - **Enhanced observability** with detailed logging

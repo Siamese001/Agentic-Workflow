@@ -300,7 +300,6 @@ class TestLLMProviderMixin:
 
     def test_mixin_lazy_loads_gateway(self):
         """Test that mixin lazy-loads the gateway."""
-        from agentic_core.L2_execution.mcp.llm_provider_mixin import llm_provider_mixin
 
         class TestAgent(LLMProviderMixin):
             pass
@@ -326,7 +325,6 @@ class TestEmbeddingMixin:
 
     def test_mixin_lazy_loads_gateway(self):
         """Test that mixin lazy-loads the embedding gateway."""
-        from agentic_core.L2_execution.mcp.embedding_mixin import embedding_mixin
 
         class TestAgent(EmbeddingMixin):
             pass

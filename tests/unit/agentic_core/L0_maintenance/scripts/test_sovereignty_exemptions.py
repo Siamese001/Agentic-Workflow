@@ -1,6 +1,6 @@
 """
 File: tests/test_sovereignty_exemptions.py
-Path: C:\Git\Agentic-Workflow\tests\test_sovereignty_exemptions.py
+Path: C:\\Git\\Agentic-Workflow\tests\test_sovereignty_exemptions.py
 Status: 100% Pass Required
 Rationale: Verifies that the new exemption logic correctly ignores test files.
 """
@@ -15,8 +15,8 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from agentic_core.L0_maintenance.scripts.PascalSovereigntyFixer import PascalSovereigntyFixer
 
+
 class TestSovereigntyExemptions(unittest.TestCase):
-    
     def setUp(self):
         self.fixer = PascalSovereigntyFixer(dry_run=True)
 
@@ -24,9 +24,18 @@ class TestSovereigntyExemptions(unittest.TestCase):
         """Scenario: 'test_auth.py' should be ignored even if it contains classes."""
         path = Path("test_auth.py")
         with (
-            patch("pathlib.Path.stat", side_effect=AssertionError("stat() should not be called for test_*.py")),
-            patch("pathlib.Path.read_text", side_effect=AssertionError("read_text() should not be called for test_*.py")),
-            patch("ast.parse", side_effect=AssertionError("ast.parse() should not be called for test_*.py")),
+            patch(
+                "pathlib.Path.stat",
+                side_effect=AssertionError("stat() should not be called for test_*.py"),
+            ),
+            patch(
+                "pathlib.Path.read_text",
+                side_effect=AssertionError("read_text() should not be called for test_*.py"),
+            ),
+            patch(
+                "ast.parse",
+                side_effect=AssertionError("ast.parse() should not be called for test_*.py"),
+            ),
         ):
             ftype = self.fixer.classify_file(path)
             self.assertEqual(ftype, "IGNORE")
@@ -35,9 +44,18 @@ class TestSovereigntyExemptions(unittest.TestCase):
         """Scenario: 'auth_test.py' should be ignored."""
         path = Path("auth_test.py")
         with (
-            patch("pathlib.Path.stat", side_effect=AssertionError("stat() should not be called for *_test.py")),
-            patch("pathlib.Path.read_text", side_effect=AssertionError("read_text() should not be called for *_test.py")),
-            patch("ast.parse", side_effect=AssertionError("ast.parse() should not be called for *_test.py")),
+            patch(
+                "pathlib.Path.stat",
+                side_effect=AssertionError("stat() should not be called for *_test.py"),
+            ),
+            patch(
+                "pathlib.Path.read_text",
+                side_effect=AssertionError("read_text() should not be called for *_test.py"),
+            ),
+            patch(
+                "ast.parse",
+                side_effect=AssertionError("ast.parse() should not be called for *_test.py"),
+            ),
         ):
             ftype = self.fixer.classify_file(path)
             self.assertEqual(ftype, "IGNORE")
@@ -56,6 +74,7 @@ class TestSovereigntyExemptions(unittest.TestCase):
         ):
             ftype = self.fixer.classify_file(path)
             self.assertNotEqual(ftype, "IGNORE")
+
 
 if __name__ == "__main__":
     unittest.main()

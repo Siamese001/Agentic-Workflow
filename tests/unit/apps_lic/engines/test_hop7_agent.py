@@ -2,6 +2,7 @@
 Unit tests for HOP7GateDecisionAgent (V2).
 Ensures failure classification and workflow direction logic.
 """
+
 import pytest
 from unittest.mock import MagicMock, patch
 from apps_lic.engines.HOP7GateDecisionAgent import HOP7GateDecisionAgent
@@ -9,9 +10,11 @@ from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
 from apps_lic.domain.config.schemas import GateConfig
 
+
 @pytest.fixture
 def resources():
     return ImmutableStagingBuffer(), TraceRegistry()
+
 
 @pytest.fixture
 def mock_specs():
@@ -19,22 +22,22 @@ def mock_specs():
     mock.gate_decision_agent = GateConfig(
         factual_failure_rules=["STRATEGIC_ALIGNMENT", "FACTUAL_INACCURACY"],
         max_factual_loops=2,
-        max_creative_retries=3
+        max_creative_retries=3,
     )
     return mock
 
-class TestHOP7GateLogic:
 
+class TestHOP7GateLogic:
     def test_pass_decision(self, mock_specs, resources):
         """Verify PASS decision leads to PROCEED."""
         buffer, registry = resources
         # Mock a passing report
         buffer.write_once("hop6_validation_report", {"passed": True, "validation_results": []})
-        
+
         with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP7GateDecisionAgent()
             agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop7_gate_decision")
         assert result["decision"] == "PASS"
         assert result["action"] == "PROCEED"
@@ -46,14 +49,14 @@ class TestHOP7GateLogic:
             "passed": False,
             "validation_results": [
                 {"rule_id": "STRATEGIC_ALIGNMENT", "severity": "CRITICAL", "passed": False}
-            ]
+            ],
         }
         buffer.write_once("hop6_validation_report", report)
-        
+
         with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP7GateDecisionAgent()
             agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop7_gate_decision")
         assert result["decision"] == "FAIL_FACTUAL"
         assert result["action"] == "RETRY_HOP2"
@@ -65,14 +68,14 @@ class TestHOP7GateLogic:
             "passed": False,
             "validation_results": [
                 {"rule_id": "PLACEHOLDERS", "severity": "CRITICAL", "passed": False}
-            ]
+            ],
         }
         buffer.write_once("hop6_validation_report", report)
-        
+
         with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP7GateDecisionAgent()
             agent.run_phase(buffer, registry)
-        
+
         result = buffer.read("hop7_gate_decision")
         assert result["decision"] == "FAIL_CREATIVE"
         assert result["action"] == "RETRY_HOP5"
@@ -81,7 +84,7 @@ class TestHOP7GateLogic:
         """Verify crash on missing validation report."""
         buffer, registry = resources
         # No validation report written
-        
+
         with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
             agent = HOP7GateDecisionAgent()
             with pytest.raises(RuntimeError):

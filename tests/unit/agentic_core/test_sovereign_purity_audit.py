@@ -4,6 +4,7 @@ Test suite for Sovereign Purity Audit.
 MANDATORY: 100% PASS REQUIREMENT for Windsurf Execution.
 Focus: Namespace isolation, Foundation renaming, Unknown elimination.
 """
+
 import pytest
 from pathlib import Path
 
@@ -29,22 +30,34 @@ class test_sovereign_purity_audit:
         """Verify only Sovereign Specialists remain in the engines/ directory."""
         engine_path = REPO_ROOT / "apps_lic" / "engines"
         # Verify 100% Pass: Stateless tools must have been moved
-        assert not (engine_path / "generate_subject_line.py").exists(), "Stateless tools should be in shared/tools/"
-        assert not (engine_path / "aggregate_campaign_state.py").exists(), "Stateless tools should be in shared/tools/"
-        assert not (engine_path / "tools_lic.py").exists(), "Stateless tools should be in shared/tools/"
+        assert not (engine_path / "generate_subject_line.py").exists(), (
+            "Stateless tools should be in shared/tools/"
+        )
+        assert not (engine_path / "aggregate_campaign_state.py").exists(), (
+            "Stateless tools should be in shared/tools/"
+        )
+        assert not (engine_path / "tools_lic.py").exists(), (
+            "Stateless tools should be in shared/tools/"
+        )
 
     def test_nomenclature_debt_purge(self, disable_path_shield):
         """Verify that passive Enums are no longer labeled as 'Agents'."""
         domain_path = REPO_ROOT / "apps_lic" / "domain"
         engines_path = REPO_ROOT / "apps_lic" / "engines"
-        
+
         # FailureClassifierAgent renamed to failure_types
-        assert not (domain_path / "FailureClassifierAgent.py").exists(), "FailureClassifierAgent should be renamed"
+        assert not (domain_path / "FailureClassifierAgent.py").exists(), (
+            "FailureClassifierAgent should be renamed"
+        )
         assert (domain_path / "failure_types.py").exists(), "failure_types.py must exist"
-        
+
         # governance_shield_agent renamed to governance_shield_types
-        assert not (engines_path / "governance_shield_agent.py").exists(), "governance_shield_agent should be renamed"
-        assert (engines_path / "governance_shield_types.py").exists(), "governance_shield_types.py must exist"
+        assert not (engines_path / "governance_shield_agent.py").exists(), (
+            "governance_shield_agent should be renamed"
+        )
+        assert (engines_path / "governance_shield_types.py").exists(), (
+            "governance_shield_types.py must exist"
+        )
 
     def test_report_completeness(self, disable_path_shield):
         """Verify the generated report addresses the 97 unknowns."""
@@ -58,7 +71,7 @@ class test_sovereign_purity_audit:
         """Verify stateless tools were moved to shared/tools/."""
         tools_path = REPO_ROOT / "apps_lic" / "shared" / "tools"
         assert tools_path.exists(), "shared/tools/ must exist"
-        
+
         # Check for moved tools
         expected_tools = [
             "generate_subject_line.py",
@@ -72,7 +85,7 @@ class test_sovereign_purity_audit:
     def test_domain_directory_populated(self, disable_path_shield):
         """Verify support structures were moved to domain/."""
         domain_path = REPO_ROOT / "apps_lic" / "domain"
-        
+
         # Check for moved support structures
         expected_files = [
             "lic_archetypes.py",
@@ -87,7 +100,7 @@ class test_sovereign_purity_audit:
         """Verify legacy files were archived."""
         legacy_path = REPO_ROOT / "apps_lic" / "legacy"
         assert legacy_path.exists(), "legacy/ must exist"
-        
+
         # Check for archived files
         expected_legacy = [
             "MainV107.py",
@@ -101,7 +114,7 @@ class test_sovereign_purity_audit:
     def test_foundation_core_components(self, disable_path_shield):
         """Verify foundation contains core V2 components."""
         foundation_path = REPO_ROOT / "apps_lic" / "shared" / "foundation"
-        
+
         expected_components = [
             "agent_base.py",
             "immutable_buffer.py",

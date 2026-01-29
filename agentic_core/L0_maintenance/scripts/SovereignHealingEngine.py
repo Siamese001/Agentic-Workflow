@@ -14,7 +14,6 @@ import re
 from pathlib import Path
 from typing import Any
 
-from agentic_core.config.blueprint_sovereign.sovereign_config_1 import OrchestratorConfig
 from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
 from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client_1 import get_git_client
 from agentic_core.L0_maintenance.P1_core.transaction_manager import HealingTransaction

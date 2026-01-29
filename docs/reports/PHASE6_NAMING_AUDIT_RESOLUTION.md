@@ -35,7 +35,7 @@ __all__ = ["PromptAssembler", "PromptComponents", "PromptTemplate", "SecurityInt
 - Already contains proper `__all__` definition
 - False positive confirmed - configuration enums are tightly coupled
 
-### 4. hardened_naming_audit.py - No Changes Required  
+### 4. hardened_naming_audit.py - No Changes Required
 - Valid script/tool with internal helper classes
 - Correctly follows snake_case convention for executables
 
@@ -58,7 +58,7 @@ Files like `PromptOptimizer.py` that contain tightly coupled configuration types
 ```bash
 # Execute these renames to complete compliance
 mv agentic_core/prompt_governance/pii.py agentic_core/prompt_governance/PIIScrubber.py
-mv agentic_core/prompt_governance/injection.py agentic_core/prompt_governance/InjectionDetector.py  
+mv agentic_core/prompt_governance/injection.py agentic_core/prompt_governance/InjectionDetector.py
 mv agentic_core/prompt_governance/middleware.py agentic_core/prompt_governance/GovernanceHub.py
 mv agentic_core/prompt_governance/sovereign_prompt_constitution.py agentic_core/prompt_governance/PromptEntry.py
 ```
@@ -72,11 +72,11 @@ After renaming, update all import statements:
 
 ## Phase 6 Completion Status
 
-✅ **Audit Methodology**: Hardened AST-based analysis implemented  
-✅ **Violation Detection**: 8 violations identified (4 true, 4 false positives)  
-✅ **Manual Review**: All ambiguous cases resolved with architectural rationale  
-✅ **Implementation Plan**: Diffs prepared and rename strategy defined  
-✅ **Lessons Learned**: Content-first analysis prevents future misses  
+✅ **Audit Methodology**: Hardened AST-based analysis implemented
+✅ **Violation Detection**: 8 violations identified (4 true, 4 false positives)
+✅ **Manual Review**: All ambiguous cases resolved with architectural rationale
+✅ **Implementation Plan**: Diffs prepared and rename strategy defined
+✅ **Lessons Learned**: Content-first analysis prevents future misses
 
 ## Ready for Phase 7: Structural Blueprint Hardening
 

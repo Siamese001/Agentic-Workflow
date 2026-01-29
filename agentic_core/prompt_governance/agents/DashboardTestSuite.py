@@ -21,9 +21,11 @@ TEMPLATE_PATH = (
     project_root / AGENTIC_CORE_DIR / "L5_safety" / "validators" / "dashboard_template.html"
 )
 
+
 # Mock LocationValidator for testing (Anti-Gravity compliance)
 class MockLocationValidator:
     """Mock validator to avoid L5 upward import coupling."""
+
     def validate_file_location(self, path):
         return True, "Mock Pass"
 

@@ -13,7 +13,6 @@ Targets:
 5. ASTValidatorAgent.py -> ASTValidatorAgent.py (L1_cognition/thought_engine/)
 """
 
-import os
 import re
 import shutil
 from pathlib import Path
@@ -22,13 +21,13 @@ from pathlib import Path
 def phase8_artifact_stripping():
     """Execute Phase 8: Strip Unified prefixes from remaining artifacts."""
     project_root = Path(__file__).resolve().parents[3]
-    
+
     print("=" * 80)
     print("PHASE 8: ARTIFACT STRIPPING & DOMAIN RELOCATION")
     print("=" * 80)
     print(f"Project Root: {project_root}")
     print()
-    
+
     # Define artifact mappings (same directory, just rename)
     ARTIFACT_MAPPINGS = [
         {
@@ -62,16 +61,16 @@ def phase8_artifact_stripping():
             "class_new": "ASTValidatorAgent",
         },
     ]
-    
+
     files_renamed = 0
     files_refactored = 0
-    
+
     # Step 1: Rename files
     print("--- STEP 1: File Renaming ---")
     for mapping in ARTIFACT_MAPPINGS:
         old_path = project_root / mapping["old"]
         new_path = project_root / mapping["new"]
-        
+
         if old_path.exists():
             if not new_path.exists():
                 shutil.move(str(old_path), str(new_path))
@@ -81,48 +80,42 @@ def phase8_artifact_stripping():
                 print(f"[SKIP] {mapping['new']} already exists")
         else:
             print(f"[MISSING] {mapping['old']} not found")
-    
+
     print()
     print("--- STEP 2: Deep Content Refactoring ---")
-    
+
     # Build regex patterns for class name replacements
     replacements = []
     for mapping in ARTIFACT_MAPPINGS:
         # Match class definitions and imports
-        replacements.append((
-            re.compile(rf'\b{mapping["class_old"]}\b'),
-            mapping["class_new"]
-        ))
+        replacements.append((re.compile(rf"\b{mapping['class_old']}\b"), mapping["class_new"]))
         # Match file imports
         old_import = mapping["old"].replace("/", ".")
         new_import = mapping["new"].replace("/", ".")
-        replacements.append((
-            re.compile(rf'{old_import}'),
-            new_import
-        ))
-    
+        replacements.append((re.compile(rf"{old_import}"), new_import))
+
     # Refactor all Python files
     for py_file in project_root.rglob("*.py"):
         if "archives" in str(py_file) or "__pycache__" in str(py_file):
             continue
-        
+
         if py_file.name == Path(__file__).name:
             continue
-        
+
         try:
             content = py_file.read_text(encoding="utf-8")
             original_content = content
-            
+
             for pattern, replacement in replacements:
                 content = pattern.sub(replacement, content)
-            
+
             if content != original_content:
                 py_file.write_text(content, encoding="utf-8")
                 print(f"[REFACTOR] {py_file.relative_to(project_root)}")
                 files_refactored += 1
         except Exception as e:
             print(f"[ERROR] {py_file.relative_to(project_root)}: {e}")
-    
+
     print()
     print("=" * 80)
     print("PHASE 8 STATISTICS")

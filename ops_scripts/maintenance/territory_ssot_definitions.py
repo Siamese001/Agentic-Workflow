@@ -320,19 +320,62 @@ def _categorize_l3_orchestration(class_name: str, docstring: str, path_str: str)
     if "dag" in name_lower or "dag" in doc_lower or "graph" in doc_lower:
         return TERRITORY_ORCHESTRATION_DAG
 
-    if any(kw in name_lower for kw in ["ppo", "qlearning", "actorcritic", "reinforcecritic", "rlorchestrat"]):
+    if any(
+        kw in name_lower
+        for kw in ["ppo", "qlearning", "actorcritic", "reinforcecritic", "rlorchestrat"]
+    ):
         return TERRITORY_ORCHESTRATION_RL
 
-    if any(kw in name_lower for kw in ["router", "connection", "permission", "registry", "gatekeeper"]):
+    if any(
+        kw in name_lower for kw in ["router", "connection", "permission", "registry", "gatekeeper"]
+    ):
         return TERRITORY_ORCHESTRATION_ROUTING
 
-    if any(kw in name_lower for kw in ["metric", "coverage", "detector", "monitor", "benchmark", "inspector", "telemetry", "observability", "cost", "report", "auditor", "track"]):
+    if any(
+        kw in name_lower
+        for kw in [
+            "metric",
+            "coverage",
+            "detector",
+            "monitor",
+            "benchmark",
+            "inspector",
+            "telemetry",
+            "observability",
+            "cost",
+            "report",
+            "auditor",
+            "track",
+        ]
+    ):
         return TERRITORY_ORCHESTRATION_MONITORING
 
     if any(kw in name_lower for kw in ["territory", "semantic", "mapper", "hierarchy"]):
         return TERRITORY_ORCHESTRATION_TERRITORY
 
-    if any(kw in name_lower for kw in ["workflow", "orchestrat", "nervous", "phase", "handshake", "fission", "healer", "governor", "signature", "canon", "subatomic", "testpilot", "exerciser", "ssot", "rag", "cached", "scope", "git"]):
+    if any(
+        kw in name_lower
+        for kw in [
+            "workflow",
+            "orchestrat",
+            "nervous",
+            "phase",
+            "handshake",
+            "fission",
+            "healer",
+            "governor",
+            "signature",
+            "canon",
+            "subatomic",
+            "testpilot",
+            "exerciser",
+            "ssot",
+            "rag",
+            "cached",
+            "scope",
+            "git",
+        ]
+    ):
         return TERRITORY_ORCHESTRATION_WORKFLOW
 
     return TERRITORY_ORCHESTRATION_CORE
@@ -344,15 +387,31 @@ def _categorize_apps_lic(class_name: str, docstring: str, path_str: str) -> str:
     if "hop" in name_lower:
         return TERRITORY_APPS_LIC_HOP
 
-    if any(kw in name_lower for kw in ["orchestrat", "workflow", "supervisor", "s2supervisor", "healing"]):
+    if any(
+        kw in name_lower
+        for kw in ["orchestrat", "workflow", "supervisor", "s2supervisor", "healing"]
+    ):
         return TERRITORY_APPS_LIC_ORCHESTRATION
 
-    if "/utils/" in path_str or any(kw in name_lower for kw in ["util", "helper", "formatter", "parser", "converter"]):
+    if "/utils/" in path_str or any(
+        kw in name_lower for kw in ["util", "helper", "formatter", "parser", "converter"]
+    ):
         return TERRITORY_APPS_LIC_UTILITIES
 
     if "/domain/" in path_str or "/validators/" in path_str:
         return TERRITORY_APPS_LIC_DOMAIN
-    if any(kw in name_lower for kw in ["validator", "quality", "compliance", "checker", "enforcer", "test", "validation"]):
+    if any(
+        kw in name_lower
+        for kw in [
+            "validator",
+            "quality",
+            "compliance",
+            "checker",
+            "enforcer",
+            "test",
+            "validation",
+        ]
+    ):
         return TERRITORY_APPS_LIC_DOMAIN
 
     return TERRITORY_APPS_LIC_ENGINES
@@ -361,10 +420,40 @@ def _categorize_apps_lic(class_name: str, docstring: str, path_str: str) -> str:
 def _categorize_l2_execution(class_name: str, docstring: str, path_str: str) -> str:
     name_lower = class_name.lower()
 
-    if any(kw in name_lower for kw in ["coordinator", "manager", "scheduler", "dispatcher", "orchestrator", "architect", "strategist", "curator", "diplomat", "governor"]):
+    if any(
+        kw in name_lower
+        for kw in [
+            "coordinator",
+            "manager",
+            "scheduler",
+            "dispatcher",
+            "orchestrator",
+            "architect",
+            "strategist",
+            "curator",
+            "diplomat",
+            "governor",
+        ]
+    ):
         return TERRITORY_EXECUTION_COORDINATORS
 
-    if any(kw in name_lower for kw in ["handler", "event", "listener", "callback", "validator", "enforcer", "detector", "inspector", "auditor", "gate", "boundary", "seal"]):
+    if any(
+        kw in name_lower
+        for kw in [
+            "handler",
+            "event",
+            "listener",
+            "callback",
+            "validator",
+            "enforcer",
+            "detector",
+            "inspector",
+            "auditor",
+            "gate",
+            "boundary",
+            "seal",
+        ]
+    ):
         return TERRITORY_EXECUTION_HANDLERS
 
     return TERRITORY_EXECUTION_RUNNERS
@@ -374,15 +463,50 @@ def _categorize_l5_guardrails(class_name: str, docstring: str, path_str: str) ->
     name_lower = class_name.lower()
     doc_lower = (docstring or "").lower()
 
-    if any(kw in name_lower for kw in ["mcp", "hardened", "hardening", "rollback", "recovery", "circuit"]):
+    if any(
+        kw in name_lower
+        for kw in ["mcp", "hardened", "hardening", "rollback", "recovery", "circuit"]
+    ):
         return TERRITORY_SAFETY_GUARDRAILS_MCP
     if "mcp" in doc_lower:
         return TERRITORY_SAFETY_GUARDRAILS_MCP
 
-    if any(kw in name_lower for kw in ["hygiene", "cleanup", "formatter", "duplicate", "import", "file", "dependency", "pruning", "lock", "git", "hierarchy", "structural", "healer"]):
+    if any(
+        kw in name_lower
+        for kw in [
+            "hygiene",
+            "cleanup",
+            "formatter",
+            "duplicate",
+            "import",
+            "file",
+            "dependency",
+            "pruning",
+            "lock",
+            "git",
+            "hierarchy",
+            "structural",
+            "healer",
+        ]
+    ):
         return TERRITORY_SAFETY_GUARDRAILS_HYGIENE
 
-    if any(kw in name_lower for kw in ["threat", "adversarial", "red", "sentinel", "hunter", "autoimmune", "neural", "policy", "safety", "inspector", "debugger"]):
+    if any(
+        kw in name_lower
+        for kw in [
+            "threat",
+            "adversarial",
+            "red",
+            "sentinel",
+            "hunter",
+            "autoimmune",
+            "neural",
+            "policy",
+            "safety",
+            "inspector",
+            "debugger",
+        ]
+    ):
         return TERRITORY_SAFETY_GUARDRAILS_THREAT
 
     return TERRITORY_SAFETY_GUARDRAILS_CORE
@@ -394,7 +518,23 @@ def _categorize_l1_cognition(class_name: str, docstring: str, path_str: str) -> 
     if any(kw in name_lower for kw in ["memory", "context", "cache", "recall", "history"]):
         return TERRITORY_COGNITION_MEMORY
 
-    if any(kw in name_lower for kw in ["plan", "strategy", "goal", "intent", "decision", "orchestrat", "governance", "budget", "router", "mapper", "metalearning", "meta"]):
+    if any(
+        kw in name_lower
+        for kw in [
+            "plan",
+            "strategy",
+            "goal",
+            "intent",
+            "decision",
+            "orchestrat",
+            "governance",
+            "budget",
+            "router",
+            "mapper",
+            "metalearning",
+            "meta",
+        ]
+    ):
         return TERRITORY_COGNITION_PLANNING
 
     if "validator" in name_lower:
@@ -411,7 +551,10 @@ def _categorize_apps_rg(class_name: str, docstring: str, path_str: str) -> str:
 
     if "/domain/" in path_str or "/validators/" in path_str:
         return TERRITORY_APPS_RG_DOMAIN
-    if any(kw in name_lower for kw in ["validator", "quality", "compliance", "checker", "content", "fact", "balance"]):
+    if any(
+        kw in name_lower
+        for kw in ["validator", "quality", "compliance", "checker", "content", "fact", "balance"]
+    ):
         return TERRITORY_APPS_RG_DOMAIN
 
     return TERRITORY_APPS_RG_ENGINES
@@ -421,7 +564,34 @@ def _categorize_l5_validators(class_name: str, docstring: str, path_str: str) ->
     name_lower = class_name.lower()
     doc_lower = (docstring or "").lower()
 
-    if any(kw in name_lower for kw in ["content", "text", "ascii", "format", "string", "message", "naming", "doc", "print", "debug", "eval", "exec", "http", "builtin", "bare", "empty", "async", "blocking", "syntax", "typehint", "pascal", "python", "input"]):
+    if any(
+        kw in name_lower
+        for kw in [
+            "content",
+            "text",
+            "ascii",
+            "format",
+            "string",
+            "message",
+            "naming",
+            "doc",
+            "print",
+            "debug",
+            "eval",
+            "exec",
+            "http",
+            "builtin",
+            "bare",
+            "empty",
+            "async",
+            "blocking",
+            "syntax",
+            "typehint",
+            "pascal",
+            "python",
+            "input",
+        ]
+    ):
         return TERRITORY_SAFETY_VALIDATORS_CONTENT
     if any(kw in doc_lower for kw in ["content", "text", "format", "string"]):
         return TERRITORY_SAFETY_VALIDATORS_CONTENT

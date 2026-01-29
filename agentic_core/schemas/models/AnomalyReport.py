@@ -43,7 +43,7 @@ class AnomalyReport(BaseModel):
 
     # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
     model_config = ConfigDict(frozen=True, extra="forbid")
-    
+
     type: str = Field(..., description="Machine-readable anomaly type")
     severity: AnomalySeverity = Field(..., description="Severity level")
     description: str = Field(..., description="Human-readable summary")
@@ -51,7 +51,7 @@ class AnomalyReport(BaseModel):
     details: dict[str, Any] = Field(default_factory=dict, description="Agent-specific context")
     timestamp: float = Field(default_factory=time.time, description="Auto-timestamp")
     provenance_id: str | None = Field(default=None, description="MCP chain ID if available")
-    
+
     @field_validator("description")
     @classmethod
     def validate_description(cls, v: str) -> str:

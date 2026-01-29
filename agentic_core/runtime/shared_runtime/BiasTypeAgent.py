@@ -10,8 +10,6 @@ from enum import Enum
 
 from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import (
     SafetyDetectorAgent,
-    SafetyThreat,
-    SafetyThreatType,
     ThreatSeverity,
 )
 
@@ -19,6 +17,7 @@ from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import (
 # Legacy compatibility types
 class BiasType(Enum):
     """Types of bias to detect (legacy compatibility)."""
+
     GENDER = "gender"
     AGE = "age"
     RACE = "race"
@@ -31,6 +30,7 @@ class BiasType(Enum):
 @dataclass
 class BiasMatch:
     """Single bias detection match (legacy compatibility)."""
+
     BiasType: BiasType
     phrase: str
     context: str
@@ -40,6 +40,7 @@ class BiasMatch:
 @dataclass
 class BiasResult:
     """Bias detection result (legacy compatibility)."""
+
     has_bias: bool
     bias_types: list[BiasType]
     flagged_phrases: list[str]
@@ -55,12 +56,12 @@ class BiasResult:
 # Compatibility wrapper class
 class BiasAuditorAgent:
     """Legacy compatibility wrapper for SafetyDetectorAgent."""
-    
+
     def __init__(self, enable_logging: bool = True):
         """Initialize bias auditor using SafetyDetectorAgent."""
         self._detector = SafetyDetectorAgent()
         self.enable_logging = enable_logging
-    
+
     def audit_content(self, content: str) -> BiasResult:
         """Check for biased language patterns using SafetyDetectorAgent."""
         if not content:
@@ -72,30 +73,36 @@ class BiasAuditorAgent:
                 confidence_score=0.0,
                 recommendations=["Content appears neutral and inclusive"],
             )
-        
+
         # Use SafetyDetectorAgent to detect bias
         threats = self._detector.detect_bias(content)
-        
+
         # Convert SafetyThreat list to legacy BiasResult format
         has_bias = len(threats) > 0
         flagged_phrases = [t.details.get("matched_text", "") for t in threats]
         confidence_score = min(len(threats) / 10.0, 1.0)
-        
+
         # Map to legacy BiasMatch format
         matches = []
         for threat in threats:
-            matches.append(BiasMatch(
-                BiasType=BiasType.GENDER,  # Default, as SafetyDetectorAgent doesn't categorize
-                phrase=threat.details.get("matched_text", ""),
-                context=threat.details.get("text_preview", ""),
-                Severity=0.5 if threat.severity == ThreatSeverity.MEDIUM else 0.8,
-            ))
-        
-        recommendations = [
-            "Consider using more inclusive language",
-            "Review flagged phrases for potential bias",
-        ] if has_bias else ["Content appears neutral and inclusive"]
-        
+            matches.append(
+                BiasMatch(
+                    BiasType=BiasType.GENDER,  # Default, as SafetyDetectorAgent doesn't categorize
+                    phrase=threat.details.get("matched_text", ""),
+                    context=threat.details.get("text_preview", ""),
+                    Severity=0.5 if threat.severity == ThreatSeverity.MEDIUM else 0.8,
+                )
+            )
+
+        recommendations = (
+            [
+                "Consider using more inclusive language",
+                "Review flagged phrases for potential bias",
+            ]
+            if has_bias
+            else ["Content appears neutral and inclusive"]
+        )
+
         return BiasResult(
             has_bias=has_bias,
             bias_types=[BiasType.GENDER] if has_bias else [],

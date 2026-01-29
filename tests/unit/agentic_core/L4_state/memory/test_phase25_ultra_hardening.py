@@ -48,7 +48,6 @@ class TestPIIRedactionInGraph:
     def test_learn_with_feedback_sanitizes_context(self):
         """Test that learn_with_feedback sanitizes context before graph write."""
         from agentic_core.L4_state.memory.SemanticCacheManager import PIISanitizer
-        from agentic_core.base_agents.meta_learning_mixin import meta_learning_mixin
 
         # Create a mock memory with sanitizer
         mock_memory = MagicMock()

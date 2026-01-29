@@ -9,6 +9,7 @@ Exit codes:
 - 0: All validations passed
 - 1: Validation failures detected
 """
+
 from pathlib import Path
 
 import sys
@@ -89,7 +90,7 @@ def run_architecture_governance_check() -> tuple[bool, str]:
             print(f"   Roots scanned: {', '.join(results.get('roots_scanned', []))}")
             return False, f"Found {violations_found} architecture violations"
 
-        print(f"\n✅ Architecture validation passed")
+        print("\n✅ Architecture validation passed")
         print(f"   Roots scanned: {', '.join(results.get('roots_scanned', []))}")
         return True, "Architecture governance check passed"
 

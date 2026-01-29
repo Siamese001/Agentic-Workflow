@@ -4,6 +4,7 @@ Test suite for LIC Core Migration.
 MANDATORY: 100% PASS REQUIREMENT for Windsurf Execution.
 Verifies that 'LICAgentBase' is now the sovereign standard.
 """
+
 import pytest
 from pathlib import Path
 
@@ -85,7 +86,9 @@ class TestLICCoreMigration:
         core_path = REPO_ROOT / "apps_lic" / "shared" / "core" / "agent_base.py"
         content = core_path.read_text(encoding="utf-8")
         assert "V2 Agent" not in content, "V2 Agent references should be LIC Agent"
-        assert "LIC Sovereign Architecture" in content or "LIC Agent" in content, "Should reference LIC"
+        assert "LIC Sovereign Architecture" in content or "LIC Agent" in content, (
+            "Should reference LIC"
+        )
 
 
 if __name__ == "__main__":

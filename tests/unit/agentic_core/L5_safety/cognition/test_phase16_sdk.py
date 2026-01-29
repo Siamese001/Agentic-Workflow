@@ -2,6 +2,7 @@
 
 Tests for new SDK client initialization, JSON mode enforcement, and model compatibility.
 """
+
 from __future__ import annotations
 
 import os
@@ -113,7 +114,9 @@ class TestJSONModeEnforcement:
         # Mock the client
         mock_client = MagicMock()
         mock_response = MagicMock()
-        mock_response.text = '{"action": "MOVE", "target_path": "agentic_core/L5_safety", "confidence": 0.9}'
+        mock_response.text = (
+            '{"action": "MOVE", "target_path": "agentic_core/L5_safety", "confidence": 0.9}'
+        )
         mock_client.models.generate_content.return_value = mock_response
         agent._client = mock_client
 

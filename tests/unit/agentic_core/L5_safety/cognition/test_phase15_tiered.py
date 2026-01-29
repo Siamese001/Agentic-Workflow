@@ -2,6 +2,7 @@
 
 Tests for API key enforcement, checkpoint clearing, root resolution, and signal handling.
 """
+
 from __future__ import annotations
 
 import os
@@ -17,6 +18,7 @@ class TestAPIKeyEnforcement:
     def test_api_key_enforcement_missing(self, tmp_path):
         """[Phase 15] Verify script returns exit code 1 when GEMINI_API_KEY is missing."""
         import sys
+
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
         from ops_scripts.maintenance.execute_tiered_purge import run_tiered_purge
@@ -106,16 +108,19 @@ class TestRootResolutionIntegrity:
     def test_script_exists(self):
         """[Phase 15] Verify execute_tiered_purge.py script exists."""
         import sys
+
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
         # Verify script can be imported
         from ops_scripts.maintenance import execute_tiered_purge
-        assert hasattr(execute_tiered_purge, 'run_tiered_purge')
-        assert hasattr(execute_tiered_purge, 'main')
+
+        assert hasattr(execute_tiered_purge, "run_tiered_purge")
+        assert hasattr(execute_tiered_purge, "main")
 
     def test_script_has_signal_handler(self):
         """[Phase 15] Verify script has signal handler code."""
         import sys
+
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
         import inspect
@@ -212,13 +217,15 @@ class TestSignalHandlerHardening:
     def test_signal_handler_registered(self):
         """[Phase 15] Verify SIGINT handler is registered."""
         import sys
+
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
         # The signal handler is registered inside run_tiered_purge
         # We can verify the import and structure exists
         # Verify signal module is imported
         import ops_scripts.maintenance.execute_tiered_purge as script_module
-        assert hasattr(script_module, 'signal')
+
+        assert hasattr(script_module, "signal")
 
     def test_graceful_shutdown_message(self, caplog):
         """[Phase 15] Verify graceful shutdown logs appropriate message."""
@@ -227,7 +234,12 @@ class TestSignalHandlerHardening:
         # Actual signal testing requires subprocess
 
         # Verify the script has the expected structure
-        script_path = Path(__file__).resolve().parent.parent.parent / "ops_scripts" / "maintenance" / "execute_tiered_purge.py"
+        script_path = (
+            Path(__file__).resolve().parent.parent.parent
+            / "ops_scripts"
+            / "maintenance"
+            / "execute_tiered_purge.py"
+        )
         script_content = script_path.read_text()
 
         assert "signal.SIGINT" in script_content

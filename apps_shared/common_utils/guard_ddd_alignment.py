@@ -10,10 +10,16 @@ Detects violations of Domain-Driven Design tactical patterns:
 """
 
 import ast
+from pathlib import Path
 
-    SCRIPTS_DIR,
-    TESTS_DIR,
-)
+try:
+    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+        SCRIPTS_DIR,
+        TESTS_DIR,
+    )
+except ImportError:
+    SCRIPTS_DIR = "ops_scripts"
+    TESTS_DIR = "tests"
 
 
 def get_ddd_violations_detailed(root_path: str) -> list[dict]:

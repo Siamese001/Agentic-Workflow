@@ -11,9 +11,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.mcp.MCPHardenedMixin import mcp_hardened_mixin
-from agentic_core.base_agents.HealerMixin import healer_mixin
-
 
 @dataclass
 class ManifestManager(MCPHardenedMixin, HealerMixin):

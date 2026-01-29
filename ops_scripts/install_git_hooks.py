@@ -1,8 +1,8 @@
-"""
+r"""
 File: scripts/install_git_hooks.py
 Path: C:\Git\Agentic-Workflow\scripts\install_git_hooks.py
 Status: New "Day 2" Sovereignty Enforcer
-Rationale: 
+Rationale:
     Now that the migration is complete/ready, we must prevent regression.
     This script installs a git pre-commit hook that runs the sovereignty validator
     before every commit, ensuring 'The 3 Laws' are never broken again.
@@ -44,9 +44,10 @@ echo "[PASS] Architecture compliant."
 exit 0
 """
 
+
 def install_hook():
     print(f"[INSTALL] Target: {PRE_COMMIT_FILE}")
-    
+
     if not HOOKS_DIR.exists():
         print(f"[ERROR] .git/hooks directory not found at {HOOKS_DIR}")
         print("        Are you in a valid git repository?")
@@ -56,17 +57,18 @@ def install_hook():
         # Write the hook
         with open(PRE_COMMIT_FILE, "w", encoding="utf-8", newline="\n") as f:
             f.write(HOOK_CONTENT)
-        
+
         # Make executable (Critical for Linux/Mac/GitBash)
         st = os.stat(PRE_COMMIT_FILE)
         os.chmod(PRE_COMMIT_FILE, st.st_mode | stat.S_IEXEC)
-        
+
         print("[SUCCESS] Pre-commit hook installed.")
         print("          Pascal Sovereignty will now protect this repo from regression.")
 
     except Exception as e:
         print(f"[ERROR] Failed to install hook: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     install_hook()

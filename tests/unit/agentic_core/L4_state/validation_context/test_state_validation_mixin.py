@@ -2,7 +2,11 @@
 # tests\mixins\test_state_validation_mixin.py was depth 3, MUST be 2.
 
 import unittest
-from agentic_core.utils.core_extensions.state_validation_mixin import StateValidationMixin, StateValidationError
+from agentic_core.utils.core_extensions.state_validation_mixin import (
+    StateValidationMixin,
+    StateValidationError,
+)
+
 
 class ValidatedAgent(StateValidationMixin):
     def __init__(self):
@@ -16,12 +20,14 @@ class ValidatedAgent(StateValidationMixin):
     def is_busy(self, result) -> bool:
         return self.status == "busy"
 
+
 class TestStateValidationMixin(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.agent = ValidatedAgent()
 
     async def test_tc5_precondition_success(self):
         """TC5: Should allow execution if pre-condition (is_idle) is met."""
+
         @StateValidationMixin.validate_state(pre=lambda s: s.is_idle())
         async def work(agent):
             agent.status = "busy"
@@ -34,7 +40,7 @@ class TestStateValidationMixin(unittest.IsolatedAsyncioTestCase):
     async def test_tc6_precondition_failure(self):
         """TC6: Should block execution if pre-condition is not met."""
         self.agent.status = "error"
-        
+
         @StateValidationMixin.validate_state(pre=lambda s: s.is_idle())
         async def work(agent):
             return "should not run"
@@ -60,16 +66,18 @@ class TestStateValidationMixin(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(res1, res2)
         self.assertNotEqual(res1, res3)
-        self.assertEqual(self.execution_count, 2) # Incremented only twice
+        self.assertEqual(self.execution_count, 2)  # Incremented only twice
 
     async def test_tc8_postcondition_validation(self):
         """TC8: Should raise error if post-condition fails after execution."""
+
         @StateValidationMixin.validate_state(post=lambda s, r: r == "correct")
         async def bad_work(agent):
             return "wrong"
 
         with self.assertRaises(StateValidationError):
             await bad_work(self.agent)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -596,18 +596,30 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         try:
             # Check for autonomous mode FIRST before any other checks
-            if getattr(self, '_autonomous_mode', False) or dry_run:
-                rel_path = file_path.relative_to(self.project_root) if file_path.is_relative_to(self.project_root) else file_path
+            if getattr(self, "_autonomous_mode", False) or dry_run:
+                rel_path = (
+                    file_path.relative_to(self.project_root)
+                    if file_path.is_relative_to(self.project_root)
+                    else file_path
+                )
                 parts = rel_path.parts if isinstance(rel_path, Path) else Path(str(rel_path)).parts
-                
+
                 if len(parts) >= 2:
                     root_folder = parts[0]
                     unknown_subfolder = parts[1]
-                    existing_subfolders = SOVEREIGN_REGISTRY.get(root_folder, {}).get("subfolders", [])
-                    
+                    existing_subfolders = SOVEREIGN_REGISTRY.get(root_folder, {}).get(
+                        "subfolders", []
+                    )
+
                     return self._autonomous_void_violation_resolution(
-                        file_path, root_folder, unknown_subfolder, msg, 
-                        existing_subfolders, dry_run, affected_paths, import_touched_paths
+                        file_path,
+                        root_folder,
+                        unknown_subfolder,
+                        msg,
+                        existing_subfolders,
+                        dry_run,
+                        affected_paths,
+                        import_touched_paths,
                     )
                 else:
                     result["action_taken"] = "AUTONOMOUS: Root-level file requires manual review"
@@ -881,77 +893,113 @@ class LocationHealerAgent(SovereignBaseAgent):
         """
         Autonomous resolution of void violations using intelligent decision-making.
         Replaces user prompts with confidence-based autonomous choices.
-        
+
         Decision Logic:
         1. HIGH CONFIDENCE: If unknown_subfolder matches semantic patterns, create it
         2. MEDIUM CONFIDENCE: If similar subfolder exists, relocate there
         3. LOW CONFIDENCE: Archive to prevent misplacement
         """
         result = {"applied": False, "action_taken": "", "error": None}
-        
+
         try:
-            Logger.info(f"[LocationHealerAgent] Autonomous resolution for {unknown_subfolder} in {root_folder}")
-            
+            Logger.info(
+                f"[LocationHealerAgent] Autonomous resolution for {unknown_subfolder} in {root_folder}"
+            )
+
             # Analyze subfolder semantics for confidence scoring
-            confidence_score = self._calculate_subfolder_confidence(unknown_subfolder, existing_subfolders)
-            
+            confidence_score = self._calculate_subfolder_confidence(
+                unknown_subfolder, existing_subfolders
+            )
+
             if confidence_score > 0.75:
                 # HIGH CONFIDENCE: Create new subfolder
-                Logger.info(f"  ✅ High confidence ({confidence_score:.2f}) - Creating new subfolder '{unknown_subfolder}'")
+                Logger.info(
+                    f"  ✅ High confidence ({confidence_score:.2f}) - Creating new subfolder '{unknown_subfolder}'"
+                )
                 return self._autonomous_create_subfolder(
                     file_path, root_folder, unknown_subfolder, dry_run, affected_paths
                 )
             elif confidence_score >= 0.5:
                 # MEDIUM CONFIDENCE: Relocate to best matching existing subfolder
-                best_match = self._find_best_matching_subfolder(unknown_subfolder, existing_subfolders)
+                best_match = self._find_best_matching_subfolder(
+                    unknown_subfolder, existing_subfolders
+                )
                 if best_match:
-                    Logger.info(f"  🎯 Medium confidence ({confidence_score:.2f}) - Relocating to '{best_match}'")
+                    Logger.info(
+                        f"  🎯 Medium confidence ({confidence_score:.2f}) - Relocating to '{best_match}'"
+                    )
                     return self._autonomous_relocate_to_subfolder(
-                        file_path, root_folder, best_match, dry_run, affected_paths, import_touched_paths
+                        file_path,
+                        root_folder,
+                        best_match,
+                        dry_run,
+                        affected_paths,
+                        import_touched_paths,
                     )
                 else:
                     # No good match, fall through to low confidence
                     confidence_score = 0.3
-            
+
             # LOW CONFIDENCE: Archive to prevent misplacement
-            Logger.warning(f"  ⚠️  Low confidence ({confidence_score:.2f}) - Archiving to prevent misplacement")
+            Logger.warning(
+                f"  ⚠️  Low confidence ({confidence_score:.2f}) - Archiving to prevent misplacement"
+            )
             archives_root = self.project_root / "archives"
-            archive_result = self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
-            archive_result["autonomous_decision"] = f"Low confidence ({confidence_score:.2f}) - archived"
+            archive_result = self._heal_via_archiving(
+                file_path, msg, archives_root, dry_run, affected_paths
+            )
+            archive_result["autonomous_decision"] = (
+                f"Low confidence ({confidence_score:.2f}) - archived"
+            )
             return archive_result
-            
+
         except Exception as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Autonomous resolution failed: {e}")
             return result
 
-    def _calculate_subfolder_confidence(self, unknown_subfolder: str, existing_subfolders: list[str]) -> float:
+    def _calculate_subfolder_confidence(
+        self, unknown_subfolder: str, existing_subfolders: list[str]
+    ) -> float:
         """
         Calculate confidence score for creating a new subfolder.
         Returns 0.0-1.0 based on semantic analysis.
         """
         import re
-        
+
         # High confidence patterns
         high_confidence_patterns = [
-            r'.*utils.*', r'.*tools.*', r'.*helpers.*',  # Utility folders
-            r'.*tests.*', r'.*test.*',                    # Test folders
-            r'.*examples.*', r'.*demo.*',                # Example folders
-            r'.*scripts.*', r'.*automation.*',           # Script folders
-            r'.*config.*', r'.*settings.*',              # Configuration
-            r'.*data.*', r'.*models.*',                  # Data/model folders
-            r'.*api.*', r'.*client.*', r'.*server.*',   # API folders
-            r'.*ui.*', r'.*gui.*', r'.*interface.*',     # UI folders
+            r".*utils.*",
+            r".*tools.*",
+            r".*helpers.*",  # Utility folders
+            r".*tests.*",
+            r".*test.*",  # Test folders
+            r".*examples.*",
+            r".*demo.*",  # Example folders
+            r".*scripts.*",
+            r".*automation.*",  # Script folders
+            r".*config.*",
+            r".*settings.*",  # Configuration
+            r".*data.*",
+            r".*models.*",  # Data/model folders
+            r".*api.*",
+            r".*client.*",
+            r".*server.*",  # API folders
+            r".*ui.*",
+            r".*gui.*",
+            r".*interface.*",  # UI folders
         ]
-        
+
         # Check if unknown subfolder matches high-confidence patterns
         for pattern in high_confidence_patterns:
             if re.match(pattern, unknown_subfolder, re.IGNORECASE):
                 return 0.9
-        
+
         # Check for semantic similarity with existing subfolders
-        similarity_score = self._calculate_semantic_similarity(unknown_subfolder, existing_subfolders)
-        
+        similarity_score = self._calculate_semantic_similarity(
+            unknown_subfolder, existing_subfolders
+        )
+
         # If very similar to existing, lower confidence (should relocate instead)
         if similarity_score > 0.8:
             return 0.3
@@ -965,50 +1013,59 @@ class LocationHealerAgent(SovereignBaseAgent):
         """Calculate semantic similarity between unknown subfolder and existing ones."""
         if not existing:
             return 0.0
-        
+
         # Simple keyword-based similarity
-        unknown_words = set(unknown.lower().replace('_', ' ').replace('-', ' ').split())
-        
+        unknown_words = set(unknown.lower().replace("_", " ").replace("-", " ").split())
+
         max_similarity = 0.0
         for subfolder in existing:
-            existing_words = set(subfolder.lower().replace('_', ' ').replace('-', ' ').split())
-            
+            existing_words = set(subfolder.lower().replace("_", " ").replace("-", " ").split())
+
             # Calculate Jaccard similarity
             intersection = unknown_words & existing_words
             union = unknown_words | existing_words
-            
+
             if union:
                 similarity = len(intersection) / len(union)
                 max_similarity = max(max_similarity, similarity)
-        
+
         return max_similarity
 
     def _find_best_matching_subfolder(self, unknown: str, existing: list[str]) -> str | None:
         """Find the best matching existing subfolder for relocation."""
         if not existing:
             return None
-        
+
         best_match = None
         best_score = 0.0
-        
+
         for subfolder in existing:
             score = self._calculate_semantic_similarity(unknown, [subfolder])
             if score > best_score and score >= 0.5:
                 best_score = score
                 best_match = subfolder
-        
+
         return best_match
 
     def _autonomous_create_subfolder(
-        self, file_path: Path, root_folder: str, new_subfolder: str, dry_run: bool, affected_paths: list[Path]
+        self,
+        file_path: Path,
+        root_folder: str,
+        new_subfolder: str,
+        dry_run: bool,
+        affected_paths: list[Path],
     ) -> dict[str, Any]:
         """Autonomously create new subfolder and update SSOT."""
         result = {"applied": False, "action_taken": "", "error": None}
-        
+
         try:
             # Update SOVEREIGN_REGISTRY in structure_blueprint.py
             blueprint_path = (
-                self.project_root / "agentic_core" / "L5_safety" / "validators" / "structure_blueprint.py"
+                self.project_root
+                / "agentic_core"
+                / "L5_safety"
+                / "validators"
+                / "structure_blueprint.py"
             )
 
             if not blueprint_path.exists():
@@ -1039,14 +1096,20 @@ class LocationHealerAgent(SovereignBaseAgent):
                     new_subfolders_content = f"'{new_subfolder}'"
 
                 new_content = (
-                    content[: match.start()] + before + new_subfolders_content + after + content[match.end() :]
+                    content[: match.start()]
+                    + before
+                    + new_subfolders_content
+                    + after
+                    + content[match.end() :]
                 )
 
                 if not dry_run:
                     # Backup and write
                     self._backup_file(blueprint_path)
                     blueprint_path.write_text(new_content, encoding="utf-8")
-                    Logger.info(f"[LocationHealerAgent] SSOT Updated: Added '{new_subfolder}' to {root_folder}")
+                    Logger.info(
+                        f"[LocationHealerAgent] SSOT Updated: Added '{new_subfolder}' to {root_folder}"
+                    )
 
                 result["applied"] = True
                 result["action_taken"] = f"AUTONOMOUS: Created '{new_subfolder}' and updated SSOT"
@@ -1054,7 +1117,9 @@ class LocationHealerAgent(SovereignBaseAgent):
                 result["new_subfolder"] = new_subfolder
                 affected_paths.append(blueprint_path)
             else:
-                result["error"] = f"Could not find subfolders list for '{root_folder}' in structure_blueprint.py"
+                result["error"] = (
+                    f"Could not find subfolders list for '{root_folder}' in structure_blueprint.py"
+                )
 
         except Exception as e:
             result["error"] = str(e)
@@ -1073,14 +1138,14 @@ class LocationHealerAgent(SovereignBaseAgent):
     ) -> dict[str, Any]:
         """Autonomously relocate file to target subfolder."""
         target_path = self.project_root / root_folder / target_subfolder / file_path.name
-        
+
         move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
         if move_result.get("applied") and not dry_run:
             affected_paths.extend([file_path, target_path])
             if "import_files_touched" in move_result:
                 for rel in move_result["import_files_touched"]:
                     import_touched_paths.append(self.project_root / rel)
-        
+
         move_result["action_taken"] = f"AUTONOMOUS: Relocated to '{target_subfolder}'"
         return move_result
 

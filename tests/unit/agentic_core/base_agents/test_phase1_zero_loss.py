@@ -79,8 +79,6 @@ def test_tc2_data_mapping_integrity():
     print("TC-2: Data Mapping Integrity")
     print("=" * 60)
 
-    from agentic_core.base_agents.healer_mixin import healer_mixin
-
     # Create a test instance
     class TestAgent(HealerMixin):
         pass
@@ -189,7 +187,6 @@ def test_tc4_mro_stability():
     print("=" * 60)
 
     from agentic_core.L3_orchestration.interfaces import IHealable
-    from agentic_core.base_agents.healer_mixin import healer_mixin
 
     # Create a sample agent class hierarchy
     class BaseMixin:

@@ -19,9 +19,25 @@ warnings.warn(
     stacklevel=2,
 )
 import ast
+from pathlib import Path
 
-    AGENTIC_CORE_DIR,
-)
+try:
+    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+        AGENTIC_CORE_DIR,
+        APPS_LIC_DIR,
+        APPS_RG_DIR,
+        APPS_SHARED_DIR,
+        get_python_files,
+    )
+except ImportError:
+    AGENTIC_CORE_DIR = Path("agentic_core")
+    APPS_LIC_DIR = Path("apps_lic")
+    APPS_RG_DIR = Path("apps_rg")
+    APPS_SHARED_DIR = Path("apps_shared")
+    
+    def get_python_files(directory):
+        """Fallback implementation to get Python files."""
+        return directory.rglob("*.py")
 
 PROJECT_ROOT = Path(__file__).parent.parent
 

@@ -19,6 +19,7 @@ Exit Codes:
     1 - No API key
     2 - Error
 """
+
 from __future__ import annotations
 
 import argparse
@@ -43,16 +44,17 @@ def run_tiered_purge(
 ) -> int:
     """
     Execute tiered cognitive purge.
-    
+
     Args:
         threshold: Confidence threshold for auto-execution
         checkpoint_file: Path to checkpoint file
         clear_checkpoint: Clear existing checkpoint
         rate_limit: Seconds between LLM calls
-    
+
     Returns:
         Exit code
     """
+
     # Signal handler for graceful shutdown (Ctrl+C)
     def signal_handler(sig, frame):
         Logger.warning("\n[INTERRUPT] Graceful shutdown initiated. Saving progress...")
@@ -64,6 +66,7 @@ def run_tiered_purge(
     # Load .env
     try:
         from dotenv import find_dotenv, load_dotenv
+
         env_file = find_dotenv(usecwd=True)
         if env_file:
             load_dotenv(env_file)
@@ -155,11 +158,11 @@ def run_tiered_purge(
         Logger.info(f"Total Processed: {results_stats['total']}")
         Logger.info("")
         Logger.info("By Tier:")
-        for tier, count in sorted(results_stats['by_tier'].items()):
+        for tier, count in sorted(results_stats["by_tier"].items()):
             Logger.info(f"  {tier}: {count}")
         Logger.info("")
         Logger.info("By Action:")
-        for action, count in sorted(results_stats['by_action'].items()):
+        for action, count in sorted(results_stats["by_action"].items()):
             Logger.info(f"  {action}: {count}")
         Logger.info("")
         Logger.info(f"Checkpoint: {checkpoint_file}")
@@ -170,6 +173,7 @@ def run_tiered_purge(
     except Exception as e:
         Logger.error(f"[ERROR] {e}")
         import traceback
+
         traceback.print_exc()
         return 2
 

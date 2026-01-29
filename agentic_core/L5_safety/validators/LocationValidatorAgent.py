@@ -307,7 +307,7 @@ class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
                         content = file_path.read_text(encoding="utf-8", errors="ignore")
                     except Exception:
                         pass  # Content check is optional
-            
+
             rejection_reason = check_forbidden_signals(file_path.name, content)
             if rejection_reason:
                 return (
@@ -434,7 +434,7 @@ class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
 
     def _check_layer_import_violation(self, module: str, current_l1: str) -> str | None:
         """Check for layer import violations and return violation description.
-        
+
         [RECONCILED 2026-01-27] Now enforces:
         1. Core layer gravity (L1-L5 import direction)
         2. App-layer horizontal isolation (apps_shared independence)
@@ -456,7 +456,7 @@ class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
             if module.startswith(("apps_rg.", "apps_lic.")):
                 imported_app = module.split(".")[0]
                 return f"apps_shared → {imported_app} (HORIZONTAL ISOLATION VIOLATION)"
-        
+
         # Apps cannot import from each other
         if current_l1 == "apps_rg" and module.startswith("apps_lic."):
             return "apps_rg → apps_lic (HORIZONTAL ISOLATION VIOLATION)"
@@ -519,7 +519,7 @@ class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
         [SSOT 2026-01-27] Implements the 'Shared Vacuum' logic.
         """
         current_root = rel_path.parts[0]
-        
+
         # 1. GLOBAL CANDIDATE DETECTION (Vacuum to apps_shared)
         # If file is in an app folder but has near-ZERO domain DNA (Resume or LinkedIn)
         if current_root in ["apps_rg", "apps_lic"]:
@@ -529,15 +529,24 @@ class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
                 filename = rel_path.name
                 if not filename.startswith(("rg_", "lic_", "resume_", "outreach_")):
                     # Violation triggers move to apps_shared/utils (Weight 95)
-                    return False, "GLOBAL CANDIDATE DETECTED: Low domain signals - belongs in apps_shared/utils"
+                    return (
+                        False,
+                        "GLOBAL CANDIDATE DETECTED: Low domain signals - belongs in apps_shared/utils",
+                    )
 
         # 2. CROSS-CONTAMINATION CHECK (App vs App)
         if current_root == "apps_rg" and app_lic_score > app_rg_score * 2.0:
-            return False, f"APP DOMAIN VIOLATION: Strong apps_lic signals ({app_lic_score:.1f} vs {app_rg_score:.1f})"
-            
+            return (
+                False,
+                f"APP DOMAIN VIOLATION: Strong apps_lic signals ({app_lic_score:.1f} vs {app_rg_score:.1f})",
+            )
+
         if current_root == "apps_lic" and app_rg_score > app_lic_score * 2.0:
-            return False, f"APP DOMAIN VIOLATION: Strong apps_rg signals ({app_rg_score:.1f} vs {app_lic_score:.1f})"
-            
+            return (
+                False,
+                f"APP DOMAIN VIOLATION: Strong apps_rg signals ({app_rg_score:.1f} vs {app_lic_score:.1f})",
+            )
+
         return True, ""
 
     def _check_territory_alignment(
@@ -678,7 +687,11 @@ class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
 
         # [STRICT SCOPE] Target specific roots or all
         if target_territory:
-            target_roots = [target_territory] if target_territory in SOVEREIGN_TERRITORIES else ["agentic_core"]
+            target_roots = (
+                [target_territory]
+                if target_territory in SOVEREIGN_TERRITORIES
+                else ["agentic_core"]
+            )
         else:
             target_roots = list(SOVEREIGN_TERRITORIES.keys())
 

@@ -163,5 +163,3 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
             return False  # Depth violation
 
     return True
-
-

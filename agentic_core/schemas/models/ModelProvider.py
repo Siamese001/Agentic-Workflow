@@ -72,9 +72,7 @@ class ModelConfig(BaseModel):
         le=2.0,
         description="Sampling temperature",
     )
-    max_tokens: int = Field(
-        default=DEFAULT_MAX_OUTPUT_TOKENS, ge=1, description="Maximum tokens"
-    )
+    max_tokens: int = Field(default=DEFAULT_MAX_OUTPUT_TOKENS, ge=1, description="Maximum tokens")
 
     @field_validator("model_name")
     @classmethod

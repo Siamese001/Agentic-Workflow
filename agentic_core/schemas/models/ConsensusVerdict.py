@@ -42,7 +42,7 @@ class ModelOpinion(BaseModel):
     confidence: float = Field(
         ..., ge=0.0, le=1.0, description="Confidence in this specific opinion"
     )
-    
+
     @field_validator("risk_assessment")
     @classmethod
     def validate_risk_assessment(cls, v: str) -> str:

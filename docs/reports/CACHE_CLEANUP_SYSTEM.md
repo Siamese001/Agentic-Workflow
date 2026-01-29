@@ -24,7 +24,7 @@ python scripts/purge_cache.py
 ### 2. Git Integration
 
 #### Post-Checkout Hook
-**Files**: 
+**Files**:
 - `.git/hooks/post-checkout` (Unix/Linux)
 - `.git/hooks/post-checkout.ps1` (Windows)
 

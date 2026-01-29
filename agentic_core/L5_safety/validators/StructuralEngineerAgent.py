@@ -30,7 +30,6 @@ from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgen
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30

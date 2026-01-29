@@ -17,7 +17,6 @@ from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
 from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.shared.core.TraceRegistry import TraceRegistry
 from apps_lic.domain.config import load_agent_specs
-from agentic_core.base_agents.SubatomicTestingMixin import subatomic_testing_mixin
 
 # Domain Imports
 try:
@@ -42,7 +41,7 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
     memory_store: Any | None = field(default=None)
     search_client: Any | None = field(default=None)
     llm_client: Any | None = field(default=None)
-    
+
     # Sovereign Seal: Runtime immutability flag
     _sealed: bool = field(default=False, init=False, repr=False)
 
@@ -51,7 +50,9 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
         Enforce Sovereign Seal (Runtime Immutability).
         """
         if getattr(self, "_sealed", False):
-            raise AttributeError(f"Sovereign Seal Active: Cannot modify '{name}' on {self.__class__.__name__}")
+            raise AttributeError(
+                f"Sovereign Seal Active: Cannot modify '{name}' on {self.__class__.__name__}"
+            )
         super().__setattr__(name, value)
 
     def __getstate__(self) -> dict[str, Any]:
@@ -78,10 +79,12 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
         # RCA FIX: Handle 'research_agent' vs 'research' naming mismatch in Sovereign Blueprint.
         # Critical Analysis: We use defensive getattr to prevent the 'AttributeError' loop which crashes the engine.
         agent_specs = load_agent_specs()
-        agent_config = getattr(agent_specs, 'research_agent', None) or getattr(agent_specs, 'research', None)
-        
+        agent_config = getattr(agent_specs, "research_agent", None) or getattr(
+            agent_specs, "research", None
+        )
+
         if agent_config is None:
-             raise AttributeError(
+            raise AttributeError(
                 f"Sovereign Blueprint Fault: '{self.__class__.__name__}' config key missing. "
                 "Expected 'research_agent' or 'research'."
             )
@@ -90,13 +93,13 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
         self.agent_specs = agent_specs
         self.vector_params = agent_config.vector_store_query_params
         self.fallback_params = agent_config.fallback_rag_params
-        
+
         self.critique_params = {
             "min_confidence_score": 0.6,
             "min_recency_days": 30,
             "min_recipient_specific_count": 2,
         }
-        
+
         # Engage Sovereign Seal
         object.__setattr__(self, "_sealed", True)
 

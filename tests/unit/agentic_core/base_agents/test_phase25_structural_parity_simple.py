@@ -15,9 +15,6 @@ with patch(
     return_value=True,
 ):
     with patch("agentic_core.domain.sovereign_lock.emergency_shutdown", MagicMock()):
-        from agentic_core.base_agents.pinecone_vector_mixin import pinecone_vector_mixin
-        from agentic_core.base_agents.meta_learning_mixin import meta_learning_mixin
-
         # Create minimal test agents
         class TestRGAgent(MetaLearningMixin, PineconeVectorMixin):
             _namespace = "apps_rg"

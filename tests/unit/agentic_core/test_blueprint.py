@@ -1,8 +1,12 @@
 import pytest
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../agentic_core/L5_safety/validators'))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "../../agentic_core/L5_safety/validators")
+)
 from structure_blueprint import is_path_allowed, SOVEREIGN_TERRITORIES
+
 
 class TestUnifiedSovereignRegistry:
     """
@@ -45,9 +49,9 @@ class TestUnifiedSovereignRegistry:
         """100% PASS: Verifies that merged CANON_REGISTRY rules are enforced."""
         forbidden = "agentic_core/common/leaked_logic.py"
         # Since 'common' is in forbidden_patterns, it must be blocked
-        # Note: Implementation of is_path_allowed would check forbidden_patterns 
+        # Note: Implementation of is_path_allowed would check forbidden_patterns
         # for a complete 100% pass on this scenario.
-        
+
     def test_unified_territory_structure(self):
         """100% PASS: Validates the unified hierarchical model integrity."""
         # Ensure all required keys exist
@@ -55,13 +59,13 @@ class TestUnifiedSovereignRegistry:
             assert "depth" in config, f"FAIL: {territory} missing depth"
             assert "purpose" in config, f"FAIL: {territory} missing purpose"
             assert "subfolders" in config, f"FAIL: {territory} missing subfolders"
-            
+
     def test_l3_specialization_validation(self):
         """100% PASS: Tests L3 validation logic."""
         # Valid L3 path
         valid_l3 = "agentic_core/L0_maintenance/script_file.py"
         assert is_path_allowed(valid_l3) is True, "FAIL: Valid L3 path blocked"
-        
+
         # Invalid L4 path (too deep)
         invalid_l4 = "agentic_core/L0_maintenance/sub/deep/file.py"
         assert is_path_allowed(invalid_l4) is False, "FAIL: Invalid L4 depth allowed"
@@ -70,13 +74,15 @@ class TestUnifiedSovereignRegistry:
         """100% PASS: Verifies depth limits are enforced per territory."""
         # agentic_core depth 3 (allows up to depth 4 for files)
         assert is_path_allowed("agentic_core/L2_execution/tool.py") is True
-        assert is_path_allowed("agentic_core/L2_execution/sub/deep.py") is True  # Valid at max depth
+        assert (
+            is_path_allowed("agentic_core/L2_execution/sub/deep.py") is True
+        )  # Valid at max depth
         assert is_path_allowed("agentic_core/L2_execution/sub/deeper/file.py") is False  # Too deep
-        
+
         # apps_rg depth 2 (allows up to depth 3 for files)
         assert is_path_allowed("apps_rg/engines/tool.py") is True
         assert is_path_allowed("apps_rg/engines/sub/deep.py") is False  # Too deep for apps
-        
+
         # tests depth 2
         assert is_path_allowed("tests/unit/test_file.py") is True
         assert is_path_allowed("tests/unit/sub/deep.py") is False
@@ -98,9 +104,10 @@ class TestUnifiedSovereignRegistry:
         """100% PASS: Ensures volatile flags are properly handled."""
         # tests territory should be non-volatile
         assert SOVEREIGN_TERRITORIES["tests"].get("volatile") is False
-        
+
         # Check that volatile flag exists where expected
         # (This would need to be added to territories that should be volatile)
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

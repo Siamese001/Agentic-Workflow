@@ -1,7 +1,7 @@
 # Execute SSOT: Autonomous Governance Engine
 
-**Version:** 2.0 (Enhanced Safety & Telemetry)  
-**Scope:** `agentic_core` & `apps_*`  
+**Version:** 2.0 (Enhanced Safety & Telemetry)
+**Scope:** `agentic_core` & `apps_*`
 **Status:** Production Ready
 
 ---
@@ -63,7 +63,7 @@ python agentic_core/L0_maintenance/scripts/execute_ssot.py \
 
 ```
 
-*Output:* `ssot_report_<TIMESTAMP>.json` 
+*Output:* `ssot_report_<TIMESTAMP>.json`
 
 ### Step 2: Impact Analysis
 
@@ -77,8 +77,8 @@ python agentic_core/L0_maintenance/scripts/verify_manifest.py \
 
 **Stop if you see:**
 
-* `🚨 MASS DELETION RISK` 
-* `🚨 HIGH BLAST RADIUS` 
+* `🚨 MASS DELETION RISK`
+* `🚨 HIGH BLAST RADIUS`
 
 ### Step 3: Execution (Live Run)
 
@@ -146,7 +146,7 @@ class MyNewFixer:
                 'type': str,
                 ...
             }
-        
+
         Returns:
             {
                 'status': 'success' | 'failed' | 'skipped',

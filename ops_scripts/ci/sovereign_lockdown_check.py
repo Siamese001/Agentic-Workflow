@@ -23,7 +23,6 @@ Pre-commit Hook Entry:
       always_run: true
 """
 
-
 import sys
 from pathlib import Path
 
