@@ -1,0 +1,22 @@
+{
+  "generated": "2026-01-29T20:36:00.407628",
+  "summary": {
+    "total_agents": 163,
+    "heal_compliant": 80,
+    "heal_missing": 83,
+    "namespace_compliant": 161,
+    "namespace_invalid": 2,
+    "compliance_rate": 49.1
+  },
+  "layer_distribution": {
+    "Unknown": 2,
+    "Base": 1,
+    "L0": 4,
+    "L1": 7,
+    "L2": 10,
+    "L3": 19,
+    "L4": 6,
+    "L5": 99,
+    "L6": 15
+  }
+}

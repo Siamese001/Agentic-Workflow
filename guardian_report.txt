@@ -1,23 +1,30 @@
 ============================================================
 GUARDIAN ARCHITECTURAL HEALTH REPORT
 ============================================================
-Generated: 2026-01-29 16:57:26
+Generated: 2026-01-29 20:33:53
 Exit Status: FAIL
 
 EXECUTION SUMMARY:
-  Total Tests Run: 1
-  Passed: 0
-  Failed: 1
+  Total Tests Run: 10
+  Passed: 4
+  Failed: 6
   Skipped: 0
 
 FAILED GATES:
-  ❌ Import Safety: 1 test(s)
+  ❌ MRO Integrity: 3 test(s)
+     - tests/guardian/test_mro_integrity.py::test_dataclass_initialization_fuzz
+     - tests/guardian/test_mro_integrity.py::test_mixin_naming_convention_and_inheritance
+     - tests/guardian/test_mro_integrity.py::test_sovereign_seal_integrity
+  ❌ Import Safety: 3 test(s)
+     - tests/guardian/test_import_safety.py::TestImportSafety::test_global_smoke_loader
      - tests/guardian/test_import_safety.py::TestImportSafety::test_zombie_reference_check
+     - tests/guardian/test_import_safety.py::TestImportSafety::test_ssot_dependency_flow
 
 ARCHITECTURAL HEALTH: ⚠️  COMPROMISED
 Architectural violations detected.
 Please review failed tests and remediate issues.
 
 RECOMMENDED ACTIONS:
+  - Fix MRO violations and inheritance issues
   - Resolve import errors and circular dependencies
 ============================================================
