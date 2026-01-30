@@ -134,8 +134,8 @@ class ThreatDetection:
     recommendations: list[str]
 
 
-from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30

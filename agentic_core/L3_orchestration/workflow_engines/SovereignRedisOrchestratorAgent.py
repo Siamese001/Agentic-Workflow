@@ -24,10 +24,10 @@ from typing import Any
 import redis
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # NAMING FIXED: SovereignRedisOrchestratorAgent → SovereignRedisOrchestratorAgent
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass

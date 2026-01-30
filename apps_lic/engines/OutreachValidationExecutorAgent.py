@@ -4,13 +4,6 @@ This module extends ValidationGateExecutor with outreach-specific validation
 rules including Metric source binding, redundancy guards, and forbidden content.
 """
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from __future__ import annotations
 
 import logging

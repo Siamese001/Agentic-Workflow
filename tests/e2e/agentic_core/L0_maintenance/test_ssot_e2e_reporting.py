@@ -281,7 +281,11 @@ class TestSSOTE2EReporting:
         proceed, msg = engine.should_proceed_with_healing(score, "AgentX")
 
         assert proceed is False
-        assert "Manual Review Required" in msg or "Confidence too low" in msg or "requires advanced reasoning" in msg
+        assert (
+            "Manual Review Required" in msg
+            or "Confidence too low" in msg
+            or "requires advanced reasoning" in msg
+        )
 
     # =========================================================================
     # CASE 9: Full Reconciliation Loop (Simulated)

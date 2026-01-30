@@ -27,12 +27,12 @@ class PeerIntelligenceConfig:
         self.differentiator_threshold = 0.3
 
 
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L2_execution.tool_registry.IntegrityGateExecutorAgent import (
     IntegrityGateExecutorAgent,
 )
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class PeerIntelligenceResult:

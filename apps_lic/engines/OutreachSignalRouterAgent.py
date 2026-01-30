@@ -7,13 +7,6 @@ Provides self-healing capabilities for outreach campaigns:
 - Automatic rollback on critical failures
 """
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -27,17 +20,22 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
 # Import mixins with fallbacks
 try:
     from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
+
     class MCPHardenedMixin(mcp_hardened_mixin):
         pass
 except ImportError:
+
     class MCPHardenedMixin:
         pass
+
 
 try:
     from agentic_core.L5_safety.validators.healing_mixin import HealerMixin
 except ImportError:
+
     class HealerMixin:
         pass
+
 
 if TYPE_CHECKING:
     from apps_lic.shared.orchestrators import AppWorkflowOrchestratorAgent

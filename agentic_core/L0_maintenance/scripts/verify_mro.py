@@ -10,7 +10,6 @@ Opportunity #4: Mixin Inheritance Complexity - Phase 4 Verification
 
 import sys
 from pathlib import Path
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))

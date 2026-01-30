@@ -55,7 +55,6 @@ if sys.platform.startswith("win"):
 
 import ast
 import re
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 try:
     from agentic_core.base_agents.decorators import HEAL_RESULT_SCHEMA, standard_heal
@@ -1651,9 +1650,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
 
     # Get DebateSynthesisAgent violations
     debate_synthesis_agent = agents["conversational_repair"](project_root=Path.cwd())
-    debate_synthesis_result = debate_synthesis_agent.scan_violations(
-        target_territory=territory
-    )
+    debate_synthesis_result = debate_synthesis_agent.scan_violations(target_territory=territory)
     conversational_violations = debate_synthesis_result.get("violations", [])
     for conv_violation in conversational_violations:
         if isinstance(conv_violation, dict):
@@ -2163,12 +2160,14 @@ Examples:
         from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
+        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
         from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
             FilesystemSSOTReconcilerAgent,
         )
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.FileClassificationAgent import FileClassificationAgent
         from agentic_core.L5_safety.validators.RootHygieneAgent import RootHygieneAgent
         from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
         from agentic_core.L6_observability.DebateSynthesisAgent import (

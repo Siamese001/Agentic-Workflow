@@ -22,12 +22,13 @@ from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import 
     SubatomicTestingMixin,
 )
 
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 
 # Sovereign Hardening Mixins – Phase 35
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass

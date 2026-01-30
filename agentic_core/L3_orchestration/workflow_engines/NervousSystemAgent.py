@@ -17,7 +17,6 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from typing import Any
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
