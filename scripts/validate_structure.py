@@ -156,27 +156,57 @@ def validate_base_agent_location(file_path: str) -> tuple[bool, str]:
     """
     [CONSTITUTIONAL] Validate that base agents are in the correct location.
 
-    This is a constitutional rule that CANNOT be overridden.
-    All files ending in 'BaseAgent.py' MUST be in agentic_core/base_agents/.
+    This rule has two parts:
+    1. Core framework base agents (SovereignBaseAgent, layer base agents)
+       MUST be in agentic_core/base_agents/
+    2. App-specific base agents (prefixed with app name)
+       MUST be in their respective apps_* directories
     """
     path = Path(file_path)
 
     if not BASE_AGENT_PATTERN.match(path.name):
         return True, ""
 
-    # Check if it's in the canonical location
     posix_path = path.as_posix()
-    if posix_path.startswith(BASE_AGENT_CANONICAL_DIR + "/"):
-        return True, ""
 
-    # Also allow if it's just the filename (relative path check)
-    parts = path.parts
-    if len(parts) >= 2 and parts[-2] == "base_agents" and parts[-3] == "agentic_core":
+    # Core framework base agents - MUST be in agentic_core/base_agents/
+    core_base_agents = {
+        "SovereignBaseAgent.py",
+        # Layer base agents would go here if they exist
+        # "L0BaseAgent.py", "L1BaseAgent.py", etc.
+    }
+
+    if path.name in core_base_agents:
+        if posix_path.startswith(BASE_AGENT_CANONICAL_DIR + "/"):
+            return True, ""
+        else:
+            return False, (
+                f"[CONSTITUTIONAL VIOLATION] Core base agent '{path.name}' must reside in "
+                f"{BASE_AGENT_CANONICAL_DIR}/, found in: {file_path}"
+            )
+
+    # App-specific base agents - MUST be in their respective apps_* directories
+    app_prefixes = ["RG", "LIC", "SHARED"]
+    for prefix in app_prefixes:
+        if path.name.startswith(prefix) and path.name.endswith("BaseAgent.py"):
+            # Find the expected app directory
+            expected_app_dir = f"apps_{prefix.lower()}" if prefix != "SHARED" else "apps_shared"
+            if posix_path.startswith(expected_app_dir + "/"):
+                return True, ""
+            else:
+                return False, (
+                    f"[CONSTITUTIONAL VIOLATION] App-specific base agent "
+                    f"'{path.name}' must reside in {expected_app_dir}/, "
+                    f"found in: {file_path}"
+                )
+
+    # For any other base agents, default to agentic_core/base_agents/
+    if posix_path.startswith(BASE_AGENT_CANONICAL_DIR + "/"):
         return True, ""
 
     return False, (
         f"[CONSTITUTIONAL VIOLATION] Base agent '{path.name}' must reside in "
-        f"{BASE_AGENT_CANONICAL_DIR}/, found in: {file_path}"
+        f"{BASE_AGENT_CANONICAL_DIR}/ or appropriate apps_* directory, found in: {file_path}"
     )
 
 
@@ -319,7 +349,9 @@ def main() -> int:
             print(f"  [!!!] {v}")
         print()
         print("=" * 70)
-        print("Fix: Move base agents to agentic_core/base_agents/")
+        print("Fix: Move base agents to correct locations:")
+        print("  - Core base agents -> agentic_core/base_agents/")
+        print("  - App-specific base agents -> respective apps_* directories")
         print("=" * 70 + "\n")
         return 1
 
