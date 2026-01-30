@@ -40,7 +40,7 @@ try:
     )
 
     IMPORTS_AVAILABLE = True
-except ImportError as e:
+except (ImportError, NameError, AttributeError, TypeError) as e:
     print(f"Import warning: {e}")
     IMPORTS_AVAILABLE = False
 

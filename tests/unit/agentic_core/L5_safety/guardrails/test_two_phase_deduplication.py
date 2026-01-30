@@ -120,7 +120,7 @@ def test_1_agent_exists() -> tuple[bool, str]:
         )
 
         return True, "TwoPhaseDeduplicationAgent module exists"
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         return False, f"Import failed: {e}"
 
 

@@ -35,7 +35,7 @@ class TestSSOTComplianceProtocol(unittest.TestCase):
             try:
                 # Intentionally triggering the ImportError logic block from the protocol
                 raise ImportError("Mocked Import Failure")
-            except ImportError:
+            except (ImportError, NameError, AttributeError):
                 mock_exit(1)
 
             mock_exit.assert_called_with(1)

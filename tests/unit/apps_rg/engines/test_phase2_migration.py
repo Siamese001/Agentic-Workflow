@@ -26,7 +26,7 @@ class TestPhase2Migration(unittest.TestCase):
             self.assertTrue(
                 hasattr(AgentExecutor, "execute"), "Imported AgentExecutor missing 'execute' method"
             )
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             self.fail(f"Phase 2 Fail: Could not import AgentExecutor from apps_rg.engines: {e}")
 
     def test_02_agent_executor_dependencies_resolved(self):
@@ -42,7 +42,7 @@ class TestPhase2Migration(unittest.TestCase):
             # We wrap in try/except because we don't have real credentials,
             # but we just want to see if the IMPORT fails
             executor._get_default_model()
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             self.fail(f"Phase 2 Fail: AgentExecutor internal imports broken: {e}")
         except Exception:
             # Other errors (like missing keys) are fine for this structural test

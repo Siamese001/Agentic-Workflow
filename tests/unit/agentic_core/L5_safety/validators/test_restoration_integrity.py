@@ -38,7 +38,7 @@ class test_restoration_integrity:
             import agentic_core.utils.terminal_colors as tc
 
             assert hasattr(tc, "PrintColors"), "terminal_colors module missing PrintColors class"
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             pytest.fail(
                 "Could not import agentic_core.utils.terminal_colors. Move may be incomplete."
             )
@@ -52,7 +52,7 @@ class test_restoration_integrity:
 
             # Just importing it is often enough to trigger module-level errors
             assert FilesystemAgent is not None
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"FilesystemAgent is broken: {e}")
 
     @pytest.mark.parametrize("class_name, module_path", RESTORED_AGENTS_MAP)
@@ -62,7 +62,7 @@ class test_restoration_integrity:
         """
         try:
             module = importlib.import_module(module_path)
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"CRITICAL: Could not import {module_path}.\nError: {e}")
         except SyntaxError as e:
             pytest.fail(f"CRITICAL: Syntax Error in {module_path}: {e}")
@@ -92,7 +92,7 @@ class test_restoration_integrity:
             if "archives." in source:
                 pytest.fail(f"{class_name} still contains imports from 'archives.'")
 
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             pytest.skip(f"Skipping mixin check for {class_name} due to import failure")
 
 

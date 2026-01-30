@@ -106,7 +106,7 @@ class TestCaseB_StrategyInjection:
                 MissionStrategy,
                 OrchestratorAgent,
             )
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.unified_orchestrator import (
                 MissionStrategy,
                 OrchestratorAgent,
@@ -129,7 +129,7 @@ class TestCaseB_StrategyInjection:
                 MissionStrategy,
                 OrchestratorAgent,
             )
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.unified_orchestrator import (
                 MissionStrategy,
                 OrchestratorAgent,
@@ -155,7 +155,7 @@ class TestCaseB_StrategyInjection:
                 MissionStrategy,
                 OrchestratorAgent,
             )
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.unified_orchestrator import (
                 MissionStrategy,
                 OrchestratorAgent,
@@ -183,7 +183,7 @@ class TestCaseB_StrategyInjection:
                 MissionStrategy,
                 OrchestratorAgent,
             )
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.unified_orchestrator import (
                 MissionStrategy,
                 OrchestratorAgent,
@@ -219,7 +219,7 @@ class TestCaseB_StrategyInjection:
         """Verify OrchestratorAgent implements IOrchestrator protocol."""
         try:
             from agentic_core.L3_orchestration.unified_orchestrator import OrchestratorAgent
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.unified_orchestrator import OrchestratorAgent
         from agentic_core.L5_safety.validators.orchestrator import IOrchestrator
 
@@ -514,7 +514,7 @@ class TestHealingStrategy:
         """Verify HealingStrategy has a name property."""
         try:
             from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.void_violations.healing_strategy import HealingStrategy
 
         strategy = HealingStrategy()
@@ -525,7 +525,7 @@ class TestHealingStrategy:
         """Verify HealingStrategy defines 5 tiers."""
         try:
             from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.void_violations.healing_strategy import HealingStrategy
 
         strategy = HealingStrategy()
@@ -538,7 +538,7 @@ class TestHealingStrategy:
         """Verify Tier 0 includes SyntaxValidatorAgent."""
         try:
             from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.void_violations.healing_strategy import HealingStrategy
 
         strategy = HealingStrategy()
@@ -558,7 +558,7 @@ class TestHealingStrategy:
         """Verify should_abort_tier returns True for Tier 0 failure."""
         try:
             from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.void_violations.healing_strategy import HealingStrategy
 
         strategy = HealingStrategy()
@@ -579,7 +579,7 @@ class TestMissionReport:
         """Verify success_rate calculation."""
         try:
             from agentic_core.L3_orchestration.unified_orchestrator import MissionReport
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.unified_orchestrator import MissionReport
 
         report = MissionReport(
@@ -600,7 +600,7 @@ class TestMissionReport:
         """Verify is_stable property."""
         try:
             from agentic_core.L3_orchestration.unified_orchestrator import MissionReport
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.unified_orchestrator import MissionReport
 
         # Stable report

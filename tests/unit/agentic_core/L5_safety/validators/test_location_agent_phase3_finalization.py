@@ -86,7 +86,7 @@ class TestL5ImportCycles:
             )
 
             assert LocationValidatorAgent is not None
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Circular import detected in LocationValidatorAgent: {e}")
 
     def test_healer_imports_cleanly(self):
@@ -95,7 +95,7 @@ class TestL5ImportCycles:
             from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
 
             assert LocationHealerAgent is not None
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Circular import detected in LocationHealerAgent: {e}")
 
     def test_gravity_detector_imports_cleanly(self):
@@ -104,7 +104,7 @@ class TestL5ImportCycles:
             from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
 
             assert GravityLeakDetector is not None
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Circular import detected in GravityLeakDetector: {e}")
 
     def test_location_constants_imports_cleanly(self):
@@ -117,7 +117,7 @@ class TestL5ImportCycles:
 
             assert ARCHIVE_SUBFOLDERS is not None
             assert HEALING_STRATEGY_MAP is not None
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Circular import detected in location_constants: {e}")
 
     def test_all_specialists_import_together(self):
@@ -135,7 +135,7 @@ class TestL5ImportCycles:
             assert LocationHealerAgent is not None
             assert GravityLeakDetector is not None
             assert LocationAgent is not None
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Cross-import failure: {e}")
 
 
@@ -214,7 +214,7 @@ class TestL1CognitionHardening:
             )
 
             assert L1CognitionBaseAgent is not None
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"L1CognitionBaseAgent import failed: {e}")
 
     def test_verification_registry_is_dict(self):

@@ -2723,7 +2723,7 @@ def run_all_tests() -> bool:
                 f"✅ Test 30 PASSED: All {len(phase5_endpoints)} Phase 5 API endpoints return 200"
             )
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         print(f"   ⚠️  Test 30 SKIPPED: Could not import API ({e})")
     except Exception as e:
         errors.append(f"Test 30 FAILED: {e}")

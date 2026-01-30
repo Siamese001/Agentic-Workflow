@@ -55,7 +55,7 @@ def test_registry_initialization_no_l5():
         # Verify default validator is used
         assert hasattr(agent, "validator")
         assert agent.validator.__name__ == "_default_placement_validator"
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         pytest.fail(f"PromptRegistryAgent initialization failed with ImportError: {e}")
 
 
@@ -98,7 +98,7 @@ def test_dashboard_suite_no_l5_imports():
         assert suite is not None
         assert hasattr(suite, "passed")
         assert hasattr(suite, "failed")
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         pytest.fail(f"DashboardTestSuite import failed: {e}")
 
 

@@ -135,7 +135,7 @@ class test_dependency_post_consolidation:
             from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
 
             assert get_orchestrator is not None
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Orchestrator Registry is broken: {e}")
 
     def test_unified_orchestrator_instantiation(self):

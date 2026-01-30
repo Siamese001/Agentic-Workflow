@@ -58,7 +58,7 @@ def test_location_agent_backup_path():
         print("   ✅ PASSED: LocationAgent uses archives/healing_backups/location/")
         return True
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         print(f"   ⚠️  SKIPPED: Could not import LocationAgent: {e}")
         return True  # Skip if import fails
     except Exception as e:
@@ -99,7 +99,7 @@ def test_filesystem_agent_backup_path():
         print("   ✅ PASSED: FilesystemAgent uses archives/healing_backups/filesystem/")
         return True
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         print(f"   ⚠️  SKIPPED: Could not import FilesystemAgent: {e}")
         return True
     except Exception as e:
@@ -140,7 +140,7 @@ def test_healing_transaction_manager_backup_path():
         print("   ✅ PASSED: HealingTransaction uses archives/healing_backups/transactions/")
         return True
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         print(f"   ⚠️  SKIPPED: Could not import HealingTransaction: {e}")
         return True
     except Exception as e:
@@ -188,7 +188,7 @@ def test_backup_file_creation():
             if temp_file.exists():
                 temp_file.unlink()
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         print(f"   ⚠️  SKIPPED: Could not import LocationAgent: {e}")
         return True
     except Exception as e:

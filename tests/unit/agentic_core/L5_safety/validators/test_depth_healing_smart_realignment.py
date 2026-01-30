@@ -91,7 +91,7 @@ def test_heal_depth_violation_exists():
             return False
 
         return True
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         test_fail("IMPORT", f"Cannot import LocationAgent: {e}")
         return False
 

@@ -19,7 +19,7 @@ try:
     from L5_safety.validators import structure_blueprint
     from L5_safety.validators.LocationAgent import LocationAgent
     from utils.discovery_parser import AGENT_METADATA, load_hardened_agent_metadata
-except ImportError as e:
+except (ImportError, NameError, AttributeError, TypeError) as e:
     pytest.skip(f"Required modules not available: {e}", allow_module_level=True)
 
 

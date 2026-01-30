@@ -45,7 +45,7 @@ class TestSovereignPurification(unittest.TestCase):
 
             # SUCCESS: 100% PASS - Namespace reclamation verified
             self.assertIsNotNone(CodeDetectorAgent)
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             self.fail(f"Sovereign import failed for reclaimed namespace: {e}")
 
     def test_integrity_hash_verification(self):

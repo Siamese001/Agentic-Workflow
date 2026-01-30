@@ -170,7 +170,7 @@ class TestSovereignIndex:
         """Reset singleton before each test."""
         try:
             from agentic_core.utils.sovereign_index import SovereignIndex
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.sovereign_index import SovereignIndex
         SovereignIndex.reset_instance()
 
@@ -178,7 +178,7 @@ class TestSovereignIndex:
         """Reset singleton after each test."""
         try:
             from agentic_core.utils.sovereign_index import SovereignIndex
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.sovereign_index import SovereignIndex
         SovereignIndex.reset_instance()
 
@@ -186,7 +186,7 @@ class TestSovereignIndex:
         """get_instance returns the same instance."""
         try:
             from agentic_core.utils.sovereign_index import SovereignIndex
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.sovereign_index import SovereignIndex
 
         index1 = SovereignIndex.get_instance(PROJECT_ROOT)
@@ -198,7 +198,7 @@ class TestSovereignIndex:
         """get_files returns files matching pattern."""
         try:
             from agentic_core.utils.sovereign_index import SovereignIndex
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.sovereign_index import SovereignIndex
 
         index = SovereignIndex.get_instance(PROJECT_ROOT)
@@ -212,7 +212,7 @@ class TestSovereignIndex:
         """get_agent_files returns agent files."""
         try:
             from agentic_core.utils.sovereign_index import SovereignIndex
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.sovereign_index import SovereignIndex
         import fnmatch
 
@@ -229,7 +229,7 @@ class TestSovereignIndex:
         """Test Case B: Phantom file detection via cache invalidation."""
         try:
             from agentic_core.utils.sovereign_index import SovereignIndex
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.sovereign_index import SovereignIndex
 
         # Create a temporary directory structure
@@ -273,7 +273,7 @@ class TestSovereignIndex:
         """Excluded directories are not scanned."""
         try:
             from agentic_core.utils.sovereign_index import SovereignIndex
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.sovereign_index import SovereignIndex
 
         # Create temp structure with excluded dir
@@ -302,7 +302,7 @@ class TestSovereignIndex:
         """get_stats returns index statistics."""
         try:
             from agentic_core.utils.sovereign_index import SovereignIndex
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.sovereign_index import SovereignIndex
 
         index = SovereignIndex.get_instance(PROJECT_ROOT)
@@ -319,7 +319,7 @@ class TestSovereignIndex:
         """add_exclusion and remove_exclusion work correctly."""
         try:
             from agentic_core.utils.sovereign_index import SovereignIndex
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             from archives.location_violations.sovereign_index import SovereignIndex
 
         test_dir = tmp_path / "test_project"

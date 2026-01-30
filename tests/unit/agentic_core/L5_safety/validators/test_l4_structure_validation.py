@@ -40,7 +40,7 @@ def test_1_l4_subfolder_map_exists() -> tuple[bool, str]:
             return False, "L4_SUBFOLDER_MAP is empty"
 
         return True, f"L4_SUBFOLDER_MAP exists with {len(L4_SUBFOLDER_MAP)} entries"
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         return False, f"Import failed: {e}"
 
 
@@ -53,7 +53,7 @@ def test_2_l4_approved_folders_exists() -> tuple[bool, str]:
             return False, "L4_APPROVED_FOLDERS is empty"
 
         return True, f"L4_APPROVED_FOLDERS exists with {len(L4_APPROVED_FOLDERS)} entries"
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         return False, f"Import failed: {e}"
 
 

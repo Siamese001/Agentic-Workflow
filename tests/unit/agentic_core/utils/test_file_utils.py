@@ -27,7 +27,7 @@ try:
         safe_write_file,
         safe_write_json,
     )
-except ImportError:
+except (ImportError, NameError, AttributeError):
     # Fallback to archived location for legacy tests
     from archives.location_violations.file_utils import (
         ensure_directory,

@@ -224,7 +224,7 @@ def test_tc12_import_stability():
                 successful_imports.append(class_name)
             else:
                 import_errors.append((class_name, "Invalid module path"))
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             import_errors.append((class_name, str(e)))
         except AttributeError as e:
             import_errors.append((class_name, str(e)))

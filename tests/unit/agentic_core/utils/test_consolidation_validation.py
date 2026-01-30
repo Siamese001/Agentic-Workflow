@@ -148,7 +148,7 @@ def test_orchestrator_ssot():
             else:
                 test_fail("HEALING_DEPRECATION", "No deprecation warning for 'healing' mode")
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         test_fail("IMPORT", f"Cannot import orchestrator_registry: {e}")
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed: {e}")
@@ -263,7 +263,7 @@ def test_deprecation_guard():
                     "ConsolidatedOrchestratorAgent does NOT trigger DeprecationWarning",
                 )
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         test_fail("IMPORT", f"Cannot import deprecated classes: {e}")
     except Exception as e:
         test_fail("EXCEPTION", f"Test failed: {e}")

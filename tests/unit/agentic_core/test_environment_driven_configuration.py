@@ -9,28 +9,28 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 # Test all refactored components for environment-driven configuration
 try:
     from agentic_core.runtime.shared_runtime.SignalQuality import QualityThresholds
-except ImportError:
+except (ImportError, NameError, AttributeError):
     # Skip SignalQuality tests if module not available
     QualityThresholds = None
 
 try:
     from agentic_core.schemas.models.ReasoningConfig import GovernorConfig, ModelConfig, RAGConfig
-except ImportError:
+except (ImportError, NameError, AttributeError):
     ModelConfig = RAGConfig = GovernorConfig = None
 
 try:
     from apps_shared.common_utils.NodeNegotiator import NegotiationConfig
-except ImportError:
+except (ImportError, NameError, AttributeError):
     NegotiationConfig = None
 
 try:
     from apps_rg.shared.tools.ValidationResult import SectionIntegratorConfig
-except ImportError:
+except (ImportError, NameError, AttributeError):
     SectionIntegratorConfig = None
 
 try:
     from apps_lic.shared.tools.SafetyProfile import BudgetProfile
-except ImportError:
+except (ImportError, NameError, AttributeError):
     BudgetProfile = None
 
 

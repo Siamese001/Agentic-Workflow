@@ -98,7 +98,7 @@ def test_variable_depth_subfolders_exist():
                 test_pass("COMPLETE", "All expected subfolders included")
         else:
             test_fail("DEFINED", "VARIABLE_DEPTH_SUBFOLDERS is empty!")
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         test_fail("IMPORT", f"Cannot import VARIABLE_DEPTH_SUBFOLDERS: {e}")
 
 
@@ -198,7 +198,7 @@ def test_is_path_allowed_function():
             else:
                 test_fail(f"REJECTED-{Path(path_str).stem[:15]}", f"{path_str} incorrectly allowed")
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         test_fail("IMPORT", f"Cannot import is_path_allowed: {e}")
 
 

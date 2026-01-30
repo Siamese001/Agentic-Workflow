@@ -68,7 +68,7 @@ def test_global_excluded_dirs():
             else:
                 test_fail(f"ENTRY_{entry}", f"'{entry}' NOT in GLOBAL_EXCLUDED_DIRS")
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         test_fail("IMPORT", f"Cannot import GLOBAL_EXCLUDED_DIRS: {e}")
 
 
@@ -119,7 +119,7 @@ def test_is_path_allowed():
             else:
                 test_fail(f"INVALID_{path.split('/')[0]}", f"'{path}' INCORRECTLY allowed")
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         test_fail("IMPORT", f"Cannot import is_path_allowed: {e}")
 
 
