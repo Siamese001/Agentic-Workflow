@@ -1,5 +1,5 @@
 """
-apps_rg/shared/core/agent_base.py - Red Group Sovereign Bridge
+apps_rg/shared/core/agent_base.py - Resume Generation Sovereign Bridge
 """
 
 from __future__ import annotations
@@ -8,14 +8,14 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.meta_learning_mixin import MetaLearningMixin
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass
 class RGAgentBase(MetaLearningMixin, SovereignBaseAgent):
     """
-    RGAgentBase: The Sovereign Foundation for all 'Red Group' Agents.
+    RGAgentBase: The Sovereign Foundation for all 'Resume Generation' Agents.
     """
 
     # Domain-specific RG configuration
