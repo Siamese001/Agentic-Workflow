@@ -668,8 +668,147 @@ class StateManagementAgent(SovereignBaseAgent):
                 Logger.error(f"Heartbeat error: {e}")
 
     # =========================================================================
-    # HEALING
+    # HEALING (HealerProtocol Compliance)
     # =========================================================================
+
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        HealerProtocol compliance method for state management violations.
+        
+        Args:
+            violation: Dictionary containing violation details
+            
+        Returns:
+            Dictionary with healing result following HEAL_RESULT_SCHEMA
+        """
+        try:
+            # Extract violation details
+            violation_type = violation.get("type", "unknown")
+            state_key = violation.get("state_key")
+            file_path = violation.get("file_path")
+            
+            if violation_type == "manifest_corruption":
+                # Heal corrupted manifest
+                try:
+                    # Backup current manifest
+                    if self.manifest_path.exists():
+                        backup_path = self.manifest_backup
+                        shutil.copy2(self.manifest_path, backup_path)
+                    
+                    # Reload manifest from backup or create fresh
+                    self._load_manifest()
+                    return {
+                        "status": "success",
+                        "details": "Manifest restored from backup or recreated",
+                        "artifacts": ["manifest.json"],
+                        "errors": []
+                    }
+                except Exception as e:
+                    return {
+                        "status": "failed",
+                        "details": f"Failed to restore manifest: {str(e)}",
+                        "artifacts": [],
+                        "errors": [str(e)]
+                    }
+                    
+            elif violation_type == "orphaned_state_entry":
+                # Heal orphaned state entries
+                if state_key:
+                    if self.delete_state(state_key):
+                        return {
+                            "status": "success",
+                            "details": f"Removed orphaned state entry: {state_key}",
+                            "artifacts": [state_key],
+                            "errors": []
+                        }
+                    else:
+                        return {
+                            "status": "skipped",
+                            "details": f"State entry not found: {state_key}",
+                            "artifacts": [],
+                            "errors": []
+                        }
+                        
+            elif violation_type == "ghost_file":
+                # Heal ghost files (files without manifest entries)
+                if file_path:
+                    try:
+                        file_path_obj = Path(file_path)
+                        if file_path_obj.exists():
+                            # Create manifest entry for ghost file
+                            rel_path = str(file_path_obj.relative_to(self.memory_root))
+                            key = file_path_obj.stem
+                            
+                            with open(file_path_obj, "rb") as f:
+                                file_hash = hashlib.md5(f.read()).hexdigest()
+                            
+                            now = datetime.now()
+                            self._manifest[key] = StateEntry(
+                                key=key,
+                                file_path=rel_path,
+                                file_hash=file_hash,
+                                created_at=now,
+                                updated_at=now,
+                                metadata={"auto_mapped": True}
+                            )
+                            self._save_manifest()
+                            
+                            return {
+                                "status": "success",
+                                "details": f"Mapped ghost file to manifest: {rel_path}",
+                                "artifacts": [key],
+                                "errors": []
+                            }
+                        else:
+                            return {
+                                "status": "skipped",
+                                "details": f"Ghost file not found: {file_path}",
+                                "artifacts": [],
+                                "errors": []
+                            }
+                    except Exception as e:
+                        return {
+                            "status": "failed",
+                            "details": f"Failed to map ghost file: {str(e)}",
+                            "artifacts": [],
+                            "errors": [str(e)]
+                        }
+                        
+            elif violation_type == "integrity_repair":
+                # Heal integrity issues
+                report = self.validate_and_sync()
+                if not report.is_healthy:
+                    repair_results = self.repair_integrity(report)
+                    return {
+                        "status": "success",
+                        "details": f"Integrity repaired: {repair_results}",
+                        "artifacts": ["integrity_repair"],
+                        "errors": []
+                    }
+                else:
+                    return {
+                        "status": "success",
+                        "details": "State integrity verified - no repair needed",
+                        "artifacts": [],
+                        "errors": []
+                    }
+                    
+            else:
+                return {
+                    "status": "skipped",
+                    "details": f"Unknown violation type: {violation_type}",
+                    "artifacts": [],
+                    "errors": []
+                }
+                
+        except Exception as e:
+            Logger.error(f"Heal operation failed in StateManagementAgent: {e}")
+            return {
+                "status": "failed",
+                "details": f"Heal operation failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
 
     @standard_heal
     def heal_repository(

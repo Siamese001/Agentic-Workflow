@@ -5,6 +5,7 @@ from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 GravityStateAgent - Gravity Healing State Tracker
@@ -84,6 +85,92 @@ class GravityStateAgent(SubatomicTestingMixin, SovereignBaseAgent):
         super().heal_repository(**kwargs)
 
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
+
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        HealerProtocol compliance method for gravity state violations.
+        
+        Args:
+            violation: Dictionary containing violation details
+            
+        Returns:
+            Dictionary with healing result following HEAL_RESULT_SCHEMA
+        """
+        try:
+            # Extract violation details
+            violation_type = violation.get("type", "unknown")
+            file_path = violation.get("file_path")
+            
+            if violation_type == "gravity_state_corruption":
+                # Heal corrupted gravity state
+                if file_path:
+                    # Clear corrupted state for specific file
+                    try:
+                        file_key = str(Path(file_path).relative_to(self.root))
+                        if file_key in self.state["healed_files"]:
+                            del self.state["healed_files"][file_key]
+                            self._save_state()
+                            return {
+                                "status": "success",
+                                "details": f"Cleared corrupted state for {file_key}",
+                                "artifacts": [file_key],
+                                "errors": []
+                            }
+                        else:
+                            return {
+                                "status": "skipped",
+                                "details": f"No state found for {file_key}",
+                                "artifacts": [],
+                                "errors": []
+                            }
+                    except ValueError:
+                        return {
+                            "status": "failed",
+                            "details": f"File path outside project root: {file_path}",
+                            "artifacts": [],
+                            "errors": [f"Invalid file path: {file_path}"]
+                        }
+                        
+            elif violation_type == "state_file_missing":
+                # Heal missing state file
+                self._load_state()  # This will create fresh state if missing
+                return {
+                    "status": "success",
+                    "details": "State file recreated with fresh state",
+                    "artifacts": ["gravity_healing_state.json"],
+                    "errors": []
+                }
+                
+            elif violation_type == "healing_history_cleanup":
+                # Clean up healing history
+                original_count = len(self.state["healing_history"])
+                # Keep only last 1000 entries
+                self.state["healing_history"] = self.state["healing_history"][-1000:]
+                self._save_state()
+                cleaned = original_count - len(self.state["healing_history"])
+                return {
+                    "status": "success",
+                    "details": f"Cleaned up {cleaned} old healing records",
+                    "artifacts": ["healing_history"],
+                    "errors": []
+                }
+                
+            else:
+                return {
+                    "status": "skipped",
+                    "details": f"Unknown violation type: {violation_type}",
+                    "artifacts": [],
+                    "errors": []
+                }
+                
+        except Exception as e:
+            self.logger.error(f"Heal operation failed in GravityStateAgent: {e}")
+            return {
+                "status": "failed",
+                "details": f"Heal operation failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
 
     def __init__(self, project_root: Path) -> None:
         """Initialize the instance."""
