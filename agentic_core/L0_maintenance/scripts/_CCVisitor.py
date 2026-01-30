@@ -114,6 +114,7 @@ except ImportError:
 from agentic_core.L5_safety.validators.canonical_truth import categorize_agent, get_canonical_layer
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,

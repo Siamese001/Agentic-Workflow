@@ -27,6 +27,7 @@ from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0Mainten
 
 # Sovereign Hardening Mixins – Phase 35
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass

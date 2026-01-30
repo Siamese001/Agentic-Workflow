@@ -7,6 +7,7 @@ This script modifies agent files to add self-testing capability.
 import json
 import re
 from pathlib import Path
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 project_root = Path(__file__).parent.parent
 discovery_file = project_root / "agent_discovery_full.json"

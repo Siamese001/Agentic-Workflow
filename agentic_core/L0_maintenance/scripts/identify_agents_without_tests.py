@@ -7,6 +7,7 @@ Prioritize by layer and complexity.
 import json
 from collections import defaultdict
 from pathlib import Path
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 project_root = Path(__file__).parent.parent
 

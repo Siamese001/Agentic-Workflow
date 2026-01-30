@@ -91,6 +91,7 @@ except ImportError:
 
 
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 

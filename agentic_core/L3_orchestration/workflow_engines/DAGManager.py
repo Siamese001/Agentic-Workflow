@@ -15,6 +15,7 @@ Renamed: 2026-01-22 (Utility Renaming - Not an Agent)
 
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class DAGManager(

@@ -55,6 +55,7 @@ if sys.platform.startswith("win"):
 
 import ast
 import re
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 try:
     from agentic_core.base_agents.decorators import HEAL_RESULT_SCHEMA, standard_heal

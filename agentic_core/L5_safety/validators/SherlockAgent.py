@@ -34,6 +34,7 @@ except ImportError:
 from agentic_core.schemas.models.anomaly_report import AnomalyReport
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass

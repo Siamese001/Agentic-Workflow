@@ -24,6 +24,7 @@ from typing import Any
 from agentic_core.utils.file_cache import FileCache
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 logger = logging.getLogger(__name__)
 
