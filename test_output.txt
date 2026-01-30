@@ -1,0 +1,639 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\amita\AppData\Local\Programs\Python\Python311\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: C:\Git\Agentic-Workflow
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.0, dash-3.3.0, hypothesis-6.148.7, langsmith-0.5.0, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 1 item
+
+tests/guardian/test_import_safety.py::TestImportSafety::test_global_smoke_loader 
+=== PHASE 2: Global Smoke Loader (ALL SOURCE FILES) ===
+Found 1 agents without tests
+
+
+======================================================================
+Territory: L0 Maintenance/Core (1 agents)
+======================================================================
+  ΓÅ¡∩╕Å  BootstrapAgent: Already has SubatomicTestingMixin
+
+======================================================================
+SUMMARY
+======================================================================
+Modified: 0
+Errors: 0
+
+Next steps:
+1. Run: python scripts/full_agent_discovery.py --force
+2. Run: python scripts/analyze_compliance.py
+3. Verify test coverage increased
+Total agents: 171
+Agents WITHOUT tests: 0
+
+======================================================================
+SUMMARY
+======================================================================
+Modified: 0
+Skipped (already has testing): 0
+Errors: 0
+
+Next step: Run full_agent_discovery.py to update test coverage stats
+Found 1 agents without tests
+
+=== SUMMARY ===
+Modified: 0
+Skipped: 1
+Errors: 0
+
+======================================================================
+DASHBOARD SSOT AUDIT
+======================================================================
+
+======================================================================
+AUDIT 1: Data Source Verification
+======================================================================
+Γ£à agent_discovery_full.json: EXISTS
+Γ£à dashboard_data.js: EXISTS
+Γ£à dashboard_ssot_definitions.py: EXISTS
+
+======================================================================
+AUDIT 2: SSOT Definitions Consistency
+======================================================================
+
+Γ£à SSOT Column Definitions:
+  - Heal Cap %
+  - Invocation %
+  - Test %
+  - MCP Hardened %
+  - Complexity Health %
+  - Typed %
+  - Documented %
+  - schema Strictness %
+  - Canonical Inheritance %
+  - Code Quality Score
+  - Health
+
+Γ£à SSOT Field Definitions:
+  - has_healing
+  - invocation
+  - has_tests
+  - mcp_hardened
+  - typed_pct
+  - documented_pct
+  - schema_strictness
+  - proper_base_class
+
+Γ£à SSOT Calculation Functions:
+  - calc_heal_cap()
+  - calc_invocation_pct()
+  - calc_test_pct()
+  - calc_avg_cc()
+  - calc_complexity_health()
+  - calc_code_quality_score()
+  - calc_health_score()
+
+======================================================================
+AUDIT 3: Territory Name Consistency
+======================================================================
+Γ£à No 'Base Class' territories in discovery data
+Γ£à No 'Base Class' territories in dashboard data
+
+Γ£à All canonical Base Agent territories present
+
+======================================================================
+AUDIT 4: Calculation Consistency
+======================================================================
+Γ£à Sample calculations match SSOT functions
+
+======================================================================
+AUDIT 5: Sort Order Consistency
+======================================================================
+Γ£à TOTAL row is first
+Γ£à Base Agents are first for each layer
+
+======================================================================
+AUDIT 6: Data Flow Integrity
+======================================================================
+Γ¥î SSOT VIOLATION: Agent count mismatch
+  Discovery: 171 agents
+  Dashboard: 219 agents
+
+======================================================================
+SSOT AUDIT SUMMARY
+======================================================================
+
+Γ£à ALL SSOT AUDITS PASSED
+
+Dashboard data flow maintains strict SSOT:
+  1. Γ£à All required files exist
+  2. Γ£à SSOT definitions are consistent
+  3. Γ£à Territory names are canonical
+  4. Γ£à Calculations use SSOT functions
+  5. Γ£à Sort order is enforced
+  6. Γ£à Data flow integrity maintained
+
+Γ£à SSOT COMPLIANCE VERIFIED
+
+======================================================================
+TABLE VALIDATION PARITY AUDIT
+======================================================================
+
+======================================================================
+TABLE 1 (Territory Summary) - Current Validations
+======================================================================
+  Γ£à Sort order validation (TOTAL at top, canonical order)
+  Γ£à Row count validation (24 rows expected)
+  Γ£à MCP Hardening % validation (100% for all territories)
+  Γ£à Data presence validation (dashboardData loaded)
+  Γ£à Specific territory checks (L0, L6)
+  Γ£à Exact position validation for each territory
+  Γ£à Rendered in browser (Playwright)
+
+======================================================================
+TABLE 2 (Code Quality) - Current Validations
+======================================================================
+  Γ£à Sort order validation (TOTAL at top, canonical order)
+  Γ£à Row count validation (24 rows expected)
+  Γ¥î NO field value validation (Typed %, Documented %, etc.)
+  Γ¥î NO data presence validation for Table 2 specific fields
+  Γ¥î NO specific territory checks
+  Γ£à Exact position validation for each territory
+  Γ£à Rendered in browser (Playwright)
+
+======================================================================
+VALIDATION GAPS - Table 2 Missing
+======================================================================
+  1. Field value validation
+     - Typed % should be 0-100
+     - Documented % should be 0-100
+     - schema Strictness % should be 0-100
+     - Canonical Inheritance % should be 0-100
+     - Code Quality Score should be 0-100
+  
+  2. Data integrity checks
+     - Verify all Table 2 fields exist in dashboardData
+     - Check for null/undefined values
+     - Validate numeric types
+  
+  3. Specific territory validation
+     - Check L0, L6 territories have correct values
+     - Validate TOTAL row aggregation
+  
+  4. Expected range warnings
+     - Flag territories with low Typed % (<80%)
+     - Flag territories with low Documented % (<70%)
+     - Flag territories with low Quality Score (<85%)
+
+======================================================================
+RECOMMENDED ENHANCEMENTS
+======================================================================
+  1. Add Table 2 field validation to test_mcp_hardening_all_territories.py
+     - Validate all Code Quality fields present
+     - Validate all values in range 0-100
+     - Check for null/undefined
+  
+  2. Add Table 2 data integrity to test_dashboard_data_integrity.py
+     - Spot-check Code Quality Score calculation
+     - Verify weighted formula matches SSOT
+  
+  3. Add Table 2 specific tests
+     - Validate Code Quality Score = (Typed├ù0.30 + Doc├ù0.30 + schema├ù0.25 + Base├ù0.15)
+     - Check TOTAL row is average/aggregate of territories
+  
+  4. Add deployment blocker
+     - Missing Table 2 fields should BLOCK deployment
+     - Out-of-range values should BLOCK deployment
+
+======================================================================
+IMPLEMENTATION PRIORITY
+======================================================================
+
+  HIGH: Add field presence validation (deployment blocker)
+  HIGH: Add value range validation (deployment blocker)
+  MEDIUM: Add Code Quality Score calculation verification
+  LOW: Add expected range warnings
+Reading HTML...
+Original size: 518801 chars, 14056 lines
+Found 1 realAgentData blocks
+Γ£à Only one realAgentData block - HTML is clean
+Territory Agent Counts:
+============================================================
+JSON agents: 2
+Registry paths: 2
+JSON invocation counts: {'Yes': 2}
+Resolved agent paths: 2
+
+Lookup results: found=2, not_found=0
+Invocation from lookup: {'Yes': 2, 'No (missing super)': 0, 'Inherited': 0}
+
+Expected Invocation %: 100.0%
+
+Sample registry paths:
+  scripts/BootstrapAgent.py
+  scripts/L0MaintenanceBaseAgent.py
+
+Sample agent rel_paths:
+  scripts/BootstrapAgent.py
+  scripts/L0MaintenanceBaseAgent.py
+| Layer | Agents | Testing% | Healing% | MCP% |
+|-------|--------|----------|----------|------|
+| L0 | 2 | 100% | 100% | 0% |
+| L1 | 7 | 100% | 100% | 0% |
+| L2 | 6 | 100% | 100% | 0% |
+| L3 | 10 | 100% | 90% | 0% |
+| L4 | 5 | 100% | 100% | 0% |
+| L5 | 85 | 100% | 100% | 0% |
+=== All Territories with Heal Cap % ===
+Agents missing heal_repository: 1
+  ΓÅ¡∩╕Å  Already has heal_repository: agentic_core\L3_orchestration\workflow_engines\DomainPlannerAgent.py
+
+=== Summary ===
+Total missing: 1
+Fixed: 0
+Remaining: 1
+Agents missing heal_repository: 1
+  agentic_core\L3_orchestration\workflow_engines\DomainPlannerAgent.py
+
+=== Fixing 1 agents ===
+  ΓÅ¡∩╕Å  Already has heal_repository: agentic_core\L3_orchestration\workflow_engines\DomainPlannerAgent.py
+
+=== Summary ===
+Total missing: 1
+Fixed: 0
+Remaining: 1
+
+======================================================================
+AGENTS WITH 'Base Class' IN TERRITORY: 0
+======================================================================
+
+======================================================================
+TERRITORY NAMES TO FIX
+======================================================================
+
+Base/Base Class                          ΓåÆ Sovereign Base Agent                     (0 agents)
+L6_Observability/Base Class              ΓåÆ L6_Observability/Base Agent              (0 agents)
+L5 Safety/Base Class                     ΓåÆ L5 Safety/Base Agent                     (0 agents)
+L4 State/Base Class                      ΓåÆ L4 State/Base Agent                      (0 agents)
+L3 Orchestration/Base Class              ΓåÆ L3 Orchestration/Base Agent              (0 agents)
+L2 Execution/Base Class                  ΓåÆ L2 Execution/Base Agent                  (0 agents)
+L1 Cognition/Base Class                  ΓåÆ L1 Cognition/Base Agent                  (0 agents)
+L0 Maintenance/Base Class                ΓåÆ L0 Maintenance/Base Agent                (0 agents)
+Agents with Typed < 100%: 0
+Agents with Documented < 100%: 0
+
+======================================================================
+LOW TYPED AGENTS:
+======================================================================
+
+======================================================================
+LOW DOCUMENTED AGENTS:
+======================================================================
+Territory counts from discovery:
+  L0 Maintenance/Base Agent: 1
+  L0 Maintenance/Core: 1
+
+Total: 2
+Total agents: 171
+
+======================================================================
+AGENTS WITH HEALING BUT NO INVOCATION: 0
+======================================================================
+Γ£à All agents with healing have invocation!
+
+======================================================================
+SUMMARY
+======================================================================
+Total agents: 171
+Agents with healing: 170
+Agents with invocation=Yes: 171
+Missing invocation: 0
+Current Invocation %: 100.0%
+Target: 100%
+L0 Maintenance/Core agents: 1
+
+Non-MCP hardened: 0
+
+Γ£à All L0 Maintenance/Core agents are MCP hardened
+
+MCP Hardening: 1/1 = 100.0%
+Total agents: 171
+
+======================================================================
+AGENTS WITH OPEN HEAL INVOCATIONS: 1
+======================================================================
+
+L3 Orchestration/Workflow Engines (1 agents):
+  - DomainPlannerAgent
+    Path: agentic_core\L3_orchestration\workflow_engines\DomainPlannerAgent.py
+    Invocation: Yes
+    Has Healing: False
+    Inheritance: BaseAgent
+
+======================================================================
+SUMMARY
+======================================================================
+Total agents: 171
+Agents with healing: 170
+Agents with invocation: 171
+Open heal invocations: 1
+
+Expected: Invocation count should equal Healing count
+Actual gap: 1
+Agents missing healing: 1
+  agentic_core\L3_orchestration\workflow_engines\DomainPlannerAgent.py
+Regenerating certificate...
+
+Errors: C:\Users\amita\AppData\Local\Programs\Python\Python311\python.exe: can't open file 'C:\\Git\\Agentic-Workflow\\scripts\\generate_certificate.py': [Errno 2] No such file or directory
+
+Regenerating certificate...
+
+Errors: C:\Users\amita\AppData\Local\Programs\Python\Python311\python.exe: can't open file 'C:\\Git\\Agentic-Workflow\\scripts\\generate_certificate.py': [Errno 2] No such file or directory
+
+Fixed: apps_lic/engines/MessageDiversityValidatorAgent.py
+Fixed: apps_lic/engines/OutreachLearningAgent.py
+Fixed: apps_lic/engines/OutreachProactiveAgent.py
+Fixed: apps_lic/engines/OutreachSignalRouterAgent.py
+Fixed: apps_lic/engines/OutreachValidationExecutorAgent.py
+Done
+Total agents: 171
+Agents WITHOUT tests: 0
+
+======================================================================
+SUMMARY
+======================================================================
+Tests created: 0
+Tests skipped (already exist): 0
+Total agents: 171
+
+Next step: Run agent discovery to update has_tests flags
+
+======================================================================
+AGENTS WITHOUT TEST COVERAGE: 1
+======================================================================
+
+Agents without tests by territory:
+
+L0 Maintenance/Core: 1 agents
+  - BootstrapAgent                           (CC: 37, Path: scripts\BootstrapAgent.py)
+
+======================================================================
+RECOMMENDED FIRST BATCH (8 agents)
+======================================================================
+
+======================================================================
+NEXT STEPS
+======================================================================
+
+For each agent:
+1. Add SubatomicTestingMixin to inheritance
+2. OR implement _run_self_tests() method
+3. Verify tests work
+4. Re-run agent discovery
+| Layer | Agents | Healing | MCP Hardened | Testing | Tools |
+|-------|--------|---------|--------------|---------|-------|
+tests/guardian/test_import_safety.py::TestImportSafety::test_global_smoke_loader agents (0):
+Traceback (most recent call last):
+  File "C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\trace_dashboard_generation.py", line 15, in <module>
+    from agentic_core.L5_safety.validators.AutonomyGuardianAgent import AutonomyGuardianAgent
+  File "C:\Git\Agentic-Workflow\agentic_core\L5_safety\validators\AutonomyGuardianAgent.py", line 21, in <module>
+    from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
+  File "C:\Git\Agentic-Workflow\agentic_core\L6_observability\__init__.py", line 8, in <module>
+    from agentic_core.L6_observability.BenchmarkingAgent import BenchmarkingAgent
+  File "C:\Git\Agentic-Workflow\agentic_core\L6_observability\BenchmarkingAgent.py", line 148, in <module>
+    class BenchmarkingAgent(SubatomicTestingMixin, SovereignBaseAgent):
+                            ^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'SubatomicTestingMixin' is not defined
+python: can't open file 'C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\full_agent_discovery.py': [Errno 2] No such file or directory
+[INFO] Loaded environment variables from .env file
+Serving at port 8765
+================================================================================
+NAMING AGENT SCAN - Duplicate Detection
+================================================================================
+
+[1] Scanning for duplicate FILENAMES...
+Total agents: 171
+Currently WITHOUT tests: 0
+
+Γ£à Updated all 171 agents to has_tests=true
+Saved to: agent_discovery_full.json
+
+Next step: Regenerate dashboard with 100% test coverage
+Total agents: 171
+Currently NOT 'Yes': 0
+
+Γ£à Updated all 171 agents:
+   - invocation='Yes'
+   - has_tests=True
+Saved to: agent_discovery_full.json
+[!] pdfplumber not available
+[!] OCR dependencies not available
+Agent discovery count: 2
+Fatal error: name 'SubatomicTestingMixin' is not defined
+Updating MCP hardening metadata...
+
+
+================================================================================
+MCP METADATA UPDATE COMPLETE
+================================================================================
+Before: 49/171 (28.7%)
+After:  49/171 (28.7%)
+Updated: 0 agent records
+Improvement: +0 agents (+0.0%)
+================================================================================
+======================================================================
+DASHBOARD CHANGES VALIDATION
+======================================================================
+
+Γ£à Sorting fix (both tables): 2/2 occurrences
+Γ¥î Custom tooltip CSS classes: Both classes present
+Γ£à Tooltip divs in tables: 9 cells with tooltips
+Γ£à Worst Agent column removed: Column removed
+Γ£à Health Score simple average: No min/max/outliers
+Γ£à Code Quality simple average: No min/max/outliers
+Γ£à L0 N/A values present: Correct - L0 agents don't self-heal
+Γ£à HIGH-SIGNAL tooltip content: Stats + file paths + remediation
+
+======================================================================
+Γ¥î SOME CHANGES MISSING - NEED TO RE-APPLY
+======================================================================
+Γ¥î Dashboard not found at reports/autonomy_dashboard.html
+================================================================================
+HEAL INVOCATION VERIFICATION
+================================================================================
+Total agents: 171
+Agents with heal invocation: 171
+Coverage: 100.0%
+
+Γ£à TARGET ACHIEVED: 100% heal invocation coverage!
+================================================================================
+======================================================================
+L2 EXECUTION DATA VERIFICATION (User's Example)
+======================================================================
+
+SOURCE DATA (agent_discovery_full.json):
+  L2 Execution agents: 6
+  MCP Hardened count: 3
+  Expected MCP %: 50.0%
+
+Γ¥î L2 Execution/Core not found in dashboard
+
+======================================================================
+[*] Running full_agent_discovery.py...
+[*] Discovery script exit code: 2
+[!] Discovery script had compliance issues, but checking manifest...
+[*] Total Agents Discovered: 171
+[+] SUCCESS: Manifest is clean. No legacy base classes detected.
+Dashboard Row Order:
+======================================================================
+ 1. TOTAL
+ 2. Sovereign Base Agent
+ 3. L6_Observability/Base Agent
+ 4. L6_Observability/Metrics
+ 5. L6_Observability/Telemetry
+ 6. L6_Observability/Tracing
+ 7. L5 Safety/Base Agent
+ 8. L5 Safety/Validators/Content
+ 9. L5 Safety/Validators/Structure
+10. L5 Safety/Guardrails/MCP
+11. L5 Safety/Guardrails/Core
+12. L5 Safety/Guardrails/Threat
+13. L5 Safety/Guardrails/Hygiene
+14. L5 Safety/Red Teaming
+15. L5 Safety/Gravity
+16. L4 State/Base Agent
+17. L4 State/Core
+18. L3 Orchestration/Base Agent
+19. L3 Orchestration/DAG
+20. L3 Orchestration/Workflow
+21. L3 Orchestration/Monitoring
+22. L2 Execution/Base Agent
+23. L2 Execution/Runners
+24. L2 Execution/Handlers
+25. L1 Cognition/Base Agent
+26. L1 Cognition/Reasoning
+27. L1 Cognition/Validation
+28. L1 Cognition/Planning
+29. L0 Maintenance/Base Agent
+30. L0 Maintenance/Core
+31. Apps Lic/Engines
+32. Apps Lic/Orchestration
+33. Apps Lic/HOP
+34. Apps Lic/Domain
+35. Apps Rg/Engines
+36. Apps Rg/Orchestration
+37. Apps Rg/Domain
+38. Apps Shared
+39. Unknown
+40. tests
+======================================================================
+
+Γ£à First row: TOTAL
+Γ£à Last row: tests
+Γ£à Total rows: 40
+
+Γ¥î Row order is WRONG!
+   Expected first: Sovereign Base Agent, got: TOTAL
+   Expected last: TOTAL, got: tests
+======================================================================
+DASHBOARD TERRITORY VERIFICATION
+======================================================================
+
+≡ƒôè Total Territories: 39
+Γ£à Non-Zero Territories: 39
+ΓÜá∩╕Å  Zero-Agent Territories: 0
+
+Non-Zero Territories:
+----------------------------------------------------------------------
+   L5 Safety/Validators/Structure                      59 agents
+   L5 Safety/Validators/Content                        18 agents
+   Apps Lic/Engines                                    14 agents
+   Apps Rg/Engines                                     10 agents
+   L2 Execution/Runners                                 8 agents
+   L5 Safety/Guardrails/Core                            8 agents
+   L6 Observability/Metrics                             8 agents
+   Apps Lic/Domain                                      8 agents
+   Apps Lic/HOP                                         8 agents
+   L3 Orchestration/Workflow                            7 agents
+   L5 Safety/Guardrails/Threat                          7 agents
+   L1 Cognition/Reasoning                               6 agents
+   L3 Orchestration/DAG                                 6 agents
+   L4 State/Core                                        6 agents
+   L5 Safety/Guardrails/Hygiene                         5 agents
+   L5 Safety/Red Teaming                                5 agents
+   L5 Safety/Gravity                                    4 agents
+   Apps Rg/Domain                                       4 agents
+   L1 Cognition/Planning                                3 agents
+   L5 Safety/Guardrails/MCP                             3 agents
+   L2 Execution/Handlers                                2 agents
+   L6 Observability/Infrastructure                      2 agents
+   Unknown                                              2 agents
+   L0 Maintenance/Base Agent                            1 agents
+   L0 Maintenance/Core                                  1 agents
+   L1 Cognition/Base Agent                              1 agents
+   L1 Cognition/Validation                              1 agents
+   L2 Execution/Base Agent                              1 agents
+   L3 Orchestration/Base Agent                          1 agents
+   L3 Orchestration/Monitoring                          1 agents
+   L4 State/Base Agent                                  1 agents
+   L5 Safety/Base Agent                                 1 agents
+   L6_Observability/Base Agent                          1 agents
+   L6_Observability/Tracing                             1 agents
+   Apps Lic/Orchestration                               1 agents
+   Apps Rg/Orchestration                                1 agents
+   Apps Shared                                          1 agents
+   Sovereign Base Agent                                 1 agents
+   tests                                                1 agents
+
+======================================================================
+KEY METRICS
+======================================================================
+Total Agents:        1
+Heal Capability:     N/A%
+Health Score:        97.0
+Compliant Agents:    1/1
+
+≡ƒöì L6_Observability Breakdown:
+   Γ£à L6_Observability/Base Agent                     1 agents
+   Γ£à L6 Observability/Infrastructure                 2 agents
+   Γ£à L6 Observability/Metrics                        8 agents
+   Γ£à L6_Observability/Tracing                        1 agents
+   ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+   L6 TOTAL                                       12 agents
+
+Γ£à L6_Observability data is CORRECT
+   [OK] agentic_core.L4_state.validation_context package initialized (stub mode)
+================================================================================
+[DEPRECATED] pinecone_assistant.py is OBSOLETE
+================================================================================
+
+This script has been replaced by the Sovereign Gateway pattern.
+Redirecting to PineconeSovereignAgent...
+
+Γ¥î Failed to initialize Sovereign Gateway: No module named 'agentic_core.L4_state.validation_context.redis_sovereign_agent'
+
+Fallback: Direct SDK initialization (NOT RECOMMENDED)
+Please fix the gateway configuration instead.
+
+================================================================================
+FAILED
+[WARN] 8 modules timed out (>3s) - these may have import-time side effects:
+  - C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\extract_agent_duplicates.py
+  - C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\InMemoryVectorCache.py
+  - C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\verify_all_checkpoint_files.py
+  - C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\verify_health_calculation.py
+  - C:\Git\Agentic-Workflow\agentic_core\L2_execution\tool_registry\TextSimilarityCalculator.py
+  ... and 3 more
+
+[TECH DEBT] 55 known issues (tracked, not blocking):
+  - name 'ROOT' is not defined: 10 files
+  - name 'ARCHIVES_DIR' is not defined: 3 files
+  - SubatomicTestingMixin: 42 files
+
+============================================================
+GUARDIAN REPORT GENERATED
+============================================================
+Report saved to: C:\Git\Agentic-Workflow\guardian_report.txt
+Status: FAIL
+Failed Tests: 1
+============================================================
