@@ -323,6 +323,140 @@ class StructureHealerAgent(SovereignBaseAgent):
         """Get all recorded healing actions."""
         return self._actions.copy()
 
+    def heal(self, violation: dict) -> dict:
+        """Heal structure violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (gravity, hierarchy, naming, territory, blueprint)
+                - path: Path to the violating file
+                - severity: Severity level of the violation
+                - line_number: Line number of the violation (if applicable)
+
+        Returns:
+            Dictionary with healing results following standard_heal format:
+                - violations_fixed: Number of violations fixed
+                - violations_found: Total violations found
+                - errors: Number of errors encountered
+                - skipped: Number of violations skipped
+        """
+        from agentic_core.base_agents.decorators import standard_heal
+
+        @standard_heal
+        def _heal_structure_violation(self, violation: dict) -> dict:
+            """Internal heal method with standard_heal decorator."""
+            violation_type = violation.get("type", "gravity")
+            path = violation.get("path", "")
+            line_number = violation.get("line_number", 0)
+
+            Logger.info(f"[STRUCTURE_HEALER] Healing {violation_type} violation at {path}:{line_number}")
+
+            if violation_type == "gravity":
+                # Heal gravity violations
+                return self._heal_gravity_violation(violation)
+            elif violation_type == "hierarchy":
+                # Heal hierarchy violations
+                return self._heal_hierarchy_violation(violation)
+            elif violation_type == "naming":
+                # Heal naming violations
+                return self._heal_naming_violation(violation)
+            elif violation_type == "territory":
+                # Heal territory violations
+                return self._heal_territory_violation(violation)
+            elif violation_type == "blueprint":
+                # Heal blueprint violations
+                return self._heal_blueprint_violation(violation)
+            else:
+                Logger.warning(f"[STRUCTURE_HEALER] Unknown violation type: {violation_type}")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+
+        return _heal_structure_violation(self, violation)
+
+    def _heal_gravity_violation(self, violation: dict) -> dict:
+        """Heal gravity violations."""
+        try:
+            path = Path(violation.get("path", ""))
+            if not path.exists():
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+            # Apply gravity healing
+            actions = self.heal_gravity(path)
+            fixed_count = sum(1 for action in actions if action.applied)
+            
+            Logger.info(f"[STRUCTURE_HEALER] Fixed {fixed_count} gravity violations in {path}")
+            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+        except Exception as e:
+            Logger.error(f"[STRUCTURE_HEALER] Failed to heal gravity violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+    def _heal_hierarchy_violation(self, violation: dict) -> dict:
+        """Heal hierarchy violations."""
+        try:
+            path = Path(violation.get("path", ""))
+            if not path.exists():
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+            # Apply hierarchy healing
+            actions = self.heal_hierarchy(path)
+            fixed_count = sum(1 for action in actions if action.applied)
+            
+            Logger.info(f"[STRUCTURE_HEALER] Fixed {fixed_count} hierarchy violations in {path}")
+            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+        except Exception as e:
+            Logger.error(f"[STRUCTURE_HEALER] Failed to heal hierarchy violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+    def _heal_naming_violation(self, violation: dict) -> dict:
+        """Heal naming violations."""
+        try:
+            path = Path(violation.get("path", ""))
+            if not path.exists():
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+            # Apply naming healing
+            actions = self.heal_naming(path)
+            fixed_count = sum(1 for action in actions if action.applied)
+            
+            Logger.info(f"[STRUCTURE_HEALER] Fixed {fixed_count} naming violations in {path}")
+            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+        except Exception as e:
+            Logger.error(f"[STRUCTURE_HEALER] Failed to heal naming violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+    def _heal_territory_violation(self, violation: dict) -> dict:
+        """Heal territory violations."""
+        try:
+            path = Path(violation.get("path", ""))
+            if not path.exists():
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+            # Apply territory healing
+            actions = self.heal_territory(path)
+            fixed_count = sum(1 for action in actions if action.applied)
+            
+            Logger.info(f"[STRUCTURE_HEALER] Fixed {fixed_count} territory violations in {path}")
+            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+        except Exception as e:
+            Logger.error(f"[STRUCTURE_HEALER] Failed to heal territory violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+    def _heal_blueprint_violation(self, violation: dict) -> dict:
+        """Heal blueprint violations."""
+        try:
+            path = Path(violation.get("path", ""))
+            if not path.exists():
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+            # Apply blueprint healing
+            actions = self.heal_blueprint(path)
+            fixed_count = sum(1 for action in actions if action.applied)
+            
+            Logger.info(f"[STRUCTURE_HEALER] Fixed {fixed_count} blueprint violations in {path}")
+            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+        except Exception as e:
+            Logger.error(f"[STRUCTURE_HEALER] Failed to heal blueprint violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
 
 # Factory methods for backward compatibility
 def create_legacy_gravity_healer() -> StructureHealerAgent:

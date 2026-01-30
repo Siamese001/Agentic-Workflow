@@ -243,3 +243,20 @@ class BoundaryTestingAgent(SovereignBaseAgent):
         """Repository healing with parent chain invocation."""
         result = super().heal_repository(dry_run=dry_run, **kwargs)
         return {"violations_fixed": 0, "skipped": 0, "parent": result}
+
+    def heal(self, violation: dict) -> dict:
+        """Heal boundary testing violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details.
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Boundary testing findings require manual review"
+        }

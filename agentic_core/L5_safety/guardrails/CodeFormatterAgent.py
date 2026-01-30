@@ -139,3 +139,27 @@ class CodeFormatterAgent(SovereignBaseAgent):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+
+    def heal(self, violation: dict) -> dict:
+        """Heal code formatting violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (formatting)
+                - path: Path to the violating file
+                - severity: Severity level of the violation
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        path = violation.get("path", "")
+        
+        try:
+            if path:
+                file_path = Path(path)
+                if file_path.exists():
+                    result = self.format_file(file_path)
+                    return {"violations_fixed": result.get("healed", 0), "violations_found": 1, "errors": 0, "skipped": 0}
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+        except Exception as e:
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}

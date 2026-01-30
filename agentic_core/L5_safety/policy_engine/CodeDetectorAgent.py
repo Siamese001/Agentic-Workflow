@@ -247,5 +247,35 @@ class CodeDetectorAgent(SovereignBaseAgent):
 
     def _update_baseline(self):
         """Generates a new baseline snapshot of the codebase."""
+
+    def heal(self, violation: dict) -> dict:
+        """Heal code detection violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (race_condition, deadlock, memory_leak)
+                - path: Path to the violating file
+                - line_number: Line number of the violation
+
+        Returns:
+            Dictionary with healing results following standard_heal format:
+                - violations_fixed: Number of violations fixed
+                - violations_found: Total violations found
+                - errors: Number of errors encountered
+                - skipped: Number of violations skipped
+        """
+        violation_type = violation.get("type", "")
+        path = violation.get("path", "")
+
+        Logger.info(f"[CODE_DETECTOR] Detection-only agent: {violation_type} at {path}")
+        
+        # CodeDetectorAgent is detection-only, healing requires manual intervention
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Detection-only agent - manual intervention required"
+        }
         # Logic to write current AST signatures to self._detector_config.baseline_path
         pass

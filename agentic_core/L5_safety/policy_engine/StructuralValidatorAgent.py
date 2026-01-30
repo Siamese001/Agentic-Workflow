@@ -257,3 +257,43 @@ class StructuralValidatorAgent(SovereignBaseAgent):
     # Governor Compatibility Stubs
     def check_duplicates(self, root: Path):
         return []  # Defer to NamingAgent
+
+    def heal(self, violation: dict) -> dict:
+        """Heal structural validation violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (naming, import, structure)
+                - path: Path to the violating file
+                - old_name: Old class name (for rename operations)
+                - new_name: New class name (for rename operations)
+
+        Returns:
+            Dictionary with healing results following standard_heal format:
+                - violations_fixed: Number of violations fixed
+                - violations_found: Total violations found
+                - errors: Number of errors encountered
+                - skipped: Number of violations skipped
+        """
+        violation_type = violation.get("type", "")
+        path = violation.get("path", "")
+
+        Logger.info(f"[STRUCTURAL_VALIDATOR] Healing {violation_type} at {path}")
+
+        try:
+            if violation_type == "naming" and violation.get("old_name") and violation.get("new_name"):
+                result = self.force_rename_class(
+                    Path(path),
+                    violation["old_name"],
+                    violation["new_name"],
+                    dry_run=False
+                )
+                if "error" not in result:
+                    return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+                else:
+                    return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+            else:
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+        except Exception as e:
+            Logger.error(f"[STRUCTURAL_VALIDATOR] Failed to heal: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}

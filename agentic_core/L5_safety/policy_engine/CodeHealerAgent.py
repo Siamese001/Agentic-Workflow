@@ -424,6 +424,118 @@ class CodeHealerAgent(SovereignBaseAgent):
         """Get all recorded healing actions."""
         return self._actions.copy()
 
+    def heal(self, violation: dict) -> dict:
+        """Heal code violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (canon, import, structural, syntax)
+                - path: Path to the violating file
+                - severity: Severity level of the violation
+                - line_number: Line number of the violation (if applicable)
+
+        Returns:
+            Dictionary with healing results following standard_heal format:
+                - violations_fixed: Number of violations fixed
+                - violations_found: Total violations found
+                - errors: Number of errors encountered
+                - skipped: Number of violations skipped
+        """
+        from agentic_core.base_agents.decorators import standard_heal
+
+        @standard_heal
+        def _heal_code_violation(self, violation: dict) -> dict:
+            """Internal heal method with standard_heal decorator."""
+            violation_type = violation.get("type", "syntax")
+            path = violation.get("path", "")
+            line_number = violation.get("line_number", 0)
+
+            Logger.info(f"[CODE_HEALER] Healing {violation_type} violation at {path}:{line_number}")
+
+            if violation_type == "canon":
+                # Heal canon compliance violations
+                return self._heal_canon_violation(violation)
+            elif violation_type == "import":
+                # Heal import violations
+                return self._heal_import_violation(violation)
+            elif violation_type == "structural":
+                # Heal structural violations
+                return self._heal_structural_violation(violation)
+            elif violation_type == "syntax":
+                # Heal syntax violations
+                return self._heal_syntax_violation(violation)
+            else:
+                Logger.warning(f"[CODE_HEALER] Unknown violation type: {violation_type}")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+
+        return _heal_code_violation(self, violation)
+
+    def _heal_canon_violation(self, violation: dict) -> dict:
+        """Heal canon compliance violations."""
+        try:
+            path = Path(violation.get("path", ""))
+            if not path.exists():
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+            # Apply canon healing
+            actions = self.heal_canon(path)
+            fixed_count = sum(1 for action in actions if action.applied)
+            
+            Logger.info(f"[CODE_HEALER] Fixed {fixed_count} canon violations in {path}")
+            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+        except Exception as e:
+            Logger.error(f"[CODE_HEALER] Failed to heal canon violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+    def _heal_import_violation(self, violation: dict) -> dict:
+        """Heal import violations."""
+        try:
+            path = Path(violation.get("path", ""))
+            if not path.exists():
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+            # Apply import healing
+            actions = self.heal_imports(path)
+            fixed_count = sum(1 for action in actions if action.applied)
+            
+            Logger.info(f"[CODE_HEALER] Fixed {fixed_count} import violations in {path}")
+            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+        except Exception as e:
+            Logger.error(f"[CODE_HEALER] Failed to heal import violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+    def _heal_structural_violation(self, violation: dict) -> dict:
+        """Heal structural violations."""
+        try:
+            path = Path(violation.get("path", ""))
+            if not path.exists():
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+            # Apply structural healing
+            actions = self.heal_structural(path)
+            fixed_count = sum(1 for action in actions if action.applied)
+            
+            Logger.info(f"[CODE_HEALER] Fixed {fixed_count} structural violations in {path}")
+            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+        except Exception as e:
+            Logger.error(f"[CODE_HEALER] Failed to heal structural violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+    def _heal_syntax_violation(self, violation: dict) -> dict:
+        """Heal syntax violations."""
+        try:
+            path = Path(violation.get("path", ""))
+            if not path.exists():
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+            # For syntax violations, we typically can't auto-heal
+            # Log the issue and mark as skipped
+            Logger.warning(f"[CODE_HEALER] Syntax violations require manual intervention: {path}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+        except Exception as e:
+            Logger.error(f"[CODE_HEALER] Failed to heal syntax violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
 
 # Factory methods for backward compatibility
 def create_legacy_canon_healer() -> CodeHealerAgent:
