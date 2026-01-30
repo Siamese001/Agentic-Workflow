@@ -43,6 +43,8 @@ def main():
         shutil.copy2(src, backup_file)
         print(f"✅ Backed up: {src.name}")
     
+    print("\n📝 Note: Rollback script available at ops_scripts/maintenance/rollback_phase1.py")
+    
     # Execute migration
     print("\n🔄 Executing migration...")
     
