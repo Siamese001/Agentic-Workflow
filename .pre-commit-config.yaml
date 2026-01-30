@@ -81,3 +81,11 @@ repos:
         language: python
         pass_filenames: false
         # Protects critical files from unauthorized modification.
+
+      - id: purge-cache
+        name: Pycache Purge
+        entry: python ops_scripts/maintenance/purge_cache.py --quiet
+        language: python
+        pass_filenames: false
+        always_run: true
+        # Enforces repository hygiene by purging all __pycache__ folders before commit.
