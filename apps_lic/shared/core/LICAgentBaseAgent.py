@@ -1,5 +1,5 @@
 """
-apps_lic/shared/core/agent_base.py - LIC Sovereign Bridge
+apps_lic/shared/core/agent_base.py - Linked-In Canonical Sovereign Bridge
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ except ImportError:
 @dataclass
 class LICAgentBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
     """
-    LICAgentBase: Sovereign Foundation for 'Local Intelligence' (LIC).
+    LICAgentBase: Sovereign Foundation for 'Linked-In Canonical' (LIC).
     """
 
     # Domain-specific LIC configuration
