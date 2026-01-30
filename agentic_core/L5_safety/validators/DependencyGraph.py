@@ -300,6 +300,12 @@ class ValidationContext:
     FEW_SHOT_STYLE: str = few_shot_style
 
     def __post_init__(self):
+        # Defer expensive initialization to explicit init() call
+        # This prevents import-time side effects that cause test hangs
+        pass
+
+    def init(self):
+        """Explicit initialization - call this when ready to use the context."""
         print("   [CTX] 🧠 INITIALIZING TRI-BRAIN...")
         self.python_files = _get_python_files()  # Refactored
         self._load_memory()

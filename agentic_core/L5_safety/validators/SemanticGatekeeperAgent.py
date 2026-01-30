@@ -41,7 +41,7 @@ class SemanticGatekeeperAgent(SovereignBaseAgent):
             max_concurrent: Maximum number of concurrent executions
             timeout_seconds: Default timeout for operations
         """
-        SELF.SEMAPHORE = asyncio.Semaphore(max_concurrent)
+        self.semaphore = asyncio.Semaphore(max_concurrent)
         self.timeout_seconds = timeout_seconds
         self.dead_letter_queue = []
         Logger.info(
@@ -171,7 +171,7 @@ class SemanticGatekeeperAgent(SovereignBaseAgent):
             Result of the coroutine
         """
         async with self.execute(trace_id, operation):
-            return await asyncio.wait_for(coro, TIMEOUT=self.timeout_seconds)
+            return await asyncio.wait_for(coro, timeout=self.timeout_seconds)
 
     def get_dead_letters(self) -> list:
         """Get all dead letter entries."""
@@ -214,5 +214,5 @@ async def with_gatekeeping(trace_id: str, operation: str, coro: Any) -> Any:
     Returns:
         Result of the coroutine
     """
-    get_gatekeeper()
+    gatekeeper = get_gatekeeper()
     return await gatekeeper.run_with_gating(trace_id, operation, coro)

@@ -24,12 +24,20 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 from plotly.subplots import make_subplots
 
-# Initialize Dash app
-app = dash.Dash(__name__, title="Windsurf Real-Time Progress", update_title=None)
-
 # Path to log file (project root)
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 LOG_PATH = PROJECT_ROOT / "windsurf_log.json"
+
+# Lazy initialization - app created only when run directly
+_app = None
+
+
+def _get_app():
+    """Get or create the Dash app (lazy initialization)."""
+    global _app
+    if _app is None:
+        _app = dash.Dash(__name__, title="Windsurf Real-Time Progress", update_title=None)
+    return _app
 
 
 def load_data() -> pd.DataFrame:
@@ -68,8 +76,9 @@ def get_latest_stats(df: pd.DataFrame) -> dict[str, Any]:
     }
 
 
-# App layout
-app.layout = html.Div(
+def _create_layout():
+    """Create the app layout (called only when app is initialized)."""
+    return html.Div(
     [
         # Header
         html.Div(
@@ -138,7 +147,7 @@ app.layout = html.Div(
         "maxWidth": "1400px",
         "margin": "0 auto",
     },
-)
+    )
 
 
 def create_stat_card(title: str, value: str, color: str, icon: str) -> html.Div:
@@ -161,147 +170,158 @@ def create_stat_card(title: str, value: str, color: str, icon: str) -> html.Div:
     )
 
 
-@app.callback(
-    [
-        Output("stats-cards", "children"),
-        Output("healing-line-chart", "figure"),
-        Output("coverage-pie-chart", "figure"),
-        Output("cumulative-dual-chart", "figure"),
-        Output("mcp-progress-chart", "figure"),
-        Output("last-update", "children"),
-    ],
-    Input("interval-component", "n_intervals"),
-)
-def update_dashboard(n_intervals):
-    """Update all dashboard components."""
-    df = load_data()
-    stats = get_latest_stats(df)
+def _register_callbacks(app):
+    """Register callbacks on the app (called only when app is initialized)."""
+    @app.callback(
+        [
+            Output("stats-cards", "children"),
+            Output("healing-line-chart", "figure"),
+            Output("coverage-pie-chart", "figure"),
+            Output("cumulative-dual-chart", "figure"),
+            Output("mcp-progress-chart", "figure"),
+            Output("last-update", "children"),
+        ],
+        Input("interval-component", "n_intervals"),
+    )
+    def update_dashboard(n_intervals):
+        """Update all dashboard components."""
+        df = load_data()
+        stats = get_latest_stats(df)
 
-    # Stats cards
-    cards = [
-        create_stat_card("Core Healing", f"{stats['healing_pct']}%", "#10B981", "💚"),
-        create_stat_card("Healed Agents", f"{stats['healed']}/{stats['total']}", "#1E3A8A", "🔧"),
-        create_stat_card("MCP Hardened", f"{stats['mcp']}", "#8B5CF6", "🛡️"),
-        create_stat_card("Total Commits", f"{stats['commits']}", "#F59E0B", "📝"),
-        create_stat_card(
-            "Regressions",
-            f"{stats['regressions']}",
-            "#10B981" if stats["regressions"] == 0 else "#EF4444",
-            "⚠️",
-        ),
-    ]
+        # Stats cards
+        cards = [
+            create_stat_card("Core Healing", f"{stats['healing_pct']}%", "#10B981", "G"),
+            create_stat_card("Healed Agents", f"{stats['healed']}/{stats['total']}", "#1E3A8A", "W"),
+            create_stat_card("MCP Hardened", f"{stats['mcp']}", "#8B5CF6", "S"),
+            create_stat_card("Total Commits", f"{stats['commits']}", "#F59E0B", "C"),
+            create_stat_card(
+                "Regressions",
+                f"{stats['regressions']}",
+                "#10B981" if stats["regressions"] == 0 else "#EF4444",
+                "!",
+            ),
+        ]
 
-    if df.empty:
-        empty_fig = go.Figure()
-        empty_fig.add_annotation(
-            text="No data available",
-            xref="paper",
-            yref="paper",
-            x=0.5,
-            y=0.5,
-            showarrow=False,
-            font={"size": 20},
-        )
-        return cards, empty_fig, empty_fig, empty_fig, empty_fig, "No data loaded"
+        if df.empty:
+            empty_fig = go.Figure()
+            empty_fig.add_annotation(
+                text="No data available",
+                xref="paper",
+                yref="paper",
+                x=0.5,
+                y=0.5,
+                showarrow=False,
+                font={"size": 20},
+            )
+            return cards, empty_fig, empty_fig, empty_fig, empty_fig, "No data loaded"
 
-    # Line chart: Healing % Progress
-    fig_line = px.line(
-        df,
-        x="batch",
-        y="healing_core_pct",
-        markers=True,
-        title="📈 Core Healing % Progress Over Time",
-    )
-    fig_line.update_traces(line_color="#10B981", line_width=3, marker_size=10)
-    fig_line.add_hline(
-        y=70,
-        line_dash="dash",
-        line_color="#EF4444",
-        annotation_text="70% Target",
-        annotation_position="right",
-    )
-    fig_line.add_hline(
-        y=100,
-        line_dash="dot",
-        line_color="#8B5CF6",
-        annotation_text="100% Goal",
-        annotation_position="right",
-    )
-    fig_line.update_layout(
-        xaxis_title="Batch", yaxis_title="Healing %", yaxis_range=[0, 105], template="plotly_white"
-    )
-
-    # Pie chart: Current Coverage
-    fig_pie = px.pie(
-        values=[stats["healed"], stats["total"] - stats["healed"]],
-        names=["Healed", "Unhealed"],
-        title="🎯 Current Core Coverage",
-        color_discrete_sequence=["#10B981", "#E5E7EB"],
-    )
-    fig_pie.update_traces(textinfo="percent+value", pull=[0.05, 0])
-
-    # Dual axis: Cumulative Progress
-    fig_dual = make_subplots(specs=[[{"secondary_y": True}]])
-    fig_dual.add_trace(
-        go.Scatter(
-            x=df["batch"],
-            y=df["healed_agents"],
-            name="Healed Agents",
-            line={"color": "#1E3A8A", "width": 3},
-            mode="lines+markers",
-        ),
-        secondary_y=False,
-    )
-    fig_dual.add_trace(
-        go.Scatter(
-            x=df["batch"],
-            y=df["cumulative_commits"],
-            name="Cumulative Commits",
-            line={"color": "#F59E0B", "width": 3},
-            mode="lines+markers",
-        ),
-        secondary_y=True,
-    )
-    fig_dual.update_layout(title="📊 Healed Agents vs Cumulative Commits", template="plotly_white")
-    fig_dual.update_yaxes(title_text="Healed Agents", secondary_y=False)
-    fig_dual.update_yaxes(title_text="Cumulative Commits", secondary_y=True)
-
-    # MCP Progress chart
-    if "mcp_hardened" in df.columns and df["mcp_hardened"].sum() > 0:
-        fig_mcp = px.bar(
+        # Line chart: Healing % Progress
+        fig_line = px.line(
             df,
             x="batch",
-            y="mcp_hardened",
-            title="🛡️ MCP Hardened Agents Progress",
-            color="mcp_hardened",
-            color_continuous_scale=["#E5E7EB", "#8B5CF6"],
+            y="healing_core_pct",
+            markers=True,
+            title="Core Healing % Progress Over Time",
         )
-        fig_mcp.update_layout(template="plotly_white", showlegend=False)
-    else:
-        fig_mcp = go.Figure()
-        fig_mcp.add_annotation(
-            text="MCP Hardening data will appear after Phase 4",
-            xref="paper",
-            yref="paper",
-            x=0.5,
-            y=0.5,
-            showarrow=False,
+        fig_line.update_traces(line_color="#10B981", line_width=3, marker_size=10)
+        fig_line.add_hline(
+            y=70,
+            line_dash="dash",
+            line_color="#EF4444",
+            annotation_text="70% Target",
+            annotation_position="right",
         )
-        fig_mcp.update_layout(title="🛡️ MCP Hardened Agents Progress")
+        fig_line.add_hline(
+            y=100,
+            line_dash="dot",
+            line_color="#8B5CF6",
+            annotation_text="100% Goal",
+            annotation_position="right",
+        )
+        fig_line.update_layout(
+            xaxis_title="Batch", yaxis_title="Healing %", yaxis_range=[0, 105], template="plotly_white"
+        )
 
-    # Last update timestamp
-    last_update = f"🔄 Last update: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Auto-refresh every 30s | Data source: windsurf_log.json"
+        # Pie chart: Current Coverage
+        fig_pie = px.pie(
+            values=[stats["healed"], stats["total"] - stats["healed"]],
+            names=["Healed", "Unhealed"],
+            title="Current Core Coverage",
+            color_discrete_sequence=["#10B981", "#E5E7EB"],
+        )
+        fig_pie.update_traces(textinfo="percent+value", pull=[0.05, 0])
 
-    return cards, fig_line, fig_pie, fig_dual, fig_mcp, last_update
+        # Dual axis: Cumulative Progress
+        fig_dual = make_subplots(specs=[[{"secondary_y": True}]])
+        fig_dual.add_trace(
+            go.Scatter(
+                x=df["batch"],
+                y=df["healed_agents"],
+                name="Healed Agents",
+                line={"color": "#1E3A8A", "width": 3},
+                mode="lines+markers",
+            ),
+            secondary_y=False,
+        )
+        fig_dual.add_trace(
+            go.Scatter(
+                x=df["batch"],
+                y=df["cumulative_commits"],
+                name="Cumulative Commits",
+                line={"color": "#F59E0B", "width": 3},
+                mode="lines+markers",
+            ),
+            secondary_y=True,
+        )
+        fig_dual.update_layout(title="Healed Agents vs Cumulative Commits", template="plotly_white")
+        fig_dual.update_yaxes(title_text="Healed Agents", secondary_y=False)
+        fig_dual.update_yaxes(title_text="Cumulative Commits", secondary_y=True)
+
+        # MCP Progress chart
+        if "mcp_hardened" in df.columns and df["mcp_hardened"].sum() > 0:
+            fig_mcp = px.bar(
+                df,
+                x="batch",
+                y="mcp_hardened",
+                title="MCP Hardened Agents Progress",
+                color="mcp_hardened",
+                color_continuous_scale=["#E5E7EB", "#8B5CF6"],
+            )
+            fig_mcp.update_layout(template="plotly_white", showlegend=False)
+        else:
+            fig_mcp = go.Figure()
+            fig_mcp.add_annotation(
+                text="MCP Hardening data will appear after Phase 4",
+                xref="paper",
+                yref="paper",
+                x=0.5,
+                y=0.5,
+                showarrow=False,
+            )
+            fig_mcp.update_layout(title="MCP Hardened Agents Progress")
+
+        # Last update timestamp
+        last_update = f"Last update: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Auto-refresh every 30s"
+
+        return cards, fig_line, fig_pie, fig_dual, fig_mcp, last_update
+
+
+def _initialize_app():
+    """Initialize the app with layout and callbacks."""
+    app = _get_app()
+    app.layout = _create_layout()
+    _register_callbacks(app)
+    return app
 
 
 if __name__ == "__main__":
     print("\n" + "=" * 60)
-    print("🌊 Windsurf Real-Time Progress Dashboard")
+    print("Windsurf Real-Time Progress Dashboard")
     print("=" * 60)
-    print(f"\n📂 Loading data from: {LOG_PATH}")
-    print("🌐 Dashboard URL: http://127.0.0.1:8050")
-    print("🔄 Auto-refresh: Every 30 seconds")
+    print(f"\nLoading data from: {LOG_PATH}")
+    print("Dashboard URL: http://127.0.0.1:8050")
+    print("Auto-refresh: Every 30 seconds")
     print("\nPress Ctrl+C to stop the server\n")
 
+    app = _initialize_app()
     app.run(debug=True, host="127.0.0.1", port=8050)

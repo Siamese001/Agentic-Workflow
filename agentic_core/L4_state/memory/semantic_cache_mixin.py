@@ -7,7 +7,7 @@ semantic_cache_mixin - Unified Semantic cache Access
 from typing import Any
 
 
-class semantic_cache_mixin:
+class SemanticCacheMixin:
     """
     Mixin providing unified semantic cache access.
 
@@ -46,3 +46,7 @@ class semantic_cache_mixin:
     async def semantic_promote(self, query: str) -> None:
         """Promote high-value memory from Redis (L1) to Pinecone (L2)."""
         await self.semantic_cache.promote_to_long_term(query)
+
+
+# Backward compatibility alias
+semantic_cache_mixin = SemanticCacheMixin

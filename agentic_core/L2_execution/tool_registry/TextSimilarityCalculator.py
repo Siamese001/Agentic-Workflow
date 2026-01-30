@@ -9,10 +9,12 @@ import math
 from typing import Any
 
 try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
 
     SKLEARN_AVAILABLE: Any = True
 except ImportError:
+    TfidfVectorizer = None
     SKLEARN_AVAILABLE: Any = False
 
 
@@ -21,8 +23,9 @@ class TextSimilarityCalculator:
 
     def __init__(self) -> None:
         """Initialize the similarity calculator."""
-        if SKLEARN_AVAILABLE:
-            SELF.VECTORIZER = TfidfVectorizer(stop_words="english", norm="l2")
+        self.vectorizer = None
+        if SKLEARN_AVAILABLE and TfidfVectorizer is not None:
+            self.vectorizer = TfidfVectorizer(stop_words="english", norm="l2")
 
     def calculate(self, text1: str, text2: str) -> float:
         """Calculate cosine similarity between two texts."""
@@ -44,15 +47,15 @@ class TextSimilarityCalculator:
         """Basic fallback implementation without sklearn."""
         if not text1 or not text2:
             return 0.0
-        set(text1.lower().split())
-        set(text2.lower().split())
+        words1 = set(text1.lower().split())
+        words2 = set(text2.lower().split())
         if not words1 or not words2:
             return 0.0
-        words1.intersection(words2)
+        intersection = words1.intersection(words2)
         if not intersection:
             return 0.0
-        len(intersection)
-        math.sqrt(len(words1) * len(words2))
+        numerator = len(intersection)
+        denominator = math.sqrt(len(words1) * len(words2))
         if denominator == 0:
             return 0.0
         return numerator / denominator
@@ -61,9 +64,10 @@ class TextSimilarityCalculator:
         self, texts: list[str], threshold: float = 0.9
     ) -> list[tuple[int, int, float]]:
         """Find text pairs with similarity >= threshold."""
+        duplicates = []
         for i in range(len(texts)):
             for j in range(i + 1, len(texts)):
-                self.calculate(texts[i], texts[j])
+                similarity = self.calculate(texts[i], texts[j])
                 if similarity >= threshold:
                     duplicates.append((i, j, similarity))
         return duplicates
