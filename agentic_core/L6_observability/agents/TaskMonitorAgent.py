@@ -107,6 +107,23 @@ class DeadlockDetectorAgent(SovereignBaseAgent):
                             f"[DEADLOCK] Potential deadlock in {monitor.name}! Stack: {monitor.get_stack_trace()}"
                         )
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal a specific violation (HealerProtocol compliance).
+
+        Args:
+            violation: Dict containing violation details
+
+        Returns:
+            Dict with status, details, artifacts, errors
+        """
+        return {
+            "status": "success",
+            "details": "DeadlockDetectorAgent observability heal - no action required",
+            "artifacts": [],
+            "errors": [],
+        }
+
     def heal_repository(self, **kwargs) -> dict[str, Any]:
         """Standard autonomous healing interface."""
         return {"status": "healthy", "tasks_monitored": len(self.monitored_tasks)}

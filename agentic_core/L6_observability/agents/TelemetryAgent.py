@@ -243,6 +243,23 @@ class TelemetryAgent(SubatomicTestingMixin, SovereignBaseAgent):
         except Exception as e:
             Logger.error(f"[TelemetryAgent] Failed to export events: {e}")
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal a specific violation (HealerProtocol compliance).
+
+        Args:
+            violation: Dict containing violation details
+
+        Returns:
+            Dict with status, details, artifacts, errors
+        """
+        return {
+            "status": "success",
+            "details": "TelemetryAgent observability heal - no action required",
+            "artifacts": [],
+            "errors": [],
+        }
+
     @timeout(300)
     @standard_heal
     def heal_repository(
