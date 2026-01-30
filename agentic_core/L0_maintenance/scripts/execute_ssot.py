@@ -1648,13 +1648,17 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
         }
         all_violations.append(violation_dict)
 
-    # Get ConversationalRepairAgent violations
-    conversational_violations = state_mgr.state.get("conversational_violations", [])
+    # Get DebateSynthesisAgent violations
+    debate_synthesis_agent = agents["conversational_repair"](project_root=Path.cwd())
+    debate_synthesis_result = debate_synthesis_agent.scan_violations(
+        target_territory=territory
+    )
+    conversational_violations = debate_synthesis_result.get("violations", [])
     for conv_violation in conversational_violations:
         if isinstance(conv_violation, dict):
             violation_dict = {
-                "type": conv_violation.get("type", "CONVERSATIONAL"),
-                "source": "ConversationalRepairAgent",
+                **conv_violation,
+                "source": "DebateSynthesisAgent",
                 "file": conv_violation.get("file", "unknown"),
                 "message": conv_violation.get("message", str(conv_violation)),
                 "severity": conv_violation.get("severity", "medium"),
@@ -2163,13 +2167,13 @@ Examples:
         )
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
+        from agentic_core.L5_safety.validators.FileClassificationAgent import FileClassificationAgent
         from agentic_core.L5_safety.validators.RootHygieneAgent import RootHygieneAgent
         from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
-        from agentic_core.L6_observability.ConversationalRepairAgent import (
-            ConversationalRepairAgent,
+        from agentic_core.L6_observability.DebateSynthesisAgent import (
+            DebateSynthesisAgent,
         )
-        # Note: NamingAgent is a dependency for PascalSovereigntyAgent, checked during instantiation
+        # Note: NamingAgent is a dependency for FileClassificationAgent, checked during instantiation
 
         agents = {
             "reconciler": FilesystemSSOTReconcilerAgent,
@@ -2177,9 +2181,8 @@ Examples:
             "hierarchy": HierarchyAgent,
             "arch_governor": ArchitectureGovernorAgent,
             "system_architect": SystemArchitectAgent,
-            "pascal_sovereignty": PascalSovereigntyAgent,
-            "root_hygiene": RootHygieneAgent,
-            "conversational_repair": ConversationalRepairAgent,
+            "file_classification": FileClassificationAgent,
+            "conversational_repair": DebateSynthesisAgent,
             "cognitive_disposition": CognitiveDispositionAgent,
         }
 
@@ -2342,8 +2345,8 @@ Examples:
 
                         if pascal_proceed and not dry_run:
                             logger.info(f"🛡️ Triggering Sovereignty Purge: {territory}")
-                            state_mgr.update_agent("PascalSovereigntyAgent", "L5 - Safety")
-                            pascal = agents["pascal_sovereignty"](project_root=Path.cwd())
+                            state_mgr.update_agent("FileClassificationAgent", "L5 - Safety")
+                            pascal = agents["file_classification"](project_root=Path.cwd())
                             # Force the agent to fix headers and rename files with proper parameters
                             if hasattr(pascal, "heal_repository"):
                                 res = pascal.heal_repository(
@@ -2353,11 +2356,11 @@ Examples:
                                 )
                                 healed = res.get("files_healed", 0) if isinstance(res, dict) else 0
                                 state_mgr.complete_agent(
-                                    "PascalSovereigntyAgent", True, f"Healed: {healed}"
+                                    "FileClassificationAgent", True, f"Healed: {healed}"
                                 )
                             else:
                                 state_mgr.complete_agent(
-                                    "PascalSovereigntyAgent", False, "No heal_repository method"
+                                    "FileClassificationAgent", False, "No heal_repository method"
                                 )
                         elif not pascal_proceed:
                             state_mgr.add_event(
@@ -2391,9 +2394,10 @@ Examples:
                         # Phase 4.5: Additional Agent Execution (Conversational Repair & Root Hygiene)
                         logger.info(f"=== PHASE 4.5: ADDITIONAL AGENTS - {territory} ===")
 
-                        # Execute ConversationalRepairAgent
+                        # Execute DebateSynthesisAgent
+                        logger.info(f"🤖 Triggering Debate Synthesis: {territory}")
+                        state_mgr.update_agent("DebateSynthesisAgent", "Prompt Governance")
                         try:
-                            state_mgr.update_agent("ConversationalRepairAgent", "Prompt Governance")
                             conversational_agent = agents["conversational_repair"](
                                 project_root=Path.cwd()
                             )
@@ -2403,7 +2407,7 @@ Examples:
                                 )
                                 conv_violations = conv_results.get("violations", [])
                                 state_mgr.complete_agent(
-                                    "ConversationalRepairAgent",
+                                    "DebateSynthesisAgent",
                                     True,
                                     f"Violations: {len(conv_violations)}",
                                 )
@@ -2413,11 +2417,11 @@ Examples:
                                 state_mgr.state["conversational_violations"].extend(conv_violations)
                             else:
                                 state_mgr.complete_agent(
-                                    "ConversationalRepairAgent", False, "No scan_violations method"
+                                    "DebateSynthesisAgent", False, "No scan_violations method"
                                 )
                         except Exception as e:
-                            logger.warning(f"ConversationalRepairAgent failed: {e}")
-                            state_mgr.complete_agent("ConversationalRepairAgent", False, str(e))
+                            logger.warning(f"DebateSynthesisAgent failed: {e}")
+                            state_mgr.complete_agent("DebateSynthesisAgent", False, str(e))
 
                         # Execute RootHygieneAgent
                         try:
