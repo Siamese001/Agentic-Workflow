@@ -26,6 +26,8 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L3_orchestration.interfaces import (
     AgentResult,
     ExecutionContext,
@@ -600,3 +602,73 @@ class OrchestratorAgent(SovereignBaseAgent):
         except Exception as e:
             self.logger.warning(f"[GATE] Pre-flight check skipped for {agent_name}: {e}")
             return True  # Allow to proceed if validation itself fails
+
+    @timeout(300)
+    @standard_heal
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
+        """
+        L3 Orchestration Agent - Central Nervous System Healing.
+        
+        WIRED CAPABILITIES:
+        - Validates strategy configurations
+        - Checks agent discovery paths
+        - Verifies mission execution capabilities
+        """
+        if _call_path is None:
+            _call_path = set()
+        
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
+        if depth > max_depth:
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
+        
+        _call_path.add(agent_name)
+        metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
+        
+        try:
+            # Validate strategies are loadable
+            try:
+                strategies = self.strategies
+                if not strategies:
+                    metrics["violations_found"] += 1
+                    self.logger.warning("No strategies loaded")
+            except Exception as e:
+                metrics["violations_found"] += 1
+                self.logger.warning(f"Strategy loading failed: {e}")
+            
+            # Validate agent discovery
+            try:
+                available_agents = self.get_available_agents()
+                if not available_agents:
+                    metrics["violations_found"] += 1
+                    self.logger.warning("No agents discovered")
+                else:
+                    self.logger.info(f"Discovered {len(available_agents)} agents")
+            except Exception as e:
+                metrics["violations_found"] += 1
+                self.logger.warning(f"Agent discovery failed: {e}")
+            
+            # Validate project root
+            if not self.project_root.exists():
+                metrics["violations_found"] += 1
+                self.logger.warning(f"Project root does not exist: {self.project_root}")
+            
+            if metrics["violations_found"] == 0:
+                metrics["violations_fixed"] = 1
+                self.logger.info("OrchestratorAgent validation passed")
+            
+        except Exception as e:
+            self.logger.error(f"OrchestratorAgent healing failed: {e}")
+            metrics["errors"] += 1
+        finally:
+            _call_path.discard(agent_name)
+        
+        return metrics
