@@ -345,10 +345,121 @@ class SafetyInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self._false_positive_cache.clear()
         LOGGER.info("False positive cache cleared")
 
-    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, Any]:
-        """Repository healing with parent chain invocation."""
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set[str] | None = None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        """Scan repository for security violations and report findings.
+
+        Scans Python files for hardcoded secrets, debug statements, eval/exec
+        usage, and other security concerns. Safety violations require manual
+        review and cannot be auto-fixed.
+
+        Args:
+            dry_run: If True, only report violations (default: True).
+            execute: If True, generate detailed security report.
+            depth: Current recursion depth for cycle detection.
+            max_depth: Maximum recursion depth allowed.
+            _call_path: Set of agent names in current call chain.
+
+        Returns:
+            Dictionary with violations_found, violations_fixed, errors, skipped.
+        """
         result = super().heal_repository(dry_run=dry_run, **kwargs)
-        return {"healed": 0, "skipped": 0, "parent": result}
+
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
+        if depth > max_depth:
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+
+        violations_found = 0
+        violations_fixed = 0
+        errors = 0
+        skipped = 0
+
+        try:
+            LOGGER.info(f"[{agent_name}] Scanning repository for security violations...")
+
+            # Scan source directories
+            source_dirs = [
+                Path(self.project_root) / "agentic_core",
+                Path(self.project_root) / "apps_lic",
+                Path(self.project_root) / "apps_rg",
+                Path(self.project_root) / "apps_shared",
+            ]
+
+            all_violations = []
+
+            for source_dir in source_dirs:
+                if not source_dir.exists():
+                    continue
+
+                for py_file in source_dir.rglob("*.py"):
+                    # Skip __pycache__ and test files
+                    if "__pycache__" in str(py_file):
+                        skipped += 1
+                        continue
+
+                    try:
+                        file_violations = self.scan_file(py_file)
+                        if file_violations:
+                            violations_found += len(file_violations)
+                            all_violations.extend(file_violations)
+                    except Exception as e:
+                        LOGGER.error(f"  Error scanning {py_file}: {e}")
+                        errors += 1
+
+            if violations_found > 0:
+                LOGGER.warning(f"  Found {violations_found} security violations")
+
+                if execute and not dry_run:
+                    # Generate a security report (we don't auto-fix security issues)
+                    import json
+                    report_path = Path(self.project_root) / "logs" / "security_scan_report.json"
+                    report_path.parent.mkdir(parents=True, exist_ok=True)
+
+                    report = {
+                        "scan_date": str(Path(__file__).stat().st_mtime),
+                        "total_violations": violations_found,
+                        "violations": [
+                            {"file": str(v.get("file", "")), "type": v.get("type", ""), "line": v.get("line", 0)}
+                            for v in all_violations[:100]  # Limit to 100 for report size
+                        ],
+                        "note": "Security violations require manual review",
+                    }
+
+                    with open(report_path, "w", encoding="utf-8") as f:
+                        json.dump(report, f, indent=2)
+
+                    LOGGER.info(f"  Generated security report: {report_path}")
+                    # Note: violations_fixed stays 0 because security issues need manual review
+
+            else:
+                LOGGER.info("  No security violations found")
+
+            LOGGER.info(f"[{agent_name}] Complete: {violations_found} violations (manual review required)")
+
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "errors": errors,
+                "skipped": skipped,
+                "agent": agent_name,
+                "dry_run": dry_run,
+                "note": "Security violations require manual review",
+            }
+
+        finally:
+            _call_path.discard(agent_name)
 
     def heal(self, violation: dict) -> dict:
         """Heal safety inspection violations using standard_heal decorator pattern.

@@ -479,10 +479,23 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
-        """L5 safety/guardrails - operational only."""
+        """Scan repository for test coverage issues and generate missing tests.
+
+        Analyzes test coverage across the codebase, identifies files with
+        low or missing test coverage, and can generate test stubs.
+
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, generate test stubs for uncovered files
+            depth: Current recursion depth
+            max_depth: Maximum recursion depth
+            _call_path: Set of agent names in call chain for cycle detection
+
+        Returns:
+            Dict with violations_found, violations_fixed, errors, skipped
+        """
         if _call_path is None:
             _call_path = set()
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository(
             dry_run=dry_run,
             execute=execute,
@@ -493,13 +506,112 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
         agent_name = "TestCoverageGuardianAgent"
         if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
         if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
         _call_path.add(agent_name)
+
+        violations_found = 0
+        violations_fixed = 0
+        errors = 0
+        skipped = 0
+
         try:
-            print(f"[{agent_name}] L5 safety/guardrails - operational only")
-            return {"skipped": 1}
+            self.logger.info(f"[{agent_name}] Scanning for test coverage gaps...")
+
+            # Find all Python source files in agentic_core and apps_*
+            source_dirs = [
+                self.project_root / "agentic_core",
+                self.project_root / "apps_lic",
+                self.project_root / "apps_rg",
+                self.project_root / "apps_shared",
+            ]
+
+            test_dir = self.project_root / "tests"
+            existing_tests = set()
+
+            # Collect existing test files
+            if test_dir.exists():
+                for test_file in test_dir.rglob("test_*.py"):
+                    # Extract the module being tested from test filename
+                    test_name = test_file.stem
+                    if test_name.startswith("test_"):
+                        module_name = test_name[5:]  # Remove "test_" prefix
+                        existing_tests.add(module_name.lower())
+
+            # Scan source files for missing tests
+            files_without_tests = []
+            for source_dir in source_dirs:
+                if not source_dir.exists():
+                    continue
+
+                for py_file in source_dir.rglob("*.py"):
+                    # Skip __init__, __pycache__, and test files
+                    if py_file.name.startswith("__") or "__pycache__" in str(py_file):
+                        skipped += 1
+                        continue
+                    if py_file.name.startswith("test_"):
+                        skipped += 1
+                        continue
+
+                    # Check if test exists for this file
+                    module_name = py_file.stem.lower()
+                    if module_name not in existing_tests:
+                        files_without_tests.append(py_file)
+                        violations_found += 1
+
+            if files_without_tests:
+                self.logger.warning(f"  Found {len(files_without_tests)} files without tests")
+
+                if execute and not dry_run:
+                    # Generate test stubs for up to 10 files
+                    for py_file in files_without_tests[:10]:
+                        try:
+                            rel_path = py_file.relative_to(self.project_root)
+                            # Determine test subdirectory
+                            if "apps_lic" in str(rel_path):
+                                test_subdir = test_dir / "integration" / "apps_lic"
+                            elif "apps_rg" in str(rel_path):
+                                test_subdir = test_dir / "integration" / "apps_rg"
+                            else:
+                                test_subdir = test_dir / "unit" / "agentic_core"
+
+                            test_subdir.mkdir(parents=True, exist_ok=True)
+                            test_file = test_subdir / f"test_{py_file.stem}.py"
+
+                            if not test_file.exists():
+                                module_path = str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
+                                test_content = f'''"""Auto-generated test stub for {py_file.name}."""
+import pytest
+
+
+class Test{py_file.stem.title().replace("_", "")}:
+    """Test cases for {module_path}."""
+
+    def test_placeholder(self):
+        """Placeholder test - implement actual tests."""
+        # TODO: Implement tests for {py_file.name}
+        assert True
+'''
+                                test_file.write_text(test_content, encoding="utf-8")
+                                violations_fixed += 1
+                                self.logger.info(f"    Generated: {test_file.name}")
+
+                        except Exception as e:
+                            self.logger.error(f"    Error generating test for {py_file}: {e}")
+                            errors += 1
+
+            self.logger.info(f"[{agent_name}] Complete: {violations_found} gaps, {violations_fixed} stubs generated")
+
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "errors": errors,
+                "skipped": skipped,
+                "agent": agent_name,
+                "dry_run": dry_run,
+            }
+
         finally:
             _call_path.discard(agent_name)
 

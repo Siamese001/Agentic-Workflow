@@ -395,22 +395,82 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         }
 
     def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set[str] | None = None,
+        **kwargs,
     ) -> dict[str, Any]:
-        """
-        Autonomous healing for credential leaks.
+        """Scan repository for hardcoded credentials and report findings.
 
-        In dry_run mode, reports violations.
-        In execute mode, would redact credentials (not implemented for safety).
+        Scans Python files for hardcoded API keys, passwords, tokens, and
+        other sensitive credentials. Credential violations require manual
+        review and cannot be auto-fixed for safety reasons.
+
+        Args:
+            dry_run: If True, only report violations (default: True).
+            execute: If True, generate detailed credential report.
+            depth: Current recursion depth for cycle detection.
+            max_depth: Maximum recursion depth allowed.
+            _call_path: Set of agent names in current call chain.
+
+        Returns:
+            Dictionary with violations_found, violations_fixed, errors, skipped.
         """
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
 
-        scan_results = self.scan_for_credentials()
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
+        if depth > max_depth:
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+        _call_path.add(agent_name)
 
-        return {
-            "violations": scan_results["total_matches"],
-            "fixed": 0,  # Never auto-fix credentials for safety
-            "errors": 0,
-            "skipped": scan_results["total_matches"],
-            "metadata": scan_results["summary"],
-        }
+        try:
+            self.logger.info(f"[{agent_name}] Scanning for hardcoded credentials...")
+
+            scan_results = self.scan_for_credentials()
+            violations_found = scan_results.get("total_matches", 0)
+
+            if violations_found > 0:
+                self.logger.warning(f"  Found {violations_found} potential credential leaks")
+
+                if execute and not dry_run:
+                    # Generate credential report (we don't auto-fix for safety)
+                    import json
+                    report_path = Path(self.project_root) / "logs" / "credential_scan_report.json"
+                    report_path.parent.mkdir(parents=True, exist_ok=True)
+
+                    report = {
+                        "scan_date": str(Path(__file__).stat().st_mtime),
+                        "total_violations": violations_found,
+                        "summary": scan_results.get("summary", {}),
+                        "note": "Credential violations require manual review - DO NOT auto-fix",
+                    }
+
+                    with open(report_path, "w", encoding="utf-8") as f:
+                        json.dump(report, f, indent=2)
+
+                    self.logger.info(f"  Generated credential report: {report_path}")
+
+            else:
+                self.logger.info("  No credential leaks detected")
+
+            self.logger.info(f"[{agent_name}] Complete: {violations_found} potential leaks (manual review required)")
+
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": 0,  # Never auto-fix credentials for safety
+                "errors": 0,
+                "skipped": violations_found,  # All skipped because manual review required
+                "agent": agent_name,
+                "dry_run": dry_run,
+                "note": "Credential violations require manual review",
+            }
+
+        finally:
+            _call_path.discard(agent_name)
