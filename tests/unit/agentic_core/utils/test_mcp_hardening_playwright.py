@@ -17,7 +17,7 @@ def test_mcp_hardening():
     """Test that 100% MCP Hardening is displayed in dashboard."""
     try:
         from playwright.sync_api import sync_playwright
-    except ImportError:
+    except (ImportError, NameError, AttributeError):
         print("❌ Playwright not installed")
         return False
 

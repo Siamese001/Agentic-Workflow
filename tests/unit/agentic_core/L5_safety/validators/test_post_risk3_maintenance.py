@@ -116,7 +116,7 @@ class TestNoCircularLocationImports:
             assert GravityLeakDetector is not None
             assert LocationAgent is not None
 
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Circular import detected: {e}")
 
     def test_reverse_import_order(self):
@@ -147,7 +147,7 @@ class TestNoCircularLocationImports:
                 ]
             )
 
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Order-dependent circular import: {e}")
 
     def test_cross_layer_imports(self):
@@ -166,7 +166,7 @@ class TestNoCircularLocationImports:
             assert LocationValidatorAgent is not None
             assert L1CognitionBaseAgent is not None
 
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Cross-layer import failure: {e}")
 
 

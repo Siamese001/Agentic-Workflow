@@ -20,7 +20,7 @@ class TestOrchestratorReadiness:
             agents = execute_phase0_validation()
             assert "SOVEREIGN_TERRITORIES" in str(agents) or True
             print("✅ Phase 0 Validation: SUCCESS")
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Orchestrator failed to load Unified SSOT: {e}")
 
     def test_territory_resolution(self):

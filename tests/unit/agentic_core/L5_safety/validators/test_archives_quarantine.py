@@ -53,7 +53,7 @@ def test_ssot_global_excluded_dirs():
         else:
             test_fail("BACKUP", "'.sovereign_healing_backup' NOT in GLOBAL_EXCLUDED_DIRS")
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         test_fail("IMPORT", f"Cannot import GLOBAL_EXCLUDED_DIRS: {e}")
 
 
@@ -76,7 +76,7 @@ def test_ssot_sovereign_excluded_folders():
         else:
             test_fail("BACKUP", "'.sovereign_healing_backup' NOT in SOVEREIGN_EXCLUDED_FOLDERS")
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         test_fail("IMPORT", f"Cannot import SOVEREIGN_EXCLUDED_FOLDERS: {e}")
 
 

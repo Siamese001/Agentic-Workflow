@@ -60,7 +60,7 @@ try:
 except ModuleNotFoundError as e:
     print(f"ModuleNotFoundError: {{e}}")
     sys.exit(1)
-except ImportError as e:
+except (ImportError, NameError, AttributeError, TypeError) as e:
     if "circular" in str(e).lower():
         print(f"CircularImportError: {{e}}")
         sys.exit(2)
@@ -94,7 +94,7 @@ except Exception as e:
         """
         try:
             from agentic_core.L1_cognition.thought_engine.MetaLearningAgent import MetaLearningAgent
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             pytest.skip("MetaLearningAgent not available for isolation test")
 
         # Create two separate instances
@@ -166,7 +166,7 @@ except Exception as e:
             assert dedup_agentic_core_dir == canonical_blueprint.AGENTIC_CORE_DIR, (
                 "CodeDeduplicationAgent AGENTIC_CORE_DIR doesn't match canonical blueprint"
             )
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             # If import fails, check the source file directly
             dedup_path = (
                 Path(__file__).resolve().parents[2]

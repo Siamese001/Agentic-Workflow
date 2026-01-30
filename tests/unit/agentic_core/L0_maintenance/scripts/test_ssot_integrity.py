@@ -55,7 +55,7 @@ class TestSSOTFinalization:
             assert agent is not None, "HOP1ProfileAnalysisAgent should initialize"
             assert hasattr(agent, "heal_repository"), "Agent should have healing capability"
             print("✅ Specialist agent initializes correctly with new SSOT paths")
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Failed to import specialist agent: {e}")
 
     def test_sovereign_base_integrity(self):

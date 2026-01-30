@@ -37,7 +37,7 @@ class TestHardenedCoreSynthesis:
             else:
                 pytest.fail("HealerError not caught properly")
 
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"CRITICAL: agentic_core.domain.exceptions missing! {e}")
 
     def test_healer_mixin_is_dataclass(self):
@@ -52,7 +52,7 @@ class TestHardenedCoreSynthesis:
             assert "_healing_count" in fields, "Missing _healing_count field"
             assert "_max_healing_operations" in fields, "Missing _max_healing_operations field"
 
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             pytest.fail("CRITICAL: HealerMixin import failed!")
 
     def test_sovereign_base_agent_is_dataclass(self):
@@ -113,7 +113,7 @@ class TestHardenedCoreSynthesis:
                 "Missing _is_safe_to_modify method"
             )
 
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             pytest.fail("CRITICAL: SyntaxScarRepairer import failed!")
 
     def test_structural_healing_mixin_exists(self):
@@ -131,7 +131,7 @@ class TestHardenedCoreSynthesis:
                 "Missing _analyze_file_structure method"
             )
 
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             pytest.fail("CRITICAL: StructuralHealingMixin import failed!")
 
     def test_unified_hygiene_mixin_exists(self):
@@ -155,7 +155,7 @@ class TestHardenedCoreSynthesis:
                 "Missing _fix_hygiene_violations method"
             )
 
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             pytest.fail("CRITICAL: HygieneMixin import failed!")
 
     def test_type_hint_coverage(self):
@@ -178,7 +178,7 @@ class TestHardenedCoreSynthesis:
                     continue
                 assert func.__annotations__, f"HARDENING FAIL: HealerMixin.{name} lacks type hints"
 
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Type hint coverage test failed due to import error: {e}")
 
     def test_logic_resurrection_presence(self):
@@ -260,7 +260,7 @@ class TestHardenedCoreSynthesis:
                 "HygieneMixin.heal_repository missing @standard_heal"
             )
 
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Canonical schema compliance test failed: {e}")
 
     def test_security_validation_methods(self):
@@ -317,7 +317,7 @@ class TestHardenedCoreSynthesis:
             else:
                 pytest.fail("HealerError not caught properly")
 
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Error boundary integration test failed: {e}")
 
 

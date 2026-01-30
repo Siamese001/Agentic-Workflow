@@ -42,7 +42,7 @@ class TestImportHarmonization:
         try:
             module = importlib.import_module(module_path)
             assert hasattr(module, attr_name), f"{attr_name} missing from {module_path}"
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"CRITICAL IMPORT BREAK: {module_path} is failing to load: {e}")
         except Exception as e:
             pytest.fail(f"Unexpected error loading {module_path}: {e}")

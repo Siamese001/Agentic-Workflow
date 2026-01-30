@@ -66,7 +66,7 @@ class TestRGSwarmCompliance:
                     if "Agent" in cls_name and cls_name != "RGAgentBase":
                         agents.append((cls_name, cls))
 
-            except ImportError as e:
+            except (ImportError, NameError, AttributeError, TypeError) as e:
                 pytest.fail(f"Failed to import module {name}: {e}")
 
         return agents

@@ -217,7 +217,7 @@ class TestPreCommitHookTrigger:
             import scripts.ci.sovereign_lockdown_check
 
             script_exists = True
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             script_exists = False
 
         assert script_exists, "CI script could not be imported"

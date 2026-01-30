@@ -70,7 +70,7 @@ class TestLICCompleteSwarmCompliance:
 
                         agents_compliant += 1
 
-            except ImportError as e:
+            except (ImportError, NameError, AttributeError, TypeError) as e:
                 # Some legacy files might fail import if not fully cleaned, catch here
                 failures.append(f"Import Error in {name}: {e}")
             except Exception as e:

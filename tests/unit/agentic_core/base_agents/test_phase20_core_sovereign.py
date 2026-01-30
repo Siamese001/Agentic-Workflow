@@ -102,7 +102,7 @@ class TestCoreLogicSynthesis:
                 "SovereignBaseAgent must implement CanonBaseAgentInterface"
             )
 
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Import error: {e}")
 
     def test_core_file_structure(self):
@@ -210,7 +210,7 @@ class TestCoreLogicSynthesis:
             for method in required_methods:
                 assert hasattr(SovereignBaseAgent, method), f"Missing required method: {method}"
 
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Cannot import SovereignBaseAgent: {e}")
 
     def test_synthesis_report_exists(self):

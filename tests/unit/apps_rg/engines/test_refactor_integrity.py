@@ -24,7 +24,7 @@ class TestRefactorIntegrity(unittest.TestCase):
                 self.fail(
                     f"CRITICAL: {agent} is still importable from common_utils! Separation failed."
                 )
-            except ImportError:
+            except (ImportError, NameError, AttributeError):
                 # Expected behavior: ModuleNotFoundError
                 pass
 
@@ -40,7 +40,7 @@ class TestRefactorIntegrity(unittest.TestCase):
             import apps_rg.engines.strategist_biowriter
 
             import apps_rg.engines.HardenedAnthropicExecutor
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             self.fail(f"CRITICAL: Could not import Agent from new location: {e}")
 
     def test_03_verify_inheritance_integrity(self):

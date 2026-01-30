@@ -17,7 +17,7 @@ sys.path.append(script_path)
 # Verify import
 try:
     from architectural_audit import DriftDetector, scan_repository
-except ImportError:
+except (ImportError, NameError, AttributeError):
     # Fallback for running pytest from within the tests directory
     from architectural_audit import DriftDetector, scan_repository
 

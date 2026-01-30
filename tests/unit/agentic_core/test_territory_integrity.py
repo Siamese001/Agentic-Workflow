@@ -12,7 +12,7 @@ if str(project_root) not in sys.path:
 
 try:
     from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
-except ImportError as e:
+except (ImportError, NameError, AttributeError, TypeError) as e:
     print(f"Import error: {e}")
     print(f"Project root: {project_root}")
     print(f"Sys path: {sys.path[:3]}")  # Show first 3 paths

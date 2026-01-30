@@ -336,21 +336,21 @@ def test_import_validation():
         from apps_shared.utils.DuplicateCodeDetectorAgent import DuplicateCodeDetectorAgent
 
         test_pass("IMPORT_AGENT", "Agent imports successfully from apps_shared")
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         test_fail("IMPORT_AGENT", f"Import failed: {e}")
 
     try:
         from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS
 
         test_pass("IMPORT_SSOT", "GLOBAL_EXCLUDED_DIRS imports from SSOT")
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         test_fail("IMPORT_SSOT", f"SSOT import failed: {e}")
 
     try:
         from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
 
         test_pass("IMPORT_MCP", "MCPHardenedMixin imports correctly")
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         test_fail("IMPORT_MCP", f"MCP import failed: {e}")
 
 

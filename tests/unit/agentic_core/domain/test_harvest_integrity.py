@@ -44,7 +44,7 @@ class TestHarvestIntegrity:
             # Test that artifacts are accessible
             assert LegacyArtifacts.CIRCULAR_IMPORT_PATTERN is not None
             assert LegacyArtifacts.CONTEXT_GROUNDING_TEMPLATE is not None
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             pytest.fail("Could not import LegacyArtifacts")
 
         # Verify legacy folder is gone

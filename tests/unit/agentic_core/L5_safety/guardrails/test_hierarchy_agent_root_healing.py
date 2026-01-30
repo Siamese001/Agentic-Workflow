@@ -115,7 +115,7 @@ def test_1_hierarchy_agent_has_root_healing_methods() -> tuple[bool, str]:
 
         return True, f"All {len(required_methods)} required methods present"
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         return False, f"Could not import HierarchyAgent: {e}"
 
 
@@ -136,7 +136,7 @@ def test_2_hierarchy_agent_has_ssot_targets() -> tuple[bool, str]:
 
         return True, f"ROOT_FOLDER_SSOT_TARGETS has all {len(required_keys)} required mappings"
 
-    except ImportError as e:
+    except (ImportError, NameError, AttributeError, TypeError) as e:
         return False, f"Could not import HierarchyAgent: {e}"
 
 

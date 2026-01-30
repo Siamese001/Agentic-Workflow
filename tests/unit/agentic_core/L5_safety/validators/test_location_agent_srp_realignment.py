@@ -113,7 +113,7 @@ class TestT3P103SecurityWrapperDiscovery:
             import tests.security.test_safe_execute
 
             assert True, "Security test file discovered and importable"
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Security test file not discoverable: {e}")
 
     def test_security_tests_importable(self):

@@ -281,7 +281,7 @@ class TestEndgameCertification:
             assert LegacyArtifacts.CIRCULAR_IMPORT_PATTERN is not None
             assert LegacyArtifacts.CONTEXT_GROUNDING_TEMPLATE is not None
             assert "{domain}" in LegacyArtifacts.CONTEXT_GROUNDING_TEMPLATE
-        except ImportError:
+        except (ImportError, NameError, AttributeError):
             pytest.fail("LegacyArtifacts could not be imported")
 
         # Verify legacy folder is permanently deleted

@@ -42,7 +42,7 @@ def run_playwright_visual_tests() -> tuple[bool, list[str]]:
     # Check if Playwright is installed
     try:
         from playwright.sync_api import sync_playwright
-    except ImportError:
+    except (ImportError, NameError, AttributeError):
         errors.append(
             "Playwright not installed. Run: pip install playwright && playwright install chromium"
         )

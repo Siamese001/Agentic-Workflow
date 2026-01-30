@@ -65,7 +65,7 @@ class TestCoreFoundationPurity:
             # Verify interface has expected attributes
             assert hasattr(CanonBaseAgentInterface, "smart_fix")
             print("✅ CanonBaseAgentInterface imports from new agentic_core location")
-        except ImportError as e:
+        except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.fail(f"Failed to import CanonBaseAgentInterface from new location: {e}")
 
     def test_global_legacy_archive(self):

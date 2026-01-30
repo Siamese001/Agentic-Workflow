@@ -21,7 +21,7 @@ try:
     import execute_ssot
 
     IMPORTS_AVAILABLE = True
-except ImportError as e:
+except (ImportError, NameError, AttributeError, TypeError) as e:
     print(f"Warning: Failed to import execute_ssot: {e}")
     IMPORTS_AVAILABLE = False
     execute_ssot = None

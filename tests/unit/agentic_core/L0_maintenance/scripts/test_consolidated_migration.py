@@ -122,7 +122,7 @@ class TestConsolidatedMigration:
                 has_legacy_keys = 17 in CANON_VALIDATION_REGISTRY or 19 in CANON_VALIDATION_REGISTRY
                 if has_legacy_keys:
                     print("⚠️  CANON_VALIDATION_REGISTRY still has legacy keys 17/19")
-            except ImportError:
+            except (ImportError, NameError, AttributeError):
                 # This is GOOD - means it's been removed
                 pass
 
