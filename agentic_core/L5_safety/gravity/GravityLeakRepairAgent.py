@@ -331,6 +331,43 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         }
 
 
+    def heal(self, violation: dict) -> dict:
+        """Heal gravity leak violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (gravity, upward_import)
+                - path: Path to the violating file
+                - import_statement: The problematic import
+                - file_layer: Layer of the file
+                - import_layer: Layer being imported
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        path = violation.get("path", "")
+        import_statement = violation.get("import_statement", "")
+        file_layer = violation.get("file_layer", "")
+        import_layer = violation.get("import_layer", "")
+
+        if path and import_statement:
+            try:
+                fix = self.analyze_violation(
+                    file_path=Path(path),
+                    import_statement=import_statement,
+                    file_layer=file_layer,
+                    import_layer=import_layer,
+                )
+                result = self.apply_fix(fix, dry_run=False)
+                if result.get("status") == "fixed":
+                    return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+            except Exception as e:
+                self.logger.error(f"[GRAVITY_LEAK_REPAIR] Failed to heal: {e}")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+        return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+
+
 def get_gravity_leak_repair_agent(project_root: Path = None) -> GravityLeakRepairAgent:
     """Factory function for GravityLeakRepairAgent."""
     return GravityLeakRepairAgent(project_root=project_root)

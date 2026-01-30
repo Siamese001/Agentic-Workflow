@@ -147,3 +147,23 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBaseAgent):
                 {"name": "test_instantiation", "status": "failed", "error": str(e)}
             )
         return results
+
+    def heal(self, violation: dict) -> dict:
+        """Heal constitutional review violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (constitutional)
+                - content: Content that failed review
+                - violations_found: List of constitutional violations
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Constitutional violations require content revision"
+        }

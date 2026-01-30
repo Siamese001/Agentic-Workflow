@@ -226,6 +226,27 @@ class GitSafetyHandlerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         finally:
             _call_path.discard(agent_name)
 
+    def heal(self, violation: dict) -> dict:
+        """Heal git safety violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (uncommitted, dirty_state)
+                - branch: Branch name
+                - file_path: Path to the file
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        Logger.info(f"[GIT_SAFETY_HANDLER] Git safety violations require manual review")
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Git safety violations require manual review and rollback"
+        }
+
 
 def get_git_safety_handler(McpRouterAgent: Any) -> GitSafetyHandlerAgent:
     """

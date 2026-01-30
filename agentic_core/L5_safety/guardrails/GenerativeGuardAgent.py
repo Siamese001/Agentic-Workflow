@@ -231,3 +231,28 @@ class GenerativeGuardAgent(
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+
+    def heal(self, violation: dict) -> dict:
+        """Heal generative guard violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (runaway_generation)
+                - path: Path to the runaway file
+                - pattern: Pattern that matched
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        path = violation.get("path", "")
+        
+        if path:
+            try:
+                import os
+                if os.path.exists(path):
+                    os.remove(path)
+                    return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+            except Exception as e:
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+        
+        return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

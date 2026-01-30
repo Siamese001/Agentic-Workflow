@@ -148,3 +148,23 @@ class PIISanitizerAgent(SovereignBaseAgent):
                 {"name": "test_instantiation", "status": "failed", "error": str(e)}
             )
         return results
+
+    def heal(self, violation: dict) -> dict:
+        """Heal PII sanitization violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (pii_detected)
+                - pii_type: Type of PII (EMAIL, PHONE, NAME)
+                - path: Path to the file containing PII
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "PII violations require manual review before redaction"
+        }

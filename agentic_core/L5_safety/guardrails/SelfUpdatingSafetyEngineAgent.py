@@ -476,6 +476,27 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, SovereignBaseAgent):
         finally:
             _call_path.discard(agent_name)
 
+    def heal(self, violation: dict) -> dict:
+        """Heal safety engine violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (threat, pattern, rule)
+                - rule_id: ID of the triggered rule
+                - threat_level: Severity level
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        Logger.info(f"[SELF_UPDATING_SAFETY] Safety engine violations require manual review")
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Safety engine violations require manual security review"
+        }
+
 
 def create_self_updating_safety_engine(
     rules_storage_path: str | None = None,

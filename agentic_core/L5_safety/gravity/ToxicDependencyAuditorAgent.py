@@ -136,6 +136,49 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
             print(f"Impact: A single violation here affects {hub['fan_in']} components.")
             print("-" * 60)
 
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes
+
+        Returns:
+            Dict with healing summary
+        """
+        # Toxic dependency auditor is detection-only
+        toxic_hubs = self.audit_toxicity()
+        return {
+            "violations_found": len(toxic_hubs),
+            "violations_fixed": 0,
+            "errors": 0,
+            "skipped": len(toxic_hubs),
+            "reason": "Toxic dependencies require architectural refactoring"
+        }
+
+    def heal(self, violation: dict) -> dict:
+        """Heal toxic dependency violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (toxic_hub, high_fan_in)
+                - module: Module with high fan-in
+                - fan_in: Number of dependencies
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Toxic dependencies require architectural refactoring"
+        }
+
 
 if __name__ == "__main__":
     auditor = ToxicDependencyAuditor()
