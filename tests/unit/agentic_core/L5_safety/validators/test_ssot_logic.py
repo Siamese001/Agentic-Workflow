@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.validators.canonical_truth import (
+from agentic_core.utils.canonical_truth import (
     HEALTH_WEIGHTS,
     calculate_health_score,
     categorize_agent,
