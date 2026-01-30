@@ -294,6 +294,36 @@ class RedSentinelAgent(SovereignBaseAgent):
         finally:
             _call_path.discard(agent_name)
 
+    def heal(self, violation: dict) -> dict:
+        """Heal red sentinel violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (vulnerability, injection, fuzzing)
+                - path: Path to the violating file
+                - severity: Severity level of the violation
+
+        Returns:
+            Dictionary with healing results following standard_heal format:
+                - violations_fixed: Number of violations fixed
+                - violations_found: Total violations found
+                - errors: Number of errors encountered
+                - skipped: Number of violations skipped
+        """
+        violation_type = violation.get("type", "")
+        path = violation.get("path", "")
+
+        LOGGER.info(f"[RED_SENTINEL] Security violation detected: {violation_type} at {path}")
+        
+        # Security vulnerabilities require manual review - cannot auto-heal
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Security vulnerabilities require manual review"
+        }
+
 
 _red_sentinel: RedSentinelAgent | None = None
 

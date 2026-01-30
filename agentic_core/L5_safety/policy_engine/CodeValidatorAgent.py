@@ -392,6 +392,123 @@ class CodeValidatorAgent(SovereignBaseAgent):
             "skipped": skipped,
         }
 
+    def heal(self, violation: dict) -> dict:
+        """Heal code validation violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (syntax, canon, async, print)
+                - path: Path to the violating file
+                - severity: Severity level of the violation
+                - line_number: Line number of the violation
+
+        Returns:
+            Dictionary with healing results following standard_heal format:
+                - violations_fixed: Number of violations fixed
+                - violations_found: Total violations found
+                - errors: Number of errors encountered
+                - skipped: Number of violations skipped
+        """
+        from agentic_core.base_agents.decorators import standard_heal
+
+        @standard_heal
+        def _heal_validation_violation(self, violation: dict) -> dict:
+            """Internal heal method with standard_heal decorator."""
+            violation_type = violation.get("type", "syntax")
+            path = violation.get("path", "")
+            line_number = violation.get("line_number", 0)
+
+            Logger.info(f"[CODE_VALIDATOR] Healing {violation_type} violation at {path}:{line_number}")
+
+            if violation_type == "syntax":
+                # For syntax violations, we can only report as they require manual fixing
+                return self._heal_syntax_violation(violation)
+            elif violation_type == "canon":
+                # Heal canon compliance violations
+                return self._heal_canon_violation(violation)
+            elif violation_type == "async":
+                # Heal async/await violations
+                return self._heal_async_violation(violation)
+            elif violation_type == "print":
+                # Heal print statement violations
+                return self._heal_print_violation(violation)
+            else:
+                Logger.warning(f"[CODE_VALIDATOR] Unknown violation type: {violation_type}")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+
+        return _heal_validation_violation(self, violation)
+
+    def _heal_syntax_violation(self, violation: dict) -> dict:
+        """Heal syntax violations (typically requires manual intervention)."""
+        try:
+            path = violation.get("path", "")
+            Logger.warning(f"[CODE_VALIDATOR] Syntax violation requires manual fix: {path}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+        except Exception as e:
+            Logger.error(f"[CODE_VALIDATOR] Failed to handle syntax violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+    def _heal_canon_violation(self, violation: dict) -> dict:
+        """Heal canon compliance violations."""
+        try:
+            path = violation.get("path", "")
+            # Use existing fix_violations method for canon issues
+            violations = [Violation(
+                violation_type=ViolationType.CANON,
+                file_path=path,
+                line_number=violation.get("line_number", 0),
+                issue=violation.get("issue", "Canon compliance violation"),
+                auto_fixable=True,
+                suggested_fix=violation.get("suggested_fix")
+            )]
+            
+            result = self.fix_violations(violations, dry_run=False)
+            Logger.info(f"[CODE_VALIDATOR] Canon healing result: {result}")
+            return result
+        except Exception as e:
+            Logger.error(f"[CODE_VALIDATOR] Failed to heal canon violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+    def _heal_async_violation(self, violation: dict) -> dict:
+        """Heal async/await violations."""
+        try:
+            path = violation.get("path", "")
+            violations = [Violation(
+                violation_type=ViolationType.ASYNC,
+                file_path=path,
+                line_number=violation.get("line_number", 0),
+                issue=violation.get("issue", "Async/await violation"),
+                auto_fixable=True,
+                suggested_fix=violation.get("suggested_fix")
+            )]
+            
+            result = self.fix_violations(violations, dry_run=False)
+            Logger.info(f"[CODE_VALIDATOR] Async healing result: {result}")
+            return result
+        except Exception as e:
+            Logger.error(f"[CODE_VALIDATOR] Failed to heal async violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+    def _heal_print_violation(self, violation: dict) -> dict:
+        """Heal print statement violations."""
+        try:
+            path = violation.get("path", "")
+            violations = [Violation(
+                violation_type=ViolationType.PRINT,
+                file_path=path,
+                line_number=violation.get("line_number", 0),
+                issue=violation.get("issue", "Print statement violation"),
+                auto_fixable=True,
+                suggested_fix=violation.get("suggested_fix", "Replace with logging")
+            )]
+            
+            result = self.fix_violations(violations, dry_run=False)
+            Logger.info(f"[CODE_VALIDATOR] Print healing result: {result}")
+            return result
+        except Exception as e:
+            Logger.error(f"[CODE_VALIDATOR] Failed to heal print violation: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
 
 # Factory functions for backward compatibility
 def create_legacy_syntax_validator(**kwargs):

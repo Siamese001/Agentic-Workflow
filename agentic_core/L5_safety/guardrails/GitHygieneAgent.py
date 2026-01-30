@@ -227,3 +227,26 @@ class GitHygieneAgent(SovereignBaseAgent):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+
+    def heal(self, violation: dict) -> dict:
+        """Heal git hygiene violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (stale_branch, uncommitted, unpushed)
+                - path: Path to the repository
+                - severity: Severity level of the violation
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        violation_type = violation.get("type", "")
+        
+        try:
+            if violation_type == "stale_branch":
+                result = self.cleanup_stale_branches()
+                return {"violations_fixed": result.get("actions_taken", 0), "violations_found": result.get("stale_branches", 0), "errors": 0, "skipped": 0}
+            else:
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+        except Exception as e:
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
