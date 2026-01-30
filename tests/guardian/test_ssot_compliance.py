@@ -33,6 +33,8 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     APPS_SHARED_DIR,
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_TERRITORIES,
+    ROOT_WHITELIST,
+    FORBIDDEN_ROOT_FOLDERS,
 )
 
 
@@ -551,6 +553,140 @@ class TestSSOTCompliance:
             print("       These will be addressed in future refactoring sprints.")
         else:
             print(f"[OK] Layer hierarchy integrity verified ({len(layer_order)} layers)")
+
+    def test_void_compliance_whitelist(self):
+        """
+        Test 7: [VOID COMPLIANCE] Root folder whitelist enforcement.
+        
+        Fails if any file exists in a root folder not in ROOT_WHITELIST.
+        Fails if any file exists in FORBIDDEN_ROOT_FOLDERS.
+        """
+        print("\n=== SSOT Compliance: Void Folder Whitelist ===")
+        
+        violations = []
+        forbidden_violations = []
+        
+        # Check all files at root level
+        for path in self.project_root.iterdir():
+            if not path.is_dir():
+                continue
+                
+            folder_name = path.name
+            
+            # Skip hidden directories
+            if folder_name.startswith("."):
+                continue
+            
+            # Check if folder is in whitelist
+            if folder_name not in ROOT_WHITELIST:
+                # Check if it has any Python files
+                py_files = list(path.rglob("*.py"))
+                if py_files:
+                    violations.append(
+                        f"Folder '{folder_name}' contains {len(py_files)} Python files but is not in ROOT_WHITELIST"
+                    )
+            
+            # Check if folder is forbidden
+            if folder_name in FORBIDDEN_ROOT_FOLDERS:
+                py_files = list(path.rglob("*.py"))
+                if py_files:
+                    forbidden_violations.append(
+                        f"Folder '{folder_name}' is FORBIDDEN but contains {len(py_files)} Python files"
+                    )
+        
+        # Report violations
+        if violations or forbidden_violations:
+            error_msg = "VOID COMPLIANCE VIOLATIONS:\n\n"
+            
+            if violations:
+                error_msg += f"WHITELIST VIOLATIONS ({len(violations)}):\n"
+                for v in violations:
+                    error_msg += f"  [X] {v}\n"
+            
+            if forbidden_violations:
+                error_msg += f"\nFORBIDDEN FOLDER VIOLATIONS ({len(forbidden_violations)}):\n"
+                for v in forbidden_violations:
+                    error_msg += f"  [!!!] {v}\n"
+                    
+            pytest.fail(error_msg)
+        
+        print(f"[OK] All root folders comply with whitelist ({len(ROOT_WHITELIST)} whitelisted, {len(FORBIDDEN_ROOT_FOLDERS)} forbidden)")
+
+    def test_sub_atomic_granularity(self):
+        """
+        Test 8: [SUB-ATOMIC] File size granularity checks (Key 13/49).
+        
+        - Monolith Check: Fail if any file > 800 LOC.
+        - Code Dust Check: Fail if any file < 80 LOC (exclude __init__.py and tests/).
+        """
+        print("\n=== SSOT Compliance: Sub-Atomic Granularity ===")
+        
+        monolith_violations = []
+        code_dust_violations = []
+        
+        # Get all Python files
+        for py_file in self.project_root.rglob("*.py"):
+            # Skip excluded directories
+            if any(excluded in str(py_file) for excluded in self.excluded_dirs):
+                continue
+                
+            # Skip __init__.py files for code dust check
+            is_init_file = py_file.name == "__init__.py"
+            
+            # Skip test files for code dust check
+            is_test_file = "tests" in py_file.parts
+            
+            try:
+                # Count lines of code
+                with open(py_file, 'r', encoding='utf-8') as f:
+                    lines = f.readlines()
+                    
+                # Filter out empty lines and comments
+                code_lines = []
+                for line in lines:
+                    stripped = line.strip()
+                    if stripped and not stripped.startswith('#'):
+                        code_lines.append(line)
+                        
+                loc_count = len(code_lines)
+                
+                # Monolith check (> 800 LOC)
+                if loc_count > 800:
+                    monolith_violations.append(
+                        f"{self._get_relative_path(py_file)}: {loc_count} LOC (limit: 800)"
+                    )
+                
+                # Code dust check (< 80 LOC)
+                if not is_init_file and not is_test_file and loc_count < 80:
+                    code_dust_violations.append(
+                        f"{self._get_relative_path(py_file)}: {loc_count} LOC (minimum: 80)"
+                    )
+                    
+            except (UnicodeDecodeError, PermissionError):
+                # Skip files that can't be read
+                continue
+        
+        # Report violations
+        if monolith_violations or code_dust_violations:
+            error_msg = "SUB-ATOMIC GRANULARITY VIOLATIONS:\n\n"
+            
+            if monolith_violations:
+                error_msg += f"MONOLITH VIOLATIONS ({len(monolith_violations)} files > 800 LOC):\n"
+                for v in monolith_violations[:10]:
+                    error_msg += f"  [MONOLITH] {v}\n"
+                if len(monolith_violations) > 10:
+                    error_msg += f"  ... and {len(monolith_violations) - 10} more\n"
+            
+            if code_dust_violations:
+                error_msg += f"\nCODE DUST VIOLATIONS ({len(code_dust_violations)} files < 80 LOC):\n"
+                for v in code_dust_violations[:10]:
+                    error_msg += f"  [DUST] {v}\n"
+                if len(code_dust_violations) > 10:
+                    error_msg += f"  ... and {len(code_dust_violations) - 10} more\n"
+                    
+            pytest.fail(error_msg)
+        
+        print(f"[OK] All files within granularity bounds (monolith: 0, code dust: 0)")
 
 
 # Standalone runner

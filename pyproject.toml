@@ -44,6 +44,8 @@ markers = [
     "integration: Zero-loss merge and transactional tests",
     "e2e: End-to-end workflow tests",
     "slow: Long-running tests",
+    "guardian: Architectural integrity checks",
+    "manual: Manual verification tests that create temporary violations",
 ]
 
 [tool.coverage.run]
