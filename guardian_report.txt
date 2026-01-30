@@ -1,18 +1,37 @@
 ============================================================
 GUARDIAN ARCHITECTURAL HEALTH REPORT
 ============================================================
-Generated: 2026-01-30 10:44:30
-Exit Status: PASS
+Generated: 2026-01-30 12:34:10
+Exit Status: FAIL
 
 EXECUTION SUMMARY:
-  Total Tests Run: 4
-  Passed: 4
-  Failed: 0
-  Skipped: 0
+  Total Tests Run: 50
+  Passed: 35
+  Failed: 11
+  Skipped: 4
 
-✅ ALL GUARDIAN GATES PASSED
+FAILED GATES:
+  ❌ MRO Integrity: 1 test(s)
+     - tests/guardian/test_mro_integrity.py::test_redundant_mixin_check
+  ❌ Import Safety: 5 test(s)
+     - tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_global_import_crawl
+     - tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_init_completeness
+     - tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_ghost_import_detection_with_find_spec
+     - tests/guardian/test_import_safety.py::TestGravityCompliance::test_import_waterfall_violations
+     - tests/guardian/test_import_safety.py::TestGravityCompliance::test_internal_gravity_leaks
+  ❌ SSOT Alignment: 5 test(s)
+     - tests/guardian/test_ssot_alignment.py::TestSSOTAlignment::test_blueprint_reality_check
+     - tests/guardian/test_ssot_alignment.py::TestSSOTAlignment::test_file_naming_convention
+     - tests/guardian/test_ssot_alignment.py::TestSSOTAlignment::test_path_depth_limit
+     - tests/guardian/test_ssot_compliance.py::TestSSOTCompliance::test_void_compliance_whitelist
+     - tests/guardian/test_ssot_compliance.py::TestSSOTCompliance::test_sub_atomic_granularity
 
-ARCHITECTURAL HEALTH: ✅ OPTIMAL
-All architectural integrity checks passed.
-The codebase maintains structural integrity.
+ARCHITECTURAL HEALTH: ⚠️  COMPROMISED
+Architectural violations detected.
+Please review failed tests and remediate issues.
+
+RECOMMENDED ACTIONS:
+  - Fix MRO violations and inheritance issues
+  - Resolve import errors and circular dependencies
+  - Correct SSOT alignment and file placement issues
 ============================================================
