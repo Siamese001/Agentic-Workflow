@@ -112,6 +112,100 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         if healing_enabled:
             self.archive_root.mkdir(parents=True, exist_ok=True)
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        [HEALER PROTOCOL] Standardized healing interface for hierarchy violations.
+        
+        Args:
+            violation: Violation dict with keys: type, file, message, etc.
+            
+        Returns:
+            Dict with keys: status, details, artifacts, errors
+        """
+        try:
+            violation_type = violation.get("type", "")
+            file_path = violation.get("file")
+            
+            if not file_path:
+                return {
+                    "status": "failed",
+                    "details": "No file path provided in violation",
+                    "artifacts": [],
+                    "errors": ["Missing file path"],
+                }
+            
+            file_path_obj = Path(file_path)
+            
+            # Dispatch based on violation type
+            if violation_type == "STRUCTURE" or "MISSING" in violation_type:
+                # Structure violations - create missing directories
+                if self.healing_enabled:
+                    results = self.create_missing_structure()
+                    return {
+                        "status": "success" if results["violations_found"] == 0 else "partial_success",
+                        "details": f"Created {len(results['created'])} directories",
+                        "artifacts": results["created"],
+                        "errors": results["errors"],
+                    }
+                else:
+                    return {
+                        "status": "skipped",
+                        "details": "Healing disabled - dry run mode",
+                        "artifacts": [],
+                        "errors": [],
+                    }
+            elif violation_type == "MISPLACED" or violation_type == "ORPHAN":
+                # File relocation violations
+                if self.healing_enabled:
+                    results = self.relocate_misplaced_files()
+                    return {
+                        "status": "success" if results["violations_found"] == 0 else "partial_success",
+                        "details": f"Relocated {results['files_relocated']} files",
+                        "artifacts": [file_path],
+                        "errors": results["errors"],
+                    }
+                else:
+                    return {
+                        "status": "skipped",
+                        "details": "Healing disabled - dry run mode",
+                        "artifacts": [],
+                        "errors": [],
+                    }
+            elif "DEPTH" in violation_type:
+                # Depth violations
+                if self.healing_enabled:
+                    results = self.enforce_depth_rules()
+                    total_archived = results["apps_archived"] + results["tests_archived"] + results["universal_archived"]
+                    return {
+                        "status": "success" if results["violations_found"] == 0 else "partial_success",
+                        "details": f"Archived {total_archived} depth violations",
+                        "artifacts": [file_path],
+                        "errors": results["errors"],
+                    }
+                else:
+                    return {
+                        "status": "skipped",
+                        "details": "Healing disabled - dry run mode",
+                        "artifacts": [],
+                        "errors": [],
+                    }
+            else:
+                return {
+                    "status": "skipped",
+                    "details": f"No healer available for violation type: {violation_type}",
+                    "artifacts": [],
+                    "errors": [],
+                }
+                
+        except Exception as e:
+            Logger.error(f"Heal operation failed: {e}")
+            return {
+                "status": "failed",
+                "details": "Exception during healing",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
+
     # ========================================================================
     # STRUCTURE CREATION
     # ========================================================================

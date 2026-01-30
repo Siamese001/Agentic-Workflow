@@ -83,6 +83,44 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
             TESTS_DIR: (TESTS_DIR, "Medium"),
         }
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        [HEALER PROTOCOL] Standardized healing interface for AutonomyGuardianAgent violations.
+        
+        Args:
+            violation: Violation dict with keys: type, file, message, etc.
+            
+        Returns:
+            Dict with keys: status, details, artifacts, errors
+        """
+        try:
+            violation_type = violation.get("type", "")
+            file_path = violation.get("file")
+            
+            if not file_path:
+                return {
+                    "status": "failed",
+                    "details": "No file path provided in violation",
+                    "artifacts": [],
+                    "errors": ["Missing file path"],
+                }
+            
+            # AutonomyGuardianAgent healing logic
+            return {
+                "status": "manual_required",
+                "details": "AutonomyGuardianAgent requires manual review for healing",
+                "artifacts": [],
+                "errors": [],
+            }
+            
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": "Exception during healing",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
+
     def validate_agent_autonomy(self, agent_file: Path) -> list[str]:
         """AST-based check for required autonomy methods."""
         violations = []

@@ -71,6 +71,61 @@ Logger: Any = logging.getLogger(__name__)
 LOGGER = Logger  # Alias for compatibility
 
 
+def heal(violation: dict[str, Any]) -> dict[str, Any]:
+    """
+    [HEALER PROTOCOL] Standardized healing interface for governance violations.
+    
+    Args:
+        violation: Violation dict with keys: type, file, message, etc.
+        
+    Returns:
+        Dict with keys: status, details, artifacts, errors
+    """
+    try:
+        violation_type = violation.get("type", "")
+        file_path = violation.get("file")
+        
+        if not file_path:
+            return {
+                "status": "failed",
+                "details": "No file path provided in violation",
+                "artifacts": [],
+                "errors": ["Missing file path"],
+            }
+        
+        # GovernanceAgent provides decision-only functions
+        # Actual healing delegated to StructuralHealerAgent
+        if "DEPTH" in violation_type:
+            return {
+                "status": "manual_required",
+                "details": "Depth violations require StructuralHealerAgent.heal_file_moves()",
+                "artifacts": [],
+                "errors": [],
+            }
+        elif "ATOMICITY" in violation_type or "SIZE" in violation_type:
+            return {
+                "status": "manual_required",
+                "details": "Atomicity violations require StructuralHealerAgent.heal_fission()",
+                "artifacts": [],
+                "errors": [],
+            }
+        else:
+            return {
+                "status": "skipped",
+                "details": f"No healing strategy for violation type: {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
+        
+    except Exception as e:
+        return {
+            "status": "failed",
+            "details": "Exception during healing",
+            "artifacts": [],
+            "errors": [str(e)],
+        }
+
+
 class DependencyGraph:
     """
     Builds a directed graph of imports and class hierarchies.

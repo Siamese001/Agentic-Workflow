@@ -121,6 +121,44 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             "REDUNDANT_TERMS": REDUNDANT_TERMS,
         }
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        [HEALER PROTOCOL] Standardized healing interface for HygieneGuardianAgent violations.
+        
+        Args:
+            violation: Violation dict with keys: type, file, message, etc.
+            
+        Returns:
+            Dict with keys: status, details, artifacts, errors
+        """
+        try:
+            violation_type = violation.get("type", "")
+            file_path = violation.get("file")
+            
+            if not file_path:
+                return {
+                    "status": "failed",
+                    "details": "No file path provided in violation",
+                    "artifacts": [],
+                    "errors": ["Missing file path"],
+                }
+            
+            # HygieneGuardianAgent healing logic
+            return {
+                "status": "manual_required",
+                "details": "HygieneGuardianAgent requires manual review for healing",
+                "artifacts": [],
+                "errors": [],
+            }
+            
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": "Exception during healing",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
+
     def _is_empty_file(self, file_path: Path) -> bool:
         """Check if file is empty or contains only whitespace."""
         try:

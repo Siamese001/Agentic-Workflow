@@ -73,6 +73,44 @@ class GitAgent(SovereignBaseAgent):
             self._mcp_audit("init_with_l4_checkpoints")
             Logger.info(f"GitAgent initialized for {self.repo_root}")
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        [HEALER PROTOCOL] Standardized healing interface for GitAgent violations.
+        
+        Args:
+            violation: Violation dict with keys: type, file, message, etc.
+            
+        Returns:
+            Dict with keys: status, details, artifacts, errors
+        """
+        try:
+            violation_type = violation.get("type", "")
+            file_path = violation.get("file")
+            
+            if not file_path:
+                return {
+                    "status": "failed",
+                    "details": "No file path provided in violation",
+                    "artifacts": [],
+                    "errors": ["Missing file path"],
+                }
+            
+            # GitAgent healing logic
+            return {
+                "status": "manual_required",
+                "details": "GitAgent requires manual review for healing",
+                "artifacts": [],
+                "errors": [],
+            }
+            
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": "Exception during healing",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
+
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L2 compliance."""
         assert hasattr(self, "repo_root"), "Missing repo_root"

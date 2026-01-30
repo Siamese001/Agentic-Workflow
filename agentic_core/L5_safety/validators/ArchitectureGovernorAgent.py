@@ -164,6 +164,79 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             )
         return self._cognitive_agent
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        [HEALER PROTOCOL] Standardized healing interface for architecture violations.
+        
+        Args:
+            violation: Violation dict with keys: type, file, message, severity, etc.
+            
+        Returns:
+            Dict with keys: status, details, artifacts, errors
+        """
+        try:
+            violation_type = violation.get("type", "")
+            file_path = violation.get("file")
+            
+            if not file_path:
+                return {
+                    "status": "failed",
+                    "details": "No file path provided in violation",
+                    "artifacts": [],
+                    "errors": ["Missing file path"],
+                }
+            
+            # Dispatch to appropriate healing method
+            if violation_type == "GRAVITY":
+                result = self._heal_gravity_violation(violation, auto_approve=True)
+                return {
+                    "status": "success" if result else "failed",
+                    "details": f"Gravity violation healing {'succeeded' if result else 'failed'}",
+                    "artifacts": [file_path] if result else [],
+                    "errors": [] if result else ["Gravity healing failed"],
+                }
+            elif violation_type == "NAMING":
+                result = self._heal_naming_violation(violation, auto_approve=True)
+                return {
+                    "status": "success" if result else "failed",
+                    "details": f"Naming violation healing {'succeeded' if result else 'failed'}",
+                    "artifacts": [file_path] if result else [],
+                    "errors": [] if result else ["Naming healing failed"],
+                }
+            elif violation_type == "DUPLICATE":
+                result = self._resolve_collision(violation)
+                return {
+                    "status": "success" if result else "failed",
+                    "details": f"Duplicate resolution {'succeeded' if result else 'failed'}",
+                    "artifacts": [file_path] if result else [],
+                    "errors": [] if result else ["Duplicate resolution failed"],
+                }
+            elif violation_type == "ORPHAN":
+                file_path_obj = Path(file_path)
+                result = self._process_cognitive_disposition(file_path_obj, "ORPHAN")
+                return {
+                    "status": "success" if result else "failed",
+                    "details": f"Orphan file processing {'succeeded' if result else 'failed'}",
+                    "artifacts": [file_path] if result else [],
+                    "errors": [] if result else ["Orphan processing failed"],
+                }
+            else:
+                return {
+                    "status": "skipped",
+                    "details": f"No healer available for violation type: {violation_type}",
+                    "artifacts": [],
+                    "errors": [],
+                }
+                
+        except Exception as e:
+            Logger.error(f"Heal operation failed: {e}")
+            return {
+                "status": "failed",
+                "details": "Exception during healing",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
+
     @timeout(300)
     @standard_heal
     def heal_repository(

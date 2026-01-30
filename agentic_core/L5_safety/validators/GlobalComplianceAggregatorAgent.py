@@ -30,6 +30,44 @@ class GlobalComplianceAggregatorAgent(SubatomicTestingMixin, SovereignBaseAgent)
         """Initialize the instance."""
         self.results = []
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        [HEALER PROTOCOL] Standardized healing interface for GlobalComplianceAggregatorAgent violations.
+        
+        Args:
+            violation: Violation dict with keys: type, file, message, etc.
+            
+        Returns:
+            Dict with keys: status, details, artifacts, errors
+        """
+        try:
+            violation_type = violation.get("type", "")
+            file_path = violation.get("file")
+            
+            if not file_path:
+                return {
+                    "status": "failed",
+                    "details": "No file path provided in violation",
+                    "artifacts": [],
+                    "errors": ["Missing file path"],
+                }
+            
+            # GlobalComplianceAggregatorAgent healing logic
+            return {
+                "status": "manual_required",
+                "details": "GlobalComplianceAggregatorAgent requires manual review for healing",
+                "artifacts": [],
+                "errors": [],
+            }
+            
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": "Exception during healing",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
+
     def aggregate_results(self, results: list[dict[str, Any]]) -> dict[str, Any]:
         """Aggregate compliance results."""
         total_violations = sum(r.get("violations", 0) for r in results)
