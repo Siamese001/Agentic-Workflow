@@ -32,13 +32,13 @@ class TestPIIRedactionInGraph:
 
     def test_pii_redacted_before_graph_write(self):
         """Test that email in context is redacted before graph write."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import PIISanitizer
+        from agentic_core.L4_state.memory.SemanticCacheManager import PII_Sanitizer
 
         # Context with PII
         context_with_pii = "User john.doe@example.com requested a file move"
 
         # Sanitize
-        sanitized = PIISanitizer.sanitize(context_with_pii)
+        sanitized = PII_Sanitizer.sanitize(context_with_pii)
 
         # Verify email is redacted
         assert "john.doe@example.com" not in sanitized
@@ -47,11 +47,11 @@ class TestPIIRedactionInGraph:
 
     def test_learn_with_feedback_sanitizes_context(self):
         """Test that learn_with_feedback sanitizes context before graph write."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import PIISanitizer
+        from agentic_core.L4_state.memory.SemanticCacheManager import PII_Sanitizer
 
         # Create a mock memory with sanitizer
         mock_memory = MagicMock()
-        mock_memory.sanitizer = PIISanitizer
+        mock_memory.sanitizer = PII_Sanitizer
         mock_memory.promote_to_long_term.return_value = True
 
         # Create a mock graph bridge
@@ -93,14 +93,14 @@ class TestPIIRedactionInGraph:
 
     def test_multiple_pii_types_redacted(self):
         """Test that multiple PII types are all redacted."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import PIISanitizer
+        from agentic_core.L4_state.memory.SemanticCacheManager import PII_Sanitizer
 
         context = (
             "User admin@company.com from IP 192.168.1.100 "
             "used API key sk-abc123456789012345678901234567890123456789"
         )
 
-        sanitized = PIISanitizer.sanitize(context)
+        sanitized = PII_Sanitizer.sanitize(context)
 
         assert "admin@company.com" not in sanitized
         assert "192.168.1.100" not in sanitized
@@ -398,12 +398,12 @@ class TestPhase25Integration:
     def test_sanitizer_accessible_from_memory(self):
         """Test that sanitizer is accessible from SemanticCacheManager."""
         from agentic_core.L4_state.memory.SemanticCacheManager import (
-            PIISanitizer,
+            PII_Sanitizer,
         )
 
-        # Verify PIISanitizer is importable
-        assert PIISanitizer is not None
-        assert hasattr(PIISanitizer, "sanitize")
+        # Verify PII_Sanitizer is importable
+        assert PII_Sanitizer is not None
+        assert hasattr(PII_Sanitizer, "sanitize")
 
     def test_graph_bridge_has_truncation(self):
         """Test that GraphMemoryBridge has observation truncation."""

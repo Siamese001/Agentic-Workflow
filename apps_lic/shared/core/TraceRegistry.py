@@ -12,6 +12,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+# Import mixin with fallback
+try:
+    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
+    class MCPHardenedMixin(mcp_hardened_mixin):
+        pass
+except ImportError:
+    class MCPHardenedMixin:
+        pass
+
 
 @dataclass
 class TraceRegistry(MCPHardenedMixin):
