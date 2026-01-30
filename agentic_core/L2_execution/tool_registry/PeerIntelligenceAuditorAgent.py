@@ -2,13 +2,12 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
+# This boosts alignment detection — review and integrate appropriately
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 from dataclasses import dataclass
-
-# This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """Brief description of functionality and purpose."""
 
@@ -28,11 +27,11 @@ class PeerIntelligenceConfig:
         self.differentiator_threshold = 0.3
 
 
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L2_execution.tool_registry.IntegrityGateExecutorAgent import (
     IntegrityGateExecutorAgent,
 )
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.base_agents.timeout_decorator import timeout
 
 
 class PeerIntelligenceResult:
