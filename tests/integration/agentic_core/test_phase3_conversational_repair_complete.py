@@ -26,7 +26,7 @@ def test_phase3_complete_integration():
         return_value=mock_llm_response,
     ):
         # Test 1: Agent Discovery
-        from agentic_core.prompt_governance.agents.ConversationalRepairAgent import (
+        from agentic_core.L6_observability.ConversationalRepairAgent import (
             get_conversational_repair,
         )
 
@@ -88,7 +88,7 @@ def test_async_sync_bridge_isolation():
         new_callable=AsyncMock,
         return_value=mock_response,
     ):
-        from agentic_core.prompt_governance.agents.ConversationalRepairAgent import (
+        from agentic_core.L6_observability.ConversationalRepairAgent import (
             ConversationalRepairAgent,
         )
 

@@ -2166,7 +2166,7 @@ Examples:
         from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
         from agentic_core.L5_safety.validators.RootHygieneAgent import RootHygieneAgent
         from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
-        from agentic_core.prompt_governance.agents.ConversationalRepairAgent import (
+        from agentic_core.L6_observability.ConversationalRepairAgent import (
             ConversationalRepairAgent,
         )
         # Note: NamingAgent is a dependency for PascalSovereigntyAgent, checked during instantiation

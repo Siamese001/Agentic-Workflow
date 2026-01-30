@@ -26,7 +26,7 @@ from agentic_core.L0_maintenance.scripts.execute_ssot import (
 )
 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
-from agentic_core.prompt_governance.agents.ConversationalRepairAgent import (
+from agentic_core.L6_observability.ConversationalRepairAgent import (
     ConversationalRepairAgent,
 )
 

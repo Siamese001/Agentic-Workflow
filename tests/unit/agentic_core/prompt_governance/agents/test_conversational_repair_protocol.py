@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agentic_core.prompt_governance.agents.ConversationalRepairAgent import (
+from agentic_core.L6_observability.ConversationalRepairAgent import (
     ConversationalRepairAgent,
 )
 

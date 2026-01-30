@@ -23,7 +23,7 @@ def test_conversational_repair_in_ssot_registry():
         return_value=mock_llm_response,
     ):
         # Import after patching to ensure mock is applied
-        from agentic_core.prompt_governance.agents.ConversationalRepairAgent import (
+        from agentic_core.L6_observability.ConversationalRepairAgent import (
             get_conversational_repair,
         )
 
@@ -64,7 +64,7 @@ def test_conversational_repair_protocol_compliance():
         new_callable=AsyncMock,
         return_value=mock_llm_response,
     ):
-        from agentic_core.prompt_governance.agents.ConversationalRepairAgent import (
+        from agentic_core.L6_observability.ConversationalRepairAgent import (
             ConversationalRepairAgent,
         )
 
