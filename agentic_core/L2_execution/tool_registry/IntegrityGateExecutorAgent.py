@@ -625,6 +625,42 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
         finally:
             _call_path.discard(agent_name)
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by IntegrityGateExecutorAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: 'success', 'partial_success', 'failed', or 'skipped'
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Default implementation - IntegrityGateExecutorAgent validates integrity gates
+        try:
+            return {
+                "status": "skipped",
+                "details": f"IntegrityGateExecutorAgent heal() not yet implemented for {violation_type} - integrity violations require manual review",
+                "artifacts": [],
+                "errors": []
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"IntegrityGateExecutorAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
+
 
 def validate_research_output(
     research_output: DeepResearchOutput, min_depth_score: float = 0.7
