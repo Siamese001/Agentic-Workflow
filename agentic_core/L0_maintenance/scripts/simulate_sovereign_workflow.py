@@ -33,7 +33,7 @@ def run_simulation():
             Logger.warning(f"    WARNING: Core Integrity check failed (expected during dev): {e}")
 
         # 2. Boot RG Agent (The Creator)
-        Logger.info("[2] Booting Red Group Agent (CampaignPlanner)...")
+        Logger.info("[2] Booting Resume Generation Agent (CampaignPlanner)...")
         planner = CampaignPlannerAgent(
             campaign_id="SIM-2026-ALPHA", active_channels=["web", "social"]
         )
@@ -54,7 +54,8 @@ def run_simulation():
 
         # 5. Verify Telemetry
         # In a real system, we'd read the log file. Here we trust the object state.
-        assert result["has_bias"] is True  # "Guaranteed" is in prohibited terms
+        if result["has_bias"] is not True:
+            raise ValueError("Expected bias detection to return True")
         Logger.info("    PASS: Governance Logic Verified.")
 
         Logger.info(">>> SIMULATION SUCCESSFUL: SYSTEM CONVERGED <<<")
