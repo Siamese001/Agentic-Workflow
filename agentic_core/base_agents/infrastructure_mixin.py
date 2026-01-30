@@ -42,7 +42,7 @@ from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 Logger = logging.getLogger(__name__)
 
 
-class infrastructure_mixin(
+class InfrastructureMixin(
     PineconeVectorMixin,
     HealerMixin,
     MCPHardenedMixin,
@@ -178,5 +178,8 @@ class infrastructure_mixin(
 
 
 __all__ = [
-    "infrastructure_mixin",
+    "InfrastructureMixin",
 ]
+
+# Backward compatibility alias
+infrastructure_mixin = InfrastructureMixin

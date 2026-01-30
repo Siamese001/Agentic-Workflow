@@ -5,7 +5,7 @@ from collections.abc import Coroutine
 from typing import Any
 
 
-class batch_operation_mixin:
+class BatchOperationMixin:
     """
     Phase 2 observability Infrastructure: Batch Operations (Report 4.6).
 

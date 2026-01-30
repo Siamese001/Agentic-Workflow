@@ -18,9 +18,19 @@ Generated: 2025-12-07T13:28:54.137995
 """
 import logging
 import time
+from dataclasses import dataclass as dc_dataclass
 from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
+
+
+@dc_dataclass
+class ExecutionResult:
+    """Result of an execution action."""
+    SUCCESS: bool = False
+    OUTPUT: Any = None
+    ERROR: str | None = None
+    duration_ms: float = 0.0
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -38,7 +48,7 @@ class DispatchOutreachToolsAgent(SovereignBaseAgent):
             config: Optional configuration dictionary with timeout settings
         """
         self.CONFIG = config or {}
-        self.TIMEOUT = self.config.get("timeout", 30.0)
+        self.TIMEOUT = self.CONFIG.get("timeout", 30.0)
         Logger.info(f"Initialized {self.__class__.__name__}")
 
     def _run_self_tests(self) -> bool:
@@ -61,11 +71,11 @@ class DispatchOutreachToolsAgent(SovereignBaseAgent):
         try:
             OUTPUT: Any = self._perform_action(action, params)
             return ExecutionResult(
-                SUCCESS=True, OUTPUT=output, duration_ms=(time.time() - start) * 1000
+                SUCCESS=True, OUTPUT=OUTPUT, duration_ms=(time.time() - START) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return ExecutionResult(
-                SUCCESS=False, ERROR=str(e), duration_ms=(time.time() - start) * 1000
+                SUCCESS=False, ERROR=str(e), duration_ms=(time.time() - START) * 1000
             )
 
     def _perform_action(self, action: str, params: dict[str, object]) -> object:

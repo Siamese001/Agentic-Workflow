@@ -8,7 +8,17 @@ import math
 import re
 from typing import Any
 
-import torch
+# Lazy import torch to avoid import-time side effects
+torch = None
+
+
+def _get_torch():
+    """Lazy load torch to avoid import-time overhead."""
+    global torch
+    if torch is None:
+        import torch as _torch
+        torch = _torch
+    return torch
 
 
 class RagGuardrail:
@@ -20,11 +30,12 @@ class RagGuardrail:
         try:
             from FlagEmbedding import FlagReranker
 
+            _torch = _get_torch()
             device = (
                 "cuda"
-                if torch.cuda.is_available()
+                if _torch.cuda.is_available()
                 else "mps"
-                if torch.backends.mps.is_available()
+                if _torch.backends.mps.is_available()
                 else "cpu"
             )
             model_name = "BAAI/bge-reranker-v2-m3"

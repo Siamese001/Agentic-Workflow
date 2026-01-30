@@ -36,6 +36,10 @@ from agentic_core.base_agents.timeout_decorator import timeout
 Logger: Any = logging.getLogger("L4.PineconeStore")
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.L2_execution.mcp.SovereignPineconeMcpClientAgent import SovereignPineconeMcpClient
+
+# Alias for backward compatibility
+SovereignPineconeMCPClient = SovereignPineconeMcpClient
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30

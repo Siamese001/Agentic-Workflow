@@ -29,12 +29,12 @@ from agentic_core.schemas.models.AnomalyReport import AnomalyReport, AnomalySeve
 
 # Import instructional injection patterns for all agents
 try:
-    from agentic_core.base_agents.instructional_injection_mixin import (
-        instructional_injection_mixin,
+    from agentic_core.base_agents.InjectionLayer import (
+        InstructionalInjectionMixin,
     )
 except ImportError:
 
-    class instructional_injection_mixin:
+    class InstructionalInjectionMixin:
         """Stub for healing resilience."""
 
         pass
@@ -43,7 +43,7 @@ except ImportError:
 Logger = logging.getLogger(__name__)
 
 
-class SubatomicTestingMixin(instructional_injection_mixin):
+class SubatomicTestingMixin(InstructionalInjectionMixin):
     """
     Phase 1: Canonical self-testing mixin for L2 agents.
 

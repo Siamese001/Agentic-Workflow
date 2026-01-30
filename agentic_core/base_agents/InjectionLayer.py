@@ -269,7 +269,7 @@ INSTRUCTIONAL_PATTERNS: dict[int, InstructionalPattern] = {
 }
 
 
-class instructional_injection_mixin:
+class InstructionalInjectionMixin:
     """
     Mixin providing all 30 instructional injection patterns to worker agents.
 
@@ -432,7 +432,11 @@ class instructional_injection_mixin:
         }
 
 
+# Backward compatibility alias
+instructional_injection_mixin = InstructionalInjectionMixin
+
+
 # Convenience function for standalone use
-def get_instructional_injection_mixin() -> instructional_injection_mixin:
+def get_instructional_injection_mixin() -> InstructionalInjectionMixin:
     """Get an instance of the instructional injection mixin."""
-    return instructional_injection_mixin()
+    return InstructionalInjectionMixin()

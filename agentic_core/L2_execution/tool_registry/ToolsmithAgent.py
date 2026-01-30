@@ -11,12 +11,16 @@ ToolsmithAgent - L2 Tool Creation Agent
 
 """
 # [SSOT IMPORT] Structure blueprint is the single source of truth
+import json
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
+
+Logger = logging.getLogger(__name__)
 
 
 @dataclass
