@@ -14,8 +14,8 @@ This document breaks down the test migration into **6 phases**, each designed to
 
 ## Phase 1: LOW Risk Migration (1 file)
 
-**Estimated Time:** 5-10 minutes  
-**Risk Level:** LOW  
+**Estimated Time:** 5-10 minutes
+**Risk Level:** LOW
 **Files:** 1
 
 ### Files to Migrate
@@ -48,23 +48,23 @@ BASE_DIR = pathlib.Path(__file__).parent.parent.parent
 
 def execute_phase1():
     """Phase 1: LOW Risk Migration - 1 file"""
-    
+
     migrations = [
-        ("ops_scripts/maintenance/test_manifest_completion.py", 
+        ("ops_scripts/maintenance/test_manifest_completion.py",
          "tests/e2e/ops_scripts/maintenance/test_manifest_completion.py"),
     ]
-    
+
     for src_rel, dest_rel in migrations:
         src = BASE_DIR / src_rel
         dest = BASE_DIR / dest_rel
-        
+
         # Create destination directory
         dest.parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Move file
         shutil.move(str(src), str(dest))
         print(f"✅ Moved: {src_rel} → {dest_rel}")
-    
+
     return True
 
 if __name__ == "__main__":
@@ -93,17 +93,17 @@ import subprocess
 
 class TestPhase1Migration:
     """Verify Phase 1 migration completed successfully."""
-    
+
     def test_file_exists_at_destination(self):
         """Verify file was moved to correct location."""
         dest = pathlib.Path("tests/e2e/ops_scripts/maintenance/test_manifest_completion.py")
         assert dest.exists(), f"File not found at destination: {dest}"
-    
+
     def test_file_removed_from_source(self):
         """Verify file no longer exists at source."""
         src = pathlib.Path("ops_scripts/maintenance/test_manifest_completion.py")
         assert not src.exists(), f"File still exists at source: {src}"
-    
+
     def test_imports_work(self):
         """Verify imports still function after move."""
         result = subprocess.run(
@@ -111,12 +111,12 @@ class TestPhase1Migration:
             capture_output=True, text=True
         )
         assert result.returncode == 0, f"Import failed: {result.stderr}"
-    
+
     def test_pytest_discovers_file(self):
         """Verify pytest can discover and collect the test."""
         result = subprocess.run(
-            ["python", "-m", "pytest", 
-             "tests/e2e/ops_scripts/maintenance/test_manifest_completion.py", 
+            ["python", "-m", "pytest",
+             "tests/e2e/ops_scripts/maintenance/test_manifest_completion.py",
              "--collect-only"],
             capture_output=True, text=True
         )
@@ -134,16 +134,16 @@ BASE_DIR = pathlib.Path(__file__).parent.parent.parent
 
 def rollback_phase1():
     """Rollback Phase 1 migration."""
-    
+
     rollbacks = [
         ("tests/e2e/ops_scripts/maintenance/test_manifest_completion.py",
          "ops_scripts/maintenance/test_manifest_completion.py"),
     ]
-    
+
     for src_rel, dest_rel in rollbacks:
         src = BASE_DIR / src_rel
         dest = BASE_DIR / dest_rel
-        
+
         if src.exists():
             shutil.move(str(src), str(dest))
             print(f"🔄 Rolled back: {src_rel} → {dest_rel}")
@@ -166,8 +166,8 @@ if __name__ == "__main__":
 
 ## Phase 2: MEDIUM Risk Migration (5 files)
 
-**Estimated Time:** 15-20 minutes  
-**Risk Level:** MEDIUM  
+**Estimated Time:** 15-20 minutes
+**Risk Level:** MEDIUM
 **Files:** 5
 
 ### Files to Migrate
@@ -209,28 +209,28 @@ BASE_DIR = pathlib.Path(__file__).parent.parent.parent
 
 def execute_phase2():
     """Phase 2: MEDIUM Risk Migration - 5 files"""
-    
+
     migrations = [
-        ("ops_scripts/test_batch_performance_optimization.py", 
+        ("ops_scripts/test_batch_performance_optimization.py",
          "tests/e2e/ops_scripts/test_batch_performance_optimization.py"),
-        ("ops_scripts/test_location_agent_telemetry.py", 
+        ("ops_scripts/test_location_agent_telemetry.py",
          "tests/e2e/ops_scripts/test_location_agent_telemetry.py"),
-        ("ops_scripts/test_mission_script_integrity.py", 
+        ("ops_scripts/test_mission_script_integrity.py",
          "tests/e2e/ops_scripts/test_mission_script_integrity.py"),
-        ("ops_scripts/test_phase1_interface.py", 
+        ("ops_scripts/test_phase1_interface.py",
          "tests/e2e/ops_scripts/test_phase1_interface.py"),
-        ("ops_scripts/test_phase2_interface.py", 
+        ("ops_scripts/test_phase2_interface.py",
          "tests/e2e/ops_scripts/test_phase2_interface.py"),
     ]
-    
+
     for src_rel, dest_rel in migrations:
         src = BASE_DIR / src_rel
         dest = BASE_DIR / dest_rel
-        
+
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(src), str(dest))
         print(f"✅ Moved: {src_rel} → {dest_rel}")
-    
+
     return True
 
 if __name__ == "__main__":
@@ -268,19 +268,19 @@ PHASE2_FILES = [
 
 class TestPhase2Migration:
     """Verify Phase 2 migration completed successfully."""
-    
+
     @pytest.mark.parametrize("filename", PHASE2_FILES)
     def test_file_exists_at_destination(self, filename):
         """Verify each file was moved to correct location."""
         dest = pathlib.Path(f"tests/e2e/ops_scripts/{filename}")
         assert dest.exists(), f"File not found: {dest}"
-    
+
     @pytest.mark.parametrize("filename", PHASE2_FILES)
     def test_file_removed_from_source(self, filename):
         """Verify each file no longer exists at source."""
         src = pathlib.Path(f"ops_scripts/{filename}")
         assert not src.exists(), f"File still at source: {src}"
-    
+
     def test_pytest_discovers_all_files(self):
         """Verify pytest can discover all migrated tests."""
         result = subprocess.run(
@@ -288,7 +288,7 @@ class TestPhase2Migration:
             capture_output=True, text=True
         )
         assert result.returncode == 0, f"Collection failed: {result.stderr}"
-        
+
         # Verify each file appears in collection
         for filename in PHASE2_FILES:
             assert filename in result.stdout, f"{filename} not discovered"
@@ -306,8 +306,8 @@ class TestPhase2Migration:
 
 ## Phase 3: HIGH Risk Migration Batch 1 (10 files)
 
-**Estimated Time:** 25-30 minutes  
-**Risk Level:** HIGH  
+**Estimated Time:** 25-30 minutes
+**Risk Level:** HIGH
 **Files:** 10 (ops_scripts root - first batch)
 
 ### Files to Migrate
@@ -356,38 +356,38 @@ BASE_DIR = pathlib.Path(__file__).parent.parent.parent
 
 def execute_phase3():
     """Phase 3: HIGH Risk Migration Batch 1 - 10 files"""
-    
+
     migrations = [
-        ("ops_scripts/test_autonomous_decision_making.py", 
+        ("ops_scripts/test_autonomous_decision_making.py",
          "tests/e2e/ops_scripts/test_autonomous_decision_making.py"),
-        ("ops_scripts/test_autonomous_end_to_end.py", 
+        ("ops_scripts/test_autonomous_end_to_end.py",
          "tests/e2e/ops_scripts/test_autonomous_end_to_end.py"),
-        ("ops_scripts/test_complete_mission_workflow.py", 
+        ("ops_scripts/test_complete_mission_workflow.py",
          "tests/e2e/ops_scripts/test_complete_mission_workflow.py"),
-        ("ops_scripts/test_hop2_sovereign_strategist.py", 
+        ("ops_scripts/test_hop2_sovereign_strategist.py",
          "tests/e2e/ops_scripts/test_hop2_sovereign_strategist.py"),
-        ("ops_scripts/test_hop3_hop4_hop5_foundation.py", 
+        ("ops_scripts/test_hop3_hop4_hop5_foundation.py",
          "tests/e2e/ops_scripts/test_hop3_hop4_hop5_foundation.py"),
-        ("ops_scripts/test_hop6_hop7_crucible_governor.py", 
+        ("ops_scripts/test_hop6_hop7_crucible_governor.py",
          "tests/e2e/ops_scripts/test_hop6_hop7_crucible_governor.py"),
-        ("ops_scripts/test_hop8_hop9_persistence_handoff.py", 
+        ("ops_scripts/test_hop8_hop9_persistence_handoff.py",
          "tests/e2e/ops_scripts/test_hop8_hop9_persistence_handoff.py"),
-        ("ops_scripts/test_hop_orchestrator_master.py", 
+        ("ops_scripts/test_hop_orchestrator_master.py",
          "tests/e2e/ops_scripts/test_hop_orchestrator_master.py"),
-        ("ops_scripts/test_lic_rg_parity.py", 
+        ("ops_scripts/test_lic_rg_parity.py",
          "tests/e2e/ops_scripts/test_lic_rg_parity.py"),
-        ("ops_scripts/test_master_verification_simulation.py", 
+        ("ops_scripts/test_master_verification_simulation.py",
          "tests/e2e/ops_scripts/test_master_verification_simulation.py"),
     ]
-    
+
     for src_rel, dest_rel in migrations:
         src = BASE_DIR / src_rel
         dest = BASE_DIR / dest_rel
-        
+
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(src), str(dest))
         print(f"✅ Moved: {src_rel} → {dest_rel}")
-    
+
     return True
 
 if __name__ == "__main__":
@@ -435,19 +435,19 @@ PHASE3_FILES = [
 
 class TestPhase3Migration:
     """Verify Phase 3 HIGH risk migration completed successfully."""
-    
+
     @pytest.mark.parametrize("filename", PHASE3_FILES)
     def test_file_exists_at_destination(self, filename):
         """Verify each file was moved to correct location."""
         dest = pathlib.Path(f"tests/e2e/ops_scripts/{filename}")
         assert dest.exists(), f"File not found: {dest}"
-    
+
     @pytest.mark.parametrize("filename", PHASE3_FILES)
     def test_file_removed_from_source(self, filename):
         """Verify each file no longer exists at source."""
         src = pathlib.Path(f"ops_scripts/{filename}")
         assert not src.exists(), f"File still at source: {src}"
-    
+
     @pytest.mark.parametrize("filename", PHASE3_FILES)
     def test_file_is_valid_python(self, filename):
         """Verify each file is syntactically valid Python."""
@@ -457,11 +457,11 @@ class TestPhase3Migration:
             capture_output=True, text=True
         )
         assert result.returncode == 0, f"Syntax error in {filename}: {result.stderr}"
-    
+
     def test_no_import_errors_on_collection(self):
         """Verify pytest can collect without import errors."""
         result = subprocess.run(
-            ["python", "-m", "pytest", "tests/e2e/ops_scripts/", 
+            ["python", "-m", "pytest", "tests/e2e/ops_scripts/",
              "--collect-only", "-q", "--ignore-glob=*verification*"],
             capture_output=True, text=True
         )
@@ -481,8 +481,8 @@ class TestPhase3Migration:
 
 ## Phase 4: HIGH Risk Migration Batch 2 (4 files)
 
-**Estimated Time:** 15-20 minutes  
-**Risk Level:** HIGH  
+**Estimated Time:** 15-20 minutes
+**Risk Level:** HIGH
 **Files:** 4 (ops_scripts/maintenance)
 
 ### Files to Migrate
@@ -506,24 +506,24 @@ BASE_DIR = pathlib.Path(__file__).parent.parent.parent
 
 def execute_phase4():
     """Phase 4: HIGH Risk Migration Batch 2 - 3 files (maintenance)"""
-    
+
     migrations = [
-        ("ops_scripts/maintenance/test_canon_key_removal.py", 
+        ("ops_scripts/maintenance/test_canon_key_removal.py",
          "tests/e2e/ops_scripts/maintenance/test_canon_key_removal.py"),
-        ("ops_scripts/maintenance/test_cognitive_subset.py", 
+        ("ops_scripts/maintenance/test_cognitive_subset.py",
          "tests/e2e/ops_scripts/maintenance/test_cognitive_subset.py"),
-        ("ops_scripts/maintenance/test_mro_refactor.py", 
+        ("ops_scripts/maintenance/test_mro_refactor.py",
          "tests/e2e/ops_scripts/maintenance/test_mro_refactor.py"),
     ]
-    
+
     for src_rel, dest_rel in migrations:
         src = BASE_DIR / src_rel
         dest = BASE_DIR / dest_rel
-        
+
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(src), str(dest))
         print(f"✅ Moved: {src_rel} → {dest_rel}")
-    
+
     return True
 
 if __name__ == "__main__":
@@ -558,12 +558,12 @@ PHASE4_FILES = [
 
 class TestPhase4Migration:
     """Verify Phase 4 migration completed successfully."""
-    
+
     @pytest.mark.parametrize("filename", PHASE4_FILES)
     def test_file_exists_at_destination(self, filename):
         dest = pathlib.Path(f"tests/e2e/ops_scripts/maintenance/{filename}")
         assert dest.exists(), f"File not found: {dest}"
-    
+
     @pytest.mark.parametrize("filename", PHASE4_FILES)
     def test_file_removed_from_source(self, filename):
         src = pathlib.Path(f"ops_scripts/maintenance/{filename}")
@@ -581,8 +581,8 @@ class TestPhase4Migration:
 
 ## Phase 5: HIGH Risk Migration Batch 3 (7 files)
 
-**Estimated Time:** 20-25 minutes  
-**Risk Level:** HIGH  
+**Estimated Time:** 20-25 minutes
+**Risk Level:** HIGH
 **Files:** 7 (remaining ops_scripts + agentic_core)
 
 ### Files to Migrate
@@ -609,35 +609,35 @@ BASE_DIR = pathlib.Path(__file__).parent.parent.parent
 
 def execute_phase5():
     """Phase 5: HIGH Risk Migration Batch 3 - 8 files"""
-    
+
     migrations = [
-        ("ops_scripts/test_mission_dry_run.py", 
+        ("ops_scripts/test_mission_dry_run.py",
          "tests/e2e/ops_scripts/test_mission_dry_run.py"),
-        ("ops_scripts/test_mission_telemetry_dashboard.py", 
+        ("ops_scripts/test_mission_telemetry_dashboard.py",
          "tests/e2e/ops_scripts/test_mission_telemetry_dashboard.py"),
-        ("ops_scripts/test_phase1_config.py", 
+        ("ops_scripts/test_phase1_config.py",
          "tests/e2e/ops_scripts/test_phase1_config.py"),
-        ("ops_scripts/test_phase2_core.py", 
+        ("ops_scripts/test_phase2_core.py",
          "tests/e2e/ops_scripts/test_phase2_core.py"),
-        ("ops_scripts/test_phase3_base.py", 
+        ("ops_scripts/test_phase3_base.py",
          "tests/e2e/ops_scripts/test_phase3_base.py"),
-        ("ops_scripts/test_phase4_orchestrator.py", 
+        ("ops_scripts/test_phase4_orchestrator.py",
          "tests/e2e/ops_scripts/test_phase4_orchestrator.py"),
         # agentic_core files (note: filename standardization)
-        ("agentic_core/L0_maintenance/scripts/direct_hierarchy_boundary_test.py", 
+        ("agentic_core/L0_maintenance/scripts/direct_hierarchy_boundary_test.py",
          "tests/e2e/agentic_core/L0_maintenance/scripts/test_direct_hierarchy_boundary.py"),
-        ("agentic_core/L0_maintenance/scripts/run_code_dedup_full_test.py", 
+        ("agentic_core/L0_maintenance/scripts/run_code_dedup_full_test.py",
          "tests/e2e/agentic_core/L0_maintenance/scripts/test_run_code_dedup_full.py"),
     ]
-    
+
     for src_rel, dest_rel in migrations:
         src = BASE_DIR / src_rel
         dest = BASE_DIR / dest_rel
-        
+
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(src), str(dest))
         print(f"✅ Moved: {src_rel} → {dest_rel}")
-    
+
     return True
 
 if __name__ == "__main__":
@@ -688,12 +688,12 @@ AGENTIC_CORE_FILES = [
 
 class TestPhase5Migration:
     """Verify Phase 5 migration completed successfully."""
-    
+
     @pytest.mark.parametrize("filename", OPS_SCRIPTS_FILES)
     def test_ops_scripts_at_destination(self, filename):
         dest = pathlib.Path(f"tests/e2e/ops_scripts/{filename}")
         assert dest.exists(), f"File not found: {dest}"
-    
+
     @pytest.mark.parametrize("src,dest", AGENTIC_CORE_FILES)
     def test_agentic_core_migrated(self, src, dest):
         src_path = pathlib.Path(src)
@@ -713,8 +713,8 @@ class TestPhase5Migration:
 
 ## Phase 6: Final Validation and Cleanup
 
-**Estimated Time:** 10-15 minutes  
-**Risk Level:** LOW  
+**Estimated Time:** 10-15 minutes
+**Risk Level:** LOW
 **Purpose:** Verify complete migration and clean up
 
 ### Validation Checklist
@@ -744,13 +744,13 @@ import subprocess
 
 def verify_migration():
     """Verify all test files have been migrated."""
-    
+
     base = pathlib.Path.cwd()
-    
+
     # Check source locations are clean
     source_dirs = ["ops_scripts", "agentic_core", "apps_rg", "apps_lic", "apps_shared"]
     remaining_tests = []
-    
+
     for src_dir in source_dirs:
         src_path = base / src_dir
         if src_path.exists():
@@ -760,32 +760,32 @@ def verify_migration():
             for test_file in src_path.rglob("*_test.py"):
                 if "tests" not in test_file.parts:
                     remaining_tests.append(test_file)
-    
+
     if remaining_tests:
         print("❌ MIGRATION INCOMPLETE - Remaining test files:")
         for f in remaining_tests:
             print(f"   - {f.relative_to(base)}")
         return False
-    
+
     # Verify destination structure
     expected_count = 27  # Total files to migrate
     dest_path = base / "tests" / "e2e"
     actual_count = len(list(dest_path.rglob("test_*.py")))
-    
+
     print(f"✅ Source directories clean")
     print(f"✅ Migrated files: {actual_count}")
-    
+
     # Run pytest collection
     result = subprocess.run(
         ["python", "-m", "pytest", "tests/", "--collect-only", "-q"],
         capture_output=True, text=True
     )
-    
+
     if result.returncode == 0:
         print("✅ Pytest collection successful")
     else:
         print(f"⚠️ Pytest collection issues: {result.stderr[:200]}")
-    
+
     return True
 
 if __name__ == "__main__":

@@ -38,7 +38,7 @@ Two structural violations occurred during Phase 1 test migration implementation:
 
 #### **Correct Location (per SSOT)**
 - **Should be**: `tests/utils/test_migration_guardian.py` or `tests/tools/test_migration_guardian.py`
-- **Rationale**: 
+- **Rationale**:
   - Primary purpose is test discovery and analysis
   - Used during testing workflows
   - Contains "test" in filename indicating test-related functionality
@@ -101,7 +101,7 @@ def validate_file_placement(filepath):
     territory = get_territory_from_path(filepath)
     if territory not in SOVEREIGN_TERRITORIES:
         raise ValidationError(f"Non-SSOT territory: {territory}")
-    
+
     if "test" in filepath.name and not filepath.startswith("tests/"):
         raise ValidationError("Test files must be in tests/ hierarchy")
 ```

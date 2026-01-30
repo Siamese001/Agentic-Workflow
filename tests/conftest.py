@@ -32,37 +32,36 @@ if str(PROJECT_ROOT) not in sys.path:
 # MARKER REGISTRATION
 # =============================================================================
 
+
 def pytest_configure(config):
     """
     Register custom pytest markers for the Guardian Layer.
-    
+
     This prevents warnings about unknown markers when running tests.
     """
     config.addinivalue_line(
         "markers",
-        "guardian: marks tests as part of the Guardian Layer (Zero-Trust architecture validation)"
+        "guardian: marks tests as part of the Guardian Layer (Zero-Trust architecture validation)",
     )
     config.addinivalue_line(
         "markers",
-        "constitutional: marks tests that enforce constitutional rules (cannot be overridden)"
+        "constitutional: marks tests that enforce constitutional rules (cannot be overridden)",
     )
     config.addinivalue_line(
-        "markers",
-        "ssot: marks tests that validate Single Source of Truth compliance"
+        "markers", "ssot: marks tests that validate Single Source of Truth compliance"
     )
     config.addinivalue_line(
-        "markers",
-        "mro: marks tests that validate Method Resolution Order integrity"
+        "markers", "mro: marks tests that validate Method Resolution Order integrity"
     )
     config.addinivalue_line(
-        "markers",
-        "import_safety: marks tests that validate import safety and dependencies"
+        "markers", "import_safety: marks tests that validate import safety and dependencies"
     )
 
 
 # =============================================================================
 # SHARED FIXTURES
 # =============================================================================
+
 
 @pytest.fixture(scope="session")
 def project_root() -> Path:
@@ -74,7 +73,7 @@ def project_root() -> Path:
 def guardian_config() -> dict:
     """
     Return configuration for Guardian tests.
-    
+
     This includes thresholds for technical debt tracking.
     """
     return {
@@ -92,9 +91,18 @@ def guardian_config() -> dict:
         },
         # Excluded directories for scanning
         "excluded_dirs": {
-            "__pycache__", ".git", ".venv", "venv", "archives",
-            ".sovereign_healing_backup", ".backup", "node_modules",
-            ".mypy_cache", ".ruff_cache", "temp_quiet_test", "temp_verbose_test",
+            "__pycache__",
+            ".git",
+            ".venv",
+            "venv",
+            "archives",
+            ".sovereign_healing_backup",
+            ".backup",
+            "node_modules",
+            ".mypy_cache",
+            ".ruff_cache",
+            "temp_quiet_test",
+            "temp_verbose_test",
         },
         # Source directories to scan
         "source_dirs": [
@@ -111,15 +119,16 @@ def guardian_config() -> dict:
 # HOOKS FOR GUARDIAN REPORTING
 # =============================================================================
 
+
 def pytest_collection_modifyitems(config, items):
     """
     Modify test collection to add guardian marker info.
-    
+
     This hook runs after test collection and can be used to
     add additional markers or skip tests based on configuration.
     """
     guardian_tests = [item for item in items if "guardian" in item.nodeid]
-    
+
     if guardian_tests:
         # Log guardian test count for reporting
         config._guardian_test_count = len(guardian_tests)
@@ -128,29 +137,29 @@ def pytest_collection_modifyitems(config, items):
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
     """
     Add Guardian summary to pytest terminal output.
-    
+
     This hook runs after all tests complete and provides
     a summary of Guardian test results.
     """
     # Check if we ran any guardian tests
     guardian_count = getattr(config, "_guardian_test_count", 0)
-    
+
     if guardian_count == 0:
         return  # No guardian tests were run
-    
+
     # Get test statistics
     stats = terminalreporter.stats
     passed = len(stats.get("passed", []))
     failed = len(stats.get("failed", []))
     errors = len(stats.get("error", []))
-    
+
     # Print Guardian summary
     terminalreporter.write_sep("=", "GUARDIAN LAYER SUMMARY")
     terminalreporter.write_line(f"Guardian tests run: {guardian_count}")
     terminalreporter.write_line(f"Passed: {passed}")
     terminalreporter.write_line(f"Failed: {failed}")
     terminalreporter.write_line(f"Errors: {errors}")
-    
+
     if exitstatus == 0:
         terminalreporter.write_line("")
         terminalreporter.write_line("✅ GUARDIAN STATUS: PASS")
@@ -159,5 +168,5 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         terminalreporter.write_line("")
         terminalreporter.write_line("❌ GUARDIAN STATUS: FAIL")
         terminalreporter.write_line("Architectural violations detected. Review failed tests.")
-    
+
     terminalreporter.write_sep("=", "")

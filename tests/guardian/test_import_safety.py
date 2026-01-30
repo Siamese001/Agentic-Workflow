@@ -1141,32 +1141,33 @@ if __name__ == "__main__":
 # PHASE 2: GRAVITY AND WATERFALL COMPLIANCE
 # =============================================================================
 
+
 class TestGravityCompliance:
     """
     Phase 2: Gravity and Waterfall Compliance Tests
-    
+
     Enforces unidirectional dependencies and prevents core contamination.
     The Sovereign Core must never depend on downstream apps.
     """
-    
+
     # Define gravity layers ordered by authority (lower index = lower layer)
     GRAVITY_LAYERS = [
-        'L0_maintenance',
-        'utils', 
-        'runtime',
-        'L1_cognition',
-        'L2_execution',
-        'L3_orchestration',
-        'L4_state',
-        'L5_safety',
+        "L0_maintenance",
+        "utils",
+        "runtime",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
     ]
-    
+
     # Directories to scan for gravity violations
     CORE_DIRECTORIES = ["agentic_core"]
-    
+
     # Downstream apps that core must not import from
     FORBIDDEN_APP_IMPORTS = ["apps_rg", "apps_lic", "apps_shared"]
-    
+
     def _get_all_python_files(self, directories: list[str]) -> list[Path]:
         """Get all Python files from specified directories"""
         python_files = []
@@ -1175,115 +1176,134 @@ class TestGravityCompliance:
             if dir_path.exists():
                 for py_file in dir_path.rglob("*.py"):
                     # Skip excluded directories
-                    if any(excluded in str(py_file) for excluded in {
-                        "__pycache__", ".git", ".venv", "venv", "archives",
-                        ".sovereign_healing_backup", ".backup", "node_modules",
-                        ".mypy_cache", ".ruff_cache", "temp_quiet_test",
-                        "temp_verbose_test"
-                    }):
+                    if any(
+                        excluded in str(py_file)
+                        for excluded in {
+                            "__pycache__",
+                            ".git",
+                            ".venv",
+                            "venv",
+                            "archives",
+                            ".sovereign_healing_backup",
+                            ".backup",
+                            "node_modules",
+                            ".mypy_cache",
+                            ".ruff_cache",
+                            "temp_quiet_test",
+                            "temp_verbose_test",
+                        }
+                    ):
                         continue
                     python_files.append(py_file)
         return python_files
-    
+
     def test_import_waterfall_violations(self):
         """
         Test 1: [WATERFALL] Core must not import from downstream apps.
-        
+
         Scan agentic_core/ and fail if ANY file imports from apps_rg, apps_lic, or apps_shared.
         The Sovereign Core must never depend on downstream apps.
         """
         print("\n=== GRAVITY COMPLIANCE: Import Waterfall Violations ===")
-        
+
         violations = []
-        
+
         # Get all Python files in agentic_core
         core_files = self._get_all_python_files(self.CORE_DIRECTORIES)
-        
+
         for py_file in core_files:
             try:
                 content = py_file.read_text(encoding="utf-8")
                 tree = ast.parse(content)
-                
+
                 for node in ast.walk(tree):
                     # Check direct imports
                     if isinstance(node, ast.Import):
                         for alias in node.names:
-                            if any(alias.name.startswith(app) for app in self.FORBIDDEN_APP_IMPORTS):
-                                violations.append({
-                                    "file": str(py_file.relative_to(PROJECT_ROOT)),
-                                    "line": node.lineno,
-                                    "violation": f"import {alias.name}",
-                                    "type": "direct_import"
-                                })
-                    
+                            if any(
+                                alias.name.startswith(app) for app in self.FORBIDDEN_APP_IMPORTS
+                            ):
+                                violations.append(
+                                    {
+                                        "file": str(py_file.relative_to(PROJECT_ROOT)),
+                                        "line": node.lineno,
+                                        "violation": f"import {alias.name}",
+                                        "type": "direct_import",
+                                    }
+                                )
+
                     # Check from imports
                     elif isinstance(node, ast.ImportFrom):
-                        if node.module and any(node.module.startswith(app) for app in self.FORBIDDEN_APP_IMPORTS):
-                            violations.append({
-                                "file": str(py_file.relative_to(PROJECT_ROOT)),
-                                "line": node.lineno,
-                                "violation": f"from {node.module} import ...",
-                                "type": "from_import"
-                            })
-                            
+                        if node.module and any(
+                            node.module.startswith(app) for app in self.FORBIDDEN_APP_IMPORTS
+                        ):
+                            violations.append(
+                                {
+                                    "file": str(py_file.relative_to(PROJECT_ROOT)),
+                                    "line": node.lineno,
+                                    "violation": f"from {node.module} import ...",
+                                    "type": "from_import",
+                                }
+                            )
+
             except SyntaxError:
                 continue
             except Exception:
                 continue
-        
+
         # Report violations
         if violations:
             error_msg = f"IMPORT WATERFALL VIOLATIONS ({len(violations)}):\n"
             error_msg += "CORE CONTAMINATION DETECTED - agentic_core must NOT import from downstream apps:\n\n"
-            
+
             for v in violations[:15]:
                 error_msg += f"  [!!!] {v['file']}:{v['line']}\n"
                 error_msg += f"        {v['violation']}\n"
                 error_msg += f"        Type: {v['type']}\n\n"
-                
+
             if len(violations) > 15:
                 error_msg += f"  ... and {len(violations) - 15} more violations\n"
-                
+
             pytest.fail(error_msg)
-        
+
         print(f"[OK] No waterfall violations detected ({len(core_files)} core files checked)")
-    
+
     def test_internal_gravity_leaks(self):
         """
         Test 2: [GRAVITY] Enforce unidirectional dependencies within core.
-        
+
         Fail if a Lower Index layer imports from a Higher Index layer.
         Gravity flows downward: higher layers can depend on lower layers, not vice versa.
         """
         print("\n=== GRAVITY COMPLIANCE: Internal Gravity Leaks ===")
-        
+
         violations = []
-        
+
         # Create layer index mapping for quick lookup
         layer_index = {layer: idx for idx, layer in enumerate(self.GRAVITY_LAYERS)}
-        
+
         # Get all Python files in agentic_core
         core_files = self._get_all_python_files(self.CORE_DIRECTORIES)
-        
+
         for py_file in core_files:
             # Determine which layer this file belongs to
             file_parts = py_file.relative_to(PROJECT_ROOT).parts
             if len(file_parts) < 2 or file_parts[0] != "agentic_core":
                 continue
-                
+
             source_layer = file_parts[1]
             if source_layer not in layer_index:
                 continue  # Skip files not in gravity layers (e.g., base_agents, config)
-                
+
             source_level = layer_index[source_layer]
-            
+
             try:
                 content = py_file.read_text(encoding="utf-8")
                 tree = ast.parse(content)
-                
+
                 for node in ast.walk(tree):
                     import_module = None
-                    
+
                     if isinstance(node, ast.Import):
                         for alias in node.names:
                             if alias.name.startswith("agentic_core."):
@@ -1291,7 +1311,7 @@ class TestGravityCompliance:
                     elif isinstance(node, ast.ImportFrom):
                         if node.module and node.module.startswith("agentic_core."):
                             import_module = node.module
-                    
+
                     if import_module:
                         # Extract the target layer
                         parts = import_module.split(".")
@@ -1299,34 +1319,38 @@ class TestGravityCompliance:
                             target_layer = parts[1]
                             if target_layer in layer_index:
                                 target_level = layer_index[target_layer]
-                                
+
                                 # Check for gravity violation: lower importing higher
                                 if source_level < target_level:
-                                    violations.append({
-                                        "file": str(py_file.relative_to(PROJECT_ROOT)),
-                                        "line": node.lineno,
-                                        "violation": f"{source_layer}(L{source_level}) -> {target_layer}(L{target_level})",
-                                        "import": import_module
-                                    })
-                                    
+                                    violations.append(
+                                        {
+                                            "file": str(py_file.relative_to(PROJECT_ROOT)),
+                                            "line": node.lineno,
+                                            "violation": f"{source_layer}(L{source_level}) -> {target_layer}(L{target_level})",
+                                            "import": import_module,
+                                        }
+                                    )
+
             except SyntaxError:
                 continue
             except Exception:
                 continue
-        
+
         # Report violations
         if violations:
             error_msg = f"INTERNAL GRAVITY LEAKS ({len(violations)}):\n"
-            error_msg += "UNIDIRECTIONAL DEPENDENCY VIOLATIONS - Lower layers importing higher layers:\n\n"
-            
+            error_msg += (
+                "UNIDIRECTIONAL DEPENDENCY VIOLATIONS - Lower layers importing higher layers:\n\n"
+            )
+
             # Group by violation type for clearer reporting
             by_type = {}
             for v in violations:
-                key = v['violation']
+                key = v["violation"]
                 if key not in by_type:
                     by_type[key] = []
                 by_type[key].append(v)
-            
+
             for violation_type, items in list(by_type.items())[:10]:
                 error_msg += f"  [GRAVITY LEAK] {violation_type}:\n"
                 for item in items[:3]:
@@ -1334,10 +1358,10 @@ class TestGravityCompliance:
                 if len(items) > 3:
                     error_msg += f"    ... and {len(items) - 3} more files\n"
                 error_msg += "\n"
-                
+
             if len(by_type) > 10:
                 error_msg += f"  ... and {len(by_type) - 10} more violation types\n"
-                
+
             pytest.fail(error_msg)
-        
+
         print(f"[OK] No gravity leaks detected ({len(core_files)} core files checked)")

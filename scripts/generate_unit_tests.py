@@ -6,14 +6,13 @@ following the established template pattern.
 """
 
 import json
-import os
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 
-def load_agents() -> List[Dict[str, Any]]:
+def load_agents() -> list[dict[str, Any]]:
     """Load agent discovery data."""
-    with open("agent_discovery_full.json", "r") as f:
+    with open("agent_discovery_full.json") as f:
         return json.load(f)
 
 
@@ -21,17 +20,17 @@ def get_test_path(agent_path: str) -> Path:
     """Convert agent path to test path."""
     # Convert backslashes to forward slashes
     agent_path = agent_path.replace("\\", "/")
-    
+
     # Get the directory and filename
     parts = agent_path.split("/")
     filename = parts[-1]
     dir_parts = parts[:-1]
-    
+
     # Convert filename to test filename
     # e.g., ATSCompatibilityAgent.py -> test_ats_compatibility_agent.py
     class_name = filename.replace(".py", "")
     test_filename = "test_" + to_snake_case(class_name) + ".py"
-    
+
     # Build test path
     test_path = Path("tests/unit") / "/".join(dir_parts) / test_filename
     return test_path
@@ -47,7 +46,7 @@ def to_snake_case(name: str) -> str:
     return "".join(result)
 
 
-def generate_test_content(agent: Dict[str, Any]) -> str:
+def generate_test_content(agent: dict[str, Any]) -> str:
     """Generate test file content for an agent."""
     class_name = agent["class_name"]
     agent_path = agent["path"].replace("\\", "/")
@@ -59,7 +58,7 @@ def generate_test_content(agent: Dict[str, Any]) -> str:
     has_tools = agent.get("has_tools", False)
     inheritance = agent.get("inheritance", [])
     description = agent.get("description", "")[:100] if agent.get("description") else ""
-    
+
     # Build method tests
     method_tests = ""
     for method in key_methods[:5]:  # Limit to first 5 methods
@@ -129,7 +128,7 @@ def mock_external_services():
 
 class Test{class_name}:
     """Unit tests for {class_name}."""
-    
+
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
@@ -138,7 +137,7 @@ class Test{class_name}:
             return {class_name}
         except ImportError as e:
             pytest.skip(f"Cannot import {class_name}: {{e}}")
-    
+
     def test_class_exists(self, agent_class):
         """Verify {class_name} exists and is importable."""
         assert agent_class is not None, "{class_name} should exist"
@@ -151,21 +150,21 @@ class Test{class_name}:
                 pass  # Would test actual processing
             except (TypeError, ValueError, AttributeError):
                 pass  # Expected for invalid inputs
-    
+
     def test_no_network_calls_on_import(self):
         """Verify no network calls during import."""
         network_calls = []
-        
+
         def track_call(*args, **kwargs):
             network_calls.append((args, kwargs))
-        
+
         with patch('requests.get', track_call), \\
              patch('requests.post', track_call):
             try:
                 from {module_path} import {class_name}
             except (ImportError, NameError, AttributeError):
                 pass  # Import may fail due to missing dependencies
-            
+
             assert len(network_calls) == 0, "No network calls on import"
 
 
@@ -178,27 +177,27 @@ if __name__ == "__main__":
 def main():
     """Generate unit tests for all agents."""
     agents = load_agents()
-    
+
     created = 0
     skipped = 0
-    
+
     for agent in agents:
         test_path = get_test_path(agent["path"])
-        
+
         # Skip if test already exists
         if test_path.exists():
             skipped += 1
             continue
-        
+
         # Create directory if needed
         test_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Generate and write test content
         content = generate_test_content(agent)
         test_path.write_text(content)
         created += 1
         print(f"Created: {test_path}")
-    
+
     print(f"\nSummary: Created {created} tests, Skipped {skipped} existing tests")
     print(f"Total agents: {len(agents)}")
 

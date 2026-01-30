@@ -2,147 +2,154 @@
 """
 Simple demonstration of Test Migration Guardian functionality
 """
+
 import pathlib
-import tempfile
 import shutil
 import sys
-import os
+import tempfile
 
 # Add the project root to import the guardian
 project_root = pathlib.Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root / "scripts" / "maintenance"))
 
+
 def test_basic_functionality():
     """Test the basic migration logic with a simple example."""
     print("🧪 Testing Test Migration Guardian - Basic Functionality")
     print("=" * 60)
-    
+
     # Create temporary test structure
     test_dir = pathlib.Path(tempfile.mkdtemp())
     print(f"📁 Created test directory: {test_dir}")
-    
+
     try:
         # Create test structure
         (test_dir / "apps_rg" / "engines").mkdir(parents=True)
         (test_dir / "apps_lic" / "tools").mkdir(parents=True)
         (test_dir / "agentic_core" / "L5_safety" / "validators").mkdir(parents=True)
-        
+
         # Create test files
         test_files = {
             "apps_rg/engines/resume_engine_test.py": "def test_resume(): pass",
-            "apps_lic/tools/validation_test.py": "def test_validation(): pass", 
+            "apps_lic/tools/validation_test.py": "def test_validation(): pass",
             "agentic_core/L5_safety/validators/test_location.py": "def test_location(): pass",
             "normal_file.py": "not a test file",
-            "tests/unit/already_in_tests.py": "already correct location"
+            "tests/unit/already_in_tests.py": "already correct location",
         }
-        
+
         for file_path, content in test_files.items():
             full_path = test_dir / file_path
             full_path.parent.mkdir(parents=True, exist_ok=True)
             full_path.write_text(content)
-        
+
         # Import and test the guardian
         from test_migration_guardian import TestMigrationGuardian
-        
+
         guardian = TestMigrationGuardian(dry_run=True)
         guardian.base_dir = test_dir
-        
-        print(f"\n📋 Test 1: File Discovery")
+
+        print("\n📋 Test 1: File Discovery")
         discovered_files = guardian.identify_test_files()
         print(f"   ✅ Found {len(discovered_files)} test files")
-        
+
         for f in discovered_files:
             print(f"   - {f.relative_to(test_dir)}")
-        
-        print(f"\n📋 Test 2: Path Mirroring")
+
+        print("\n📋 Test 2: Path Mirroring")
         for src in discovered_files:
             dest = guardian.calculate_mirrored_path(src)
             print(f"   ✅ {src.relative_to(test_dir)} → {dest.relative_to(test_dir)}")
-        
-        print(f"\n📋 Test 3: Filename Standardization")
+
+        print("\n📋 Test 3: Filename Standardization")
         test_cases = ["logic_test.py", "test_worker.py", "validator.py"]
         for case in test_cases:
             result = guardian.standardize_test_filename(case)
             print(f"   ✅ {case} → {result}")
-        
-        print(f"\n📋 Test 4: Test Type Detection")
+
+        print("\n📋 Test 4: Test Type Detection")
         for src in discovered_files:
             test_type = guardian.determine_test_type(src)
             print(f"   ✅ {src.name} → {test_type}")
-        
-        print(f"\n📋 Test 5: Risk Assessment")
+
+        print("\n📋 Test 5: Risk Assessment")
         for src in discovered_files:
-            import_changes = guardian.analyze_import_changes(src, guardian.calculate_mirrored_path(src))
+            import_changes = guardian.analyze_import_changes(
+                src, guardian.calculate_mirrored_path(src)
+            )
             risk_level = guardian.assess_risk_level(src, import_changes)
             print(f"   ✅ {src.name} → {risk_level} risk")
-        
-        print(f"\n📋 Test 6: Dry Run Report")
+
+        print("\n📋 Test 6: Dry Run Report")
         report = guardian.generate_dry_run_report()
         print(f"   ✅ Generated report with {report['total_files']} files")
-        print(f"   ✅ Risk distribution: {report['high_risk']} high, {report['medium_risk']} medium, {report['low_risk']} low")
-        
-        print(f"\n🎯 ALL BASIC TESTS PASSED!")
+        print(
+            f"   ✅ Risk distribution: {report['high_risk']} high, {report['medium_risk']} medium, {report['low_risk']} low"
+        )
+
+        print("\n🎯 ALL BASIC TESTS PASSED!")
         return True
-        
+
     except Exception as e:
         print(f"❌ Test failed: {e}")
         return False
-        
+
     finally:
         # Cleanup
         if test_dir.exists():
             shutil.rmtree(test_dir)
-            print(f"🧹 Cleaned up test directory")
+            print("🧹 Cleaned up test directory")
+
 
 def test_actual_repository():
     """Test on the actual repository structure."""
-    print(f"\n🏗️ Testing on Actual Repository Structure")
+    print("\n🏗️ Testing on Actual Repository Structure")
     print("=" * 60)
-    
+
     try:
         from test_migration_guardian import TestMigrationGuardian
-        
+
         guardian = TestMigrationGuardian(dry_run=True)
-        
+
         print(f"📁 Base directory: {guardian.base_dir}")
-        
+
         # Test SSOT folder detection
         approved_folders = guardian.get_ssot_approved_folders()
         print(f"✅ SSOT-approved folders: {len(approved_folders)}")
         for folder in approved_folders:
             print(f"   - {folder}")
-        
+
         # Test actual file discovery
         test_files = guardian.identify_test_files()
         print(f"\n✅ Found {len(test_files)} misplaced test files")
-        
+
         if test_files:
-            print(f"Sample discoveries:")
+            print("Sample discoveries:")
             for i, f in enumerate(test_files[:5]):  # Show first 5
-                print(f"   {i+1}. {f.relative_to(guardian.base_dir)}")
-        
+                print(f"   {i + 1}. {f.relative_to(guardian.base_dir)}")
+
         return True
-        
+
     except Exception as e:
         print(f"❌ Repository test failed: {e}")
         return False
+
 
 def main():
     """Main execution."""
     print("Test Migration Guardian - Validation Suite")
     print("=" * 60)
-    
+
     success = True
-    
+
     # Test basic functionality
     if not test_basic_functionality():
         success = False
-    
+
     # Test on actual repository
     if not test_actual_repository():
         success = False
-    
-    print(f"\n{'='*60}")
+
+    print(f"\n{'=' * 60}")
     if success:
         print("🎉 ALL VALIDATIONS PASSED!")
         print("✅ Test Migration Guardian is working correctly")
@@ -150,8 +157,9 @@ def main():
     else:
         print("❌ Some validations failed")
         print("🔧 Review the errors above")
-    
+
     return 0 if success else 1
+
 
 if __name__ == "__main__":
     exit(main())
