@@ -1,29 +1,30 @@
 from __future__ import annotations
 
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: memory, orchestrator, prompt, workflow
-
-from dataclasses import dataclass
-import textwrap
 import importlib
 import inspect
 import json
+import textwrap
+
+# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+# File appears to be a sovereign component but missing canon high-signal keywords.
+# Suggested keywords to add in docstring/code: memory, orchestrator, prompt, workflow
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.utils.security import safe_execute
+
+from agentic_core.base_agents.decorators import standard_heal
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.security import safe_execute
-from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
-
 
 #!/usr/bin/env python3
 """
@@ -506,9 +507,21 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
         agent_name = "TestCoverageGuardianAgent"
         if agent_name in _call_path:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 1,
+                "skipped": 0,
+                "cycle_detected": True,
+            }
         if depth > max_depth:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 0,
+                "skipped": 1,
+                "depth_limited": True,
+            }
         _call_path.add(agent_name)
 
         violations_found = 0
@@ -580,7 +593,11 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                             test_file = test_subdir / f"test_{py_file.stem}.py"
 
                             if not test_file.exists():
-                                module_path = str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
+                                module_path = (
+                                    str(rel_path.with_suffix(""))
+                                    .replace("/", ".")
+                                    .replace("\\", ".")
+                                )
                                 test_content = f'''"""Auto-generated test stub for {py_file.name}."""
 import pytest
 
@@ -601,7 +618,9 @@ class Test{py_file.stem.title().replace("_", "")}:
                             self.logger.error(f"    Error generating test for {py_file}: {e}")
                             errors += 1
 
-            self.logger.info(f"[{agent_name}] Complete: {violations_found} gaps, {violations_fixed} stubs generated")
+            self.logger.info(
+                f"[{agent_name}] Complete: {violations_found} gaps, {violations_fixed} stubs generated"
+            )
 
             return {
                 "violations_found": violations_found,
@@ -618,10 +637,10 @@ class Test{py_file.stem.title().replace("_", "")}:
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         HealerProtocol compliance method for test coverage violations.
-        
+
         Args:
             violation: Dictionary containing violation details
-            
+
         Returns:
             Dictionary with healing result following HEAL_RESULT_SCHEMA
         """
@@ -629,19 +648,21 @@ class Test{py_file.stem.title().replace("_", "")}:
             # Extract violation details
             violation_type = violation.get("type", "unknown")
             file_path = violation.get("file_path")
-            
+
             if violation_type == "low_test_coverage":
                 # Heal low test coverage by generating test stubs
                 if file_path:
                     try:
                         # Generate basic test stub for the file
                         rel_path = Path(file_path).relative_to(self.project_root)
-                        module_name = str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
-                        
+                        module_name = (
+                            str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
+                        )
+
                         # Create test file path
                         test_name = f"test_{rel_path.stem}.py"
                         test_path = self.test_dir / test_name
-                        
+
                         if not test_path.exists():
                             # Generate basic test stub
                             test_content = f'''"""
@@ -662,28 +683,28 @@ def test_auto_generated_stub():
 '''
                             test_path.parent.mkdir(parents=True, exist_ok=True)
                             test_path.write_text(test_content, encoding="utf-8")
-                            
+
                             return {
                                 "status": "success",
                                 "details": f"Generated test stub for {module_name}",
                                 "artifacts": [str(test_path)],
-                                "errors": []
+                                "errors": [],
                             }
                         else:
                             return {
                                 "status": "skipped",
                                 "details": f"Test file already exists: {test_path}",
                                 "artifacts": [],
-                                "errors": []
+                                "errors": [],
                             }
                     except Exception as e:
                         return {
                             "status": "failed",
                             "details": f"Failed to generate test stub: {str(e)}",
                             "artifacts": [],
-                            "errors": [str(e)]
+                            "errors": [str(e)],
                         }
-                        
+
             elif violation_type == "missing_property_tests":
                 # Heal missing property tests
                 candidates = self._discover_property_candidates()
@@ -694,14 +715,14 @@ def test_auto_generated_stub():
                         p_path.parent.mkdir(parents=True, exist_ok=True)
                         p_path.write_text(p_content, encoding="utf-8")
                         generated += 1
-                        
+
                 return {
                     "status": "success",
                     "details": f"Generated {generated} property tests",
                     "artifacts": [f"property_test_{i}" for i in range(generated)],
-                    "errors": []
+                    "errors": [],
                 }
-                
+
             elif violation_type == "missing_stateful_tests":
                 # Heal missing stateful tests
                 candidates = self._discover_stateful_candidates()
@@ -712,41 +733,41 @@ def test_auto_generated_stub():
                         s_path.parent.mkdir(parents=True, exist_ok=True)
                         s_path.write_text(s_content, encoding="utf-8")
                         generated += 1
-                        
+
                 return {
                     "status": "success",
                     "details": f"Generated {generated} stateful tests",
                     "artifacts": [f"stateful_test_{i}" for i in range(generated)],
-                    "errors": []
+                    "errors": [],
                 }
-                
+
             elif violation_type == "coverage_tools_missing":
                 # Heal missing coverage tools by providing guidance
                 guidance = [
                     "Install coverage tools: pip install coverage pytest-cov mutmut hypothesis",
                     "Run coverage: coverage run -m pytest",
                     "Run mutation testing: mutmut run",
-                    "Install property testing: pip install hypothesis"
+                    "Install property testing: pip install hypothesis",
                 ]
                 return {
                     "status": "partial_success",
                     "details": "Coverage tools missing - installation guidance provided",
                     "artifacts": ["installation_guidance"],
-                    "errors": ["Coverage tools need to be installed"]
+                    "errors": ["Coverage tools need to be installed"],
                 }
-                
+
             else:
                 return {
                     "status": "skipped",
                     "details": f"Unknown violation type: {violation_type}",
                     "artifacts": [],
-                    "errors": []
+                    "errors": [],
                 }
-                
+
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"Heal operation failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }

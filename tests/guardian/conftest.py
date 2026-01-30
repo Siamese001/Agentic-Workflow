@@ -1,6 +1,19 @@
 """
 Guardian Suite Configuration and Reporting
-Provides architectural health summary reporting for all Guardian tests
+===========================================
+Zero-Trust Guardian Layer - Architectural Health Validation
+
+This conftest.py provides:
+1. Guardian marker registration for all tests in this directory
+2. Architectural health summary reporting
+3. Violation tracking and categorization
+4. Integration with the root tests/conftest.py
+
+USAGE:
+    pytest tests/guardian/ -v -m guardian
+    ./run_guardian.sh
+
+All tests in this directory are automatically marked with @pytest.mark.guardian
 """
 
 import sys
@@ -12,6 +25,22 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+
+# =============================================================================
+# GUARDIAN MARKER - Auto-apply to all tests in this directory
+# =============================================================================
+
+
+def pytest_collection_modifyitems(config, items):
+    """
+    Automatically add the guardian marker to all tests in this directory.
+    """
+    guardian_marker = pytest.mark.guardian
+
+    for item in items:
+        if "guardian" in str(item.fspath):
+            item.add_marker(guardian_marker)
 
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):

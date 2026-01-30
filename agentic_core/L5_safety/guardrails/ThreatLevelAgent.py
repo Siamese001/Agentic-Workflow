@@ -344,5 +344,5 @@ class ThreatDetectionGuardrail(SovereignBaseAgent):
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Threat detection violations require manual security review"
+            "reason": "Threat detection violations require manual security review",
         }

@@ -75,6 +75,16 @@ class DeliverabilityAgent(SubatomicTestingMixin, LICAgentBase):
         """Heal violations detected by DeliverabilityAgent."""
         violation_type = violation.get("type", "unknown")
         try:
-            return {"status": "skipped", "details": f"DeliverabilityAgent heal() not yet implemented for {violation_type}", "artifacts": [], "errors": []}
+            return {
+                "status": "skipped",
+                "details": f"DeliverabilityAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
         except Exception as e:
-            return {"status": "failed", "details": f"DeliverabilityAgent heal() failed: {str(e)}", "artifacts": [], "errors": [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"DeliverabilityAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }

@@ -27,10 +27,12 @@ Logger: Any = logging.getLogger(__name__)
 @dc_dataclass
 class ExecutionResult:
     """Result of an execution action."""
+
     SUCCESS: bool = False
     OUTPUT: Any = None
     ERROR: str | None = None
     duration_ms: float = 0.0
+
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 

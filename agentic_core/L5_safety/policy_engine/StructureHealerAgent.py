@@ -349,7 +349,9 @@ class StructureHealerAgent(SovereignBaseAgent):
             path = violation.get("path", "")
             line_number = violation.get("line_number", 0)
 
-            Logger.info(f"[STRUCTURE_HEALER] Healing {violation_type} violation at {path}:{line_number}")
+            Logger.info(
+                f"[STRUCTURE_HEALER] Healing {violation_type} violation at {path}:{line_number}"
+            )
 
             if violation_type == "gravity":
                 # Heal gravity violations
@@ -382,9 +384,14 @@ class StructureHealerAgent(SovereignBaseAgent):
             # Apply gravity healing
             actions = self.heal_gravity(path)
             fixed_count = sum(1 for action in actions if action.applied)
-            
+
             Logger.info(f"[STRUCTURE_HEALER] Fixed {fixed_count} gravity violations in {path}")
-            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+            return {
+                "violations_fixed": fixed_count,
+                "violations_found": len(actions),
+                "errors": 0,
+                "skipped": 0,
+            }
         except Exception as e:
             Logger.error(f"[STRUCTURE_HEALER] Failed to heal gravity violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
@@ -399,9 +406,14 @@ class StructureHealerAgent(SovereignBaseAgent):
             # Apply hierarchy healing
             actions = self.heal_hierarchy(path)
             fixed_count = sum(1 for action in actions if action.applied)
-            
+
             Logger.info(f"[STRUCTURE_HEALER] Fixed {fixed_count} hierarchy violations in {path}")
-            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+            return {
+                "violations_fixed": fixed_count,
+                "violations_found": len(actions),
+                "errors": 0,
+                "skipped": 0,
+            }
         except Exception as e:
             Logger.error(f"[STRUCTURE_HEALER] Failed to heal hierarchy violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
@@ -416,9 +428,14 @@ class StructureHealerAgent(SovereignBaseAgent):
             # Apply naming healing
             actions = self.heal_naming(path)
             fixed_count = sum(1 for action in actions if action.applied)
-            
+
             Logger.info(f"[STRUCTURE_HEALER] Fixed {fixed_count} naming violations in {path}")
-            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+            return {
+                "violations_fixed": fixed_count,
+                "violations_found": len(actions),
+                "errors": 0,
+                "skipped": 0,
+            }
         except Exception as e:
             Logger.error(f"[STRUCTURE_HEALER] Failed to heal naming violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
@@ -433,9 +450,14 @@ class StructureHealerAgent(SovereignBaseAgent):
             # Apply territory healing
             actions = self.heal_territory(path)
             fixed_count = sum(1 for action in actions if action.applied)
-            
+
             Logger.info(f"[STRUCTURE_HEALER] Fixed {fixed_count} territory violations in {path}")
-            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+            return {
+                "violations_fixed": fixed_count,
+                "violations_found": len(actions),
+                "errors": 0,
+                "skipped": 0,
+            }
         except Exception as e:
             Logger.error(f"[STRUCTURE_HEALER] Failed to heal territory violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
@@ -450,9 +472,14 @@ class StructureHealerAgent(SovereignBaseAgent):
             # Apply blueprint healing
             actions = self.heal_blueprint(path)
             fixed_count = sum(1 for action in actions if action.applied)
-            
+
             Logger.info(f"[STRUCTURE_HEALER] Fixed {fixed_count} blueprint violations in {path}")
-            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+            return {
+                "violations_fixed": fixed_count,
+                "violations_found": len(actions),
+                "errors": 0,
+                "skipped": 0,
+            }
         except Exception as e:
             Logger.error(f"[STRUCTURE_HEALER] Failed to heal blueprint violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}

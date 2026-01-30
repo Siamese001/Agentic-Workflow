@@ -5,10 +5,12 @@ Unit tests for LicHealingOrchestratorAgent.
 Auto-generated to ensure 100% test coverage.
 Tests basic instantiation and key method signatures.
 """
-import pytest
+
 import sys
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch
+
+import pytest
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -21,6 +23,7 @@ class TestLicHealingOrchestratorAgent:
         """Verify the class can be imported."""
         try:
             from apps_lic.engines.LicHealingOrchestratorAgent import LicHealingOrchestratorAgent
+
             assert LicHealingOrchestratorAgent is not None
         except ImportError as e:
             # Class exists but may have import dependencies
@@ -30,6 +33,7 @@ class TestLicHealingOrchestratorAgent:
         """Verify the class follows agent patterns."""
         try:
             from apps_lic.engines.LicHealingOrchestratorAgent import LicHealingOrchestratorAgent
+
             # Check it's a class
             assert isinstance(LicHealingOrchestratorAgent, type)
         except ImportError:
@@ -39,11 +43,10 @@ class TestLicHealingOrchestratorAgent:
         """Test that the agent can be instantiated with mocked dependencies."""
         try:
             from apps_lic.engines.LicHealingOrchestratorAgent import LicHealingOrchestratorAgent
+
             # Try to instantiate with common agent patterns
             with patch.multiple(
-                LicHealingOrchestratorAgent,
-                __init__=lambda self: None,
-                create=True
+                LicHealingOrchestratorAgent, __init__=lambda self: None, create=True
             ):
                 pass  # Just verify no errors in class definition
             assert True
@@ -57,9 +60,11 @@ class TestLicHealingOrchestratorAgent:
         """Verify healing methods exist if agent has healing."""
         try:
             from apps_lic.engines.LicHealingOrchestratorAgent import LicHealingOrchestratorAgent
+
             # Check for heal_repository method
-            has_heal = hasattr(LicHealingOrchestratorAgent, 'heal_repository') or \
-                       any('heal' in str(m).lower() for m in dir(LicHealingOrchestratorAgent))
+            has_heal = hasattr(LicHealingOrchestratorAgent, "heal_repository") or any(
+                "heal" in str(m).lower() for m in dir(LicHealingOrchestratorAgent)
+            )
             # Not all agents need healing - this is informational
             assert True
         except ImportError:
@@ -69,8 +74,9 @@ class TestLicHealingOrchestratorAgent:
         """Verify key methods are defined."""
         try:
             from apps_lic.engines.LicHealingOrchestratorAgent import LicHealingOrchestratorAgent
+
             # Get all public methods
-            methods = [m for m in dir(LicHealingOrchestratorAgent) if not m.startswith('_')]
+            methods = [m for m in dir(LicHealingOrchestratorAgent) if not m.startswith("_")]
             assert len(methods) > 0, "Agent should have at least one public method"
         except ImportError:
             pytest.skip("Import dependencies not available")

@@ -418,7 +418,9 @@ class CodeValidatorAgent(SovereignBaseAgent):
             path = violation.get("path", "")
             line_number = violation.get("line_number", 0)
 
-            Logger.info(f"[CODE_VALIDATOR] Healing {violation_type} violation at {path}:{line_number}")
+            Logger.info(
+                f"[CODE_VALIDATOR] Healing {violation_type} violation at {path}:{line_number}"
+            )
 
             if violation_type == "syntax":
                 # For syntax violations, we can only report as they require manual fixing
@@ -453,15 +455,17 @@ class CodeValidatorAgent(SovereignBaseAgent):
         try:
             path = violation.get("path", "")
             # Use existing fix_violations method for canon issues
-            violations = [Violation(
-                violation_type=ViolationType.CANON,
-                file_path=path,
-                line_number=violation.get("line_number", 0),
-                issue=violation.get("issue", "Canon compliance violation"),
-                auto_fixable=True,
-                suggested_fix=violation.get("suggested_fix")
-            )]
-            
+            violations = [
+                Violation(
+                    violation_type=ViolationType.CANON,
+                    file_path=path,
+                    line_number=violation.get("line_number", 0),
+                    issue=violation.get("issue", "Canon compliance violation"),
+                    auto_fixable=True,
+                    suggested_fix=violation.get("suggested_fix"),
+                )
+            ]
+
             result = self.fix_violations(violations, dry_run=False)
             Logger.info(f"[CODE_VALIDATOR] Canon healing result: {result}")
             return result
@@ -473,15 +477,17 @@ class CodeValidatorAgent(SovereignBaseAgent):
         """Heal async/await violations."""
         try:
             path = violation.get("path", "")
-            violations = [Violation(
-                violation_type=ViolationType.ASYNC,
-                file_path=path,
-                line_number=violation.get("line_number", 0),
-                issue=violation.get("issue", "Async/await violation"),
-                auto_fixable=True,
-                suggested_fix=violation.get("suggested_fix")
-            )]
-            
+            violations = [
+                Violation(
+                    violation_type=ViolationType.ASYNC,
+                    file_path=path,
+                    line_number=violation.get("line_number", 0),
+                    issue=violation.get("issue", "Async/await violation"),
+                    auto_fixable=True,
+                    suggested_fix=violation.get("suggested_fix"),
+                )
+            ]
+
             result = self.fix_violations(violations, dry_run=False)
             Logger.info(f"[CODE_VALIDATOR] Async healing result: {result}")
             return result
@@ -493,15 +499,17 @@ class CodeValidatorAgent(SovereignBaseAgent):
         """Heal print statement violations."""
         try:
             path = violation.get("path", "")
-            violations = [Violation(
-                violation_type=ViolationType.PRINT,
-                file_path=path,
-                line_number=violation.get("line_number", 0),
-                issue=violation.get("issue", "Print statement violation"),
-                auto_fixable=True,
-                suggested_fix=violation.get("suggested_fix", "Replace with logging")
-            )]
-            
+            violations = [
+                Violation(
+                    violation_type=ViolationType.PRINT,
+                    file_path=path,
+                    line_number=violation.get("line_number", 0),
+                    issue=violation.get("issue", "Print statement violation"),
+                    auto_fixable=True,
+                    suggested_fix=violation.get("suggested_fix", "Replace with logging"),
+                )
+            ]
+
             result = self.fix_violations(violations, dry_run=False)
             Logger.info(f"[CODE_VALIDATOR] Print healing result: {result}")
             return result

@@ -39,13 +39,13 @@ class BaseAgent:
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by BaseAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -55,21 +55,21 @@ class BaseAgent:
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - BaseAgent provides base functionality
         try:
             return {
                 "status": "skipped",
                 "details": f"BaseAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"BaseAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 
@@ -178,23 +178,23 @@ class DomainPlannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     ) -> dict[str, int]:
         """
         L3 Orchestration Agent - Domain Planner Healing.
-        
+
         WIRED CAPABILITIES:
         - Validates domain alignment logic
         - Checks focus area processing
         """
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         if depth > max_depth:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
-        
+
         _call_path.add(agent_name)
         metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - domain planning validation")
             metrics["skipped"] = 1
@@ -203,19 +203,19 @@ class DomainPlannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-        
+
         return metrics
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by DomainPlannerAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -225,21 +225,21 @@ class DomainPlannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - DomainPlannerAgent plans domains
         try:
             return {
                 "status": "skipped",
                 "details": f"DomainPlannerAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"DomainPlannerAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 
@@ -312,16 +312,16 @@ class RiskAssessorAgent(SovereignBaseAgent):
         """L3 Orchestration Agent - Risk Assessor Healing."""
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         if depth > max_depth:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
-        
+
         _call_path.add(agent_name)
         metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - risk assessment validation")
             metrics["skipped"] = 1
@@ -330,19 +330,19 @@ class RiskAssessorAgent(SovereignBaseAgent):
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-        
+
         return metrics
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by RiskAssessorAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -352,21 +352,21 @@ class RiskAssessorAgent(SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - RiskAssessorAgent assesses risk
         try:
             return {
                 "status": "skipped",
                 "details": f"RiskAssessorAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"RiskAssessorAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 
@@ -438,16 +438,16 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
         """L3 Orchestration Agent - Feasibility Analyst Healing."""
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         if depth > max_depth:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
-        
+
         _call_path.add(agent_name)
         metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - feasibility analysis validation")
             metrics["skipped"] = 1
@@ -456,19 +456,19 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-        
+
         return metrics
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by FeasibilityAnalystAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -478,21 +478,21 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - FeasibilityAnalystAgent analyzes feasibility
         try:
             return {
                 "status": "skipped",
                 "details": f"FeasibilityAnalystAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"FeasibilityAnalystAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 
@@ -601,16 +601,16 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
         """L3 Orchestration Agent - Strategy Scenario Simulator Healing."""
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         if depth > max_depth:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
-        
+
         _call_path.add(agent_name)
         metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - scenario simulation validation")
             metrics["skipped"] = 1
@@ -619,19 +619,19 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-        
+
         return metrics
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by StrategyScenarioSimulatorAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -641,21 +641,21 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - StrategyScenarioSimulatorAgent simulates scenarios
         try:
             return {
                 "status": "skipped",
                 "details": f"StrategyScenarioSimulatorAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"StrategyScenarioSimulatorAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 
@@ -792,16 +792,16 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
         """L3 Orchestration Agent - Strategy Coordinator Healing."""
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         if depth > max_depth:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
-        
+
         _call_path.add(agent_name)
         metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - strategy coordination validation")
             metrics["skipped"] = 1
@@ -810,19 +810,19 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-        
+
         return metrics
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by StrategyCoordinatorAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: "success", "partial_success", "failed", or "skipped"
@@ -832,19 +832,19 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - StrategyCoordinatorAgent coordinates strategies
         try:
             return {
                 "status": "skipped",
                 "details": f"StrategyCoordinatorAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"StrategyCoordinatorAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }

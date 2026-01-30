@@ -314,14 +314,14 @@ class RedSentinelAgent(SovereignBaseAgent):
         path = violation.get("path", "")
 
         LOGGER.info(f"[RED_SENTINEL] Security violation detected: {violation_type} at {path}")
-        
+
         # Security vulnerabilities require manual review - cannot auto-heal
         return {
             "violations_fixed": 0,
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Security vulnerabilities require manual review"
+            "reason": "Security vulnerabilities require manual review",
         }
 
 

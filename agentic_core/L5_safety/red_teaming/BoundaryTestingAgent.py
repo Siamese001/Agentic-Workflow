@@ -258,5 +258,5 @@ class BoundaryTestingAgent(SovereignBaseAgent):
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Boundary testing findings require manual review"
+            "reason": "Boundary testing findings require manual review",
         }

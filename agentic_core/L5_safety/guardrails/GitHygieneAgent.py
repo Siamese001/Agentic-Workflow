@@ -218,9 +218,21 @@ class GitHygieneAgent(SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 1,
+                "skipped": 0,
+                "cycle_detected": True,
+            }
         if depth > max_depth:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 0,
+                "skipped": 1,
+                "depth_limited": True,
+            }
         _call_path.add(agent_name)
 
         violations_found = 0
@@ -250,9 +262,9 @@ class GitHygieneAgent(SovereignBaseAgent):
                     if large_files:
                         self.logger.warning(f"    - {large_files} large files")
                     if uncommitted:
-                        self.logger.warning(f"    - Uncommitted changes detected")
+                        self.logger.warning("    - Uncommitted changes detected")
                     if unpushed:
-                        self.logger.warning(f"    - Unpushed commits detected")
+                        self.logger.warning("    - Unpushed commits detected")
 
                     if execute and not dry_run:
                         # Clean up stale branches
@@ -268,7 +280,9 @@ class GitHygieneAgent(SovereignBaseAgent):
                 self.logger.error(f"  Error during Git hygiene audit: {e}")
                 errors += 1
 
-            self.logger.info(f"[{agent_name}] Complete: {violations_found} issues, {violations_fixed} fixed")
+            self.logger.info(
+                f"[{agent_name}] Complete: {violations_found} issues, {violations_fixed} fixed"
+            )
 
             return {
                 "violations_found": violations_found,
@@ -295,12 +309,17 @@ class GitHygieneAgent(SovereignBaseAgent):
             Dictionary with healing results following standard_heal format.
         """
         violation_type = violation.get("type", "")
-        
+
         try:
             if violation_type == "stale_branch":
                 result = self.cleanup_stale_branches()
-                return {"violations_fixed": result.get("actions_taken", 0), "violations_found": result.get("stale_branches", 0), "errors": 0, "skipped": 0}
+                return {
+                    "violations_fixed": result.get("actions_taken", 0),
+                    "violations_found": result.get("stale_branches", 0),
+                    "errors": 0,
+                    "skipped": 0,
+                }
             else:
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
-        except Exception as e:
+        except Exception:
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}

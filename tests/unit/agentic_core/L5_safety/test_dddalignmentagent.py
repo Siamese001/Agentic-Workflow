@@ -5,10 +5,12 @@ Unit tests for DDDAlignmentAgent.
 Auto-generated to ensure 100% test coverage.
 Tests basic instantiation and key method signatures.
 """
-import pytest
+
 import sys
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch
+
+import pytest
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -21,6 +23,7 @@ class TestDDDAlignmentAgent:
         """Verify the class can be imported."""
         try:
             from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+
             assert DDDAlignmentAgent is not None
         except ImportError as e:
             # Class exists but may have import dependencies
@@ -30,6 +33,7 @@ class TestDDDAlignmentAgent:
         """Verify the class follows agent patterns."""
         try:
             from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+
             # Check it's a class
             assert isinstance(DDDAlignmentAgent, type)
         except ImportError:
@@ -39,12 +43,9 @@ class TestDDDAlignmentAgent:
         """Test that the agent can be instantiated with mocked dependencies."""
         try:
             from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+
             # Try to instantiate with common agent patterns
-            with patch.multiple(
-                DDDAlignmentAgent,
-                __init__=lambda self: None,
-                create=True
-            ):
+            with patch.multiple(DDDAlignmentAgent, __init__=lambda self: None, create=True):
                 pass  # Just verify no errors in class definition
             assert True
         except ImportError:
@@ -57,9 +58,11 @@ class TestDDDAlignmentAgent:
         """Verify healing methods exist if agent has healing."""
         try:
             from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+
             # Check for heal_repository method
-            has_heal = hasattr(DDDAlignmentAgent, 'heal_repository') or \
-                       any('heal' in str(m).lower() for m in dir(DDDAlignmentAgent))
+            has_heal = hasattr(DDDAlignmentAgent, "heal_repository") or any(
+                "heal" in str(m).lower() for m in dir(DDDAlignmentAgent)
+            )
             # Not all agents need healing - this is informational
             assert True
         except ImportError:
@@ -69,8 +72,9 @@ class TestDDDAlignmentAgent:
         """Verify key methods are defined."""
         try:
             from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+
             # Get all public methods
-            methods = [m for m in dir(DDDAlignmentAgent) if not m.startswith('_')]
+            methods = [m for m in dir(DDDAlignmentAgent) if not m.startswith("_")]
             assert len(methods) > 0, "Agent should have at least one public method"
         except ImportError:
             pytest.skip("Import dependencies not available")

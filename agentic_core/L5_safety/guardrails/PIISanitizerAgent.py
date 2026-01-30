@@ -166,5 +166,5 @@ class PIISanitizerAgent(SovereignBaseAgent):
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "PII violations require manual review before redaction"
+            "reason": "PII violations require manual review before redaction",
         }

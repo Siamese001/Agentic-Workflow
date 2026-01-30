@@ -281,12 +281,13 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         Logger.info(f"[STRUCTURAL_VALIDATOR] Healing {violation_type} at {path}")
 
         try:
-            if violation_type == "naming" and violation.get("old_name") and violation.get("new_name"):
+            if (
+                violation_type == "naming"
+                and violation.get("old_name")
+                and violation.get("new_name")
+            ):
                 result = self.force_rename_class(
-                    Path(path),
-                    violation["old_name"],
-                    violation["new_name"],
-                    dry_run=False
+                    Path(path), violation["old_name"], violation["new_name"], dry_run=False
                 )
                 if "error" not in result:
                     return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}

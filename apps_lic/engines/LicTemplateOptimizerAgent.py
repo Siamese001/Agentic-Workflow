@@ -69,6 +69,16 @@ class LicTemplateOptimizerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """Heal violations detected by LicTemplateOptimizerAgent."""
         violation_type = violation.get("type", "unknown")
         try:
-            return {"status": "skipped", "details": f"LicTemplateOptimizerAgent heal() not yet implemented for {violation_type}", "artifacts": [], "errors": []}
+            return {
+                "status": "skipped",
+                "details": f"LicTemplateOptimizerAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
         except Exception as e:
-            return {"status": "failed", "details": f"LicTemplateOptimizerAgent heal() failed: {str(e)}", "artifacts": [], "errors": [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"LicTemplateOptimizerAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }

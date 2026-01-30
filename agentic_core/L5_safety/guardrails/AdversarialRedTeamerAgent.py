@@ -552,7 +552,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAt
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Red team findings require manual security review"
+            "reason": "Red team findings require manual security review",
         }
 
 

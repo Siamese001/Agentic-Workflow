@@ -89,10 +89,10 @@ class GravityStateAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         HealerProtocol compliance method for gravity state violations.
-        
+
         Args:
             violation: Dictionary containing violation details
-            
+
         Returns:
             Dictionary with healing result following HEAL_RESULT_SCHEMA
         """
@@ -100,7 +100,7 @@ class GravityStateAgent(SubatomicTestingMixin, SovereignBaseAgent):
             # Extract violation details
             violation_type = violation.get("type", "unknown")
             file_path = violation.get("file_path")
-            
+
             if violation_type == "gravity_state_corruption":
                 # Heal corrupted gravity state
                 if file_path:
@@ -114,23 +114,23 @@ class GravityStateAgent(SubatomicTestingMixin, SovereignBaseAgent):
                                 "status": "success",
                                 "details": f"Cleared corrupted state for {file_key}",
                                 "artifacts": [file_key],
-                                "errors": []
+                                "errors": [],
                             }
                         else:
                             return {
                                 "status": "skipped",
                                 "details": f"No state found for {file_key}",
                                 "artifacts": [],
-                                "errors": []
+                                "errors": [],
                             }
                     except ValueError:
                         return {
                             "status": "failed",
                             "details": f"File path outside project root: {file_path}",
                             "artifacts": [],
-                            "errors": [f"Invalid file path: {file_path}"]
+                            "errors": [f"Invalid file path: {file_path}"],
                         }
-                        
+
             elif violation_type == "state_file_missing":
                 # Heal missing state file
                 self._load_state()  # This will create fresh state if missing
@@ -138,9 +138,9 @@ class GravityStateAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     "status": "success",
                     "details": "State file recreated with fresh state",
                     "artifacts": ["gravity_healing_state.json"],
-                    "errors": []
+                    "errors": [],
                 }
-                
+
             elif violation_type == "healing_history_cleanup":
                 # Clean up healing history
                 original_count = len(self.state["healing_history"])
@@ -152,24 +152,24 @@ class GravityStateAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     "status": "success",
                     "details": f"Cleaned up {cleaned} old healing records",
                     "artifacts": ["healing_history"],
-                    "errors": []
+                    "errors": [],
                 }
-                
+
             else:
                 return {
                     "status": "skipped",
                     "details": f"Unknown violation type: {violation_type}",
                     "artifacts": [],
-                    "errors": []
+                    "errors": [],
                 }
-                
+
         except Exception as e:
             self.logger.error(f"Heal operation failed in GravityStateAgent: {e}")
             return {
                 "status": "failed",
                 "details": f"Heal operation failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
     def __init__(self, project_root: Path) -> None:

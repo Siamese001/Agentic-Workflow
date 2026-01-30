@@ -30,12 +30,9 @@ if str(PROJECT_ROOT) not in sys.path:
 # Import SSOT constants from structure_blueprint
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
     APPS_SHARED_DIR,
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_TERRITORIES,
-    VARIABLE_DEPTH_SUBFOLDERS,
 )
 
 
@@ -47,7 +44,7 @@ class TestSSOTCompliance:
     # These are tracked and will be fixed in future sprints.
     # New violations will still cause test failures.
     # ==========================================================================
-    
+
     # Base agents that need to be moved to agentic_core/base_agents/
     KNOWN_BASE_AGENT_VIOLATIONS = {
         "L0MaintenanceBaseAgent.py",
@@ -56,13 +53,13 @@ class TestSSOTCompliance:
         "RGAgentBaseAgent.py",
         "test_SovereignBaseAgent.py",  # Test file - naming exception
     }
-    
+
     # apps_shared files with known dependency violations (to be refactored)
     KNOWN_APPS_SHARED_VIOLATIONS = {
         "GoldenStateEvaluator.py",
         "MockSyntaxValidatorAgent.py",
     }
-    
+
     # Test files at root level (legacy - to be moved)
     KNOWN_ROOT_TEST_FILES = {
         "test_always_heal_llm.py",
@@ -73,7 +70,7 @@ class TestSSOTCompliance:
         "test_location_agent_integration.py",
         "test_sovereign_remediation_simple.py",
     }
-    
+
     # ops_scripts test files (legacy - to be moved to tests/integration/)
     KNOWN_OPS_SCRIPTS_TEST_FILES = {
         "test_autonomous_decision_making.py",
@@ -170,19 +167,21 @@ class TestSSOTCompliance:
     def test_all_files_in_valid_territories(self):
         """
         Test 1: Every file must exist in a valid sovereign territory.
-        
+
         Validates that no files exist outside the defined SOVEREIGN_TERRITORIES.
         """
         print("\n=== SSOT Compliance: Territory Validation ===")
 
         valid_territories = set(SOVEREIGN_TERRITORIES.keys())
         # Add common root-level items that are allowed
-        valid_territories.update({
-            "scripts",
-            ".github",
-            ".windsurf",
-            ".gravity_state",
-        })
+        valid_territories.update(
+            {
+                "scripts",
+                ".github",
+                ".windsurf",
+                ".gravity_state",
+            }
+        )
 
         violations = []
         all_files = list(self.project_root.rglob("*"))
@@ -227,7 +226,7 @@ class TestSSOTCompliance:
     def test_agentic_core_subfolder_compliance(self):
         """
         Test 2: agentic_core files must be in approved subfolders.
-        
+
         Validates the L0-L6 layer structure and specialized domains.
         """
         print("\n=== SSOT Compliance: Agentic Core Structure ===")
@@ -253,9 +252,7 @@ class TestSSOTCompliance:
             elif path.suffix == ".py":
                 # Python files at agentic_core root are allowed (e.g., __init__.py)
                 if path.name not in {"__init__.py", "DiscoveredAgent.py"}:
-                    violations.append(
-                        f"Unexpected Python file at agentic_core root: {path.name}"
-                    )
+                    violations.append(f"Unexpected Python file at agentic_core root: {path.name}")
 
         if violations:
             error_msg = f"AGENTIC_CORE STRUCTURE VIOLATIONS ({len(violations)}):\n"
@@ -268,7 +265,7 @@ class TestSSOTCompliance:
     def test_base_agents_constitutional_location(self):
         """
         Test 3: [CONSTITUTIONAL] All *BaseAgent.py files must be in agentic_core/base_agents/
-        
+
         This is a constitutional rule that CANNOT be overridden.
         Known violations are tracked as technical debt.
         """
@@ -299,7 +296,9 @@ class TestSSOTCompliance:
 
         # Report known debt (informational)
         if known_debt:
-            print(f"[INFO] {len(known_debt)} known base agent violations (tracked as technical debt)")
+            print(
+                f"[INFO] {len(known_debt)} known base agent violations (tracked as technical debt)"
+            )
 
         # Fail only on NEW violations
         if violations:
@@ -310,13 +309,17 @@ class TestSSOTCompliance:
             pytest.fail(error_msg)
 
         # Count base agents in canonical location
-        base_agent_count = len(list(canonical_dir.glob("*BaseAgent.py"))) if canonical_dir.exists() else 0
-        print(f"[OK] All {base_agent_count} base agents in constitutional location (+ {len(known_debt)} known debt)")
+        base_agent_count = (
+            len(list(canonical_dir.glob("*BaseAgent.py"))) if canonical_dir.exists() else 0
+        )
+        print(
+            f"[OK] All {base_agent_count} base agents in constitutional location (+ {len(known_debt)} known debt)"
+        )
 
     def test_apps_shared_independence(self):
         """
         Test 4: apps_shared MUST NOT import from apps_rg or apps_lic.
-        
+
         Enforces the one-way dependency valve.
         Known violations are tracked as technical debt.
         """
@@ -366,7 +369,9 @@ class TestSSOTCompliance:
 
         # Report known debt (informational)
         if known_debt:
-            print(f"[INFO] {len(set(known_debt))} known dependency violations (tracked as technical debt)")
+            print(
+                f"[INFO] {len(set(known_debt))} known dependency violations (tracked as technical debt)"
+            )
 
         # Fail only on NEW violations
         if violations:
@@ -379,12 +384,14 @@ class TestSSOTCompliance:
             pytest.fail(error_msg)
 
         file_count = len(list(apps_shared_path.rglob("*.py")))
-        print(f"[OK] apps_shared independence verified ({file_count} files, {len(set(known_debt))} known debt)")
+        print(
+            f"[OK] apps_shared independence verified ({file_count} files, {len(set(known_debt))} known debt)"
+        )
 
     def test_test_files_in_tests_directory(self):
         """
         Test 5: All test_*.py files must be in the tests/ directory.
-        
+
         Prevents test file leakage into source directories.
         Known violations are tracked as technical debt.
         """
@@ -417,7 +424,9 @@ class TestSSOTCompliance:
 
         # Report known debt (informational)
         if known_debt:
-            print(f"[INFO] {len(known_debt)} known test file placement violations (tracked as technical debt)")
+            print(
+                f"[INFO] {len(known_debt)} known test file placement violations (tracked as technical debt)"
+            )
 
         # Fail only on NEW violations
         if violations:
@@ -429,14 +438,16 @@ class TestSSOTCompliance:
             pytest.fail(error_msg)
 
         test_count = len(list(tests_dir.rglob("test_*.py"))) if tests_dir.exists() else 0
-        print(f"[OK] All test files in tests/ directory ({test_count} files, {len(known_debt)} known debt)")
+        print(
+            f"[OK] All test files in tests/ directory ({test_count} files, {len(known_debt)} known debt)"
+        )
 
     def test_layer_hierarchy_integrity(self):
         """
         Test 6: L0-L6 layers must not have cross-layer imports that violate hierarchy.
-        
+
         Lower layers (L0-L2) should not import from higher layers (L4-L6).
-        
+
         NOTE: This test is currently INFORMATIONAL due to extensive existing violations.
         It reports violations but does not fail the test suite.
         Once violations are remediated, this can be made strict.
@@ -534,7 +545,9 @@ class TestSSOTCompliance:
 
         # Report violations as informational (not failing)
         if violations:
-            print(f"[INFO] {len(violations)} layer hierarchy violations detected (tracked as technical debt)")
+            print(
+                f"[INFO] {len(violations)} layer hierarchy violations detected (tracked as technical debt)"
+            )
             print("       These will be addressed in future refactoring sprints.")
         else:
             print(f"[OK] Layer hierarchy integrity verified ({len(layer_order)} layers)")

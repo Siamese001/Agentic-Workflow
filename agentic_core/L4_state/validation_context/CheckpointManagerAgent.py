@@ -631,10 +631,10 @@ class CheckpointManagerAgent(SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         HealerProtocol compliance method for checkpoint violations.
-        
+
         Args:
             violation: Dictionary containing violation details
-            
+
         Returns:
             Dictionary with healing result following HEAL_RESULT_SCHEMA
         """
@@ -643,7 +643,7 @@ class CheckpointManagerAgent(SovereignBaseAgent):
             violation_type = violation.get("type", "unknown")
             checkpoint_id = violation.get("checkpoint_id")
             file_path = violation.get("file_path")
-            
+
             if violation_type == "checkpoint_integrity":
                 # Heal checkpoint integrity issues
                 if checkpoint_id and not self.verify_integrity(checkpoint_id):
@@ -652,23 +652,23 @@ class CheckpointManagerAgent(SovereignBaseAgent):
                             "status": "success",
                             "details": f"Recovered checkpoint {checkpoint_id}",
                             "artifacts": [checkpoint_id],
-                            "errors": []
+                            "errors": [],
                         }
                     else:
                         return {
                             "status": "failed",
                             "details": f"Failed to recover checkpoint {checkpoint_id}",
                             "artifacts": [],
-                            "errors": [f"Checkpoint {checkpoint_id} beyond recovery"]
+                            "errors": [f"Checkpoint {checkpoint_id} beyond recovery"],
                         }
                 else:
                     return {
                         "status": "success",
                         "details": f"Checkpoint {checkpoint_id} integrity verified",
                         "artifacts": [],
-                        "errors": []
+                        "errors": [],
                     }
-                    
+
             elif violation_type == "storage_cleanup":
                 # Heal storage issues
                 self._cleanup_old_checkpoints()
@@ -676,9 +676,9 @@ class CheckpointManagerAgent(SovereignBaseAgent):
                     "status": "success",
                     "details": "Storage cleanup completed",
                     "artifacts": ["checkpoints_cleaned"],
-                    "errors": []
+                    "errors": [],
                 }
-                
+
             elif violation_type == "missing_checkpoint_file":
                 # Heal missing checkpoint files
                 if checkpoint_id:
@@ -687,31 +687,31 @@ class CheckpointManagerAgent(SovereignBaseAgent):
                             "status": "success",
                             "details": f"Restored missing checkpoint {checkpoint_id}",
                             "artifacts": [checkpoint_id],
-                            "errors": []
+                            "errors": [],
                         }
                     else:
                         return {
                             "status": "failed",
                             "details": f"Cannot restore missing checkpoint {checkpoint_id}",
                             "artifacts": [],
-                            "errors": [f"No backup available for {checkpoint_id}"]
+                            "errors": [f"No backup available for {checkpoint_id}"],
                         }
-                        
+
             else:
                 return {
                     "status": "skipped",
                     "details": f"Unknown violation type: {violation_type}",
                     "artifacts": [],
-                    "errors": []
+                    "errors": [],
                 }
-                
+
         except Exception as e:
             Logger.error(f"Heal operation failed in CheckpointManagerAgent: {e}")
             return {
                 "status": "failed",
                 "details": f"Heal operation failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
     @timeout(300)

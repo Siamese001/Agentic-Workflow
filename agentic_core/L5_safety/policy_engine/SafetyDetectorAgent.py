@@ -287,13 +287,13 @@ class SafetyDetectorAgent(SovereignBaseAgent):
         Returns:
             Dictionary with healing results following standard_heal format.
         """
-        Logger.info(f"[SAFETY_DETECTOR] Detection-only agent - threats require manual review")
+        Logger.info("[SAFETY_DETECTOR] Detection-only agent - threats require manual review")
         return {
             "violations_fixed": 0,
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Detection-only agent - threats require manual security review"
+            "reason": "Detection-only agent - threats require manual security review",
         }
 
 

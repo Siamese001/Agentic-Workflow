@@ -480,9 +480,14 @@ class CodeHealerAgent(SovereignBaseAgent):
             # Apply canon healing
             actions = self.heal_canon(path)
             fixed_count = sum(1 for action in actions if action.applied)
-            
+
             Logger.info(f"[CODE_HEALER] Fixed {fixed_count} canon violations in {path}")
-            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+            return {
+                "violations_fixed": fixed_count,
+                "violations_found": len(actions),
+                "errors": 0,
+                "skipped": 0,
+            }
         except Exception as e:
             Logger.error(f"[CODE_HEALER] Failed to heal canon violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
@@ -497,9 +502,14 @@ class CodeHealerAgent(SovereignBaseAgent):
             # Apply import healing
             actions = self.heal_imports(path)
             fixed_count = sum(1 for action in actions if action.applied)
-            
+
             Logger.info(f"[CODE_HEALER] Fixed {fixed_count} import violations in {path}")
-            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+            return {
+                "violations_fixed": fixed_count,
+                "violations_found": len(actions),
+                "errors": 0,
+                "skipped": 0,
+            }
         except Exception as e:
             Logger.error(f"[CODE_HEALER] Failed to heal import violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
@@ -514,9 +524,14 @@ class CodeHealerAgent(SovereignBaseAgent):
             # Apply structural healing
             actions = self.heal_structural(path)
             fixed_count = sum(1 for action in actions if action.applied)
-            
+
             Logger.info(f"[CODE_HEALER] Fixed {fixed_count} structural violations in {path}")
-            return {"violations_fixed": fixed_count, "violations_found": len(actions), "errors": 0, "skipped": 0}
+            return {
+                "violations_fixed": fixed_count,
+                "violations_found": len(actions),
+                "errors": 0,
+                "skipped": 0,
+            }
         except Exception as e:
             Logger.error(f"[CODE_HEALER] Failed to heal structural violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}

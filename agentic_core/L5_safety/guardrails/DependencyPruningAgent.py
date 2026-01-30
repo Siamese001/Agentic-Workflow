@@ -204,13 +204,18 @@ class DependencyPruningAgent(SovereignBaseAgent):
             Dictionary with healing results following standard_heal format.
         """
         package = violation.get("package", "")
-        
+
         if package:
             try:
                 self.dry_run = False
                 result = self._remove_from_requirements_txt([package])
-                return {"violations_fixed": result.get("removed", 0), "violations_found": 1, "errors": 0, "skipped": 0}
-            except Exception as e:
+                return {
+                    "violations_fixed": result.get("removed", 0),
+                    "violations_found": 1,
+                    "errors": 0,
+                    "skipped": 0,
+                }
+            except Exception:
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
-        
+
         return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

@@ -74,17 +74,17 @@ LOGGER = Logger  # Alias for compatibility
 def heal(violation: dict[str, Any]) -> dict[str, Any]:
     """
     [HEALER PROTOCOL] Standardized healing interface for governance violations.
-    
+
     Args:
         violation: Violation dict with keys: type, file, message, etc.
-        
+
     Returns:
         Dict with keys: status, details, artifacts, errors
     """
     try:
         violation_type = violation.get("type", "")
         file_path = violation.get("file")
-        
+
         if not file_path:
             return {
                 "status": "failed",
@@ -92,7 +92,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
                 "artifacts": [],
                 "errors": ["Missing file path"],
             }
-        
+
         # GovernanceAgent provides decision-only functions
         # Actual healing delegated to StructuralHealerAgent
         if "DEPTH" in violation_type:
@@ -116,7 +116,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
                 "artifacts": [],
                 "errors": [],
             }
-        
+
     except Exception as e:
         return {
             "status": "failed",
@@ -1036,9 +1036,21 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 1,
+                "skipped": 0,
+                "cycle_detected": True,
+            }
         if depth > max_depth:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 0,
+                "skipped": 1,
+                "depth_limited": True,
+            }
         _call_path.add(agent_name)
 
         violations_found = 0
@@ -1087,7 +1099,9 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 self.logger.error(f"  Error checking atomicity law: {e}")
                 errors += 1
 
-            self.logger.info(f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed")
+            self.logger.info(
+                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed"
+            )
 
             return {
                 "violations_found": violations_found,
@@ -1104,13 +1118,13 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by GovernanceAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -1120,20 +1134,20 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         try:
             return {
                 "status": "skipped",
                 "details": f"GovernanceAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"GovernanceAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 

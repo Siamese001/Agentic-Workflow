@@ -466,13 +466,28 @@ class StructureEnforcerAgent(SovereignBaseAgent):
 
             if violation_type == "gravity":
                 result = self.enforce_gravity(file_path)
-                return {"violations_fixed": len(result), "violations_found": len(result), "errors": 0, "skipped": 0}
+                return {
+                    "violations_fixed": len(result),
+                    "violations_found": len(result),
+                    "errors": 0,
+                    "skipped": 0,
+                }
             elif violation_type == "naming":
                 result = self.enforce_naming(file_path)
-                return {"violations_fixed": len(result), "violations_found": len(result), "errors": 0, "skipped": 0}
+                return {
+                    "violations_fixed": len(result),
+                    "violations_found": len(result),
+                    "errors": 0,
+                    "skipped": 0,
+                }
             elif violation_type == "hierarchy":
                 result = self.enforce_hierarchy(file_path)
-                return {"violations_fixed": len(result), "violations_found": len(result), "errors": 0, "skipped": 0}
+                return {
+                    "violations_fixed": len(result),
+                    "violations_found": len(result),
+                    "errors": 0,
+                    "skipped": 0,
+                }
             else:
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
         except Exception as e:

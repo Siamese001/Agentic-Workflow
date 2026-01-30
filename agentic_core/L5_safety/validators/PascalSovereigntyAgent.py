@@ -98,7 +98,17 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
             "renamed": 0,
             "imports_fixed": 0,
             "collisions_resolved": 0,
-            "violations": {"AGENT": 0, "CLASS": 0, "MIXIN": 0, "UTILITY": 0, "PROTOCOL": 0, "ENGINE": 0, "STUB": 0, "TEST": 0, "GATEWAY": 0},
+            "violations": {
+                "AGENT": 0,
+                "CLASS": 0,
+                "MIXIN": 0,
+                "UTILITY": 0,
+                "PROTOCOL": 0,
+                "ENGINE": 0,
+                "STUB": 0,
+                "TEST": 0,
+                "GATEWAY": 0,
+            },
         }
         # CACHE: Track file paths in memory to avoid repetitive disk scanning (O(1) lookups)
         self.file_registry: list[Path] = []
@@ -535,13 +545,13 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         if file_type == "TEST":
             name = path.stem
             # Regex to convert PascalCase/camelCase to snake_case
-            s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-            snake_name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-            
+            s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+            snake_name = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
             # Ensure test_ prefix if missing
             if not snake_name.startswith("test_"):
                 snake_name = f"test_{snake_name}"
-            
+
             return f"{snake_name}.py"
 
         try:
@@ -562,7 +572,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
             if file_type == "AGENT":
                 if not target_name.endswith("Agent"):
                     target_name += "Agent"
-            
+
             elif file_type == "PROTOCOL":
                 # Protocols must remain strictly PascalCase, preserving 'I' prefix.
                 pass

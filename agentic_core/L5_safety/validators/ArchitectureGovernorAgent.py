@@ -167,17 +167,17 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         [HEALER PROTOCOL] Standardized healing interface for architecture violations.
-        
+
         Args:
             violation: Violation dict with keys: type, file, message, severity, etc.
-            
+
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
         try:
             violation_type = violation.get("type", "")
             file_path = violation.get("file")
-            
+
             if not file_path:
                 return {
                     "status": "failed",
@@ -185,7 +185,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     "artifacts": [],
                     "errors": ["Missing file path"],
                 }
-            
+
             # Dispatch to appropriate healing method
             if violation_type == "GRAVITY":
                 result = self._heal_gravity_violation(violation, auto_approve=True)
@@ -227,7 +227,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     "artifacts": [],
                     "errors": [],
                 }
-                
+
         except Exception as e:
             Logger.error(f"Heal operation failed: {e}")
             return {

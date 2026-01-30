@@ -29,52 +29,91 @@ from pathlib import Path
 # =============================================================================
 
 # Valid top-level directories (Sovereign Territories)
-VALID_TERRITORIES: frozenset[str] = frozenset({
-    "agentic_core",
-    "apps_rg",
-    "apps_lic",
-    "apps_shared",
-    "tests",
-    "ops_scripts",
-    "archives",
-    "data",
-    "docs",
-    "logs",
-    "reports",
-    "scripts",
-    ".sovereign_healing_backup",
-    ".github",
-    ".windsurf",
-    ".gravity_state",
-    ".backup",
-    ".git",
-    "temp_quiet_test",
-    "temp_verbose_test",
-})
+VALID_TERRITORIES: frozenset[str] = frozenset(
+    {
+        "agentic_core",
+        "apps_rg",
+        "apps_lic",
+        "apps_shared",
+        "tests",
+        "ops_scripts",
+        "archives",
+        "data",
+        "docs",
+        "logs",
+        "reports",
+        "scripts",
+        ".sovereign_healing_backup",
+        ".github",
+        ".windsurf",
+        ".gravity_state",
+        ".backup",
+        ".git",
+        "temp_quiet_test",
+        "temp_verbose_test",
+    }
+)
 
 # Valid subfolders for apps_* directories (depth 2)
-APPS_VALID_SUBFOLDERS: frozenset[str] = frozenset({
-    # apps_rg
-    "asset_library", "core", "domain", "engines", "logic_nodes",
-    "shared", "system_flow", "validation",
-    # apps_lic
-    "reports", "scripts", "tools",
-    # apps_shared
-    "agents", "common_utils", "config", "core_components", "data", "utils",
-})
+APPS_VALID_SUBFOLDERS: frozenset[str] = frozenset(
+    {
+        # apps_rg
+        "asset_library",
+        "core",
+        "domain",
+        "engines",
+        "logic_nodes",
+        "shared",
+        "system_flow",
+        "validation",
+        # apps_lic
+        "reports",
+        "scripts",
+        "tools",
+        # apps_shared
+        "agents",
+        "common_utils",
+        "config",
+        "core_components",
+        "data",
+        "utils",
+    }
+)
 
 # Valid subfolders for agentic_core (depth 2)
-AGENTIC_CORE_VALID_SUBFOLDERS: frozenset[str] = frozenset({
-    "base_agents", "domain", "L0_maintenance", "L1_cognition", "L2_execution",
-    "L3_orchestration", "L4_state", "L5_safety", "L6_observability",
-    "config", "schemas", "prompt_governance", "runtime", "utils",
-    "patterns", "semantic_memory", "knowledge",
-})
+AGENTIC_CORE_VALID_SUBFOLDERS: frozenset[str] = frozenset(
+    {
+        "base_agents",
+        "domain",
+        "L0_maintenance",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability",
+        "config",
+        "schemas",
+        "prompt_governance",
+        "runtime",
+        "utils",
+        "patterns",
+        "semantic_memory",
+        "knowledge",
+    }
+)
 
 # Valid test type directories (tests/TYPE/...)
-TESTS_VALID_TYPES: frozenset[str] = frozenset({
-    "unit", "integration", "e2e", "fixtures", "guardian", "autogen",
-})
+TESTS_VALID_TYPES: frozenset[str] = frozenset(
+    {
+        "unit",
+        "integration",
+        "e2e",
+        "fixtures",
+        "guardian",
+        "autogen",
+    }
+)
 
 # =============================================================================
 # CONSTITUTIONAL RULES (NEVER VIOLATE)
@@ -103,36 +142,38 @@ ROOT_FORBIDDEN_PATTERNS: list[str] = [
 ]
 
 # Allowed root-level Python files (exceptions)
-ROOT_ALLOWED_FILES: frozenset[str] = frozenset({
-    "conftest.py",
-    "setup.py",
-    "AgentTechnicalStatus.py",  # Legacy - to be migrated
-    "NuclearAuditAgent.py",  # Legacy - to be migrated
-})
+ROOT_ALLOWED_FILES: frozenset[str] = frozenset(
+    {
+        "conftest.py",
+        "setup.py",
+        "AgentTechnicalStatus.py",  # Legacy - to be migrated
+        "NuclearAuditAgent.py",  # Legacy - to be migrated
+    }
+)
 
 
 def validate_base_agent_location(file_path: str) -> tuple[bool, str]:
     """
     [CONSTITUTIONAL] Validate that base agents are in the correct location.
-    
+
     This is a constitutional rule that CANNOT be overridden.
     All files ending in 'BaseAgent.py' MUST be in agentic_core/base_agents/.
     """
     path = Path(file_path)
-    
+
     if not BASE_AGENT_PATTERN.match(path.name):
         return True, ""
-    
+
     # Check if it's in the canonical location
     posix_path = path.as_posix()
     if posix_path.startswith(BASE_AGENT_CANONICAL_DIR + "/"):
         return True, ""
-    
+
     # Also allow if it's just the filename (relative path check)
     parts = path.parts
     if len(parts) >= 2 and parts[-2] == "base_agents" and parts[-3] == "agentic_core":
         return True, ""
-    
+
     return False, (
         f"[CONSTITUTIONAL VIOLATION] Base agent '{path.name}' must reside in "
         f"{BASE_AGENT_CANONICAL_DIR}/, found in: {file_path}"
@@ -143,16 +184,16 @@ def validate_territory(file_path: str) -> tuple[bool, str]:
     """Validate that file is in a valid top-level territory."""
     path = Path(file_path)
     parts = path.parts
-    
+
     if len(parts) < 1:
         return True, ""
-    
+
     territory = parts[0]
-    
+
     # Hidden directories starting with . are generally allowed
     if territory.startswith("."):
         return True, ""
-    
+
     # Root-level files are allowed (pyproject.toml, README.md, etc.)
     if len(parts) == 1:
         # Check for forbidden root patterns
@@ -160,10 +201,10 @@ def validate_territory(file_path: str) -> tuple[bool, str]:
             if re.match(pattern, territory) and territory not in ROOT_ALLOWED_FILES:
                 return False, f"Forbidden file at root: {file_path}"
         return True, ""
-    
+
     if territory not in VALID_TERRITORIES:
         return False, f"Unknown territory '{territory}' in: {file_path}"
-    
+
     return True, ""
 
 
@@ -171,12 +212,12 @@ def validate_subfolder_structure(file_path: str) -> tuple[bool, str]:
     """Validate subfolder structure for apps_* and agentic_core."""
     path = Path(file_path)
     parts = path.parts
-    
+
     if len(parts) < 2:
         return True, ""
-    
+
     territory = parts[0]
-    
+
     # Validate apps_* subfolder structure
     if territory.startswith("apps_"):
         subfolder = parts[1]
@@ -187,7 +228,7 @@ def validate_subfolder_structure(file_path: str) -> tuple[bool, str]:
                     f"Invalid subfolder '{subfolder}' in {territory}: {file_path}. "
                     f"Valid subfolders: {sorted(APPS_VALID_SUBFOLDERS)}"
                 )
-    
+
     # Validate agentic_core subfolder structure
     if territory == "agentic_core":
         subfolder = parts[1]
@@ -197,7 +238,7 @@ def validate_subfolder_structure(file_path: str) -> tuple[bool, str]:
                     f"Invalid subfolder '{subfolder}' in agentic_core: {file_path}. "
                     f"Valid subfolders: {sorted(AGENTIC_CORE_VALID_SUBFOLDERS)}"
                 )
-    
+
     # Validate tests structure
     if territory == "tests":
         if len(parts) >= 2:
@@ -209,30 +250,30 @@ def validate_subfolder_structure(file_path: str) -> tuple[bool, str]:
                         f"Invalid test type '{test_type}' in tests/: {file_path}. "
                         f"Valid types: {sorted(TESTS_VALID_TYPES)}"
                     )
-    
+
     return True, ""
 
 
 def validate_forbidden_patterns(file_path: str) -> tuple[bool, str]:
     """Check for forbidden patterns that indicate structural violations."""
     posix_path = Path(file_path).as_posix()
-    
+
     for pattern, message in FORBIDDEN_PATTERNS:
         if re.search(pattern, posix_path):
             return False, f"Forbidden pattern detected in {file_path}: {message}"
-    
+
     return True, ""
 
 
 def validate_path(file_path: str) -> list[str]:
     """
     Validate a single file path against all SSOT rules.
-    
+
     Returns:
         List of error messages (empty if valid)
     """
     errors: list[str] = []
-    
+
     # Run all validators
     validators = [
         validate_base_agent_location,  # Constitutional - runs first
@@ -240,25 +281,25 @@ def validate_path(file_path: str) -> list[str]:
         validate_subfolder_structure,
         validate_forbidden_patterns,
     ]
-    
+
     for validator in validators:
         is_valid, error = validator(file_path)
         if not is_valid:
             errors.append(error)
-    
+
     return errors
 
 
 def main() -> int:
     """Main entry point for pre-commit hook."""
     files = sys.argv[1:] if len(sys.argv) > 1 else []
-    
+
     if not files:
         return 0
-    
+
     all_violations: list[str] = []
     constitutional_violations: list[str] = []
-    
+
     for file_path in files:
         errors = validate_path(file_path)
         for error in errors:
@@ -266,7 +307,7 @@ def main() -> int:
                 constitutional_violations.append(error)
             else:
                 all_violations.append(error)
-    
+
     # Constitutional violations are CRITICAL
     if constitutional_violations:
         print("\n" + "=" * 70)
@@ -281,7 +322,7 @@ def main() -> int:
         print("Fix: Move base agents to agentic_core/base_agents/")
         print("=" * 70 + "\n")
         return 1
-    
+
     # Regular violations
     if all_violations:
         print("\n" + "=" * 70)
@@ -293,7 +334,7 @@ def main() -> int:
         print("\nFix: Move files to valid SSOT locations per structure_blueprint.py")
         print("=" * 70 + "\n")
         return 1
-    
+
     return 0
 
 

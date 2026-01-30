@@ -17,6 +17,7 @@ def _get_torch():
     global torch
     if torch is None:
         import torch as _torch
+
         torch = _torch
     return torch
 

@@ -147,16 +147,25 @@ class UnusedCleanupAgent(SovereignBaseAgent):
             Dictionary with healing results following standard_heal format.
         """
         path = violation.get("path", "")
-        
+
         if path:
             try:
                 from pathlib import Path as PathLib
+
                 file_path = PathLib(path)
                 if file_path.exists():
                     import asyncio
-                    result = asyncio.get_event_loop().run_until_complete(self.execute(str(file_path)))
-                    return {"violations_fixed": 1 if result.get("healed") else 0, "violations_found": 1, "errors": 0, "skipped": 0}
-            except Exception as e:
+
+                    result = asyncio.get_event_loop().run_until_complete(
+                        self.execute(str(file_path))
+                    )
+                    return {
+                        "violations_fixed": 1 if result.get("healed") else 0,
+                        "violations_found": 1,
+                        "errors": 0,
+                        "skipped": 0,
+                    }
+            except Exception:
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
-        
+
         return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

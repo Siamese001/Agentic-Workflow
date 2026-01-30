@@ -478,13 +478,23 @@ class CodeEnforcerAgent(SovereignBaseAgent):
                     file_path = Path(path)
                     if file_path.exists():
                         result = self.enforce_naming(file_path)
-                        return {"violations_fixed": result.get("fixed", 0), "violations_found": 1, "errors": 0, "skipped": 0}
+                        return {
+                            "violations_fixed": result.get("fixed", 0),
+                            "violations_found": 1,
+                            "errors": 0,
+                            "skipped": 0,
+                        }
                 elif violation_type == "import":
                     # Enforce import rules
                     file_path = Path(path)
                     if file_path.exists():
                         result = self.enforce_imports(file_path)
-                        return {"violations_fixed": result.get("fixed", 0), "violations_found": 1, "errors": 0, "skipped": 0}
+                        return {
+                            "violations_fixed": result.get("fixed", 0),
+                            "violations_found": 1,
+                            "errors": 0,
+                            "skipped": 0,
+                        }
                 else:
                     Logger.warning(f"[CODE_ENFORCER] Unknown violation type: {violation_type}")
                     return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

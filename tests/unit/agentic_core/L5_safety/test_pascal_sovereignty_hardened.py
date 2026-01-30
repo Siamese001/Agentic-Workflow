@@ -15,19 +15,18 @@ PRIORITY QUEUE (First Match Wins):
 CRITICAL: 100% PASS REQUIREMENT
 """
 
-import pytest
-from pathlib import Path
 from unittest.mock import patch
+
+import pytest
 
 from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
 
 
 class TestPascalSovereigntyHardened:
-
     @pytest.fixture
     def agent(self, tmp_path):
         """Create agent with security validation bypassed for unit testing."""
-        with patch.object(PascalSovereigntyAgent, '_security_hardening_validation'):
+        with patch.object(PascalSovereigntyAgent, "_security_hardening_validation"):
             return PascalSovereigntyAgent(project_root=tmp_path, dry_run=True)
 
     # TEST 1: Stub Priority (The "Trojan Horse" Check)

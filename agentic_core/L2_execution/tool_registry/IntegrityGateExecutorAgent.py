@@ -522,9 +522,21 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 1,
+                "skipped": 0,
+                "cycle_detected": True,
+            }
         if depth > max_depth:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 0,
+                "skipped": 1,
+                "depth_limited": True,
+            }
         _call_path.add(agent_name)
 
         violations_found = 0
@@ -549,12 +561,16 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
                 for json_file in research_dir.rglob("*.json"):
                     try:
                         # Skip non-research files
-                        if "research" not in json_file.name.lower() and "output" not in json_file.name.lower():
+                        if (
+                            "research" not in json_file.name.lower()
+                            and "output" not in json_file.name.lower()
+                        ):
                             skipped += 1
                             continue
 
-                        with open(json_file, "r", encoding="utf-8") as f:
+                        with open(json_file, encoding="utf-8") as f:
                             import json
+
                             data = json.load(f)
 
                         # Check if it looks like a research output
@@ -578,12 +594,18 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
 
                         # Check for unbound metrics (numbers without context)
                         content_str = json.dumps(data)
-                        unbound_pattern = r'\b\d+\.?\d*[%KMBT]?\b(?!\s*(percent|million|billion|thousand|users|customers|revenue))'
+                        unbound_pattern = r"\b\d+\.?\d*[%KMBT]?\b(?!\s*(percent|million|billion|thousand|users|customers|revenue))"
                         if re.search(unbound_pattern, content_str):
                             issues.append("potential_unbound_metrics")
 
                         # Check for fluff language
-                        fluff_words = ["revolutionary", "game-changing", "unprecedented", "synergy", "leverage"]
+                        fluff_words = [
+                            "revolutionary",
+                            "game-changing",
+                            "unprecedented",
+                            "synergy",
+                            "leverage",
+                        ]
                         for word in fluff_words:
                             if word.lower() in content_str.lower():
                                 issues.append(f"fluff_language:{word}")
@@ -611,7 +633,9 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
                         self.logger.error(f"    Error processing {json_file}: {e}")
                         errors += 1
 
-            self.logger.info(f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed, {errors} errors")
+            self.logger.info(
+                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed, {errors} errors"
+            )
 
             return {
                 "violations_found": violations_found,
@@ -628,13 +652,13 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by IntegrityGateExecutorAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -644,21 +668,21 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - IntegrityGateExecutorAgent validates integrity gates
         try:
             return {
                 "status": "skipped",
                 "details": f"IntegrityGateExecutorAgent heal() not yet implemented for {violation_type} - integrity violations require manual review",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"IntegrityGateExecutorAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 

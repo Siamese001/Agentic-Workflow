@@ -183,7 +183,7 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, SovereignBaseAgent):
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Threat evolution findings require manual security review"
+            "reason": "Threat evolution findings require manual security review",
         }
 
 

@@ -3,7 +3,6 @@ from __future__ import annotations
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, prompt, state, workflow
-
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 from typing import Any
@@ -30,7 +29,12 @@ class UiValidationAgent(SubatomicTestingMixin, SovereignBaseAgent):
         Determines if the UIValidationAgent can run based on available services.
         """
         # Check if Figma MCP is available
-        return hasattr(self, 'ctx') and hasattr(self.ctx, 'services') and hasattr(self.ctx.services, 'mcp_clients') and "figma" in self.ctx.services.mcp_clients
+        return (
+            hasattr(self, "ctx")
+            and hasattr(self.ctx, "services")
+            and hasattr(self.ctx.services, "mcp_clients")
+            and "figma" in self.ctx.services.mcp_clients
+        )
 
     def execute(self) -> Any:
         """
@@ -46,10 +50,10 @@ class UiValidationAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         HealerProtocol compliance method for UI validation violations.
-        
+
         Args:
             violation: Dictionary containing violation details
-            
+
         Returns:
             Dictionary with healing result following HEAL_RESULT_SCHEMA
         """
@@ -58,7 +62,7 @@ class UiValidationAgent(SubatomicTestingMixin, SovereignBaseAgent):
             violation_type = violation.get("type", "unknown")
             figma_file = violation.get("figma_file")
             component_id = violation.get("component_id")
-            
+
             if violation_type == "figma_component_missing":
                 # Heal missing Figma components
                 if figma_file and component_id:
@@ -69,23 +73,23 @@ class UiValidationAgent(SubatomicTestingMixin, SovereignBaseAgent):
                             "status": "partial_success",
                             "details": f"Figma MCP available but component healing not implemented for {component_id}",
                             "artifacts": [component_id],
-                            "errors": ["Component healing not yet implemented"]
+                            "errors": ["Component healing not yet implemented"],
                         }
                     else:
                         return {
                             "status": "failed",
                             "details": "Figma MCP not available for component healing",
                             "artifacts": [],
-                            "errors": ["Figma MCP service unavailable"]
+                            "errors": ["Figma MCP service unavailable"],
                         }
                 else:
                     return {
                         "status": "failed",
                         "details": "Missing figma_file or component_id for healing",
                         "artifacts": [],
-                        "errors": ["Missing required parameters"]
+                        "errors": ["Missing required parameters"],
                     }
-                    
+
             elif violation_type == "ui_pattern_violation":
                 # Heal UI pattern violations
                 pattern_name = violation.get("pattern_name")
@@ -95,67 +99,67 @@ class UiValidationAgent(SubatomicTestingMixin, SovereignBaseAgent):
                         "spacing": "Ensure consistent spacing using 8px grid system",
                         "color": "Use design system color palette",
                         "typography": "Follow typography scale guidelines",
-                        "components": "Use standardized component library"
+                        "components": "Use standardized component library",
                     }
-                    
+
                     fix_suggestion = guidance.get(pattern_name, "Follow design system guidelines")
-                    
+
                     return {
                         "status": "partial_success",
                         "details": f"Pattern violation guidance for {pattern_name}: {fix_suggestion}",
                         "artifacts": [pattern_name],
-                        "errors": ["Manual intervention required"]
+                        "errors": ["Manual intervention required"],
                     }
                 else:
                     return {
                         "status": "failed",
                         "details": "Missing pattern_name for healing",
                         "artifacts": [],
-                        "errors": ["Missing required parameter: pattern_name"]
+                        "errors": ["Missing required parameter: pattern_name"],
                     }
-                    
+
             elif violation_type == "design_system_mismatch":
                 # Heal design system mismatches
                 return {
                     "status": "skipped",
                     "details": "Design system healing requires manual review and Figma MCP integration",
                     "artifacts": [],
-                    "errors": ["Manual intervention required"]
+                    "errors": ["Manual intervention required"],
                 }
-                
+
             elif violation_type == "figma_connection_lost":
                 # Heal lost Figma connection
                 # Attempt to re-establish connection
-                if hasattr(self, 'ctx') and hasattr(self.ctx, 'services'):
+                if hasattr(self, "ctx") and hasattr(self.ctx, "services"):
                     # Placeholder for reconnection logic
                     return {
                         "status": "partial_success",
                         "details": "Figma connection reconnection attempted - manual verification required",
                         "artifacts": ["figma_connection"],
-                        "errors": ["Manual verification required"]
+                        "errors": ["Manual verification required"],
                     }
                 else:
                     return {
                         "status": "failed",
                         "details": "Cannot re-establish Figma connection - context unavailable",
                         "artifacts": [],
-                        "errors": ["Context unavailable"]
+                        "errors": ["Context unavailable"],
                     }
-                    
+
             else:
                 return {
                     "status": "skipped",
                     "details": f"Unknown violation type: {violation_type}",
                     "artifacts": [],
-                    "errors": []
+                    "errors": [],
                 }
-                
+
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"Heal operation failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
     def heal_repository(self, **kwargs) -> dict:

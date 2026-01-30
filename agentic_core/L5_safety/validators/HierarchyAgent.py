@@ -115,17 +115,17 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         [HEALER PROTOCOL] Standardized healing interface for hierarchy violations.
-        
+
         Args:
             violation: Violation dict with keys: type, file, message, etc.
-            
+
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
         try:
             violation_type = violation.get("type", "")
             file_path = violation.get("file")
-            
+
             if not file_path:
                 return {
                     "status": "failed",
@@ -133,16 +133,18 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
                     "artifacts": [],
                     "errors": ["Missing file path"],
                 }
-            
+
             file_path_obj = Path(file_path)
-            
+
             # Dispatch based on violation type
             if violation_type == "STRUCTURE" or "MISSING" in violation_type:
                 # Structure violations - create missing directories
                 if self.healing_enabled:
                     results = self.create_missing_structure()
                     return {
-                        "status": "success" if results["violations_found"] == 0 else "partial_success",
+                        "status": "success"
+                        if results["violations_found"] == 0
+                        else "partial_success",
                         "details": f"Created {len(results['created'])} directories",
                         "artifacts": results["created"],
                         "errors": results["errors"],
@@ -159,7 +161,9 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
                 if self.healing_enabled:
                     results = self.relocate_misplaced_files()
                     return {
-                        "status": "success" if results["violations_found"] == 0 else "partial_success",
+                        "status": "success"
+                        if results["violations_found"] == 0
+                        else "partial_success",
                         "details": f"Relocated {results['files_relocated']} files",
                         "artifacts": [file_path],
                         "errors": results["errors"],
@@ -175,9 +179,15 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
                 # Depth violations
                 if self.healing_enabled:
                     results = self.enforce_depth_rules()
-                    total_archived = results["apps_archived"] + results["tests_archived"] + results["universal_archived"]
+                    total_archived = (
+                        results["apps_archived"]
+                        + results["tests_archived"]
+                        + results["universal_archived"]
+                    )
                     return {
-                        "status": "success" if results["violations_found"] == 0 else "partial_success",
+                        "status": "success"
+                        if results["violations_found"] == 0
+                        else "partial_success",
                         "details": f"Archived {total_archived} depth violations",
                         "artifacts": [file_path],
                         "errors": results["errors"],
@@ -196,7 +206,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
                     "artifacts": [],
                     "errors": [],
                 }
-                
+
         except Exception as e:
             Logger.error(f"Heal operation failed: {e}")
             return {

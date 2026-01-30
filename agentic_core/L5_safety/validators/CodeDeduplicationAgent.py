@@ -146,17 +146,17 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         [HEALER PROTOCOL] Standardized healing interface for code deduplication violations.
-        
+
         Args:
             violation: Violation dict with keys: type, file, message, etc.
-            
+
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
         try:
             violation_type = violation.get("type", "")
             file_path = violation.get("file")
-            
+
             if not file_path:
                 return {
                     "status": "failed",
@@ -164,7 +164,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                     "artifacts": [],
                     "errors": ["Missing file path"],
                 }
-            
+
             # For deduplication violations, we need project context
             # Return recommendation for batch processing
             if "DUPLICATE" in violation_type or "IDENTICAL" in violation_type:
@@ -188,7 +188,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                     "artifacts": [],
                     "errors": [],
                 }
-                
+
         except Exception as e:
             return {
                 "status": "failed",
@@ -733,9 +733,21 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 1,
+                "skipped": 0,
+                "cycle_detected": True,
+            }
         if depth > max_depth:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 0,
+                "skipped": 1,
+                "depth_limited": True,
+            }
         _call_path.add(agent_name)
 
         violations_found = 0
@@ -761,8 +773,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
 
             # Filter out __pycache__ and archives
             python_files = [
-                f for f in python_files
-                if "__pycache__" not in str(f) and "archives" not in str(f)
+                f for f in python_files if "__pycache__" not in str(f) and "archives" not in str(f)
             ]
 
             self.logger.info(f"  Scanning {len(python_files)} Python files...")
@@ -770,7 +781,9 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
             # Scan for code block duplicates
             try:
                 self.scan_for_duplicates([str(f) for f in python_files])
-                block_duplicates = len(self.duplicate_blocks) if hasattr(self, "duplicate_blocks") else 0
+                block_duplicates = (
+                    len(self.duplicate_blocks) if hasattr(self, "duplicate_blocks") else 0
+                )
                 violations_found += block_duplicates
             except Exception as e:
                 self.logger.error(f"  Error scanning code blocks: {e}")
@@ -779,7 +792,9 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
             # Scan for file-level duplicates
             try:
                 self.scan_file_level_duplicates(python_files)
-                file_duplicates = len(self.file_duplicates) if hasattr(self, "file_duplicates") else 0
+                file_duplicates = (
+                    len(self.file_duplicates) if hasattr(self, "file_duplicates") else 0
+                )
                 violations_found += file_duplicates
             except Exception as e:
                 self.logger.error(f"  Error scanning file duplicates: {e}")
@@ -788,7 +803,9 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
             # Scan for filename collisions
             try:
                 self.scan_filename_duplicates(python_files)
-                name_duplicates = len(self.filename_duplicates) if hasattr(self, "filename_duplicates") else 0
+                name_duplicates = (
+                    len(self.filename_duplicates) if hasattr(self, "filename_duplicates") else 0
+                )
                 violations_found += name_duplicates
             except Exception as e:
                 self.logger.error(f"  Error scanning filename duplicates: {e}")
@@ -800,6 +817,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                 if execute and not dry_run:
                     # Generate deduplication report
                     import json
+
                     report_path = self.project_root / "logs" / "deduplication_report.json"
                     report_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -807,8 +825,12 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                         "scan_date": str(Path(__file__).stat().st_mtime),
                         "total_duplicates": violations_found,
                         "block_duplicates": getattr(self, "duplicate_blocks", [])[:20],
-                        "file_duplicates": [str(f) for f in getattr(self, "file_duplicates", [])[:20]],
-                        "filename_duplicates": [str(f) for f in getattr(self, "filename_duplicates", [])[:20]],
+                        "file_duplicates": [
+                            str(f) for f in getattr(self, "file_duplicates", [])[:20]
+                        ],
+                        "filename_duplicates": [
+                            str(f) for f in getattr(self, "filename_duplicates", [])[:20]
+                        ],
                         "note": "Deduplication requires batch processing and manual review",
                     }
 
@@ -820,7 +842,9 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
             else:
                 self.logger.info("  No significant duplication found")
 
-            self.logger.info(f"[{agent_name}] Complete: {violations_found} duplicates (batch processing required)")
+            self.logger.info(
+                f"[{agent_name}] Complete: {violations_found} duplicates (batch processing required)"
+            )
 
             return {
                 "violations_found": violations_found,

@@ -567,7 +567,12 @@ class PineconeSovereignAgent(SovereignBaseAgent):
                 # Clean up low-quality vectors
                 # This is a placeholder for actual vector cleanup logic
                 Logger.info(f"[PINECONE] Cleaned up {health['quality_issues']} low-quality vectors")
-                return {"violations_fixed": health["quality_issues"], "violations_found": health["quality_issues"], "errors": 0, "skipped": 0}
+                return {
+                    "violations_fixed": health["quality_issues"],
+                    "violations_found": health["quality_issues"],
+                    "errors": 0,
+                    "skipped": 0,
+                }
             else:
                 return {"violations_fixed": 0, "violations_found": 0, "errors": 0, "skipped": 0}
         except Exception as e:

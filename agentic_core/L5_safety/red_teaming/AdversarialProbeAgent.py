@@ -237,5 +237,5 @@ class AdversarialProbeAgent(SovereignBaseAgent):
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Adversarial findings require manual security review"
+            "reason": "Adversarial findings require manual security review",
         }

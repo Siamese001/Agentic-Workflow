@@ -337,14 +337,14 @@ class DecompositionOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 "status": "skipped",
                 "details": f"DecompositionOrchestratorAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"DecompositionOrchestratorAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 

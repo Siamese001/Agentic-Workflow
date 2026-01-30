@@ -11,7 +11,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.validators.HealerProtocol import HealerProtocol
 
 """TestSovereigntyAgent — Ultra L5 Sovereign Testing Specialist (Jan 01, 2026)
 
@@ -27,12 +26,12 @@ import re
 from enum import Enum
 from pathlib import Path
 
+from agentic_core.utils.security import safe_execute
+
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.validators.structure_blueprint import (
     TESTS_DIR,
 )
-from agentic_core.utils.security import safe_execute
 
 
 class SovereignSeverity(Enum):
@@ -247,14 +246,9 @@ class TestSovereigntyAgent(SovereignBaseAgent):
     @timeout(300)
     def heal(self, violation: dict) -> dict:
         """Heal method for L5 safety compliance."""
-        return {
-            "violations_found": 1,
-            "violations_fixed": 0,
-            "errors": [],
-            "skipped": 1
-        }
+        return {"violations_found": 1, "violations_fixed": 0, "errors": [], "skipped": 1}
 
-    def get_test_sovereignty_agent(self) -> "TestSovereigntyAgent":
+    def get_test_sovereignty_agent(self) -> TestSovereigntyAgent:
         """Factory function to get test sovereignty agent instance."""
         return TestSovereigntyAgent()
 

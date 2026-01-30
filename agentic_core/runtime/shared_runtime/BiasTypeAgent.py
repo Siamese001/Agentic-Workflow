@@ -115,13 +115,13 @@ class BiasAuditorAgent:
     def heal(self, violation: dict[str, any]) -> dict[str, any]:
         """
         Heal violations detected by BiasAuditorAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -131,30 +131,30 @@ class BiasAuditorAgent:
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - BiasAuditorAgent delegates to SafetyDetectorAgent
         try:
-            if hasattr(self._detector, 'heal'):
+            if hasattr(self._detector, "heal"):
                 result = self._detector.heal(violation)
                 return {
                     "status": result.get("status", "skipped"),
                     "details": f"BiasAuditorAgent healed via SafetyDetectorAgent: {result.get('details', '')}",
                     "artifacts": result.get("artifacts", []),
-                    "errors": result.get("errors", [])
+                    "errors": result.get("errors", []),
                 }
             else:
                 return {
                     "status": "skipped",
                     "details": f"BiasAuditorAgent heal() not yet implemented for {violation_type}",
                     "artifacts": [],
-                    "errors": []
+                    "errors": [],
                 }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"BiasAuditorAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 

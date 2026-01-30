@@ -10,36 +10,39 @@ EmbeddingSovereignAgent - Unified Embedding Gateway
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Any, Literal, TYPE_CHECKING
-import time
+
+import hashlib
 import logging
 import os
-import hashlib
+import time
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any, Literal
 
 if TYPE_CHECKING:
     pass
 
-from agentic_core.config.SovereignConfigManager import get_sovereign_config
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.config.SovereignConfigManager import get_sovereign_config
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 
 # Import mixins for functionality
 try:
-    from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
     from agentic_core.base_agents.redis_cache_mixin import RedisCacheMixin
+    from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 except ImportError:
     # Fallback stubs if mixins are not available
     class SubatomicTestingMixin:
         pass
-    
+
     class RedisCacheMixin:
         def cache_get(self, key):
             return None
+
         def cache_set(self, key, value, ttl=None):
             pass
+
 
 EmbeddingProvider = Literal["gemini", "openai"]
 
@@ -245,7 +248,7 @@ class EmbeddingSovereignAgent(SubatomicTestingMixin, RedisCacheMixin, SovereignB
     ) -> dict[str, int]:
         """
         L2 Execution Agent - Embedding Gateway Healing.
-        
+
         WIRED CAPABILITIES:
         - Validates embedding provider configurations
         - Checks Redis cache connectivity
@@ -253,30 +256,30 @@ class EmbeddingSovereignAgent(SubatomicTestingMixin, RedisCacheMixin, SovereignB
         """
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"errors": 1, "cycle_detected": True}
         if depth > max_depth:
             return {"errors": 1, "depth_limited": True}
-        
+
         _call_path.add(agent_name)
         metrics = {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             # Validate embedding providers
             if not os.getenv("GOOGLE_API_KEY"):
                 metrics["violations"] += 1
                 Logger.warning("GOOGLE_API_KEY missing for Gemini embeddings")
-            
+
             if not os.getenv("OPENAI_API_KEY"):
                 metrics["violations"] += 1
                 Logger.warning("OPENAI_API_KEY missing for OpenAI embeddings")
-            
+
             # Test Redis cache connectivity
             try:
                 test_key = f"{self._cache_prefix}:test"
-                if hasattr(self, 'cache_set') and hasattr(self, 'cache_get'):
+                if hasattr(self, "cache_set") and hasattr(self, "cache_get"):
                     self.cache_set(test_key, "test_value", ttl=60)
                     cached = self.cache_get(test_key)
                     if cached != "test_value":
@@ -288,7 +291,7 @@ class EmbeddingSovereignAgent(SubatomicTestingMixin, RedisCacheMixin, SovereignB
             except Exception as e:
                 metrics["violations"] += 1
                 Logger.warning(f"Redis cache connectivity test failed: {e}")
-            
+
             # Validate expected dimensions
             try:
                 expected_dims = self.EXPECTED_DIMENSIONS
@@ -298,29 +301,29 @@ class EmbeddingSovereignAgent(SubatomicTestingMixin, RedisCacheMixin, SovereignB
             except Exception as e:
                 metrics["violations"] += 1
                 Logger.warning(f"Dimensions validation failed: {e}")
-            
+
             if metrics["violations"] == 0:
                 metrics["fixed"] = 1
                 Logger.info("EmbeddingSovereignAgent validation passed")
-            
+
         except Exception as e:
             Logger.error(f"EmbeddingSovereignAgent healing failed: {e}")
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-        
+
         return metrics
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by EmbeddingSovereignAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -330,21 +333,21 @@ class EmbeddingSovereignAgent(SubatomicTestingMixin, RedisCacheMixin, SovereignB
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - EmbeddingSovereignAgent handles embeddings
         try:
             return {
                 "status": "skipped",
                 "details": f"EmbeddingSovereignAgent heal() not yet implemented for {violation_type} - embedding violations require manual review",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"EmbeddingSovereignAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 
