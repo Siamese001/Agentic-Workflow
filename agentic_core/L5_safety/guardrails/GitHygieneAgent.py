@@ -197,10 +197,10 @@ class GitHygieneAgent(SovereignBaseAgent):
         max_depth: int = 3,
         _call_path: set[str] | None = None,
     ) -> dict[str, int]:
-        """Execute L5 safety healing operations.
+        """Audit and heal Git repository hygiene issues.
 
-        This is an operational agent - no repository healing required.
-        Implements cycle detection and depth limiting.
+        Scans for stale branches, large files, uncommitted changes,
+        and unpushed commits. Can clean up stale branches when execute=True.
 
         Args:
             dry_run: If True, only report what would be done (default: True).
@@ -210,7 +210,7 @@ class GitHygieneAgent(SovereignBaseAgent):
             _call_path: Set of agent names in current call chain for cycle detection.
 
         Returns:
-            Dictionary with healing results: {"skipped": 1} for operational agents.
+            Dictionary with violations_found, violations_fixed, errors, skipped.
         """
         super().heal_repository()
 
@@ -218,13 +218,67 @@ class GitHygieneAgent(SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
         if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
         _call_path.add(agent_name)
+
+        violations_found = 0
+        violations_fixed = 0
+        errors = 0
+        skipped = 0
+
         try:
-            print(f"[{agent_name}] L5 safety - operational only")
-            return {"skipped": 1}
+            self.logger.info(f"[{agent_name}] Auditing Git repository hygiene...")
+
+            # Run the execute method to get current status
+            try:
+                result = self.execute(cleanup=False)
+
+                # Count violations
+                stale_count = result.get("stale_branches", 0)
+                large_files = result.get("large_files", 0)
+                uncommitted = 1 if result.get("uncommitted", False) else 0
+                unpushed = 1 if result.get("unpushed", False) else 0
+
+                violations_found = stale_count + large_files + uncommitted + unpushed
+
+                if violations_found > 0:
+                    self.logger.warning(f"  Found {violations_found} hygiene issues:")
+                    if stale_count:
+                        self.logger.warning(f"    - {stale_count} stale branches")
+                    if large_files:
+                        self.logger.warning(f"    - {large_files} large files")
+                    if uncommitted:
+                        self.logger.warning(f"    - Uncommitted changes detected")
+                    if unpushed:
+                        self.logger.warning(f"    - Unpushed commits detected")
+
+                    if execute and not dry_run:
+                        # Clean up stale branches
+                        if stale_count > 0:
+                            cleanup_result = self.cleanup_stale_branches()
+                            violations_fixed += cleanup_result.get("actions_taken", 0)
+                            self.logger.info(f"    Cleaned {violations_fixed} stale branches")
+
+                else:
+                    self.logger.info("  Repository hygiene is clean")
+
+            except Exception as e:
+                self.logger.error(f"  Error during Git hygiene audit: {e}")
+                errors += 1
+
+            self.logger.info(f"[{agent_name}] Complete: {violations_found} issues, {violations_fixed} fixed")
+
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "errors": errors,
+                "skipped": skipped,
+                "agent": agent_name,
+                "dry_run": dry_run,
+            }
+
         finally:
             _call_path.discard(agent_name)
 

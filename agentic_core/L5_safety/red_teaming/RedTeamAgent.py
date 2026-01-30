@@ -210,19 +210,92 @@ class RedTeamAgent(SubatomicTestingMixin, SovereignBaseAgent):
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
-        """Red team agent - operational testing mode only."""
+        """Execute red team adversarial testing on repository guardrails.
+
+        Runs adversarial tests against safety guardrails to identify potential
+        bypasses. Findings require manual security review and cannot be auto-fixed.
+
+        Args:
+            dry_run: If True, only report findings (default: True).
+            execute: If True, run full adversarial test suite.
+            depth: Current recursion depth for cycle detection.
+            max_depth: Maximum recursion depth allowed.
+            _call_path: Set of agent names in current call chain.
+
+        Returns:
+            Dictionary with violations_found, violations_fixed, errors, skipped.
+        """
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
         if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
         _call_path.add(agent_name)
+
+        violations_found = 0
+        violations_fixed = 0
+        errors = 0
+        skipped = 0
+
         try:
-            print(f"[{agent_name}] Operational red team agent - no healing required")
-            return {"skipped": 1}
+            self.logger.info(f"[{agent_name}] Running adversarial guardrail tests...")
+
+            # Check if we're authorized for red team operations
+            if not self._is_authorized():
+                self.logger.warning("  Red team operations require authorization")
+                skipped += 1
+                return {
+                    "violations_found": 0,
+                    "violations_fixed": 0,
+                    "errors": 0,
+                    "skipped": 1,
+                    "agent": agent_name,
+                    "reason": "Red team requires authorization",
+                }
+
+            if execute and not dry_run:
+                # Run adversarial tests
+                bypasses = []
+
+                for fragment in self.adversarial_fragments:
+                    try:
+                        result = self._execute_fragment(fragment)
+                        if self._detect_bypass(result):
+                            bypasses.append({
+                                "fragment": fragment[:50],
+                                "result": str(result)[:100],
+                            })
+                            violations_found += 1
+                    except Exception as e:
+                        self.logger.error(f"  Fragment execution error: {e}")
+                        errors += 1
+
+                if bypasses:
+                    self.logger.warning(f"  Detected {len(bypasses)} potential guardrail bypasses")
+                    # Escalate findings
+                    self._escalate_breach(bypasses)
+                else:
+                    self.logger.info("  No guardrail bypasses detected")
+
+            else:
+                self.logger.info("  Dry run - would execute adversarial tests")
+                skipped = len(self.adversarial_fragments)
+
+            self.logger.info(f"[{agent_name}] Complete: {violations_found} bypasses found (manual review required)")
+
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "errors": errors,
+                "skipped": skipped,
+                "agent": agent_name,
+                "dry_run": dry_run,
+                "note": "Red team findings require manual security review",
+            }
+
         finally:
             _call_path.discard(agent_name)
 

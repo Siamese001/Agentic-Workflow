@@ -713,19 +713,125 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
         _call_path: set | None = None,
         **kwargs,
     ) -> dict[str, int]:
-        """L2 execution agent - operational only with signal propagation."""
+        """Scan repository for code duplication and report findings.
+
+        Detects duplicated code blocks, whole-file duplicates, and filename
+        collisions. Deduplication requires batch processing and manual review.
+
+        Args:
+            dry_run: If True, only report duplicates (default: True).
+            execute: If True, generate deduplication report.
+            depth: Current recursion depth for cycle detection.
+            max_depth: Maximum recursion depth allowed.
+            _call_path: Set of agent names in current call chain.
+
+        Returns:
+            Dictionary with violations_found, violations_fixed, errors, skipped.
+        """
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path, **kwargs)
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
         if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
         _call_path.add(agent_name)
+
+        violations_found = 0
+        violations_fixed = 0
+        errors = 0
+        skipped = 0
+
         try:
-            print(f"[{agent_name}] L2 execution - operational only")
-            return {"skipped": 1}
+            self.logger.info(f"[{agent_name}] Scanning for code duplication...")
+
+            # Collect Python files from source directories
+            source_dirs = [
+                self.project_root / "agentic_core",
+                self.project_root / "apps_lic",
+                self.project_root / "apps_rg",
+                self.project_root / "apps_shared",
+            ]
+
+            python_files = []
+            for source_dir in source_dirs:
+                if source_dir.exists():
+                    python_files.extend(source_dir.rglob("*.py"))
+
+            # Filter out __pycache__ and archives
+            python_files = [
+                f for f in python_files
+                if "__pycache__" not in str(f) and "archives" not in str(f)
+            ]
+
+            self.logger.info(f"  Scanning {len(python_files)} Python files...")
+
+            # Scan for code block duplicates
+            try:
+                self.scan_for_duplicates([str(f) for f in python_files])
+                block_duplicates = len(self.duplicate_blocks) if hasattr(self, "duplicate_blocks") else 0
+                violations_found += block_duplicates
+            except Exception as e:
+                self.logger.error(f"  Error scanning code blocks: {e}")
+                errors += 1
+
+            # Scan for file-level duplicates
+            try:
+                self.scan_file_level_duplicates(python_files)
+                file_duplicates = len(self.file_duplicates) if hasattr(self, "file_duplicates") else 0
+                violations_found += file_duplicates
+            except Exception as e:
+                self.logger.error(f"  Error scanning file duplicates: {e}")
+                errors += 1
+
+            # Scan for filename collisions
+            try:
+                self.scan_filename_duplicates(python_files)
+                name_duplicates = len(self.filename_duplicates) if hasattr(self, "filename_duplicates") else 0
+                violations_found += name_duplicates
+            except Exception as e:
+                self.logger.error(f"  Error scanning filename duplicates: {e}")
+                errors += 1
+
+            if violations_found > 0:
+                self.logger.warning(f"  Found {violations_found} duplication issues")
+
+                if execute and not dry_run:
+                    # Generate deduplication report
+                    import json
+                    report_path = self.project_root / "logs" / "deduplication_report.json"
+                    report_path.parent.mkdir(parents=True, exist_ok=True)
+
+                    report = {
+                        "scan_date": str(Path(__file__).stat().st_mtime),
+                        "total_duplicates": violations_found,
+                        "block_duplicates": getattr(self, "duplicate_blocks", [])[:20],
+                        "file_duplicates": [str(f) for f in getattr(self, "file_duplicates", [])[:20]],
+                        "filename_duplicates": [str(f) for f in getattr(self, "filename_duplicates", [])[:20]],
+                        "note": "Deduplication requires batch processing and manual review",
+                    }
+
+                    with open(report_path, "w", encoding="utf-8") as f:
+                        json.dump(report, f, indent=2, default=str)
+
+                    self.logger.info(f"  Generated deduplication report: {report_path}")
+
+            else:
+                self.logger.info("  No significant duplication found")
+
+            self.logger.info(f"[{agent_name}] Complete: {violations_found} duplicates (batch processing required)")
+
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "errors": errors,
+                "skipped": skipped,
+                "agent": agent_name,
+                "dry_run": dry_run,
+                "note": "Deduplication requires batch processing",
+            }
+
         finally:
             _call_path.discard(agent_name)
 

@@ -24,21 +24,78 @@ class LicS2SupervisorAgent(SovereignBaseAgent):
 
     @standard_heal
     def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set = None,
+        **kwargs,
     ) -> Dict[str, Any]:
-        """
-        Autonomous healing method (Canon Key 51 compliance).
+        """Validate strategic alignment research workflow components.
+
+        Checks that all sub-agents (LicInternalAgent, LicRecipientAgent,
+        LicOrganizationAgent) are properly configured and operational.
 
         Args:
-            dry_run: If True, only report violations without fixing
-            execute: If True, apply fixes
+            dry_run: If True, only report violations without fixing.
+            execute: If True, apply fixes.
+            depth: Current recursion depth for cycle detection.
+            max_depth: Maximum recursion depth allowed.
+            _call_path: Set of agent names in current call chain.
 
         Returns:
-            Dict with healing summary
+            Dict with violations_found, violations_fixed, errors, skipped.
         """
         super().heal_repository(**kwargs)
 
-        return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
+        if depth > max_depth:
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+
+        violations_found = 0
+        violations_fixed = 0
+        errors = 0
+        skipped = 0
+
+        try:
+            # Validate sub-agent configurations
+            sub_agents = [
+                ("internal_agent", self.internal_agent),
+                ("recipient_agent", self.recipient_agent),
+                ("organization_agent", self.organization_agent),
+            ]
+
+            for name, agent in sub_agents:
+                if agent is None:
+                    violations_found += 1
+                elif not hasattr(agent, "circuit_breaker"):
+                    violations_found += 1
+
+            # Validate LLM client
+            if self.llm_client is None:
+                violations_found += 1
+
+            # Validate scoring components
+            if self.signal_scorer is None or self.claim_scorer is None:
+                violations_found += 1
+
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "errors": errors,
+                "skipped": skipped,
+                "agent": agent_name,
+                "dry_run": dry_run,
+            }
+
+        finally:
+            _call_path.discard(agent_name)
 
     def __init__(
         self,

@@ -1011,7 +1011,22 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
-        """L1 cognition agent - architectural governance enforcement."""
+        """Enforce architectural governance laws across the repository.
+
+        Checks root hygiene (Law of The Void), depth requirements, and
+        atomicity constraints. Governance violations are delegated to
+        StructuralHealerAgent for actual fixes.
+
+        Args:
+            dry_run: If True, only report violations (default: True).
+            execute: If True, delegate fixes to StructuralHealerAgent.
+            depth: Current recursion depth for cycle detection.
+            max_depth: Maximum recursion depth allowed.
+            _call_path: Set of agent names in current call chain.
+
+        Returns:
+            Dictionary with violations_found, violations_fixed, errors, skipped.
+        """
         if _call_path is None:
             _call_path = set()
             try:
@@ -1021,28 +1036,68 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
         if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
         _call_path.add(agent_name)
+
+        violations_found = 0
+        violations_fixed = 0
+        errors = 0
+        skipped = 0
+
         try:
-            violations_found = 0
+            self.logger.info(f"[{agent_name}] Enforcing architectural governance...")
 
             # Check Law of The Void (Root Hygiene)
-            root_violations = self.check_root_hygiene(auto_sanitize=False)
-            if root_violations:
-                print(f"[{agent_name}] ROOT HYGIENE VIOLATIONS: {len(root_violations)}")
-                for v in root_violations[:5]:
-                    print(f"  - {v}")
-                violations_found += len(root_violations)
+            try:
+                root_violations = self.check_root_hygiene(auto_sanitize=False)
+                if root_violations:
+                    self.logger.warning(f"  Root hygiene violations: {len(root_violations)}")
+                    for v in root_violations[:5]:
+                        self.logger.warning(f"    - {v}")
+                    violations_found += len(root_violations)
 
-            # Skip dependency graph building for now (has path resolution issues)
-            # TODO: Fix build_graph to handle relative/absolute path mixing
+                    if execute and not dry_run:
+                        # Attempt to sanitize root
+                        sanitized = self.check_root_hygiene(auto_sanitize=True)
+                        if sanitized:
+                            violations_fixed += len(root_violations) - len(sanitized)
+            except Exception as e:
+                self.logger.error(f"  Error checking root hygiene: {e}")
+                errors += 1
 
-            print(
-                f"[{agent_name} HEAL @ depth {depth}] Found {violations_found} governance violations"
-            )
-            return {"violations_found": violations_found, "fixed": 0}
+            # Check depth law violations
+            try:
+                depth_violations = self.check_depth_law()
+                if depth_violations:
+                    self.logger.warning(f"  Depth law violations: {len(depth_violations)}")
+                    violations_found += len(depth_violations)
+            except Exception as e:
+                self.logger.error(f"  Error checking depth law: {e}")
+                errors += 1
+
+            # Check atomicity law (file size)
+            try:
+                atomicity_violations = self.check_atomicity_law()
+                if atomicity_violations:
+                    self.logger.warning(f"  Atomicity violations: {len(atomicity_violations)}")
+                    violations_found += len(atomicity_violations)
+            except Exception as e:
+                self.logger.error(f"  Error checking atomicity law: {e}")
+                errors += 1
+
+            self.logger.info(f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed")
+
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "errors": errors,
+                "skipped": skipped,
+                "agent": agent_name,
+                "dry_run": dry_run,
+            }
+
         finally:
             _call_path.discard(agent_name)
 

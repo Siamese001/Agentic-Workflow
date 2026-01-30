@@ -391,18 +391,20 @@ class CanonBaseAgent(SovereignBaseAgent):
         max_depth: int = 3,
         _call_path: set[str] | None = None,
     ) -> dict[str, int]:
-        """
-        Execute L1 cognition healing operations.
+        """Validate Canon keys and run registered verification checks.
+
+        Iterates through the VERIFICATION_REGISTRY and runs all registered
+        checks for Canon validation. Can apply smart fixes when execute=True.
 
         Args:
             dry_run: If True, only report violations without fixing.
-            execute: If True, apply fixes.
+            execute: If True, apply fixes using smart_fix.
             depth: Current recursion depth for cycle detection.
             max_depth: Maximum allowed recursion depth.
             _call_path: Set of agent names already in call chain.
 
         Returns:
-            Dict with keys: violations, fixed, errors, skipped.
+            Dict with violations_found, violations_fixed, errors, skipped.
         """
         # Call parent heal_repository if it exists
         try:
@@ -420,12 +422,57 @@ class CanonBaseAgent(SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
         if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
         _call_path.add(agent_name)
+
+        violations_found = 0
+        violations_fixed = 0
+        errors = 0
+        skipped = 0
+
         try:
-            print(f"[{agent_name}] L1 cognition - operational only")
-            return {"skipped": 1}
+            self.logger.info(f"[{agent_name}] Running Canon validation checks...")
+
+            # Run all registered verification checks
+            for canon_key, check_func in self.VERIFICATION_REGISTRY.items():
+                try:
+                    self.logger.info(f"  Checking Canon key: {canon_key}")
+
+                    # Get context for this check
+                    context = self._get_check_context(canon_key)
+
+                    # Run the check
+                    result = check_func(context)
+
+                    if not result.get("valid", True):
+                        violations_found += 1
+                        self.logger.warning(f"    Violation: {result.get('message', 'Unknown')}")
+
+                        if execute and not dry_run:
+                            # Attempt smart fix
+                            fix_result = self.smart_fix(canon_key, context, result)
+                            if fix_result.get("fixed", False):
+                                violations_fixed += 1
+                                self.logger.info(f"    Fixed: {canon_key}")
+                            else:
+                                self.logger.warning(f"    Could not fix: {canon_key}")
+
+                except Exception as e:
+                    self.logger.error(f"    Error checking {canon_key}: {e}")
+                    errors += 1
+
+            self.logger.info(f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed")
+
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "errors": errors,
+                "skipped": skipped,
+                "agent": agent_name,
+                "dry_run": dry_run,
+            }
+
         finally:
             _call_path.discard(agent_name)
