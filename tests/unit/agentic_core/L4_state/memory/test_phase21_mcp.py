@@ -2,7 +2,7 @@
 [PHASE 21] Unit Tests for Production-Grade Privacy & Knowledge Graph Integration.
 
 Tests:
-1. PIISanitizer - Email, IPv4/v6, and API key pattern detection and redaction
+1. PII_Sanitizer - Email, IPv4/v6, and API key pattern detection and redaction
 2. GraphMemoryBridge - Entity creation, relation creation, graceful degradation
 
 [SSOT] Tests for Phase 21 features in SemanticCacheManager and GraphMemoryBridge.
@@ -16,19 +16,19 @@ from unittest.mock import MagicMock
 import pytest
 
 # =============================================================================
-# PIISanitizer Tests
+# PII_Sanitizer Tests
 # =============================================================================
 
 
-class TestPIISanitizer:
-    """Tests for the production-grade PIISanitizer."""
+class TestPII_Sanitizer:
+    """Tests for the production-grade PII_Sanitizer."""
 
     @pytest.fixture
     def sanitizer(self):
-        """Get the PIISanitizer class."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import PIISanitizer
+        """Get the PII_Sanitizer class."""
+        from agentic_core.L4_state.memory.SemanticCacheManager import PII_Sanitizer
 
-        return PIISanitizer
+        return PII_Sanitizer
 
     def test_sanitize_email(self, sanitizer):
         """Test that email addresses are properly redacted."""
@@ -321,19 +321,19 @@ class TestPhase21Integration:
     """Integration tests for Phase 21 features."""
 
     def test_pii_sanitizer_in_semantic_cache(self):
-        """Test that PIISanitizer is used in SemanticCacheManager."""
+        """Test that PII_Sanitizer is used in SemanticCacheManager."""
         from agentic_core.L4_state.memory.SemanticCacheManager import (
-            PIISanitizer,
+            PII_Sanitizer,
         )
 
-        # Verify PIISanitizer is imported and functional
-        assert hasattr(PIISanitizer, "sanitize")
-        assert hasattr(PIISanitizer, "is_safe")
-        assert hasattr(PIISanitizer, "detect_pii")
+        # Verify PII_Sanitizer is imported and functional
+        assert hasattr(PII_Sanitizer, "sanitize")
+        assert hasattr(PII_Sanitizer, "is_safe")
+        assert hasattr(PII_Sanitizer, "detect_pii")
 
         # Test sanitization
         test_content = "User email: test@example.com with key sk-abc123def456ghi789jkl012mno"
-        sanitized = PIISanitizer.sanitize(test_content)
+        sanitized = PII_Sanitizer.sanitize(test_content)
 
         assert "test@example.com" not in sanitized
         assert "sk-abc123def456ghi789jkl012mno" not in sanitized

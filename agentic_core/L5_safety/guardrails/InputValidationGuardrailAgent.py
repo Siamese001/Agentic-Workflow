@@ -2,7 +2,7 @@ from __future__ import annotations
 
 """
 InputValidationGuardrail: Consolidated input validation with composable rules.
-Merges: input_validator, PIISanitizer, PromptInjectionDetector, BiasDetector, safety_guardrail
+Merges: input_validator, PII_Sanitizer, PromptInjectionDetector, BiasDetector, safety_guardrail
 """
 
 import logging

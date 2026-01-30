@@ -42,7 +42,7 @@ class CriticalInfrastructureError(Exception):
     pass
 
 
-class PIISanitizer:
+class PII_Sanitizer:
     """
     [PHASE 21] Production-Grade PII Sanitizer for content sanitization before embedding.
 
@@ -269,7 +269,7 @@ class SemanticCacheManager:
         self.stateless_mode = False
 
         # PII Sanitizer
-        self.sanitizer = PIISanitizer()
+        self.sanitizer = PII_Sanitizer()
 
         # Layer 1: Redis (Working Memory - Short-Term)
         self.redis_client = None

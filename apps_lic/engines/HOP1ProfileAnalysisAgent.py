@@ -16,6 +16,13 @@ from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
 from apps_lic.shared.core.TraceRegistry import TraceRegistry
 
+# Import mixin with fallback
+try:
+    from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+except ImportError:
+    class SubatomicTestingMixin:
+        pass
+
 
 @dataclass
 class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):

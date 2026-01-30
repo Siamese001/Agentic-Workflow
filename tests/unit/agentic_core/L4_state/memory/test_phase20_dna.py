@@ -888,21 +888,21 @@ class TestMemoryLifecycle:
             SemanticCacheManager.reset_instance()
 
 
-class TestPIISanitizer:
+class TestPII_Sanitizer:
     """Phase 20 Tests: PII Sanitizer stub."""
 
     def test_pii_sanitizer_passthrough(self):
-        """[Phase 20] Verify PIISanitizer is currently a pass-through."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import PIISanitizer
+        """[Phase 20] Verify PII_Sanitizer is currently a pass-through."""
+        from agentic_core.L4_state.memory.SemanticCacheManager import PII_Sanitizer
 
         test_content = "This is test content with email@example.com"
 
         # Currently pass-through
-        sanitized = PIISanitizer.sanitize(test_content)
+        sanitized = PII_Sanitizer.sanitize(test_content)
         assert sanitized == test_content
 
         # is_safe should return True
-        assert PIISanitizer.is_safe(test_content) is True
+        assert PII_Sanitizer.is_safe(test_content) is True
 
 
 class TestKnowledgeGraphBridge:
