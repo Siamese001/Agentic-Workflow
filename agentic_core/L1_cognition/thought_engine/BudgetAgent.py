@@ -79,3 +79,48 @@ class BudgetAgent(SovereignBaseAgent):
 
         passed, details = self.validate_canon_key(19, self.ctx)
         self.ctx.report(self.name, 19, passed, details)
+
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by BudgetAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: 'success', 'partial_success', 'failed', or 'skipped'
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Default implementation - delegate to heal_repository if available
+        try:
+            if hasattr(self, 'heal_repository'):
+                result = self.heal_repository(dry_run=False)
+                return {
+                    "status": "success" if result.get("violations_fixed", 0) > 0 else "skipped",
+                    "details": f"BudgetAgent healed {result.get('violations_fixed', 0)} violations",
+                    "artifacts": [file_path] if file_path else [],
+                    "errors": []
+                }
+            else:
+                return {
+                    "status": "skipped",
+                    "details": f"BudgetAgent heal() not yet implemented for {violation_type}",
+                    "artifacts": [],
+                    "errors": []
+                }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"BudgetAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
