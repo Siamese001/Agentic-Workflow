@@ -105,3 +105,11 @@ class ProactiveAgent(SubatomicTestingMixin, RGAgentBase):
             Dictionary with healing results including violations, fixed, errors, skipped
         """
         return super().heal_repository()
+
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """Heal violations detected by ProactiveAgent."""
+        violation_type = violation.get("type", "unknown")
+        try:
+            return {"status": "skipped", "details": f"ProactiveAgent heal() not yet implemented for {violation_type}", "artifacts": [], "errors": []}
+        except Exception as e:
+            return {"status": "failed", "details": f"ProactiveAgent heal() failed: {str(e)}", "artifacts": [], "errors": [str(e)]}

@@ -78,3 +78,29 @@ class PerformanceAnalystAgentSimple:
             "violations_fixed": 0,
             "violations_found": 0,
         }
+
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by PerformanceAnalystAgentSimple.
+        
+        Args:
+            violation: Dictionary containing violation details
+                
+        Returns:
+            Dictionary with status, details, artifacts, errors keys
+        """
+        violation_type = violation.get("type", "unknown")
+        try:
+            return {
+                "status": "skipped",
+                "details": f"PerformanceAnalystAgentSimple heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": []
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"PerformanceAnalystAgentSimple heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
