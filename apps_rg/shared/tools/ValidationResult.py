@@ -24,7 +24,8 @@ Non-responsibilities:
 import logging
 import os
 import re
-from dataclasses import dataclass, field as Field
+from dataclasses import dataclass
+from dataclasses import field as Field
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

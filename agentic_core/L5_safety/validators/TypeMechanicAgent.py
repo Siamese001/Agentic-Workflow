@@ -14,8 +14,8 @@ Part of the SubAtomic agent family for code quality enforcement.
 import ast
 from typing import Any
 
-from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
 
 
 # Sovereign Agent for type enforcement and precision engineering

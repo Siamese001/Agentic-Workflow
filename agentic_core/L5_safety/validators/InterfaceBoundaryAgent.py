@@ -26,11 +26,11 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.utils.ssot_discovery import get_python_files
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass

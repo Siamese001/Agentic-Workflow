@@ -5496,7 +5496,7 @@ C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest
 C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\ast.py:50: in parse
     return compile(source, filename, mode, flags,
 E     File "C:\Git\Agentic-Workflow\tests\unit\agentic_core\L2_execution\ToolRegistry\test_sub_atomic_registry_agent.py", line 46
-E       
+E
 E       ^
 E   SyntaxError: invalid syntax
 _ ERROR collecting tests/unit/agentic_core/L2_execution/mcp/test_all_clients.py _
@@ -5574,7 +5574,7 @@ C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest
 C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\ast.py:50: in parse
     return compile(source, filename, mode, flags,
 E     File "C:\Git\Agentic-Workflow\tests\unit\agentic_core\L3_orchestration\workflow_engines\test_orchestration_handshake_agent.py", line 46
-E       
+E
 E       ^
 E   SyntaxError: invalid syntax
 _ ERROR collecting tests/unit/agentic_core/L3_orchestration/workflow_engines/test_phase1_orchestrator_consolidation.py _
@@ -6041,7 +6041,7 @@ C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest
 C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\ast.py:50: in parse
     return compile(source, filename, mode, flags,
 E     File "C:\Git\Agentic-Workflow\tests\unit\agentic_core\L5_safety\validators\test_pinecone_sovereign_agent.py", line 46
-E       
+E
 E       ^
 E   SyntaxError: invalid syntax
 _ ERROR collecting tests/unit/agentic_core/L5_safety/validators/test_redis_sovereign_agent.py _
@@ -6069,7 +6069,7 @@ C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest
 C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\ast.py:50: in parse
     return compile(source, filename, mode, flags,
 E     File "C:\Git\Agentic-Workflow\tests\unit\agentic_core\L5_safety\validators\test_redis_sovereign_agent.py", line 48
-E       
+E
 E       ^
 E   SyntaxError: invalid syntax
 _ ERROR collecting tests/unit/agentic_core/L5_safety/validators/test_sovereign_lockdown.py _
@@ -6225,7 +6225,7 @@ C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest
 C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\ast.py:50: in parse
     return compile(source, filename, mode, flags,
 E     File "C:\Git\Agentic-Workflow\tests\unit\agentic_core\config\blueprint_sovereign\test_test_sovereignty_agent.py", line 42
-E       
+E
 E       ^
 E   SyntaxError: invalid syntax
 _ ERROR collecting tests/unit/agentic_core/config/test_core_hygiene_agents.py _
