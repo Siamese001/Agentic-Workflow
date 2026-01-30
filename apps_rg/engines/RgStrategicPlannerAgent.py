@@ -77,3 +77,11 @@ class RgStrategicPlannerAgent(SubatomicTestingMixin, RGAgentBase):
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()
+
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """Heal violations detected by RgStrategicPlannerAgent."""
+        violation_type = violation.get("type", "unknown")
+        try:
+            return {"status": "skipped", "details": f"RgStrategicPlannerAgent heal() not yet implemented for {violation_type}", "artifacts": [], "errors": []}
+        except Exception as e:
+            return {"status": "failed", "details": f"RgStrategicPlannerAgent heal() failed: {str(e)}", "artifacts": [], "errors": [str(e)]}

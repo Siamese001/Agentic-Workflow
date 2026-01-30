@@ -149,3 +149,11 @@ class BrandComplianceAgent(SubatomicTestingMixin, RGAgentBase):
             Dict with healing summary (violations, fixed, errors)
         """
         return super().heal_repository(dry_run, execute, **kwargs)
+
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """Heal violations detected by BrandComplianceAgent."""
+        violation_type = violation.get("type", "unknown")
+        try:
+            return {"status": "skipped", "details": f"BrandComplianceAgent heal() not yet implemented for {violation_type}", "artifacts": [], "errors": []}
+        except Exception as e:
+            return {"status": "failed", "details": f"BrandComplianceAgent heal() failed: {str(e)}", "artifacts": [], "errors": [str(e)]}
