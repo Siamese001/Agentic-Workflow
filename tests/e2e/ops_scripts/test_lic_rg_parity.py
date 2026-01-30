@@ -42,10 +42,9 @@ def test_configuration_parity():
         assert specs is not specs3, "Reload not working"
 
         print("   ✅ Configuration parity tests PASSED")
-        return True
     except Exception as e:
         print(f"   ❌ Configuration parity tests FAILED: {e}")
-        return False
+        raise
 
 
 def test_reasoning_toggles_parity():
@@ -69,10 +68,9 @@ def test_reasoning_toggles_parity():
         assert dev_toggles.strict_mode is False, "Dev mode should be less strict"
 
         print("   ✅ Reasoning toggles parity tests PASSED")
-        return True
     except Exception as e:
         print(f"   ❌ Reasoning toggles parity tests FAILED: {e}")
-        return False
+        raise
 
 
 def test_trace_registry_parity():
@@ -107,10 +105,9 @@ def test_trace_registry_parity():
         trace_path.unlink()
 
         print("   ✅ Trace registry parity tests PASSED")
-        return True
     except Exception as e:
         print(f"   ❌ Trace registry parity tests FAILED: {e}")
-        return False
+        raise
 
 
 def test_base_engine_parity():
@@ -139,10 +136,9 @@ def test_base_engine_parity():
         assert hasattr(engine, "run_subatomic_test"), "Missing SubatomicTestingMixin"
 
         print("   ✅ Base engine parity tests PASSED")
-        return True
     except Exception as e:
         print(f"   ❌ Base engine parity tests FAILED: {e}")
-        return False
+        raise
 
 
 def test_orchestrator_parity():
@@ -168,10 +164,9 @@ def test_orchestrator_parity():
         assert orch.GLOBAL_STEP_LIMIT > 0, "Invalid step limit"
 
         print("   ✅ Orchestrator parity tests PASSED")
-        return True
     except Exception as e:
         print(f"   ❌ Orchestrator parity tests FAILED: {e}")
-        return False
+        raise
 
 
 def test_gap_closure_validation():
@@ -260,10 +255,9 @@ def test_gap_closure_validation():
 
     if gaps_closed == total_gaps:
         print("   ✅ All critical gaps have been CLOSED!")
-        return True
     else:
         print(f"   ❌ {total_gaps - gaps_closed} gaps remain OPEN")
-        return False
+        raise AssertionError(f"{total_gaps - gaps_closed} gaps remain OPEN")
 
 
 def main():
