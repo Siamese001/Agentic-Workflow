@@ -14,15 +14,19 @@ from typing import Any
 # Import mixins with fallbacks
 try:
     from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
+
     class MCPHardenedMixin(mcp_hardened_mixin):
         pass
 except ImportError:
+
     class MCPHardenedMixin:
         pass
+
 
 try:
     from agentic_core.L5_safety.validators.healing_mixin import HealerMixin
 except ImportError:
+
     class HealerMixin:
         pass
 

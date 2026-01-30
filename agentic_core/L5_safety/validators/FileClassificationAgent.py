@@ -11,7 +11,7 @@ Rationale:
     - Implements standard agent interface for execute_ssot.py orchestration
     - Preserves all original PascalSovereigntyFixer functionality
     - Adds heal_repository() method for standard healing chain integration
-    
+
     Hardening Features (Architecture Hallucination Prevention):
     - SCRIPT category for ops_scripts (snake_case enforcement)
     - TYPES category for collections and private modules (immunity from renaming)
@@ -75,7 +75,7 @@ FileType = Literal[
     "STUB",
     "TEST",
     "SCRIPT",  # NEW: For ops_scripts and maintenance tools
-    "TYPES",   # NEW: For schemas/types/enums/collections
+    "TYPES",  # NEW: For schemas/types/enums/collections
     "GATEWAY",
     "IGNORE",
 ]
@@ -116,7 +116,7 @@ class FileClassificationAgent(SovereignBaseAgent):
                 "STUB": 0,
                 "TEST": 0,
                 "SCRIPT": 0,  # NEW: Script category
-                "TYPES": 0,   # NEW: Types category
+                "TYPES": 0,  # NEW: Types category
                 "GATEWAY": 0,
             },
         }
@@ -218,8 +218,14 @@ class FileClassificationAgent(SovereignBaseAgent):
         9. UTILITY  - No class definitions
         """
         # --- EXEMPTION: SSOT & CONFIG FILES ---
-        critical_ignores = {"conftest.py", "__init__.py", "__main__.py", "setup.py", 
-                           "structure_blueprint.py", "tool_registry.py"}
+        critical_ignores = {
+            "conftest.py",
+            "__init__.py",
+            "__main__.py",
+            "setup.py",
+            "structure_blueprint.py",
+            "tool_registry.py",
+        }
         if path.name in critical_ignores:
             return "IGNORE"
 
@@ -539,12 +545,12 @@ class FileClassificationAgent(SovereignBaseAgent):
 
         # SCRIPT: Force Snake Case
         if file_type == "SCRIPT":
-            snake = re.sub(r'(?<!^)(?=[A-Z])', '_', path.stem).lower().replace("__", "_")
+            snake = re.sub(r"(?<!^)(?=[A-Z])", "_", path.stem).lower().replace("__", "_")
             return f"{snake}.py" if f"{snake}.py" != path.name else None
 
         # TEST: Force test_ prefix + snake_case
         if file_type == "TEST":
-            clean = re.sub(r'(?<!^)(?=[A-Z])', '_', path.stem.replace("test_", "")).lower()
+            clean = re.sub(r"(?<!^)(?=[A-Z])", "_", path.stem.replace("test_", "")).lower()
             return f"test_{clean}.py" if f"test_{clean}.py" != path.name else None
 
         # --- MIXIN STANDARDIZATION ---

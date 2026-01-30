@@ -17,6 +17,11 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import targets
+from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
+from agentic_core.L6_observability.ConversationalRepairAgent import (
+    ConversationalRepairAgent,
+)
+
 from agentic_core.L0_maintenance.scripts.execute_ssot import (
     AutonomousDecisionEngine,
     RuntimeStateManager,
@@ -25,10 +30,6 @@ from agentic_core.L0_maintenance.scripts.execute_ssot import (
     execute_phase2_reconciliation as phase2_reconcile,
 )
 from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
-from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
-from agentic_core.L6_observability.ConversationalRepairAgent import (
-    ConversationalRepairAgent,
-)
 
 
 @pytest.fixture

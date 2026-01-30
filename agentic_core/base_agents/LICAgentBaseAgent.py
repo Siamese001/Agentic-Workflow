@@ -15,12 +15,15 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 try:
     from agentic_core.L1_cognition.thought_engine.meta_learning_mixin import MetaLearningMixin
 except ImportError:
+
     class MetaLearningMixin:
         pass
+
 
 try:
     from agentic_core.L5_safety.validators.healing_mixin import HealerMixin
 except ImportError:
+
     class HealerMixin:
         pass
 

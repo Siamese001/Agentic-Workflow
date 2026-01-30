@@ -23,7 +23,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L2_execution.tool_registry.ValidationOrchestratorAgent import ValidationOrchestratorAgent
 
 Logger = logging.getLogger(__name__)
 

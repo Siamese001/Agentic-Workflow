@@ -10,16 +10,18 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+
 from apps_lic.domain.config import load_agent_specs
 from apps_lic.logic_nodes.K1Router import K1Router
 from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
-from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
 from apps_lic.shared.core.TraceRegistry import TraceRegistry
 
 # Import mixin with fallback
 try:
     from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 except ImportError:
+
     class SubatomicTestingMixin:
         pass
 

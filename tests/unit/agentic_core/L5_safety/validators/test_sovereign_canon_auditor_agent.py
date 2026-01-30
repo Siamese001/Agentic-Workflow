@@ -12,31 +12,36 @@ Tests:
 - Mocking: Zero network calls
 """
 
-import pytest
 from unittest.mock import Mock, patch
-from typing import Any, Dict
+
+import pytest
 
 
 @pytest.fixture(autouse=True)
 def mock_external_services():
     """Mock all external services to prevent network calls."""
-    with patch('redis.Redis', return_value=Mock()), \
-         patch.dict('os.environ', {'OPENAI_API_KEY': 'test-key', 'ANTHROPIC_API_KEY': 'test-key'}):
+    with (
+        patch("redis.Redis", return_value=Mock()),
+        patch.dict("os.environ", {"OPENAI_API_KEY": "test-key", "ANTHROPIC_API_KEY": "test-key"}),
+    ):
         yield
 
 
 class TestSovereignCanonAuditorAgent:
     """Unit tests for SovereignCanonAuditorAgent."""
-    
+
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.SovereignCanonAuditorAgent import SovereignCanonAuditorAgent
+            from agentic_core.L5_safety.validators.SovereignCanonAuditorAgent import (
+                SovereignCanonAuditorAgent,
+            )
+
             return SovereignCanonAuditorAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.skip(f"Cannot import SovereignCanonAuditorAgent: {e}")
-    
+
     def test_class_exists(self, agent_class):
         """Verify SovereignCanonAuditorAgent exists and is importable."""
         assert agent_class is not None, "SovereignCanonAuditorAgent should exist"
@@ -44,33 +49,41 @@ class TestSovereignCanonAuditorAgent:
     def test_inherits_from_subatomic_testing_mixin(self, agent_class):
         """Verify proper inheritance from SubatomicTestingMixin."""
         mro_names = [cls.__name__ for cls in agent_class.__mro__]
-        assert 'SubatomicTestingMixin' in mro_names, "Should inherit from SubatomicTestingMixin"
+        assert "SubatomicTestingMixin" in mro_names, "Should inherit from SubatomicTestingMixin"
 
     def test_has_audit_core_components_method(self, agent_class):
         """Verify agent has audit_core_components method."""
-        assert hasattr(agent_class, 'audit_core_components'), "Should have audit_core_components method"
+        assert hasattr(agent_class, "audit_core_components"), (
+            "Should have audit_core_components method"
+        )
 
     def test_has_get_architectural_insight_method(self, agent_class):
         """Verify agent has get_architectural_insight method."""
-        assert hasattr(agent_class, 'get_architectural_insight'), "Should have get_architectural_insight method"
+        assert hasattr(agent_class, "get_architectural_insight"), (
+            "Should have get_architectural_insight method"
+        )
 
     def test_has_verify_mcp_integration_method(self, agent_class):
         """Verify agent has verify_mcp_integration method."""
-        assert hasattr(agent_class, 'verify_mcp_integration'), "Should have verify_mcp_integration method"
+        assert hasattr(agent_class, "verify_mcp_integration"), (
+            "Should have verify_mcp_integration method"
+        )
 
     def test_has_run_full_audit_method(self, agent_class):
         """Verify agent has run_full_audit method."""
-        assert hasattr(agent_class, 'run_full_audit'), "Should have run_full_audit method"
+        assert hasattr(agent_class, "run_full_audit"), "Should have run_full_audit method"
 
     def test_has_healing_capability(self, agent_class):
         """Verify agent has healing capability."""
-        assert hasattr(agent_class, 'heal_repository') or hasattr(agent_class, 'heal'), \
-               "Should have healing method"
+        assert hasattr(agent_class, "heal_repository") or hasattr(agent_class, "heal"), (
+            "Should have healing method"
+        )
 
     def test_has_tools_capability(self, agent_class):
         """Verify agent has tools capability."""
-        assert hasattr(agent_class, '_perform_action') or hasattr(agent_class, 'execute'), \
-               "Should have tool execution method"
+        assert hasattr(agent_class, "_perform_action") or hasattr(agent_class, "execute"), (
+            "Should have tool execution method"
+        )
 
     def test_fuzzing_invalid_inputs(self, agent_class):
         """Test handling of invalid inputs."""
@@ -80,21 +93,22 @@ class TestSovereignCanonAuditorAgent:
                 pass  # Would test actual processing
             except (TypeError, ValueError, AttributeError):
                 pass  # Expected for invalid inputs
-    
+
     def test_no_network_calls_on_import(self):
         """Verify no network calls during import."""
         network_calls = []
-        
+
         def track_call(*args, **kwargs):
             network_calls.append((args, kwargs))
-        
-        with patch('requests.get', track_call), \
-             patch('requests.post', track_call):
+
+        with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.SovereignCanonAuditorAgent import SovereignCanonAuditorAgent
+                from agentic_core.L5_safety.validators.SovereignCanonAuditorAgent import (
+                    SovereignCanonAuditorAgent,
+                )
             except (ImportError, NameError, AttributeError):
                 pass
-            
+
             assert len(network_calls) == 0, "No network calls on import"
 
 
