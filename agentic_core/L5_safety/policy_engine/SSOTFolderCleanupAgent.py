@@ -626,11 +626,17 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         if path and target_path:
             try:
                 from pathlib import Path as PathLib
+
                 source = PathLib(path)
                 if source.exists():
                     success = self.move_file_to_ssot(source, target_path)
                     if success:
-                        return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+                        return {
+                            "violations_fixed": 1,
+                            "violations_found": 1,
+                            "errors": 0,
+                            "skipped": 0,
+                        }
             except Exception as e:
                 Logger.error(f"[SSOT_CLEANUP] Failed to heal: {e}")
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}

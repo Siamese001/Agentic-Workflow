@@ -68,17 +68,17 @@ class HandoffSummary:
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         [HEALER PROTOCOL] Standardized healing interface for ContextCuratorAgent violations.
-        
+
         Args:
             violation: Violation dict with keys: type, file, message, etc.
-            
+
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
         try:
             violation_type = violation.get("type", "")
             file_path = violation.get("file")
-            
+
             if not file_path:
                 return {
                     "status": "failed",
@@ -86,7 +86,7 @@ class HandoffSummary:
                     "artifacts": [],
                     "errors": ["Missing file path"],
                 }
-            
+
             # ContextCuratorAgent healing logic
             return {
                 "status": "manual_required",
@@ -94,7 +94,7 @@ class HandoffSummary:
                 "artifacts": [],
                 "errors": [],
             }
-            
+
         except Exception as e:
             return {
                 "status": "failed",
@@ -400,13 +400,13 @@ class ContextCuratorAgent(SovereignBaseAgent, SubAtomicAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by ContextCuratorAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -416,21 +416,21 @@ class ContextCuratorAgent(SovereignBaseAgent, SubAtomicAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - ContextCuratorAgent curates context
         try:
             return {
                 "status": "skipped",
                 "details": f"ContextCuratorAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"ContextCuratorAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 

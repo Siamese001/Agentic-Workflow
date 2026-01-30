@@ -112,6 +112,7 @@ except ImportError:
 
 # SSOT: Import canonical functions (Phase 3 Migration)
 from agentic_core.L5_safety.validators.canonical_truth import categorize_agent, get_canonical_layer
+
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,

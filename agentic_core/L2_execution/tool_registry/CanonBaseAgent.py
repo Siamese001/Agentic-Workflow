@@ -422,9 +422,21 @@ class CanonBaseAgent(SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 1,
+                "skipped": 0,
+                "cycle_detected": True,
+            }
         if depth > max_depth:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 0,
+                "skipped": 1,
+                "depth_limited": True,
+            }
         _call_path.add(agent_name)
 
         violations_found = 0
@@ -463,7 +475,9 @@ class CanonBaseAgent(SovereignBaseAgent):
                     self.logger.error(f"    Error checking {canon_key}: {e}")
                     errors += 1
 
-            self.logger.info(f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed")
+            self.logger.info(
+                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed"
+            )
 
             return {
                 "violations_found": violations_found,
@@ -480,13 +494,13 @@ class CanonBaseAgent(SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by CanonBaseAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -496,19 +510,19 @@ class CanonBaseAgent(SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - CanonBaseAgent validates canon keys
         try:
             return {
                 "status": "skipped",
                 "details": f"CanonBaseAgent heal() not yet implemented for {violation_type} - canon violations require manual review",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"CanonBaseAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }

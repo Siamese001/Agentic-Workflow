@@ -86,17 +86,17 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         [HEALER PROTOCOL] Standardized healing interface for AutonomyGuardianAgent violations.
-        
+
         Args:
             violation: Violation dict with keys: type, file, message, etc.
-            
+
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
         try:
             violation_type = violation.get("type", "")
             file_path = violation.get("file")
-            
+
             if not file_path:
                 return {
                     "status": "failed",
@@ -104,7 +104,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     "artifacts": [],
                     "errors": ["Missing file path"],
                 }
-            
+
             # AutonomyGuardianAgent healing logic
             return {
                 "status": "manual_required",
@@ -112,7 +112,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-            
+
         except Exception as e:
             return {
                 "status": "failed",

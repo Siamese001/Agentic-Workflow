@@ -231,5 +231,5 @@ class InputValidationGuardrail(SovereignBaseAgent):
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Input validation violations require content revision"
+            "reason": "Input validation violations require content revision",
         }

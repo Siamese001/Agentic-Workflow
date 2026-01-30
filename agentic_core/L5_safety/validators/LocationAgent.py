@@ -70,17 +70,17 @@ def _get_python_files(project_root: Path) -> list[Path]:
 def heal(violation: dict[str, Any]) -> dict[str, Any]:
     """
     [HEALER PROTOCOL] Standardized healing interface for location violations.
-    
+
     Args:
         violation: Violation dict with keys: type, file, message, etc.
-        
+
     Returns:
         Dict with keys: status, details, artifacts, errors
     """
     try:
         violation_type = violation.get("type", "")
         file_path = violation.get("file")
-        
+
         if not file_path:
             return {
                 "status": "failed",
@@ -88,16 +88,16 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
                 "artifacts": [],
                 "errors": ["Missing file path"],
             }
-        
+
         # Location violations typically require file moves
         # Delegate to LocationHealerAgent for actual healing
         return {
             "status": "manual_required",
-            "details": f"Location violation requires file move operation via LocationHealerAgent",
+            "details": "Location violation requires file move operation via LocationHealerAgent",
             "artifacts": [],
             "errors": [],
         }
-        
+
     except Exception as e:
         return {
             "status": "failed",

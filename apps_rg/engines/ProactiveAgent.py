@@ -110,6 +110,16 @@ class ProactiveAgent(SubatomicTestingMixin, RGAgentBase):
         """Heal violations detected by ProactiveAgent."""
         violation_type = violation.get("type", "unknown")
         try:
-            return {"status": "skipped", "details": f"ProactiveAgent heal() not yet implemented for {violation_type}", "artifacts": [], "errors": []}
+            return {
+                "status": "skipped",
+                "details": f"ProactiveAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
         except Exception as e:
-            return {"status": "failed", "details": f"ProactiveAgent heal() failed: {str(e)}", "artifacts": [], "errors": [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"ProactiveAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }

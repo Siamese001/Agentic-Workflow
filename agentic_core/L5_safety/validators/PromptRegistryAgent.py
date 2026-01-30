@@ -84,12 +84,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
         Returns:
             Dict with canonical heal schema keys
         """
-        return {
-            "violations_found": 1,
-            "violations_fixed": 0,
-            "errors": [],
-            "skipped": 1
-        }
+        return {"violations_found": 1, "violations_fixed": 0, "errors": [], "skipped": 1}
 
     def __init__(self, placement_validator=None) -> None:
         """Initialize the instance.

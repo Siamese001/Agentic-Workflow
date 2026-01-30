@@ -165,5 +165,5 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBaseAgent):
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Constitutional violations require content revision"
+            "reason": "Constitutional violations require content revision",
         }

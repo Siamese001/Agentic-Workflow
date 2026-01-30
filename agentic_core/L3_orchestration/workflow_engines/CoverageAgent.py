@@ -247,7 +247,7 @@ class CoverageAgent(SovereignBaseAgent):
     ) -> dict[str, int]:
         """
         L3 Orchestration Agent - Coverage Agent Healing.
-        
+
         WIRED CAPABILITIES:
         - Validates layer coverage metrics
         - Checks dashboard API connectivity
@@ -255,53 +255,53 @@ class CoverageAgent(SovereignBaseAgent):
         """
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         if depth > max_depth:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
-        
+
         _call_path.add(agent_name)
         metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             # Validate layer configuration
             if not self.layers or len(self.layers) == 0:
                 metrics["violations_found"] += 1
-            
+
             # Validate entropy threshold
             if self.threshold_entropy <= 0 or self.threshold_entropy > 5:
                 metrics["violations_found"] += 1
-            
+
             # Validate bias weight
             if self.bias_weight <= 0:
                 metrics["violations_found"] += 1
-            
+
             # Validate priority boost layers
             if not self.priority_boost_layers:
                 metrics["violations_found"] += 1
-            
+
             if metrics["violations_found"] == 0:
                 metrics["violations_fixed"] = 1
-            
-        except Exception as e:
+
+        except Exception:
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-        
+
         return metrics
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by CoverageAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -311,19 +311,19 @@ class CoverageAgent(SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - CoverageAgent manages test coverage
         try:
             return {
                 "status": "skipped",
                 "details": f"CoverageAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"CoverageAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }

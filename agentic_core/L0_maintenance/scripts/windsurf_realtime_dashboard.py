@@ -79,74 +79,74 @@ def get_latest_stats(df: pd.DataFrame) -> dict[str, Any]:
 def _create_layout():
     """Create the app layout (called only when app is initialized)."""
     return html.Div(
-    [
-        # Header
-        html.Div(
-            [
-                html.H1(
-                    "🌊 Windsurf Real-Time Progress Dashboard",
-                    style={"textAlign": "center", "color": "#1E3A8A", "marginBottom": "10px"},
-                ),
-                html.P(
-                    "Autonomous Healing & MCP Hardening Progress",
-                    style={"textAlign": "center", "color": "#6B7280", "marginTop": "0"},
-                ),
-            ],
-            style={
-                "backgroundColor": "#F3F4F6",
-                "padding": "20px",
-                "borderRadius": "10px",
-                "marginBottom": "20px",
-            },
-        ),
-        # Auto-refresh interval (30 seconds)
-        dcc.Interval(id="interval-component", interval=30 * 1000, n_intervals=0),
-        # Stats cards row
-        html.Div(
-            id="stats-cards",
-            style={
-                "display": "flex",
-                "justifyContent": "space-around",
-                "marginBottom": "30px",
-                "flexWrap": "wrap",
-            },
-        ),
-        # Charts row 1
-        html.Div(
-            [
-                html.Div(
-                    [dcc.Graph(id="healing-line-chart")],
-                    style={"width": "60%", "display": "inline-block", "verticalAlign": "top"},
-                ),
-                html.Div(
-                    [dcc.Graph(id="coverage-pie-chart")],
-                    style={"width": "38%", "display": "inline-block", "verticalAlign": "top"},
-                ),
-            ],
-            style={"marginBottom": "20px"},
-        ),
-        # Charts row 2
-        html.Div([dcc.Graph(id="cumulative-dual-chart")], style={"marginBottom": "20px"}),
-        # Charts row 3 (MCP if available)
-        html.Div([dcc.Graph(id="mcp-progress-chart")], style={"marginBottom": "20px"}),
-        # Footer with last update
-        html.Div(
-            id="last-update",
-            style={
-                "textAlign": "center",
-                "padding": "15px",
-                "backgroundColor": "#F3F4F6",
-                "borderRadius": "10px",
-                "color": "#6B7280",
-            },
-        ),
-    ],
-    style={
-        "fontFamily": "Arial, sans-serif",
-        "padding": "20px",
-        "maxWidth": "1400px",
-        "margin": "0 auto",
-    },
+        [
+            # Header
+            html.Div(
+                [
+                    html.H1(
+                        "🌊 Windsurf Real-Time Progress Dashboard",
+                        style={"textAlign": "center", "color": "#1E3A8A", "marginBottom": "10px"},
+                    ),
+                    html.P(
+                        "Autonomous Healing & MCP Hardening Progress",
+                        style={"textAlign": "center", "color": "#6B7280", "marginTop": "0"},
+                    ),
+                ],
+                style={
+                    "backgroundColor": "#F3F4F6",
+                    "padding": "20px",
+                    "borderRadius": "10px",
+                    "marginBottom": "20px",
+                },
+            ),
+            # Auto-refresh interval (30 seconds)
+            dcc.Interval(id="interval-component", interval=30 * 1000, n_intervals=0),
+            # Stats cards row
+            html.Div(
+                id="stats-cards",
+                style={
+                    "display": "flex",
+                    "justifyContent": "space-around",
+                    "marginBottom": "30px",
+                    "flexWrap": "wrap",
+                },
+            ),
+            # Charts row 1
+            html.Div(
+                [
+                    html.Div(
+                        [dcc.Graph(id="healing-line-chart")],
+                        style={"width": "60%", "display": "inline-block", "verticalAlign": "top"},
+                    ),
+                    html.Div(
+                        [dcc.Graph(id="coverage-pie-chart")],
+                        style={"width": "38%", "display": "inline-block", "verticalAlign": "top"},
+                    ),
+                ],
+                style={"marginBottom": "20px"},
+            ),
+            # Charts row 2
+            html.Div([dcc.Graph(id="cumulative-dual-chart")], style={"marginBottom": "20px"}),
+            # Charts row 3 (MCP if available)
+            html.Div([dcc.Graph(id="mcp-progress-chart")], style={"marginBottom": "20px"}),
+            # Footer with last update
+            html.Div(
+                id="last-update",
+                style={
+                    "textAlign": "center",
+                    "padding": "15px",
+                    "backgroundColor": "#F3F4F6",
+                    "borderRadius": "10px",
+                    "color": "#6B7280",
+                },
+            ),
+        ],
+        style={
+            "fontFamily": "Arial, sans-serif",
+            "padding": "20px",
+            "maxWidth": "1400px",
+            "margin": "0 auto",
+        },
     )
 
 
@@ -172,6 +172,7 @@ def create_stat_card(title: str, value: str, color: str, icon: str) -> html.Div:
 
 def _register_callbacks(app):
     """Register callbacks on the app (called only when app is initialized)."""
+
     @app.callback(
         [
             Output("stats-cards", "children"),
@@ -191,7 +192,9 @@ def _register_callbacks(app):
         # Stats cards
         cards = [
             create_stat_card("Core Healing", f"{stats['healing_pct']}%", "#10B981", "G"),
-            create_stat_card("Healed Agents", f"{stats['healed']}/{stats['total']}", "#1E3A8A", "W"),
+            create_stat_card(
+                "Healed Agents", f"{stats['healed']}/{stats['total']}", "#1E3A8A", "W"
+            ),
             create_stat_card("MCP Hardened", f"{stats['mcp']}", "#8B5CF6", "S"),
             create_stat_card("Total Commits", f"{stats['commits']}", "#F59E0B", "C"),
             create_stat_card(
@@ -239,7 +242,10 @@ def _register_callbacks(app):
             annotation_position="right",
         )
         fig_line.update_layout(
-            xaxis_title="Batch", yaxis_title="Healing %", yaxis_range=[0, 105], template="plotly_white"
+            xaxis_title="Batch",
+            yaxis_title="Healing %",
+            yaxis_range=[0, 105],
+            template="plotly_white",
         )
 
         # Pie chart: Current Coverage
@@ -301,7 +307,9 @@ def _register_callbacks(app):
             fig_mcp.update_layout(title="MCP Hardened Agents Progress")
 
         # Last update timestamp
-        last_update = f"Last update: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Auto-refresh every 30s"
+        last_update = (
+            f"Last update: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Auto-refresh every 30s"
+        )
 
         return cards, fig_line, fig_pie, fig_dual, fig_mcp, last_update
 

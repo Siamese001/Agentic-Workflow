@@ -27,13 +27,13 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L3_orchestration.interfaces import (
     AgentResult,
     ExecutionContext,
     ExecutionPhase,
     MissionResult,
 )
+from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
 
 # [PHASE 2] SSOT Discovery Integration
@@ -615,7 +615,7 @@ class OrchestratorAgent(SovereignBaseAgent):
     ) -> dict[str, int]:
         """
         L3 Orchestration Agent - Central Nervous System Healing.
-        
+
         WIRED CAPABILITIES:
         - Validates strategy configurations
         - Checks agent discovery paths
@@ -623,16 +623,16 @@ class OrchestratorAgent(SovereignBaseAgent):
         """
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         if depth > max_depth:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
-        
+
         _call_path.add(agent_name)
         metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             # Validate strategies are loadable
             try:
@@ -643,7 +643,7 @@ class OrchestratorAgent(SovereignBaseAgent):
             except Exception as e:
                 metrics["violations_found"] += 1
                 self.logger.warning(f"Strategy loading failed: {e}")
-            
+
             # Validate agent discovery
             try:
                 available_agents = self.get_available_agents()
@@ -655,34 +655,34 @@ class OrchestratorAgent(SovereignBaseAgent):
             except Exception as e:
                 metrics["violations_found"] += 1
                 self.logger.warning(f"Agent discovery failed: {e}")
-            
+
             # Validate project root
             if not self.project_root.exists():
                 metrics["violations_found"] += 1
                 self.logger.warning(f"Project root does not exist: {self.project_root}")
-            
+
             if metrics["violations_found"] == 0:
                 metrics["violations_fixed"] = 1
                 self.logger.info("OrchestratorAgent validation passed")
-            
+
         except Exception as e:
             self.logger.error(f"OrchestratorAgent healing failed: {e}")
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-        
+
         return metrics
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by OrchestratorAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -692,19 +692,19 @@ class OrchestratorAgent(SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - OrchestratorAgent manages orchestration
         try:
             return {
                 "status": "skipped",
                 "details": f"OrchestratorAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"OrchestratorAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }

@@ -8,7 +8,7 @@ plugins: anyio-4.12.0, dash-3.3.0, hypothesis-6.148.7, langsmith-0.5.0, asyncio-
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
 collecting ... collected 1 item
 
-tests/guardian/test_import_safety.py::TestImportSafety::test_global_smoke_loader 
+tests/guardian/test_import_safety.py::TestImportSafety::test_global_smoke_loader
 === PHASE 2: Global Smoke Loader (ALL SOURCE FILES) ===
 Found 1 agents without tests
 
@@ -170,16 +170,16 @@ VALIDATION GAPS - Table 2 Missing
      - schema Strictness % should be 0-100
      - Canonical Inheritance % should be 0-100
      - Code Quality Score should be 0-100
-  
+
   2. Data integrity checks
      - Verify all Table 2 fields exist in dashboardData
      - Check for null/undefined values
      - Validate numeric types
-  
+
   3. Specific territory validation
      - Check L0, L6 territories have correct values
      - Validate TOTAL row aggregation
-  
+
   4. Expected range warnings
      - Flag territories with low Typed % (<80%)
      - Flag territories with low Documented % (<70%)
@@ -192,15 +192,15 @@ RECOMMENDED ENHANCEMENTS
      - Validate all Code Quality fields present
      - Validate all values in range 0-100
      - Check for null/undefined
-  
+
   2. Add Table 2 data integrity to test_dashboard_data_integrity.py
      - Spot-check Code Quality Score calculation
      - Verify weighted formula matches SSOT
-  
+
   3. Add Table 2 specific tests
      - Validate Code Quality Score = (Typed├ù0.30 + Doc├ù0.30 + schema├ù0.25 + Base├ù0.15)
      - Check TOTAL row is average/aggregate of territories
-  
+
   4. Add deployment blocker
      - Missing Table 2 fields should BLOCK deployment
      - Out-of-range values should BLOCK deployment

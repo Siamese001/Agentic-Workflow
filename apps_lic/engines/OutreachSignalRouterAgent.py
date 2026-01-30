@@ -8,35 +8,6 @@ Provides self-healing capabilities for outreach campaigns:
 """
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -192,9 +163,19 @@ class OutreachSignalRouterAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """Heal violations detected by OutreachSignalRouterAgent."""
         violation_type = violation.get("type", "unknown")
         try:
-            return {"status": "skipped", "details": f"OutreachSignalRouterAgent heal() not yet implemented for {violation_type}", "artifacts": [], "errors": []}
+            return {
+                "status": "skipped",
+                "details": f"OutreachSignalRouterAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
         except Exception as e:
-            return {"status": "failed", "details": f"OutreachSignalRouterAgent heal() failed: {str(e)}", "artifacts": [], "errors": [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"OutreachSignalRouterAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
 
 
 class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):

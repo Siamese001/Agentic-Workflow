@@ -185,17 +185,17 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         [HEALER PROTOCOL] Standardized healing interface for CredentialScannerAgent violations.
-        
+
         Args:
             violation: Violation dict with keys: type, file, message, etc.
-            
+
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
         try:
             violation_type = violation.get("type", "")
             file_path = violation.get("file")
-            
+
             if not file_path:
                 return {
                     "status": "failed",
@@ -203,7 +203,7 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     "artifacts": [],
                     "errors": ["Missing file path"],
                 }
-            
+
             # CredentialScannerAgent healing logic
             return {
                 "status": "manual_required",
@@ -211,7 +211,7 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-            
+
         except Exception as e:
             return {
                 "status": "failed",
@@ -425,9 +425,21 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 1,
+                "skipped": 0,
+                "cycle_detected": True,
+            }
         if depth > max_depth:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 0,
+                "skipped": 1,
+                "depth_limited": True,
+            }
         _call_path.add(agent_name)
 
         try:
@@ -442,6 +454,7 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 if execute and not dry_run:
                     # Generate credential report (we don't auto-fix for safety)
                     import json
+
                     report_path = Path(self.project_root) / "logs" / "credential_scan_report.json"
                     report_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -460,7 +473,9 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
             else:
                 self.logger.info("  No credential leaks detected")
 
-            self.logger.info(f"[{agent_name}] Complete: {violations_found} potential leaks (manual review required)")
+            self.logger.info(
+                f"[{agent_name}] Complete: {violations_found} potential leaks (manual review required)"
+            )
 
             return {
                 "violations_found": violations_found,

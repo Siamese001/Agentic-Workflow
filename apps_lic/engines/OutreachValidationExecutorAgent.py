@@ -5,35 +5,6 @@ rules including Metric source binding, redundancy guards, and forbidden content.
 """
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from __future__ import annotations
 
 import logging
@@ -545,6 +516,16 @@ class OutreachValidationExecutorAgent(SovereignBaseAgent):
         """Heal violations detected by OutreachValidationExecutorAgent."""
         violation_type = violation.get("type", "unknown")
         try:
-            return {"status": "skipped", "details": f"OutreachValidationExecutorAgent heal() not yet implemented for {violation_type}", "artifacts": [], "errors": []}
+            return {
+                "status": "skipped",
+                "details": f"OutreachValidationExecutorAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
         except Exception as e:
-            return {"status": "failed", "details": f"OutreachValidationExecutorAgent heal() failed: {str(e)}", "artifacts": [], "errors": [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"OutreachValidationExecutorAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }

@@ -16,11 +16,11 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from agentic_core.utils.security import safe_execute
-
 # SSOT: Import canonical layer inference (Phase 3 Migration)
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
 from agentic_core.L5_safety.validators.canonical_truth import get_canonical_layer
+from agentic_core.utils.security import safe_execute
+
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,

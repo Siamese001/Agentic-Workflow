@@ -376,9 +376,21 @@ class SafetyInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 1,
+                "skipped": 0,
+                "cycle_detected": True,
+            }
         if depth > max_depth:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 0,
+                "skipped": 1,
+                "depth_limited": True,
+            }
         _call_path.add(agent_name)
 
         violations_found = 0
@@ -424,6 +436,7 @@ class SafetyInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 if execute and not dry_run:
                     # Generate a security report (we don't auto-fix security issues)
                     import json
+
                     report_path = Path(self.project_root) / "logs" / "security_scan_report.json"
                     report_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -431,7 +444,11 @@ class SafetyInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                         "scan_date": str(Path(__file__).stat().st_mtime),
                         "total_violations": violations_found,
                         "violations": [
-                            {"file": str(v.get("file", "")), "type": v.get("type", ""), "line": v.get("line", 0)}
+                            {
+                                "file": str(v.get("file", "")),
+                                "type": v.get("type", ""),
+                                "line": v.get("line", 0),
+                            }
                             for v in all_violations[:100]  # Limit to 100 for report size
                         ],
                         "note": "Security violations require manual review",
@@ -446,7 +463,9 @@ class SafetyInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             else:
                 LOGGER.info("  No security violations found")
 
-            LOGGER.info(f"[{agent_name}] Complete: {violations_found} violations (manual review required)")
+            LOGGER.info(
+                f"[{agent_name}] Complete: {violations_found} violations (manual review required)"
+            )
 
             return {
                 "violations_found": violations_found,
@@ -481,14 +500,14 @@ class SafetyInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         path = violation.get("path", "")
 
         Logger.info(f"[SAFETY_INSPECTOR] Inspecting {violation_type} at {path}")
-        
+
         # Safety inspections require manual review
         return {
             "violations_fixed": 0,
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Safety violations require manual review"
+            "reason": "Safety violations require manual review",
         }
 
 

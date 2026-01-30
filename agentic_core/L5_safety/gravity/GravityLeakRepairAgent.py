@@ -330,7 +330,6 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             "summary": f"Analyzed {len(violations)} violations, applied {fixes_applied} fixes",
         }
 
-
     def heal(self, violation: dict) -> dict:
         """Heal gravity leak violations using standard_heal decorator pattern.
 

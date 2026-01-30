@@ -7,9 +7,10 @@ BootstrapAgent: Sovereign Boot Integrity.
 from dataclasses import dataclass
 from pathlib import Path
 
+from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
+
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -91,13 +92,13 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
     def heal(self, violation: dict[str, any]) -> dict[str, any]:
         """
         Heal violations detected by BootstrapAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -107,7 +108,7 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Delegate to existing heal_repository method
         try:
             result = self.heal_repository(target_path=file_path)
@@ -115,12 +116,12 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
                 "status": "success" if result.get("violations_fixed", 0) > 0 else "skipped",
                 "details": f"BootstrapAgent healed {result.get('violations_fixed', 0)} violations",
                 "artifacts": [file_path] if file_path else [],
-                "errors": result.get("errors", [])
+                "errors": result.get("errors", []),
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"BootstrapAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }

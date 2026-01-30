@@ -391,13 +391,13 @@ class SafetyExecutorAgent(SovereignBaseAgent):
         Returns:
             Dictionary with healing results following standard_heal format.
         """
-        Logger.info(f"[SAFETY_EXECUTOR] Execution violations are runtime-managed")
+        Logger.info("[SAFETY_EXECUTOR] Execution violations are runtime-managed")
         return {
             "violations_fixed": 0,
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Execution violations are runtime-managed, not code-healable"
+            "reason": "Execution violations are runtime-managed, not code-healable",
         }
 
 

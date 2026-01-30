@@ -71,17 +71,17 @@ class LocationHealerAgent(SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         [HEALER PROTOCOL] Standardized healing interface for location violations.
-        
+
         Args:
             violation: Violation dict with keys: type, file, message, etc.
-            
+
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
         try:
             violation_type = violation.get("type", "")
             file_path = violation.get("file")
-            
+
             if not file_path:
                 return {
                     "status": "failed",
@@ -89,9 +89,9 @@ class LocationHealerAgent(SovereignBaseAgent):
                     "artifacts": [],
                     "errors": ["Missing file path"],
                 }
-            
+
             src_path = Path(file_path)
-            
+
             # Determine target location based on violation type
             if "DEPTH" in violation_type or "MISPLACED" in violation_type:
                 # Use safe_move to relocate file
@@ -105,14 +105,14 @@ class LocationHealerAgent(SovereignBaseAgent):
                         "artifacts": [str(dst_path)] if result["applied"] else [],
                         "errors": [result["error"]] if result.get("error") else [],
                     }
-            
+
             return {
                 "status": "skipped",
                 "details": f"No healing strategy for violation type: {violation_type}",
                 "artifacts": [],
                 "errors": [],
             }
-            
+
         except Exception as e:
             Logger.error(f"Heal operation failed: {e}")
             return {
@@ -121,14 +121,14 @@ class LocationHealerAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [str(e)],
             }
-    
+
     def _determine_target_directory(self, src_path: Path, violation: dict[str, Any]) -> Path | None:
         """Determine target directory for file relocation based on violation context."""
         # Use healing strategy map to determine target
         suggested_target = violation.get("suggested_target")
         if suggested_target:
             return self.project_root / suggested_target
-        
+
         # Fallback to default app healing target
         return self.project_root / DEFAULT_APP_HEALING_TARGET
 

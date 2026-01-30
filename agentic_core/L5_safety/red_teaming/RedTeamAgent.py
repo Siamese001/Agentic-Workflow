@@ -230,9 +230,21 @@ class RedTeamAgent(SubatomicTestingMixin, SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0, "cycle_detected": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 1,
+                "skipped": 0,
+                "cycle_detected": True,
+            }
         if depth > max_depth:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1, "depth_limited": True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 0,
+                "skipped": 1,
+                "depth_limited": True,
+            }
         _call_path.add(agent_name)
 
         violations_found = 0
@@ -264,10 +276,12 @@ class RedTeamAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     try:
                         result = self._execute_fragment(fragment)
                         if self._detect_bypass(result):
-                            bypasses.append({
-                                "fragment": fragment[:50],
-                                "result": str(result)[:100],
-                            })
+                            bypasses.append(
+                                {
+                                    "fragment": fragment[:50],
+                                    "result": str(result)[:100],
+                                }
+                            )
                             violations_found += 1
                     except Exception as e:
                         self.logger.error(f"  Fragment execution error: {e}")
@@ -284,7 +298,9 @@ class RedTeamAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 self.logger.info("  Dry run - would execute adversarial tests")
                 skipped = len(self.adversarial_fragments)
 
-            self.logger.info(f"[{agent_name}] Complete: {violations_found} bypasses found (manual review required)")
+            self.logger.info(
+                f"[{agent_name}] Complete: {violations_found} bypasses found (manual review required)"
+            )
 
             return {
                 "violations_found": violations_found,
@@ -312,14 +328,14 @@ class RedTeamAgent(SubatomicTestingMixin, SovereignBaseAgent):
             Dictionary with healing results following standard_heal format.
         """
         violation_type = violation.get("type", "")
-        
+
         # Red team findings require manual security review
         return {
             "violations_fixed": 0,
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Red team findings require manual security review"
+            "reason": "Red team findings require manual security review",
         }
 
 

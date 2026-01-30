@@ -9,20 +9,19 @@ Tests the 5 new architectural categories:
 - GATEWAY: Gateway naming convention detection
 """
 
-import pytest
-from pathlib import Path
 from unittest.mock import patch
+
+import pytest
 
 from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
 
 
 # MANDATORY: 100% PASS
 class TestPascalSovereigntyExtended:
-
     @pytest.fixture
     def agent(self, tmp_path):
         """Create agent with security validation bypassed for unit testing."""
-        with patch.object(PascalSovereigntyAgent, '_security_hardening_validation'):
+        with patch.object(PascalSovereigntyAgent, "_security_hardening_validation"):
             return PascalSovereigntyAgent(project_root=tmp_path, dry_run=True)
 
     # 1. PROTOCOL DETECTION
@@ -60,11 +59,11 @@ class TestPascalSovereigntyExtended:
         tests_dir.mkdir(parents=True)
         f = tests_dir / "TestMyFeature.py"
         f.write_text("def test_one(): pass")
-        
+
         # Classify first to get TEST type
         file_type = agent.classify_file(f)
         assert file_type == "TEST"
-        
+
         # Now check compliant name
         compliant_name = agent.get_compliant_name(f, "TEST")
         assert compliant_name == "test_my_feature.py"

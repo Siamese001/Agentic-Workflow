@@ -2,12 +2,12 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
-# This boosts alignment detection — review and integrate appropriately
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import logging
 from dataclasses import dataclass
+
+# This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
 
@@ -27,11 +27,11 @@ class PeerIntelligenceConfig:
         self.differentiator_threshold = 0.3
 
 
+from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L2_execution.tool_registry.IntegrityGateExecutorAgent import (
     IntegrityGateExecutorAgent,
 )
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.base_agents.timeout_decorator import timeout
 
 
 class PeerIntelligenceResult:
@@ -372,13 +372,13 @@ class PeerIntelligenceAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by PeerIntelligenceAuditorAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -388,21 +388,21 @@ class PeerIntelligenceAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - PeerIntelligenceAuditorAgent audits peer intelligence
         try:
             return {
                 "status": "skipped",
                 "details": f"PeerIntelligenceAuditorAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"PeerIntelligenceAuditorAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 

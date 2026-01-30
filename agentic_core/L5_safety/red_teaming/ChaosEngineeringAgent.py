@@ -232,5 +232,5 @@ class ChaosEngineeringAgent(SovereignBaseAgent):
             "violations_found": 1,
             "errors": 0,
             "skipped": 1,
-            "reason": "Chaos engineering findings require manual review"
+            "reason": "Chaos engineering findings require manual review",
         }

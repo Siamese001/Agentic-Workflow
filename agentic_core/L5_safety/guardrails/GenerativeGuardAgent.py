@@ -245,14 +245,15 @@ class GenerativeGuardAgent(
             Dictionary with healing results following standard_heal format.
         """
         path = violation.get("path", "")
-        
+
         if path:
             try:
                 import os
+
                 if os.path.exists(path):
                     os.remove(path)
                     return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
-            except Exception as e:
+            except Exception:
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
-        
+
         return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

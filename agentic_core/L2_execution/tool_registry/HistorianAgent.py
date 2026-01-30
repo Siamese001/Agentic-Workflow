@@ -2,9 +2,8 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
+
 # This boosts alignment detection — review and integrate appropriately
-
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -96,7 +95,7 @@ class HistorianAgent(SovereignBaseAgent):
     ) -> dict[str, int]:
         """
         L2 Execution Agent - Historian Healing.
-        
+
         WIRED CAPABILITIES:
         - Validates log file accessibility
         - Checks log directory permissions
@@ -104,16 +103,16 @@ class HistorianAgent(SovereignBaseAgent):
         """
         if _call_path is None:
             _call_path = set()
-        
+
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         if depth > max_depth:
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
-        
+
         _call_path.add(agent_name)
         metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             # Validate log file path
             log_dir = os.path.dirname(self.log_file) if os.path.dirname(self.log_file) else "."
@@ -122,7 +121,7 @@ class HistorianAgent(SovereignBaseAgent):
                 if execute and not dry_run:
                     os.makedirs(log_dir, exist_ok=True)
                     metrics["violations_fixed"] += 1
-            
+
             # Test write capability
             try:
                 test_entry = f"[HEAL_TEST] {datetime.datetime.now().isoformat()}"
@@ -130,27 +129,27 @@ class HistorianAgent(SovereignBaseAgent):
                     with open(self.log_file, "a", encoding="utf-8") as f:
                         f.write(f"# Heal test: {test_entry}\n")
                     metrics["violations_fixed"] += 1
-            except OSError as e:
+            except OSError:
                 metrics["violations_found"] += 1
                 metrics["errors"] += 1
-            
-        except Exception as e:
+
+        except Exception:
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
-        
+
         return metrics
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by HistorianAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -160,21 +159,21 @@ class HistorianAgent(SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - HistorianAgent logs events
         try:
             return {
                 "status": "skipped",
                 "details": f"HistorianAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"HistorianAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 

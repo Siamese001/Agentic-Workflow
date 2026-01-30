@@ -82,10 +82,10 @@ class PerformanceAnalystAgentSimple:
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by PerformanceAnalystAgentSimple.
-        
+
         Args:
             violation: Dictionary containing violation details
-                
+
         Returns:
             Dictionary with status, details, artifacts, errors keys
         """
@@ -95,12 +95,12 @@ class PerformanceAnalystAgentSimple:
                 "status": "skipped",
                 "details": f"PerformanceAnalystAgentSimple heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"PerformanceAnalystAgentSimple heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }

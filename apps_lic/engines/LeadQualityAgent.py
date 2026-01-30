@@ -77,9 +77,19 @@ class LeadQualityAgent(SubatomicTestingMixin, LICAgentBase):
         """Heal violations detected by LeadQualityAgent."""
         violation_type = violation.get("type", "unknown")
         try:
-            return {"status": "skipped", "details": f"LeadQualityAgent heal() not yet implemented for {violation_type}", "artifacts": [], "errors": []}
+            return {
+                "status": "skipped",
+                "details": f"LeadQualityAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
         except Exception as e:
-            return {"status": "failed", "details": f"LeadQualityAgent heal() failed: {str(e)}", "artifacts": [], "errors": [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"LeadQualityAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
 
 
 # DUPLICATE ACCEPTED: App-specific customization valid

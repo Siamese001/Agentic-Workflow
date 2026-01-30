@@ -73,17 +73,17 @@ class ArchitectureDNAVisitor(ast.NodeVisitor):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         [HEALER PROTOCOL] Standardized healing interface for CanonDependencySentinelAgent violations.
-        
+
         Args:
             violation: Violation dict with keys: type, file, message, etc.
-            
+
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
         try:
             violation_type = violation.get("type", "")
             file_path = violation.get("file")
-            
+
             if not file_path:
                 return {
                     "status": "failed",
@@ -91,7 +91,7 @@ class ArchitectureDNAVisitor(ast.NodeVisitor):
                     "artifacts": [],
                     "errors": ["Missing file path"],
                 }
-            
+
             # CanonDependencySentinelAgent healing logic
             return {
                 "status": "manual_required",
@@ -99,7 +99,7 @@ class ArchitectureDNAVisitor(ast.NodeVisitor):
                 "artifacts": [],
                 "errors": [],
             }
-            
+
         except Exception as e:
             return {
                 "status": "failed",
@@ -514,13 +514,13 @@ class CanonDependencySentinelAgent(SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by CanonDependencySentinelAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -530,19 +530,19 @@ class CanonDependencySentinelAgent(SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - CanonDependencySentinelAgent monitors dependencies
         try:
             return {
                 "status": "skipped",
                 "details": f"CanonDependencySentinelAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"CanonDependencySentinelAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }

@@ -5,10 +5,12 @@ Unit tests for HOP3SenderGroundingAgent.
 Auto-generated to ensure 100% test coverage.
 Tests basic instantiation and key method signatures.
 """
-import pytest
+
 import sys
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch
+
+import pytest
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -21,6 +23,7 @@ class TestHOP3SenderGroundingAgent:
         """Verify the class can be imported."""
         try:
             from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
+
             assert HOP3SenderGroundingAgent is not None
         except ImportError as e:
             # Class exists but may have import dependencies
@@ -30,6 +33,7 @@ class TestHOP3SenderGroundingAgent:
         """Verify the class follows agent patterns."""
         try:
             from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
+
             # Check it's a class
             assert isinstance(HOP3SenderGroundingAgent, type)
         except ImportError:
@@ -39,12 +43,9 @@ class TestHOP3SenderGroundingAgent:
         """Test that the agent can be instantiated with mocked dependencies."""
         try:
             from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
+
             # Try to instantiate with common agent patterns
-            with patch.multiple(
-                HOP3SenderGroundingAgent,
-                __init__=lambda self: None,
-                create=True
-            ):
+            with patch.multiple(HOP3SenderGroundingAgent, __init__=lambda self: None, create=True):
                 pass  # Just verify no errors in class definition
             assert True
         except ImportError:
@@ -57,9 +58,11 @@ class TestHOP3SenderGroundingAgent:
         """Verify healing methods exist if agent has healing."""
         try:
             from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
+
             # Check for heal_repository method
-            has_heal = hasattr(HOP3SenderGroundingAgent, 'heal_repository') or \
-                       any('heal' in str(m).lower() for m in dir(HOP3SenderGroundingAgent))
+            has_heal = hasattr(HOP3SenderGroundingAgent, "heal_repository") or any(
+                "heal" in str(m).lower() for m in dir(HOP3SenderGroundingAgent)
+            )
             # Not all agents need healing - this is informational
             assert True
         except ImportError:
@@ -69,8 +72,9 @@ class TestHOP3SenderGroundingAgent:
         """Verify key methods are defined."""
         try:
             from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
+
             # Get all public methods
-            methods = [m for m in dir(HOP3SenderGroundingAgent) if not m.startswith('_')]
+            methods = [m for m in dir(HOP3SenderGroundingAgent) if not m.startswith("_")]
             assert len(methods) > 0, "Agent should have at least one public method"
         except ImportError:
             pytest.skip("Import dependencies not available")

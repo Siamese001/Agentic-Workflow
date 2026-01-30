@@ -166,13 +166,13 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent)
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by SovereignRedisOrchestratorAgent.
-        
+
         Args:
             violation: Dictionary containing violation details with keys:
                 - file: Path to the file with the violation
                 - type: Type of violation detected
                 - message: Description of the violation
-                
+
         Returns:
             Dictionary with keys:
                 - status: 'success', 'partial_success', 'failed', or 'skipped'
@@ -182,21 +182,21 @@ class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent)
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
-        
+
         # Default implementation - SovereignRedisOrchestratorAgent orchestrates Redis
         try:
             return {
                 "status": "skipped",
                 "details": f"SovereignRedisOrchestratorAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
-                "errors": []
+                "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
                 "details": f"SovereignRedisOrchestratorAgent heal() failed: {str(e)}",
                 "artifacts": [],
-                "errors": [str(e)]
+                "errors": [str(e)],
             }
 
 
