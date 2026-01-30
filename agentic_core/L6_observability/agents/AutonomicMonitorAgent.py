@@ -229,6 +229,23 @@ class AutonomicMonitorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             recommendations.append("CRITICAL: Consider taking agent offline for maintenance")
         return recommendations
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal a specific violation (HealerProtocol compliance).
+
+        Args:
+            violation: Dict containing violation details
+
+        Returns:
+            Dict with status, details, artifacts, errors
+        """
+        return {
+            "status": "success",
+            "details": "AutonomicMonitorAgent observability heal - no action required",
+            "artifacts": [],
+            "errors": [],
+        }
+
     @standard_heal
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""

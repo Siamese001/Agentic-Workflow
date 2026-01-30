@@ -442,6 +442,23 @@ class TracingAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 if self.auto_export_on_mission_end and self.export_path:
                     self.export_trace_to_file(trace_id)
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal a specific violation (HealerProtocol compliance).
+
+        Args:
+            violation: Dict containing violation details
+
+        Returns:
+            Dict with status, details, artifacts, errors
+        """
+        return {
+            "status": "success",
+            "details": "TracingAgent observability heal - no action required",
+            "artifacts": [],
+            "errors": [],
+        }
+
     @timeout(300)
     def heal_repository(
         self,

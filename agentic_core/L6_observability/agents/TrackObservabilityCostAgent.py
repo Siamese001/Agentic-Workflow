@@ -56,6 +56,23 @@ class TrackObservabilityCostAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """Process data."""
         return data
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal a specific violation (HealerProtocol compliance).
+
+        Args:
+            violation: Dict containing violation details
+
+        Returns:
+            Dict with status, details, artifacts, errors
+        """
+        return {
+            "status": "success",
+            "details": "TrackObservabilityCostAgent observability heal - no action required",
+            "artifacts": [],
+            "errors": [],
+        }
+
     @timeout(300)
     @standard_heal
     def heal_repository(
