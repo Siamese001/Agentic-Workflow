@@ -11,8 +11,8 @@ import json
 import sys
 from pathlib import Path
 
-# Add project root to path
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+# Add project root to path (tests/unit/agentic_core/utils/ is 3 levels deep)
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import pytest

@@ -31,163 +31,213 @@ def ensure_directory(path: str | Path) -> bool:
     try:
         Path(path).mkdir(parents=True, exist_ok=True)
         return True
-    except Exception as e:
+    except OSError as e:
         logger.error(f"Failed to create directory {path}: {e}")
         return False
 
 
-def safe_read_file(path: str | Path, encoding: str = "utf-8") -> str | None:
+def safe_read_file(
+    path: str | Path, encoding: str = "utf-8", default=None, errors: str = "replace"
+) -> str | None:
     """
-    Safely read a file's content.
+    Safely read a file with proper error handling.
 
     Args:
-        path: The file path to read.
-        encoding: The file encoding (default: utf-8).
+        path: Path to the file to read.
+        encoding: File encoding (default: utf-8).
+        default: Default value to return if file cannot be read.
+        errors: Error handling strategy (default: replace).
 
     Returns:
-        The file content as a string, or None if file doesn't exist or cannot be read.
+        File contents as string, or default value if read fails.
     """
     try:
-        p = Path(path)
-        if not p.exists():
-            return None
-        return p.read_text(encoding=encoding)
-    except UnicodeDecodeError as e:
-        logger.warning(f"Unicode decode error reading {path}: {e}")
-        return None
-    except Exception as e:
-        logger.error(f"Failed to read file {path}: {e}")
-        return None
+        return Path(path).read_text(encoding=encoding, errors=errors)
+    except (OSError, UnicodeDecodeError) as e:
+        logger.warning(f"Failed to read file {path}: {e}")
+        return default
 
 
 def safe_write_file(
-    path: str | Path, content: str, encoding: str = "utf-8", make_dirs: bool = True
+    path: str | Path, content: str, encoding: str = "utf-8", backup: bool = True
 ) -> bool:
     """
-    Safely write content to a file using an atomic write pattern.
-
-    Uses write-to-temp-then-rename pattern for atomicity.
+    Safely write a file using atomic write pattern.
 
     Args:
-        path: The target file path.
-        content: The content to write.
-        encoding: The file encoding (default: utf-8).
-        make_dirs: If True, create parent directories if they don't exist.
+        path: Path to the file to write.
+        content: Content to write to the file.
+        encoding: File encoding (default: utf-8).
+        backup: Whether to create backup of existing file.
 
     Returns:
-        True if write succeeded, False otherwise.
+        True if write was successful, False otherwise.
     """
-    target_path = Path(path)
-    temp_path = None
+    path = Path(path)
 
+    # Create backup if requested and file exists
+    if backup and path.exists():
+        backup_path = path.with_suffix(f"{path.suffix}.bak")
+        try:
+            shutil.copy2(path, backup_path)
+        except OSError as e:
+            logger.warning(f"Failed to create backup of {path}: {e}")
+
+    # Ensure parent directory exists
+    ensure_directory(path.parent)
+
+    # Write to temporary file first, then atomic rename
+    temp_path = path.with_suffix(f"{path.suffix}.tmp")
     try:
-        if make_dirs:
-            ensure_directory(target_path.parent)
-
-        # Write to a temp file first
-        temp_path = target_path.with_suffix(target_path.suffix + ".tmp")
         temp_path.write_text(content, encoding=encoding)
-
-        # Atomic replace (POSIX compliant, usually safe on Windows too)
-        # On Windows, os.replace allows overwriting
-        os.replace(temp_path, target_path)
+        temp_path.replace(path)
         return True
-    except Exception as e:
+    except OSError as e:
         logger.error(f"Failed to write file {path}: {e}")
-        # Cleanup temp file if it exists
-        if temp_path is not None and temp_path.exists():
+        # Clean up temp file if it exists
+        if temp_path.exists():
             try:
-                os.remove(temp_path)
-            except Exception:
+                temp_path.unlink()
+            except OSError:
                 pass
         return False
 
 
-def safe_delete_file(path: str | Path) -> bool:
+def safe_append_file(path: str | Path, content: str, encoding: str = "utf-8") -> bool:
     """
-    Safely delete a file if it exists.
+    Safely append content to a file.
 
     Args:
-        path: The file path to delete.
+        path: Path to the file to append to.
+        content: Content to append.
+        encoding: File encoding (default: utf-8).
 
     Returns:
-        True if file was deleted or didn't exist, False on error.
+        True if append was successful, False otherwise.
     """
     try:
-        p = Path(path)
-        if p.exists():
-            p.unlink()
+        path = Path(path)
+        ensure_directory(path.parent)
+        with open(path, "a", encoding=encoding) as f:
+            f.write(content)
         return True
-    except Exception as e:
+    except OSError as e:
+        logger.error(f"Failed to append to file {path}: {e}")
+        return False
+
+
+def safe_delete_file(path: str | Path, backup: bool = True) -> bool:
+    """
+    Safely delete a file with optional backup.
+
+    Args:
+        path: Path to the file to delete.
+        backup: Whether to create backup before deletion.
+
+    Returns:
+        True if deletion was successful, False otherwise.
+    """
+    path = Path(path)
+
+    if not path.exists():
+        return True
+
+    # Create backup if requested
+    if backup:
+        backup_path = path.with_suffix(f"{path.suffix}.bak")
+        try:
+            shutil.copy2(path, backup_path)
+        except OSError as e:
+            logger.warning(f"Failed to create backup of {path}: {e}")
+
+    try:
+        path.unlink()
+        return True
+    except OSError as e:
         logger.error(f"Failed to delete file {path}: {e}")
         return False
 
 
-def safe_copy_file(src: str | Path, dst: str | Path, make_dirs: bool = True) -> bool:
+def safe_move_file(src: str | Path, dst: str | Path, backup: bool = True) -> bool:
     """
-    Safely copy a file from source to destination.
+    Safely move a file with optional backup of destination.
 
     Args:
         src: Source file path.
         dst: Destination file path.
-        make_dirs: If True, create parent directories if they don't exist.
+        backup: Whether to backup existing destination file.
 
     Returns:
-        True if copy succeeded, False otherwise.
+        True if move was successful, False otherwise.
     """
+    src, dst = Path(src), Path(dst)
+
+    if not src.exists():
+        logger.error(f"Source file {src} does not exist")
+        return False
+
+    # Create backup of destination if it exists
+    if backup and dst.exists():
+        backup_path = dst.with_suffix(f"{dst.suffix}.bak")
+        try:
+            shutil.copy2(dst, backup_path)
+        except OSError as e:
+            logger.warning(f"Failed to create backup of {dst}: {e}")
+
+    # Ensure destination directory exists
+    ensure_directory(dst.parent)
+
     try:
-        src_path = Path(src)
-        dst_path = Path(dst)
-
-        if not src_path.exists():
-            logger.error(f"Source file does not exist: {src}")
-            return False
-
-        if make_dirs:
-            ensure_directory(dst_path.parent)
-
-        shutil.copy2(src_path, dst_path)
+        shutil.move(str(src), str(dst))
         return True
-    except Exception as e:
-        logger.error(f"Failed to copy {src} to {dst}: {e}")
+    except OSError as e:
+        logger.error(f"Failed to move file {src} to {dst}: {e}")
         return False
 
 
-def safe_move_file(src: str | Path, dst: str | Path, make_dirs: bool = True) -> bool:
+def get_file_size(path: str | Path) -> int:
     """
-    Safely move a file from source to destination.
+    Get file size in bytes.
 
     Args:
-        src: Source file path.
-        dst: Destination file path.
-        make_dirs: If True, create parent directories if they don't exist.
+        path: Path to the file.
 
     Returns:
-        True if move succeeded, False otherwise.
+        File size in bytes, or -1 if file doesn't exist.
     """
     try:
-        src_path = Path(src)
-        dst_path = Path(dst)
-
-        if not src_path.exists():
-            logger.error(f"Source file does not exist: {src}")
-            return False
-
-        if make_dirs:
-            ensure_directory(dst_path.parent)
-
-        shutil.move(str(src_path), str(dst_path))
-        return True
-    except Exception as e:
-        logger.error(f"Failed to move {src} to {dst}: {e}")
-        return False
+        return Path(path).stat().st_size
+    except OSError:
+        return -1
 
 
-__all__ = [
-    "ensure_directory",
-    "safe_read_file",
-    "safe_write_file",
-    "safe_delete_file",
-    "safe_copy_file",
-    "safe_move_file",
-]
+def is_file_empty(path: str | Path) -> bool:
+    """
+    Check if file is empty.
+
+    Args:
+        path: Path to the file.
+
+    Returns:
+        True if file is empty or doesn't exist, False otherwise.
+    """
+    return get_file_size(path) <= 0
+
+
+def create_temp_file(prefix: str = "temp", suffix: str = ".tmp", dir: str | Path = None) -> Path:
+    """
+    Create a temporary file.
+
+    Args:
+        prefix: File name prefix.
+        suffix: File name suffix.
+        dir: Directory for temporary file (default: system temp).
+
+    Returns:
+        Path to the created temporary file.
+    """
+    import tempfile
+
+    fd, path = tempfile.mkstemp(prefix=prefix, suffix=suffix, dir=dir)
+    os.close(fd)  # Close file descriptor, we'll manage the file ourselves
+    return Path(path)
