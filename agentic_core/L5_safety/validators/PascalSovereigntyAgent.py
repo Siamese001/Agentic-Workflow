@@ -59,7 +59,18 @@ def get_python_files_fast(root: Path) -> list[Path]:
     return python_files
 
 
-FileType = Literal["AGENT", "CLASS", "MIXIN", "UTILITY", "IGNORE"]
+FileType = Literal[
+    "AGENT",
+    "CLASS",
+    "MIXIN",
+    "UTILITY",
+    "PROTOCOL",
+    "ENGINE",
+    "STUB",
+    "TEST",
+    "GATEWAY",
+    "IGNORE",
+]
 
 
 @dataclass
@@ -87,7 +98,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
             "renamed": 0,
             "imports_fixed": 0,
             "collisions_resolved": 0,
-            "violations": {"AGENT": 0, "CLASS": 0, "MIXIN": 0, "UTILITY": 0},
+            "violations": {"AGENT": 0, "CLASS": 0, "MIXIN": 0, "UTILITY": 0, "PROTOCOL": 0, "ENGINE": 0, "STUB": 0, "TEST": 0, "GATEWAY": 0},
         }
         # CACHE: Track file paths in memory to avoid repetitive disk scanning (O(1) lookups)
         self.file_registry: list[Path] = []
@@ -155,6 +166,11 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         print(f"  - Classes: {self.stats['violations']['CLASS']}")
         print(f"  - Utils:   {self.stats['violations']['UTILITY']}")
         print(f"  - Mixins:  {self.stats['violations']['MIXIN']}")
+        print(f"  - Protocols: {self.stats['violations']['PROTOCOL']}")
+        print(f"  - Engines: {self.stats['violations']['ENGINE']}")
+        print(f"  - Stubs:   {self.stats['violations']['STUB']}")
+        print(f"  - Tests:   {self.stats['violations']['TEST']}")
+        print(f"  - Gateways: {self.stats['violations']['GATEWAY']}")
         if not self.dry_run:
             print(f"Files Renamed:        {self.stats['renamed']}")
             print(f"Imports Fixed:        {self.stats['imports_fixed']}")
@@ -166,35 +182,28 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
 
     def classify_file(self, path: Path) -> FileType:
         """
-        Analyze file AST to determine architectural role with strict test exemptions.
+        Analyze file AST to determine architectural role with STRICT PRIORITY ORDERING.
 
-        CRITICAL ANALYSIS:
-        Hardened definition of 'AGENT':
-        1. Class name ends in 'Agent'.
-        2. Inherits from *Agent.
-        3. [NEW] Resides in a structural 'agents/' or 'validators/' directory.
+        PRIORITY QUEUE (First Match Wins):
+        1. STUB     - File contains NOT_AN_AGENT marker (MUST preempt AGENT)
+        2. TEST     - Path contains tests/ OR name starts with test_
+        3. PROTOCOL - Class inherits from typing.Protocol
+        4. GATEWAY  - Class name contains "Gateway"
+        5. ENGINE   - Path contains engines/ AND has class
+        6. MIXIN    - Class name ends in "Mixin"
+        7. AGENT    - Inherits *Agent OR path in agents/validators
+        8. CLASS    - Any other class
+        9. UTILITY  - No class definitions
         """
-        # --- EXEMPTION PATCH: TESTS ---
-        # Critical Analysis: Preserving Pytest Discovery. Renaming test_*.py to PascalCase
-        # would render the CI/CD pipeline blind as pytest would ignore the files.
-        if path.name.startswith("test_") or path.name.endswith("_test.py") or "tests" in path.parts:
-            return "IGNORE"
-
+        # --- EXEMPTION: CONFIG FILES (Always Ignore) ---
         if path.name == "conftest.py" or path.name == "__init__.py":
             return "IGNORE"
 
-        # --- EXEMPTION PATCH: MIXINS ---
-        # Mixins are explicitly categorized to enforce snake_case naming conventions,
-        # differentiating them from the PascalCase requirement of primary Agent/Class files.
-        if path.name.endswith("_mixin.py") or path.name.endswith("Mixin.py"):
-            return "MIXIN"
-
-        # --- EXEMPTION PATCH: SSOT ---
-        # Critical SSOT files that have hundreds of import references.
+        # --- EXEMPTION: SSOT FILES (Always Ignore) ---
         critical_ssot_files = {
-            "structure_blueprint.py",  # 926+ import references
-            "tool_registry.py",  # Tool registration system
-            "execute_ssot.py",  # SSOT execution orchestrator - do not rename
+            "structure_blueprint.py",
+            "tool_registry.py",
+            "execute_ssot.py",
         }
         if path.name in critical_ssot_files:
             return "IGNORE"
@@ -203,32 +212,74 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
             if not path.exists() or path.stat().st_size == 0:
                 return "IGNORE"
             content = path.read_text(encoding="utf-8")
+
+            # [PRIORITY 1] STUB Detection: Explicit Marker Override
+            # CRITICAL: Must check BEFORE AST parsing to prevent Stubs from being detected as Agents
+            if "NOT_AN_AGENT" in content or "# NOT_AN_AGENT" in content:
+                return "STUB"
+
             tree = ast.parse(content)
         except (SyntaxError, UnicodeDecodeError, OSError):
             return "IGNORE"
 
+        # [PRIORITY 2] TEST Detection: Structural or Naming
+        is_structural_test = "tests" in path.parts or path.name.startswith("test_")
+        if is_structural_test:
+            # Already compliant test files - don't touch them
+            if path.name.startswith("test_") or path.name.endswith("_test.py"):
+                return "IGNORE"
+            return "TEST"
+
         has_class = False
         is_agent = False
+        is_protocol = False
+        is_gateway = False
+        is_mixin = False
 
-        # [HARDENED] Structural Location Check
-        # If the file is in an 'agents' or 'validators' folder, it IS an agent contextually.
+        # [HARDENED] Structural Contexts
         is_structural_agent = "agents" in path.parts or "validators" in path.parts
+        is_engine = "engines" in path.parts
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 has_class = True
-                if node.name.endswith("Agent"):
-                    is_agent = True
-                for base in node.bases:
-                    if (isinstance(base, ast.Name) and "Agent" in base.id) or (
-                        isinstance(base, ast.Attribute) and "Agent" in base.attr
-                    ):
-                        is_agent = True
+                name = node.name
 
-        if is_agent:
+                # Protocol Check (bases)
+                for base in node.bases:
+                    if (isinstance(base, ast.Name) and base.id == "Protocol") or (
+                        isinstance(base, ast.Attribute) and base.attr == "Protocol"
+                    ):
+                        is_protocol = True
+
+                # Name-based checks
+                if "Gateway" in name:
+                    is_gateway = True
+                if name.endswith("Mixin"):
+                    is_mixin = True
+                if name.endswith("Agent"):
+                    is_agent = True
+
+                # Inheritance Check for Agents (if not already found)
+                if not is_agent:
+                    for base in node.bases:
+                        if (isinstance(base, ast.Name) and "Agent" in base.id) or (
+                            isinstance(base, ast.Attribute) and "Agent" in base.attr
+                        ):
+                            is_agent = True
+
+        # [PRIORITY EXECUTION] - Order matters!
+        if is_protocol:
+            return "PROTOCOL"
+        elif is_gateway:
+            return "GATEWAY"
+        elif is_engine and has_class:
+            return "ENGINE"
+        elif is_mixin:
+            return "MIXIN"
+        elif is_agent:
             return "AGENT"
         elif has_class:
-            # [HARDENED] Enforce Agent suffix if structurally located in agent territory
             if is_structural_agent:
                 return "AGENT"
             return "CLASS"
@@ -478,6 +529,21 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
 
         if file_type == "UTILITY":
             return None
+
+        # --- TEST STANDARDIZATION ---
+        # Handle TEST files before AST parsing (tests may not have classes)
+        if file_type == "TEST":
+            name = path.stem
+            # Regex to convert PascalCase/camelCase to snake_case
+            s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+            snake_name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+            
+            # Ensure test_ prefix if missing
+            if not snake_name.startswith("test_"):
+                snake_name = f"test_{snake_name}"
+            
+            return f"{snake_name}.py"
+
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"))
             classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
@@ -492,9 +558,31 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                     break
             target_name = primary
 
-            # [HARDENED] Enforce Suffix
-            if file_type == "AGENT" and not target_name.endswith("Agent"):
-                target_name += "Agent"
+            # [HARDENED] Type-Specific Naming Rules
+            if file_type == "AGENT":
+                if not target_name.endswith("Agent"):
+                    target_name += "Agent"
+            
+            elif file_type == "PROTOCOL":
+                # Protocols must remain strictly PascalCase, preserving 'I' prefix.
+                pass
+
+            elif file_type == "ENGINE":
+                # Engines are high-authority classes, strictly PascalCase.
+                pass
+
+            elif file_type == "GATEWAY":
+                # Gateways are strictly PascalCase.
+                pass
+
+            elif file_type == "STUB":
+                # [CRITICAL] Stub Sovereignty: Strip 'Agent' and enforce 'Stub'
+                # Example: SubAtomicAgent -> SubAtomicStub
+                target_name = target_name.replace("Agent", "")
+                if not target_name.endswith("Stub"):
+                    target_name += "Stub"
+
+            # Note: TEST handling is done earlier in the method (before AST parsing)
 
             return f"{target_name}.py"
         except:
