@@ -260,5 +260,41 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
             if ctx:
                 ctx.report("VectorHealth", 1, True, f"Pinecone health check warning: {str(e)}")
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by SovereignPineconeStoreAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: 'success', 'partial_success', 'failed', or 'skipped'
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Default implementation - SovereignPineconeStoreAgent manages Pinecone storage
+        try:
+            return {
+                "status": "skipped",
+                "details": f"SovereignPineconeStoreAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": []
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"SovereignPineconeStoreAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
+
 
 PineconeSovereignAgent: Any = SovereignPineconeStoreAgent

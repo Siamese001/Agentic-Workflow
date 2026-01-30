@@ -197,6 +197,42 @@ class SovereignCanonAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             "timestamp": asyncio.get_event_loop().time(),
         }
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by SovereignCanonAuditorAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: 'success', 'partial_success', 'failed', or 'skipped'
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Default implementation - SovereignCanonAuditorAgent audits canon
+        try:
+            return {
+                "status": "skipped",
+                "details": f"SovereignCanonAuditorAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": []
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"SovereignCanonAuditorAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
+
     @standard_heal
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
