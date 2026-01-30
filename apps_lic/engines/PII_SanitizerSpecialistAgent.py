@@ -23,7 +23,7 @@ def track_metrics(name):
 
 
 @dataclass
-class PII_SanitizerSpecialist(LICAgentBase, SubatomicTestingMixin):
+class PII_SanitizerSpecialistAgent(LICAgentBase, SubatomicTestingMixin):
     """Performs local PII detection using regex heuristics."""
 
     # Sovereign Configuration
