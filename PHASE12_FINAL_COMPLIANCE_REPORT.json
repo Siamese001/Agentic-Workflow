@@ -1,22 +1,17 @@
 {
-  "generated": "2026-01-29T20:36:00.407628",
+  "generated": "2026-01-29T20:41:33.500541",
   "summary": {
-    "total_agents": 163,
-    "heal_compliant": 80,
-    "heal_missing": 83,
-    "namespace_compliant": 161,
-    "namespace_invalid": 2,
-    "compliance_rate": 49.1
+    "total_agents": 79,
+    "heal_compliant": 79,
+    "heal_missing": 0,
+    "namespace_compliant": 79,
+    "namespace_invalid": 0,
+    "compliance_rate": 100.0
   },
   "layer_distribution": {
-    "Unknown": 2,
     "Base": 1,
-    "L0": 4,
-    "L1": 7,
-    "L2": 10,
-    "L3": 19,
     "L4": 6,
-    "L5": 99,
-    "L6": 15
+    "L5": 59,
+    "L6": 13
   }
 }
