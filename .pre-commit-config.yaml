@@ -68,12 +68,7 @@ repos:
         # Validates all files against structure_blueprint.py SSOT rules.
         # Checks: territories, subfolders, forbidden patterns, test placement.
 
-      - id: validate-ssot-paths
-        name: SSOT Path Guard (Legacy)
-        entry: python scripts/hooks/validate_paths.py
-        language: python
-        files: ^apps/.*\.py$
-        # Legacy hook - retained for backward compatibility.
+      # Legacy SSOT Path Guard removed - functionality covered by tests/guardian/test_ssot_compliance.py
 
       - id: check-protected-files
         name: Gatekeeper Lockdown
