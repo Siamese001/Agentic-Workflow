@@ -300,7 +300,7 @@ def test_dataclass_initialization_fuzz(monkeypatch: pytest.MonkeyPatch):
         if len(failures) <= KNOWN_INIT_FAILURES:
             print(f"\n[TECH DEBT] {len(failures)} dataclass init failures (tracked, not blocking)")
         else:
-            assert False, (
+            raise AssertionError(
                 f"Dataclass init failures ({len(failures)}) exceed threshold ({KNOWN_INIT_FAILURES}):\n"
                 + "\n".join(failures[:10])
             )
@@ -388,7 +388,6 @@ def test_diamond_of_death_detection():
             for ancestor, count in shared_ancestors:
                 # Check if the ancestor appears multiple times in direct bases' MROs
                 # before the linearization
-                ancestor_name = f"{ancestor.__module__}.{ancestor.__name__}"
 
                 # Classify severity
                 if ancestor.__name__.endswith("Mixin"):
@@ -729,7 +728,7 @@ class TestDiamondDefense:
                 for v in violations[:5]:
                     print(f"  - {v}")
             else:
-                assert False, (
+                raise AssertionError(
                     f"MRO ORDER VIOLATIONS ({len(violations)}, exceeds threshold {KNOWN_MRO_VIOLATIONS}):\n"
                     + "\n".join(f"  [X] {v}" for v in violations[:10])
                 )
@@ -764,7 +763,6 @@ class TestDiamondDefense:
                 if not isinstance(node, ast.ClassDef):
                     continue
 
-                class_name = node.name
                 scanned_classes += 1
 
                 # Get base class names from AST
@@ -848,7 +846,7 @@ class TestDiamondDefense:
                 if len(violations) > 5:
                     print(f"  ... and {len(violations) - 5} more")
             else:
-                assert False, (
+                raise AssertionError(
                     f"DUPLICATE MIXIN INJECTION ({len(violations)}, exceeds threshold {KNOWN_DUPLICATE_INJECTIONS}):\n"
                     + "\n".join(f"  [X] {v}" for v in violations[:10])
                 )
@@ -864,7 +862,6 @@ class TestDiamondDefense:
         without defaults. Mixing inheritance can violate this.
         """
         # First, verify Python's behavior with a synthetic test
-        caught_error = False
 
         try:
             # This SHOULD raise TypeError due to field ordering
@@ -885,7 +882,6 @@ class TestDiamondDefense:
 
         except TypeError as e:
             # Expected in Python < 3.10 or certain configurations
-            caught_error = True
             assert "non-default" in str(e).lower() or "default" in str(e).lower(), (
                 f"Unexpected TypeError: {e}"
             )
@@ -936,7 +932,7 @@ class TestDiamondDefense:
             # For now, track as tech debt if within threshold
             KNOWN_FIELD_ISSUES = 5
             if len(field_ordering_issues) > KNOWN_FIELD_ISSUES:
-                assert False, (
+                raise AssertionError(
                     f"DATACLASS FIELD ORDERING VIOLATIONS ({len(field_ordering_issues)}):\n"
                     + "\n".join(f"  [X] {i}" for i in field_ordering_issues[:10])
                 )

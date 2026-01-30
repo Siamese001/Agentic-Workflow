@@ -251,7 +251,7 @@ class TestSSOTAlignment:
                 )
                 for path in missing_paths[:15]:
                     error_msg += f"  [X] {path}\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         print("\n[OK] Blueprint reality check complete")
 
@@ -364,7 +364,7 @@ class TestSSOTAlignment:
                 error_msg = f"NAMING CONVENTION VIOLATIONS EXCEED THRESHOLD ({len(naming_violations)} > {KNOWN_NAMING_VIOLATIONS}):\n"
                 for v in naming_violations[:15]:
                     error_msg += f"  [X] {v['file']}: {v['issue']}\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         print("\n[OK] File naming convention check complete")
 
@@ -440,7 +440,7 @@ class TestSSOTAlignment:
         KNOWN_ORPHAN_DIRS = 5
         KNOWN_ORPHAN_FILES = 30  # Root-level test files are common
 
-        total_orphans = len(orphan_dirs) + len(orphan_files)
+        len(orphan_dirs) + len(orphan_files)
 
         if orphan_dirs:
             if len(orphan_dirs) <= KNOWN_ORPHAN_DIRS:
@@ -451,7 +451,7 @@ class TestSSOTAlignment:
                 error_msg = f"ORPHAN DIRECTORIES EXCEED THRESHOLD ({len(orphan_dirs)} > {KNOWN_ORPHAN_DIRS}):\n"
                 for d in orphan_dirs[:10]:
                     error_msg += f"  [X] {d}/\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         if orphan_files:
             if len(orphan_files) <= KNOWN_ORPHAN_FILES:
@@ -466,7 +466,7 @@ class TestSSOTAlignment:
                 )
                 for f in orphan_files[:15]:
                     error_msg += f"  [X] {f}\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         print("\n[OK] Orphan file detection complete")
 
@@ -547,7 +547,7 @@ class TestSSOTAlignment:
                 error_msg = f"PATH DEPTH VIOLATIONS EXCEED THRESHOLD ({len(depth_violations)} > {KNOWN_DEPTH_VIOLATIONS}):\n"
                 for v in depth_violations[:15]:
                     error_msg += f"  [X] {v['file']} (depth: {v['depth']}, max: {MAX_DEPTH})\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         print("\n[OK] Path depth limit check complete")
 
@@ -651,7 +651,7 @@ class TestSSOTAlignment:
                 error_msg += "All *BaseAgent.py files MUST be in agentic_core/base_agents/\n\n"
                 for v in violations[:10]:
                     error_msg += f"  [X] {v}\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         print("\n[OK] Constitutional base agent location check complete")
 
