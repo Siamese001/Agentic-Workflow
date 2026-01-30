@@ -535,6 +535,26 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAt
         finally:
             _call_path.discard(agent_name)
 
+    def heal(self, violation: dict) -> dict:
+        """Heal adversarial red team violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (vulnerability, sandbox_escape, etc.)
+                - test_id: ID of the failed test
+                - severity: Severity level
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Red team findings require manual security review"
+        }
+
 
 _red_teamer: AdversarialRedTeamer | None = None
 

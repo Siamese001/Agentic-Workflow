@@ -310,3 +310,39 @@ class ThreatDetectionGuardrail(SovereignBaseAgent):
             if self.scans_performed > 0
             else 0,
         }
+
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes
+
+        Returns:
+            Dict with healing summary
+        """
+        # Threat detection is runtime-only; no code healing
+        return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1}
+
+    def heal(self, violation: dict) -> dict:
+        """Heal threat detection violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (adversarial, injection, evasion)
+                - threat_level: Severity level
+                - pattern_matched: Pattern that triggered detection
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Threat detection violations require manual security review"
+        }

@@ -333,6 +333,27 @@ class ResourceManagerAgent(SovereignBaseAgent):
         with self._lock:
             return {rt.name: self.get_budget_status(rt) for rt in self._budgets.keys()}
 
+    def heal(self, violation: dict) -> dict:
+        """Heal resource management violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (budget, memory, cpu, tokens)
+                - resource_type: ResourceType enum value
+                - agent_id: Agent that caused the violation
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        Logger.info(f"[RESOURCE_MANAGER] Resource violations are runtime-managed")
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Resource violations are runtime-managed, not code-healable"
+        }
+
 
 # Factory methods for backward compatibility (will be removed in future)
 def create_legacy_budget_manager() -> ResourceManagerAgent:

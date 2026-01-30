@@ -379,6 +379,27 @@ class SafetyExecutorAgent(SovereignBaseAgent):
         """Get all execution results."""
         return self._results.copy()
 
+    def heal(self, violation: dict) -> dict:
+        """Heal safety execution violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (blocked, failed, integrity)
+                - block_reason: Reason for blocking
+                - agent_id: Agent that was blocked
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        Logger.info(f"[SAFETY_EXECUTOR] Execution violations are runtime-managed")
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Execution violations are runtime-managed, not code-healable"
+        }
+
 
 # Import Tuple for type hints
 

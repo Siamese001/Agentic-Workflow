@@ -583,3 +583,56 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
             return self.cleanup_repository()
         finally:
             self.dry_run = original_dry_run
+
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, **kwargs
+    ) -> dict[str, Any]:
+        """
+        Autonomous healing method (Canon Key 51 compliance).
+
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True, apply fixes
+
+        Returns:
+            Dict with healing summary
+        """
+        self.dry_run = dry_run
+        result = self.cleanup_repository()
+        return {
+            "violations_found": result.get("non_approved_files", 0),
+            "violations_fixed": result.get("files_moved", 0),
+            "errors": result.get("errors", 0),
+            "skipped": 0,
+        }
+
+    def heal(self, violation: dict) -> dict:
+        """Heal SSOT folder violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (orphan, misplaced)
+                - path: Path to the violating file
+                - target_path: Suggested target path
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        path = violation.get("path", "")
+        target_path = violation.get("target_path", "")
+
+        Logger.info(f"[SSOT_CLEANUP] Healing file location: {path}")
+
+        if path and target_path:
+            try:
+                from pathlib import Path as PathLib
+                source = PathLib(path)
+                if source.exists():
+                    success = self.move_file_to_ssot(source, target_path)
+                    if success:
+                        return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+            except Exception as e:
+                Logger.error(f"[SSOT_CLEANUP] Failed to heal: {e}")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+        return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

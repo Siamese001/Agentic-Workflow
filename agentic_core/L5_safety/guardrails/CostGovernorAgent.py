@@ -123,3 +123,24 @@ class CostGovernorAgent(SovereignBaseAgent):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+
+    def heal(self, violation: dict) -> dict:
+        """Heal cost governance violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (budget_exceeded)
+                - model: Model that caused the overspend
+                - spend: Current spend amount
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        logging.info(f"[COST_GOVERNOR] Budget violations are runtime-managed")
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Budget violations are runtime-managed, not code-healable"
+        }

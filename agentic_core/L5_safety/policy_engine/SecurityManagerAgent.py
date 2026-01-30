@@ -391,6 +391,27 @@ class SecurityManagerAgent(SovereignBaseAgent):
 
             return entries[-limit:]
 
+    def heal(self, violation: dict) -> dict:
+        """Heal security management violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (permission, config, checkpoint)
+                - agent_id: Agent that caused the violation
+                - action: Security action that failed
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        Logger.info(f"[SECURITY_MANAGER] Security violations require manual review")
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Security violations require manual security review"
+        }
+
 
 # Factory methods for backward compatibility
 def create_legacy_permission_manager() -> SecurityManagerAgent:

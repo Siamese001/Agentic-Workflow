@@ -275,6 +275,27 @@ class SafetyDetectorAgent(SovereignBaseAgent):
         with self._lock:
             self._threats.clear()
 
+    def heal(self, violation: dict) -> dict:
+        """Heal safety detection violations using standard_heal decorator pattern.
+
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - type: Type of violation (bias, hallucination, injection)
+                - source: Source of the threat
+                - severity: Severity level
+
+        Returns:
+            Dictionary with healing results following standard_heal format.
+        """
+        Logger.info(f"[SAFETY_DETECTOR] Detection-only agent - threats require manual review")
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Detection-only agent - threats require manual security review"
+        }
+
 
 # Factory methods for backward compatibility
 def create_legacy_bias_detector() -> SafetyDetectorAgent:
