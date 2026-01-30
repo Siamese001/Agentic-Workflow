@@ -1,65 +1,90 @@
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state, validator, workflow
-from __future__ import annotations
+"""Diagnostics engine for inspection domain."""
 
-# This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
-"""
-DagRuntimeInspectorAgent.py - Diagnostics Module
-
-Domain: inspection
-Generated: 2025-12-07T12:07:59.841073
-"""
-import logging
-from dataclasses import dataclass, field
-from datetime import datetime
 from typing import Any
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing import SubatomicTestingMixin
 
-Logger: Any = logging.getLogger(__name__)
 
-
-@dataclass
 class DiagnosticReport:
-    """Diagnostic report."""
-
-    _timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
-    HEALTHY: bool = True
-    issues: list[str] = field(default_factory=list)
-    metrics: dict[str, object] = field(default_factory=dict)
+    """Report from diagnostics."""
+    
+    def __init__(self, healthy: bool, issues: list[str], metrics: dict):
+        self.healthy = healthy
+        self.issues = issues
+        self.metrics = metrics
 
 
 class DagRuntimeInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Diagnostics engine for inspection domain."""
+
+    def __init__(self, config: dict[str, Any] | None = None):
+        """Initialize the inspector."""
+        super().__init__()
+        self.config = config or {}
 
     @standard_heal
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository(**kwargs)
 
+    def diagnose(self, target: object, context: dict | None = None) -> DiagnosticReport:
+        """Run diagnostics."""
+        issues = []
+        metrics = {}
+        healthy = True
+        
+        if target is None:
+            issues.append("Target is null")
+            healthy = False
+        elif isinstance(target, dict):
+            metrics["field_count"] = len(target)
+        elif isinstance(target, list):
+            metrics["item_count"] = len(target)
+        
+        metrics["TYPE"] = type(target).__name__
+        
+        return DiagnosticReport(healthy=healthy, issues=issues, metrics=metrics)
 
-def __init__(self: Any, config: dict[str, object] | None) -> None:
-    SELF.CONFIG = config or {}
-    Logger.info(f"Initialized {self.__class__.__name__}")
-
-
-def diagnose(self: Any, target: object, context: dict | None) -> DiagnosticReport:
-    """Run diagnostics."""
-    METRICS: Any = {}
-    if target is None:
-        issues.append("Target is null")
-    elif isinstance(target, dict):
-        metrics["field_count"] = len(target)
-    elif isinstance(target, list):
-        metrics["item_count"] = len(target)
-    METRICS["TYPE"] = type(target).__name__
-    len(issues) == 0
-    return DiagnosticReport(healthy=healthy, issues=issues, metrics=metrics)
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by DagRuntimeInspectorAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: 'success', 'partial_success', 'failed', or 'skipped'
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Default implementation - DagRuntimeInspectorAgent provides runtime diagnostics
+        try:
+            return {
+                "status": "skipped",
+                "details": f"DagRuntimeInspectorAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": []
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"DagRuntimeInspectorAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
 
 
 def diagnose(target: object, config: dict | None = None) -> DiagnosticReport:
     """Convenience function for diagnostics."""
-    return DagRuntimeInspectorAgent(config).diagnose(target)
+    inspector = DagRuntimeInspectorAgent(config)
+    return inspector.diagnose(target)

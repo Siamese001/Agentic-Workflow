@@ -36,6 +36,42 @@ class BaseAgent:
     def log_feedback(self, *args, **kwargs):
         pass
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by BaseAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: 'success', 'partial_success', 'failed', or 'skipped'
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Default implementation - BaseAgent provides base functionality
+        try:
+            return {
+                "status": "skipped",
+                "details": f"BaseAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": []
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"BaseAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
+
 
 class PlannerAssessment:
     def __init__(self, **kwargs):
@@ -170,6 +206,42 @@ class DomainPlannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         
         return metrics
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by DomainPlannerAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: 'success', 'partial_success', 'failed', or 'skipped'
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Default implementation - DomainPlannerAgent plans domains
+        try:
+            return {
+                "status": "skipped",
+                "details": f"DomainPlannerAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": []
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"DomainPlannerAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
+
 
 class RiskAssessorAgent(SovereignBaseAgent):
     """Assesses risk and potential failure modes in the strategy."""
@@ -261,6 +333,42 @@ class RiskAssessorAgent(SovereignBaseAgent):
         
         return metrics
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by RiskAssessorAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: 'success', 'partial_success', 'failed', or 'skipped'
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Default implementation - RiskAssessorAgent assesses risk
+        try:
+            return {
+                "status": "skipped",
+                "details": f"RiskAssessorAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": []
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"RiskAssessorAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
+
 
 class FeasibilityAnalystAgent(SovereignBaseAgent):
     """Evaluates whether the plan is grounded in achievable achievements."""
@@ -350,6 +458,42 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
             _call_path.discard(agent_name)
         
         return metrics
+
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by FeasibilityAnalystAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: 'success', 'partial_success', 'failed', or 'skipped'
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Default implementation - FeasibilityAnalystAgent analyzes feasibility
+        try:
+            return {
+                "status": "skipped",
+                "details": f"FeasibilityAnalystAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": []
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"FeasibilityAnalystAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
 
 
 class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
@@ -477,6 +621,42 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
             _call_path.discard(agent_name)
         
         return metrics
+
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by StrategyScenarioSimulatorAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: 'success', 'partial_success', 'failed', or 'skipped'
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Default implementation - StrategyScenarioSimulatorAgent simulates scenarios
+        try:
+            return {
+                "status": "skipped",
+                "details": f"StrategyScenarioSimulatorAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": []
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"StrategyScenarioSimulatorAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
 
 
 class StrategyCoordinatorAgent(SovereignBaseAgent):
@@ -632,3 +812,39 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
             _call_path.discard(agent_name)
         
         return metrics
+
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by StrategyCoordinatorAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: "success", "partial_success", "failed", or "skipped"
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Default implementation - StrategyCoordinatorAgent coordinates strategies
+        try:
+            return {
+                "status": "skipped",
+                "details": f"StrategyCoordinatorAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": []
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"StrategyCoordinatorAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
