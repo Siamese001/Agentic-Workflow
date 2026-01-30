@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L5_safety.validators.HealerProtocol import HealerProtocol
 
 """TestSovereigntyAgent — Ultra L5 Sovereign Testing Specialist (Jan 01, 2026)
 
@@ -44,7 +45,7 @@ class SovereignSeverity(Enum):
 
 
 @dataclass
-class TestSovereigntyAgent(SubatomicTestingMixin, SovereignBaseAgent, CanonBaseAgent):
+class TestSovereigntyAgent(SovereignBaseAgent):
     """L5 specialist — advanced sovereign testing."""
 
     def __init__(
@@ -244,35 +245,17 @@ class TestSovereigntyAgent(SubatomicTestingMixin, SovereignBaseAgent, CanonBaseA
             print(f"  Payload: {payload}")
 
     @timeout(300)
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set | None = None,
-    ) -> dict[str, int]:
-        """L5 safety agent - operational only."""
-        super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
-        if _call_path is None:
-            _call_path = set()
-        agent_name = self.__class__.__name__
-        if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
-        if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
-        _call_path.add(agent_name)
-        try:
-            print(f"[{agent_name}] L5 safety - operational only")
-            return {"skipped": 1}
-        finally:
-            _call_path.discard(agent_name)
+    def heal(self, violation: dict) -> dict:
+        """Heal method for L5 safety compliance."""
+        return {
+            "violations_found": 1,
+            "violations_fixed": 0,
+            "errors": [],
+            "skipped": 1
+        }
 
-    def get_test_sovereignty_agent(self) -> TestSovereigntyAgent:
+    def get_test_sovereignty_agent(self) -> "TestSovereigntyAgent":
         """Factory function to get test sovereignty agent instance."""
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
-
         return TestSovereigntyAgent()
 
 

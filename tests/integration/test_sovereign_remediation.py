@@ -15,7 +15,7 @@ from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
 from agentic_core.L5_safety.validators.RootHygieneAgent import RootHygieneAgent
 from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
-from agentic_core.prompt_governance.agents.ConversationalRepairAgent import (
+from agentic_core.L6_observability.ConversationalRepairAgent import (
     ConversationalRepairAgent,
 )
 

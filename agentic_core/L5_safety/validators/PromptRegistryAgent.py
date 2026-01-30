@@ -74,20 +74,22 @@ class PromptRegistryAgent(SovereignBaseAgent):
 
     REGISTRY_FILE = Path(__file__).parent / "registry.json"
 
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        Autonomous healing method (Canon Key 51 compliance).
+        Heal method for L5 safety compliance (HealerProtocol).
 
         Args:
-            dry_run: If True, only report violations without fixing
-            execute: If True, apply fixes
+            violation: Dict containing violation details
 
         Returns:
-            Dict with healing summary
+            Dict with canonical heal schema keys
         """
-        return {"violations": 0, "fixed": 0, "errors": 0}
+        return {
+            "violations_found": 1,
+            "violations_fixed": 0,
+            "errors": [],
+            "skipped": 1
+        }
 
     def __init__(self, placement_validator=None) -> None:
         """Initialize the instance.
@@ -248,7 +250,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
         skip registration to prevent the 9-duplicate bug.
 
         SEMANTIC DEDUPLICATION: Checks for semantically similar prompts across registry
-        using embedding-based similarity (threshold: 0.9). Raises DuplicatePromptErrorAgent
+        using embedding-based similarity (threshold: 0.9). Raises DuplicatePromptError
         if a similar prompt is found to prevent sprawl.
         """
         # Compute embedding for semantic deduplication
@@ -258,7 +260,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
         if content_emb is not None:
             similar = self._find_similar_prompts(content_emb, template_name)
             if similar:
-                raise DuplicatePromptErrorAgent(
+                raise DuplicatePromptError(
                     f"Semantic duplicate detected (threshold {self.similarity_threshold}). "
                     f"Found {len(similar)} similar prompt(s): {similar[0]['name']} "
                     f"(similarity: {similar[0]['similarity']:.3f})",
@@ -346,7 +348,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
         ]
 
 
-class DuplicatePromptErrorAgent(Exception):
+class DuplicatePromptError(Exception):
     """Raised when a semantically duplicate prompt is detected."""
 
     def __init__(self, message, similar_entries) -> None:
