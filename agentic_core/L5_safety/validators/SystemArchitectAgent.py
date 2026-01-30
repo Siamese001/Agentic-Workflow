@@ -23,14 +23,14 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.ValidationOrchestratorAgent import ValidationOrchestratorAgent
 
 Logger = logging.getLogger(__name__)
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
-class SystemArchitectAgent(SovereignBaseAgent, CanonBaseAgent):
+class SystemArchitectAgent(SovereignBaseAgent):
     """
     System Architect validates core architecture and import dependencies.
 
