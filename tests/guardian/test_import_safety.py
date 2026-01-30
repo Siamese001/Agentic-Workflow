@@ -245,7 +245,7 @@ class TestImportSafety:
 
         for failure in failed_imports:
             is_known_debt = False
-            for pattern, description in self.KNOWN_TECHNICAL_DEBT:
+            for pattern, _description in self.KNOWN_TECHNICAL_DEBT:
                 if pattern in failure["error"]:
                     technical_debt.append(failure)
                     is_known_debt = True
@@ -258,7 +258,7 @@ class TestImportSafety:
             print(f"\n[TECH DEBT] {len(technical_debt)} known issues (tracked, not blocking):")
             debt_by_pattern = {}
             for failure in technical_debt:
-                for pattern, desc in self.KNOWN_TECHNICAL_DEBT:
+                for pattern, _desc in self.KNOWN_TECHNICAL_DEBT:
                     if pattern in failure["error"]:
                         debt_by_pattern[pattern] = debt_by_pattern.get(pattern, 0) + 1
                         break
@@ -275,7 +275,7 @@ class TestImportSafety:
             if len(critical_failures) > 10:
                 error_msg += f"\n... and {len(critical_failures) - 10} more"
 
-            assert False, error_msg
+            raise AssertionError(error_msg)
 
         print(
             f"\n[OK] {len(python_files)} files checked: {len(python_files) - len(failed_imports)} OK, {len(technical_debt)} tech debt, {len(timeout_imports)} timeouts"
@@ -373,7 +373,7 @@ class TestImportSafety:
                     error_msg += f"  [CYCLE] {dep_a} <-> {dep_b}\n"
                 if len(circular_deps) > 10:
                     error_msg += f"  ... and {len(circular_deps) - 10} more\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         print(
             f"[OK] Circular dependency check complete ({len(all_files)} files, {len(circular_deps)} known debt)"
@@ -460,7 +460,7 @@ class TestImportSafety:
                 for zombie in zombie_imports[:10]:
                     error_msg += f"  {zombie['file']}:{zombie['line']}\n"
                     error_msg += f"   Import: {zombie['import']}\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         print(
             f"[OK] Zombie import check complete ({len(python_files)} files, {len(zombie_imports)} known debt)"
@@ -574,7 +574,7 @@ class TestImportSafety:
                     error_msg += f"      {v['violation']}\n"
                 if len(violations) > 15:
                     error_msg += f"  ... and {len(violations) - 15} more\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         total_files = len(apps_shared_files) + len(apps_rg_files) + len(apps_lic_files)
         print(
@@ -754,7 +754,7 @@ class TestNuclearImportSweep:
                     for ie in import_errors[:5]:
                         error_msg += f"  [X] {ie['file']}: {ie['error']}\n"
 
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         print("\n[OK] Global import crawl complete")
 
@@ -850,7 +850,7 @@ class TestNuclearImportSweep:
                 error_msg = f"CIRCULAR DEPENDENCIES EXCEED THRESHOLD ({len(cycles)} > {KNOWN_CIRCULAR_DEPS}):\n"
                 for a, b in cycles[:10]:
                     error_msg += f"  [CYCLE] {a} <-> {b}\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         print("\n[OK] Circular dependency trap complete")
 
@@ -917,7 +917,7 @@ class TestNuclearImportSweep:
                 for v in violations[:10]:
                     error_msg += f"  [X] {v['file']}:{v['line']}\n"
                     error_msg += f"      {v['violation']}\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         print("\n[OK] Forbidden imports check complete")
 
@@ -974,7 +974,7 @@ class TestNuclearImportSweep:
                 error_msg = f"MISSING __init__.py EXCEEDS THRESHOLD ({len(missing_init)} > {KNOWN_MISSING_INIT}):\n"
                 for path in missing_init[:15]:
                     error_msg += f"  [X] {path}/\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         print("\n[OK] __init__.py completeness check complete")
 
@@ -1079,7 +1079,7 @@ class TestNuclearImportSweep:
                 error_msg = f"GHOST IMPORTS EXCEED THRESHOLD ({len(ghost_imports)} > {KNOWN_GHOST_IMPORTS}):\n"
                 for gi in ghost_imports[:10]:
                     error_msg += f"  [X] {gi['file']}:{gi['line']} - {gi['type']} {gi['import']}\n"
-                assert False, error_msg
+                raise AssertionError(error_msg)
 
         print("\n[OK] Ghost import detection complete")
 

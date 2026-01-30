@@ -7,6 +7,7 @@ Provides self-healing capabilities for outreach campaigns:
 - Automatic rollback on critical failures
 """
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from __future__ import annotations
 
 from dataclasses import dataclass, field
