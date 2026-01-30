@@ -46,21 +46,38 @@ repos:
         exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
 
   # ============================================================================
-  # TIER 2: Project-Specific Structural Guards
+  # TIER 2: Project-Specific Structural Guards (The Contract)
   # ============================================================================
   - repo: local
     hooks:
+      # [CONSTITUTIONAL] Base Agent Location Lock - CANNOT be disabled
+      - id: check-base-agent-location
+        name: Constitutional Base Agent Lock
+        entry: python scripts/validate_structure.py
+        language: python
+        files: .*BaseAgent\.py$
+        # CRITICAL: All *BaseAgent.py files MUST be in agentic_core/base_agents/
+        # This is a constitutional rule that short-circuits all other validation.
+
+      - id: validate-ssot-structure
+        name: SSOT Structure Guard (Smoke Detector)
+        entry: python scripts/validate_structure.py
+        language: python
+        files: \.(py|json|yaml|yml)$
+        exclude: ^(archives/.*|\.sovereign_healing_backup/.*|\.git/.*)
+        # Validates all files against structure_blueprint.py SSOT rules.
+        # Checks: territories, subfolders, forbidden patterns, test placement.
+
       - id: validate-ssot-paths
-        name: SSOT Path Guard (Smoke Detector)
+        name: SSOT Path Guard (Legacy)
         entry: python scripts/hooks/validate_paths.py
         language: python
         files: ^apps/.*\.py$
-        # Critical Analysis: This replaces 5+ heavy pytest hooks with one static path check.
-        # It ensures files match structure_blueprint.py without importing them.
+        # Legacy hook - retained for backward compatibility.
 
       - id: check-protected-files
         name: Gatekeeper Lockdown
         entry: python ops_scripts/maintenance/check_protected_files.py
         language: python
         pass_filenames: false
-        # Critical Analysis: Retained as it is a simple string-match check on changed files.
+        # Protects critical files from unauthorized modification.
