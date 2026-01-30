@@ -1,0 +1,366 @@
+tests/e2e/agentic_core/L0_maintenance/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_01_dry_run_integrity
+tests/e2e/agentic_core/L0_maintenance/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_02_multi_violation_aggregation
+tests/e2e/agentic_core/L0_maintenance/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_03_state_persistence_crash_recovery
+tests/e2e/agentic_core/L0_maintenance/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_04_territory_isolation
+tests/e2e/agentic_core/L0_maintenance/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_05_decision_audit_trail
+tests/e2e/agentic_core/L0_maintenance/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_06_broken_agent_containment
+tests/e2e/agentic_core/L0_maintenance/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_07_large_scale_serialization
+tests/e2e/agentic_core/L0_maintenance/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_08_human_rejection_logic
+tests/e2e/agentic_core/L0_maintenance/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_09_full_reconciliation_loop
+tests/e2e/agentic_core/L0_maintenance/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_10_telemetry_severity_filtering
+tests/e2e/agentic_core/test_sovereign_validation_e2e.py::TestSovereignValidationE2E::test_full_validation_workflow
+tests/e2e/agentic_core/test_sovereign_validation_e2e.py::TestSovereignValidationE2E::test_violation_detection_and_healing
+tests/e2e/agentic_core/test_sovereign_validation_e2e.py::TestSovereignValidationE2E::test_ssot_compliance_e2e
+tests/e2e/agentic_core/test_sovereign_validation_e2e.py::TestPascalSovereigntyE2E::test_pascal_sovereignty_full_scan
+tests/e2e/agentic_core/test_sovereign_validation_e2e.py::TestPascalSovereigntyE2E::test_pascal_sovereignty_with_violations
+tests/e2e/agentic_core/test_sovereign_validation_e2e.py::TestAgentDiscoveryE2E::test_full_agent_discovery
+tests/e2e/apps_lic/test_lic_outreach_e2e.py::TestLICOutreachE2E::test_full_outreach_generation_workflow
+tests/e2e/apps_lic/test_lic_outreach_e2e.py::TestLICOutreachE2E::test_outreach_with_validation_failure_and_retry
+tests/e2e/apps_lic/test_lic_outreach_e2e.py::TestLICOutreachE2E::test_outreach_with_low_value_lead
+tests/e2e/apps_lic/test_lic_outreach_e2e.py::TestLICErrorRecovery::test_research_timeout_recovery
+tests/e2e/apps_lic/test_lic_outreach_e2e.py::TestLICErrorRecovery::test_llm_failure_recovery
+tests/e2e/apps_lic/test_lic_outreach_e2e.py::TestLICMetrics::test_pipeline_metrics_collection
+tests/e2e/apps_rg/test_rg_resume_generation_e2e.py::TestRGResumeGenerationE2E::test_full_resume_generation_workflow
+tests/e2e/apps_rg/test_rg_resume_generation_e2e.py::TestRGResumeGenerationE2E::test_resume_with_skill_gap_handling
+tests/e2e/apps_rg/test_rg_resume_generation_e2e.py::TestRGResumeGenerationE2E::test_resume_with_validation_iteration
+tests/e2e/apps_rg/test_rg_resume_generation_e2e.py::TestRGMultipleFormats::test_pdf_generation
+tests/e2e/apps_rg/test_rg_resume_generation_e2e.py::TestRGMultipleFormats::test_docx_generation
+tests/e2e/apps_rg/test_rg_resume_generation_e2e.py::TestRGMultipleFormats::test_plain_text_generation
+tests/e2e/apps_rg/test_rg_resume_generation_e2e.py::TestRGErrorRecovery::test_llm_timeout_recovery
+tests/e2e/apps_rg/test_rg_resume_generation_e2e.py::TestRGErrorRecovery::test_validation_loop_prevention
+tests/e2e/apps_rg/test_rg_resume_generation_e2e.py::TestRGMetrics::test_generation_metrics
+tests/e2e/flows/test_cross_app_workflow_e2e.py::TestCrossAppWorkflowE2E::test_resume_then_outreach_workflow
+tests/e2e/flows/test_cross_app_workflow_e2e.py::TestCrossAppWorkflowE2E::test_shared_profile_consistency
+tests/e2e/flows/test_cross_app_workflow_e2e.py::TestCrossAppWorkflowE2E::test_shared_utilities_in_workflow
+tests/e2e/flows/test_cross_app_workflow_e2e.py::TestCrossAppDataFlow::test_profile_enrichment_flow
+tests/e2e/flows/test_cross_app_workflow_e2e.py::TestCrossAppDataFlow::test_shared_schema_compliance
+tests/e2e/flows/test_cross_app_workflow_e2e.py::TestCrossAppErrorHandling::test_upstream_failure_handling
+tests/e2e/flows/test_cross_app_workflow_e2e.py::TestCrossAppErrorHandling::test_shared_service_failure
+tests/e2e/flows/test_cross_app_workflow_e2e.py::TestCrossAppMetrics::test_combined_workflow_metrics
+tests/e2e/ops_scripts/maintenance/test_manifest_completion.py::TestManifestCompletion::test_all_high_priority_resolved
+tests/e2e/ops_scripts/maintenance/test_mro_refactor.py::test_tc_mro_001_reporting_agent_initialization
+tests/e2e/ops_scripts/maintenance/test_mro_refactor.py::test_tc_mro_002_l4_state_base_agent_mro
+tests/e2e/ops_scripts/maintenance/test_mro_refactor.py::test_tc_mro_003_semantic_debugger_inheritance
+tests/e2e/ops_scripts/maintenance/test_mro_refactor.py::test_tc_cap_001_redis_capability_retention
+tests/e2e/ops_scripts/maintenance/test_mro_refactor.py::test_tc_cap_002_healer_capability_retention
+tests/e2e/ops_scripts/maintenance/test_phase1_verification.py::TestPhase1Migration::test_file_exists_at_destination
+tests/e2e/ops_scripts/maintenance/test_phase1_verification.py::TestPhase1Migration::test_file_removed_from_source
+tests/e2e/ops_scripts/maintenance/test_phase1_verification.py::TestPhase1Migration::test_file_is_valid_python
+tests/e2e/ops_scripts/maintenance/test_phase1_verification.py::TestPhase1Migration::test_pytest_discovers_file
+tests/e2e/ops_scripts/maintenance/test_phase1_verification.py::TestPhase1Migration::test_backup_exists
+tests/e2e/ops_scripts/maintenance/test_phase1_verification.py::TestPhase1Migration::test_imports_work
+tests/e2e/ops_scripts/test_batch_performance_optimization.py::test_batch_performance_optimization
+tests/e2e/ops_scripts/test_batch_performance_optimization.py::test_nested_batch_context
+tests/e2e/ops_scripts/test_batch_performance_optimization.py::test_immediate_write_outside_batch
+tests/e2e/ops_scripts/test_complete_mission_workflow.py::test_complete_mission_workflow
+tests/e2e/ops_scripts/test_lic_rg_parity.py::test_configuration_parity
+tests/e2e/ops_scripts/test_lic_rg_parity.py::test_reasoning_toggles_parity
+tests/e2e/ops_scripts/test_lic_rg_parity.py::test_trace_registry_parity
+tests/e2e/ops_scripts/test_lic_rg_parity.py::test_base_engine_parity
+tests/e2e/ops_scripts/test_lic_rg_parity.py::test_orchestrator_parity
+tests/e2e/ops_scripts/test_lic_rg_parity.py::test_gap_closure_validation
+tests/e2e/ops_scripts/test_location_agent_telemetry.py::test_location_agent_telemetry
+tests/e2e/ops_scripts/test_mission_script_integrity.py::test_mission_script_integrity
+tests/e2e/ops_scripts/test_mission_script_integrity.py::test_mission_script_target_zones
+tests/e2e/ops_scripts/test_mission_script_integrity.py::test_agent_initialization
+tests/e2e/ops_scripts/test_mission_script_integrity.py::test_mission_script_syntax
+tests/e2e/ops_scripts/test_phase2_interface.py::TestPhase2InterfaceCompliance::test_code_validator_wiring
+tests/e2e/ops_scripts/test_phase2_interface.py::TestPhase2InterfaceCompliance::test_safety_executor_interface
+tests/e2e/ops_scripts/test_phase2_interface.py::TestPhase2InterfaceCompliance::test_security_manager_interface
+tests/e2e/ops_scripts/test_phase2_interface.py::TestPhase2InterfaceCompliance::test_structure_enforcer_interface
+tests/e2e/ops_scripts/test_phase2_interface.py::TestPhase2InterfaceCompliance::test_structure_healer_wiring
+tests/e2e/scenarios/test_dashboard_e2e_validation.py::test_dashboard_html_contains_correct_data
+tests/e2e/scenarios/test_dashboard_e2e_validation.py::test_dashboard_strategic_recommendations_present
+tests/e2e/scenarios/test_dashboard_e2e_validation.py::test_dashboard_territory_table_rendered
+tests/e2e/scenarios/test_dashboard_e2e_validation.py::test_no_hardcoded_health_scores_in_code
+tests/e2e/scenarios/test_e2e.py::TestAgentDiscovery::test_agent_discovery_file_exists
+tests/e2e/scenarios/test_e2e.py::TestAgentDiscovery::test_agent_discovery_has_agents
+tests/e2e/scenarios/test_e2e.py::TestAgentDiscovery::test_agents_have_required_fields
+tests/e2e/scenarios/test_e2e.py::TestDashboardHTML::test_html_file_exists
+================================================================================
+DASHBOARD DRILL-DOWN VALIDATION TEST
+================================================================================
+
+≡ƒôè Validating 39 territories...
+
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+TEST RESULTS
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+Γ£à Total Territories: 39
+Γ£à Territories with Agents: 39
+Γ£à Total Agents Validated: 219
+
+ΓÜá∩╕Å  WARNINGS: 8
+
+   ΓÜá∩╕Å  L1 Cognition/Reasoning[3]: Unexpected invocation value: No (missing super)
+   ΓÜá∩╕Å  L3 Orchestration/Workflow[0]: Unexpected invocation value: No (missing super)
+   ΓÜá∩╕Å  L3 Orchestration/Workflow[1]: Unexpected invocation value: No (missing super)
+   ΓÜá∩╕Å  L3 Orchestration/Base Agent[0]: Unexpected invocation value: No (missing super)
+   ΓÜá∩╕Å  L5 Safety/Validators/Structure[2]: Unexpected invocation value: No (missing super)
+   ΓÜá∩╕Å  L5 Safety/Validators/Content[16]: Unexpected invocation value: No (missing super)
+   ΓÜá∩╕Å  L5 Safety/Validators/Content[17]: Unexpected invocation value: No (missing super)
+   ΓÜá∩╕Å  L6_Observability/Base Agent[0]: Unexpected invocation value: No (missing super)
+
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+DRILL-DOWN HEALTH CHECK
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+Agents at 0% health: 0
+Agents < 50% health: 6
+Agents with 'undefined' values: 0
+
+================================================================================
+Γ£à DRILL-DOWN VALIDATION PASSED
+================================================================================
+
+All drill-down modals have complete, valid agent data.
+No 'undefined' values found. Drill-downs are ready for use.
+
+Note: 8 warnings found (non-critical).
+tests/e2e/scenarios/test_e2e.py::TestDashboardHTML::test_html_has_dashboard_data
+tests/e2e/scenarios/test_e2e.py::TestDashboardHTML::test_html_has_tables
+tests/e2e/scenarios/test_e2e.py::TestDashboardData::test_dashboard_data_file_exists
+tests/e2e/scenarios/test_e2e.py::TestDashboardData::test_dashboard_data_is_valid_json
+tests/e2e/scenarios/test_e2e.py::TestDashboardData::test_dashboard_data_has_rows
+tests/e2e/scenarios/test_e2e.py::TestDataConsistency::test_total_agent_count_matches
+tests/e2e/scenarios/test_e2e.py::TestTableRendering::test_kpi_grid_exists
+tests/e2e/scenarios/test_e2e.py::TestTableRendering::test_table_headers_exist
+tests/e2e/scenarios/test_e2e.py::TestRowOrder::test_total_row_is_first
+tests/e2e/scenarios/test_e2e.py::TestRowOrder::test_territories_are_sorted
+tests/e2e/scenarios/test_e2e.py::TestPlaywrightVisual::test_playwright_available
+tests/e2e/scenarios/test_e2e.py::TestPlaywrightVisual::test_tables_render_in_browser
+tests/e2e/scenarios/test_example_e2e.py::TestExampleE2E::test_full_flow
+tests/e2e/scenarios/test_run_e2e_verification.py::test_run_e2e_verification
+tests/e2e/scenarios/test_user_flow_e2e.py::TestUserFlowE2E::test_user_registration_flow
+tests/e2e/test_full_mock_isolation.py::TestFullMockIsolation::test_e2e_mock_coverage
+tests/e2e/test_full_mock_isolation.py::TestFullMockIsolation::test_no_external_dependencies_in_e2e
+tests/e2e/test_full_mock_isolation.py::TestFullMockIsolation::test_e2e_workflow_mock_integrity
+tests/e2e/test_full_mock_isolation.py::TestFullMockIsolation::test_e2e_mock_state_consistency
+tests/e2e/test_full_mock_isolation.py::TestFullMockIsolation::test_e2e_mock_performance_impact
+tests/e2e/test_full_mock_isolation.py::TestE2EMockFailures::test_mock_failure_detection
+tests/e2e/test_full_mock_isolation.py::TestE2EMockFailures::test_partial_mock_coverage_detection
+tests/e2e/test_full_mock_isolation.py::TestE2EMockFailures::test_mock_leakage_detection
+tests/guardian/test_import_safety.py::TestImportSafety::test_global_smoke_loader
+tests/guardian/test_import_safety.py::TestImportSafety::test_circular_dependency_scanner
+tests/guardian/test_import_safety.py::TestImportSafety::test_zombie_reference_check
+tests/guardian/test_import_safety.py::TestImportSafety::test_ssot_dependency_flow
+tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_global_import_crawl
+tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_circular_dependency_trap
+tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_forbidden_imports
+tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_init_completeness
+tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_ghost_import_detection_with_find_spec
+tests/guardian/test_import_safety.py::TestGravityCompliance::test_import_waterfall_violations
+tests/guardian/test_import_safety.py::TestGravityCompliance::test_internal_gravity_leaks
+tests/guardian/test_manual_verification.py::TestManualVerification::test_monolith_detection_works
+tests/guardian/test_manual_verification.py::TestManualVerification::test_gravity_leak_detection_works
+tests/guardian/test_manual_verification.py::TestManualVerification::test_waterfall_detection_works
+tests/guardian/test_manual_verification.py::TestManualVerification::test_code_dust_detection_works
+tests/guardian/test_manual_verification.py::TestManualVerification::test_void_compliance_detection_works
+tests/guardian/test_mro_integrity.py::test_redundant_mixin_check
+tests/guardian/test_mro_integrity.py::test_dataclass_initialization_fuzz
+tests/guardian/test_mro_integrity.py::test_diamond_resolution_synthetic
+tests/guardian/test_mro_integrity.py::test_diamond_of_death_detection
+tests/guardian/test_mro_integrity.py::test_mixin_naming_convention_and_inheritance
+tests/guardian/test_mro_integrity.py::test_abc_implementation_for_concrete_agents
+tests/guardian/test_mro_integrity.py::test_sovereign_seal_integrity
+tests/guardian/test_mro_integrity.py::TestDiamondDefense::test_detect_diamond_pattern
+tests/guardian/test_mro_integrity.py::TestDiamondDefense::test_mixin_order_safety
+tests/guardian/test_mro_integrity.py::TestDiamondDefense::test_duplicate_mixin_injection
+tests/guardian/test_mro_integrity.py::TestDiamondDefense::test_dataclass_field_ordering
+tests/guardian/test_mro_integrity.py::TestDiamondDefense::test_mro_consistency_across_inheritance_chain
+tests/guardian/test_pascal_edge_cases.py::TestPascalHardening::test_ops_script_protection
+tests/guardian/test_pascal_edge_cases.py::TestPascalHardening::test_types_collection_immunity
+tests/guardian/test_pascal_edge_cases.py::TestPascalHardening::test_private_module_immunity
+tests/guardian/test_pascal_edge_cases.py::TestPascalHardening::test_agent_suffix_enforcement
+tests/guardian/test_ssot_alignment.py::TestSSOTAlignment::test_blueprint_reality_check
+tests/guardian/test_ssot_alignment.py::TestSSOTAlignment::test_file_naming_convention
+tests/guardian/test_ssot_alignment.py::TestSSOTAlignment::test_orphan_file_detection
+tests/guardian/test_ssot_alignment.py::TestSSOTAlignment::test_path_depth_limit
+tests/guardian/test_ssot_alignment.py::TestSSOTAlignment::test_layer_directory_structure
+tests/guardian/test_ssot_alignment.py::TestSSOTAlignment::test_base_agents_location_constitutional
+tests/guardian/test_ssot_compliance.py::TestSSOTCompliance::test_all_files_in_valid_territories
+tests/guardian/test_ssot_compliance.py::TestSSOTCompliance::test_agentic_core_subfolder_compliance
+tests/guardian/test_ssot_compliance.py::TestSSOTCompliance::test_base_agents_constitutional_location
+tests/guardian/test_ssot_compliance.py::TestSSOTCompliance::test_apps_shared_independence
+tests/guardian/test_ssot_compliance.py::TestSSOTCompliance::test_test_files_in_tests_directory
+tests/guardian/test_ssot_compliance.py::TestSSOTCompliance::test_layer_hierarchy_integrity
+tests/guardian/test_ssot_compliance.py::TestSSOTCompliance::test_void_compliance_whitelist
+tests/guardian/test_ssot_compliance.py::TestSSOTCompliance::test_sub_atomic_granularity
+tests/guardian/test_subatomic_compliance.py::TestSubatomicCompliance::test_capability_limit
+tests/guardian/test_subatomic_compliance.py::TestSubatomicCompliance::test_layer_zoning_alignment
+tests/guardian/test_subatomic_compliance.py::TestSubatomicCompliance::test_subatomic_naming_convention
+tests/guardian/test_subatomic_compliance.py::TestSubatomicCompliance::test_no_cross_layer_pollution
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehensive.py::TestComprehensiveSSOT::test_01_high_confidence_auto_heal
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehensive.py::TestComprehensiveSSOT::test_02_medium_confidence_llm_override
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehensive.py::TestComprehensiveSSOT::test_02b_medium_confidence_no_llm_block
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehensive.py::TestComprehensiveSSOT::test_03_low_confidence_hard_block
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehensive.py::TestComprehensiveSSOT::test_04_cycle_detection_guard
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehensive.py::TestComprehensiveSSOT::test_05_healing_budget_exhaustion
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehensive.py::TestComprehensiveSSOT::test_06_security_input_validation
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehensive.py::TestComprehensiveSSOT::test_07_ast_missing_type_hints
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehensive.py::TestComprehensiveSSOT::test_08_ast_file_size_limit
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehensive.py::TestComprehensiveSSOT::test_09_telemetry_report_structure
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehensive.py::TestComprehensiveSSOT::test_10_full_phase_execution_schema
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_hardened.py::test_phase2_atomic_rollback
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_hardened.py::test_phase2_sovereignty_denial
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_lifecycle.py::TestSovereignLifecycle::test_confidence_score_integration
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_lifecycle.py::TestSovereignLifecycle::test_decision_engine_with_state_tracking
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_lifecycle.py::TestSovereignLifecycle::test_lifecycle_healing_override_execution
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_lifecycle.py::TestSovereignLifecycle::test_llm_override_at_boundary
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_lifecycle.py::TestSovereignLifecycle::test_non_interactive_guard_in_context
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_lifecycle.py::TestSovereignLifecycle::test_reporting_breakdown_consistency
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_lifecycle.py::TestSovereignLifecycle::test_retry_decorator_integration
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_lifecycle.py::TestSovereignLifecycle::test_state_manager_persistence
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_lifecycle.py::TestSovereignLifecycle::test_territorial_trust_calculation
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_lifecycle.py::TestSovereignLifecycle::test_zero_violations_always_high_confidence
+tests/integration/agentic_core/L0_maintenance/test_execute_ssot_lifecycle.py::TestDownstreamAgentIntegration::test_downstream_threshold_files_exist
+tests/integration/agentic_core/L0_maintenance/test_ssot_orchestration.py::TestOrchestrationLayers::test_dynamic_agent_discovery
+tests/integration/agentic_core/L0_maintenance/test_ssot_orchestration.py::TestOrchestrationLayers::test_graceful_exit_handler
+tests/integration/agentic_core/L0_maintenance/test_ssot_orchestration.py::TestOrchestrationLayers::test_main_arg_parsing_validation
+tests/integration/agentic_core/L0_maintenance/test_ssot_orchestration.py::TestOrchestrationLayers::test_main_flow_aborts_on_empty_agents
+tests/integration/agentic_core/L0_maintenance/test_ssot_phases.py::TestPhaseExecutionSafety::test_phase2_hard_gate_budget_exhaustion
+tests/integration/agentic_core/L0_maintenance/test_ssot_phases.py::TestPhaseExecutionSafety::test_phase2_dry_run_immutability
+tests/integration/agentic_core/L0_maintenance/test_ssot_phases.py::TestPhaseExecutionSafety::test_phase2_missing_agent_handling
+tests/integration/agentic_core/L0_maintenance/test_ssot_phases.py::TestPhaseExecutionSafety::test_phase2_confidence_blocking
+tests/integration/agentic_core/L0_maintenance/test_ssot_phases.py::TestPhaseExecutionSafety::test_phase2_successful_execution
+tests/integration/agentic_core/L0_maintenance/test_ssot_phases.py::TestPhaseExecutionSafety::test_phase3_validation_function_exists
+tests/integration/agentic_core/L0_maintenance/test_ssot_phases.py::TestPhaseExecutionSafety::test_ast_code_quality_validator
+tests/integration/agentic_core/L0_maintenance/test_ssot_phases.py::TestPhaseExecutionSafety::test_autonomous_decision_engine_cycle_detection
+tests/integration/agentic_core/L0_maintenance/test_ssot_phases.py::TestPhaseExecutionSafety::test_autonomous_decision_engine_budget_enforcement
+tests/integration/agentic_core/L5_safety/test_location_hierarchy_integration.py::TestLocationHierarchyIntegration::test_location_validates_before_hierarchy_moves
+tests/integration/agentic_core/L5_safety/test_location_hierarchy_integration.py::TestLocationHierarchyIntegration::test_hierarchy_respects_location_constraints
+tests/integration/agentic_core/L5_safety/test_location_hierarchy_integration.py::TestLocationHierarchyIntegration::test_cross_layer_validation
+tests/integration/agentic_core/L5_safety/test_location_hierarchy_integration.py::TestValidatorChainIntegration::test_pascal_sovereignty_calls_location
+tests/integration/agentic_core/L5_safety/test_location_hierarchy_integration.py::TestValidatorChainIntegration::test_healing_chain_integration
+tests/integration/agentic_core/L5_safety/test_location_hierarchy_integration.py::TestSSOTIntegration::test_agent_discovery_integration
+tests/integration/agentic_core/L5_safety/test_location_hierarchy_integration.py::TestSSOTIntegration::test_structure_blueprint_integration
+tests/integration/agentic_core/test_api_integration.py::TestApiIntegration::test_user_api_endpoint
+tests/integration/agentic_core/test_arch_guard.py::test_no_zombie_files_active
+tests/integration/agentic_core/test_arch_guard.py::test_sdk_isolation
+tests/integration/agentic_core/test_arch_guard.py::test_no_archived_imports
+tests/integration/agentic_core/test_arch_guard.py::test_structure_lock
+tests/integration/agentic_core/test_ast_audit_verification.py::TestASTAuditVerification::test_unknown_threshold_reduction
+tests/integration/agentic_core/test_ast_audit_verification.py::TestASTAuditVerification::test_enum_mismatch_renaming_logic
+tests/integration/agentic_core/test_ast_audit_verification.py::TestASTAuditVerification::test_subatomic_mixin_discovery
+tests/integration/agentic_core/test_ast_audit_verification.py::TestASTAuditVerification::test_import_canonicalization
+tests/integration/agentic_core/test_ast_audit_verification.py::TestASTAuditVerification::test_sovereign_agent_count_increase
+tests/integration/agentic_core/test_ast_audit_verification.py::TestASTAuditVerification::test_specialist_node_detection
+tests/integration/agentic_core/test_ast_audit_verification.py::TestASTAuditVerification::test_audit_results_structure
+tests/integration/agentic_core/test_ast_audit_verification.py::TestASTAuditVerification::test_classification_completeness
+tests/integration/agentic_core/test_ast_audit_verification.py::TestASTAuditVerification::test_refactoring_recommendations_exist
+tests/integration/agentic_core/test_cda_integration.py::TestCDAIntegration::test_async_cognitive_analysis
+tests/integration/agentic_core/test_cda_integration.py::TestCDAIntegration::test_cognitive_disposition_analysis
+tests/integration/agentic_core/test_cda_integration.py::TestCDAIntegration::test_cognitive_factor_calculation
+tests/integration/agentic_core/test_cda_integration.py::TestCDAIntegration::test_command_line_argument_parsing
+tests/integration/agentic_core/test_cda_integration.py::TestCDAIntegration::test_confidence_enhancement_with_cognitive_data
+tests/integration/agentic_core/test_cda_integration.py::TestCDAIntegration::test_enhanced_decision_engine_creation
+tests/integration/agentic_core/test_cda_integration.py::TestCDALiveIntegration::test_live_cda_integration
+tests/integration/agentic_core/test_conversational_repair_ssot_integration.py::test_conversational_repair_in_ssot_registry
+tests/integration/agentic_core/test_conversational_repair_ssot_integration.py::test_conversational_repair_protocol_compliance
+INTERNALERROR> Traceback (most recent call last):
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\main.py", line 318, in wrap_session
+mainloop: caught unexpected SystemExit!
+INTERNALERROR>     session.exitstatus = doit(config, session) or 0
+INTERNALERROR>                          ^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\main.py", line 371, in _main
+INTERNALERROR>     config.hook.pytest_collection(session=session)
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+INTERNALERROR>     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+INTERNALERROR>            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+INTERNALERROR>     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+INTERNALERROR>            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+INTERNALERROR>     raise exception
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+INTERNALERROR>     teardown.throw(exception)
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\logging.py", line 788, in pytest_collection
+INTERNALERROR>     return (yield)
+INTERNALERROR>             ^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+INTERNALERROR>     teardown.throw(exception)
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\warnings.py", line 98, in pytest_collection
+INTERNALERROR>     return (yield)
+INTERNALERROR>             ^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+INTERNALERROR>     teardown.throw(exception)
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\config\__init__.py", line 1403, in pytest_collection
+INTERNALERROR>     return (yield)
+INTERNALERROR>             ^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+INTERNALERROR>     res = hook_impl.function(*args)
+INTERNALERROR>           ^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\main.py", line 382, in pytest_collection
+INTERNALERROR>     session.perform_collect()
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\main.py", line 857, in perform_collect
+INTERNALERROR>     self.items.extend(self.genitems(node))
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\main.py", line 1023, in genitems
+INTERNALERROR>     yield from self.genitems(subnode)
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\main.py", line 1023, in genitems
+INTERNALERROR>     yield from self.genitems(subnode)
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\main.py", line 1023, in genitems
+INTERNALERROR>     yield from self.genitems(subnode)
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\main.py", line 1020, in genitems
+INTERNALERROR>     rep, duplicate = self._collect_one_node(node, handle_dupes)
+INTERNALERROR>                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\main.py", line 883, in _collect_one_node
+INTERNALERROR>     rep = collect_one_node(node)
+INTERNALERROR>           ^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\runner.py", line 576, in collect_one_node
+INTERNALERROR>     rep: CollectReport = ihook.pytest_make_collect_report(collector=collector)
+INTERNALERROR>                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+INTERNALERROR>     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+INTERNALERROR>            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+INTERNALERROR>     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+INTERNALERROR>            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+INTERNALERROR>     raise exception
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+INTERNALERROR>     teardown.throw(exception)
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\capture.py", line 880, in pytest_make_collect_report
+INTERNALERROR>     rep = yield
+INTERNALERROR>           ^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+INTERNALERROR>     res = hook_impl.function(*args)
+INTERNALERROR>           ^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\runner.py", line 400, in pytest_make_collect_report
+INTERNALERROR>     call = CallInfo.from_call(
+INTERNALERROR>            ^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\runner.py", line 353, in from_call
+INTERNALERROR>     result: TResult | None = func()
+INTERNALERROR>                              ^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\runner.py", line 398, in collect
+INTERNALERROR>     return list(collector.collect())
+INTERNALERROR>                 ^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\python.py", line 563, in collect
+INTERNALERROR>     self._register_setup_module_fixture()
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\python.py", line 576, in _register_setup_module_fixture
+INTERNALERROR>     self.obj, ("setUpModule", "setup_module")
+INTERNALERROR>     ^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\python.py", line 289, in obj
+INTERNALERROR>     self._obj = obj = self._getobj()
+INTERNALERROR>                       ^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\python.py", line 560, in _getobj
+INTERNALERROR>     return importtestmodule(self.path, self.config)
+INTERNALERROR>            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\python.py", line 507, in importtestmodule
+INTERNALERROR>     mod = import_path(
+INTERNALERROR>           ^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\pathlib.py", line 587, in import_path
+INTERNALERROR>     importlib.import_module(module_name)
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py", line 126, in import_module
+INTERNALERROR>     return _bootstrap._gcd_import(name[level:], package, level)
+INTERNALERROR>            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+INTERNALERROR>   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+INTERNALERROR>   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+INTERNALERROR>   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\assertion\rewrite.py", line 197, in exec_module
+INTERNALERROR>     exec(co, module.__dict__)
+INTERNALERROR>   File "C:\Git\Agentic-Workflow\tests\integration\agentic_core\test_dashboard_drilldown.py", line 225, in <module>
+INTERNALERROR>     exit(0)
+INTERNALERROR>   File "<frozen _sitebuiltins>", line 26, in __call__
+INTERNALERROR> SystemExit: 0
+
+219 tests collected, 4 errors in 4.73s

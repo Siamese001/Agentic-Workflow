@@ -66,6 +66,7 @@ except ImportError:
 
 
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 LOGGER = Logger  # Alias for compatibility

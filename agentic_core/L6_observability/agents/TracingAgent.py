@@ -44,6 +44,7 @@ from datetime import datetime
 from pathlib import Path
 from threading import Lock
 from typing import Any
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 

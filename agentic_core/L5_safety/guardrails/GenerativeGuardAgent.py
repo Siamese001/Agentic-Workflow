@@ -22,6 +22,7 @@ import re
 import sys
 from pathlib import Path
 from typing import Any
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface (MOVED to agentic_core.utils.core_extensions)
 # GRAVITY FIXED (Upward Leak): from agentic_core.base_agents.mcp_hardened_mixin import mcp_hardened_mixin

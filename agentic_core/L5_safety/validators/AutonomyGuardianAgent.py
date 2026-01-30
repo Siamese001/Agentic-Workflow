@@ -23,6 +23,7 @@ from agentic_core.prompt_governance.renderer import DashboardRenderer
 
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
     TESTS_DIR,

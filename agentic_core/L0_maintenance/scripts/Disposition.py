@@ -13,6 +13,7 @@ from enum import Enum
 from pathlib import Path
 
 import networkx as nx
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class Disposition(Enum):

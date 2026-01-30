@@ -22,6 +22,7 @@ from agentic_core.L5_safety.validators.canonical_truth import get_canonical_laye
 from agentic_core.utils.security import safe_execute
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
     SCRIPTS_DIR,

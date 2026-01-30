@@ -320,6 +320,7 @@ class ASTValidatorAgent(SovereignBaseAgent, CanonASTValidator):
             self.clear_violations()
             test_code = """
 from typing import TYPE_CHECKING
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 if TYPE_CHECKING:
     eval('should be ignored')
 """

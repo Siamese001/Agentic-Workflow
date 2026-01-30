@@ -15,6 +15,7 @@ from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 try:
     from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import mcp_hardened_mixin

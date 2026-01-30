@@ -22,6 +22,7 @@ except ImportError:
     FileSystemEventHandler = object
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # Mock/Placeholder for internal timeout decorator if not available

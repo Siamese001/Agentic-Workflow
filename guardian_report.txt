@@ -1,19 +1,20 @@
 ============================================================
 GUARDIAN ARCHITECTURAL HEALTH REPORT
 ============================================================
-Generated: 2026-01-30 12:34:10
+Generated: 2026-01-30 14:44:45
 Exit Status: FAIL
 
 EXECUTION SUMMARY:
   Total Tests Run: 50
-  Passed: 35
-  Failed: 11
+  Passed: 34
+  Failed: 12
   Skipped: 4
 
 FAILED GATES:
   ❌ MRO Integrity: 1 test(s)
      - tests/guardian/test_mro_integrity.py::test_redundant_mixin_check
-  ❌ Import Safety: 5 test(s)
+  ❌ Import Safety: 6 test(s)
+     - tests/guardian/test_import_safety.py::TestImportSafety::test_global_smoke_loader
      - tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_global_import_crawl
      - tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_init_completeness
      - tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_ghost_import_detection_with_find_spec

@@ -38,6 +38,7 @@ from threading import Lock
 from typing import Any, List, Tuple
 
 from agentic_core.base_agents.timeout_decorator import List, Tuple, timeout
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 

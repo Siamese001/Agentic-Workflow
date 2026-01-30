@@ -1,3 +1,4 @@
+from pathlib import Path
 import pytest
 
 pytestmark = pytest.mark.skip(reason="DEPRECATED: Test requires external modules")
