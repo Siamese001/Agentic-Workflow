@@ -86,3 +86,40 @@ class BootstrapAgent(L0MaintenanceBaseAgent):
             "errors": errors,
             "skipped": skipped,
         }
+
+    def heal(self, violation: dict[str, any]) -> dict[str, any]:
+        """
+        Heal violations detected by BootstrapAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: 'success', 'partial_success', 'failed', or 'skipped'
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Delegate to existing heal_repository method
+        try:
+            result = self.heal_repository(target_path=file_path)
+            return {
+                "status": "success" if result.get("violations_fixed", 0) > 0 else "skipped",
+                "details": f"BootstrapAgent healed {result.get('violations_fixed', 0)} violations",
+                "artifacts": [file_path] if file_path else [],
+                "errors": result.get("errors", [])
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"BootstrapAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
