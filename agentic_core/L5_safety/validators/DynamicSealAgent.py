@@ -77,6 +77,44 @@ class DynamicSealAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self.refactor_count = 0
         self.sealed_files: list[str] = []
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        [HEALER PROTOCOL] Standardized healing interface for DynamicSealAgent violations.
+        
+        Args:
+            violation: Violation dict with keys: type, file, message, etc.
+            
+        Returns:
+            Dict with keys: status, details, artifacts, errors
+        """
+        try:
+            violation_type = violation.get("type", "")
+            file_path = violation.get("file")
+            
+            if not file_path:
+                return {
+                    "status": "failed",
+                    "details": "No file path provided in violation",
+                    "artifacts": [],
+                    "errors": ["Missing file path"],
+                }
+            
+            # DynamicSealAgent healing logic
+            return {
+                "status": "manual_required",
+                "details": "DynamicSealAgent requires manual review for healing",
+                "artifacts": [],
+                "errors": [],
+            }
+            
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": "Exception during healing",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
+
     def execute_sprint(
         self, target_pattern: str | None = None, dry_run: bool = True
     ) -> dict[str, Any]:

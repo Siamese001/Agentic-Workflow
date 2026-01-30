@@ -46,6 +46,44 @@ class Guardrail(ABC):
         self.violations = 0
 
     @abstractmethod
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        [HEALER PROTOCOL] Standardized healing interface for CompositeGuardrailAgent violations.
+        
+        Args:
+            violation: Violation dict with keys: type, file, message, etc.
+            
+        Returns:
+            Dict with keys: status, details, artifacts, errors
+        """
+        try:
+            violation_type = violation.get("type", "")
+            file_path = violation.get("file")
+            
+            if not file_path:
+                return {
+                    "status": "failed",
+                    "details": "No file path provided in violation",
+                    "artifacts": [],
+                    "errors": ["Missing file path"],
+                }
+            
+            # CompositeGuardrailAgent healing logic
+            return {
+                "status": "manual_required",
+                "details": "CompositeGuardrailAgent requires manual review for healing",
+                "artifacts": [],
+                "errors": [],
+            }
+            
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": "Exception during healing",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
+
     def check(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Check input against guardrail.

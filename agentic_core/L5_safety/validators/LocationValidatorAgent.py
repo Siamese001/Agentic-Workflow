@@ -52,6 +52,26 @@ class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
         # Validation-only initialization
         # No backup dirs, no healing state
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        [HEALER PROTOCOL] Standardized healing interface for location violations.
+        
+        Note: LocationValidatorAgent is validation-only and does not perform healing.
+        Use LocationHealerAgent for actual remediation.
+        
+        Args:
+            violation: Violation dict with keys: type, file, message, etc.
+            
+        Returns:
+            Dict with keys: status, details, artifacts, errors
+        """
+        return {
+            "status": "skipped",
+            "details": "LocationValidatorAgent is validation-only. Use LocationHealerAgent for healing.",
+            "artifacts": [],
+            "errors": [],
+        }
+
     def run(self) -> dict[str, Any]:
         """
         Execute validation-only scan.

@@ -165,18 +165,28 @@ class FilesystemSSOTReconcilerAgent(
             v_type = violation.get("type", "")
 
             if not target:
-                return {"status": "skipped", "reason": "No target specified"}
+                return {
+                    "status": "skipped",
+                    "details": "No target specified",
+                    "artifacts": [],
+                    "errors": [],
+                }
 
             # For SSOT violations, we typically need to reconcile filesystem with blueprint
             return {
                 "status": "manual_required",
-                "reason": "SSOT reconciliation requires blueprint alignment",
-                "suggested_action": f"Reconcile {target} with structure blueprint",
-                "confidence": 0.9,
+                "details": "SSOT reconciliation requires blueprint alignment",
+                "artifacts": [],
+                "errors": [],
             }
 
         except Exception as e:
-            return {"status": "error", "error": str(e)}
+            return {
+                "status": "failed",
+                "details": "Exception during healing",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
 
     BLUEPRINT_PATH = Path("agentic_core/config/blueprint_sovereign/structure_blueprint.py")
     ARCHIVE_ROOT = Path("archives/unmapped_drift/")

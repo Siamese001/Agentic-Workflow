@@ -24,6 +24,44 @@ class CartographerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgen
     """
     ROLE: Memory & Embedding. Maps the codebase into semantic space.
     """
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        [HEALER PROTOCOL] Standardized healing interface for CartographerAgent violations.
+        
+        Args:
+            violation: Violation dict with keys: type, file, message, etc.
+            
+        Returns:
+            Dict with keys: status, details, artifacts, errors
+        """
+        try:
+            violation_type = violation.get("type", "")
+            file_path = violation.get("file")
+            
+            if not file_path:
+                return {
+                    "status": "failed",
+                    "details": "No file path provided in violation",
+                    "artifacts": [],
+                    "errors": ["Missing file path"],
+                }
+            
+            # CartographerAgent healing logic
+            return {
+                "status": "manual_required",
+                "details": "CartographerAgent requires manual review for healing",
+                "artifacts": [],
+                "errors": [],
+            }
+            
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": "Exception during healing",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
+
 
     def can_run(self) -> bool:
         """Execute can_run operation."""

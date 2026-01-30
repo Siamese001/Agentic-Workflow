@@ -182,6 +182,44 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self.file_cache: FileCache | None = None
         self.matches: list[CredentialMatch] = []
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        [HEALER PROTOCOL] Standardized healing interface for CredentialScannerAgent violations.
+        
+        Args:
+            violation: Violation dict with keys: type, file, message, etc.
+            
+        Returns:
+            Dict with keys: status, details, artifacts, errors
+        """
+        try:
+            violation_type = violation.get("type", "")
+            file_path = violation.get("file")
+            
+            if not file_path:
+                return {
+                    "status": "failed",
+                    "details": "No file path provided in violation",
+                    "artifacts": [],
+                    "errors": ["Missing file path"],
+                }
+            
+            # CredentialScannerAgent healing logic
+            return {
+                "status": "manual_required",
+                "details": "CredentialScannerAgent requires manual review for healing",
+                "artifacts": [],
+                "errors": [],
+            }
+            
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": "Exception during healing",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
+
     def scan_for_credentials(
         self, target_path: Path | None = None, file_patterns: list[str] | None = None
     ) -> dict[str, Any]:
