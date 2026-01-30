@@ -91,6 +91,42 @@ class SignatureVerifierAgent(SubatomicTestingMixin, SovereignBaseAgent):
         finally:
             _call_path.discard(agent_name)
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """
+        Heal violations detected by SignatureVerifierAgent.
+        
+        Args:
+            violation: Dictionary containing violation details with keys:
+                - file: Path to the file with the violation
+                - type: Type of violation detected
+                - message: Description of the violation
+                
+        Returns:
+            Dictionary with keys:
+                - status: 'success', 'partial_success', 'failed', or 'skipped'
+                - details: Human-readable summary
+                - artifacts: List of modified files
+                - errors: List of error messages
+        """
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        
+        # Default implementation - SignatureVerifierAgent verifies signatures
+        try:
+            return {
+                "status": "skipped",
+                "details": f"SignatureVerifierAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": []
+            }
+        except Exception as e:
+            return {
+                "status": "failed",
+                "details": f"SignatureVerifierAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)]
+            }
+
 
 def execute_signature_verification(
     data: object, config: dict | None = None, **kwargs: dict[str, object]
