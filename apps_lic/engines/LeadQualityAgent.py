@@ -73,6 +73,14 @@ class LeadQualityAgent(SubatomicTestingMixin, LICAgentBase):
         """Invoke healing chain via super()."""
         return super().heal_repository()
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """Heal violations detected by LeadQualityAgent."""
+        violation_type = violation.get("type", "unknown")
+        try:
+            return {"status": "skipped", "details": f"LeadQualityAgent heal() not yet implemented for {violation_type}", "artifacts": [], "errors": []}
+        except Exception as e:
+            return {"status": "failed", "details": f"LeadQualityAgent heal() failed: {str(e)}", "artifacts": [], "errors": [str(e)]}
+
 
 # DUPLICATE ACCEPTED: App-specific customization valid
 # (different contexts: apps_lic outreach-specific vs apps_rg resume-specific)
