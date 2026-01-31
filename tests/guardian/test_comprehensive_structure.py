@@ -27,8 +27,10 @@ from scripts.validate_structure import (
     validate_territory,
     validate_subfolder_structure,
     validate_forbidden_patterns,
+    validate_base_agent_location,
     VALID_TERRITORIES,
     FORBIDDEN_PATTERNS,
+    BASE_AGENT_CANONICAL_DIR,
 )
 
 
@@ -245,3 +247,62 @@ class TestComprehensiveSSOTStructure:
             print("\nTest files should be placed in tests/ hierarchy.")
         else:
             print("[OK] All test files properly placed")
+
+    @pytest.mark.guardian
+    def test_constitutional_base_agent_location(self):
+        """
+        [CONSTITUTIONAL] Test that base agents are in correct locations.
+
+        This is a constitutional rule that enforces:
+        1. Core framework base agents (SovereignBaseAgent, layer base agents)
+           MUST be in agentic_core/base_agents/
+        2. App-specific base agents (prefixed with app name)
+           MUST be in their respective apps_* directories
+
+        Moved from pre-commit to Guardian tests for comprehensive validation.
+        """
+        print("\n=== CONSTITUTIONAL BASE AGENT LOCATION CHECK ===")
+
+        violations: List[Dict[str, str]] = []
+
+        # Find all *BaseAgent.py files
+        for file_path in PROJECT_ROOT.rglob("*BaseAgent.py"):
+            # Skip excluded directories
+            if any(
+                excluded in str(file_path)
+                for excluded in [
+                    "__pycache__",
+                    ".git",
+                    ".pytest_cache",
+                    "node_modules",
+                    "archives",
+                    ".sovereign_healing_backup",
+                ]
+            ):
+                continue
+
+            # Validate location
+            relative_path = str(file_path.relative_to(PROJECT_ROOT))
+            is_valid, error = validate_base_agent_location(relative_path)
+
+            if not is_valid:
+                violations.append({"file": relative_path, "error": error})
+
+        # Report results
+        print(f"  Base agent files checked: {len(list(PROJECT_ROOT.rglob('*BaseAgent.py')))}")
+        print(f"  Constitutional violations: {len(violations)}")
+
+        if violations:
+            print(f"\n[REPORT] {len(violations)} constitutional violations detected:")
+            for v in violations[:10]:
+                print(f"  - {v['file']}")
+                print(f"    Error: {v['error']}")
+            if len(violations) > 10:
+                print(f"  ... and {len(violations) - 10} more")
+
+            print("\n[REMEDIATION] Move base agents to correct locations:")
+            print(f"  - Core base agents → {BASE_AGENT_CANONICAL_DIR}/")
+            print("  - App-specific base agents → respective apps_* directories")
+            print("\n  See: tests/guardian/REMEDIATION_GUIDE.md#base-agent-location")
+        else:
+            print("[OK] All base agents in correct locations")
