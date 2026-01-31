@@ -140,7 +140,9 @@ def test_no_ghost_variables():
                 # Allow certain legitimate uses
                 if "CANON_VALIDATION_REGISTRY" in line or "canon_validator" in line:
                     continue
-                assert False, f"POTENTIAL GHOST VARIABLE DETECTED at line {i + 1}: {line.strip()}"
+                raise AssertionError(
+                    f"POTENTIAL GHOST VARIABLE DETECTED at line {i + 1}: {line.strip()}"
+                )
 
 
 def test_utf8_encoding_enforcement():

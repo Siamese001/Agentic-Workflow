@@ -60,7 +60,7 @@ class TestGitHygieneAgent:
             from agentic_core.L5_safety.guardrails.GitHygieneAgent import GitHygieneAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(GitHygieneAgent, "heal_repository") or any(
+            hasattr(GitHygieneAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(GitHygieneAgent)
             )
             # Not all agents need healing - this is informational

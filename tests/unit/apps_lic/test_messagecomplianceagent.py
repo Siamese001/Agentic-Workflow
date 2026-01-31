@@ -60,7 +60,7 @@ class TestMessageComplianceAgent:
             from apps_lic.engines.MessageComplianceAgent import MessageComplianceAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(MessageComplianceAgent, "heal_repository") or any(
+            hasattr(MessageComplianceAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(MessageComplianceAgent)
             )
             # Not all agents need healing - this is informational

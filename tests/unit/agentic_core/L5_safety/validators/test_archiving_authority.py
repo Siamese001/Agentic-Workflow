@@ -81,7 +81,7 @@ class TestLocationHealerAgentAuthority:
             dst = temp_project / "agentic_core" / "test_file.py"
 
             # Execute move (not dry run)
-            result = agent.safe_move(src, dst, dry_run=False)
+            agent.safe_move(src, dst, dry_run=False)
 
             # Verify gatekeeper was called
             mock_gatekeeper.safe_move.assert_called_once()
@@ -104,7 +104,7 @@ class TestLocationHealerAgentAuthority:
             test_file.write_text("# to delete")
 
             # Execute delete (not dry run)
-            result = agent.safe_delete(test_file, dry_run=False)
+            agent.safe_delete(test_file, dry_run=False)
 
             # Verify gatekeeper was called
             mock_gatekeeper.safe_delete.assert_called_once()

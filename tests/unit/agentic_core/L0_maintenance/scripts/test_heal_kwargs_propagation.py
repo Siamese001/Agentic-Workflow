@@ -24,7 +24,7 @@ def test_l0_kwargs_propagation():
 
     # Should NOT raise TypeError with unknown kwargs
     try:
-        result = agent.heal_repository(dry_run=True, unknown_flag=123, custom_param="test")
+        agent.heal_repository(dry_run=True, unknown_flag=123, custom_param="test")
         print("✅ L0MaintenanceBaseAgent: kwargs propagation successful")
         return True
     except TypeError as e:
@@ -42,7 +42,7 @@ def test_l3_kwargs_propagation():
 
     # Should NOT raise TypeError with unknown kwargs
     try:
-        result = agent.heal_repository(dry_run=True, unknown_flag=456, extra_data={"test": True})
+        agent.heal_repository(dry_run=True, unknown_flag=456, extra_data={"test": True})
         print("✅ L3OrchestrationBaseAgent: kwargs propagation successful")
         return True
     except TypeError as e:
@@ -58,7 +58,7 @@ def test_l5_kwargs_propagation():
 
     # Should NOT raise TypeError with unknown kwargs
     try:
-        result = agent.heal_repository(dry_run=True, mystery_param="value", debug_mode=True)
+        agent.heal_repository(dry_run=True, mystery_param="value", debug_mode=True)
         print("✅ L5SafetyBaseAgent: kwargs propagation successful")
         return True
     except TypeError as e:
@@ -74,7 +74,7 @@ def test_l6_kwargs_propagation():
 
     # Should NOT raise TypeError with unknown kwargs
     try:
-        result = agent.heal_repository(dry_run=True, telemetry_flag=True, metrics_mode="detailed")
+        agent.heal_repository(dry_run=True, telemetry_flag=True, metrics_mode="detailed")
         print("✅ L6ObservabilityBaseAgent: kwargs propagation successful")
         return True
     except TypeError as e:

@@ -71,8 +71,8 @@ def generate_standardized_header(
     required_vars: set[str], optional_vars: set[str], relative_path: str
 ) -> str:
     """Generate the standardized header for a template."""
-    req_list = sorted(list(required_vars)) if required_vars else []
-    opt_list = sorted(list(optional_vars)) if optional_vars else []
+    req_list = sorted(required_vars) if required_vars else []
+    opt_list = sorted(optional_vars) if optional_vars else []
 
     header = f"""{{# ============================================================================ #}}
 {{# TEMPLATE VALIDATION HEADER (Phase 4 Automation)                             #}}

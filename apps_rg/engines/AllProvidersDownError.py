@@ -10,16 +10,15 @@ import logging
 from typing import Any
 
 from agentic_core.base_agents.telemetry import SystemTelemetry
-
-# Previous: from runtime.shared.circuit_breaker import CircuitBreaker, CircuitBreakerState
-from apps_shared.common_utils.multi_provider_clients import Provider
-
 from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
 from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
 
 # [Diff Start: Updated Imports for Relocation]
 # Previous: from runtime.shared.HardenedAnthropicExecutor import HardenedAnthropicExecutor
 from apps_rg.engines.HardenedAnthropicExecutor import HardenedAnthropicExecutor
+
+# Previous: from runtime.shared.circuit_breaker import CircuitBreaker, CircuitBreakerState
+from apps_shared.common_utils.multi_provider_clients import Provider
 
 # [Diff End]
 from .schema import DEFAULT_ROUTING_CONFIGS, RouteConfig, RoutingTier

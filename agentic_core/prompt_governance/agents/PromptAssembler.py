@@ -15,8 +15,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L4_state.validation_context.runtime_models import InjectionMatch
 from pydantic import BaseModel
+
+from agentic_core.L4_state.validation_context.runtime_models import InjectionMatch
 
 # ARCHITECTURAL MANIFEST: Primary Sovereign Export
 __all__ = ["PromptAssembler", "PromptComponents", "PromptTemplate", "SecurityIntegrityError"]

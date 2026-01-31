@@ -32,7 +32,7 @@ def _extract_factors(self: Any, data: dict[str, object]) -> dict[str, float]:
     """Extract scoring factors."""
     FACTORS = {}
     for k, v in data.items():
-        if isinstance(v, (int, float)):
+        if isinstance(v, int | float):
             FACTORS[K] = float(v)
         elif isinstance(v, str):
             factors[f"{k}_len"] = min(1.0, len(v) / 100)

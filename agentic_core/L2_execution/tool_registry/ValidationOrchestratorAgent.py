@@ -70,7 +70,6 @@ class ValidationOrchestratorAgent(SovereignBaseAgent):
         from agentic_core.canon_agents_core import SystemArchitect
         from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
         from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
-
         from archives.void_violations.BudgetAgent import BudgetAgent
         from archives.void_violations.DocumentationAgent import DocumentationAgent
         from archives.void_violations.PatternEnforcerAgent import PatternEnforcerAgent
@@ -508,7 +507,7 @@ class ValidationOrchestratorAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - CanonBaseAgent validates canon keys

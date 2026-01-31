@@ -357,7 +357,7 @@ class SkillExtractorNode:
 
         # Extract technical skills
         technical_skills = []
-        for category, skills in self.technical_skills.items():
+        for _category, skills in self.technical_skills.items():
             for skill in skills:
                 if skill in text_lower:
                     technical_skills.append(skill.title())
@@ -370,14 +370,14 @@ class SkillExtractorNode:
 
         # Extract domain skills
         domain_skills = []
-        for industry, skills in self.domain_skills.items():
+        for _industry, skills in self.domain_skills.items():
             for skill in skills:
                 if skill in text_lower:
                     domain_skills.append(skill.title())
 
         # Extract tool skills
         tool_skills = []
-        for category, tools in self.tool_skills.items():
+        for _category, tools in self.tool_skills.items():
             for tool in tools:
                 if tool in text_lower:
                     tool_skills.append(tool.title())
@@ -497,22 +497,22 @@ class SkillExtractorNode:
             SkillMatchResult with detailed matching
         """
         # Exact matches
-        jd_technical_set = set(skill.lower() for skill in jd_skills.technical_skills)
-        candidate_technical_set = set(skill.lower() for skill in candidate_skills.technical_skills)
+        jd_technical_set = {skill.lower() for skill in jd_skills.technical_skills}
+        candidate_technical_set = {skill.lower() for skill in candidate_skills.technical_skills}
 
         matched_technical = list(jd_technical_set & candidate_technical_set)
 
         # Similar logic for other skill types
-        jd_soft_set = set(skill.lower() for skill in jd_skills.soft_skills)
-        candidate_soft_set = set(skill.lower() for skill in candidate_skills.soft_skills)
+        jd_soft_set = {skill.lower() for skill in jd_skills.soft_skills}
+        candidate_soft_set = {skill.lower() for skill in candidate_skills.soft_skills}
         matched_soft = list(jd_soft_set & candidate_soft_set)
 
-        jd_domain_set = set(skill.lower() for skill in jd_skills.domain_skills)
-        candidate_domain_set = set(skill.lower() for skill in candidate_skills.domain_skills)
+        jd_domain_set = {skill.lower() for skill in jd_skills.domain_skills}
+        candidate_domain_set = {skill.lower() for skill in candidate_skills.domain_skills}
         matched_domain = list(jd_domain_set & candidate_domain_set)
 
-        jd_tool_set = set(skill.lower() for skill in jd_skills.tool_skills)
-        candidate_tool_set = set(skill.lower() for skill in candidate_skills.tool_skills)
+        jd_tool_set = {skill.lower() for skill in jd_skills.tool_skills}
+        candidate_tool_set = {skill.lower() for skill in candidate_skills.tool_skills}
         matched_tool = list(jd_tool_set & candidate_tool_set)
 
         # Combine all matches
@@ -525,7 +525,7 @@ class SkillExtractorNode:
             + jd_skills.domain_skills
             + jd_skills.tool_skills
         )
-        all_jd_lower = [skill.lower() for skill in all_jd_skills]
+        [skill.lower() for skill in all_jd_skills]
         unmatched_skills = [
             skill for skill in all_jd_skills if skill.lower() not in all_matched_skills
         ]
@@ -633,7 +633,7 @@ class SkillExtractorNode:
             + extraction_result.domain_skills
             + extraction_result.tool_skills
         )
-        expected_skills_set = set(skill.lower() for skill in expected_skills)
+        expected_skills_set = {skill.lower() for skill in expected_skills}
 
         true_positives = len(extracted_skills & expected_skills_set)
         false_positives = len(extracted_skills - expected_skills_set)

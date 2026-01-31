@@ -22,9 +22,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.security import safe_git_execute
-
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.utils.security import safe_git_execute
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -84,7 +83,7 @@ class GitAgent(SovereignBaseAgent):
             Dict with keys: status, details, artifacts, errors
         """
         try:
-            violation_type = violation.get("type", "")
+            violation.get("type", "")
             file_path = violation.get("file")
 
             if not file_path:

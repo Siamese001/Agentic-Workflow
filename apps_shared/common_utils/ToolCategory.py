@@ -237,8 +237,7 @@ class ObservabilityToolInvoker:
             raise ValueError(f"No client for tool: {context.tool_id}")
 
         # Execute streaming invocation
-        for chunk in client.invoke_stream(context.method, parameters):
-            yield chunk
+        yield from client.invoke_stream(context.method, parameters)
 
     def list_tools(self, category: ToolCategory | None = None) -> list[ToolSpecification]:
         """List registered tools.

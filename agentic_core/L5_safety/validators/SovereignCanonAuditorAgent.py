@@ -19,10 +19,9 @@ import asyncio
 import logging
 from typing import Any
 
-from agentic_core.L6_observability.deepwiki_client_sovereign import SovereignDeepWikiClient
-
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L6_observability.deepwiki_client_sovereign import SovereignDeepWikiClient
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -215,7 +214,7 @@ class SovereignCanonAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - SovereignCanonAuditorAgent audits canon

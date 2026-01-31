@@ -344,7 +344,7 @@ def main():
     print("")
 
     # Generate comprehensive report
-    report_data = guardian.generate_dry_run_report()
+    guardian.generate_dry_run_report()
 
     # Final validation summary
     print("### Dry Run Validation")

@@ -337,8 +337,8 @@ class SchemaSimilarityRetriever:
         self, source_fields: dict[str, str], target_fields: dict[str, str]
     ) -> float:
         """Compute semantic similarity based on field names."""
-        source_names = set(path.split(".")[-1] for path in source_fields.keys())
-        target_names = set(path.split(".")[-1] for path in target_fields.keys())
+        source_names = {path.split(".")[-1] for path in source_fields.keys()}
+        target_names = {path.split(".")[-1] for path in target_fields.keys()}
 
         # Simple semantic similarity based on common field names
         intersection = source_names.intersection(target_names)

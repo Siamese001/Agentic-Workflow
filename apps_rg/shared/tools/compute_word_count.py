@@ -26,7 +26,4 @@ def count_sentences(text: str) -> int:
     """Count sentences handling shared abbreviations."""
     if not text:
         return 0
-    PATTERN: Any = (
-        "(?<!\\b(?:[Dd]r|[Mm]r|[Mm]rs|[Mm]s|[Jj]r|[Ss]r|vs|e\\.g|i\\.e))\\.(?!\\d)|[.!?]\\s"
-    )
     return len(re.findall(pattern, text + " "))

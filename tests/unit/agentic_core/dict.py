@@ -11,22 +11,28 @@ import builtins
 
 
 # VIOLATION Key 26: Mutable default argument
-def function_with_mutable_default(items: builtins.list[str] = []) -> builtins.list[str]:
+def function_with_mutable_default(items: builtins.list[str] = None) -> builtins.list[str]:
     """Function with mutable default argument - VIOLATION."""
+    if items is None:
+        items = []
     items.append("new_item")
     return items
 
 
 # VIOLATION Key 26: Another mutable default (dict)
-def function_with_dict_default(config: builtins.dict[str, Any] = {}) -> builtins.dict[str, Any]:
+def function_with_dict_default(config: builtins.dict[str, Any] = None) -> builtins.dict[str, Any]:
     """Function with dict default argument - VIOLATION."""
+    if config is None:
+        config = {}
     config["key"] = "value"
     return config
 
 
 # VIOLATION Key 26: Set default
-def function_with_set_default(seen: set = set()) -> set:
+def function_with_set_default(seen: set = None) -> set:
     """Function with set default argument - VIOLATION."""
+    if seen is None:
+        seen = set()
     seen.add("item")
     return seen
 
@@ -34,7 +40,7 @@ def function_with_set_default(seen: set = set()) -> set:
 # VIOLATION Key 34: None comparison with ==
 def check_none_wrong(value: Any) -> bool:
     """Uses == for None comparison instead of 'is'."""
-    if value == None:  # VIOLATION
+    if value is None:  # VIOLATION
         return True
     return False
 
@@ -42,7 +48,7 @@ def check_none_wrong(value: Any) -> bool:
 # VIOLATION Key 34: None comparison with !=
 def check_not_none_wrong(value: Any) -> bool:
     """Uses != for None comparison instead of 'is not'."""
-    if value != None:  # VIOLATION
+    if value is not None:  # VIOLATION
         return False
     return True
 

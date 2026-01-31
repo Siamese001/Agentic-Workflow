@@ -304,7 +304,7 @@ class RAGConfig:
     def _validate_source_weights(self) -> None:
         """Ensure source_weights are positive and reasonable."""
         for source, weight in self.source_weights.items():
-            if not isinstance(weight, (int, float)):
+            if not isinstance(weight, int | float):
                 raise TypeError(f"Weight for '{source}' must be numeric, got {type(weight)}")
             if weight < 0:
                 raise ValueError(f"Weight for '{source}' cannot be negative: {weight}")

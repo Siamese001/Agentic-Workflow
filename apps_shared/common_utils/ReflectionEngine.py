@@ -407,7 +407,7 @@ Respond in JSON format:
 
     def _validate_json(self, content: Any) -> bool:
         """Validate that content is valid JSON."""
-        if isinstance(content, (dict, list)):
+        if isinstance(content, dict | list):
             try:
                 json.dumps(content)
                 return True
@@ -426,7 +426,7 @@ Respond in JSON format:
         if not isinstance(content, dict):
             return True  # Not applicable
 
-        for key, value in content.items():
+        for _key, value in content.items():
             if value is None or value == "":
                 return False
             if isinstance(value, str) and not value.strip():

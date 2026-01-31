@@ -68,7 +68,7 @@ def fix_large_functions(tree: Any) -> Any:
     """Key 17: Split functions > 50 lines."""
     fixed: Any = False
     for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             length: Any = node.end_lineno - node.lineno
             if length > 50:
                 pass

@@ -16,7 +16,6 @@ from dataclasses import dataclass
 
 from agentic_core.base_agents.resilience_mixin import HardeningMixin
 from agentic_core.base_agents.telemetry import SystemTelemetry
-
 from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
 
 logger = logging.getLogger(__name__)

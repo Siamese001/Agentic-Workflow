@@ -10,11 +10,10 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
-
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -122,8 +121,8 @@ class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
             }
 
         # Extract keywords > 4 chars from brief
-        brief_keywords = set(w.lower() for w in brief.split() if len(w) > 4)
-        text_words = set(w.lower() for w in text.split())
+        brief_keywords = {w.lower() for w in brief.split() if len(w) > 4}
+        text_words = {w.lower() for w in text.split()}
         overlap = brief_keywords.intersection(text_words)
 
         passed = len(overlap) >= min_match or len(brief_keywords) == 0

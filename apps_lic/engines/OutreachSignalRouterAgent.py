@@ -7,7 +7,6 @@ Provides self-healing capabilities for outreach campaigns:
 - Automatic rollback on critical failures
 """
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -39,9 +38,8 @@ except ImportError:
 
 
 if TYPE_CHECKING:
-    from apps_lic.shared.orchestrators import AppWorkflowOrchestratorAgent
-
     from apps_lic.engines.LeadQualityAgent import LeadQualityAgent
+    from apps_lic.shared.orchestrators import AppWorkflowOrchestratorAgent
 
 
 # STUBS: Legacy mixins (use LICAgentBase instead)

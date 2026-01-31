@@ -312,7 +312,7 @@ class CognitiveBatchProcessor:
             by_action[action] = by_action.get(action, 0) + 1
 
             confidence = result.get("confidence", 0.0)
-            if isinstance(confidence, (int, float)):
+            if isinstance(confidence, int | float):
                 confidences.append(confidence)
 
         avg_confidence = sum(confidences) / len(confidences) if confidences else 0.0

@@ -92,7 +92,7 @@ class test_hierarchy_agent_phase3:
         invalid_file.write_text("# Invalid")
 
         agent = HierarchyAgent(mock_project, healing_enabled=True, auto_approve=True)
-        results = agent.purge_orphaned_files()
+        agent.purge_orphaned_files()
 
         # Valid file should still exist
         assert valid_file.exists(), "Valid SSOT file should not be purged"
@@ -139,7 +139,7 @@ class test_hierarchy_agent_phase3:
         (mock_project / ".gitignore").write_text("*.pyc")
 
         agent = HierarchyAgent(mock_project, healing_enabled=True, auto_approve=True)
-        results = agent.purge_orphaned_files()
+        agent.purge_orphaned_files()
 
         # Protected files should still exist
         assert (mock_project / "README.md").exists()

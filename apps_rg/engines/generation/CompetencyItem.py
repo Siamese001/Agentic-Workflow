@@ -54,7 +54,7 @@ class GapClosureEngine(BaseRGEngine):
             self.record_fail("Missing dependencies for K9 Generation", signal="DATA_MISSING")
             raise ValueError("Buffer missing hop2_enrichment or mission_input")
 
-        jd_keywords = mission.get("job_description_keywords", [])  # Assuming extracted in HOP0/1
+        mission.get("job_description_keywords", [])  # Assuming extracted in HOP0/1
 
         self._mcp_audit("k9_generation_start")
 

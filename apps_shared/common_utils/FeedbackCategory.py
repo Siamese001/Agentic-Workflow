@@ -237,10 +237,8 @@ class FeedbackAggregator:
                 insights.append(
                     {
                         "category": category,
-                        "engines": list(set(fb.source_engine.value for fb in items)),
-                        "common_issues": list(
-                            set(fb.comments or "" for fb in items if fb.comments)
-                        ),
+                        "engines": list({fb.source_engine.value for fb in items}),
+                        "common_issues": list({fb.comments or "" for fb in items if fb.comments}),
                         "transfer_score": sum(fb.transfer_score for fb in items) / len(items),
                     }
                 )
@@ -488,11 +486,11 @@ class UnifiedFeedbackSystem:
                 plan["cross_engine_opportunities"].append(
                     {
                         "category": category,
-                        "source_engines": list(set(f.source_engine.value for f in feedback_list)),
+                        "source_engines": list({f.source_engine.value for f in feedback_list}),
                         "transfer_score": sum(f.transfer_score for f in feedback_list)
                         / len(feedback_list),
                         "suggested_actions": list(
-                            set(action for f in feedback_list for action in f.suggested_actions)
+                            {action for f in feedback_list for action in f.suggested_actions}
                         ),
                     }
                 )

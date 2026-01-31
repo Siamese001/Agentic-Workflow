@@ -12,7 +12,6 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
-
 from agentic_core.L5_safety.validators.RootHygieneAgent import RootHygieneAgent
 
 
@@ -44,7 +43,7 @@ def main():
     # Step 3: Validation Pass
     print("\n[PHASE 3] Running validation audit...")
     validator = PascalSovereigntyAgent(project_root=project_root, dry_run=True, validate_only=True)
-    validation_result = validator.run()
+    validator.run()
 
     total_violations = sum(validator.stats["violations"].values())
     print("\n=== VALIDATION AUDIT ===")

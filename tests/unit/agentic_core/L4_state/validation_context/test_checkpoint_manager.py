@@ -135,7 +135,7 @@ def test_mode_switching() -> dict[str, Any]:
             assert primary_file.exists(), f"Primary checkpoint not found: {primary_file}"
 
             # Verify mirror was created
-            mirror_file = auto_manager.mirror_path / f"{cp_id}.json"
+            auto_manager.mirror_path / f"{cp_id}.json"
             # Note: Mirror may not exist immediately due to async nature
 
             results["autonomous_test"] = {
@@ -398,7 +398,7 @@ def test_state_integrity() -> dict[str, Any]:
             cp1_id = manager.create_checkpoint({"state": "initial"}, label="rollback_1")
 
             # Create modified state
-            cp2_id = manager.create_checkpoint({"state": "modified"}, label="rollback_2")
+            manager.create_checkpoint({"state": "modified"}, label="rollback_2")
 
             # Rollback to initial
             result = manager.rollback_to_checkpoint(cp1_id)

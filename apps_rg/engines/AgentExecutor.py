@@ -107,7 +107,7 @@ class AgentExecutor:
         span_name = f"agent.execute.{self.config.provider.value}"
 
         if self.config.enable_tracing:
-            with create_span(span_name) as span:
+            with create_span(span_name):
                 set_span_attribute("agent.provider", self.config.provider.value)
                 set_span_attribute("agent.model", self.config.model or "default")
                 set_span_attribute("agent.message_count", len(messages))

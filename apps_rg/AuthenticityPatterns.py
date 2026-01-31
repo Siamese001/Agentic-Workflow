@@ -367,11 +367,6 @@ class TwoPhaseGenerationNode:
         bullets = []
 
         # Mock implementation - would use LLM in production
-        verb_templates = {
-            "3V": ["Spearheaded", "Engineered", "Transformed"],
-            "3T": ["developed", "implemented", "optimized"],
-            "1S": ["achieving", "resulting in", "delivering"],
-        }
 
         for i in range(count):
             if company_type == "unify":
@@ -562,7 +557,7 @@ class RegenerationEngine:
         self, content: str, validation_result: ValidationResult
     ) -> str:
         """Expand content by adding relevant details."""
-        shortage = validation_result.min_required - validation_result.word_count
+        validation_result.min_required - validation_result.word_count
 
         # Mock expansion - would use LLM in production
         expansion_phrases = [
@@ -585,7 +580,7 @@ class RegenerationEngine:
         self, content: str, validation_result: ValidationResult
     ) -> str:
         """Condense content while preserving specifics."""
-        excess = validation_result.word_count - validation_result.max_allowed
+        validation_result.word_count - validation_result.max_allowed
 
         # Mock condensation - would use LLM in production
         words = content.split()

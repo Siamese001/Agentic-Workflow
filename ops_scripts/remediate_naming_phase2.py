@@ -102,7 +102,7 @@ def get_targets(file_map: dict) -> list[Path]:
         if fname in file_map:
             files.append(file_map[fname])
 
-    return sorted(list(set(files)))
+    return sorted(set(files))
 
 
 def update_imports_tokenized(renames: list[tuple[Path, str]]):

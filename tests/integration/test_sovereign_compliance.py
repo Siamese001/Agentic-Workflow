@@ -35,14 +35,14 @@ class TestSovereignIntegration(unittest.TestCase):
 
         # Test Medium Band (0.60 should trigger GEMINI_MODEL)
         conf_med = ConfidenceScore(value=0.60, reasoning="Test")
-        decision = engine.should_proceed_with_healing(conf_med, "AgentA")
+        engine.should_proceed_with_healing(conf_med, "AgentA")
 
         # Check that decisions were recorded
         self.assertTrue(hasattr(engine, "decisions_made"))
 
         # Test Low Band (0.30 should trigger GEMINI_PRO_MODEL)
         conf_low = ConfidenceScore(value=0.30, reasoning="Test")
-        decision = engine.should_proceed_with_healing(conf_low, "AgentB")
+        engine.should_proceed_with_healing(conf_low, "AgentB")
 
         # Verify decisions were made
         self.assertGreater(len(engine.decisions_made), 0)

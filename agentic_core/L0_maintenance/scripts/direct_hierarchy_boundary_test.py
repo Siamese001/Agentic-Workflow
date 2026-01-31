@@ -125,7 +125,7 @@ def test_cli_flag_override():
     os.environ["SOVEREIGN_AUTO_APPROVE"] = "0"
     print("\n🔧 Environment: ARCHIVE_BATCH_ACCEPT=0, SOVEREIGN_AUTO_APPROVE=0")
 
-    agent = HierarchyAgent(project_root=PROJECT_ROOT, healing_enabled=True, auto_approve=False)
+    HierarchyAgent(project_root=PROJECT_ROOT, healing_enabled=True, auto_approve=False)
 
     # Check what the agent sees
     batch_accept = os.environ.get("ARCHIVE_BATCH_ACCEPT", "0")
@@ -140,7 +140,7 @@ def test_cli_flag_override():
     os.environ["SOVEREIGN_AUTO_APPROVE"] = "1"
     print("\n🔧 Simulating --yes flag: ARCHIVE_BATCH_ACCEPT=1, SOVEREIGN_AUTO_APPROVE=1")
 
-    agent2 = HierarchyAgent(project_root=PROJECT_ROOT, healing_enabled=True, auto_approve=True)
+    HierarchyAgent(project_root=PROJECT_ROOT, healing_enabled=True, auto_approve=True)
     batch_accept2 = os.environ.get("ARCHIVE_BATCH_ACCEPT", "0")
     auto_approve2 = os.environ.get("SOVEREIGN_AUTO_APPROVE", "0")
     print(

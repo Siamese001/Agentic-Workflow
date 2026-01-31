@@ -36,7 +36,7 @@ class TestDownstreamDeprecation:
 
         violations = []
 
-        for root, dirs, files in os.walk(project_root):
+        for root, _dirs, files in os.walk(project_root):
             if "legacy" in root or ".git" in root or "__pycache__" in root:
                 continue
 
@@ -71,7 +71,7 @@ class TestDownstreamDeprecation:
         try:
             from agentic_core.L5_safety.validators.CanonKeyValidator import CanonKeyValidator
 
-            validator = CanonKeyValidator()
+            CanonKeyValidator()
             # If the class attempts to iterate the registry on __init__, this might fail or do nothing.
             # We want to ensure it handles the empty registry correctly.
             assert True

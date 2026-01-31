@@ -57,9 +57,8 @@ class SovereignRAGManager:
         # Optional: Initialize vector store, embedder, and BM25 if available
         try:
             from agentic_core.semantic_memory.embeddings.GeminiEmbedder import GeminiEmbedder
-            from agentic_core.semantic_memory.store.pinecone_store import PineconeVectorStore
-
             from agentic_core.semantic_memory.store.Bm25Store import get_bm25_store
+            from agentic_core.semantic_memory.store.pinecone_store import PineconeVectorStore
 
             self.embedder = GeminiEmbedder()
             self.vector_store = PineconeVectorStore()
@@ -265,8 +264,8 @@ Output ONLY a JSON list of indices in order of relevance (e.g., [2, 0, 1])."""
 
         context_parts = ["### RELEVANT SOVEREIGN KNOWLEDGE"]
         for r in retrievals:
-            source = r["source"]
-            content = r["content"]
+            r["source"]
+            r["content"]
 
         return "\n".join(context_parts)
 

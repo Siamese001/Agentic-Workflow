@@ -74,7 +74,7 @@ class NamingAgent(SovereignBaseAgent):
         try:
             # Extract violation data
             target = violation.get("file")
-            v_type = violation.get("type", "")
+            violation.get("type", "")
 
             if not target:
                 return {"status": "skipped", "reason": "No target file specified"}

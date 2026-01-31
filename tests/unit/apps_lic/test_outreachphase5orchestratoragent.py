@@ -70,7 +70,7 @@ class TestOutreachPhase5OrchestratorAgent:
             )
 
             # Check for heal_repository method
-            has_heal = hasattr(OutreachPhase5OrchestratorAgent, "heal_repository") or any(
+            hasattr(OutreachPhase5OrchestratorAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(OutreachPhase5OrchestratorAgent)
             )
             # Not all agents need healing - this is informational

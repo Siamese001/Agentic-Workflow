@@ -146,7 +146,7 @@ def test_infrastructure_mixin_init_chain():
         class TestMixin(infrastructure_mixin, TrackerBase):
             pass
 
-        mixin = TestMixin()
+        TestMixin()
 
         # Verify infrastructure_mixin called super().__init__()
         assert "TrackerBase" in init_calls, "super().__init__() should propagate"

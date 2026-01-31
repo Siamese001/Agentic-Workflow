@@ -156,7 +156,7 @@ class TestCanonKeyFilesystemPurge:
                 ]
             ):
                 if not line.strip().startswith("#"):
-                    assert False, (
+                    raise AssertionError(
                         f"void_compliance.py line {i + 1} has active Canon Key reference: {line.strip()}"
                     )
 

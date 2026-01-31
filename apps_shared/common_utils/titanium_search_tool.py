@@ -309,7 +309,7 @@ def sync_search(query: str, context: str | None = None) -> str:
     """
     try:
         # Try to get current event loop
-        loop = asyncio.get_running_loop()
+        asyncio.get_running_loop()
         # If we're in an async context, we can't use run_until_complete
         # Use run_coroutine_threadsafe instead
         import concurrent.futures

@@ -19,11 +19,10 @@ import json
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
 
 
 class OrchestrationHandshakeAgent(
@@ -147,7 +146,7 @@ class OrchestrationHandshakeAgent(
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - OrchestrationHandshakeAgent manages orchestration handshakes

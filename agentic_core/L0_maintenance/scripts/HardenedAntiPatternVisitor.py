@@ -42,8 +42,7 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
 
     def _is_docstring(self, node: ast.stmt) -> bool:
         if isinstance(node, ast.Expr):
-            if sys.version_info >= (3, 8):
-                return isinstance(node.value, ast.Constant) and isinstance(node.value.value, str)
+            return isinstance(node.value, ast.Constant) and isinstance(node.value.value, str)
             return isinstance(node.value, ast.Str)
         return False
 
@@ -126,7 +125,7 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
         """TODO: Add documentation for visit_FunctionDef."""
         if node.name in ("execute", "run", "process", "handle") and (not node.name.startswith("_")):
             body = [s for s in node.body if not self._is_docstring(s)]
-            is_ghost = not body or (len(body) == 1 and isinstance(body[0], (ast.Pass, ast.Raise)))
+            is_ghost = not body or (len(body) == 1 and isinstance(body[0], ast.Pass | ast.Raise))
             if is_ghost:
                 self.add_finding(
                     "Ghost Implementation",
@@ -141,7 +140,7 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
             if isinstance(target, ast.Name) and any(
                 x in target.id.upper() for x in ["REGISTRY", "MAP", "CONFIG"]
             ):
-                if isinstance(node.value, (ast.Dict, ast.List)):
+                if isinstance(node.value, ast.Dict | ast.List):
                     try:
                         src = unparse(node.value)
                         if len(src) > 500 and "Agent" in src:
@@ -193,7 +192,7 @@ def main():
                 findings.extend(visitor.findings)
             except Exception:
                 continue
-    for f in findings:
+    for _f in findings:
         pass
 
 

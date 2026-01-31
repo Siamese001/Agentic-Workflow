@@ -13,7 +13,6 @@ sys.path.insert(0, str(project_root))
 from typing import Any
 
 from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent
-
 from agentic_core.L3_orchestration.interfaces import (
     ExecutionContext,
     ExecutionPhase,
@@ -125,7 +124,7 @@ def test_orchestrator_interface_2_1():
 
     try:
         # Attempt to instantiate abstract class directly
-        orchestrator = IOrchestratorAgent()
+        IOrchestratorAgent()
         print("❌ Test Case 2.1 FAILED: IOrchestratorAgent was instantiated (should be abstract)")
         return False
     except TypeError as e:

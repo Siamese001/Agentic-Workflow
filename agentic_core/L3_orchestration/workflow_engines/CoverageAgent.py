@@ -10,11 +10,11 @@ from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
-from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 
 # Gravity-safe imports for active interventions
 try:
@@ -309,7 +309,7 @@ class CoverageAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - CoverageAgent manages test coverage

@@ -580,7 +580,7 @@ class BoundaryStressTest:
         self.results["test_c_cli_interaction"] = self.test_c_cli_flag_interaction()
 
         # Generate report
-        report = self.generate_findings_report()
+        self.generate_findings_report()
 
         # Print summary
         print("\n" + "=" * 80)

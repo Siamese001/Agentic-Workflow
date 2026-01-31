@@ -60,7 +60,7 @@ class TestLeadQualityAgent:
             from apps_lic.engines.LeadQualityAgent import LeadQualityAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(LeadQualityAgent, "heal_repository") or any(
+            hasattr(LeadQualityAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(LeadQualityAgent)
             )
             # Not all agents need healing - this is informational

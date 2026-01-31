@@ -82,8 +82,8 @@ class ContextualCompressor:
             Jaccard similarity score (0-1)
         """
         # Convert to lowercase and split into words
-        words1 = set(word.lower().strip('.,!?;:"()[]{}') for word in text1.split())
-        words2 = set(word.lower().strip('.,!?;:"()[]{}') for word in text2.split())
+        words1 = {word.lower().strip('.,!?;:"()[]{}') for word in text1.split()}
+        words2 = {word.lower().strip('.,!?;:"()[]{}') for word in text2.split()}
 
         # Remove empty strings
         words1.discard("")
@@ -109,7 +109,7 @@ class ContextualCompressor:
         """
         entities = set()
 
-        for entity_type, pattern in self.entity_patterns.items():
+        for _entity_type, pattern in self.entity_patterns.items():
             matches = re.findall(pattern, text)
             entities.update(matches)
 
@@ -129,7 +129,7 @@ class ContextualCompressor:
 
         # Extract entities from query
         query_entities = self._extract_entities(query)
-        query_words = set(word.lower() for word in query.split())
+        query_words = {word.lower() for word in query.split()}
 
         selected_sentences = []
         all_sentences = []
@@ -150,7 +150,7 @@ class ContextualCompressor:
             entity_match = bool(query_entities.intersection(sentence_entities))
 
             # Check for direct keyword matches
-            sentence_words = set(word.lower() for word in sentence.split())
+            sentence_words = {word.lower() for word in sentence.split()}
             keyword_match = bool(query_words.intersection(sentence_words))
 
             sentence_scores.append(

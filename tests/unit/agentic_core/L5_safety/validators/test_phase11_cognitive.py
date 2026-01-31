@@ -34,7 +34,6 @@ class TestCognitiveAgentIntegration:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             DispositionDecision,
         )
-
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
@@ -86,7 +85,6 @@ class TestCognitiveAgentIntegration:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             DispositionDecision,
         )
-
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
@@ -148,7 +146,6 @@ class TestGravityFallbackToCognition:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             DispositionDecision,
         )
-
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
@@ -198,7 +195,7 @@ class TestGravityFallbackToCognition:
         }
 
         # Process violation - should fall back to cognitive
-        result = agent._heal_violation(violation, auto_approve=True)
+        agent._heal_violation(violation, auto_approve=True)
 
         # Cognitive agent should have been called
         mock_cognitive.analyze_violation.assert_called_once()
@@ -208,7 +205,6 @@ class TestGravityFallbackToCognition:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             DispositionDecision,
         )
-
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
@@ -425,7 +421,6 @@ class TestPhase11Integration:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             DispositionDecision,
         )
-
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
@@ -467,7 +462,7 @@ class TestPhase11Integration:
         }
 
         # Process
-        result = agent._heal_violation(violation, auto_approve=True)
+        agent._heal_violation(violation, auto_approve=True)
 
         # Cognitive should have been called
         mock_cognitive.analyze_violation.assert_called_once()

@@ -111,14 +111,14 @@ class CoreSynthesisAnalyzer:
 
         for node in ast.walk(tree):
             # Count control flow structures
-            if isinstance(node, (ast.If, ast.While, ast.For, ast.Try)):
+            if isinstance(node, ast.If | ast.While | ast.For | ast.Try):
                 complexity += 1
             elif isinstance(node, ast.With):
                 complexity += 1
             elif isinstance(node, ast.FunctionDef):
                 # Count branches in functions
                 for child in ast.walk(node):
-                    if isinstance(child, (ast.If, ast.While, ast.For)):
+                    if isinstance(child, ast.If | ast.While | ast.For):
                         complexity += 1
                 break
 

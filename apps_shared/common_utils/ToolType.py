@@ -185,8 +185,7 @@ class ObservabilityToolExecutor:
             raise ValueError(f"No handler for tool: {context.tool_id}")
 
         # Execute and yield results
-        for chunk in handler(parameters, stream=True):
-            yield chunk
+        yield from handler(parameters, stream=True)
 
     def list_tools(self, tool_type: ToolType | None = None) -> list[ToolDefinition]:
         """List registered tools.
@@ -332,7 +331,7 @@ class ObservabilityToolExecutor:
         type_validators = {
             "string": lambda v: isinstance(v, str),
             "integer": lambda v: isinstance(v, int),
-            "float": lambda v: isinstance(v, (int, float)),
+            "float": lambda v: isinstance(v, int | float),
             "boolean": lambda v: isinstance(v, bool),
             "array": lambda v: isinstance(v, list),
             "object": lambda v: isinstance(v, dict),
@@ -423,7 +422,7 @@ class ObservabilityToolExecutor:
         )
 
         def _trace_handler(exec_env: dict[str, Any]) -> dict[str, Any]:
-            params = exec_env["parameters"]
+            exec_env["parameters"]
             return {
                 "output": {
                     "traces": [
@@ -450,7 +449,7 @@ class ObservabilityToolExecutor:
         )
 
         def _metric_handler(exec_env: dict[str, Any]) -> dict[str, Any]:
-            params = exec_env["parameters"]
+            exec_env["parameters"]
             return {
                 "output": {
                     "metrics": [
@@ -485,7 +484,7 @@ class ObservabilityToolExecutor:
         )
 
         def _log_handler(exec_env: dict[str, Any]) -> dict[str, Any]:
-            params = exec_env["parameters"]
+            exec_env["parameters"]
             return {
                 "output": {
                     "logs": [

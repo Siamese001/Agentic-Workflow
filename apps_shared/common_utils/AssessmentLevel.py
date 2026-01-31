@@ -46,7 +46,7 @@ def _compute_score(self: Any, data: object) -> float:
         return 0.0
     if isinstance(data, dict):
         return min(1.0, len(data) / 10)
-    if isinstance(data, (list, str)):
+    if isinstance(data, list | str):
         return min(1.0, len(data) / 100)
     return 0.5
 

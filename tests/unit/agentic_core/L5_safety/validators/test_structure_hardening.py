@@ -50,7 +50,7 @@ class TestStructureHardening:
             if val:
                 k = next(iter(val))
                 assert isinstance(k, str)
-                assert isinstance(val[k], (list, tuple))
+                assert isinstance(val[k], list | tuple)
 
     def test_frozenset_enforcement(self):
         """

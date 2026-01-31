@@ -189,7 +189,7 @@ class TestMissingKeyGracefulDegradation:
         try:
             with patch("dotenv.find_dotenv", return_value=None):
                 with caplog.at_level(logging.WARNING):
-                    agent = CognitiveDispositionAgent(project_root=tmp_path)
+                    CognitiveDispositionAgent(project_root=tmp_path)
 
             # Should have logged warning
             assert any("GEMINI_API_KEY not found" in record.message for record in caplog.records)
@@ -266,7 +266,7 @@ class TestPhase14Integration:
         )
 
         with caplog.at_level(logging.INFO):
-            agent = CognitiveDispositionAgent(
+            CognitiveDispositionAgent(
                 project_root=tmp_path,
                 api_key="test_key",
             )

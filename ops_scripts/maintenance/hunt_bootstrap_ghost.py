@@ -18,7 +18,7 @@ def hunt_bootstrap():
 
     found_any = False
 
-    for root, dirs, files in os.walk(PROJECT_ROOT / "agentic_core"):
+    for root, _dirs, files in os.walk(PROJECT_ROOT / "agentic_core"):
         if "archived" in root:
             continue
 

@@ -105,7 +105,7 @@ class HardenedNamingAuditor:
                     }
                     functions.append(func_info)
 
-                elif isinstance(node, (ast.Import, ast.ImportFrom)):
+                elif isinstance(node, ast.Import | ast.ImportFrom):
                     imports.append(ast.unparse(node))
 
                 elif isinstance(node, ast.Assign):

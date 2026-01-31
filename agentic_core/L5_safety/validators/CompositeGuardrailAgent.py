@@ -57,7 +57,7 @@ class Guardrail(ABC):
             Dict with keys: status, details, artifacts, errors
         """
         try:
-            violation_type = violation.get("type", "")
+            violation.get("type", "")
             file_path = violation.get("file")
 
             if not file_path:
@@ -430,7 +430,7 @@ class CompositeGuardrailAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - CompositeGuardrailAgent provides composite guardrails

@@ -150,7 +150,7 @@ def main():
         files_checked += 1
     if all_violations:
         for v in all_violations:
-            rel_path = (
+            (
                 Path(v["file"]).relative_to(root.parent)
                 if root.parent in Path(v["file"]).parents
                 else v["file"]

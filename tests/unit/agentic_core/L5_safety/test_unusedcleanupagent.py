@@ -60,7 +60,7 @@ class TestUnusedCleanupAgent:
             from agentic_core.L5_safety.guardrails.UnusedCleanupAgent import UnusedCleanupAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(UnusedCleanupAgent, "heal_repository") or any(
+            hasattr(UnusedCleanupAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(UnusedCleanupAgent)
             )
             # Not all agents need healing - this is informational

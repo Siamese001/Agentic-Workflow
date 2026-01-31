@@ -58,10 +58,6 @@ IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
         "agentic_core.L5_safety.unified.StructureValidatorAgent",
         "StructureValidatorAgent",
     ),
-    "HygieneValidatorAgent": (
-        "agentic_core.L5_safety.unified.StructureValidatorAgent",
-        "StructureValidatorAgent",
-    ),
     "AgentRegistryValidatorAgent": (
         "agentic_core.L5_safety.unified.StructureValidatorAgent",
         "StructureValidatorAgent",

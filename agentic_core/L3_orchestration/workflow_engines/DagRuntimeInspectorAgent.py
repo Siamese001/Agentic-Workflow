@@ -2,10 +2,9 @@
 
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing import SubatomicTestingMixin
-
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing import SubatomicTestingMixin
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
@@ -66,7 +65,7 @@ class DagRuntimeInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - DagRuntimeInspectorAgent provides runtime diagnostics

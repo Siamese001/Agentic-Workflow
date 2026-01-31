@@ -34,10 +34,9 @@ def test_tc9_mro_integrity():
     print("TC-9: MRO Integrity")
     print("=" * 60)
 
-    from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
-
     from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
 
     # Get MRO
     mro = L2ExecutionBaseAgent.__mro__
@@ -220,7 +219,7 @@ def test_tc12_import_stability():
             if len(parts) == 2:
                 module_name, attr_name = parts
                 module = __import__(module_name, fromlist=[attr_name])
-                cls = getattr(module, attr_name)
+                getattr(module, attr_name)
                 successful_imports.append(class_name)
             else:
                 import_errors.append((class_name, "Invalid module path"))

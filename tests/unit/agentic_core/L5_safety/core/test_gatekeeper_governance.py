@@ -263,7 +263,7 @@ class TestBatchMode:
 
         # Set empty value
         with patch.dict(os.environ, {ARCHIVE_BATCH_ACCEPT_ENV: ""}):
-            result = gatekeeper.safe_delete(test_file, "TestAgent", "Empty batch test")
+            gatekeeper.safe_delete(test_file, "TestAgent", "Empty batch test")
 
         # Verify input was called (batch mode disabled)
         assert len(input_called) > 0, "Empty value should not enable batch mode"
@@ -302,7 +302,7 @@ class TestL4LedgerIntegration:
         gatekeeper.set_input_function(lambda prompt: "y")
 
         # Perform operation
-        result = gatekeeper.safe_delete(test_file, "TestAgent", "Ledger test")
+        gatekeeper.safe_delete(test_file, "TestAgent", "Ledger test")
 
         # Verify ledger was notified
         assert len(ledger_entries) == 1, "L4 Ledger should be notified once"
@@ -325,7 +325,7 @@ class TestL4LedgerIntegration:
         gatekeeper.set_input_function(lambda prompt: "n")
 
         # Perform operation (will be denied)
-        result = gatekeeper.safe_delete(test_file, "TestAgent", "Ledger denial test")
+        gatekeeper.safe_delete(test_file, "TestAgent", "Ledger denial test")
 
         # Verify ledger was notified of denial
         assert len(ledger_entries) == 1, "L4 Ledger should be notified of denial"

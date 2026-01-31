@@ -291,7 +291,7 @@ class SignalQualityPipeline:
             doc_type = metadata.get("type", "").lower()
 
             # Check all source identifiers
-            for tier_name, tier_config in self.authority_tiers.items():
+            for _tier_name, tier_config in self.authority_tiers.items():
                 for source_id in tier_config["sources"]:
                     if source_id in source or source_id in doc_type:
                         return tier_config["score"]

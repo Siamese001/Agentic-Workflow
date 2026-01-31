@@ -17,7 +17,6 @@ if TYPE_CHECKING:
         ScenarioSimulationResult,
         StrategyPlan,
     )
-
     from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Runtime imports
@@ -53,7 +52,7 @@ class BaseAgent:
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - BaseAgent provides base functionality
@@ -223,7 +222,7 @@ class DomainPlannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - DomainPlannerAgent plans domains
@@ -350,7 +349,7 @@ class RiskAssessorAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - RiskAssessorAgent assesses risk
@@ -476,7 +475,7 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - FeasibilityAnalystAgent analyzes feasibility
@@ -639,7 +638,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - StrategyScenarioSimulatorAgent simulates scenarios
@@ -830,7 +829,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - StrategyCoordinatorAgent coordinates strategies

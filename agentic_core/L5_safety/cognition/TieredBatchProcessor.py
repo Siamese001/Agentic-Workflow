@@ -272,7 +272,7 @@ class TieredBatchProcessor:
         Args:
             tier2_queue: List of (violation, file_path, v_type, heuristic) tuples
         """
-        for i, (violation, file_path, v_type, heuristic) in enumerate(tier2_queue, 1):
+        for i, (_violation, file_path, v_type, heuristic) in enumerate(tier2_queue, 1):
             file_path_str = str(file_path)
             file_name = Path(file_path).name
 

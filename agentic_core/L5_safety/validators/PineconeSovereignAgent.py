@@ -25,13 +25,13 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
-    RedisSovereignAgent,
-)
 from pinecone import Pinecone
 
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
+from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
+    RedisSovereignAgent,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -522,7 +522,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
         def _heal_pinecone_violation(self, violation: dict) -> dict:
             """Internal heal method with standard_heal decorator."""
             violation_type = violation.get("type", "index_config")
-            path = violation.get("path", "")
+            violation.get("path", "")
             index_name = violation.get("index_name", self.index_name)
 
             Logger.info(f"[PINECONE] Healing {violation_type} violation for index {index_name}")

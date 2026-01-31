@@ -42,8 +42,9 @@ def validate_base_engine():
     print("2. BASE ENGINE VALIDATION")
     print("-" * 60)
 
-    from apps_rg.engines.base.base_resume_agent import BaseRGEngine
     from pydantic import BaseModel
+
+    from apps_rg.engines.base.base_resume_agent import BaseRGEngine
 
     class TestInput(BaseModel):
         data: str
@@ -159,7 +160,7 @@ def validate_void_compliance():
     engine = VoidComplianceEngine()
 
     # Test detection of legacy imports
-    test_violations = engine.scan_file_content("test_file.py", ComplianceInput())
+    engine.scan_file_content("test_file.py", ComplianceInput())
 
     print("✅ Void Compliance engine initialized")
 
@@ -194,11 +195,12 @@ def validate_pydantic_models():
     print("6. PYDANTIC MODEL VALIDATION")
     print("-" * 60)
 
-    from apps_rg.engines.hops.hop1_clerk_engine import ClerkInput, ExperienceSection
     from pydantic import ValidationError
 
+    from apps_rg.engines.hops.hop1_clerk_engine import ClerkInput, ExperienceSection
+
     # Valid model
-    valid = ClerkInput(master_resume={"test": "data"})
+    ClerkInput(master_resume={"test": "data"})
     print("✅ Valid ClerkInput created")
 
     # Valid ExperienceSection
@@ -209,7 +211,7 @@ def validate_pydantic_models():
 
     # Invalid model should raise
     try:
-        invalid = ClerkInput()  # Missing required field
+        ClerkInput()  # Missing required field
         print("❌ Should have raised ValidationError")
         return False
     except ValidationError:

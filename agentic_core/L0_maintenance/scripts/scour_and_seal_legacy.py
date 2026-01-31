@@ -19,7 +19,7 @@ def find_legacy_folders() -> list[Path]:
         if not path.exists():
             continue
 
-        for root_dir, dirs, files in os.walk(path):
+        for root_dir, dirs, _files in os.walk(path):
             if "legacy" in dirs:
                 legacy_paths.append(Path(root_dir) / "legacy")
     return legacy_paths

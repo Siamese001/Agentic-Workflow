@@ -103,7 +103,7 @@ class SchemaContextMatcher:
             # Compute matches for all candidates
             matches = []
 
-            for schema_id, schema_def, schema_context in request.candidate_schemas:
+            for _schema_id, schema_def, schema_context in request.candidate_schemas:
                 match_result = self._compute_match_score(
                     request.query_context, schema_def, schema_context, request.match_types
                 )
@@ -343,8 +343,8 @@ class SchemaContextMatcher:
 
     def _match_tags(self, tags1: list[str], tags2: list[str]) -> float:
         """Match tag lists."""
-        set1 = set(tag.lower() for tag in tags1)
-        set2 = set(tag.lower() for tag in tags2)
+        set1 = {tag.lower() for tag in tags1}
+        set2 = {tag.lower() for tag in tags2}
 
         if not set1 or not set2:
             return 0.0
@@ -367,8 +367,8 @@ class SchemaContextMatcher:
         if not patterns1 or not patterns2:
             return 0.0
 
-        set1 = set(pattern.lower() for pattern in patterns1)
-        set2 = set(pattern.lower() for pattern in patterns2)
+        set1 = {pattern.lower() for pattern in patterns1}
+        set2 = {pattern.lower() for pattern in patterns2}
 
         intersection = set1.intersection(set2)
         union = set1.union(set2)

@@ -27,7 +27,7 @@ LEGACY_IMPORTS = {
 def find_python_files(directory: Path) -> list[Path]:
     """Find all Python files in the directory recursively."""
     python_files = []
-    for root, dirs, files in os.walk(directory):
+    for root, _dirs, files in os.walk(directory):
         for file in files:
             if file.endswith(".py"):
                 python_files.append(Path(root) / file)
@@ -42,8 +42,6 @@ def refactor_file(file_path: Path) -> tuple[bool, list[str]]:
     try:
         with open(file_path, encoding="utf-8") as f:
             content = f.read()
-
-        original_content = content
 
         # Replace import statements
         for legacy_name, legacy_path in LEGACY_IMPORTS.items():

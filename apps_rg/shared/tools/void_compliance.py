@@ -224,7 +224,7 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> list[str
         violations.append(f"PARSE ERROR: Cannot analyze imports in {file_path.name}: {e}")
         return violations
 
-    import_nodes = [n for n in ast.walk(tree) if isinstance(n, (ast.Import, ast.ImportFrom))]
+    import_nodes = [n for n in ast.walk(tree) if isinstance(n, ast.Import | ast.ImportFrom)]
     import_nodes.sort(key=lambda n: n.lineno if hasattr(n, "lineno") else 0)
 
     # 1. No relative/star imports (except relative imports in __init__.py)

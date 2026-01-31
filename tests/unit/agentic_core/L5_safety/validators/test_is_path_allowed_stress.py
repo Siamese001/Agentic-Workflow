@@ -99,7 +99,6 @@ class TestPathHardeningRigor:
     def test_special_characters_and_edge_cases(self):
         """100% PASS: Handles special characters and edge case paths."""
         # Path with spaces (should be normalized)
-        path_with_spaces = "agentic_core/L2_execution/tool name.py"
         # Should be processed based on actual structure rules
 
         # Path with dots (should be handled correctly)

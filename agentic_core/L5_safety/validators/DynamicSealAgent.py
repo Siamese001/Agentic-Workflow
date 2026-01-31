@@ -21,10 +21,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.unified_validator import UnifiedSSOTValidator
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.unified_validator import UnifiedSSOTValidator
 
 
 @dataclass
@@ -89,7 +88,7 @@ class DynamicSealAgent(SubatomicTestingMixin, SovereignBaseAgent):
             Dict with keys: status, details, artifacts, errors
         """
         try:
-            violation_type = violation.get("type", "")
+            violation.get("type", "")
             file_path = violation.get("file")
 
             if not file_path:

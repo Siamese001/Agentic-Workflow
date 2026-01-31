@@ -60,7 +60,7 @@ class TestHOP3SenderGroundingAgent:
             from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(HOP3SenderGroundingAgent, "heal_repository") or any(
+            hasattr(HOP3SenderGroundingAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(HOP3SenderGroundingAgent)
             )
             # Not all agents need healing - this is informational

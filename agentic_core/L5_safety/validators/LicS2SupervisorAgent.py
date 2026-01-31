@@ -83,7 +83,7 @@ class LicS2SupervisorAgent(SovereignBaseAgent):
                 ("organization_agent", self.organization_agent),
             ]
 
-            for name, agent in sub_agents:
+            for _name, agent in sub_agents:
                 if agent is None:
                     violations_found += 1
                 elif not hasattr(agent, "circuit_breaker"):
@@ -395,7 +395,7 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - LicS2SupervisorAgent supervises LIC S2 compliance

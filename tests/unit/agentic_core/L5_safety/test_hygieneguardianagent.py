@@ -60,7 +60,7 @@ class TestHygieneGuardianAgent:
             from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(HygieneGuardianAgent, "heal_repository") or any(
+            hasattr(HygieneGuardianAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(HygieneGuardianAgent)
             )
             # Not all agents need healing - this is informational

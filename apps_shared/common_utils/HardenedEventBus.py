@@ -76,7 +76,7 @@ class HardenedEventBus:
         """
         try:
             # Execute through bulkhead with circuit breaker and retry
-            result = await self.bulkhead_manager.execute(
+            await self.bulkhead_manager.execute(
                 self._publish_with_retry,
                 channel,
                 event,
