@@ -23,7 +23,7 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
 
 
 @dataclass
-class StrategistAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
+class StrategistAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     ROLE: Proactive Architecture. Identifies code smells and proposes refactors.
     """

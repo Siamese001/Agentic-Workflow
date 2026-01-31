@@ -7,7 +7,6 @@
 #
 # USAGE:
 #   ./run_guardian.sh           # Run all guardian tests
-#   ./run_guardian.sh --verbose # Run with verbose output
 #   ./run_guardian.sh --quick   # Run only critical tests
 #
 # EXIT CODES:
