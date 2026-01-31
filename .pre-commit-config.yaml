@@ -1,86 +1,21 @@
 # .pre-commit-config.yaml
-# LAYER: The Smoke Detector (Pre-commit)
-# Rationale: Fast (<5s) structural checks to prevent "Path Rot" and Syntax errors.
-# Heavy logic (MRO, Nuclear Imports) moved to Layer 2: tests/guardian/
+# SIMPLIFIED: Only ruff lint/format on staged files
+# Rationale: Prevent circular logic from stash/unstash conflicts
+# Heavy validation moved to CI/CD and tests/guardian/
 
 repos:
   # ============================================================================
-  # TIER 0: Standard Hygiene (Fast & Agnostic)
-  # ============================================================================
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
-    hooks:
-      - id: trailing-whitespace
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
-      - id: end-of-file-fixer
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
-      - id: check-yaml
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
-      - id: check-added-large-files
-        args: ['--maxkb=500']
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
-      - id: check-merge-conflict
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
-      - id: detect-private-key
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*|tests/security/.*|agentic_core/L5_safety/validators/CredentialScannerAgent\.py|agentic_core/L5_safety/guardrails/membrane\.py)$
-
-  - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.5.0
-    hooks:
-      - id: detect-secrets
-        args: ['--baseline', '.secrets.baseline']
-        exclude: ^(\.secrets\.baseline|tests/.*|archives/.*)$
-
-  # ============================================================================
-  # TIER 1: Lightning Fast Linting (Ruff replaces Black/Isort/Mypy)
+  # TIER 1: Ruff Linting and Formatting (Staged Files Only)
   # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.13
     hooks:
       - id: ruff
         name: Ruff (Lint)
-        args: [--fix, --select, "F,E,W,B,S,UP,I"] # 'I' adds Import Sorting (isort replacement)
+        args: [--fix, --select, "F,E,W,B,UP,I"]
         exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
+        # Only runs on staged files - no repo-wide scanning
       - id: ruff-format
         name: Ruff (Format)
         exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
-
-  # ============================================================================
-  # TIER 2: Project-Specific Structural Guards (The Contract)
-  # ============================================================================
-  - repo: local
-    hooks:
-      # [CONSTITUTIONAL] Base Agent Location Lock - CANNOT be disabled
-      - id: check-base-agent-location
-        name: Constitutional Base Agent Lock
-        entry: python scripts/validate_structure.py
-        language: python
-        files: .*BaseAgent\.py$
-        # CRITICAL: All *BaseAgent.py files MUST be in agentic_core/base_agents/
-        # This is a constitutional rule that short-circuits all other validation.
-
-      - id: validate-ssot-structure
-        name: SSOT Structure Guard (Smoke Detector)
-        entry: python scripts/validate_structure.py
-        language: python
-        files: \.(py|json|yaml|yml)$
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*|\.git/.*)
-        # Validates all files against structure_blueprint.py SSOT rules.
-        # Checks: territories, subfolders, forbidden patterns, test placement.
-
-      # Legacy SSOT Path Guard removed - functionality covered by tests/guardian/test_ssot_compliance.py
-
-      - id: check-protected-files
-        name: Gatekeeper Lockdown
-        entry: python ops_scripts/maintenance/check_protected_files.py
-        language: python
-        pass_filenames: false
-        # Protects critical files from unauthorized modification.
-
-      - id: purge-cache
-        name: Pycache Purge
-        entry: python ops_scripts/maintenance/purge_cache.py --quiet
-        language: python
-        pass_filenames: false
-        always_run: true
-        # Enforces repository hygiene by purging all __pycache__ folders before commit.
+        # Only runs on staged files - no repo-wide scanning

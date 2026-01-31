@@ -6,12 +6,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_rg.shared.core.agent_base import RGAgentBase
+from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
 
 @dataclass
-class ContentStrategyAgent(SubatomicTestingMixin, RGAgentBase):
+class ContentStrategyAgent(RGAgentBase):
     """
     Sovereign Content Strategist.
     Analyzes topics and generates content calendars.

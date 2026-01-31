@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Hardening mixin for resilient execution.
 
 Provides a unified way to add circuit breaking, retries, and telemetry
@@ -8,13 +6,16 @@ to any component that executes external operations.
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
+from __future__ import annotations
+
 import asyncio
 import time
 from collections.abc import Awaitable, Callable
 from typing import Any
 
-from .circuit_breaker import CircuitBreakerOpenError, get_breaker
-from .error_recovery import ErrorRecoveryManager
+from agentic_core.L4_state.ledger.CircuitBreaker import CircuitBreakerOpenError, get_breaker
+
+from .ErrorRecoveryManager import ErrorRecoveryManager
 from .telemetry import SystemTelemetry, get_telemetry
 
 
