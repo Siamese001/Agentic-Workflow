@@ -18,6 +18,13 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+# Import SSOT for namespace validation
+from agentic_core.L5_safety.validators.structure_blueprint import (
+    SOVEREIGN_TERRITORIES,
+    L4_APPROVED_FOLDERS,
+    CORE_SUBFOLDER_MAP,
+)
+
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
@@ -54,24 +61,8 @@ class NuclearAuditAgent:
 
     def _load_structure_blueprint(self) -> dict:
         """Load structure blueprint for namespace validation."""
-        blueprint_file = (
-            self.agentic_core_dir / "L5_safety" / "validators" / "structure_blueprint.py"
-        )
-        try:
-            with open(blueprint_file, encoding="utf-8") as f:
-                content = f.read()
-
-            # Extract CORE_SUBFOLDER_MAP for namespace validation
-            tree = ast.parse(content)
-            for node in ast.walk(tree):
-                if isinstance(node, ast.Assign):
-                    for target in node.targets:
-                        if isinstance(target, ast.Name) and target.id == "CORE_SUBFOLDER_MAP":
-                            return ast.literal_eval(node.value)
-            return {}
-        except Exception as e:
-            logger.error(f"Failed to load structure blueprint: {e}")
-            return {}
+        # Return the SSOT from structure_blueprint.py
+        return CORE_SUBFOLDER_MAP
 
     def _find_agent_files(self) -> list[Path]:
         """Find all Python files containing agent classes."""
@@ -94,6 +85,91 @@ class NuclearAuditAgent:
 
         return sorted(set(agent_files))
 
+    def _is_agent_class(self, node: ast.ClassDef) -> bool:
+        """Determine if class is an agent (not Protocol/Mixin)."""
+        # Exclude Protocols
+        if any(base.id == "Protocol" for base in node.bases if isinstance(base, ast.Name)):
+            return False
+
+        # Exclude Mixins (by naming convention)
+        if node.name.endswith("Mixin"):
+            return False
+
+        # Include only classes ending with 'Agent' or 'BaseAgent'
+        return node.name.endswith("Agent") or node.name.endswith("BaseAgent")
+
+    def _validate_namespace(self, file_path: Path, class_name: str) -> tuple[str, bool]:
+        """Validate agent namespace against SSOT."""
+        # Get relative path from project root
+        rel_path = file_path.relative_to(self.project_root)
+        parts = rel_path.parts
+
+        # Normalize path to use forward slashes
+        namespace_str = str(Path(*parts[:-1])).replace("\\", "/")
+
+        # Constitutional check: Base agents MUST be in agentic_core/base_agents/
+        if class_name.endswith("BaseAgent"):
+            expected = "agentic_core/base_agents"
+            is_valid = namespace_str == expected
+            return namespace_str, is_valid
+
+        # Check against SOVEREIGN_TERRITORIES
+        if len(parts) >= 2 and parts[0] == "agentic_core":
+            if len(parts) >= 3:
+                layer_folder = parts[2]
+                subfolder = parts[3] if len(parts) > 3 else None
+
+                # Check if layer is in CORE_SUBFOLDER_MAP
+                if layer_folder in self.structure_blueprint:
+                    valid_subfolders = self.structure_blueprint[layer_folder]
+                    if subfolder is None or subfolder in valid_subfolders:
+                        return namespace_str, True
+                    else:
+                        # Check if it's an L4 approved folder
+                        full_path = f"agentic_core/{layer_folder}/{subfolder}"
+                        if full_path in L4_APPROVED_FOLDERS:
+                            return namespace_str, True
+                        return namespace_str, False
+                else:
+                    return namespace_str, False
+            else:
+                return namespace_str, False
+        else:
+            # Not in agentic_core - check other territories
+            if parts[0] in SOVEREIGN_TERRITORIES:
+                return namespace_str, True
+            return namespace_str, False
+
+    def _check_inheritance(self, node: ast.ClassDef) -> dict:
+        """Check inheritance chain."""
+        # Special case: SovereignBaseAgent is the root
+        if node.name == "SovereignBaseAgent":
+            return {"status": "ROOT", "message": "Root of inheritance hierarchy"}
+
+        # Extract inheritance chain
+        inheritance_chain = []
+        for base in node.bases:
+            if isinstance(base, ast.Name):
+                inheritance_chain.append(base.id)
+            elif isinstance(base, ast.Attribute):
+                inheritance_chain.append(ast.unparse(base))
+
+        # Check for SovereignBaseAgent inheritance
+        has_sovereign = any("SovereignBaseAgent" in base for base in inheritance_chain)
+
+        if has_sovereign:
+            return {
+                "status": "VALID",
+                "chain": inheritance_chain,
+                "message": "Valid SovereignBaseAgent inheritance",
+            }
+        else:
+            return {
+                "status": "BROKEN",
+                "chain": inheritance_chain,
+                "message": "Missing SovereignBaseAgent inheritance",
+            }
+
     def _analyze_class(self, file_path: Path, class_node: ast.ClassDef) -> AgentAuditResult:
         """Analyze a single agent class."""
         class_name = class_node.name
@@ -114,20 +190,16 @@ class NuclearAuditAgent:
             issues=[],
         )
 
-        # Analyze inheritance
-        inheritance_chain = []
-        for base in class_node.bases:
-            if isinstance(base, ast.Name):
-                inheritance_chain.append(base.id)
-            elif isinstance(base, ast.Attribute):
-                inheritance_chain.append(ast.unparse(base))
-        result.inheritance = ", ".join(inheritance_chain)
+        # Analyze inheritance using new helper
+        inheritance_result = self._check_inheritance(class_node)
+        result.inheritance = ", ".join(inheritance_result.get("chain", []))
 
-        # Check for SovereignBaseAgent inheritance
-        has_sovereign = any("SovereignBaseAgent" in base for base in inheritance_chain)
-        if not has_sovereign and not class_name.endswith("Mixin"):
+        if inheritance_result["status"] == "BROKEN":
             result.issues.append("Missing SovereignBaseAgent inheritance")
             result.status = "Broken Import"
+        elif inheritance_result["status"] == "ROOT":
+            # SovereignBaseAgent itself - don't flag as broken
+            pass
 
         # Check for mixin imports
         try:
@@ -157,7 +229,9 @@ class NuclearAuditAgent:
                     if "violation" not in args:
                         result.issues.append("heal() method missing 'violation: dict' parameter")
                         result.status = "Signature Mismatch"
-            elif has_sovereign:  # Should have heal method if inheriting from SovereignBaseAgent
+            elif (
+                inheritance_result["status"] == "VALID"
+            ):  # Should have heal method if inheriting from SovereignBaseAgent
                 result.issues.append("Missing heal() method")
                 result.status = "Signature Mismatch"
 
@@ -172,28 +246,14 @@ class NuclearAuditAgent:
             result.issues.append(f"File analysis error: {e}")
             result.status = "Broken Import"
 
-        # Validate namespace
-        namespace_parts = str(rel_path.parent).split("/")
-        if len(namespace_parts) >= 2 and namespace_parts[0] == "agentic_core":
-            if len(namespace_parts) >= 3:
-                layer_folder = namespace_parts[2]
-                subfolder = namespace_parts[3] if len(namespace_parts) > 3 else None
+        # Validate namespace using new helper
+        namespace, namespace_valid = self._validate_namespace(file_path, class_name)
+        result.namespace = namespace
+        result.namespace_valid = namespace_valid
 
-                # Check if layer is in blueprint
-                if layer_folder in self.structure_blueprint:
-                    valid_subfolders = self.structure_blueprint[layer_folder]
-                    if subfolder is None or subfolder in valid_subfolders:
-                        result.namespace_valid = True
-                    else:
-                        result.issues.append(
-                            f"Invalid subfolder '{subfolder}' in layer '{layer_folder}'"
-                        )
-                        result.status = "Signature Mismatch"
-                else:
-                    result.issues.append(f"Unknown layer '{layer_folder}'")
-                    result.status = "Signature Mismatch"
-            else:
-                result.issues.append("Insufficient namespace depth")
+        if not namespace_valid:
+            result.issues.append(f"Invalid namespace: {namespace}")
+            if result.status == "Ready":
                 result.status = "Signature Mismatch"
 
         # Check for stub status
@@ -232,7 +292,8 @@ class NuclearAuditAgent:
                 tree = ast.parse(content)
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
-                        if node.name.endswith("Agent") or "Mixin" in node.name:
+                        # Exclude Protocols and Mixins from audit
+                        if self._is_agent_class(node):
                             result = self._analyze_class(file_path, node)
                             self.results.append(result)
 
@@ -261,11 +322,13 @@ class NuclearAuditAgent:
             f"- **Total Agents**: {len(self.results)}",
             f"- **Ready**: {len([r for r in self.results if r.status == 'Ready'])}",
             f"- **Broken Import**: {len([r for r in self.results if r.status == 'Broken Import'])}",
-            f"- **Signature Mismatch**: {len([r for r in self.results if r.status == 'Signature Mismatch'])}",
+            f"- **Signature Mismatch**: "
+            f"{len([r for r in self.results if r.status == 'Signature Mismatch'])}",
             f"- **Stub**: {len([r for r in self.results if r.status == 'Stub'])}",
             "",
             "## Detailed Technical Status Table\n",
-            "| Agent Name | Inheritance | Mixin Verification | heal() Signature | Primary Dependencies | Namespace | Status | Issues |",
+            "| Agent Name | Inheritance | Mixin Verification | "
+            "heal() Signature | Primary Dependencies | Namespace | Status | Issues |",
             "|------------|-------------|-------------------|------------------|-------------------|----------|--------|---------|",
         ]
 
@@ -376,7 +439,8 @@ def main():
 
     if broken > 0 or mismatch > 0:
         print(
-            f"Found {broken} broken imports and {mismatch} signature mismatches - immediate attention required!"
+            f"Found {broken} broken imports and {mismatch} "
+            f"signature mismatches - immediate attention required!"
         )
     else:
         print("All agents passed basic validation!")
