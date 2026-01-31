@@ -5,9 +5,10 @@ Tests the Phase 1 fixes: namespace validation, Protocol/Mixin exclusion, and inh
 """
 
 import ast
-import pytest
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent.parent.parent

@@ -20,9 +20,9 @@ from pathlib import Path
 
 # Import SSOT for namespace validation
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    SOVEREIGN_TERRITORIES,
-    L4_APPROVED_FOLDERS,
     CORE_SUBFOLDER_MAP,
+    L4_APPROVED_FOLDERS,
+    SOVEREIGN_TERRITORIES,
 )
 
 logging.basicConfig(level=logging.ERROR)
