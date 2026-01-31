@@ -364,7 +364,7 @@ class TestImportSafety:
                 print(f"  - {Path(dep_a).name} <-> {Path(dep_b).name}")
             if len(circular_deps) > 10:
                 print(f"  ... and {len(circular_deps) - 10} more")
-            
+
             print("\n[REMEDIATION] Manual refactoring required:")
             print("  1. Extract shared code to new module")
             print("  2. Use dependency injection")
@@ -453,7 +453,7 @@ class TestImportSafety:
                 print(f"    Error: {zombie['error']}")
             if len(zombie_imports) > 10:
                 print(f"  ... and {len(zombie_imports) - 10} more")
-            
+
             print("\n[REMEDIATION] Manual review required:")
             print("  1. Verify if import is actually used")
             print("  2. Remove unused imports")
@@ -564,10 +564,14 @@ class TestImportSafety:
                 print(f"    Violation: {v['violation']}")
             if len(violations) > 10:
                 print(f"  ... and {len(violations) - 10} more")
-            
+
             print("\n[REMEDIATION] Run HierarchyAgent:")
-            print("  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --dry-run")
-            print("  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --apply")
+            print(
+                "  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --dry-run"
+            )
+            print(
+                "  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --apply"
+            )
             print("\n  See: tests/guardian/REMEDIATION_GUIDE.md#import-waterfall-violations")
 
         total_files = len(apps_shared_files) + len(apps_rg_files) + len(apps_lic_files)
@@ -725,7 +729,7 @@ class TestNuclearImportSweep:
         # Report all issues (pure reporting, no thresholds)
         if total_issues > 0:
             print(f"\n[REPORT] {total_issues} import issues detected:")
-            
+
             if ghost_imports:
                 print(f"\n  Ghost Imports ({len(ghost_imports)}):")
                 for gi in ghost_imports[:10]:
@@ -746,7 +750,7 @@ class TestNuclearImportSweep:
                     print(f"    - {ie['file']}: {ie['error']}")
                 if len(import_errors) > 10:
                     print(f"    ... and {len(import_errors) - 10} more")
-            
+
             print("\n[REMEDIATION] Manual review required:")
             print("  1. Review each import error")
             print("  2. Fix typos in import statements")
@@ -1075,7 +1079,7 @@ class TestNuclearImportSweep:
                 print(f"  - {gi['file']}:{gi['line']} - {gi['type']} {gi['import']}")
             if len(ghost_imports) > 10:
                 print(f"  ... and {len(ghost_imports) - 10} more")
-            
+
             print("\n[REMEDIATION] Manual review required:")
             print("  1. Verify if module exists")
             print("  2. Fix import paths")
@@ -1147,18 +1151,17 @@ if __name__ == "__main__":
 class TestGravityCompliance:
     """
     Phase 2: Gravity and Waterfall Compliance Tests
-    
+
     This test ensures lower layers don't import higher layers,
     maintaining architectural integrity.
     """
-    
+
     # Directories to scan for Python files
     SOURCE_DIRECTORIES = [
         "agentic_core",
-        "apps_rg", 
+        "apps_rg",
         "apps_lic",
-        "apps_shared"
-        "utils",
+        "apps_sharedutils",
         "runtime",
         "L1_cognition",
         "L2_execution",
@@ -1264,7 +1267,7 @@ class TestGravityCompliance:
                 print(f"    {v['violation']}")
             if len(violations) > 10:
                 print(f"  ... and {len(violations) - 10} more")
-            
+
             print("\n[REMEDIATION] Run LocationAgent:")
             print("  python -m agentic_core.L5_safety.validators.LocationAgent --heal --dry-run")
             print("  python -m agentic_core.L5_safety.validators.LocationAgent --heal --apply")
@@ -1343,7 +1346,7 @@ class TestGravityCompliance:
         # Report violations (pure reporting)
         if violations:
             print(f"\n[REPORT] {len(violations)} gravity leaks detected:")
-            
+
             # Group by violation type for clearer reporting
             by_type = {}
             for v in violations:
@@ -1361,10 +1364,14 @@ class TestGravityCompliance:
 
             if len(by_type) > 10:
                 print(f"\n  ... and {len(by_type) - 10} more violation types")
-            
+
             print("\n[REMEDIATION] Run HierarchyAgent:")
-            print("  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --dry-run")
-            print("  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --apply")
+            print(
+                "  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --dry-run"
+            )
+            print(
+                "  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --apply"
+            )
             print("\n  See: tests/guardian/REMEDIATION_GUIDE.md#gravity-leaks")
         else:
             print(f"[OK] No gravity leaks detected ({len(core_files)} core files checked)")
@@ -1381,9 +1388,9 @@ class TestGravityCompliance:
         - Import alias conventions
         """
         print("\n=== ADVANCED IMPORT PATTERN VALIDATION ===")
-        
+
         violations: List[Dict[str, Any]] = []
-        
+
         # Build import graph for circular dependency detection
         import_graph: Dict[str, Set[str]] = {}
         python_files = self._get_all_python_files(self.SOURCE_DIRECTORIES)
@@ -1551,7 +1558,7 @@ class TestGravityCompliance:
         # Report results
         print(f"  Files analyzed: {len(python_files)}")
         print(f"  Import pattern violations: {len(violations)}")
-        
+
         # Break down by type
         by_type = {}
         for v in violations:
@@ -1559,10 +1566,10 @@ class TestGravityCompliance:
             if vtype not in by_type:
                 by_type[vtype] = []
             by_type[vtype].append(v)
-        
+
         for vtype, items in by_type.items():
             print(f"    - {vtype}: {len(items)} violations")
-        
+
         # Report circular imports
         circular_violations = [v for v in violations if v["type"] == "circular_import"]
         if circular_violations:
@@ -1572,7 +1579,7 @@ class TestGravityCompliance:
             if len(circular_violations) > 3:
                 print(f"  ... and {len(circular_violations) - 3} more")
             print("\nCircular dependencies should be refactored.")
-        
+
         # Report dynamic imports
         dynamic_violations = [v for v in violations if v["type"] == "dynamic_import"]
         if dynamic_violations:
@@ -1582,7 +1589,7 @@ class TestGravityCompliance:
             if len(dynamic_violations) > 5:
                 print(f"  ... and {len(dynamic_violations) - 5} more")
             print("\nDynamic imports should be documented or avoided.")
-        
+
         # Report deep relative imports
         relative_violations = [v for v in violations if v["type"] == "deep_relative_import"]
         if relative_violations:
@@ -1592,7 +1599,7 @@ class TestGravityCompliance:
             if len(relative_violations) > 5:
                 print(f"  ... and {len(relative_violations) - 5} more")
             print("\nDeep packages should use absolute imports.")
-        
+
         # Report redundant aliases
         alias_violations = [v for v in violations if v["type"] == "redundant_alias"]
         if alias_violations:
@@ -1602,6 +1609,6 @@ class TestGravityCompliance:
             if len(alias_violations) > 5:
                 print(f"  ... and {len(alias_violations) - 5} more")
             print("\nRemove redundant import aliases.")
-        
+
         if not violations:
-            print(f"[OK] Import patterns are acceptable")
+            print("[OK] Import patterns are acceptable")
