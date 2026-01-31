@@ -88,7 +88,7 @@ class TestContentQualityAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.ContentQualityAgent import ContentQualityAgent
+                from apps_rg.engines.ContentQualityAgent import ContentQualityAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

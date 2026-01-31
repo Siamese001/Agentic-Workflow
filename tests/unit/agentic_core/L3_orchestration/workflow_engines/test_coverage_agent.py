@@ -72,7 +72,7 @@ class TestCoverageAgent:
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
                 from agentic_core.L3_orchestration.workflow_engines.CoverageAgent import (
-                    CoverageAgent,
+                    CoverageAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass

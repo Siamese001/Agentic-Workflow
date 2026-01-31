@@ -85,7 +85,7 @@ class TestHOP2ResearchAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
+                from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

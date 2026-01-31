@@ -87,7 +87,7 @@ class TestFactCheckAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.FactCheckAgent import FactCheckAgent
+                from apps_rg.engines.FactCheckAgent import FactCheckAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

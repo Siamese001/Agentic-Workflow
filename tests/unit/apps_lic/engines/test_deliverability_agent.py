@@ -83,7 +83,7 @@ class TestDeliverabilityAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.DeliverabilityAgent import DeliverabilityAgent
+                from apps_lic.engines.DeliverabilityAgent import DeliverabilityAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

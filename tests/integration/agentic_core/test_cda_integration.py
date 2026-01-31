@@ -59,7 +59,7 @@ class TestCDAIntegration(unittest.TestCase):
                 EnhancedAutonomousDecisionEngine,
             )
             from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
-                DispositionDecision,
+                DispositionDecision,  # noqa: F401
             )
 
             # Create mock decision engine
@@ -158,7 +158,7 @@ class TestCDAIntegration(unittest.TestCase):
     def test_command_line_argument_parsing(self):
         """Test that --enable-cda argument is properly parsed"""
         try:
-            import argparse
+            import argparse  # noqa: F401
 
             from agentic_core.L0_maintenance.scripts.execute_ssot import main
 

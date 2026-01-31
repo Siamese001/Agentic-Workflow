@@ -212,7 +212,8 @@ class AgentUnitTestTemplate:
                             logger.debug(f"Method {method_name} correctly rejected fuzz input: {e}")
                         except Exception as e:
                             pytest.fail(
-                                f"Unexpected exception from {method_name} with input {repr(fuzz_input)}: {e}"
+                                f"Unexpected exception from {method_name} "
+                                f"with input {repr(fuzz_input)}: {e}"
                             )
 
             except Exception as e:
@@ -360,7 +361,7 @@ class NetworkCallDetector:
 
         # requests
         try:
-            import requests
+            import requests  # noqa: F401
 
             patch_obj = patch.multiple(
                 "requests",

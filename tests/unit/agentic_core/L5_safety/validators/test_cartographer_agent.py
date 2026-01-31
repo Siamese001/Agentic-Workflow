@@ -91,7 +91,7 @@ class TestCartographerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.CartographerAgent import CartographerAgent
+                from agentic_core.L5_safety.validators.CartographerAgent import CartographerAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

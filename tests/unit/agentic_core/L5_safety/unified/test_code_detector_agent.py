@@ -92,7 +92,7 @@ class TestCodeDetectorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.unified.CodeDetectorAgent import CodeDetectorAgent
+                from agentic_core.L5_safety.unified.CodeDetectorAgent import CodeDetectorAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

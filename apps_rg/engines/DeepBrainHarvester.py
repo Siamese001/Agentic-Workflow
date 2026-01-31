@@ -12,12 +12,16 @@ import argparse
 import logging
 import os
 import sys
+from pathlib import Path
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 try:
-    PINECONE_AVAILABLE: Any = True
+    from pinecone import Pinecone
+
+    PINECONE_AVAILABLE = True
 except ImportError:
-    PINECONE_AVAILABLE: Any = False
+    PINECONE_AVAILABLE = False
     print("⚠️  Pinecone not available. Install with: pip install pinecone-client")
 
 logging.basicConfig(level=logging.INFO)
@@ -138,7 +142,10 @@ class DeepBrainHarvester:
             f"## Trigger: {pattern['reusable_pattern']['trigger']}",
             "",
             "## Problem:",
-            f"Method with {pattern['before']['lines']} lines and {pattern['before']['nesting_depth']} nesting levels",
+            (
+                f"Method with {pattern['before']['lines']} lines and "
+                f"{pattern['before']['nesting_depth']} nesting levels"
+            ),
             "Issues: " + ", ".join(pattern["before"]["issues"]),
             "",
             "## Solution:",
@@ -165,12 +172,18 @@ class DeepBrainHarvester:
             "## Example:",
             f"Source: {pattern['source_file']}",
             f"Method: {pattern['method_name']}",
-            f"Before: {pattern['before']['lines']} lines, {pattern['before']['nesting_depth']} levels",
+            (
+                f"Before: {pattern['before']['lines']} lines, "
+                f"{pattern['before']['nesting_depth']} levels"
+            ),
             f"After: {pattern['after']['lines']} lines, {pattern['after']['nesting_depth']} levels",
             "",
             "## Extracted Helpers:",
             *[
-                f"- {helper['name']}: {helper['purpose']} ({helper['lines']} lines, {helper['nesting']} nesting)"
+                (
+                    f"- {helper['name']}: {helper['purpose']} "
+                    f"({helper['lines']} lines, {helper['nesting']} nesting)"
+                )
                 for helper in pattern["helper_methods"]
             ],
         ]

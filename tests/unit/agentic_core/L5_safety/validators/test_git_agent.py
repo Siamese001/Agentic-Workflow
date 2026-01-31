@@ -85,7 +85,7 @@ class TestGitAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.GitAgent import GitAgent
+                from agentic_core.L5_safety.validators.GitAgent import GitAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

@@ -15,7 +15,7 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 try:
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent  # noqa: F401
 
     SOVEREIGN_AVAILABLE = True
 except ImportError:

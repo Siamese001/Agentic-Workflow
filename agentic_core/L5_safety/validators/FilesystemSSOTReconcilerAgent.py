@@ -64,7 +64,7 @@ from pathlib import Path
 from typing import Any
 
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+from agentic_core.base_agents.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
@@ -72,7 +72,7 @@ from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosis
 # GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
 # Use correct MCP mixin location
 try:
-    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
+    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
 except ImportError:
     # Fallback for testing
     class MCPHardenedMixin:
@@ -82,7 +82,7 @@ except ImportError:
 from agentic_core.base_agents.timeout_decorator import timeout
 
 try:
-    from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+    from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
 except ImportError:
 
     class SubatomicTestingMixin:

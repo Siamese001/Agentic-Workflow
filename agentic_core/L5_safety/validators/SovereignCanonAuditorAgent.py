@@ -58,26 +58,31 @@ class SovereignCanonAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             Audit results with status for each component
         """
         import subprocess
-        
+
         print("=" * 60)
         print("🔍 SOVEREIGN CANON AUDIT - Phase 13E")
         print("=" * 60)
-        
+
         # Run the Guardian test for core components
-        result = subprocess.run([
-            "python", "tests/guardian/test_core_components.py"
-        ], capture_output=True, text=True, cwd=Path(__file__).parent.parent.parent.parent)
-        
+        result = subprocess.run(
+            ["python", "tests/guardian/test_core_components.py"],
+            capture_output=True,
+            text=True,
+            cwd=Path(__file__).parent.parent.parent.parent,
+        )
+
         # Parse results
         passed = result.returncode == 0
-        
+
         if passed:
             print("✅ COMPLIANT: All critical files exist")
             return {
                 "total": len(self.critical_files),
                 "found": len(self.critical_files),
                 "Missing": 0,
-                "details": [{"file": f, "exists": True, "status": "✅ FOUND"} for f in self.critical_files]
+                "details": [
+                    {"file": f, "exists": True, "status": "✅ FOUND"} for f in self.critical_files
+                ],
             }
         else:
             print("❌ VIOLATION: Critical files missing")
@@ -86,7 +91,10 @@ class SovereignCanonAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 "total": len(self.critical_files),
                 "found": 0,
                 "Missing": len(self.critical_files),
-                "details": [{"file": f, "exists": False, "status": "❌ MISSING"} for f in self.critical_files]
+                "details": [
+                    {"file": f, "exists": False, "status": "❌ MISSING"}
+                    for f in self.critical_files
+                ],
             }
 
     async def get_architectural_insight(self, question: str) -> str:

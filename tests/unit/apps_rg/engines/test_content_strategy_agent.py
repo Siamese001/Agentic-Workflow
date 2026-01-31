@@ -78,7 +78,7 @@ class TestContentStrategyAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.ContentStrategyAgent import ContentStrategyAgent
+                from apps_rg.engines.ContentStrategyAgent import ContentStrategyAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

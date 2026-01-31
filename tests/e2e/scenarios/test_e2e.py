@@ -134,7 +134,7 @@ class TestPlaywrightVisual:
     def test_playwright_available(self):
         """Check if Playwright is available."""
         try:
-            from playwright.sync_api import sync_playwright
+            from playwright.sync_api import sync_playwright  # noqa: F401
 
             assert True
         except ImportError:

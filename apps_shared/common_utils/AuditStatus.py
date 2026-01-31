@@ -9,7 +9,7 @@ import json
 import sys
 
 try:
-    import yaml
+    import yaml  # noqa: F401
 
     YAML_AVAILABLE = True
 except ImportError:

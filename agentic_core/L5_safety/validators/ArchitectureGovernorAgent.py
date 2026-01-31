@@ -629,13 +629,15 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             Tuple of (is_valid, reason)
         """
         import subprocess
-        
+
         # Run the Guardian test for architecture governance
-        result = subprocess.run([
-            "python", "tests/guardian/test_architecture_governance.py",
-            str(file_path)
-        ], capture_output=True, text=True, cwd=self.project_root)
-        
+        result = subprocess.run(
+            ["python", "tests/guardian/test_architecture_governance.py", str(file_path)],
+            capture_output=True,
+            text=True,
+            cwd=self.project_root,
+        )
+
         if result.returncode == 0:
             return (True, "Architecture governance validated")
         else:

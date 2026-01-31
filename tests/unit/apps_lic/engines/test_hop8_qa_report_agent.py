@@ -79,7 +79,7 @@ class TestHOP8QAReportAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP8QAReportAgent import HOP8QAReportAgent
+                from apps_lic.engines.HOP8QAReportAgent import HOP8QAReportAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

@@ -214,7 +214,7 @@ class TestPreCommitHookTrigger:
         """[Phase 8] Verify CI script file exists."""
         # The script can be imported, so it exists
         try:
-            import scripts.ci.sovereign_lockdown_check
+            import scripts.ci.sovereign_lockdown_check  # noqa: F401
 
             script_exists = True
         except (ImportError, NameError, AttributeError):

@@ -94,7 +94,7 @@ class TestMetaLearningAgent:
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
                 from agentic_core.L1_cognition.thought_engine.MetaLearningAgent import (
-                    MetaLearningAgent,
+                    MetaLearningAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass

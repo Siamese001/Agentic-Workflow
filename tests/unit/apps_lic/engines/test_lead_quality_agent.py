@@ -77,7 +77,7 @@ class TestLeadQualityAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.LeadQualityAgent import LeadQualityAgent
+                from apps_lic.engines.LeadQualityAgent import LeadQualityAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

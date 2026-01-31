@@ -94,7 +94,7 @@ class TestEmbeddingSovereignAgent:
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
                 from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import (
-                    EmbeddingSovereignAgent,
+                    EmbeddingSovereignAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass

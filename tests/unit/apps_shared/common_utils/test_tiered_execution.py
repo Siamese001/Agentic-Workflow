@@ -57,7 +57,8 @@ def test_isolation():
     else:
         test_fail(
             "TEST-1",
-            f"Isolation failed: Tier0={tier0_should_run}, Tier1={tier1_should_run}, Tier2={tier2_should_run}",
+            f"Isolation failed: Tier0={tier0_should_run}, "
+            f"Tier1={tier1_should_run}, Tier2={tier2_should_run}",
         )
 
 

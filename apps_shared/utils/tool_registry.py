@@ -7,6 +7,7 @@ Integrates with SovereignIndex for safety validation.
 
 import logging
 
+from agentic_core.L5_safety.validators.structure_blueprint import (
     GLOBAL_EXCLUDED_DIRS,
     is_path_allowed,
 )

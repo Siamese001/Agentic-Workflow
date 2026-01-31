@@ -11,18 +11,17 @@ GUARDIAN_TEST = Path(__file__).parent / "test_core_components.py"
 def test_all_critical_files_exist():
     """TC-CC-01: All critical files exist."""
     from tests.guardian.test_core_components import CRITICAL_FILES
-    
+
     # Check that all critical files actually exist in the repo
     missing = []
     for filepath in CRITICAL_FILES:
         if not Path(filepath).exists():
             missing.append(filepath)
-    
+
     if missing:
         pytest.skip(f"Some critical files don't exist: {missing}")
-    
-    result = subprocess.run([sys.executable, str(GUARDIAN_TEST)], 
-                          capture_output=True, text=True)
+
+    result = subprocess.run([sys.executable, str(GUARDIAN_TEST)], capture_output=True, text=True)
     assert result.returncode == 0
     assert "COMPLIANT" in result.stdout
 
@@ -30,7 +29,7 @@ def test_all_critical_files_exist():
 def test_missing_file_detection():
     """TC-CC-02: Missing file is detected."""
     # Create a temporary critical files list with a missing file
-    test_code = '''
+    test_code = """
 import sys
 from pathlib import Path
 
@@ -54,16 +53,15 @@ def test_critical_files_exist():
 
 if __name__ == "__main__":
     test_critical_files_exist()
-'''
-    
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+"""
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(test_code)
         f.flush()
         temp_path = Path(f.name)
-    
+
     try:
-        result = subprocess.run([sys.executable, str(temp_path)], 
-                              capture_output=True, text=True)
+        result = subprocess.run([sys.executable, str(temp_path)], capture_output=True, text=True)
         assert result.returncode == 1
         assert "VIOLATION" in result.stdout
     finally:
@@ -73,12 +71,13 @@ if __name__ == "__main__":
                 break
             except PermissionError:
                 import time
+
                 time.sleep(0.1)
 
 
 def test_empty_critical_files_list():
     """TC-CC-03: Empty critical files list passes."""
-    test_code = '''
+    test_code = """
 import sys
 
 CRITICAL_FILES = []
@@ -93,16 +92,15 @@ def test_critical_files_exist():
 
 if __name__ == "__main__":
     test_critical_files_exist()
-'''
-    
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+"""
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(test_code)
         f.flush()
         temp_path = Path(f.name)
-    
+
     try:
-        result = subprocess.run([sys.executable, str(temp_path)], 
-                              capture_output=True, text=True)
+        result = subprocess.run([sys.executable, str(temp_path)], capture_output=True, text=True)
         assert result.returncode == 0
         assert "COMPLIANT" in result.stdout
     finally:
@@ -112,12 +110,13 @@ if __name__ == "__main__":
                 break
             except PermissionError:
                 import time
+
                 time.sleep(0.1)
 
 
 def test_partial_file_existence():
     """TC-CC-04: Partial file existence detected correctly."""
-    test_code = '''
+    test_code = """
 import sys
 from pathlib import Path
 
@@ -150,16 +149,15 @@ def test_critical_files_exist():
 
 if __name__ == "__main__":
     test_critical_files_exist()
-'''
-    
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+"""
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(test_code)
         f.flush()
         temp_path = Path(f.name)
-    
+
     try:
-        result = subprocess.run([sys.executable, str(temp_path)], 
-                              capture_output=True, text=True)
+        result = subprocess.run([sys.executable, str(temp_path)], capture_output=True, text=True)
         assert result.returncode == 1
         assert "VIOLATION" in result.stdout
         assert "Found: 1" in result.stdout
@@ -171,12 +169,13 @@ if __name__ == "__main__":
                 break
             except PermissionError:
                 import time
+
                 time.sleep(0.1)
 
 
 def test_file_permission_error():
     """TC-CC-05: Permission errors handled gracefully."""
-    test_code = '''
+    test_code = """
 import sys
 import os
 from pathlib import Path
@@ -215,16 +214,15 @@ def test_critical_files_exist():
 
 if __name__ == "__main__":
     test_critical_files_exist()
-'''
-    
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+"""
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(test_code)
         f.flush()
         temp_path = Path(f.name)
-    
+
     try:
-        result = subprocess.run([sys.executable, str(temp_path)], 
-                              capture_output=True, text=True)
+        result = subprocess.run([sys.executable, str(temp_path)], capture_output=True, text=True)
         # This test should pass or fail gracefully depending on system
         assert result.returncode in [0, 1]
     finally:
@@ -234,12 +232,13 @@ if __name__ == "__main__":
                 break
             except PermissionError:
                 import time
+
                 time.sleep(0.1)
 
 
 def test_directory_instead_of_file():
     """TC-CC-06: Directory instead of file handled correctly."""
-    test_code = '''
+    test_code = """
 import sys
 import tempfile
 from pathlib import Path
@@ -273,16 +272,15 @@ def test_critical_files_exist():
 
 if __name__ == "__main__":
     test_critical_files_exist()
-'''
-    
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+"""
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(test_code)
         f.flush()
         temp_path = Path(f.name)
-    
+
     try:
-        result = subprocess.run([sys.executable, str(temp_path)], 
-                              capture_output=True, text=True)
+        result = subprocess.run([sys.executable, str(temp_path)], capture_output=True, text=True)
         assert result.returncode == 1
         assert "VIOLATION" in result.stdout
     finally:
@@ -292,12 +290,13 @@ if __name__ == "__main__":
                 break
             except PermissionError:
                 import time
+
                 time.sleep(0.1)
 
 
 def test_symlink_handling():
     """TC-CC-07: Symbolic links handled correctly."""
-    test_code = '''
+    test_code = """
 import sys
 import os
 from pathlib import Path
@@ -341,16 +340,15 @@ def test_critical_files_exist():
 
 if __name__ == "__main__":
     test_critical_files_exist()
-'''
-    
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+"""
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(test_code)
         f.flush()
         temp_path = Path(f.name)
-    
+
     try:
-        result = subprocess.run([sys.executable, str(temp_path)], 
-                              capture_output=True, text=True)
+        result = subprocess.run([sys.executable, str(temp_path)], capture_output=True, text=True)
         assert result.returncode == 0
         assert "COMPLIANT" in result.stdout
     finally:
@@ -360,13 +358,14 @@ if __name__ == "__main__":
                 break
             except PermissionError:
                 import time
+
                 time.sleep(0.1)
 
 
 def test_large_file_list_performance():
     """TC-CC-08: Performance with large file lists."""
     # Generate a large list of files (most non-existent)
-    test_code = '''
+    test_code = """
 import sys
 from pathlib import Path
 
@@ -401,16 +400,17 @@ def test_critical_files_exist():
 
 if __name__ == "__main__":
     test_critical_files_exist()
-'''
-    
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+"""
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(test_code)
         f.flush()
         temp_path = Path(f.name)
-    
+
     try:
-        result = subprocess.run([sys.executable, str(temp_path)], 
-                              capture_output=True, text=True, timeout=30)
+        result = subprocess.run(
+            [sys.executable, str(temp_path)], capture_output=True, text=True, timeout=30
+        )
         assert result.returncode == 1
         assert "VIOLATION" in result.stdout
         assert "Found: 1" in result.stdout
@@ -422,4 +422,5 @@ if __name__ == "__main__":
                 break
             except PermissionError:
                 import time
+
                 time.sleep(0.1)

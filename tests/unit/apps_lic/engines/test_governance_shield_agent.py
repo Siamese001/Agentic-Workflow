@@ -93,7 +93,7 @@ class TestGovernanceShieldAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.GovernanceShieldAgent import GovernanceShieldAgent
+                from apps_lic.engines.GovernanceShieldAgent import GovernanceShieldAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

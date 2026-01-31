@@ -58,7 +58,7 @@ from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 
 # GRAVITY FIXED: Explicit import for MCPHardenedMixin
 try:
-    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
+    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
 except ImportError:
 
     class MCPHardenedMixin:  # Fallback to prevent load failure

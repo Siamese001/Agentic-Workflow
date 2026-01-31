@@ -21,7 +21,7 @@ def run_llm_anthropic(
     """Run an Anthropic message completion and return the response text."""
 
     try:
-        import data.sdks_mcps.reference_clients.minimal_anthropic
+        import anthropic
     except ImportError as exc:  # pragma: no cover - optional dependency
         raise ImportError("anthropic package not installed") from exc
 

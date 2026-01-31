@@ -61,6 +61,7 @@ def run_cognitive_purge(
     # Load .env file first
     try:
         from dotenv import find_dotenv, load_dotenv
+
         env_file = find_dotenv(usecwd=True)
         if env_file:
             load_dotenv(env_file)
@@ -80,6 +81,7 @@ def run_cognitive_purge(
         project_root = Path(__file__).resolve().parent.parent.parent
         sys.path.insert(0, str(project_root))
 
+        from agentic_core.L5_safety.validators import (
             ArchitectureGovernorAgent,
         )
 
@@ -142,7 +144,7 @@ def run_cognitive_purge(
         Logger.info(f"  Average Confidence: {results_stats.get('avg_confidence', 0.0):.2%}")
         Logger.info("")
         Logger.info("Actions by Type:")
-        for action, count in sorted(results_stats.get('by_action', {}).items()):
+        for action, count in sorted(results_stats.get("by_action", {}).items()):
             Logger.info(f"  {action}: {count}")
         Logger.info("")
         Logger.info(f"Checkpoint saved to: {result.get('checkpoint_file', checkpoint_file)}")
@@ -165,6 +167,7 @@ def run_cognitive_purge(
     except Exception as e:
         Logger.error(f"[ERROR] Execution Error: {e}")
         import traceback
+
         traceback.print_exc()
         return 2
 

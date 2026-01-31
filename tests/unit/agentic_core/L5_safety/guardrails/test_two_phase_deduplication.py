@@ -116,7 +116,7 @@ def test_1_agent_exists() -> tuple[bool, str]:
     """Test 1: Verify TwoPhaseDeduplicationAgent exists."""
     try:
         from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
-            TwoPhaseDeduplicationAgent,
+            TwoPhaseDeduplicationAgent,  # noqa: F401
         )
 
         return True, "TwoPhaseDeduplicationAgent module exists"

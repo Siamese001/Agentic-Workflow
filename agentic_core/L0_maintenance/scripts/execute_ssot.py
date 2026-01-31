@@ -1945,11 +1945,11 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
             ArchitectureGovernorAgent,
         )
         from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
-            FilesystemSSOTReconcilerAgent,
+            FilesystemSSOTReconcilerAgent,  # noqa: F401
         )
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
+        from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent  # noqa: F401
 
         orchestrator = get_consolidated_orchestrator(project_root)
         logger.info("🧠 L3 ORCHESTRATOR SUMMONED: Delegating command.")
@@ -2168,7 +2168,7 @@ Examples:
         )
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.RootHygieneAgent import RootHygieneAgent
+        from agentic_core.L5_safety.validators.RootHygieneAgent import RootHygieneAgent  # noqa: F401
         from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
         from agentic_core.L6_observability.DebateSynthesisAgent import (
             DebateSynthesisAgent,

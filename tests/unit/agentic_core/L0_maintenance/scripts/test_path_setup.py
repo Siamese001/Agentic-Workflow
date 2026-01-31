@@ -17,6 +17,6 @@ def _setup_paths():
 
 PROJECT_ROOT = _setup_paths()
 try:
-    from agentic_core.L5_safety.validators import canonical_truth
+    from agentic_core.L5_safety.validators import canonical_truth  # noqa: F401
 except (ImportError, NameError, AttributeError):
     pass

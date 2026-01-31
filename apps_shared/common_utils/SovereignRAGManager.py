@@ -17,7 +17,7 @@ try:
     from agentic_core.knowledge.static_index.skill_taxonomy import ALL_SKILLS, SKILL_TAXONOMY
     from agentic_core.semantic_memory.embeddings.core_embedder import (
         _embedding_cache,
-        clear_embedding_cache,
+        clear_embedding_cache,  # noqa: F401
     )
 except ImportError:
     # Fallback to avoid mission failure if sub-modules are mid-relocation

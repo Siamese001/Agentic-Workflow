@@ -39,7 +39,7 @@ def test_two_phase_dedup_import():
     print("=" * 70)
 
     try:
-        from apps_lic.engines.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
+        from apps_lic.engines.TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent  # noqa: F401
 
         test_pass("GIANT-01", "TwoPhaseDeduplicationAgent imports successfully")
     except ImportError as e:
