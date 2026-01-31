@@ -161,6 +161,8 @@ def validate_base_agent_location(file_path: str) -> tuple[bool, str]:
        MUST be in agentic_core/base_agents/
     2. App-specific base agents (prefixed with app name)
        MUST be in their respective apps_* directories
+
+    Note: Test files (test_*BaseAgent.py or in tests/) are excluded from this check.
     """
     path = Path(file_path)
 
@@ -168,6 +170,10 @@ def validate_base_agent_location(file_path: str) -> tuple[bool, str]:
         return True, ""
 
     posix_path = path.as_posix()
+
+    # Exclude test files from constitutional check
+    if "tests/" in posix_path or path.name.startswith("test_"):
+        return True, ""
 
     # Core framework base agents - MUST be in agentic_core/base_agents/
     core_base_agents = {
