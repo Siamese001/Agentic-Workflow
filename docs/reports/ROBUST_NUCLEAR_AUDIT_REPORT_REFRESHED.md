@@ -1,6 +1,6 @@
 # ROBUST NUCLEAR AUDIT REPORT - REFRESHED
-**Generated:** 2026-01-30  
-**Repository:** Agentic-Workflow  
+**Generated:** 2026-01-30
+**Repository:** Agentic-Workflow
 **Audit Scope:** Complete codebase analysis with gap identification
 
 ---
@@ -39,7 +39,7 @@
 ## Critical Gap Analysis
 
 ### Gap 1: Constitutional Base Agent Location Violation
-**Severity:** CRITICAL  
+**Severity:** CRITICAL
 **Impact:** 213/213 agents (100%)
 
 **Issue:** All agents report `[INVALID]` namespace because the Nuclear Audit incorrectly flags base agent locations. Per `.windsurfrules`, base agents MUST reside in `agentic_core/base_agents/`, but the audit is flagging this as invalid.
@@ -52,7 +52,7 @@
 - Re-run audit to verify all agents in correct locations per SSOT
 
 ### Gap 2: Broken Import Chain (15 agents)
-**Severity:** CRITICAL  
+**Severity:** CRITICAL
 **Impact:** 7.0% of codebase
 
 **Affected Agents:**
@@ -76,7 +76,7 @@
 - Archive or fix DiscoveredAgent, RootCustomsAgent, MockSovereignAgent, BiasAuditorAgent
 
 ### Gap 3: Missing heal() Method (10 agents)
-**Severity:** WARNING  
+**Severity:** WARNING
 **Impact:** 4.7% of codebase
 
 **Affected Agents:**
@@ -95,12 +95,12 @@
 - StructuralEngineerAgent: Investigate why HealerMixin doesn't provide heal()
 
 ### Gap 4: Stub/Incomplete Agents (53 agents)
-**Severity:** INFO  
+**Severity:** INFO
 **Impact:** 24.9% of codebase
 
 **Categories:**
 - **TODO/FIXME markers:** 45 agents
-- **Pass-only methods:** 6 agents  
+- **Pass-only methods:** 6 agents
 - **Stub markers:** 2 agents
 
 **High-Priority Stubs (L5 Safety):**
@@ -116,7 +116,7 @@
 - Move low-value stubs to archives/
 
 ### Gap 5: Test Coverage Gaps
-**Severity:** WARNING  
+**Severity:** WARNING
 **Impact:** Unknown (not measured in audit)
 
 **Known Gaps:**
@@ -132,7 +132,7 @@
 - Add integration tests for cross-layer workflows
 
 ### Gap 6: Namespace Validation Inconsistency
-**Severity:** CRITICAL  
+**Severity:** CRITICAL
 **Impact:** 100% of agents
 
 **Issue:** Every agent shows `[INVALID]` namespace, suggesting the audit tool's validation logic is broken or using incorrect SSOT.
@@ -220,8 +220,8 @@
 ## Phased Remediation Plan
 
 ### Phase 1: Fix Nuclear Audit Tool (Foundation)
-**Goal:** Ensure audit tool provides accurate baseline  
-**Duration:** 1 Cascade chat  
+**Goal:** Ensure audit tool provides accurate baseline
+**Duration:** 1 Cascade chat
 **Priority:** CRITICAL
 
 **Tasks:**
@@ -242,8 +242,8 @@
 - Clear separation of true issues vs. false positives
 
 ### Phase 2: Fix Broken Imports (Critical Path)
-**Goal:** Restore inheritance chain integrity  
-**Duration:** 1 Cascade chat  
+**Goal:** Restore inheritance chain integrity
+**Duration:** 1 Cascade chat
 **Priority:** CRITICAL
 
 **Tasks:**
@@ -268,8 +268,8 @@
 - No duplicate agent definitions
 
 ### Phase 3: Implement Missing heal() Methods
-**Goal:** Universal heal() compliance  
-**Duration:** 1 Cascade chat  
+**Goal:** Universal heal() compliance
+**Duration:** 1 Cascade chat
 **Priority:** HIGH
 
 **Tasks:**
@@ -290,8 +290,8 @@
 - 100% test coverage for heal() methods
 
 ### Phase 4: Complete or Archive Stub Agents
-**Goal:** Reduce technical debt, prioritize high-value agents  
-**Duration:** 2-3 Cascade chats  
+**Goal:** Reduce technical debt, prioritize high-value agents
+**Duration:** 2-3 Cascade chats
 **Priority:** MEDIUM
 
 **Tasks:**
@@ -322,8 +322,8 @@
 - Clear deprecation path for archived agents
 
 ### Phase 5: Expand Test Coverage
-**Goal:** Achieve 80%+ test coverage across all layers  
-**Duration:** 2 Cascade chats  
+**Goal:** Achieve 80%+ test coverage across all layers
+**Duration:** 2 Cascade chats
 **Priority:** MEDIUM
 
 **Tasks:**
@@ -347,8 +347,8 @@
 - All critical workflows have integration tests
 
 ### Phase 6: Namespace Validation and Healing
-**Goal:** Ensure all agents in correct locations per SSOT  
-**Duration:** 1 Cascade chat  
+**Goal:** Ensure all agents in correct locations per SSOT
+**Duration:** 1 Cascade chat
 **Priority:** LOW (after Phase 1 audit fix)
 
 **Tasks:**
@@ -394,21 +394,21 @@ def validate_namespace(self, file_path: Path) -> tuple[str, bool]:
     # Get relative path from project root
     rel_path = file_path.relative_to(self.project_root)
     parts = rel_path.parts
-    
+
     # Constitutional check: Base agents MUST be in agentic_core/base_agents/
     if file_path.stem.endswith('BaseAgent'):
         expected = Path('agentic_core/base_agents')
         actual = Path(*parts[:-1])
         is_valid = actual == expected
         return str(actual), is_valid
-    
+
     # Check against SOVEREIGN_TERRITORIES
     if parts[0] in SOVEREIGN_TERRITORIES:
         territory = SOVEREIGN_TERRITORIES[parts[0]]
         # Validate depth and subfolder structure
         # ... (implementation details)
         return str(Path(*parts[:-1])), is_valid
-    
+
     return str(Path(*parts[:-1])), False
 ```
 
@@ -419,11 +419,11 @@ def is_agent_class(self, node: ast.ClassDef) -> bool:
     # Exclude Protocols
     if any(base.id == 'Protocol' for base in node.bases if isinstance(base, ast.Name)):
         return False
-    
+
     # Exclude Mixins (by naming convention)
     if node.name.endswith('Mixin'):
         return False
-    
+
     return True
 ```
 
@@ -437,7 +437,7 @@ def check_inheritance(self, node: ast.ClassDef) -> dict:
             'status': 'ROOT',
             'message': 'Root of inheritance hierarchy'
         }
-    
+
     # ... rest of inheritance checking
 ```
 
@@ -548,7 +548,7 @@ sed -i 's/from agentic_core.L2_execution.tool_registry.SubAtomicAgent/from agent
 - class DiscoveredAgent:
 + class DiscoveredAgent(SovereignBaseAgent):
       """Dynamically discovered agent placeholder."""
-+     
++
 +     def heal(self, violation: dict) -> dict:
 +         """Heal violations in discovered agents."""
 +         return {
@@ -584,7 +584,7 @@ mv agentic_core/DiscoveredAgent.py archives/agents/DiscoveredAgent.py
 - class MockSovereignAgent:
 + class MockSovereignAgent(SovereignBaseAgent):
       """Mock agent for testing."""
-+     
++
 +     def heal(self, violation: dict) -> dict:
 +         """Mock heal implementation."""
 +         return {
@@ -600,11 +600,11 @@ mv agentic_core/DiscoveredAgent.py archives/agents/DiscoveredAgent.py
 ```diff
 + from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
   from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import SafetyDetectorAgent
-  
+
 - class BiasAuditorAgent:
 + class BiasAuditorAgent(SovereignBaseAgent):
       """Audits for bias in agent decisions."""
-      
+
       # ... existing implementation ...
 ```
 
@@ -621,16 +621,16 @@ import importlib
 def test_all_agents_inherit_from_sovereign():
     """Verify all agents inherit from SovereignBaseAgent."""
     agent_files = list(Path('agentic_core').rglob('*Agent.py'))
-    
+
     for agent_file in agent_files:
         # Skip base agents and mixins
         if 'base_agents' in str(agent_file) or 'Mixin' in agent_file.stem:
             continue
-        
+
         # Parse file and check inheritance
         with open(agent_file) as f:
             tree = ast.parse(f.read())
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef) and node.name.endswith('Agent'):
                 # Check if inherits from SovereignBaseAgent (directly or via layer base)
@@ -641,11 +641,11 @@ def test_no_duplicate_agent_definitions():
     """Verify no duplicate agent class definitions."""
     agent_classes = {}
     agent_files = list(Path('agentic_core').rglob('*.py'))
-    
+
     for agent_file in agent_files:
         with open(agent_file) as f:
             tree = ast.parse(f.read())
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef) and node.name.endswith('Agent'):
                 if node.name in agent_classes:
@@ -671,13 +671,13 @@ def test_subatomic_agent_duplicate_removed():
 def heal(self, violation: dict) -> dict:
     """
     Heal violations detected in this agent's domain.
-    
+
     Args:
         violation: Dictionary containing:
             - type: str - Violation type
             - file: str - File path with violation
             - details: dict - Violation-specific details
-    
+
     Returns:
         Dictionary containing:
             - status: str - 'success', 'partial_success', 'failed', 'skipped'
@@ -694,11 +694,11 @@ def heal(self, violation: dict) -> dict:
                 "artifacts": [],
                 "errors": ["Violation must be a dictionary"]
             }
-        
+
         # 2. Extract violation details
         violation_type = violation.get('type', 'unknown')
         file_path = violation.get('file')
-        
+
         # 3. Implement healing logic
         if violation_type == 'specific_type':
             result = self._heal_specific_type(file_path, violation)
@@ -709,7 +709,7 @@ def heal(self, violation: dict) -> dict:
                 "artifacts": [],
                 "errors": []
             }
-        
+
         # 4. Return standardized result
         return {
             "status": "success" if result else "failed",
@@ -717,7 +717,7 @@ def heal(self, violation: dict) -> dict:
             "artifacts": [file_path] if result else [],
             "errors": []
         }
-    
+
     except Exception as e:
         self.logger.error(f"Heal failed: {e}")
         return {
@@ -735,7 +735,7 @@ def heal(self, violation: dict) -> dict:
 ```diff
   class SubAtomicAgent(SovereignBaseAgent):
       """Base class for subatomic agents."""
-+     
++
 +     def heal(self, violation: dict) -> dict:
 +         """Heal violations in subatomic agent logic."""
 +         return {
@@ -751,11 +751,11 @@ def heal(self, violation: dict) -> dict:
 ```diff
   class SubatomicHopAgent(SovereignBaseAgent):
       """Manages subatomic hop logic."""
-+     
++
 +     def heal(self, violation: dict) -> dict:
 +         """Heal violations in hop logic."""
 +         violation_type = violation.get('type')
-+         
++
 +         if violation_type == 'invalid_hop_sequence':
 +             return self._heal_hop_sequence(violation)
 +         elif violation_type == 'missing_hop_metadata':
@@ -767,12 +767,12 @@ def heal(self, violation: dict) -> dict:
 +                 "artifacts": [],
 +                 "errors": []
 +             }
-+     
++
 +     def _heal_hop_sequence(self, violation: dict) -> dict:
 +         """Fix invalid hop sequences."""
 +         # Implementation details...
 +         pass
-+     
++
 +     def _heal_hop_metadata(self, violation: dict) -> dict:
 +         """Fix missing hop metadata."""
 +         # Implementation details...
@@ -784,11 +784,11 @@ def heal(self, violation: dict) -> dict:
 ```diff
   class TerritoryChangeHandlerAgent(SubatomicTestingMixin, SovereignBaseAgent, FileSystemEventHandler):
       """Handles territory boundary changes."""
-+     
++
 +     def heal(self, violation: dict) -> dict:
 +         """Heal territory boundary violations."""
 +         violation_type = violation.get('type')
-+         
++
 +         if violation_type == 'territory_mismatch':
 +             return self._heal_territory_mismatch(violation)
 +         elif violation_type == 'boundary_violation':
@@ -807,11 +807,11 @@ def heal(self, violation: dict) -> dict:
 ```diff
   class TestGeneratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
       """Generates test cases for agents."""
-+     
++
 +     def heal(self, violation: dict) -> dict:
 +         """Heal missing or broken test cases."""
 +         violation_type = violation.get('type')
-+         
++
 +         if violation_type == 'missing_tests':
 +             return self._generate_missing_tests(violation)
 +         elif violation_type == 'broken_tests':
@@ -823,7 +823,7 @@ def heal(self, violation: dict) -> dict:
 +                 "artifacts": [],
 +                 "errors": []
 +             }
-+     
++
 +     def _generate_missing_tests(self, violation: dict) -> dict:
 +         """Generate missing test files."""
 +         agent_file = violation.get('file')
@@ -837,11 +837,11 @@ def heal(self, violation: dict) -> dict:
 ```diff
   class TokenBudgetInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
       """Inspects and enforces token budget limits."""
-+     
++
 +     def heal(self, violation: dict) -> dict:
 +         """Heal token budget violations."""
 +         violation_type = violation.get('type')
-+         
++
 +         if violation_type == 'budget_exceeded':
 +             return self._heal_budget_exceeded(violation)
 +         elif violation_type == 'missing_budget_tracking':
@@ -860,12 +860,12 @@ def heal(self, violation: dict) -> dict:
 ```diff
   class TypeHintFixerAgent(SubatomicTestingMixin, SovereignBaseAgent, ast.NodeTransformer):
       """Fixes missing or incorrect type hints."""
-+     
++
 +     def heal(self, violation: dict) -> dict:
 +         """Heal type hint violations."""
 +         violation_type = violation.get('type')
 +         file_path = violation.get('file')
-+         
++
 +         if violation_type == 'missing_type_hints':
 +             return self._add_type_hints(file_path, violation)
 +         elif violation_type == 'incorrect_type_hints':
@@ -877,7 +877,7 @@ def heal(self, violation: dict) -> dict:
 +                 "artifacts": [],
 +                 "errors": []
 +             }
-+     
++
 +     def _add_type_hints(self, file_path: str, violation: dict) -> dict:
 +         """Add missing type hints using AST transformation."""
 +         # Use ast.NodeTransformer to add type hints
@@ -890,11 +890,11 @@ def heal(self, violation: dict) -> dict:
 ```diff
   class TypeMechanicAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
       """Maintains type system integrity."""
-+     
++
 +     def heal(self, violation: dict) -> dict:
 +         """Heal type system violations."""
 +         violation_type = violation.get('type')
-+         
++
 +         if violation_type == 'type_mismatch':
 +             return self._heal_type_mismatch(violation)
 +         elif violation_type == 'missing_type_definition':
@@ -922,24 +922,24 @@ import inspect
 def test_all_agents_have_heal_method():
     """Verify all agents implement heal() method."""
     agent_files = list(Path('agentic_core').rglob('*Agent.py'))
-    
+
     for agent_file in agent_files:
         # Skip base agents, mixins, and protocols
         if any(skip in str(agent_file) for skip in ['base_agents', 'Mixin', 'Protocol']):
             continue
-        
+
         # Import agent class
         module_path = str(agent_file).replace('/', '.').replace('\\', '.').replace('.py', '')
         try:
             module = importlib.import_module(module_path)
         except ImportError:
             continue
-        
+
         # Check all agent classes in module
         for name, obj in inspect.getmembers(module, inspect.isclass):
             if name.endswith('Agent') and not name.endswith('BaseAgent'):
                 assert hasattr(obj, 'heal'), f"{agent_file}: {name} missing heal() method"
-                
+
                 # Check signature
                 sig = inspect.signature(obj.heal)
                 params = list(sig.parameters.keys())
@@ -949,54 +949,54 @@ def test_all_agents_have_heal_method():
 def test_heal_method_signature():
     """Verify heal() method has correct signature."""
     from agentic_core.L5_safety.validators.SubatomicHopAgent import SubatomicHopAgent
-    
+
     agent = SubatomicHopAgent()
     sig = inspect.signature(agent.heal)
-    
+
     # Check parameters
     assert 'violation' in sig.parameters
     assert sig.parameters['violation'].annotation == dict
-    
+
     # Check return type
     assert sig.return_annotation == dict
 
 def test_heal_method_returns_standard_schema():
     """Verify heal() returns standardized schema."""
     from agentic_core.L5_safety.validators.SubatomicHopAgent import SubatomicHopAgent
-    
+
     agent = SubatomicHopAgent()
     result = agent.heal({'type': 'test_violation', 'file': 'test.py'})
-    
+
     # Check required keys
     assert 'status' in result
     assert 'details' in result
     assert 'artifacts' in result
     assert 'errors' in result
-    
+
     # Check types
     assert isinstance(result['status'], str)
     assert isinstance(result['details'], str)
     assert isinstance(result['artifacts'], list)
     assert isinstance(result['errors'], list)
-    
+
     # Check status values
     assert result['status'] in ['success', 'partial_success', 'failed', 'skipped']
 
 def test_heal_method_handles_invalid_input():
     """Verify heal() handles invalid input gracefully."""
     from agentic_core.L5_safety.validators.SubatomicHopAgent import SubatomicHopAgent
-    
+
     agent = SubatomicHopAgent()
-    
+
     # Test with non-dict input
     result = agent.heal("invalid")
     assert result['status'] == 'failed'
     assert len(result['errors']) > 0
-    
+
     # Test with None
     result = agent.heal(None)
     assert result['status'] == 'failed'
-    
+
     # Test with empty dict
     result = agent.heal({})
     assert result['status'] in ['skipped', 'failed']
