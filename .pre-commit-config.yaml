@@ -21,19 +21,13 @@ repos:
         # RCA FIX: Standard ruff-format - verify script will catch uncommitted changes
 
   # ============================================================================
-  # TIER 2: Constitutional Rules Only
+  # TIER 2: Repository Hygiene
   # ============================================================================
   - repo: local
     hooks:
-      # [CONSTITUTIONAL] Base Agent Location Lock - CANNOT be disabled
-      # CRITICAL: All *BaseAgent.py files MUST be in agentic_core/base_agents/
-      - id: check-base-agent-location
-        name: Constitutional Base Agent Lock
-        entry: python scripts/validate_structure.py --constitutional-only
-        language: python
-        files: .*BaseAgent\.py$
-        # This is a constitutional rule that short-circuits all other validation.
-
+      # Note: Constitutional base agent check moved to Guardian tests
+      # Pre-commit should be minimal - comprehensive validation in Guardian/CI
+      
       - id: purge-cache
         name: Pycache Purge
         entry: python ops_scripts/maintenance/purge_cache.py --quiet
