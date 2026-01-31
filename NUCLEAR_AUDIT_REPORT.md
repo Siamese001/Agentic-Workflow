@@ -241,13 +241,13 @@ The following agents require immediate attention:
 ### **DiscoveredAgent** (Broken Import)
 - **File**: `agentic_core\DiscoveredAgent.py`
 - **Issues**: Missing SovereignBaseAgent inheritance
-- **Inheritance**: 
+- **Inheritance**:
 - **Namespace**: agentic_core
 
 ### **RootCustomsAgent** (Broken Import)
 - **File**: `agentic_core\L0_maintenance\logs\RoutingDecisionAgent.py`
 - **Issues**: Missing SovereignBaseAgent inheritance
-- **Inheritance**: 
+- **Inheritance**:
 - **Namespace**: agentic_core\L0_maintenance\logs
 
 ### **BootstrapAgent** (Broken Import)
@@ -259,19 +259,19 @@ The following agents require immediate attention:
 ### **RootCustomsAgent** (Broken Import)
 - **File**: `agentic_core\L0_maintenance\scripts\RoutingDecisionAgent.py`
 - **Issues**: Missing SovereignBaseAgent inheritance
-- **Inheritance**: 
+- **Inheritance**:
 - **Namespace**: agentic_core\L0_maintenance\scripts
 
 ### **SubAtomicAgent** (Broken Import)
 - **File**: `agentic_core\L2_execution\tool_registry\BaseToolAgent.py`
 - **Issues**: Missing SovereignBaseAgent inheritance
-- **Inheritance**: 
+- **Inheritance**:
 - **Namespace**: agentic_core\L2_execution\tool_registry
 
 ### **BaseAgent** (Broken Import)
 - **File**: `agentic_core\L2_execution\tool_registry\BaseToolAgent.py`
 - **Issues**: Missing SovereignBaseAgent inheritance
-- **Inheritance**: 
+- **Inheritance**:
 - **Namespace**: agentic_core\L2_execution\tool_registry
 
 ### **SubAtomicAgent** (Signature Mismatch)
@@ -289,7 +289,7 @@ The following agents require immediate attention:
 ### **BaseAgent** (Broken Import)
 - **File**: `agentic_core\L3_orchestration\workflow_engines\DomainPlannerAgent.py`
 - **Issues**: Missing SovereignBaseAgent inheritance
-- **Inheritance**: 
+- **Inheritance**:
 - **Namespace**: agentic_core\L3_orchestration\workflow_engines
 
 ### **FilesystemSSOTReconcilerAgent** (Broken Import)
@@ -361,7 +361,7 @@ The following agents require immediate attention:
 ### **MockSovereignAgent** (Broken Import)
 - **File**: `agentic_core\L6_observability\agents\RuntimeTelemetryAgent.py`
 - **Issues**: Missing SovereignBaseAgent inheritance
-- **Inheritance**: 
+- **Inheritance**:
 - **Namespace**: agentic_core\L6_observability\agents
 
 ### **AutonomyMixin** (Signature Mismatch)
@@ -379,5 +379,5 @@ The following agents require immediate attention:
 ### **BiasAuditorAgent** (Broken Import)
 - **File**: `agentic_core\runtime\shared_runtime\BiasTypeAgent.py`
 - **Issues**: Missing SovereignBaseAgent inheritance
-- **Inheritance**: 
+- **Inheritance**:
 - **Namespace**: agentic_core\runtime\shared_runtime
