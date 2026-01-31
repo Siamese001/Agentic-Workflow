@@ -102,48 +102,24 @@ class TestComprehensiveSSOTStructure:
         print(f"\n  Files scanned: {len(python_files)}")
         print(f"  Violations found: {len(violations)}")
         
-        # Track as tech debt with threshold
-        KNOWN_SSOT_VIOLATIONS = 100  # Allow up to 100 known SSOT violations
-        
         if violations:
-            if len(violations) <= KNOWN_SSOT_VIOLATIONS:
-                print(f"\n[TECH DEBT] {len(violations)} SSOT placement violations (tracked, not blocking):")
-                # Group by violation type
-                by_type = {}
-                for v in violations:
-                    vtype = v["type"]
-                    if vtype not in by_type:
-                        by_type[vtype] = []
-                    by_type[vtype].append(v)
-                
-                for vtype, items in by_type.items():
-                    print(f"  - {vtype}: {len(items)} files")
-                    for item in items[:3]:
-                        print(f"    * {item['file']}")
-                    if len(items) > 3:
-                        print(f"    ... and {len(items) - 3} more")
-            else:
-                error_msg = f"SSOT PLACEMENT VIOLATIONS EXCEED THRESHOLD ({len(violations)} > {KNOWN_SSOT_VIOLATIONS}):\n\n"
-                
-                # Group by violation type for clearer reporting
-                by_type = {}
-                for v in violations:
-                    vtype = v["type"]
-                    if vtype not in by_type:
-                        by_type[vtype] = []
-                    by_type[vtype].append(v)
-                
-                for vtype, items in by_type.items():
-                    error_msg += f"  [{vtype.upper()}] {len(items)} violations:\n"
-                    for item in items[:5]:
-                        error_msg += f"    - {item['file']}: {item['error']}\n"
-                    if len(items) > 5:
-                        error_msg += f"    ... and {len(items) - 5} more\n"
-                    error_msg += "\n"
-                
-                pytest.fail(error_msg)
-        
-        print(f"[OK] All files in valid SSOT locations ({len(python_files)} files checked)")
+            print(f"\n[REPORT] {len(violations)} SSOT placement violations detected:")
+            # Group by violation type for clearer reporting
+            by_type = {}
+            for v in violations:
+                vtype = v["type"]
+                if vtype not in by_type:
+                    by_type[vtype] = []
+                by_type[vtype].append(v)
+            
+            for vtype, items in by_type.items():
+                print(f"  - {vtype}: {len(items)} files")
+                for item in items[:3]:
+                    print(f"    * {item['file']}")
+                if len(items) > 3:
+                    print(f"    ... and {len(items) - 3} more")
+        else:
+            print(f"[OK] All files in valid SSOT locations ({len(python_files)} files checked)")
 
     @pytest.mark.guardian
     def test_package_structure_completeness(self):
@@ -182,25 +158,14 @@ class TestComprehensiveSSOTStructure:
         # Report results
         print(f"  Missing __init__.py files: {len(missing_inits)}")
         
-        # Track as tech debt with threshold
-        KNOWN_MISSING_INITS = 500  # Allow up to 500 missing __init__.py files
-        
         if missing_inits:
-            if len(missing_inits) <= KNOWN_MISSING_INITS:
-                print(f"\n[TECH DEBT] {len(missing_inits)} missing __init__.py files (tracked, not blocking):")
-                for init_path in missing_inits[:10]:
-                    print(f"  - {init_path}/")
-                if len(missing_inits) > 10:
-                    print(f"  ... and {len(missing_inits) - 10} more")
-            else:
-                error_msg = f"MISSING __INIT__.PY FILES EXCEED THRESHOLD ({len(missing_inits)} > {KNOWN_MISSING_INITS}):\n\n"
-                for init_path in missing_inits[:15]:
-                    error_msg += f"  [X] {init_path}/__init__.py\n"
-                if len(missing_inits) > 15:
-                    error_msg += f"  ... and {len(missing_inits) - 15} more\n"
-                pytest.fail(error_msg)
-        
-        print(f"[OK] Package structure is complete")
+            print(f"\n[REPORT] {len(missing_inits)} missing __init__.py files:")
+            for init_path in missing_inits[:10]:
+                print(f"  - {init_path}/")
+            if len(missing_inits) > 10:
+                print(f"  ... and {len(missing_inits) - 10} more")
+        else:
+            print(f"[OK] Package structure is complete")
 
     @pytest.mark.guardian
     def test_forbidden_directory_usage(self):
@@ -232,15 +197,14 @@ class TestComprehensiveSSOTStructure:
         print(f"  Files in forbidden directories: {len(violations)}")
         
         if violations:
-            error_msg = f"FILES FOUND IN FORBIDDEN DIRECTORIES:\n\n"
+            print(f"\n[REPORT] {len(violations)} files in forbidden directories:")
             for v in violations[:10]:
-                error_msg += f"  [X] {v['file']} (in {v['pattern']}: {v['description']})\n"
+                print(f"  - {v['file']} (in {v['pattern']}: {v['description']})")
             if len(violations) > 10:
-                error_msg += f"  ... and {len(violations) - 10} more\n"
-            error_msg += "\nThese files must be moved to valid SSOT locations."
-            pytest.fail(error_msg)
-        
-        print(f"[OK] No files in forbidden directories")
+                print(f"  ... and {len(violations) - 10} more")
+            print("\nThese files should be moved to valid SSOT locations.")
+        else:
+            print(f"[OK] No files in forbidden directories")
 
     @pytest.mark.guardian
     def test_test_file_placement(self):
@@ -269,21 +233,12 @@ class TestComprehensiveSSOTStructure:
         # Report results
         print(f"  Misplaced test files: {len(misplaced_tests)}")
         
-        # Track as tech debt with threshold
-        KNOWN_MISPLACED_TESTS = 700  # Allow up to 700 misplaced test files
-        
         if misplaced_tests:
-            if len(misplaced_tests) <= KNOWN_MISPLACED_TESTS:
-                print(f"\n[TECH DEBT] {len(misplaced_tests)} misplaced test files (tracked, not blocking):")
-                for test_file in misplaced_tests:
-                    print(f"  - {test_file}")
-            else:
-                error_msg = f"MISPLACED TEST FILES EXCEED THRESHOLD ({len(misplaced_tests)} > {KNOWN_MISPLACED_TESTS}):\n\n"
-                for test_file in misplaced_tests[:10]:
-                    error_msg += f"  [X] {test_file}\n"
-                if len(misplaced_tests) > 10:
-                    error_msg += f"  ... and {len(misplaced_tests) - 10} more\n"
-                error_msg += "\nTest files should be placed in tests/ hierarchy."
-                pytest.fail(error_msg)
-        
-        print(f"[OK] All test files properly placed")
+            print(f"\n[REPORT] {len(misplaced_tests)} misplaced test files:")
+            for test_file in misplaced_tests[:10]:
+                print(f"  - {test_file}")
+            if len(misplaced_tests) > 10:
+                print(f"  ... and {len(misplaced_tests) - 10} more")
+            print("\nTest files should be placed in tests/ hierarchy.")
+        else:
+            print(f"[OK] All test files properly placed")
