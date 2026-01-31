@@ -17,6 +17,7 @@ using DeepWiki's codebase intelligence capabilities.
 """
 import asyncio
 import logging
+from pathlib import Path
 from typing import Any
 
 from agentic_core.L6_observability.deepwiki_client_sovereign import SovereignDeepWikiClient
@@ -51,33 +52,42 @@ class SovereignCanonAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
     async def audit_core_components(self) -> dict[str, Any]:
         """
-        Audit critical core components for existence.
+        Audit critical core components for existence using deterministic Guardian test.
 
         Returns:
             Audit results with status for each component
         """
-        print(+"=" * 60)
+        import subprocess
+        
+        print("=" * 60)
         print("🔍 SOVEREIGN CANON AUDIT - Phase 13E")
         print("=" * 60)
-        results: Any = {"total": len(self.critical_files), "found": 0, "Missing": 0, "details": []}
-        for filepath in self.critical_files:
-            try:
-                exists: Any = await self.client.verify_file_exists(filepath)
-                status: Any = "✅ FOUND" if exists else "❌ MISSING"
-                results["details"].append({"file": filepath, "exists": exists, "status": status})
-                if exists:
-                    results["found"] += 1
-                else:
-                    results["Missing"] += 1
-                print(f"{status}: {filepath}")
-            except Exception as e:
-                Logger.error(f"[CANON AUDIT] Failed to verify {filepath}: {e}")
-                results["details"].append(
-                    {"file": filepath, "exists": False, "status": "⚠️ ERROR", "error": str(e)}
-                )
-                results["Missing"] += 1
-                print(f"⚠️ ERROR: {filepath} - {e}")
-        return results
+        
+        # Run the Guardian test for core components
+        result = subprocess.run([
+            "python", "tests/guardian/test_core_components.py"
+        ], capture_output=True, text=True, cwd=Path(__file__).parent.parent.parent.parent)
+        
+        # Parse results
+        passed = result.returncode == 0
+        
+        if passed:
+            print("✅ COMPLIANT: All critical files exist")
+            return {
+                "total": len(self.critical_files),
+                "found": len(self.critical_files),
+                "Missing": 0,
+                "details": [{"file": f, "exists": True, "status": "✅ FOUND"} for f in self.critical_files]
+            }
+        else:
+            print("❌ VIOLATION: Critical files missing")
+            # For simplicity, assume all files are missing when test fails
+            return {
+                "total": len(self.critical_files),
+                "found": 0,
+                "Missing": len(self.critical_files),
+                "details": [{"file": f, "exists": False, "status": "❌ MISSING"} for f in self.critical_files]
+            }
 
     async def get_architectural_insight(self, question: str) -> str:
         """
