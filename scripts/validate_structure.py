@@ -325,7 +325,7 @@ def main() -> int:
     args = sys.argv[1:]
     files = []
     constitutional_only = False
-    
+
     # Parse arguments
     i = 0
     while i < len(args):
