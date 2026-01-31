@@ -86,7 +86,7 @@ class NuclearAuditAgent:
         return sorted(set(agent_files))
 
     def _is_agent_class(self, node: ast.ClassDef) -> bool:
-        """Determine if class is an agent (not Protocol/Mixin)."""
+        """Determine if class is an agent (not Protocol/Mixin/Dataclass)."""
         # Exclude Protocols
         if any(base.id == "Protocol" for base in node.bases if isinstance(base, ast.Name)):
             return False
@@ -94,6 +94,13 @@ class NuclearAuditAgent:
         # Exclude Mixins (by naming convention)
         if node.name.endswith("Mixin"):
             return False
+
+        # Exclude dataclasses (check for @dataclass decorator)
+        for decorator in node.decorator_list:
+            if isinstance(decorator, ast.Name) and decorator.id == "dataclass":
+                return False
+            if isinstance(decorator, ast.Attribute) and decorator.attr == "dataclass":
+                return False
 
         # Include only classes ending with 'Agent' or 'BaseAgent'
         return node.name.endswith("Agent") or node.name.endswith("BaseAgent")
