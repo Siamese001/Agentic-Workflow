@@ -1,13 +1,13 @@
+"""Brief description of functionality and purpose."""
+
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, state, validator, workflow
+# Suggested keywords to add in docstring/code: engine, guardrail, healer,
+# memory, orchestrator, prompt, state, validator, workflow
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
 import ast
-
-"""Brief description of functionality and purpose."""
-
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -18,6 +18,23 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 # NAMING FIXED: SubAtomicAgent → SubAtomicAgent
 class SubAtomicAgent(SovereignBaseAgent):
     """Base class stub for structural agents."""
+
+    def heal(self, violation: dict) -> dict:
+        """
+        Heal violations in subatomic agent logic.
+
+        Args:
+            violation: Dictionary containing violation details
+
+        Returns:
+            Dictionary with status, details, artifacts, and errors
+        """
+        return {
+            "status": "skipped",
+            "details": "SubAtomicAgent is a base class - healing delegated to subclasses",
+            "artifacts": [],
+            "errors": [],
+        }
 
     @timeout(300)
     @standard_heal
