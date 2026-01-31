@@ -21,7 +21,6 @@ from pathlib import Path
 # Import SSOT for namespace validation
 from agentic_core.L5_safety.validators.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
-    L4_APPROVED_FOLDERS,
     SOVEREIGN_TERRITORIES,
 )
 
@@ -102,6 +101,10 @@ class NuclearAuditAgent:
             if isinstance(decorator, ast.Attribute) and decorator.attr == "dataclass":
                 return False
 
+        # Exclude self-reference (SovereignBaseAgent is the root)
+        if node.name == "SovereignBaseAgent":
+            return False
+
         # Include only classes ending with 'Agent' or 'BaseAgent'
         return node.name.endswith("Agent") or node.name.endswith("BaseAgent")
 
@@ -120,21 +123,32 @@ class NuclearAuditAgent:
             is_valid = namespace_str == expected
             return namespace_str, is_valid
 
-        # Check against SOVEREIGN_TERRITORIES
+        # Check against SOVEREIGN_TERRITORIES using structure_blueprint.py
         if len(parts) >= 2 and parts[0] == "agentic_core":
             if len(parts) >= 3:
                 layer_folder = parts[2]
                 subfolder = parts[3] if len(parts) > 3 else None
 
-                # Check if layer is in CORE_SUBFOLDER_MAP
-                if layer_folder in self.structure_blueprint:
-                    valid_subfolders = self.structure_blueprint[layer_folder]
-                    if subfolder is None or subfolder in valid_subfolders:
+                # Get valid subfolders from SOVEREIGN_TERRITORIES
+                if layer_folder in SOVEREIGN_TERRITORIES:
+                    territory = SOVEREIGN_TERRITORIES[layer_folder]
+                    valid_subfolders = territory["subfolders"]
+
+                    # Check if subfolder is valid for this territory
+                    if subfolder is None:
+                        # Agent directly in layer folder (should be in subfolder)
+                        return namespace_str, False
+                    elif subfolder in valid_subfolders:
+                        # Valid subfolder
                         return namespace_str, True
                     else:
-                        # Check if it's an L4 approved folder
-                        full_path = f"agentic_core/{layer_folder}/{subfolder}"
-                        if full_path in L4_APPROVED_FOLDERS:
+                        # Check if it's a specialized subfolder with l4_specializations
+                        subfolder_def = valid_subfolders.get(subfolder)
+                        if isinstance(subfolder_def, dict):
+                            # This is a valid specialized subfolder
+                            return namespace_str, True
+                        elif isinstance(subfolder_def, str):
+                            # Simple string definition is also valid
                             return namespace_str, True
                         return namespace_str, False
                 else:
