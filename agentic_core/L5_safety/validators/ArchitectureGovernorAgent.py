@@ -620,10 +620,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
     def validate_layer_boundaries(self, file_path: Path) -> tuple[bool, str]:
         """
-        [PHASE 22] Validate that file respects layer boundaries (L0-L6) using Cognitive Triage.
-
-        Integrates CognitiveDispositionAgent for intelligent violation analysis.
-        Falls back to structural checks if cognitive triage is unavailable.
+        Validate that file respects layer boundaries using deterministic Guardian test.
 
         Args:
             file_path: Path to file to validate
@@ -631,26 +628,18 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         Returns:
             Tuple of (is_valid, reason)
         """
-        try:
-            rel_path = file_path.relative_to(self.project_root)
-            parts = rel_path.parts
-
-            # Check agentic_core layer structure
-            if len(parts) > 1 and parts[0] == "agentic_core":
-                if len(parts) > 2 and parts[1] in LAYER_DIRS:
-                    return (True, f"Valid layer structure: {parts[1]}")
-                # Invalid layer - invoke Cognitive Triage
-                return self._cognitive_triage_validation(file_path, "ORPHAN")
-
-            # Check other sovereign territories
-            if parts[0] in SOVEREIGN_TERRITORIES:
-                return (True, f"Valid sovereign territory: {parts[0]}")
-
-            # File outside sovereign territories - invoke Cognitive Triage
-            return self._cognitive_triage_validation(file_path, "ORPHAN")
-
-        except ValueError:
-            return (False, "File outside project root")
+        import subprocess
+        
+        # Run the Guardian test for architecture governance
+        result = subprocess.run([
+            "python", "tests/guardian/test_architecture_governance.py",
+            str(file_path)
+        ], capture_output=True, text=True, cwd=self.project_root)
+        
+        if result.returncode == 0:
+            return (True, "Architecture governance validated")
+        else:
+            return (False, result.stdout.strip())
 
     def _cognitive_triage_validation(
         self,
