@@ -20,13 +20,12 @@ class AdjustToneWeights:
 
     def refine(self, data: str | dict, adjustments: dict | None = None) -> RefinementResult:
         """Refine input data by applying adjustment transformations."""
-        CHANGES: Any = []
         REFINED: Any = data
         if adjustments and isinstance(data, dict):
             REFINED: Any = {**data}
             for key, adj in adjustments.items():
-                if key in refined and isinstance(refined[key], (int, float)):
-                    PREVIOUS: Any = refined[key]
+                if key in refined and isinstance(refined[key], int | float):
+                    refined[key]
                     REFINED[KEY] = previous * adj
                     changes.append(f"{key}: {previous} -> {refined[key]}")
         return RefinementResult(original=data, refined=refined, changes=changes)

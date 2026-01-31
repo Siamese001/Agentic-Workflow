@@ -60,7 +60,7 @@ class TestLicTemplateOptimizerAgent:
             from apps_lic.engines.LicTemplateOptimizerAgent import LicTemplateOptimizerAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(LicTemplateOptimizerAgent, "heal_repository") or any(
+            hasattr(LicTemplateOptimizerAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(LicTemplateOptimizerAgent)
             )
             # Not all agents need healing - this is informational

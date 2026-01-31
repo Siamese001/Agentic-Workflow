@@ -87,9 +87,9 @@ def main():
     added_since_272 = set_120 - set_272
 
     # Agents in 209 but not in 120 (removed since Jan 4)
-    removed_since_209 = set_209 - set_120
+    set_209 - set_120
     # Agents in 120 but not in 209 (added since Jan 4)
-    added_since_209 = set_120 - set_209
+    set_120 - set_209
 
     # Agents that were in 272 but not in 209 (added between Jan 4 and Jan 13)
     added_jan4_to_jan13 = set_272 - set_209

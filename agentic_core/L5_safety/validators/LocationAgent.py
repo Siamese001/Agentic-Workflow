@@ -78,7 +78,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
         Dict with keys: status, details, artifacts, errors
     """
     try:
-        violation_type = violation.get("type", "")
+        violation.get("type", "")
         file_path = violation.get("file")
 
         if not file_path:
@@ -663,7 +663,7 @@ class LocationAgent(SovereignBaseAgent):
                     all_files_dict = get_all_files(target_path)
                     # Flatten all files into a single list
                     files = []
-                    for ext, file_list in all_files_dict.items():
+                    for _ext, file_list in all_files_dict.items():
                         files.extend(file_list)
 
                     # Store file statistics

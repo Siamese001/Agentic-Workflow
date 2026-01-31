@@ -25,8 +25,8 @@ class SkillSimilarityTool(BaseRGEngine):
         """
         Calculate Jaccard similarity between skill sets.
         """
-        set_a = set(s.lower() for s in skills_a)
-        set_b = set(s.lower() for s in skills_b)
+        set_a = {s.lower() for s in skills_a}
+        set_b = {s.lower() for s in skills_b}
 
         if not set_a or not set_b:
             return 0.0

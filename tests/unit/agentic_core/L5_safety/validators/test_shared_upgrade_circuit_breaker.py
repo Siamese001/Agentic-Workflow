@@ -94,7 +94,7 @@ class TestSharedUpgradeCircuitBreaker:
                         # Mock the file reading for dust threshold
                         with patch("builtins.open", mock_open(read_data="".join(content_lines))):
                             # Trigger the deep import validation logic
-                            result = agent.deep_import_validation_and_heal(
+                            agent.deep_import_validation_and_heal(
                                 affected_paths=[generic_file],
                                 import_touched_paths=[],
                                 dry_run=False,
@@ -158,7 +158,7 @@ class TestSharedUpgradeCircuitBreaker:
                         # Mock the file reading for dust threshold
                         with patch("builtins.open", mock_open(read_data=tiny_content)):
                             # Trigger the deep import validation logic
-                            result = agent.deep_import_validation_and_heal(
+                            agent.deep_import_validation_and_heal(
                                 affected_paths=[tiny_file], import_touched_paths=[], dry_run=False
                             )
 
@@ -219,7 +219,7 @@ class TestSharedUpgradeCircuitBreaker:
                         # Mock the file reading for dust threshold
                         with patch("builtins.open", mock_open(read_data="".join(content_lines))):
                             # Trigger the deep import validation logic
-                            result = agent.deep_import_validation_and_heal(
+                            agent.deep_import_validation_and_heal(
                                 affected_paths=[valid_file], import_touched_paths=[], dry_run=False
                             )
 
@@ -286,7 +286,7 @@ class TestSharedUpgradeCircuitBreaker:
                                 "builtins.open", mock_open(read_data="".join(content_lines))
                             ):
                                 # Trigger the deep import validation logic
-                                result = agent.deep_import_validation_and_heal(
+                                agent.deep_import_validation_and_heal(
                                     affected_paths=[trigger_file],
                                     import_touched_paths=[],
                                     dry_run=False,

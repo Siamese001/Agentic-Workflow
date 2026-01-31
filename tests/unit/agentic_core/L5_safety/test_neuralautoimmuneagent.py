@@ -68,7 +68,7 @@ class TestNeuralAutoImmuneAgent:
             )
 
             # Check for heal_repository method
-            has_heal = hasattr(NeuralAutoImmuneAgent, "heal_repository") or any(
+            hasattr(NeuralAutoImmuneAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(NeuralAutoImmuneAgent)
             )
             # Not all agents need healing - this is informational

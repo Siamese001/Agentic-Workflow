@@ -20,10 +20,10 @@ import os
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
-
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.ssot_discovery import get_python_files
 
 
@@ -149,7 +149,7 @@ class GospelSyncAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - GospelSyncAgent syncs gospel files

@@ -195,7 +195,7 @@ class HealerMixin:
     def _fix_file_violations(self, file_path: str, violations: list[dict[str, Any]]) -> int:
         """Fix violations in file."""
         fixed = 0
-        for violation in violations:
+        for _violation in violations:
             try:
                 # Implementation of fix logic
                 fixed += 1
@@ -446,7 +446,8 @@ class HealerMixin:
         complexity = 1
         for child in ast.walk(node):
             if isinstance(
-                child, (ast.If, ast.For, ast.While, ast.ExceptHandler, ast.AsyncFor, ast.AsyncWith)
+                child,
+                ast.If | ast.For | ast.While | ast.ExceptHandler | ast.AsyncFor | ast.AsyncWith,
             ):
                 complexity += 1
             elif isinstance(child, ast.BoolOp):

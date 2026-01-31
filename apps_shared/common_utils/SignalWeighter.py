@@ -256,7 +256,7 @@ class SignalWeighter:
         """
         try:
             # Validate input score
-            if not isinstance(original_score, (int, float)):
+            if not isinstance(original_score, int | float):
                 logger.error(f"Invalid score type: {type(original_score)} for doc {doc_id}")
                 original_score = 0.0
 
@@ -304,7 +304,7 @@ class SignalWeighter:
             logger.error(f"Error reweighting score for doc {doc_id}: {str(e)}")
             # Return safe fallback
             return WeightingResult(
-                original_score=original_score if isinstance(original_score, (int, float)) else 0.0,
+                original_score=original_score if isinstance(original_score, int | float) else 0.0,
                 adjusted_score=0.0,
                 weights_applied=weights,
                 signal_type="error",

@@ -49,7 +49,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     """
     # Check if we're running guardian tests
     guardian_tests_found = False
-    for stat_name, stat_items in terminalreporter.stats.items():
+    for _stat_name, stat_items in terminalreporter.stats.items():
         if hasattr(stat_items, "__iter__"):
             for item in stat_items:
                 if hasattr(item, "nodeid") and "guardian" in item.nodeid:

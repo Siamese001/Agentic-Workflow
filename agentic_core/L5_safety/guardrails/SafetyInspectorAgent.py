@@ -30,10 +30,9 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L1_cognition.P1_interfaces import ActionRequest
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L1_cognition.P1_interfaces import ActionRequest
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
@@ -371,7 +370,7 @@ class SafetyInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         Returns:
             Dictionary with violations_found, violations_fixed, errors, skipped.
         """
-        result = super().heal_repository(dry_run=dry_run, **kwargs)
+        super().heal_repository(dry_run=dry_run, **kwargs)
 
         if _call_path is None:
             _call_path = set()

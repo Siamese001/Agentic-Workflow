@@ -63,7 +63,7 @@ def analyze_impact(report: dict[str, Any]) -> bool:
     blast_radius = len(files_touched)
     logging.info("\n--- PROPOSED ACTIONS (Dry Run) ---")
     logging.info(f"Files to be Modified: {blast_radius}")
-    logging.info(f"Agents Engaged: {len(set(m.get('agent') for m in modifications))}")
+    logging.info(f"Agents Engaged: {len({m.get('agent') for m in modifications})}")
     logging.info(f"Blocked/Failed Actions: {len(failures)}")
 
     # 4. Critical Safety Checks

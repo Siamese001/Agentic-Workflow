@@ -13,5 +13,5 @@ for f in from_utils:
     if canonical.exists():
         canonicals.append((f, canonical))
 if canonicals:
-    for dup, canon in canonicals:
+    for _dup, _canon in canonicals:
         pass

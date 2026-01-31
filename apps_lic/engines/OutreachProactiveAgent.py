@@ -1,4 +1,3 @@
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from dataclasses import dataclass
 from typing import Any
 

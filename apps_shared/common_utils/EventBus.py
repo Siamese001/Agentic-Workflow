@@ -540,7 +540,7 @@ class RedisEventBus(EventBus):
                     block=1000,  # 1 second timeout
                 )
 
-                for stream, msgs in messages:
+                for _stream, msgs in messages:
                     for msg_id, fields in msgs:
                         try:
                             # Parse event

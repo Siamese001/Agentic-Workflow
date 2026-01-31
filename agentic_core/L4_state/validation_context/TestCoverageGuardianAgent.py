@@ -13,8 +13,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.security import safe_execute
-
 from agentic_core.base_agents.decorators import standard_heal
 
 # This boosts alignment detection — review and integrate appropriately
@@ -25,6 +23,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
+from agentic_core.utils.security import safe_execute
 
 #!/usr/bin/env python3
 """
@@ -743,12 +742,6 @@ def test_auto_generated_stub():
 
             elif violation_type == "coverage_tools_missing":
                 # Heal missing coverage tools by providing guidance
-                guidance = [
-                    "Install coverage tools: pip install coverage pytest-cov mutmut hypothesis",
-                    "Run coverage: coverage run -m pytest",
-                    "Run mutation testing: mutmut run",
-                    "Install property testing: pip install hypothesis",
-                ]
                 return {
                     "status": "partial_success",
                     "details": "Coverage tools missing - installation guidance provided",

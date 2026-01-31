@@ -34,6 +34,7 @@ def test_case_1_signal_saturation_sweep():
     print("=" * 70)
 
     try:
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
             L1CognitionBaseAgent,
         )
@@ -43,8 +44,6 @@ def test_case_1_signal_saturation_sweep():
         from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
             L3OrchestrationBaseAgent,
         )
-
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Step 1: Create Orchestrator (top of chain)
         orchestrator = L3OrchestrationBaseAgent()
@@ -273,15 +272,15 @@ def test_case_3_depth_constraint_persistence():
 
         call_path = set()
 
-        result_a = orchestrator.heal_repository(
+        orchestrator.heal_repository(
             dry_run=True, depth=0, max_depth=3, _call_path=call_path, chain_test="agent_a"
         )
 
-        result_b = executor.heal_repository(
+        executor.heal_repository(
             dry_run=True, depth=1, max_depth=3, _call_path=call_path, chain_test="agent_b"
         )
 
-        result_c = cognition.heal_repository(
+        cognition.heal_repository(
             dry_run=True, depth=2, max_depth=3, _call_path=call_path, chain_test="agent_c"
         )
 

@@ -64,7 +64,7 @@ def test_agent_spec_validation():
             AgentSpec(
                 name="TestAgent", module_path="apps_rg.engines.test.TestEngine", timeout_sec=0
             )
-            assert False, "Should have raised ValueError"
+            raise AssertionError("Should have raised ValueError")
         except ValueError:
             pass  # Expected
 
@@ -75,7 +75,7 @@ def test_agent_spec_validation():
                 module_path="apps_rg.engines.test.TestEngine",
                 criticality="invalid",
             )
-            assert False, "Should have raised ValueError"
+            raise AssertionError("Should have raised ValueError")
         except ValueError:
             pass  # Expected
 
@@ -155,7 +155,7 @@ def test_topology_validation():
             OrchestrationTopology(
                 phases={"phase1": ["MISSING_AGENT"]}, agents={"TEST_AGENT": agent_spec}
             )
-            assert False, "Should have raised ValueError"
+            raise AssertionError("Should have raised ValueError")
         except ValueError as e:
             assert "unknown agent" in str(e)
 

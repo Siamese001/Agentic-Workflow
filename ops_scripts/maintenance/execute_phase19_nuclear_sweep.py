@@ -128,7 +128,7 @@ TARGETS = {
 def nuclear_sweep():
     print("--- STARTING PHASE 19 NUCLEAR SWEEP ---")
 
-    for root, dirs, files in os.walk(PROJECT_ROOT / "agentic_core"):
+    for root, _dirs, files in os.walk(PROJECT_ROOT / "agentic_core"):
         if "archived" in root:
             continue
 
@@ -142,7 +142,7 @@ def nuclear_sweep():
                 print(f"[CLEANED] {full_path}")
 
     print("\n--- HUNTING PINECONE __init__ ---")
-    for root, dirs, files in os.walk(PROJECT_ROOT / "agentic_core"):
+    for root, _dirs, files in os.walk(PROJECT_ROOT / "agentic_core"):
         if "archived" in root:
             continue
 

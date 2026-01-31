@@ -256,7 +256,7 @@ class TestNonInteractiveGuard(unittest.TestCase):
 
     def test_13_resource_exhaustion_protection(self):
         """Guard should prevent infinite prompt loops."""
-        with NonInteractiveGuard(active=True, max_blocked_prompts=3) as guard:
+        with NonInteractiveGuard(active=True, max_blocked_prompts=3):
             # First 3 should raise RuntimeError
             for i in range(3):
                 with self.assertRaises(RuntimeError):

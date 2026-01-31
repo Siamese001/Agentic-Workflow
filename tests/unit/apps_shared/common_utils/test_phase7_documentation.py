@@ -197,7 +197,7 @@ def test_dev_doc_api_endpoints(content: str):
         ("/api/metrics/latency", "Latency metrics endpoint"),
     ]
 
-    for endpoint, desc in endpoints:
+    for endpoint, _desc in endpoints:
         record_test(f"Documents {endpoint}", endpoint in content)
 
 

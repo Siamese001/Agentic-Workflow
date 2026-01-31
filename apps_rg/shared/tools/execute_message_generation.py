@@ -22,9 +22,9 @@ class execute_message_generation:
 
     def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
         """Execute action."""
-        START: Any = time.time()
+        time.time()
         try:
-            OUTPUT: Any = self._perform_action(action, params)
+            self._perform_action(action, params)
             return ExecutionResult(
                 SUCCESS=True, OUTPUT=output, duration_ms=(time.time() - start) * 1000
             )

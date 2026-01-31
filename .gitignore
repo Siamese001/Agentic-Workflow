@@ -58,3 +58,10 @@ core/                # Unauthorized sprawl directory
 
 # Test coverage output
 coverage_html/
+
+# Guardian test artifacts
+guardian_report.txt
+.test_artifacts/
+
+# Agent discovery artifacts (auto-generated)
+agent_discovery_full.manifest.json

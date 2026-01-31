@@ -53,7 +53,7 @@ class TestOutreachSignalRouterAgent:
 
         # Check for common mixins
         expected_mixins = ["MCPHardenedMixin", "HealerMixin", "SubatomicTestingMixin"]
-        has_mixin = any(mixin in mro_names for mixin in expected_mixins)
+        any(mixin in mro_names for mixin in expected_mixins)
         # Note: Not all agents have mixins, so this is informational
 
     def test_agent_has_methods(self):

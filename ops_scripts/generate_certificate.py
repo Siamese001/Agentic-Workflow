@@ -26,7 +26,7 @@ def analyze_agent(module_name: str, cls_name: str, cls: type) -> tuple[str, str,
 
     # Check 3: Security Hook
     # Heuristic: Does it have __post_init__?
-    has_hook = hasattr(cls, "__post_init__")
+    hasattr(cls, "__post_init__")
 
     # Overall
     if is_sovereign and is_data:

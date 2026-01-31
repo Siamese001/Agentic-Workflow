@@ -60,7 +60,7 @@ class TestDDDAlignmentAgent:
             from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(DDDAlignmentAgent, "heal_repository") or any(
+            hasattr(DDDAlignmentAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(DDDAlignmentAgent)
             )
             # Not all agents need healing - this is informational

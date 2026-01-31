@@ -202,8 +202,7 @@ class ObservabilityToolInvoker:
             raise ValueError(f"No handler for tool: {request.tool_name}")
 
         # Execute and stream
-        for chunk in handler(request.parameters, stream=True):
-            yield chunk
+        yield from handler(request.parameters, stream=True)
 
     def get_tool_status(self, tool_name: str) -> dict[str, Any] | None:
         """Get tool status.

@@ -69,10 +69,10 @@ def main():
         sys.exit(0)
     commit_message = get_commit_message()
     if OVERRIDE_FLAG in commit_message:
-        for f in modified_protected:
+        for _f in modified_protected:
             pass
         sys.exit(0)
-    for f in modified_protected:
+    for _f in modified_protected:
         pass
     sys.exit(1)
 

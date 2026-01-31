@@ -39,7 +39,7 @@ def hunt_and_archive():
     if not ARCHIVE_ROOT.exists():
         ARCHIVE_ROOT.mkdir(parents=True)
 
-    for root, dirs, files in os.walk(scan_dir):
+    for root, _dirs, files in os.walk(scan_dir):
         # Skip archive directory
         if "archived" in root:
             continue

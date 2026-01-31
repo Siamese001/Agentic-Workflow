@@ -217,7 +217,7 @@ class AgentUnitTestTemplate:
 
             except Exception as e:
                 # Only fail if it's an unhandled exception
-                if not isinstance(e, (ValueError, TypeError, AttributeError)):
+                if not isinstance(e, ValueError | TypeError | AttributeError):
                     pytest.fail(f"Unhandled exception with fuzz input {repr(fuzz_input)}: {e}")
 
     def test_network_call_isolation(self, agent_instance):

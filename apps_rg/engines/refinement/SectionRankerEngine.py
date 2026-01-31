@@ -84,7 +84,7 @@ class SectionRankerEngine(BaseRGEngine):
 
         # Append orphans
         for section in content:
-            if isinstance(section, str) and section not in [v for v in section_mapping.values()]:
+            if isinstance(section, str) and section not in list(section_mapping.values()):
                 ranked_resume[section] = content[section]
 
         # 3. WRITE

@@ -90,7 +90,7 @@ class TestUnifiedSovereignHardening:
             "APPS_SHARED_DIR": "Final[str]",
         }
 
-        for const_name, expected_annotation in required_constants.items():
+        for const_name, _expected_annotation in required_constants.items():
             assert const_name in found_constants, f"Missing constant: {const_name}"
             assert "Final" in found_constants[const_name], f"{const_name} must be marked as Final"
 

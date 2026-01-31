@@ -395,7 +395,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         # Identify lines that are definitely imports
         import_lines = set()
         for node in ast.walk(tree):
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
+            if isinstance(node, ast.Import | ast.ImportFrom):
                 # Mark all lines covered by this node (including multi-line imports)
                 for i in range(node.lineno, node.end_lineno + 1):
                     import_lines.add(i)
@@ -439,7 +439,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         deleted_count = 0
 
         # Walk bottom-up to delete empty folders
-        for dirpath, dirnames, filenames in os.walk(start_path, topdown=False):
+        for dirpath, _dirnames, _filenames in os.walk(start_path, topdown=False):
             dir_path = Path(dirpath)
 
             # Skip approved folders

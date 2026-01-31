@@ -10,9 +10,8 @@ from pydantic import BaseModel
 
 # Import mixins - fall back to stubs if not available
 try:
-    from agentic_core.base_agents.mcp_hardened_mixin import mcp_hardened_mixin
-
     from agentic_core.base_agents.healer_mixin import healer_mixin
+    from agentic_core.base_agents.mcp_hardened_mixin import mcp_hardened_mixin
 
     MIXINS_AVAILABLE = True
 except ImportError:

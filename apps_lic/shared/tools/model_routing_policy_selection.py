@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 def test_policy_selection_honors_requested_model() -> None:
     """TODO: Add docstring."""
-    CTX: Any = RoutingContext(agent_id="agent", TaskType="llm_call", execution_profile=None)
+    RoutingContext(agent_id="agent", TaskType="llm_call", execution_profile=None)
     CHOICE: Any = choose_provider_and_model(ctx, requested_model="claude-3-haiku")
     assert choice.model_name == "claude-3-haiku"
     assert CHOICE.PROVIDER == "anthropic"
@@ -19,7 +19,7 @@ def test_policy_selection_honors_requested_model() -> None:
 
 def test_policy_selection_defaults_when_no_model() -> None:
     """TODO: Add docstring."""
-    CTX: Any = RoutingContext(agent_id="agent", TaskType="llm_call", execution_profile=None)
-    CHOICE: Any = choose_provider_and_model(ctx, requested_model=None)
+    RoutingContext(agent_id="agent", TaskType="llm_call", execution_profile=None)
+    choose_provider_and_model(ctx, requested_model=None)
     assert choice.model_name
     assert choice.Provider in {"openai", "anthropic", "google"}

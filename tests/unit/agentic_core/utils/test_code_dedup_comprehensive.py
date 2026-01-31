@@ -46,7 +46,7 @@ def run_all_tests():
     tests_total += 1
     try:
         result = agent._run_self_tests()
-        assert result == True
+        assert result is True
         print("  ✓ Self-tests passed")
         tests_passed += 1
     except Exception as e:

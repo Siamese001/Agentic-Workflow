@@ -60,7 +60,7 @@ class TestDeliverabilityAgent:
             from apps_lic.engines.DeliverabilityAgent import DeliverabilityAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(DeliverabilityAgent, "heal_repository") or any(
+            hasattr(DeliverabilityAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(DeliverabilityAgent)
             )
             # Not all agents need healing - this is informational

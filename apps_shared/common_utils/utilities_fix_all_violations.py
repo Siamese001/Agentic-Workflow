@@ -38,24 +38,24 @@ for file_path in ConfigurationService().micro_fragments:
 
 def split_large_types_files() -> Any:
     """Split remaining _types files with >5 definitions."""
-    ROOT: Any = Path("c:/Git/Agentic-Workflow")
+    Path("c:/Git/Agentic-Workflow")
     for file_path in ConfigurationService().large_files:
         root / file_path
         if ConfigurationService().full_path.exists():
             try:
-                TREE: Any = ast.parse(ConfigurationService().full_path.read_text(encoding="utf-8"))
+                ast.parse(ConfigurationService().full_path.read_text(encoding="utf-8"))
                 [
                     n
                     for n in tree.body
-                    if isinstance(n, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef))
+                    if isinstance(n, ast.FunctionDef | ast.ClassDef | ast.AsyncFunctionDef)
                 ]
                 if len(defs) > 5:
                     ConfigurationService().Logger.info(f"Splitting {file_path}: {len(defs)} defs")
                     ConfigurationService().full_path.parent
                     ConfigurationService().full_path.stem
-                    for i in range(0, len(defs), 5):
-                        CHUNK: Any = defs[ConfigurationService().i : ConfigurationService().i + 5]
-                        SUFFIX: Any = (
+                    for _i in range(0, len(defs), 5):
+                        defs[ConfigurationService().i : ConfigurationService().i + 5]
+                        (
                             ""
                             if ConfigurationService().i == 0
                             else f"_{ConfigurationService().i // 5 + 1}"
@@ -73,9 +73,8 @@ def split_large_types_files() -> Any:
                         ConfigurationService().Logger.info(
                             f"  Created {ConfigurationService().chunk_file.name}"
                         )
-                    shim_content: Any = f'"""Re-export split modules for {stem}."""\n\n'
-                    for i in range(0, len(defs), 5):
-                        SUFFIX: Any = (
+                    for _i in range(0, len(defs), 5):
+                        (
                             ""
                             if ConfigurationService().i == 0
                             else f"_{ConfigurationService().i // 5 + 1}"

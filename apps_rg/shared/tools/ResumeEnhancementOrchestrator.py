@@ -334,7 +334,7 @@ class ResumeEnhancementOrchestrator:
             "recon_agent": {
                 "companies_in_db": len(self.recon_agent.competitor_db),
                 "industries_covered": len(
-                    set(c.industry for c in self.recon_agent.competitor_db.values())
+                    {c.industry for c in self.recon_agent.competitor_db.values()}
                 ),
             },
         }

@@ -97,7 +97,7 @@ def main():
     verdicts = {}
     for r in all_results:
         verdicts[r.verdict] = verdicts.get(r.verdict, 0) + 1
-    for v, count in sorted(verdicts.items(), key=lambda x: verdict_order.get(x[0], 99)):
+    for _v, _count in sorted(verdicts.items(), key=lambda x: verdict_order.get(x[0], 99)):
         pass
     for r in all_results:
         fix_logic = []
@@ -107,7 +107,7 @@ def main():
             fix_logic.append("_fix_vs")
         if r.has_perform_surgery:
             fix_logic.append("surgery")
-        fix_str = ",".join(fix_logic) if fix_logic else "NONE"
+        ",".join(fix_logic) if fix_logic else "NONE"
     impotent = [r for r in all_results if r.verdict == "IMPOTENT"]
     if impotent:
         for r in impotent:

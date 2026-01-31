@@ -382,9 +382,9 @@ class ConfigModelConverter:
         """Validate field value using validator."""
         # Built-in validators
         if validator == "positive":
-            return isinstance(value, (int, float)) and value > 0
+            return isinstance(value, int | float) and value > 0
         elif validator == "non_negative":
-            return isinstance(value, (int, float)) and value >= 0
+            return isinstance(value, int | float) and value >= 0
         elif validator == "non_empty":
             return isinstance(value, str) and len(value.strip()) > 0
         elif validator == "email":

@@ -105,7 +105,7 @@ class TestDashboardDrillDown:
                     value = agent.get(field)
                     if value == "undefined" or value is None:
                         errors.append(f"{agent_id}: {field} is undefined")
-                    elif not isinstance(value, (int, float)):
+                    elif not isinstance(value, int | float):
                         errors.append(f"{agent_id}: {field} is not numeric: {value}")
 
         assert not errors, f"Invalid numeric fields in {len(errors)} cases:\n" + "\n".join(

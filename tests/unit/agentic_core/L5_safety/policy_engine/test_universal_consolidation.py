@@ -28,8 +28,8 @@ def test_mro_stability():
     This confirms the redundant mixin removal.
     """
     try:
-        v = CodeValidatorAgent()
-        h = CodeHealerAgent()
+        CodeValidatorAgent()
+        CodeHealerAgent()
         e = CodeEnforcerAgent()
     except TypeError as e:
         pytest.fail(f"MRO Conflict detected: {e}")

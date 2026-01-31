@@ -138,7 +138,7 @@ class TestMockIsolationContext:
 
     def test_context_manager_basic_usage(self):
         """Test basic context manager usage."""
-        with MockIsolationContext() as ctx:
+        with MockIsolationContext():
             # Should be able to execute code within context
             result = "executed"
 
@@ -146,16 +146,16 @@ class TestMockIsolationContext:
 
     def test_context_manager_with_env_vars(self):
         """Test context manager with environment variables."""
-        with MockIsolationContext(env_vars={"CTX_TEST_VAR": "ctx_value"}) as ctx:
+        with MockIsolationContext(env_vars={"CTX_TEST_VAR": "ctx_value"}):
             result = os.environ.get("CTX_TEST_VAR")
 
         assert result == "ctx_value"
 
     def test_context_manager_cleanup(self):
         """Test that context manager cleans up properly."""
-        original_env = dict(os.environ)
+        dict(os.environ)
 
-        with MockIsolationContext(env_vars={"CLEANUP_VAR": "cleanup_value"}) as ctx:
+        with MockIsolationContext(env_vars={"CLEANUP_VAR": "cleanup_value"}):
             pass
 
         # Environment should be restored

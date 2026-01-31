@@ -72,7 +72,7 @@ def main():
         if not replacements:
             continue
         if args.dry_run:
-            for old, new in replacements.items():
+            for _old, _new in replacements.items():
                 pass
         else:
             modified, count = fix_file(filepath, replacements)

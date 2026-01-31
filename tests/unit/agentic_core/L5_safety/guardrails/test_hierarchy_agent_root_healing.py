@@ -252,7 +252,7 @@ def test_6_heal_root_violations_merges_scripts() -> tuple[bool, str]:
 
         # Check SSOT location
         ssot_scripts = temp_dir / "agentic_core" / "L0_maintenance" / "scripts"
-        scripts_after = get_python_files(ssot_scripts) if ssot_scripts.exists() else []
+        get_python_files(ssot_scripts) if ssot_scripts.exists() else []
 
         if results["scripts_files_moved"] < count_before:
             return False, f"Only moved {results['scripts_files_moved']} of {count_before} scripts"
@@ -285,7 +285,7 @@ def test_7_heal_root_violations_merges_logs() -> tuple[bool, str]:
 
         # Check SSOT location
         ssot_logs = temp_dir / "agentic_core" / "L0_maintenance" / "logs"
-        logs_after = get_files(ssot_logs) if ssot_logs.exists() else []
+        get_files(ssot_logs) if ssot_logs.exists() else []
 
         if results["logs_files_moved"] < file_count_before:
             return False, f"Only moved {results['logs_files_moved']} of {file_count_before} logs"
@@ -347,7 +347,7 @@ def test_9_heal_root_violations_dry_run_no_changes() -> tuple[bool, str]:
         logs_before = (temp_dir / "logs").exists()
 
         # Dry run
-        results = agent.heal_root_violations(dry_run=True)
+        agent.heal_root_violations(dry_run=True)
 
         # Count files after
         archived_after = len([f for f in temp_dir.iterdir() if f.suffix == ".archived"])
@@ -540,7 +540,6 @@ def run_all_tests() -> dict[str, Any]:
     for name, test_func in tests:
         try:
             passed, message = test_func()
-            status = "PASSED" if passed else "FAILED"
             icon = "✅" if passed else "❌"
 
             if passed:

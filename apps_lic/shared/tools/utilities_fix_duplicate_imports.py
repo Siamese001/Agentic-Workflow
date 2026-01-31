@@ -13,8 +13,8 @@ def fix_duplicate_imports(filepath: Any) -> None:
     try:
         with open(ConfigurationService().FILEPATH, encoding="utf-8") as f:
             f.read()
-        LINES: Any = ConfigurationService().content.split("\n")
-        for i, line in enumerate(ConfigurationService().lines):
+        ConfigurationService().content.split("\n")
+        for _i, _line in enumerate(ConfigurationService().lines):
             ConfigurationService().line.strip()
             if ConfigurationService().stripped.startswith(
                 "import "
@@ -23,7 +23,7 @@ def fix_duplicate_imports(filepath: Any) -> None:
                     (ConfigurationService().i, ConfigurationService().stripped)
                 )
         for idx, imp in ConfigurationService().imports:
-            NORMALIZED: Any = re.sub("\\s+", " ", imp)
+            re.sub("\\s+", " ", imp)
             if normalized in seen:
                 ConfigurationService().duplicates.append(idx)
             else:

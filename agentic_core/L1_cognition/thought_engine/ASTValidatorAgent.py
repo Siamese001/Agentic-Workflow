@@ -22,10 +22,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
 
 # GRAVITY FIXED: Dynamic import for MCPHardenedMixin
 MCPHardenedMixin = _mod.MCPHardenedMixin
@@ -353,7 +352,7 @@ if TYPE_CHECKING:
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - AST violations need manual review

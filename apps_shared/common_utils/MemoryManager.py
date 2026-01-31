@@ -308,7 +308,7 @@ class MemoryManager:
         """
         if isinstance(value, str):
             return len(value.encode("utf-8"))
-        elif isinstance(value, (list, tuple)):
+        elif isinstance(value, list | tuple):
             return sum(self._calculate_size(v) for v in value) + 64  # Overhead
         elif isinstance(value, dict):
             return (

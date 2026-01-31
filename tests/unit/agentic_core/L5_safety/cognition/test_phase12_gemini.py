@@ -211,7 +211,7 @@ class TestHybridPriority:
         agent._llm_model = mock_model
 
         # Analyze
-        decision = agent.analyze_violation(unclear_file, "ORPHAN")
+        agent.analyze_violation(unclear_file, "ORPHAN")
 
         # LLM should have been called (heuristic confidence < 0.8)
         mock_model.generate_content.assert_called_once()

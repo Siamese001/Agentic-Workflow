@@ -25,7 +25,7 @@ class HandleApiTimeouts:
         last_error: Any = None
         for attempt in range(self.max_retries):
             try:
-                RESULT: Any = func(*args, **kwargs)
+                func(*args, **kwargs)
                 return RetryResult(success=True, attempts=attempt + 1, result=result)
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 last_error: Any = str(e)
@@ -37,7 +37,7 @@ class HandleApiTimeouts:
         self, primary: Callable, fallback: Callable, *args, **kwargs: dict[str, object]
     ) -> object:
         """Execute with fallback."""
-        RESULT: Any = self.execute(primary, *args, **kwargs)
+        self.execute(primary, *args, **kwargs)
         if result.success:
             return result.result
         return fallback(*args, **kwargs)

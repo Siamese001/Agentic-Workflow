@@ -26,9 +26,8 @@ class TestEndgameCertification:
         """
         Verify that placing a 'dirty' file in the Core triggers a fatal crash.
         """
-        from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier
-
         from agentic_core.domain.exceptions import ConfigurationError
+        from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier
 
         core_path = Path("agentic_core/base_agents")
         dirty_file = core_path / "malicious_script.tmp"
@@ -57,7 +56,7 @@ class TestEndgameCertification:
         caplog.set_level(logging.INFO)
 
         # Boot Agent
-        agent = CampaignPlannerAgent()
+        CampaignPlannerAgent()
 
         # Check Logs
         found_boot_signal = False
@@ -82,10 +81,9 @@ class TestEndgameCertification:
         Verify that apps_lic and apps_rg are using the EXACT same base class memory address.
         This proves there is no 'Split-Brain'.
         """
-        from apps_lic.shared.core.agent_base import LICAgentBase
-
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
+        from apps_lic.shared.core.agent_base import LICAgentBase
 
         # Check Method Resolution Order
         rg_mro = RGAgentBase.mro()
@@ -209,7 +207,6 @@ class TestEndgameCertification:
         trigger a heal event, write to the Black Box, and pass the Integrity Lock check.
         """
         from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier
-
         from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
         from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
 
@@ -224,8 +221,8 @@ class TestEndgameCertification:
         assert rg_agent._session_id != lic_agent._session_id
 
         # 4. Verify both agents have audit enabled
-        assert rg_agent._audit_enabled == True
-        assert lic_agent._audit_enabled == True
+        assert rg_agent._audit_enabled is True
+        assert lic_agent._audit_enabled is True
 
         # 5. Trigger heal events on both agents
         rg_agent.log_heal_event(violations_found=1, violations_fixed=1, execution_time_ms=100.0)

@@ -34,7 +34,7 @@ class StructuredEngine(SovereignBaseAgent):
 
         try:
             # Use Google Gemini by default for planning (fast/long context)
-            resp = await self.llm_generate(
+            await self.llm_generate(
                 prompt, provider="google", model=os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
             )
 

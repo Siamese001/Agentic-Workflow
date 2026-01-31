@@ -106,7 +106,7 @@ class TestSingletonEnforcement:
                     t.join()
 
             # All instances should be the same
-            assert len(set(id(i) for i in instances)) == 1
+            assert len({id(i) for i in instances}) == 1
         finally:
             if original_strict:
                 os.environ["HIVE_MIND_STRICT_MODE"] = original_strict
@@ -488,7 +488,7 @@ class TestCircuitBreaker:
             with patch.object(
                 SemanticCacheManager, "get_instance", side_effect=Exception("Hive Mind down")
             ):
-                agent = TestAgent()
+                TestAgent()
 
         # Circuit breaker should be active
         assert MetaLearningMixin._lobotomized is True
@@ -1111,7 +1111,6 @@ class TestMetaLearningKGIntegration:
         from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
-
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
@@ -1159,7 +1158,6 @@ class TestMetaLearningKGIntegration:
         from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
-
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
@@ -1213,7 +1211,6 @@ class TestMetaLearningKGIntegration:
         from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
-
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
@@ -1265,7 +1262,6 @@ class TestMetaLearningKGIntegration:
         from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
-
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )

@@ -42,7 +42,7 @@ class ServiceInvokerEngine(BaseRGEngine):
         response = "Sovereign Generated Content"
 
         # Telemetry
-        duration = time.time() - start
+        time.time() - start
         tokens = len(prompt) // 4 + len(response) // 4
 
         # Update Trace Registry via Context

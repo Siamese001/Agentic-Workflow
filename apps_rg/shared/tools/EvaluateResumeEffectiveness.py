@@ -29,7 +29,7 @@ class EvaluateResumeEffectiveness:
         """Extract scoring factors."""
         factors = {}
         for k, v in data.items():
-            if isinstance(v, (int, float)):
+            if isinstance(v, int | float):
                 factors[k] = float(v)
             elif isinstance(v, str):
                 factors[f"{k}_len"] = min(1.0, len(v) / 100)

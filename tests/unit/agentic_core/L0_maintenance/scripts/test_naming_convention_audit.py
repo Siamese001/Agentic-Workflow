@@ -94,7 +94,7 @@ def test_no_duplicate_stems():
     conflicts = {}
     for stem, file_list in files_by_stem.items():
         if len(file_list) > 1:
-            names = set(f[0] for f in file_list)
+            names = {f[0] for f in file_list}
             if len(names) > 1:
                 conflicts[stem] = file_list
 

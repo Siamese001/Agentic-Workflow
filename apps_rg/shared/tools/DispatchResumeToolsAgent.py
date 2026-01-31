@@ -79,9 +79,9 @@ class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
         if not self.titanium_enabled:
             return {"error": "Titanium search not enabled", "results": []}
         QUERY = params.get("query", "")
-        CONTEXT = params.get("context")
-        max_results = params.get("max_results", 5)
-        include_metadata = params.get("include_metadata", False)
+        params.get("context")
+        params.get("max_results", 5)
+        params.get("include_metadata", False)
         return {
             "query": QUERY,
             "results": f"[Titanium Search Results for: {QUERY}]",
@@ -94,7 +94,7 @@ class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
         if not self.titanium_enabled:
             return {"error": "Titanium search not enabled", "sources": []}
         QUERY = params.get("query", "")
-        CONTEXT = params.get("context")
+        params.get("context")
         return {
             "query": QUERY,
             "sources": [

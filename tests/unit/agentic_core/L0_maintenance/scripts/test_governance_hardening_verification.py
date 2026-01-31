@@ -53,9 +53,8 @@ def test_1_signal_saturation_sweep():
     try:
         from dataclasses import dataclass
 
-        from agentic_core.L5_safety.validators.context import ValidationContext
-
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L5_safety.validators.context import ValidationContext
 
         # Create a concrete test agent
         @dataclass
@@ -291,7 +290,7 @@ def test_3_depth_constraint_cycle():
         # Test 3c: Verify _call_path is cleaned up
         print("\n🔧 Testing _call_path cleanup...")
         fresh_path = set()
-        cleanup_result = cycle_agent.heal_repository(
+        cycle_agent.heal_repository(
             dry_run=True, execute=False, depth=0, max_depth=3, _call_path=fresh_path
         )
 

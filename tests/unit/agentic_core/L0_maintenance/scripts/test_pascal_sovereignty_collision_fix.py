@@ -40,7 +40,7 @@ class TestMixin:
         fixer = PascalSovereigntyFixer(dry_run=False)
         result = fixer.safe_rename_windows(test_file1, "test_mixin.py")
 
-        assert result == True, "Should handle identical content collision correctly"
+        assert result is True, "Should handle identical content collision correctly"
         assert not test_file1.exists(), "Source file should be removed"
         assert test_file2.exists(), "Target file should still exist"
 
@@ -54,7 +54,7 @@ class TestMixin:
         # Test collision with different content
         result2 = fixer.safe_rename_windows(test_file3, "another_mixin.py")
 
-        assert result2 == False, "Should not overwrite different content"
+        assert result2 is False, "Should not overwrite different content"
         assert test_file3.exists(), "Source file should remain when content differs"
         assert test_file4.exists(), "Target file should remain when content differs"
 

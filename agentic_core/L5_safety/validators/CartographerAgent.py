@@ -13,9 +13,8 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 import datetime
 
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
-
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -38,7 +37,7 @@ class CartographerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgen
             Dict with keys: status, details, artifacts, errors
         """
         try:
-            violation_type = violation.get("type", "")
+            violation.get("type", "")
             file_path = violation.get("file")
 
             if not file_path:

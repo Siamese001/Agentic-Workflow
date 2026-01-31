@@ -46,7 +46,7 @@ class HealerProtocol:
         # Test the method
         result = agent.resolve_collision_and_rename(violator, "HealerProtocol.py")
 
-        assert result == True, "Should resolve identical collision"
+        assert result is True, "Should resolve identical collision"
         assert not violator.exists(), "Violator should be deleted"
         assert target.exists(), "Target should still exist"
 
@@ -62,7 +62,7 @@ class HealerProtocol:
 
         result2 = agent.resolve_collision_and_rename(violator2, "TestAgent.py")
 
-        assert result2 == True, "Should resolve divergent collision"
+        assert result2 is True, "Should resolve divergent collision"
         assert not violator2.exists(), "Violator should be moved"
         assert target2.exists(), "Target should still exist"
 
@@ -79,7 +79,7 @@ class HealerProtocol:
 
         result3 = agent.resolve_collision_and_rename(src, "NewName.py")
 
-        assert result3 == True, "Should perform standard rename"
+        assert result3 is True, "Should perform standard rename"
         assert not src.exists(), "Source should be renamed"
         assert (temp_path / "NewName.py").exists(), "Target should exist"
 
@@ -93,7 +93,7 @@ class HealerProtocol:
 
         result4 = agent.resolve_collision_and_rename(src2, "DryRunTarget.py")
 
-        assert result4 == True, "Should return success in dry run"
+        assert result4 is True, "Should return success in dry run"
         assert src2.exists(), "Source should still exist in dry run"
         assert not (temp_path / "DryRunTarget.py").exists(), "Target should not exist in dry run"
 

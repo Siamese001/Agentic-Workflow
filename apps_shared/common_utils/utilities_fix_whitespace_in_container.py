@@ -25,7 +25,7 @@ def fix_whitespace_in_file(filepath: Any) -> Any:
 def fix_all_files(root_dir: Any) -> Any:
     """Fix whitespace in all Python files."""
     fixed_count: Any = 0
-    for root, dirs, files in os.walk(root_dir):
+    for root, _dirs, files in os.walk(root_dir):
         for file in files:
             if file.endswith(".py"):
                 filepath: Any = os.path.join(root, file)

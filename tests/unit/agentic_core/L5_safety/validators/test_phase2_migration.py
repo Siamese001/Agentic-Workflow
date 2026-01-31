@@ -143,7 +143,7 @@ class TestCaseB_StrategyInjection:
         orchestrator = OrchestratorAgent(strategy=mock_strategy)
 
         # Run mission
-        result = orchestrator.run_mission({"dry_run": True})
+        orchestrator.run_mission({"dry_run": True})
 
         # Verify get_tiers was called
         mock_strategy.get_tiers.assert_called_once()
@@ -171,7 +171,7 @@ class TestCaseB_StrategyInjection:
         orchestrator = OrchestratorAgent(strategy=mock_strategy)
 
         # Run mission
-        result = orchestrator.run_mission({"dry_run": True})
+        orchestrator.run_mission({"dry_run": True})
 
         # Verify get_agent was called with agent name
         mock_strategy.get_agent.assert_called_with("TestAgent")
@@ -207,7 +207,7 @@ class TestCaseB_StrategyInjection:
         orchestrator = OrchestratorAgent(strategy=mock_strategy)
 
         # Run mission
-        result = orchestrator.run_mission({"dry_run": True})
+        orchestrator.run_mission({"dry_run": True})
 
         # Verify execute_agent was called
         mock_strategy.execute_agent.assert_called_once()

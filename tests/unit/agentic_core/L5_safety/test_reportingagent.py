@@ -60,7 +60,7 @@ class TestReportingAgent:
             from agentic_core.L5_safety.validators.ReportingAgent import ReportingAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(ReportingAgent, "heal_repository") or any(
+            hasattr(ReportingAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(ReportingAgent)
             )
             # Not all agents need healing - this is informational

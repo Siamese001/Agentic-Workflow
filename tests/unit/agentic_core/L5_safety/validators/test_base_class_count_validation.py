@@ -181,11 +181,11 @@ class TestBaseClassCounts:
 
         # Check dashboard to ensure none are in Base Class territories
         if DASHBOARD_PATH.exists():
-            html = DASHBOARD_PATH.read_text(encoding="utf-8")
+            DASHBOARD_PATH.read_text(encoding="utf-8")
 
             # Enforcer agents should NOT appear in base class context
             for agent_path in enforcer_agents:
-                agent_name = Path(agent_path).stem
+                Path(agent_path).stem
 
                 # These agents should be in their respective layer's core/validator territory
                 # NOT in base_class subterritory

@@ -24,7 +24,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agentic_core.L5_safety.gravity.ssot_scanner import SSOTScanner
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_EXCLUDED_FOLDERS,

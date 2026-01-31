@@ -19,12 +19,11 @@ import subprocess
 import time
 from typing import Any
 
-from agentic_core.shared.interfaces import ActionRequest, ActionResult, IActionPlane
-
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import (
     SCRIPTS_DIR,
 )
+from agentic_core.shared.interfaces import ActionRequest, ActionResult, IActionPlane
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -439,7 +438,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - SovereignActionPlaneAgent manages action plane

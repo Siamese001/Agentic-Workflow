@@ -62,7 +62,7 @@ class TestIntelligenceLibrarianAgent:
             from apps_lic.engines.IntelligenceLibrarianAgent import IntelligenceLibrarianAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(IntelligenceLibrarianAgent, "heal_repository") or any(
+            hasattr(IntelligenceLibrarianAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(IntelligenceLibrarianAgent)
             )
             # Not all agents need healing - this is informational

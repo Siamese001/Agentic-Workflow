@@ -19,11 +19,10 @@ from agentic_core.L4_state.audit_trails.genealogy import GenealogyRegistry
 from agentic_core.L4_state.session_manager.disk_adapter import LocalDiskAdapter
 from agentic_core.L5_safety.guardrails.airlock import AirlockProtocol
 from agentic_core.L5_safety.guardrails.membrane import InputMembrane
+from agentic_core.L5_safety.guardrails.PiiVault import PIIVault
 from agentic_core.L5_safety.validators.ConstitutionalOverseer import ConstitutionalOverseer
 from agentic_core.L5_safety.validators.CostGovernor import CostGovernor
 from agentic_core.runtime.P1_core.SubatomicHop import SubatomicHop
-
-from agentic_core.L5_safety.guardrails.PiiVault import PIIVault
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

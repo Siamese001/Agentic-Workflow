@@ -23,7 +23,7 @@ def scan_archives_for_moved_files() -> list[dict[str, Any]]:
     if not archive_root.exists():
         return archived_files
 
-    for root, dirs, files in os.walk(archive_root):
+    for root, _dirs, files in os.walk(archive_root):
         for file in files:
             if file.endswith(".py") or file.endswith(".json") or file.endswith(".txt"):
                 file_path = Path(root) / file

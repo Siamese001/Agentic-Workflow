@@ -316,7 +316,7 @@ class RootHygieneAgent(SovereignBaseAgent):
 
         try:
             # Execute the hygiene enforcement
-            exit_code = self._enforce_root_hygiene()
+            self._enforce_root_hygiene()
 
             # Calculate violations based on stats
             violations_found = (

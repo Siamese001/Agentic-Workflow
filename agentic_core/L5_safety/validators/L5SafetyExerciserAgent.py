@@ -8,8 +8,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
-
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.structure_blueprint import (
@@ -17,6 +15,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     has_forbidden_layer_prefix,
     is_broken_backup_file,
 )
+from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
 
 
 # Lazy imports — gravity-safe (same/downstream L5)
@@ -233,7 +232,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - L5SafetyExerciserAgent exercises safety validators

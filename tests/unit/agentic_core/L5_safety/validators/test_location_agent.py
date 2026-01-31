@@ -88,7 +88,7 @@ class TestLocationAgent:
             ["list", "of", "paths"],
         ]
 
-        for invalid_path in invalid_paths:
+        for _invalid_path in invalid_paths:
             # Should handle gracefully without crashing
             try:
                 if hasattr(agent_class, "validate_file_location"):

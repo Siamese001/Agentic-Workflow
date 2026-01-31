@@ -196,8 +196,7 @@ class ObservabilityOperationPerformer:
             raise ValueError(f"No handler for operation: {context.operation_id}")
 
         # Execute and stream
-        for chunk in handler(inputs, stream=True):
-            yield chunk
+        yield from handler(inputs, stream=True)
 
     def perform_operations_batch(
         self, contexts: list[OperationExecutionContext], inputs_list: list[dict[str, Any]]
@@ -384,7 +383,7 @@ class ObservabilityOperationPerformer:
         type_validators = {
             "string": lambda v: isinstance(v, str),
             "integer": lambda v: isinstance(v, int),
-            "float": lambda v: isinstance(v, (int, float)),
+            "float": lambda v: isinstance(v, int | float),
             "boolean": lambda v: isinstance(v, bool),
             "array": lambda v: isinstance(v, list),
             "object": lambda v: isinstance(v, dict),

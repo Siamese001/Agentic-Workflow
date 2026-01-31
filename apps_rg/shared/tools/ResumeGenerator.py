@@ -300,7 +300,7 @@ Return ONLY the rewritten description, no additional text."""
         )
 
         # Remove duplicates and limit
-        unique_keywords = list(set([k.lower() for k in all_keywords]))[:30]
+        unique_keywords = list({k.lower() for k in all_keywords})[:30]
 
         optimized["ats_keywords"] = unique_keywords
 

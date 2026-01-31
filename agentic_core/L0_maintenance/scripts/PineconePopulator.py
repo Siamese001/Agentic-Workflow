@@ -192,7 +192,7 @@ class PineconePopulator:
                     methods = [
                         m.name
                         for m in node.body
-                        if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef))
+                        if isinstance(m, ast.FunctionDef | ast.AsyncFunctionDef)
                         and not m.name.startswith("_")
                     ]
 
@@ -233,7 +233,7 @@ class PineconePopulator:
         all_files = get_markdown_files(PROJECT_ROOT)
 
         for file_path in all_files:
-            path_str = str(file_path)
+            str(file_path)
 
             try:
                 with open(file_path, encoding="utf-8", errors="ignore") as f:
@@ -378,7 +378,7 @@ class PineconePopulator:
                     class_name = node.name
 
                     for item in node.body:
-                        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                             # Skip private methods except important ones
                             if item.name.startswith("_") and item.name not in [
                                 "__init__",

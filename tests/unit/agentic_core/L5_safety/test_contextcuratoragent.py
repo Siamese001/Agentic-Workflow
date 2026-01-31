@@ -60,7 +60,7 @@ class TestContextCuratorAgent:
             from agentic_core.L5_safety.validators.ContextCuratorAgent import ContextCuratorAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(ContextCuratorAgent, "heal_repository") or any(
+            hasattr(ContextCuratorAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(ContextCuratorAgent)
             )
             # Not all agents need healing - this is informational

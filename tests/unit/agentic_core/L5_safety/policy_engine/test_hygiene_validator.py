@@ -128,7 +128,7 @@ def test_marker_scanning() -> dict[str, Any]:
     markers = validator._scan_markers()
 
     # Check marker types found
-    marker_types = set(m.get("type", "") for m in markers)
+    marker_types = {m.get("type", "") for m in markers}
     expected_markers = {"TODO", "FIXME", "HACK", "XXX", "BUG"}
 
     # Check if markers are from our test file

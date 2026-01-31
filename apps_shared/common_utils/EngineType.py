@@ -203,11 +203,11 @@ class ResumeValidator(DomainValidator):
         """Calculate action verb diversity."""
         verbs = self._count_action_verbs(content)
         unique_verbs = len(
-            set(
+            {
                 word.lower()
                 for word in content.split()
                 if word in ["led", "managed", "developed", "created"]
-            )
+            }
         )
         return unique_verbs / max(verbs, 1)
 

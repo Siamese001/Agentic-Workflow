@@ -407,8 +407,6 @@ class TestNonInteractiveGuard:
 
         from agentic_core.L0_maintenance.scripts.execute_ssot import NonInteractiveGuard
 
-        original_input = builtins.input
-
         # Mock input to avoid actual stdin read
         with patch.object(builtins, "input", return_value="test"):
             with NonInteractiveGuard(active=False):

@@ -233,7 +233,7 @@ class SchemaHistoryFetcher:
         records.sort(key=lambda x: x.timestamp)
 
         # Extract information
-        contributors = list(set(r.changed_by for r in records if r.changed_by))
+        contributors = list({r.changed_by for r in records if r.changed_by})
 
         # Find major changes
         major_changes = []
@@ -248,7 +248,7 @@ class SchemaHistoryFetcher:
 
         return SchemaEvolutionSummary(
             schema_id=schema_id,
-            total_versions=len(set(r.version_to for r in records if r.version_to)),
+            total_versions=len({r.version_to for r in records if r.version_to}),
             first_version=first_record.version_from or "1.0.0",
             latest_version=latest_record.version_to or "1.0.0",
             creation_date=first_record.timestamp,

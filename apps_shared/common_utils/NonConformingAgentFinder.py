@@ -89,7 +89,7 @@ class NonConformingAgentFinder(ast.NodeVisitor):
         # Scan methods
         suspicious_methods = []
         for item in node.body:
-            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                 if item.name in AGENT_LIKE_METHODS:
                     suspicious_methods.append(item.name)
 
@@ -141,7 +141,7 @@ def main():
 
     # Output table
     # Count excluded classes
-    total_excluded = sum(len(f.get("excluded", [])) for f in [{"excluded": []}])  # placeholder
+    sum(len(f.get("excluded", [])) for f in [{"excluded": []}])  # placeholder
 
     if suspects:
         print(

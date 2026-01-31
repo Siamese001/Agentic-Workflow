@@ -33,7 +33,7 @@ class TestSSOTE2EReporting:
     def state_mgr(self, tmp_path):
         """Persistent state manager backed by a temp file."""
         # Create a mock state file for testing
-        state_file = tmp_path / "runtime_state.json"
+        tmp_path / "runtime_state.json"
         return RuntimeStateManager(tmp_path)
 
     @pytest.fixture
@@ -296,7 +296,7 @@ class TestSSOTE2EReporting:
         Expected: Full chain of custody matches.
         """
         # 1. Detection
-        violation = ReconciliationViolation(False, "Fix me", "SIMPLE", Path("x.py"))
+        ReconciliationViolation(False, "Fix me", "SIMPLE", Path("x.py"))
 
         # 2. Confidence Calculation - use high confidence scenario
         conf = engine.calculate_healing_confidence(

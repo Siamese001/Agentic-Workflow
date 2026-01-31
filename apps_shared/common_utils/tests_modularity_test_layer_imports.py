@@ -22,8 +22,7 @@ def _iter_project_py_files() -> list:
             ".ruff_cache",
             ".git",
         }:
-            for sub in path.rglob("*.py"):
-                yield sub
+            yield from path.rglob("*.py")
 
 
 def _get_imported_modules(path: pathlib.Path) -> set[str]:

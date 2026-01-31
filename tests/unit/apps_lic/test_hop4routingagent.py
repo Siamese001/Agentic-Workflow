@@ -60,7 +60,7 @@ class TestHOP4RoutingAgent:
             from apps_lic.engines.HOP4RoutingAgent import HOP4RoutingAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(HOP4RoutingAgent, "heal_repository") or any(
+            hasattr(HOP4RoutingAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(HOP4RoutingAgent)
             )
             # Not all agents need healing - this is informational

@@ -15,7 +15,6 @@ class TestAdvancedRoutingHardening:
     def test_shadow_template_routing(self):
         """100% PASS: Ensures .jinja files with system_prompt content route to meta_prompts."""
         # Signature: Contains 'sovereign_instruction' or 'persona_definition'
-        content = "{% block instructions %} sovereign_instruction: Act as SSOT... {% endblock %}"
         signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
             "agentic_core/prompt_governance/meta_prompts"
         ]
@@ -40,7 +39,6 @@ class TestAdvancedRoutingHardening:
     # --- TEST 3: The "Persona Definition" (Base Class Gravity) ---
     def test_persona_base_class_gravity(self):
         """100% PASS: Validates that classes inheriting from BasePersona route to meta_prompts."""
-        content = "class ArchitectPersona(BasePersona): pass"
         signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
             "agentic_core/prompt_governance/meta_prompts"
         ]

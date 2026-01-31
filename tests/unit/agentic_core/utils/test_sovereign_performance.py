@@ -143,7 +143,7 @@ from collections import defaultdict, Counter
         imports = get_file_imports(complex_import_file)
 
         # All line numbers should be positive integers
-        for name, line_no in imports:
+        for _name, line_no in imports:
             assert isinstance(line_no, int)
             assert line_no > 0
 
@@ -263,12 +263,11 @@ class TestCrossAgentScanConsistency:
 
     def test_scanner_used_by_structural_validator(self, mock_project):
         """[Phase 5] Verify StructuralValidatorAgent uses SovereignScanner."""
-        from agentic_core.utils.sovereign_scanner import SovereignScanner
-
         from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
             StructuralValidatorAgent,
             StructureConfig,
         )
+        from agentic_core.utils.sovereign_scanner import SovereignScanner
 
         # Create validator
         config = StructureConfig(project_root=mock_project)

@@ -170,7 +170,7 @@ def compare_results(legacy: dict, unified: dict) -> dict[str, Any]:
     """
     # Collect all legacy violations
     legacy_violations = []
-    for validator_name, violations in legacy.items():
+    for _validator_name, violations in legacy.items():
         if isinstance(violations, list):
             legacy_violations.extend(violations)
 

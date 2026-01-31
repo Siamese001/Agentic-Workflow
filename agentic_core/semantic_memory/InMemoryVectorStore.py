@@ -46,7 +46,7 @@ class InMemoryVectorStore(BaseVectorStore):
 
             # 2. Cosine Similarity Calculation
             d_vec = item.embedding
-            dot_product = sum(a * b for a, b in zip(q_vec, d_vec))
+            dot_product = sum(a * b for a, b in zip(q_vec, d_vec, strict=False))
             d_mag = math.sqrt(sum(x * x for x in d_vec))
 
             if d_mag * q_mag == 0:

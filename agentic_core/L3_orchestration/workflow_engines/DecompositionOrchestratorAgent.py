@@ -109,7 +109,7 @@ class DecompositionOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         }
         for agent_name, agent_data in self._agent_registry.items():
             name_lower = agent_name.lower()
-            layer = agent_data.get("layer", "")
+            agent_data.get("layer", "")
             territory = agent_data.get("territory", "")
             for capability, keywords in capability_keywords.items():
                 if any(kw in name_lower or kw in territory.lower() for kw in keywords):
@@ -190,7 +190,7 @@ class DecompositionOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             previous_task_id = task_id
         plan.validation_summary = {
             "total_tasks": len(plan.tasks),
-            "unique_agents": len(set(t.target_agent for t in plan.tasks)),
+            "unique_agents": len({t.target_agent for t in plan.tasks}),
             "has_dependencies": any(t.dependencies for t in plan.tasks),
             "validation_gates": ["L5_safety"],
         }
@@ -330,7 +330,7 @@ class DecompositionOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - DecompositionOrchestratorAgent decomposes tasks

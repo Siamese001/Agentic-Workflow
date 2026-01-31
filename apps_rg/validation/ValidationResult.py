@@ -68,7 +68,7 @@ class WordCountEnforcementEngine:
         """
         current_content = content
 
-        for attempt in range(max_attempts):
+        for _attempt in range(max_attempts):
             result = self.validate_content(current_content, content_type)
             if result.is_valid:
                 # Sign the valid result

@@ -60,7 +60,7 @@ class TestLicReflectionAgent:
             from apps_lic.engines.LicReflectionAgent import LicReflectionAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(LicReflectionAgent, "heal_repository") or any(
+            hasattr(LicReflectionAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(LicReflectionAgent)
             )
             # Not all agents need healing - this is informational

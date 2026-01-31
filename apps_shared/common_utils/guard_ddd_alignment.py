@@ -235,7 +235,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                         [
                             n
                             for n in ast.walk(method)
-                            if isinstance(n, (ast.If, ast.For, ast.While, ast.Try))
+                            if isinstance(n, ast.If | ast.For | ast.While | ast.Try)
                         ]
                     )
                     if method_complexity > 8:  # Slightly relaxed threshold

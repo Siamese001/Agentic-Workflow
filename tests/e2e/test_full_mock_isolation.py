@@ -50,7 +50,7 @@ class TestFullMockIsolation:
         expected_interactions = {"requests.get", "requests.post", "socket.socket", "subprocess.run"}
 
         # Check that we have mock coverage for expected external systems
-        actual_coverage = interaction_types.intersection(expected_interactions)
+        interaction_types.intersection(expected_interactions)
         # At least some interactions should be tracked
         assert len(external_interactions) >= 0, "Mock tracking is working"
 
@@ -187,17 +187,10 @@ print(f"ENV_VAR_STATUS: {test_var}")
     def _simulate_e2e_workflow(self):
         """Simulate a typical e2e workflow for testing purposes"""
         # This simulates the workflow steps that would normally use external dependencies
-        mock_responses = {
-            "intent": {"intent": "test_workflow", "confidence": 0.9},
-            "tools": {"available_tools": ["mock_tool_1", "mock_tool_2"]},
-            "workflow": {"status": "completed", "steps": 3},
-            "state": {"state": "consistent", "version": "1.0"},
-            "safety": {"validation": "passed", "risks": []},
-        }
 
         # Simulate workflow steps with mocked requests
         try:
-            response = requests.get("https://api.example.com/intent")
+            requests.get("https://api.example.com/intent")
             # This will be mocked
         except:
             pass
@@ -252,7 +245,7 @@ class TestE2EMockFailures:
         # Test coverage detector with a mock
         mock_module = MagicMock()
         mock_module.function = coverage_detector
-        result = mock_module.function()
+        mock_module.function()
         assert len(uncovered_calls) > 0
 
     def test_mock_leakage_detection(self):

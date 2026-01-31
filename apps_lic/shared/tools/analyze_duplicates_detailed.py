@@ -132,7 +132,7 @@ async def main():
 
     # Print detailed table
     for idx, result in enumerate(same_filename_results, 1):
-        action_color = "REVIEW" if result["action"] == "REVIEW_RENAME" else "DELETE"
+        "REVIEW" if result["action"] == "REVIEW_RENAME" else "DELETE"
 
         print(f"[{idx}] {result['filename']}")
         print(f"    Action: {result['action']}")

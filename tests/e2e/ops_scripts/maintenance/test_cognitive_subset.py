@@ -74,7 +74,6 @@ def run_subset_test(sample_size: int = 5) -> int:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
-
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
@@ -95,7 +94,7 @@ def run_subset_test(sample_size: int = 5) -> int:
 
         # Run dry-run audit to get violations
         Logger.info("Running dry-run audit to collect violations...")
-        report = agent.heal_repository(dry_run=True)
+        agent.heal_repository(dry_run=True)
 
         # Get violations from the agent
         all_violations = getattr(agent, "violations", [])

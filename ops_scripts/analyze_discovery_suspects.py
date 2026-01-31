@@ -37,7 +37,7 @@ def analyze_suspects():
         path = agent.get("path", "").replace("\\", "/").lower()
         name = agent.get("class_name", "")
         has_healing = agent.get("has_healing", False)
-        inheritance = agent.get("inheritance", [])
+        agent.get("inheritance", [])
 
         # Check for scripts
         if "/scripts/" in path:
