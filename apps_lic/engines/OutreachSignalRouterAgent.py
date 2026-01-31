@@ -38,8 +38,9 @@ except ImportError:
 
 
 if TYPE_CHECKING:
-    from apps_lic.engines.LeadQualityAgent import LeadQualityAgent
     from apps_lic.shared.orchestrators import AppWorkflowOrchestratorAgent
+
+    from apps_lic.engines.LeadQualityAgent import LeadQualityAgent
 
 
 # STUBS: Legacy mixins (use LICAgentBase instead)

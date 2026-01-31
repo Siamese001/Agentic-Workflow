@@ -482,9 +482,8 @@ def test_api_integration():
     print("=" * 70)
 
     try:
-        from fastapi.testclient import TestClient
-
         from agentic_core.L6_observability.api.runtime_api import app
+        from fastapi.testclient import TestClient
 
         client = TestClient(app)
 

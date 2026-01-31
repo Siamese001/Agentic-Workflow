@@ -1940,6 +1940,7 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
         from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import (
             get_consolidated_orchestrator,
         )
+
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )

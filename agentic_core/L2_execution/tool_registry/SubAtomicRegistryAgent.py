@@ -27,11 +27,12 @@ import os
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
+
+from agentic_core.base_agents.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 
@@ -51,6 +52,10 @@ def _get_unified_agent_mapping() -> dict[str, type]:
         Dictionary mapping legacy agent IDs to unified agent classes.
     """
     # Import unified agents lazily to avoid circular dependencies
+    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
+        StructureValidatorAgent,
+    )
+
     from agentic_core.L1_cognition.thought_engine.ASTValidatorAgent import (
         ASTValidatorAgent,
     )
@@ -61,9 +66,6 @@ def _get_unified_agent_mapping() -> dict[str, type]:
         StateManagementAgent,
     )
     from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import CodeEnforcerAgent
-    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
-        StructureValidatorAgent,
-    )
 
     return {
         # Phase 1: L1 AST Validator Consolidation
@@ -156,6 +158,7 @@ def _get_phase4_detector_healer_router_executor_mapping() -> dict[str, type]:
         Dictionary mapping legacy detector/healer/router/executor names to unified classes.
     """
     from agentic_core.L2_execution.execution_bridge.ModelRouterAgent import ModelRouterAgent
+
     from agentic_core.L5_safety.policy_engine.CodeDetectorAgent import CodeDetectorAgent
     from agentic_core.L5_safety.policy_engine.CodeHealerAgent import CodeHealerAgent
     from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import SafetyDetectorAgent
@@ -205,11 +208,12 @@ def _get_phase2_validator_mapping() -> dict[str, type]:
     Returns:
         Dictionary mapping legacy validator names to unified validator classes.
     """
-    from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import CodeValidatorAgent
     from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
         StructureValidatorAgent,
     )
     from apps_lic.shared.validation.AppContentValidatorAgent import AppContentValidatorAgent
+
+    from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import CodeValidatorAgent
 
     return {
         # Unified Code Validator (L5) - Single-pass AST validation

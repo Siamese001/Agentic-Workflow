@@ -34,6 +34,7 @@ class TestCognitiveAgentIntegration:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             DispositionDecision,
         )
+
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
@@ -85,6 +86,7 @@ class TestCognitiveAgentIntegration:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             DispositionDecision,
         )
+
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
@@ -146,6 +148,7 @@ class TestGravityFallbackToCognition:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             DispositionDecision,
         )
+
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
@@ -205,6 +208,7 @@ class TestGravityFallbackToCognition:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             DispositionDecision,
         )
+
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
@@ -421,6 +425,7 @@ class TestPhase11Integration:
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             DispositionDecision,
         )
+
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )

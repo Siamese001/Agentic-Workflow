@@ -35,10 +35,11 @@ class TestRefactorIntegrity(unittest.TestCase):
         """
         try:
             # Dynamic imports to verify runtime accessibility
-            import apps_rg.engines.HardenedAnthropicExecutor
             import apps_rg.engines.Router
             import apps_rg.engines.schema  # The new dependency
             import apps_rg.engines.strategist_biowriter
+
+            import apps_rg.engines.HardenedAnthropicExecutor
         except (ImportError, NameError, AttributeError, TypeError) as e:
             self.fail(f"CRITICAL: Could not import Agent from new location: {e}")
 

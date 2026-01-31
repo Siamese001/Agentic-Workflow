@@ -30,9 +30,10 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.L1_cognition.P1_interfaces import ActionRequest
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L1_cognition.P1_interfaces import ActionRequest
 
 Logger: logging.Logger = logging.getLogger(__name__)
 

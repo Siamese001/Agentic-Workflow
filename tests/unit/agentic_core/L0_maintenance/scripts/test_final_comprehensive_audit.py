@@ -34,7 +34,6 @@ def test_case_1_signal_saturation_sweep():
     print("=" * 70)
 
     try:
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent import (
             L1CognitionBaseAgent,
         )
@@ -44,6 +43,8 @@ def test_case_1_signal_saturation_sweep():
         from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
             L3OrchestrationBaseAgent,
         )
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Step 1: Create Orchestrator (top of chain)
         orchestrator = L3OrchestrationBaseAgent()

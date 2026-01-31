@@ -94,6 +94,7 @@ class TestCoreLogicSynthesis:
         """Verify SovereignBaseAgent implements the full Canon interface."""
         try:
             from agentic_core.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+
             from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
             # Check inheritance

@@ -465,6 +465,7 @@ def main():
         try:
             # Import Guardian and Targets Config
             from agentic_core.config.autonomy_targets import get_target
+
             from agentic_core.L5_safety.validators.AutonomyGuardianAgent import (
                 get_autonomy_guardian,
             )
@@ -588,9 +589,10 @@ def main():
 
     # Handle hygiene modes
     if args.preflight_only or args.hygiene or args.full_hygiene:
+        from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
+
         from agentic_core.config.core_hygiene_agents import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
         from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
-        from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
 
         execute_heal = getattr(args, "execute_heal", False) or getattr(args, "execute", False)
         mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
@@ -665,13 +667,14 @@ def main():
         try:
             # [PHASE 3] UNIFIED ORCHESTRATION - Strategy Pattern
             # The 5-tier logic is now encapsulated in HealingStrategy
+            from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
+
             from agentic_core.L3_orchestration.OrchestratorAgent import (
                 OrchestratorAgent,
             )
             from agentic_core.L4_state.validation_context.CheckpointManagerAgent import (
                 get_checkpoint_manager,
             )
-            from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
 
             # Helper to safely load Performance Analyst (L6)
             def get_performance_analyst_safe(root):

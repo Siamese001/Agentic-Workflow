@@ -98,8 +98,9 @@ def test_tc6_registry_resolution():
     print("TC-6: Registry Resolution")
     print("=" * 60)
 
-    from agentic_core.L3_orchestration.interfaces import IOrchestratorAgent
     from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
+
+    from agentic_core.L3_orchestration.interfaces import IOrchestratorAgent
 
     # Test all valid modes
     modes = ["unified", "healing", "compliance", "ssot", "full"]

@@ -13,6 +13,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.utils.security import safe_execute
+
 from agentic_core.base_agents.decorators import standard_heal
 
 # This boosts alignment detection — review and integrate appropriately
@@ -23,7 +25,6 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
-from agentic_core.utils.security import safe_execute
 
 #!/usr/bin/env python3
 """

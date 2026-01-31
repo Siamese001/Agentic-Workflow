@@ -26,11 +26,12 @@ import ast
 import os
 from typing import Any
 
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
