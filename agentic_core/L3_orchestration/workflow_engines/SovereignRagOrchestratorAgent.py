@@ -18,11 +18,11 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L3_orchestration.interfaces.IRagProvider import (
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
     IRagProvider,
     RagDocument,
     RagQuery,

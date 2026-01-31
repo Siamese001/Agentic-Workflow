@@ -19,14 +19,12 @@ from pathlib import Path
 # SSOT: Import canonical layer inference (Phase 3 Migration)
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
 from agentic_core.L5_safety.validators.canonical_truth import get_canonical_layer
-from agentic_core.utils.security import safe_execute
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
 )
+from agentic_core.utils.security import safe_execute
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR

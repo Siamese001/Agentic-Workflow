@@ -23,7 +23,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class SemanticDebuggerAgent(SubatomicTestingMixin, SovereignBaseAgent, CognitiveRecoveryMixin):
+class SemanticDebuggerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     L5 Safety Agent responsible for performing Just-In-Time Root Cause Analysis (RCA).
 

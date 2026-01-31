@@ -23,7 +23,7 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
 
 
 @dataclass
-class OmniContextAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
+class OmniContextAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
     ROLE: Wisdom & Semantic Retrieval. Provides context-aware answers.
     """

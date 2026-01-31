@@ -1,0 +1,276 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\amita\AppData\Local\Programs\Python\Python311\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: C:\Git\Agentic-Workflow
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.0, dash-3.3.0, hypothesis-6.148.7, langsmith-0.5.0, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 1 item
+
+tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_ghost_import_detection_with_find_spec 
+=== PHASE 2 ADDITIONAL: Ghost Import Detection ===
+FAILED
+
+================================== FAILURES ===================================
+______ TestNuclearImportSweep.test_ghost_import_detection_with_find_spec ______
+
+self = <guardian.test_import_safety.TestNuclearImportSweep object at 0x0000023C3573D990>
+
+    def test_ghost_import_detection_with_find_spec(self):
+        """
+        Additional test: Use importlib.util.find_spec to detect imports
+        that reference non-existent modules.
+    
+        This catches "Ghost Imports" that pass syntax checks but fail at runtime.
+        """
+        print("\n=== PHASE 2 ADDITIONAL: Ghost Import Detection ===")
+    
+        python_files = self._get_all_python_files()
+    
+        ghost_imports: list[dict[str, Any]] = []
+    
+        for file_path in python_files:
+            try:
+                content = file_path.read_text(encoding="utf-8")
+                tree = ast.parse(content, filename=str(file_path))
+            except (SyntaxError, UnicodeDecodeError):
+                continue
+    
+            # Extract all imports
+            for node in ast.walk(tree):
+                import_target = None
+                line_no = 0
+    
+                if isinstance(node, ast.Import):
+                    for alias in node.names:
+                        import_target = alias.name
+                        line_no = node.lineno
+    
+                        # Only check project-local imports
+                        if not import_target.startswith(("agentic_core", "apps_")):
+                            continue
+    
+                        # Use find_spec to check if module exists
+                        try:
+                            spec = importlib.util.find_spec(import_target)
+                            if spec is None:
+                                ghost_imports.append(
+                                    {
+                                        "file": str(file_path.relative_to(PROJECT_ROOT)),
+                                        "line": line_no,
+                                        "import": import_target,
+                                        "type": "import",
+                                    }
+                                )
+                        except (ModuleNotFoundError, ImportError, ValueError):
+                            ghost_imports.append(
+                                {
+                                    "file": str(file_path.relative_to(PROJECT_ROOT)),
+                                    "line": line_no,
+                                    "import": import_target,
+                                    "type": "import",
+                                }
+                            )
+    
+                elif isinstance(node, ast.ImportFrom):
+                    if node.module:
+                        import_target = node.module
+                        line_no = node.lineno
+    
+                        # Only check project-local imports
+                        if not import_target.startswith(("agentic_core", "apps_")):
+                            continue
+    
+                        # Use find_spec to check if module exists
+                        try:
+>                           spec = importlib.util.find_spec(import_target)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\guardian\test_import_safety.py:1048: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+<frozen importlib.util>:95: in find_spec
+    ???
+agentic_core\L6_observability\__init__.py:8: in <module>
+    from agentic_core.L6_observability.BenchmarkingAgent import BenchmarkingAgent
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+    # File appears to be a sovereign component but missing canon high-signal keywords.
+    # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
+    from __future__ import annotations
+    
+    # This boosts alignment detection ù review and integrate appropriately
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    
+    """
+    BenchmarkingAgent - L3 System Health Specialist
+    
+    Measures execution time of specific functions and operations.
+    Tracks performance metrics across cycles to detect degradation.
+    """
+    import json
+    import logging
+    import statistics
+    import time
+    from collections.abc import Callable
+    from datetime import datetime
+    from functools import wraps
+    from pathlib import Path
+    from typing import Any
+    
+    # NAMING FIXED: Logger \u2192 Logger
+    Logger = logging.getLogger(__name__)
+    
+    # configuration
+    # NAMING FIXED: BENCHMARK_HISTORY_SIZE \u2192 benchmark_history_size
+    benchmark_history_size = 1000
+    # NAMING FIXED: PERFORMANCE_DEGRADATION_THRESHOLD \u2192 PERFORMANCE_DEGRADATION_THRESHOLD
+    PERFORMANCE_DEGRADATION_THRESHOLD = 0.5  # 50% slower than average
+    
+    
+    # NAMING FIXED: BenchmarkResult \u2192 BenchmarkResult
+    class BenchmarkResult:
+        """BenchmarkResult agent for autonomous operations."""
+    
+        pass
+    
+    
+    BenchmarkSuite = type(
+        "BenchmarkSuite",
+        (),
+        {
+            "name": "",
+            "add_result": lambda s, r: None,
+            "is_degraded": lambda s: False,
+            "stats": {"avg_ms": 0, "count": 0},
+            "get_summary": lambda s: {},
+        },
+    )
+    
+    
+    class BenchmarkResultActual:
+        """Result of a single benchmark measurement."""
+    
+        def __init__(self, name: str, duration_ms: float, metadata: dict = None):
+            self.name = name
+            self.duration_ms = duration_ms
+            self.metadata = metadata or {}
+            self.timestamp = datetime.utcnow()
+    
+        def to_dict(self) -> dict:
+            """Convert to dictionary."""
+            return {
+                "name": self.name,
+                "duration_ms": self.duration_ms,
+                "metadata": self.metadata,
+                "timestamp": self.timestamp.isoformat(),
+            }
+    
+    
+    # NAMING FIXED: BenchmarkSuite \u2192 BenchmarkSuite
+    class BenchmarkSuite:
+        """Collection of benchmarks for a specific operation."""
+    
+        def __init__(self, name: str):
+            self.name = name
+            self.results: list[BenchmarkResult] = []
+            self.stats = {
+                "count": 0,
+                "avg_ms": 0.0,
+                "min_ms": float("inf"),
+                "max_ms": 0.0,
+                "std_dev": 0.0,
+            }
+    
+        def add_result(self, result: BenchmarkResult) -> Any:
+            """Add a benchmark result."""
+            self.results.append(result)
+    
+            # Keep only recent results
+            if len(self.results) > BENCHMARK_HISTORY_SIZE:
+                self.results = self.results[-BENCHMARK_HISTORY_SIZE:]
+    
+            # Update statistics
+            self._update_stats()
+    
+        def _update_stats(self):
+            """Update statistical measures."""
+            if not self.results:
+                return
+    
+            durations = [r.duration_ms for r in self.results]
+    
+            self.stats["count"] = len(durations)
+            self.stats["avg_ms"] = statistics.mean(durations)
+            self.stats["min_ms"] = min(durations)
+            self.stats["max_ms"] = max(durations)
+    
+            if len(durations) > 1:
+                self.stats["std_dev"] = statistics.stdev(durations)
+            else:
+                self.stats["std_dev"] = 0.0
+    
+        def is_degraded(self, threshold: float = None) -> bool:
+            """Check if performance has degraded."""
+            threshold = threshold or PERFORMANCE_DEGRADATION_THRESHOLD
+    
+            if len(self.results) < 10:  # Need enough data
+                return False
+    
+            # Compare last 5 results to historical average
+            recent_avg = statistics.mean(r.duration_ms for r in self.results[-5:])
+            historical_avg = statistics.mean(r.duration_ms for r in self.results[:-5])
+    
+            if historical_avg == 0:
+                return False
+    
+            degradation = (recent_avg - historical_avg) / historical_avg
+            return degradation > threshold
+    
+        def get_summary(self) -> dict:
+            """Get benchmark summary."""
+            return {
+                "name": self.name,
+                "statistics": self.stats.copy(),
+                "is_degraded": self.is_degraded(),
+                "last_result": self.results[-1].to_dict() if self.results else None,
+            }
+    
+    
+    from agentic_core.base_agents.decorators import standard_heal
+    from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+    
+    
+    # NAMING FIXED: BenchmarkingAgent \u2192 BenchmarkingAgent
+>   class BenchmarkingAgent(SubatomicTestingMixin, SovereignBaseAgent):
+E   TypeError: Cannot create a consistent method resolution
+E   order (MRO) for bases SubatomicTestingMixin, SovereignBaseAgent
+
+agentic_core\L6_observability\BenchmarkingAgent.py:149: TypeError
+============================== warnings summary ===============================
+tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_ghost_import_detection_with_find_spec
+  C:\Git\Agentic-Workflow\apps_lic\shared\reasoning\ReasoningToggles.py:13: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ReasoningToggles(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+============================================================
+GUARDIAN REPORT GENERATED
+============================================================
+Report saved to: C:\Git\Agentic-Workflow\guardian_report.txt
+Status: FAIL
+Failed Tests: 1
+============================================================
+=========================== GUARDIAN LAYER SUMMARY ============================
+Guardian tests run: 1
+Passed: 0
+Failed: 1
+Errors: 0
+
+\u274c GUARDIAN STATUS: FAIL
+Architectural violations detected. Review failed tests.
+======================================  =======================================
+=========================== short test summary info ===========================
+FAILED tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_ghost_import_detection_with_find_spec
+======================== 1 failed, 1 warning in 14.49s ========================

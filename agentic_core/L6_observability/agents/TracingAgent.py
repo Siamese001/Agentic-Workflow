@@ -46,6 +46,7 @@ from threading import Lock
 from typing import Any
 
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
