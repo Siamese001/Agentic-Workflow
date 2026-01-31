@@ -1391,3 +1391,260 @@ class TestGravityCompliance:
                 pytest.fail(error_msg)
 
         print(f"[OK] No gravity leaks detected ({len(core_files)} core files checked)")
+
+    @pytest.mark.guardian
+    def test_advanced_import_patterns(self):
+        """
+        Advanced import pattern validation.
+        
+        Validates:
+        - Circular import detection
+        - Dynamic import best practices
+        - Relative import usage
+        - Import alias conventions
+        """
+        print("\n=== ADVANCED IMPORT PATTERN VALIDATION ===")
+        
+        violations: List[Dict[str, Any]] = []
+        
+        # Build import graph for circular dependency detection
+        import_graph: Dict[str, Set[str]] = {}
+        python_files = self.get_all_python_files()
+        
+        # First pass: build import graph
+        for file_path in python_files:
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                tree = ast.parse(content, filename=str(file_path))
+                file_key = str(file_path.relative_to(PROJECT_ROOT))
+                import_graph[file_key] = set()
+                
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Import):
+                        for alias in node.names:
+                            # Convert import to file path
+                            module_path = alias.name.replace('.', '/') + '.py'
+                            potential_files = [
+                                PROJECT_ROOT / module_path,
+                                PROJECT_ROOT / alias.name / '__init__.py'
+                            ]
+                            
+                            for potential_file in potential_files:
+                                if potential_file.exists():
+                                    import_graph[file_key].add(str(potential_file.relative_to(PROJECT_ROOT)))
+                    
+                    elif isinstance(node, ast.ImportFrom):
+                        if node.module:
+                            module_path = node.module.replace('.', '/') + '.py'
+                            potential_files = [
+                                PROJECT_ROOT / module_path,
+                                PROJECT_ROOT / node.module / '__init__.py'
+                            ]
+                            
+                            for potential_file in potential_files:
+                                if potential_file.exists():
+                                    import_graph[file_key].add(str(potential_file.relative_to(PROJECT_ROOT)))
+            
+            except (SyntaxError, UnicodeDecodeError):
+                continue
+        
+        # Check for circular dependencies
+        def find_circular_dependencies(graph: Dict[str, Set[str]]) -> List[List[str]]:
+            """Find circular dependencies using DFS."""
+            visited = set()
+            rec_stack = set()
+            cycles = []
+            
+            def dfs(node: str, path: List[str]):
+                if node in rec_stack:
+                    # Found a cycle
+                    cycle_start = path.index(node)
+                    cycles.append(path[cycle_start:] + [node])
+                    return
+                
+                if node in visited:
+                    return
+                
+                visited.add(node)
+                rec_stack.add(node)
+                
+                for neighbor in graph.get(node, []):
+                    dfs(neighbor, path + [node])
+                
+                rec_stack.remove(node)
+            
+            for node in graph:
+                if node not in visited:
+                    dfs(node, [])
+            
+            return cycles
+        
+        circular_deps = find_circular_dependencies(import_graph)
+        
+        for cycle in circular_deps:
+            violations.append({
+                "type": "circular_import",
+                "cycle": " -> ".join(cycle),
+                "length": len(cycle)
+            })
+        
+        # Second pass: Check other import patterns
+        for file_path in python_files:
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    lines = f.readlines()
+                
+                rel_path = str(file_path.relative_to(PROJECT_ROOT))
+                
+                for line_num, line in enumerate(lines, 1):
+                    stripped = line.strip()
+                    
+                    # Check dynamic imports
+                    if any(pattern in stripped for pattern in [
+                        'importlib.import_module',
+                        '__import__',
+                        'exec(',
+                        'eval(',
+                        'globals()[',
+                        'locals()['
+                    ]):
+                        # Allow some legitimate uses
+                        if not any(legit in stripped for legit in [
+                            '# LEGITIMATE',
+                            '# DYNAMIC IMPORT',
+                            'test_import',
+                            'test_dynamic'
+                        ]):
+                            violations.append({
+                                "type": "dynamic_import",
+                                "file": rel_path,
+                                "line": line_num,
+                                "content": stripped[:100]
+                            })
+                    
+                    # Check relative imports in deep packages
+                    if stripped.startswith('from ..'):
+                        depth = rel_path.count('/')
+                        if depth > 3:  # Deep package using relative imports
+                            violations.append({
+                                "type": "deep_relative_import",
+                                "file": rel_path,
+                                "line": line_num,
+                                "content": stripped[:100]
+                            })
+                    
+                    # Check import alias conventions
+                    if ' as ' in stripped and ('import ' in stripped or 'from ' in stripped):
+                        # Check for non-standard aliases
+                        if any(bad in stripped for bad in [
+                            'import os as os',
+                            'import sys as sys',
+                            'import json as json',
+                            'from datetime import datetime as datetime'
+                        ]):
+                            violations.append({
+                                "type": "redundant_alias",
+                                "file": rel_path,
+                                "line": line_num,
+                                "content": stripped[:100]
+                            })
+            
+            except (UnicodeDecodeError, PermissionError):
+                continue
+        
+        # Report results
+        print(f"  Files analyzed: {len(python_files)}")
+        print(f"  Import pattern violations: {len(violations)}")
+        
+        # Break down by type
+        by_type = {}
+        for v in violations:
+            vtype = v["type"]
+            if vtype not in by_type:
+                by_type[vtype] = []
+            by_type[vtype].append(v)
+        
+        for vtype, items in by_type.items():
+            print(f"    - {vtype}: {len(items)} violations")
+        
+        # Track as tech debt with thresholds
+        KNOWN_CIRCULAR_IMPORTS = 5
+        KNOWN_DYNAMIC_IMPORTS = 20
+        KNOWN_DEEP_RELATIVE_IMPORTS = 10
+        KNOWN_REDUNDANT_ALIASES = 30
+        
+        # Check circular imports (critical)
+        circular_violations = [v for v in violations if v["type"] == "circular_import"]
+        if circular_violations:
+            if len(circular_violations) <= KNOWN_CIRCULAR_IMPORTS:
+                print(f"\n[TECH DEBT] {len(circular_violations)} circular imports (tracked, not blocking):")
+                for v in circular_violations[:3]:
+                    print(f"  - Cycle length {v['length']}: {v['cycle']}")
+                if len(circular_violations) > 3:
+                    print(f"  ... and {len(circular_violations) - 3} more")
+            else:
+                error_msg = f"CIRCULAR IMPORTS EXCEED THRESHOLD ({len(circular_violations)} > {KNOWN_CIRCULAR_IMPORTS}):\n\n"
+                for v in circular_violations[:5]:
+                    error_msg += f"  [X] Cycle length {v['length']}: {v['cycle']}\n"
+                if len(circular_violations) > 5:
+                    error_msg += f"  ... and {len(circular_violations) - 5} more\n"
+                error_msg += "\nCircular dependencies should be refactored."
+                pytest.fail(error_msg)
+        
+        # Check dynamic imports
+        dynamic_violations = [v for v in violations if v["type"] == "dynamic_import"]
+        if dynamic_violations:
+            if len(dynamic_violations) <= KNOWN_DYNAMIC_IMPORTS:
+                print(f"\n[TECH DEBT] {len(dynamic_violations)} dynamic imports (tracked, not blocking):")
+                for v in dynamic_violations[:5]:
+                    print(f"  - {v['file']}:{v['line']}")
+                if len(dynamic_violations) > 5:
+                    print(f"  ... and {len(dynamic_violations) - 5} more")
+            else:
+                error_msg = f"DYNAMIC IMPORTS EXCEED THRESHOLD ({len(dynamic_violations)} > {KNOWN_DYNAMIC_IMPORTS}):\n\n"
+                for v in dynamic_violations[:10]:
+                    error_msg += f"  [X] {v['file']}:{v['line']} - {v['content']}\n"
+                if len(dynamic_violations) > 10:
+                    error_msg += f"  ... and {len(dynamic_violations) - 10} more\n"
+                error_msg += "\nDynamic imports should be documented or avoided."
+                pytest.fail(error_msg)
+        
+        # Check deep relative imports
+        relative_violations = [v for v in violations if v["type"] == "deep_relative_import"]
+        if relative_violations:
+            if len(relative_violations) <= KNOWN_DEEP_RELATIVE_IMPORTS:
+                print(f"\n[TECH DEBT] {len(relative_violations)} deep relative imports (tracked, not blocking):")
+                for v in relative_violations[:5]:
+                    print(f"  - {v['file']}:{v['line']}")
+                if len(relative_violations) > 5:
+                    print(f"  ... and {len(relative_violations) - 5} more")
+            else:
+                error_msg = f"DEEP RELATIVE IMPORTS EXCEED THRESHOLD ({len(relative_violations)} > {KNOWN_DEEP_RELATIVE_IMPORTS}):\n\n"
+                for v in relative_violations[:10]:
+                    error_msg += f"  [X] {v['file']}:{v['line']} - {v['content']}\n"
+                if len(relative_violations) > 10:
+                    error_msg += f"  ... and {len(relative_violations) - 10} more\n"
+                error_msg += "\nDeep packages should use absolute imports."
+                pytest.fail(error_msg)
+        
+        # Check redundant aliases
+        alias_violations = [v for v in violations if v["type"] == "redundant_alias"]
+        if alias_violations:
+            if len(alias_violations) <= KNOWN_REDUNDANT_ALIASES:
+                print(f"\n[TECH DEBT] {len(alias_violations)} redundant aliases (tracked, not blocking):")
+                for v in alias_violations[:5]:
+                    print(f"  - {v['file']}:{v['line']}")
+                if len(alias_violations) > 5:
+                    print(f"  ... and {len(alias_violations) - 5} more")
+            else:
+                error_msg = f"REDUNDANT ALIASES EXCEED THRESHOLD ({len(alias_violations)} > {KNOWN_REDUNDANT_ALIASES}):\n\n"
+                for v in alias_violations[:10]:
+                    error_msg += f"  [X] {v['file']}:{v['line']} - {v['content']}\n"
+                if len(alias_violations) > 10:
+                    error_msg += f"  ... and {len(alias_violations) - 10} more\n"
+                error_msg += "\nRemove redundant import aliases."
+                pytest.fail(error_msg)
+        
+        print(f"[OK] Import patterns are acceptable")

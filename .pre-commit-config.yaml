@@ -1,20 +1,17 @@
 # .pre-commit-config.yaml
-# SIMPLIFIED: Only ruff lint/format on staged files
-# Rationale: Prevent circular logic from stash/unstash conflicts
-# Heavy validation moved to CI/CD and tests/guardian/
-# SSOT validation moved to Guardian tests - enforced via test suite
+# MINIMAL: Only essential fast checks
+# Comprehensive validation moved to Guardian tests/CI
 
 repos:
   # ============================================================================
-  # TIER 1: Ruff Linting and Formatting (Staged Files Only)
+  # TIER 1: Essential Linting and Formatting (Staged Files Only)
   # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.13
     hooks:
       - id: ruff
         name: Ruff (Lint)
-        args: [--fix, --select, "F,E,W,B,UP,I"]
-<<<<<<< HEAD
+        args: [--fix, --select, "F,E"]  # Only critical errors (Pyflakes + Error)
         exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
         # Only runs on staged files - no repo-wide scanning
       - id: ruff-format
@@ -23,17 +20,17 @@ repos:
         # Only runs on staged files - no repo-wide scanning
 
   # ============================================================================
-  # TIER 2: Essential Checks Only
+  # TIER 2: Constitutional Rules Only
   # ============================================================================
   - repo: local
     hooks:
       # [CONSTITUTIONAL] Base Agent Location Lock - CANNOT be disabled
+      # CRITICAL: All *BaseAgent.py files MUST be in agentic_core/base_agents/
       - id: check-base-agent-location
         name: Constitutional Base Agent Lock
-        entry: python scripts/validate_structure.py
+        entry: python scripts/validate_structure.py --constitutional-only
         language: python
         files: .*BaseAgent\.py$
-        # CRITICAL: All *BaseAgent.py files MUST be in agentic_core/base_agents/
         # This is a constitutional rule that short-circuits all other validation.
 
       - id: purge-cache

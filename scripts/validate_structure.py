@@ -322,7 +322,18 @@ def validate_path(file_path: str) -> list[str]:
 
 def main() -> int:
     """Main entry point for pre-commit hook."""
-    files = sys.argv[1:] if len(sys.argv) > 1 else []
+    args = sys.argv[1:]
+    files = []
+    constitutional_only = False
+    
+    # Parse arguments
+    i = 0
+    while i < len(args):
+        if args[i] == "--constitutional-only":
+            constitutional_only = True
+        else:
+            files.append(args[i])
+        i += 1
 
     if not files:
         return 0
@@ -331,12 +342,19 @@ def main() -> int:
     constitutional_violations: list[str] = []
 
     for file_path in files:
-        errors = validate_path(file_path)
-        for error in errors:
-            if "[CONSTITUTIONAL" in error:
+        if constitutional_only:
+            # Only check constitutional rule
+            is_valid, error = validate_base_agent_location(Path(file_path))
+            if not is_valid:
                 constitutional_violations.append(error)
-            else:
-                all_violations.append(error)
+        else:
+            # Check all validators
+            errors = validate_path(Path(file_path))
+            for error in errors:
+                if "[CONSTITUTIONAL" in error:
+                    constitutional_violations.append(error)
+                else:
+                    all_violations.append(error)
 
     # Constitutional violations are CRITICAL
     if constitutional_violations:
@@ -355,8 +373,8 @@ def main() -> int:
         print("=" * 70 + "\n")
         return 1
 
-    # Regular violations
-    if all_violations:
+    # Regular violations (only if not constitutional-only)
+    if not constitutional_only and all_violations:
         print("\n" + "=" * 70)
         print("[SSOT STRUCTURE GUARD] STRUCTURAL VIOLATIONS DETECTED")
         print("=" * 70)
