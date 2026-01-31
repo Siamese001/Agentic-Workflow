@@ -42,7 +42,7 @@ def demo_cli_functionality():
     # Test 3: Test main function signature
     print("\n3. Testing main function with territory parameter:")
     try:
-        from ops_scripts.execute_ssot_compliance_protocol import main
+        from ops_scripts.execute_ssot_compliance_protocol import main  # noqa: F401
 
         print("✅ main() function accepts target_territory parameter")
         print("   Function signature: main(target_territory=None)")

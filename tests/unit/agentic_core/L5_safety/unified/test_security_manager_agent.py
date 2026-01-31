@@ -83,7 +83,7 @@ class TestSecurityManagerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.unified.SecurityManagerAgent import SecurityManagerAgent
+                from agentic_core.L5_safety.unified.SecurityManagerAgent import SecurityManagerAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

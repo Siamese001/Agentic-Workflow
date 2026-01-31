@@ -273,6 +273,11 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
         "purpose": "Generated reports and analysis outputs.",
         "subfolders": ["coverage_html", "telemetry", "audit"],
     },
+    "scripts": {
+        "depth": 2,
+        "purpose": "Project maintenance and utility scripts.",
+        "subfolders": ["hooks", "maintenance"],
+    },
     ".sovereign_healing_backup": {
         "depth": 2,
         "purpose": "Backup directory for healing operations.",

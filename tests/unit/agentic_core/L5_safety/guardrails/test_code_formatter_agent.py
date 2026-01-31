@@ -87,7 +87,7 @@ class TestCodeFormatterAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.guardrails.CodeFormatterAgent import CodeFormatterAgent
+                from agentic_core.L5_safety.guardrails.CodeFormatterAgent import CodeFormatterAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

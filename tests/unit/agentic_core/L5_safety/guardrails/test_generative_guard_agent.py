@@ -92,7 +92,7 @@ class TestGenerativeGuardAgent:
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
                 from agentic_core.L5_safety.guardrails.GenerativeGuardAgent import (
-                    GenerativeGuardAgent,
+                    GenerativeGuardAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass

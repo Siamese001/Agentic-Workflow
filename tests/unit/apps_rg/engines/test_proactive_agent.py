@@ -93,7 +93,7 @@ class TestProactiveAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.ProactiveAgent import ProactiveAgent
+                from apps_rg.engines.ProactiveAgent import ProactiveAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

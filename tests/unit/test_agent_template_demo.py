@@ -164,7 +164,8 @@ class TestMockAgent:
             # Verify the expected tool/logic was triggered
             assert result is not None, f"Execute should return result for: {scenario['input']}"
             assert result["tool"] == scenario["expected_tool"], (
-                f"Expected tool {scenario['expected_tool']}, got {result['tool']} for input: {scenario['input']}"
+                f"Expected tool {scenario['expected_tool']}, got {result['tool']} "
+                f"for input: {scenario['input']}"
             )
 
             # Verify state was updated

@@ -95,7 +95,7 @@ class TestMessageDiversityValidatorAgent:
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
                 from apps_lic.engines.MessageDiversityValidatorAgent import (
-                    MessageDiversityValidatorAgent,
+                    MessageDiversityValidatorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass

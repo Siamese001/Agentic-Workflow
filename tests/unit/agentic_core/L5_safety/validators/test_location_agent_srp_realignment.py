@@ -110,7 +110,7 @@ class TestT3P103SecurityWrapperDiscovery:
         # Import verification is more robust than path checking
         # since pytest may change working directories
         try:
-            import tests.security.test_safe_execute
+            import tests.security.test_safe_execute  # noqa: F401
 
             assert True, "Security test file discovered and importable"
         except (ImportError, NameError, AttributeError, TypeError) as e:

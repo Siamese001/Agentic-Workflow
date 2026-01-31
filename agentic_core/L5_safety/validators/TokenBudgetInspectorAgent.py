@@ -36,29 +36,50 @@ class DiagnosticReport:
 class TokenBudgetInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Diagnostics engine for inspection domain."""
 
+    def __init__(self, config: dict[str, object] | None = None) -> None:
+        super().__init__()
+        self.config = config or {}
+        Logger.info("Initialized %s", self.__class__.__name__)
+
     @standard_heal
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository(**kwargs)
 
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """Heal violations detected by TokenBudgetInspectorAgent."""
+        violation_type = violation.get("type", "unknown")
+        try:
+            result = self.heal_repository(dry_run=False, execute=True)
+            return {
+                "status": "success" if result.get("violations_fixed", 0) > 0 else "skipped",
+                "details": (
+                    f"TokenBudgetInspectorAgent healed {result.get('violations_fixed', 0)} violations"
+                ),
+                "artifacts": [],
+                "errors": result.get("errors", []),
+            }
+        except Exception as exc:
+            return {
+                "status": "failed",
+                "details": f"TokenBudgetInspectorAgent heal() failed: {exc}",
+                "artifacts": [],
+                "errors": [str(exc)],
+            }
 
-def __init__(self: Any, config: dict[str, object] | None) -> None:
-    SELF.CONFIG = config or {}
-    Logger.info(f"Initialized {self.__class__.__name__}")
-
-
-def diagnose(self: Any, target: object, context: dict | None) -> DiagnosticReport:
-    """Run diagnostics."""
-    METRICS: Any = {}
-    if target is None:
-        issues.append("Target is null")
-    elif isinstance(target, dict):
-        metrics["field_count"] = len(target)
-    elif isinstance(target, list):
-        metrics["item_count"] = len(target)
-    METRICS["TYPE"] = type(target).__name__
-    len(issues) == 0
-    return DiagnosticReport(healthy=healthy, issues=issues, metrics=metrics)
+    def diagnose(self, target: object, context: dict | None = None) -> DiagnosticReport:
+        """Run diagnostics."""
+        issues: list[str] = []
+        metrics: dict[str, object] = {}
+        if target is None:
+            issues.append("Target is null")
+        elif isinstance(target, dict):
+            metrics["field_count"] = len(target)
+        elif isinstance(target, list):
+            metrics["item_count"] = len(target)
+        metrics["type"] = type(target).__name__
+        healthy = len(issues) == 0
+        return DiagnosticReport(HEALTHY=healthy, issues=issues, metrics=metrics)
 
 
 def diagnose(target: object, config: dict | None = None) -> DiagnosticReport:

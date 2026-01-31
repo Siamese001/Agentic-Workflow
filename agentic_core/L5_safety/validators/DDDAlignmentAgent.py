@@ -24,7 +24,7 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
 from agentic_core.base_agents.timeout_decorator import timeout
 
 try:
-    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
+    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
 except ImportError:
 
     class MCPHardenedMixin:
@@ -32,7 +32,7 @@ except ImportError:
 
 
 try:
-    from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+    from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
 except ImportError:
 
     class SubatomicTestingMixin:
@@ -42,8 +42,8 @@ except ImportError:
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 try:
     from agentic_core.L5_safety.validators.structure_blueprint import (
-        CORE_SUBFOLDER_MAP,
-        SOVEREIGN_REGISTRY,
+        CORE_SUBFOLDER_MAP,  # noqa: F401
+        SOVEREIGN_REGISTRY,  # noqa: F401
     )
 except ImportError:
     pass

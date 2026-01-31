@@ -4,9 +4,10 @@ Implements robust error handling, retry logic, and structured output parsing.
 
 import json
 import os
+from dataclasses import dataclass
 
 import backoff
-
+from openai import (
     APIError,
     APITimeoutError,
     OpenAI,

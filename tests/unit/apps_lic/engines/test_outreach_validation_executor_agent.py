@@ -82,7 +82,7 @@ class TestOutreachValidationExecutorAgent:
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
                 from apps_lic.engines.OutreachValidationExecutorAgent import (
-                    OutreachValidationExecutorAgent,
+                    OutreachValidationExecutorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass

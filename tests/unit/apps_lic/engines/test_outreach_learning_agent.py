@@ -90,7 +90,7 @@ class TestOutreachLearningAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.OutreachLearningAgent import OutreachLearningAgent
+                from apps_lic.engines.OutreachLearningAgent import OutreachLearningAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

@@ -70,7 +70,7 @@ class TestBootstrapAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L0_maintenance.scripts.BootstrapAgent import BootstrapAgent
+                from agentic_core.L0_maintenance.scripts.BootstrapAgent import BootstrapAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

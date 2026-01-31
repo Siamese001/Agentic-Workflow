@@ -20,7 +20,7 @@ class TestPhase2Migration(unittest.TestCase):
         Critical Check: Verify AgentExecutor can be imported from its new home.
         """
         try:
-            from apps_rg.engines import AgentConfig, AgentExecutor, Provider
+            from apps_rg.engines import AgentConfig, AgentExecutor, Provider  # noqa: F401
 
             # Verify it's the class we expect
             self.assertTrue(

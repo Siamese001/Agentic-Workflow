@@ -24,7 +24,7 @@ try:
     # Add the project root to sys.path to import the blueprint
     project_root = pathlib.Path(__file__).parent.parent.parent
     sys.path.insert(0, str(project_root / "agentic_core" / "L5_safety" / "validators"))
-    from structure_blueprint import BASE_DIR, SOVEREIGN_TERRITORIES
+    from structure_blueprint import SOVEREIGN_TERRITORIES  # noqa: F401
 except ImportError as e:
     print(f"ERROR: Could not import structure_blueprint.py: {e}")
     print("Falling back to hardcoded approved folders for standalone execution")
@@ -184,7 +184,8 @@ class TestMigrationGuardian:
             dest_depth = len(dest_path.relative_to(self.base_dir).parts)
             if dest_depth > source_depth:
                 changes.append(
-                    f"Depth increase from {source_depth} to {dest_depth} - imports may need adjustment"
+                    f"Depth increase from {source_depth} to {dest_depth} - "
+                    f"imports may need adjustment"
                 )
 
         except Exception as e:
@@ -259,10 +260,15 @@ class TestMigrationGuardian:
             elif risk_level == "MEDIUM":
                 medium_risk_count += 1
 
-            justification = f"Enforces separation of concerns; mirrors {src.parent.name} structure under tests/{test_type}/"
+            justification = (
+                f"Enforces separation of concerns; mirrors {src.parent.name} "
+                f"structure under tests/{test_type}/"
+            )
 
             print(
-                f"| `{src.relative_to(self.base_dir)}` | `{dest.relative_to(self.base_dir)}` | {test_type} | {risk_level} | {justification} |"
+                f"| `{src.relative_to(self.base_dir)}` | "
+                f"`{dest.relative_to(self.base_dir)}` | {test_type} | "
+                f"{risk_level} | {justification} |"
             )
 
             # Store migration plan

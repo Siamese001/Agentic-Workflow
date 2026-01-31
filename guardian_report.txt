@@ -1,18 +1,34 @@
 ============================================================
 GUARDIAN ARCHITECTURAL HEALTH REPORT
 ============================================================
-Generated: 2026-01-31 06:22:03
-Exit Status: PASS
+Generated: 2026-01-31 19:10:36
+Exit Status: FAIL
 
 EXECUTION SUMMARY:
-  Total Tests Run: 4
-  Passed: 4
-  Failed: 0
-  Skipped: 0
+  Total Tests Run: 96
+  Passed: 80
+  Failed: 12
+  Skipped: 4
 
-✅ ALL GUARDIAN GATES PASSED
+FAILED GATES:
+  ❌ Other: 12 test(s)
+     - tests/guardian/test_agent_autonomy_comprehensive.py::test_agent_with_heal_repository
+     - tests/guardian/test_agent_autonomy_comprehensive.py::test_agent_missing_heal_repository
+     - tests/guardian/test_agent_autonomy_comprehensive.py::test_nonexistent_file
+     - tests/guardian/test_agent_autonomy_comprehensive.py::test_syntax_error_file
+     - tests/guardian/test_agent_autonomy_comprehensive.py::test_multiple_agent_classes
+     - tests/guardian/test_agent_autonomy_comprehensive.py::test_no_agent_classes
+     - tests/guardian/test_agent_autonomy_comprehensive.py::test_partial_compliance
+     - tests/guardian/test_agent_autonomy_comprehensive.py::test_non_python_file
+     - tests/guardian/test_core_components_comprehensive.py::test_all_critical_files_exist
+     - tests/guardian/test_manual_verification.py::TestManualVerification::test_monolith_detection_works
+     - tests/guardian/test_manual_verification.py::TestManualVerification::test_code_dust_detection_works
+     - tests/guardian/test_architecture_governance.py::test_architecture_governance
 
-ARCHITECTURAL HEALTH: ✅ OPTIMAL
-All architectural integrity checks passed.
-The codebase maintains structural integrity.
+ARCHITECTURAL HEALTH: ⚠️  COMPROMISED
+Architectural violations detected.
+Please review failed tests and remediate issues.
+
+RECOMMENDED ACTIONS:
+  - Review and fix other architectural violations
 ============================================================

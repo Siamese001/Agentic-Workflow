@@ -80,7 +80,7 @@ class TestHOP3SenderGroundingAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
+                from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

@@ -81,7 +81,7 @@ class TestHOP5GenerationAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP5GenerationAgent import HOP5GenerationAgent
+                from apps_lic.engines.HOP5GenerationAgent import HOP5GenerationAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

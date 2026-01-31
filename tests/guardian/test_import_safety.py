@@ -1156,6 +1156,17 @@ class TestGravityCompliance:
     maintaining architectural integrity.
     """
 
+    # Gravity layers in order (lower index = lower layer)
+    GRAVITY_LAYERS = [
+        "L0_maintenance",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability",
+    ]
+
     # Directories to scan for Python files
     SOURCE_DIRECTORIES = [
         "agentic_core",

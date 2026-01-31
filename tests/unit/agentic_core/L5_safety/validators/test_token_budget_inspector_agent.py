@@ -78,7 +78,7 @@ class TestTokenBudgetInspectorAgent:
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
                 from agentic_core.L5_safety.validators.TokenBudgetInspectorAgent import (
-                    TokenBudgetInspectorAgent,
+                    TokenBudgetInspectorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass

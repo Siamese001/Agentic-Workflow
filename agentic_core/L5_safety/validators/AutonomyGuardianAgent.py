@@ -14,6 +14,7 @@ Reporting logic and discovery are delegated to the L6 Modular Engine to ensure L
 import ast
 import json
 import logging
+import subprocess
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -124,7 +125,6 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
     def validate_agent_autonomy(self, agent_file: Path) -> list[str]:
         """Delegate autonomy validation to deterministic Guardian test."""
-        import subprocess
 
         # Run the Guardian test for autonomy compliance
         result = subprocess.run(

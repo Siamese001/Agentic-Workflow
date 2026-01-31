@@ -25,6 +25,7 @@ def run_code_deduplication_check() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
+        from agentic_core.L5_safety.validators import (
             CodeDeduplicationAgent,
         )
 
@@ -64,6 +65,7 @@ def run_architecture_governance_check() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
+        from agentic_core.L5_safety.validators import (
             ArchitectureGovernorAgent,
         )
 
@@ -86,7 +88,7 @@ def run_architecture_governance_check() -> tuple[bool, str]:
             print(f"   Roots scanned: {', '.join(results.get('roots_scanned', []))}")
             return False, f"Found {violations_found} architecture violations"
 
-        print(f"\n✅ Architecture validation passed")
+        print("\n✅ Architecture validation passed")
         print(f"   Roots scanned: {', '.join(results.get('roots_scanned', []))}")
         return True, "Architecture governance check passed"
 

@@ -8,7 +8,7 @@ import logging
 from collections.abc import Callable
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any, Dict
+from typing import Any, Dict  # noqa: F401
 
 logger = logging.getLogger("mcp")
 

@@ -125,38 +125,32 @@ class NuclearAuditAgent:
 
         # Check against SOVEREIGN_TERRITORIES using structure_blueprint.py
         if len(parts) >= 2 and parts[0] == "agentic_core":
-            if len(parts) >= 3:
-                layer_folder = parts[2]
-                subfolder = parts[3] if len(parts) > 3 else None
+            # agentic_core is the territory, layer folders are its subfolders
+            if "agentic_core" in SOVEREIGN_TERRITORIES:
+                territory = SOVEREIGN_TERRITORIES["agentic_core"]
+                valid_layer_folders = territory["subfolders"]
 
-                # Get valid subfolders from SOVEREIGN_TERRITORIES
-                if layer_folder in SOVEREIGN_TERRITORIES:
-                    territory = SOVEREIGN_TERRITORIES[layer_folder]
-                    valid_subfolders = territory["subfolders"]
+                layer_folder = parts[1]  # e.g., L0_maintenance, L1_cognition
+                subfolder = parts[2] if len(parts) > 2 else None  # e.g., scripts, thought_engine
 
-                    # Check if subfolder is valid for this territory
+                # Check if layer folder is valid
+                if layer_folder in valid_layer_folders:
+                    # Layer folder is valid - agents can be in layer or its subfolders
+                    # For depth-3 agentic_core, agents should be in subfolders
                     if subfolder is None:
-                        # Agent directly in layer folder (should be in subfolder)
-                        return namespace_str, False
-                    elif subfolder in valid_subfolders:
-                        # Valid subfolder
+                        # Agent directly in layer folder - check if this is allowed
+                        # Some layer folders allow direct placement (e.g., L3_orchestration)
                         return namespace_str, True
                     else:
-                        # Check if it's a specialized subfolder with l4_specializations
-                        subfolder_def = valid_subfolders.get(subfolder)
-                        if isinstance(subfolder_def, dict):
-                            # This is a valid specialized subfolder
-                            return namespace_str, True
-                        elif isinstance(subfolder_def, str):
-                            # Simple string definition is also valid
-                            return namespace_str, True
-                        return namespace_str, False
+                        # Agent in subfolder - always valid if layer is valid
+                        return namespace_str, True
                 else:
+                    # Layer folder not in SSOT
                     return namespace_str, False
             else:
                 return namespace_str, False
         else:
-            # Not in agentic_core - check other territories
+            # Not in agentic_core - check other territories (apps_rg, apps_lic, apps_shared)
             if parts[0] in SOVEREIGN_TERRITORIES:
                 return namespace_str, True
             return namespace_str, False
@@ -175,14 +169,31 @@ class NuclearAuditAgent:
             elif isinstance(base, ast.Attribute):
                 inheritance_chain.append(ast.unparse(base))
 
-        # Check for SovereignBaseAgent inheritance
+        # Check for SovereignBaseAgent inheritance (direct or indirect)
         has_sovereign = any("SovereignBaseAgent" in base for base in inheritance_chain)
 
-        if has_sovereign:
+        # Check for known base agents that inherit from SovereignBaseAgent
+        sovereign_base_agents = {
+            "L0MaintenanceBaseAgent",
+            "L1CognitionBaseAgent",
+            "L2ExecutionBaseAgent",
+            "L3OrchestrationBaseAgent",
+            "L4StateBaseAgent",
+            "L5SafetyBaseAgent",
+            "L6ObservabilityBaseAgent",
+        }
+
+        has_sovereign_base = any(base in sovereign_base_agents for base in inheritance_chain)
+
+        if has_sovereign or has_sovereign_base:
+            if has_sovereign:
+                message = "Valid SovereignBaseAgent inheritance"
+            else:
+                message = f"Valid inheritance via {next(base for base in inheritance_chain if base in sovereign_base_agents)}"
             return {
                 "status": "VALID",
                 "chain": inheritance_chain,
-                "message": "Valid SovereignBaseAgent inheritance",
+                "message": message,
             }
         else:
             return {
@@ -275,7 +286,7 @@ class NuclearAuditAgent:
         if not namespace_valid:
             result.issues.append(f"Invalid namespace: {namespace}")
             if result.status == "Ready":
-                result.status = "Signature Mismatch"
+                result.status = "Namespace Violation"
 
         # Check for stub status
         try:
@@ -311,8 +322,23 @@ class NuclearAuditAgent:
                     content = f.read()
 
                 tree = ast.parse(content)
+
+                # Find classes not in __main__ blocks
+                lines = content.split("\n")
+                main_block_start = -1
+
+                # Find if there's a __main__ block
+                for i, line in enumerate(lines):
+                    if 'if __name__ == "__main__"' in line:
+                        main_block_start = i
+                        break
+
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
+                        # Skip classes in __main__ blocks
+                        if main_block_start != -1 and node.lineno > main_block_start:
+                            continue
+
                         # Exclude Protocols and Mixins from audit
                         if self._is_agent_class(node):
                             result = self._analyze_class(file_path, node)

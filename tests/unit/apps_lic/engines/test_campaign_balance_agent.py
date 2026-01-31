@@ -88,7 +88,7 @@ class TestCampaignBalanceAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.CampaignBalanceAgent import CampaignBalanceAgent
+                from apps_lic.engines.CampaignBalanceAgent import CampaignBalanceAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

@@ -81,7 +81,7 @@ class TestCampaignPlannerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
+                from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

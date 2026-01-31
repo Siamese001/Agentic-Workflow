@@ -60,8 +60,8 @@ class TestUniversalHealing(unittest.TestCase):
         # Import and execute the relevant code section
         try:
             from agentic_core.L0_maintenance.scripts.execute_ssot import (
-                execute_phase1_discovery_impl,
-                logger,
+                execute_phase1_discovery_impl,  # noqa: F401
+                logger,  # noqa: F401
             )
 
             # Mock the logger to capture calls
@@ -337,7 +337,7 @@ class TestUniversalHealing(unittest.TestCase):
 
         # Import the certificate generation function
         try:
-            from datetime import datetime
+            from datetime import datetime  # noqa: F401
 
             from agentic_core.L0_maintenance.scripts.execute_ssot import execute_phase5_final_impl
 

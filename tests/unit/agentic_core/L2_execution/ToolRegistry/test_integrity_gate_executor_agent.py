@@ -86,7 +86,7 @@ class TestIntegrityGateExecutorAgent:
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
                 from agentic_core.L2_execution.ToolRegistry.IntegrityGateExecutorAgent import (
-                    IntegrityGateExecutorAgent,
+                    IntegrityGateExecutorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass

@@ -84,7 +84,7 @@ class TestOutreachPhase5OrchestratorAgent:
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
                 from apps_lic.engines.OutreachPhase5OrchestratorAgent import (
-                    OutreachPhase5OrchestratorAgent,
+                    OutreachPhase5OrchestratorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass

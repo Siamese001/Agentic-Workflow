@@ -88,7 +88,7 @@ class TestBrandComplianceAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
+                from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

@@ -82,7 +82,7 @@ class TestBoundaryTestingAgent:
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
                 from agentic_core.L5_safety.red_teaming.BoundaryTestingAgent import (
-                    BoundaryTestingAgent,
+                    BoundaryTestingAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass

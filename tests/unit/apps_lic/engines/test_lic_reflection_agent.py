@@ -84,7 +84,7 @@ class TestLicReflectionAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.LicReflectionAgent import LicReflectionAgent
+                from apps_lic.engines.LicReflectionAgent import LicReflectionAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

@@ -41,7 +41,7 @@ class LateInteractionReranker:
             return False
         # Try to check availability without loading
         try:
-            from sentence_transformers import CrossEncoder
+            from sentence_transformers import CrossEncoder  # noqa: F401
 
             return True
         except ImportError:
@@ -59,7 +59,7 @@ class LateInteractionReranker:
 
         try:
             # Import sentence_transformers
-            import torch
+            import torch  # noqa: F401
             from sentence_transformers import CrossEncoder
 
             logger.info(f"Loading CrossEncoder model: {self.model_name}")

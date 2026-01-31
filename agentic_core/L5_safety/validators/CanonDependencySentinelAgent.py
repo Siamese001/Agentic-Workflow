@@ -17,7 +17,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 
 try:
-    from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import mcp_hardened_mixin
+    from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
 except ImportError:
 
     class MCPHardenedMixin:

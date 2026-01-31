@@ -1,11 +1,10 @@
-```python
 """Minimal Anthropic Reference Client
 Production-ready minimal client for quick integration with prompt caching.
 """
 
 import os
 
-from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic
+from anthropic import Anthropic
 
 
 def simple_message(prompt: str, model: str = "claude-3-5-sonnet-20241022") -> str:
@@ -23,13 +22,11 @@ def simple_message(prompt: str, model: str = "claude-3-5-sonnet-20241022") -> st
     response = client.messages.create(
         model=model,
         max_tokens=1000,
-        messages=[{
-            "role": "user",
-            "content": [{"type": "text", "text": prompt}]
-        }]
+        messages=[{"role": "user", "content": [{"type": "text", "text": prompt}]}],
     )
 
     return response.content[0].text
+
 
 def cached_message(prompt: str, system_prompt: str = None) -> str:
     """Message with prompt caching for cost optimization.
@@ -46,23 +43,19 @@ def cached_message(prompt: str, system_prompt: str = None) -> str:
     # Build system prompt with caching
     system_content = []
     if system_prompt:
-        system_content.append({
-            "type": "text",
-            "text": system_prompt,
-            "cache_control": {"type": "ephemeral"}
-        })
+        system_content.append(
+            {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
+        )
 
     response = client.messages.create(
         model="claude-3-5-sonnet-20241022",
         max_tokens=1000,
         system=system_content if system_content else None,
-        messages=[{
-            "role": "user",
-            "content": [{"type": "text", "text": prompt}]
-        }]
+        messages=[{"role": "user", "content": [{"type": "text", "text": prompt}]}],
     )
 
     return response.content[0].text
+
 
 def tool_use_message(prompt: str, tools: list) -> dict:
     """Message with tool use capabilities.
@@ -79,11 +72,8 @@ def tool_use_message(prompt: str, tools: list) -> dict:
     response = client.messages.create(
         model="claude-3-5-sonnet-20241022",
         max_tokens=1000,
-        messages=[{
-            "role": "user",
-            "content": [{"type": "text", "text": prompt}]
-        }],
-        tools=tools
+        messages=[{"role": "user", "content": [{"type": "text", "text": prompt}]}],
+        tools=tools,
     )
 
     content = ""
@@ -93,16 +83,12 @@ def tool_use_message(prompt: str, tools: list) -> dict:
         if content_block.type == "text":
             content += content_block.text
         elif content_block.type == "tool_use":
-            tool_calls.append({
-                "id": content_block.id,
-                "name": content_block.name,
-                "input": content_block.input
-            })
+            tool_calls.append(
+                {"id": content_block.id, "name": content_block.name, "input": content_block.input}
+            )
 
-    return {
-        "content": content,
-        "tool_calls": tool_calls
-    }
+    return {"content": content, "tool_calls": tool_calls}
+
 
 if __name__ == "__main__":
     # Test simple message
@@ -110,20 +96,15 @@ if __name__ == "__main__":
 
     # Test cached message
     cached_message(
-        "Summarize quantum computing",
-        system_prompt="You are an expert physics educator."
+        "Summarize quantum computing", system_prompt="You are an expert physics educator."
     )
 
     # Test tool use
-    tools = [{
-        "name": "get_weather",
-        "description": "Get weather information",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "location": {"type": "string"}
-            }
+    tools = [
+        {
+            "name": "get_weather",
+            "description": "Get weather information",
+            "input_schema": {"type": "object", "properties": {"location": {"type": "string"}}},
         }
-    }]
+    ]
     # print(tool_use_message("What's the weather like in San Francisco?", tools)) # Example call
-```

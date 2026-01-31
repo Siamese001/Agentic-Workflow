@@ -11,12 +11,14 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 Logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from agentic_core.base_agents.BaseAgent import (
-        BaseAgent,
-        PlannerAssessment,
-        ScenarioSimulationResult,
-        StrategyPlan,
+    from agentic_core.base_agents.SovereignBaseAgent import (
+        SovereignBaseAgent,
     )
+
+    # Type aliases for compatibility
+    PlannerAssessment = dict[str, Any]
+    ScenarioSimulationResult = dict[str, Any]
+    StrategyPlan = dict[str, Any]
 
     from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
@@ -29,48 +31,8 @@ except ImportError:
         pass
 
 
-# STUB: BaseAgent (use LICAgentBase instead)
-class BaseAgent:
-    """Legacy base class."""
-
-    def log_feedback(self, *args, **kwargs):
-        pass
-
-    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
-        """
-        Heal violations detected by BaseAgent.
-
-        Args:
-            violation: Dictionary containing violation details with keys:
-                - file: Path to the file with the violation
-                - type: Type of violation detected
-                - message: Description of the violation
-
-        Returns:
-            Dictionary with keys:
-                - status: 'success', 'partial_success', 'failed', or 'skipped'
-                - details: Human-readable summary
-                - artifacts: List of modified files
-                - errors: List of error messages
-        """
-        violation.get("file") or violation.get("file_path")
-        violation_type = violation.get("type", "unknown")
-
-        # Default implementation - BaseAgent provides base functionality
-        try:
-            return {
-                "status": "skipped",
-                "details": f"BaseAgent heal() not yet implemented for {violation_type}",
-                "artifacts": [],
-                "errors": [],
-            }
-        except Exception as e:
-            return {
-                "status": "failed",
-                "details": f"BaseAgent heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
+# REMOVED: BaseAgent stub class
+# Use SovereignBaseAgent from agentic_core.base_agents instead
 
 
 class PlannerAssessment:

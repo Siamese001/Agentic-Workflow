@@ -18,8 +18,8 @@ Logger: Any = logging.getLogger(__name__)
 try:
     from titanium_rag_pipeline import (
         get_pipeline_stats,
-        get_titanium_search_tool,
-        get_titanium_search_with_sources,
+        get_titanium_search_tool,  # noqa: F401
+        get_titanium_search_with_sources,  # noqa: F401
     )
 
     TITANIUM_AVAILABLE: Any = True

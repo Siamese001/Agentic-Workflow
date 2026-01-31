@@ -27,6 +27,10 @@ from structure_blueprint import (
     get_validated_project_root,
 )
 
+# Import SovereignBaseAgent for inheritance
+sys.path.append(str(Path(__file__).parent.parent.parent.parent / "base_agents"))
+from SovereignBaseAgent import SovereignBaseAgent
+
 
 @dataclass
 class RoutingDecision:
@@ -123,12 +127,15 @@ class ASTAnalyzer:
                         self.function_calls.append("warnings.warn")
 
 
-class RootCustomsAgent:
+class RootCustomsAgent(SovereignBaseAgent):
     """
     Enhanced "Customs Agent" with AST-based Test Taxonomy and Zombie Code detection.
     """
 
     def __init__(self, project_root: Path | None = None, dry_run: bool = True):
+        # Initialize SovereignBaseAgent
+        super().__init__(name="RootCustomsAgent", layer="L0")
+
         self.project_root = project_root or get_validated_project_root()
         self.dry_run = dry_run
         self.routing_decisions: list[RoutingDecision] = []

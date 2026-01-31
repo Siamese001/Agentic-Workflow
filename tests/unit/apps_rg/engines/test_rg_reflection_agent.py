@@ -89,7 +89,7 @@ class TestRgReflectionAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.RgReflectionAgent import RgReflectionAgent
+                from apps_rg.engines.RgReflectionAgent import RgReflectionAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

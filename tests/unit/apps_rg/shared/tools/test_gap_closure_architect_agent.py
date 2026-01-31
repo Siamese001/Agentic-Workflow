@@ -73,7 +73,7 @@ class TestGapClosureArchitectAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.shared.tools.GapClosureArchitectAgent import GapClosureArchitectAgent
+                from apps_rg.shared.tools.GapClosureArchitectAgent import GapClosureArchitectAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

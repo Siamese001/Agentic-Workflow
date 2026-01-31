@@ -97,7 +97,7 @@ class TestBenchmarkingAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L6_observability.BenchmarkingAgent import BenchmarkingAgent
+                from agentic_core.L6_observability.BenchmarkingAgent import BenchmarkingAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

@@ -80,7 +80,7 @@ class TestHOP4RoutingAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP4RoutingAgent import HOP4RoutingAgent
+                from apps_lic.engines.HOP4RoutingAgent import HOP4RoutingAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

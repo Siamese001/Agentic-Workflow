@@ -1,8 +1,7 @@
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 # OutreachEngineContext stub

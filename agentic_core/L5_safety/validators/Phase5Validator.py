@@ -18,8 +18,6 @@ Target: PASS (testing 100%, healing >70%, MCP >80%, 0 regressions)
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-import importlib
-import importlib.util
 import json
 import logging
 import sys
@@ -108,23 +106,25 @@ class Phase5Validator:
     def instantiate_agent(self, agent: dict) -> tuple[Any | None, str | None]:
         """
         Validate agent using deterministic Guardian test instead of runtime instantiation.
-        
+
         This replaces the AI-Checking-AI pattern of runtime instantiation with static analysis.
         """
         import subprocess
-        
+
         rel_path = agent["path"]
         file_path = self.project_root / rel_path
-        
+
         if not file_path.exists():
             return None, f"File not found: {rel_path}"
-        
+
         # Run the Guardian test for agent validation
-        result = subprocess.run([
-            "python", "tests/guardian/test_agent_validation.py",
-            str(file_path)
-        ], capture_output=True, text=True, cwd=self.project_root)
-        
+        result = subprocess.run(
+            ["python", "tests/guardian/test_agent_validation.py", str(file_path)],
+            capture_output=True,
+            text=True,
+            cwd=self.project_root,
+        )
+
         if result.returncode == 0:
             return True, None  # Return True to indicate validation passed
         else:

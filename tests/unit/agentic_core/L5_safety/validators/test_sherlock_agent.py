@@ -93,7 +93,7 @@ class TestSherlockAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.SherlockAgent import SherlockAgent
+                from agentic_core.L5_safety.validators.SherlockAgent import SherlockAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

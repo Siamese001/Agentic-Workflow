@@ -93,7 +93,7 @@ class TestInferenceTypeHintAgent:
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
                 from agentic_core.schemas.models.InferenceTypeHintAgent import (
-                    InferenceTypeHintAgent,
+                    InferenceTypeHintAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass

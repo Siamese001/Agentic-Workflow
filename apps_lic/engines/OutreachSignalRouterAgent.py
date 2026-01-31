@@ -7,6 +7,7 @@ Provides self-healing capabilities for outreach campaigns:
 - Automatic rollback on critical failures
 """
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -14,7 +15,6 @@ from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Import mixins with fallbacks

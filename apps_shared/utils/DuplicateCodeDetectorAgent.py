@@ -14,11 +14,11 @@ Typical usage:
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-
 import ast
 import hashlib
 import logging
 
+from agentic_core.L5_safety.validators.structure_blueprint import (
     GLOBAL_EXCLUDED_DIRS,
     L0_MAINTENANCE_DIR,
     L1_COGNITION_DIR,
@@ -36,7 +36,6 @@ ARCHIVES_DIR = "archives"
 
 # Tree-sitter for AST fingerprinting
 try:
-
     TREE_SITTER_AVAILABLE = True
 except ImportError:
     TREE_SITTER_AVAILABLE = False

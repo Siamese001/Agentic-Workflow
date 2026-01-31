@@ -79,7 +79,7 @@ class TestHOP9IntegrationAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP9IntegrationAgent import HOP9IntegrationAgent
+                from apps_lic.engines.HOP9IntegrationAgent import HOP9IntegrationAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

@@ -96,7 +96,7 @@ def test_2_deduplication_detection():
     # Check that TwoPhaseDeduplicationAgent exists and can be imported
     try:
         from apps_lic.engines.TwoPhaseDeduplicationAgent import (
-            TwoPhaseDeduplicationAgent,
+            TwoPhaseDeduplicationAgent,  # noqa: F401
             get_two_phase_deduplication_agent,
         )
 

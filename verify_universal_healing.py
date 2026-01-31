@@ -145,8 +145,6 @@ def run_verification():
         sys.path.insert(0, str(project_root))
         from agentic_core.L0_maintenance.scripts.execute_ssot import (
             AutonomousDecisionEngine,
-            RuntimeStateManager,
-            main,
         )
 
         print("✅ PASS: Patched module imports successfully")

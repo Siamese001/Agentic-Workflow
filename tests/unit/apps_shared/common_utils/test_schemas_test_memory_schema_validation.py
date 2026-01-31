@@ -56,7 +56,7 @@ def validate_schema_version(
         # Non-Pydantic payloads are ignored by this function.
         return
 
-    _get_schema_version(obj)
+    version = _get_schema_version(obj)
     if version is None:
         # Older objects or non-versioned models are tolerated for now.
         return
