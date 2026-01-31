@@ -77,7 +77,7 @@ def test_tc_mro_003_semantic_debugger_inheritance():
         from agentic_core.L5_safety.validators.SemanticDebuggerAgent import SemanticDebuggerAgent
 
         # If we get here without TypeError, the diamond problem is resolved
-        agent = SemanticDebuggerAgent(project_root=PROJECT_ROOT)
+        SemanticDebuggerAgent(project_root=PROJECT_ROOT)
 
         print("   ✅ 100% PASS: Diamond Problem Resolved")
         return True

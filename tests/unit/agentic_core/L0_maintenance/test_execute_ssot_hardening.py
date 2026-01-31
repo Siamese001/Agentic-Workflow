@@ -170,7 +170,7 @@ def test_windows_long_paths_check():
     with patch("platform.system", return_value="Windows"):
         # Mock successful registry check
         with (
-            patch("winreg.OpenKey") as mock_open,
+            patch("winreg.OpenKey"),
             patch("winreg.QueryValueEx", return_value=(1, None)),
         ):
             success, errors = validator.run_checks()
@@ -178,7 +178,7 @@ def test_windows_long_paths_check():
 
         # Mock failed registry check
         with (
-            patch("winreg.OpenKey") as mock_open,
+            patch("winreg.OpenKey"),
             patch("winreg.QueryValueEx", return_value=(0, None)),
         ):
             success, errors = validator.run_checks()

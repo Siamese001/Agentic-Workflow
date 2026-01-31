@@ -236,7 +236,7 @@ def generate_dashboard_data(agents):
             dashboard_data.append(metrics)
 
     # Calculate TOTAL row
-    total_agents = len(agents)
+    len(agents)
     total_metrics = calculate_metrics(agents)
     if total_metrics:
         total_metrics["Territory"] = "TOTAL"

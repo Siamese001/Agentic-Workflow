@@ -159,7 +159,7 @@ def validate_void_compliance():
     engine = VoidComplianceEngine()
 
     # Test detection of legacy imports
-    test_violations = engine.scan_file_content("test_file.py", ComplianceInput())
+    engine.scan_file_content("test_file.py", ComplianceInput())
 
     print("✅ Void Compliance engine initialized")
 
@@ -198,7 +198,7 @@ def validate_pydantic_models():
     from pydantic import ValidationError
 
     # Valid model
-    valid = ClerkInput(master_resume={"test": "data"})
+    ClerkInput(master_resume={"test": "data"})
     print("✅ Valid ClerkInput created")
 
     # Valid ExperienceSection
@@ -209,7 +209,7 @@ def validate_pydantic_models():
 
     # Invalid model should raise
     try:
-        invalid = ClerkInput()  # Missing required field
+        ClerkInput()  # Missing required field
         print("❌ Should have raised ValidationError")
         return False
     except ValidationError:

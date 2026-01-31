@@ -146,7 +146,7 @@ class TestLocationAgentSmartRouting:
         mock_safe_move.return_value = {"applied": True, "new_path": "data/test_data.csv"}
 
         # Execute
-        results = mock_agent.cleanup_violations([(violation_file, msg)], dry_run=False)
+        mock_agent.cleanup_violations([(violation_file, msg)], dry_run=False)
 
         # Verify directory creation
         target_dir = mock_agent.project_root / "data"
@@ -210,7 +210,7 @@ class TestLocationAgentSmartRouting:
         msg = "File not in ROOT_WHITELIST"
 
         # Execute in dry run
-        results = mock_agent.cleanup_violations([(violation_file, msg)], dry_run=True)
+        mock_agent.cleanup_violations([(violation_file, msg)], dry_run=True)
 
         # Verify file wasn't moved (still in root)
         assert violation_file.exists()

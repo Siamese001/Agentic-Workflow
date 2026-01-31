@@ -60,7 +60,7 @@ class TestHOP8QAReportAgent:
             from apps_lic.engines.HOP8QAReportAgent import HOP8QAReportAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(HOP8QAReportAgent, "heal_repository") or any(
+            hasattr(HOP8QAReportAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(HOP8QAReportAgent)
             )
             # Not all agents need healing - this is informational

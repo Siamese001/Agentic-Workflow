@@ -49,7 +49,7 @@ def test_extended_purge_coverage():
 
     try:
         # Run with --all
-        result = subprocess.run(
+        subprocess.run(
             ["python", "ops_scripts/maintenance/purge_cache.py", "--all", "--quiet"],
             capture_output=True,
             text=True,
@@ -84,7 +84,7 @@ def test_selective_exclusion_persistence():
     venv_cache.mkdir(parents=True, exist_ok=True)
 
     try:
-        result = subprocess.run(
+        subprocess.run(
             ["python", "ops_scripts/maintenance/purge_cache.py", "--all", "--quiet"],
             capture_output=True,
             text=True,

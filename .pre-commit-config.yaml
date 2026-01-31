@@ -14,6 +14,7 @@ repos:
       - id: ruff
         name: Ruff (Lint)
         args: [--fix, --select, "F,E,W,B,UP,I"]
+<<<<<<< HEAD
         exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
         # Only runs on staged files - no repo-wide scanning
       - id: ruff-format

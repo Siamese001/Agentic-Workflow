@@ -141,7 +141,7 @@ class DepthScorer:
             # Check 2: Recent activity
             if recent_posts and isinstance(recent_posts, list):
                 # Look for posts within last 90 days
-                cutoff_date = datetime.now() - timedelta(days=90)
+                datetime.now() - timedelta(days=90)
                 recent_count = 0
 
                 for post in recent_posts:

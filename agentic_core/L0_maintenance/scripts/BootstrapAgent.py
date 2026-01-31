@@ -108,7 +108,7 @@ class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBaseAgent):
                 - errors: List of error messages
         """
         file_path = violation.get("file") or violation.get("file_path")
-        violation_type = violation.get("type", "unknown")
+        violation.get("type", "unknown")
 
         # Delegate to existing heal_repository method
         try:

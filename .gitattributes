@@ -1,0 +1,45 @@
+# .gitattributes - Line Ending Normalization
+# Ensures consistent line endings across platforms
+
+# Auto-detect text files and normalize to LF
+* text=auto
+
+# Python files - always LF
+*.py text eol=lf
+*.pyi text eol=lf
+
+# JSON files - always LF
+*.json text eol=lf
+*.jsonl text eol=lf
+
+# YAML files - always LF
+*.yaml text eol=lf
+*.yml text eol=lf
+
+# Markdown files - always LF
+*.md text eol=lf
+
+# Shell scripts - always LF
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Batch files - always CRLF (Windows)
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Configuration files - always LF
+*.toml text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Binary files - no normalization
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary

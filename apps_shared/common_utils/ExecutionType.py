@@ -192,8 +192,7 @@ class ObservabilityToolExecutor:
             raise ValueError(f"No implementation for tool: {request.tool_id}")
 
         # Execute and stream
-        for chunk in implementation(request.command, request.parameters, stream=True):
-            yield chunk
+        yield from implementation(request.command, request.parameters, stream=True)
 
     def execute_tools_batch(
         self, requests: list[ToolExecutionRequest]

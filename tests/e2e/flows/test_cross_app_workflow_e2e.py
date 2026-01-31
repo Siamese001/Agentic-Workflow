@@ -63,7 +63,7 @@ class TestCrossAppWorkflowE2E:
         assert resume_result["quality_score"] > 0.9, "High quality resume"
 
         # Step 2: LIC uses resume insights for outreach
-        outreach_context = {
+        {
             "resume_highlights": resume_result["highlights"],
             "target_role": mock_job_opportunity["title"],
             "recruiter": mock_job_opportunity["recruiter"],
@@ -189,11 +189,6 @@ class TestCrossAppErrorHandling:
     def test_upstream_failure_handling(self):
         """Test handling of upstream app failure."""
         # RG fails
-        rg_failure = {
-            "app": "RG",
-            "error": "resume_generation_failed",
-            "recoverable": True,
-        }
 
         # LIC should handle gracefully
         lic_response = {
@@ -207,11 +202,6 @@ class TestCrossAppErrorHandling:
     def test_shared_service_failure(self):
         """Test handling of shared service failure."""
         # Shared LLM service fails
-        service_failure = {
-            "service": "llm_provider",
-            "error": "rate_limit_exceeded",
-            "affects": ["RG", "LIC"],
-        }
 
         # Both apps should handle
         recovery = {

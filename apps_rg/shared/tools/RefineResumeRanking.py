@@ -26,7 +26,7 @@ class RefineResumeRanking:
         if adjustments and isinstance(data, dict):
             refined = {**data}
             for key, adj in adjustments.items():
-                if key in refined and isinstance(refined[key], (int, float)):
+                if key in refined and isinstance(refined[key], int | float):
                     previous = refined[key]
                     refined[key] = previous * adj
                     changes.append(f"{key}: {previous} -> {refined[key]}")

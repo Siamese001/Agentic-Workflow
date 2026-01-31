@@ -16,5 +16,5 @@ for a in sovereign_agents:
     if "/" in path or "\\" in path:
         prefix = path.split("/")[0] if "/" in path else path.split("\\")[0]
         path_prefixes[prefix] = path_prefixes.get(prefix, 0) + 1
-for prefix, count in sorted(path_prefixes.items(), key=lambda x: -x[1]):
+for prefix, _count in sorted(path_prefixes.items(), key=lambda x: -x[1]):
     pass

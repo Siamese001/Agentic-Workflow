@@ -44,7 +44,7 @@ def test_manifest_integrity_lock(clean_manifest_environment):
     from ManifestGuardian import ManifestGuardian
 
     # 1. Seal the manifest
-    checksum = ManifestGuardian.seal_manifest()
+    ManifestGuardian.seal_manifest()
     assert os.path.exists(".manifest.lock")
 
     # 2. Verify Valid State
@@ -118,7 +118,7 @@ def test_manifest_tampering_detection(clean_manifest_environment):
     from ManifestGuardian import ManifestGuardian
 
     # Initial seal
-    original_checksum = ManifestGuardian.seal_manifest()
+    ManifestGuardian.seal_manifest()
 
     # Test 1: Add a character
     with open("manifest.json", "a") as f:

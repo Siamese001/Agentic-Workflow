@@ -50,7 +50,6 @@ class ComplexityScanner:
             List of Violation dictionaries
         """
         Logger.info(f"🔍 Scanning directory: {directory}")
-        pattern: Any = "**/*.py" if recursive else "*.py"
         # Phase 6.9: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery import get_python_files
 
@@ -88,7 +87,7 @@ class ComplexityScanner:
             return []
         violations: Any = []
         for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 metrics: Any = self._analyze_function(node, source)
                 if metrics.exceeds_threshold():
                     violations.append(
@@ -135,7 +134,7 @@ class ComplexityScanner:
         max_depth = depth
         for child in ast.iter_child_nodes(node):
             child_depth = depth
-            if isinstance(child, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
+            if isinstance(child, ast.If | ast.For | ast.While | ast.With | ast.Try):
                 child_depth += 1
             max_depth = max(max_depth, self._calculate_nesting(child, child_depth))
         return max_depth

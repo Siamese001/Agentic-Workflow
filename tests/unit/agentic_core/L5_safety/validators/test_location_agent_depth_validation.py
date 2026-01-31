@@ -114,7 +114,7 @@ def test_variable_depth_paths_not_flagged():
         agent = LocationAgent(project_root=PROJECT_ROOT)
 
         for rel_path_str in VALID_VARIABLE_DEPTH_PATHS:
-            file_path = PROJECT_ROOT / rel_path_str
+            PROJECT_ROOT / rel_path_str
             rel_path = Path(rel_path_str)
             parts = rel_path.parts
             root_folder = parts[0]

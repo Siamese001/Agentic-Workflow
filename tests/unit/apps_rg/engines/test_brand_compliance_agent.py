@@ -73,7 +73,7 @@ class TestBrandComplianceAgent:
     def test_fuzzing_invalid_inputs(self, agent_class):
         """Test handling of invalid inputs."""
         invalid_inputs = [None, {}, "", [], 123]
-        for invalid_input in invalid_inputs:
+        for _invalid_input in invalid_inputs:
             try:
                 pass  # Would test actual processing
             except (TypeError, ValueError, AttributeError):

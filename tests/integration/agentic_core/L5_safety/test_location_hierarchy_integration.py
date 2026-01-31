@@ -34,7 +34,7 @@ class TestLocationHierarchyIntegration:
     def test_location_validates_before_hierarchy_moves(self, mock_project_root):
         """Test that location validation happens before hierarchy moves."""
         # Simulate a file move request
-        source = mock_project_root / "agentic_core" / "L5_safety" / "TestAgent.py"
+        mock_project_root / "agentic_core" / "L5_safety" / "TestAgent.py"
         target = mock_project_root / "agentic_core" / "base_agents" / "TestAgent.py"
 
         # Location should validate target is valid

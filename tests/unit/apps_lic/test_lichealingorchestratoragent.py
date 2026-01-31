@@ -62,7 +62,7 @@ class TestLicHealingOrchestratorAgent:
             from apps_lic.engines.LicHealingOrchestratorAgent import LicHealingOrchestratorAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(LicHealingOrchestratorAgent, "heal_repository") or any(
+            hasattr(LicHealingOrchestratorAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(LicHealingOrchestratorAgent)
             )
             # Not all agents need healing - this is informational

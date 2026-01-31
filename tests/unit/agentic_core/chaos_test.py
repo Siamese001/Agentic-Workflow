@@ -54,7 +54,7 @@ def another_breakpoint_usage():
 def function_with_empty_except():
     """Contains empty except block - should be detected."""
     try:
-        risky_operation = 1 / 0
+        pass
     except ZeroDivisionError:
         pass  # VIOLATION: Key 4 - empty except block
 
@@ -62,7 +62,7 @@ def function_with_empty_except():
 def another_empty_except():
     """Another empty except for coverage."""
     try:
-        x = int("not a number")
+        int("not a number")
     except ValueError:
         pass  # VIOLATION: Key 4 - empty except block
 
@@ -75,7 +75,7 @@ def another_empty_except():
 def function_with_bare_except():
     """Contains bare except - should be detected."""
     try:
-        dangerous_call = eval("1+1")
+        eval("1+1")
     except:  # VIOLATION: Key 5 - bare except (no exception type)
         print("Caught something")
 
@@ -83,7 +83,7 @@ def function_with_bare_except():
 def another_bare_except():
     """Another bare except for coverage."""
     try:
-        x = 1 / 0
+        pass
     except:  # VIOLATION: Key 5 - bare except
         pass  # Also Key 4 violation (empty)
 

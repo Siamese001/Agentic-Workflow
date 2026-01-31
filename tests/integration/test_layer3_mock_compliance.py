@@ -88,12 +88,12 @@ class TestLayer3MockCompliance:
 
         # Test database mock in Layer 3 - use direct mock instances
         mock_instance1 = MagicMock(return_value=mock_db)
-        conn1 = mock_instance1("postgresql://test")
+        mock_instance1("postgresql://test")
         assert mock_instance1.called
 
         # Test same configuration would work in other layers
         mock_instance2 = MagicMock(return_value=mock_db)
-        conn2 = mock_instance2("postgresql://test")
+        mock_instance2("postgresql://test")
         assert mock_instance2.called
 
         # Verify call patterns are identical

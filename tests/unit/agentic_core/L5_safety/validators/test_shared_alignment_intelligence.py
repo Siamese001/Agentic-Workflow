@@ -65,7 +65,7 @@ class DuplicateCodeDetector:
         generic_file.write_text(content, encoding="utf-8")
 
         # Parse AST and compute scores
-        tree = ast.parse(content)
+        ast.parse(content)
 
         # Mock the _recompute_ast_scores to return low domain scores
         with patch.object(location_agent, "_recompute_ast_scores") as mock_scores:
@@ -77,11 +77,9 @@ class DuplicateCodeDetector:
                 mock_move.return_value = {"applied": True, "status": "SUCCESS"}
 
                 # Simulate gravity violation detection
-                affected_paths = []
-                import_touched_paths = []
 
                 # Trigger the deep import validation logic
-                result = location_agent.deep_import_validation_and_heal(
+                location_agent.deep_import_validation_and_heal(
                     affected_paths=[generic_file], import_touched_paths=[], dry_run=False
                 )
 
@@ -120,7 +118,7 @@ class ProfileScraper:
         lic_file.write_text(content, encoding="utf-8")
 
         # Parse AST and compute scores
-        tree = ast.parse(content)
+        ast.parse(content)
 
         # Mock the _recompute_ast_scores to return high lic score
         with patch.object(location_agent, "_recompute_ast_scores") as mock_scores:

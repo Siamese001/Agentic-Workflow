@@ -253,13 +253,7 @@ def test_attribute_collision():
 
     # Check MCPHardenedMixin uses _mcp_ prefix
     try:
-        mcp_attrs = [attr for attr in dir(MCPHardenedMixin) if attr.startswith("_mcp_")]
-        expected_mcp = [
-            "_mcp_audit_log",
-            "_mcp_call_count",
-            "_mcp_success_count",
-            "_mcp_failure_count",
-        ]
+        [attr for attr in dir(MCPHardenedMixin) if attr.startswith("_mcp_")]
 
         # Check that key attributes use _mcp_ prefix
         if "_mcp_audit_log" in str(

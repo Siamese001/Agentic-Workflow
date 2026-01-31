@@ -337,16 +337,16 @@ class LICCodeInterpreter:
         Returns:
             Dictionary with overlap statistics
         """
-        words1 = set(
+        words1 = {
             w.lower()
             for w in re.findall(r"\b\w+\b", text1)
             if len(w) >= min_word_length and w.lower() not in STOP_WORDS
-        )
-        words2 = set(
+        }
+        words2 = {
             w.lower()
             for w in re.findall(r"\b\w+\b", text2)
             if len(w) >= min_word_length and w.lower() not in STOP_WORDS
-        )
+        }
 
         intersection = words1 & words2
         union = words1 | words2

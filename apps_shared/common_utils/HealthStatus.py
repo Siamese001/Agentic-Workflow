@@ -111,8 +111,8 @@ class BulkheadHealthChecker(HealthChecker):
 
             # Determine overall status
             issues = []
-            total_active = metrics["global"]["total_active_tasks"]
-            total_queued = metrics["global"]["total_queued_tasks"]
+            metrics["global"]["total_active_tasks"]
+            metrics["global"]["total_queued_tasks"]
 
             # Check for high utilization
             for name, bulkhead_metrics in metrics["bulkheads"].items():

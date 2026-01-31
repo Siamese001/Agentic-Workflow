@@ -175,7 +175,7 @@ def mine_workflows():
             configs = extract_keys_recursive(data, config_keys)
 
             for key, val in sorted(configs.items()):
-                if not isinstance(val, (dict, list)):
+                if not isinstance(val, dict | list):
                     report.write(f"| `{key}` | `{val}` |\n")
 
             report.write("\n")
@@ -191,7 +191,7 @@ def mine_workflows():
                     if isinstance(val, str) and len(val) > 10:
                         report.write(f"### Rule: `{key}`\n")
                         report.write(f"> {val}\n\n")
-                    elif isinstance(val, (int, float, bool)):
+                    elif isinstance(val, int | float | bool):
                         report.write(f"- **{key}:** `{val}`\n")
             else:
                 report.write("> No explicit validation rules found.\n")
@@ -265,7 +265,7 @@ def extract_keys_recursive(data, target_keys, parent_key=""):
 
             # Check if key matches targets
             is_match = any(t in k.lower() for t in targets)
-            if is_match and not isinstance(v, (dict, list)):
+            if is_match and not isinstance(v, dict | list):
                 found[current_path] = v
 
             # Recurse

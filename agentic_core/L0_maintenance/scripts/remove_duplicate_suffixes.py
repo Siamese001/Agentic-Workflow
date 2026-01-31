@@ -91,9 +91,9 @@ def remove_duplicates(
 ) -> int:
     """Remove duplicate files that have canonical versions."""
     removed_count = 0
-    for dup_path, canonical_path, suffix, _ in safe_to_delete:
-        rel_dup = dup_path.relative_to(project_root)
-        rel_canonical = canonical_path.relative_to(project_root)
+    for dup_path, canonical_path, _suffix, _ in safe_to_delete:
+        dup_path.relative_to(project_root)
+        canonical_path.relative_to(project_root)
         if dry_run:
             pass
         else:
@@ -120,13 +120,13 @@ def main(dry_run: bool = True) -> int:
     for _, _, suffix, _ in results["safe_to_delete"]:
         suffix_breakdown[suffix] = suffix_breakdown.get(suffix, 0) + 1
     if safe_count > 0:
-        removed = remove_duplicates(results["safe_to_delete"], dry_run)
+        remove_duplicates(results["safe_to_delete"], dry_run)
         if not dry_run:
             pass
     if review_count > 0:
         for dup_path, canonical_path, suffix, _ in results["needs_review"]:
-            rel_dup = dup_path.relative_to(project_root)
-            rel_canonical = canonical_path.relative_to(project_root)
+            dup_path.relative_to(project_root)
+            canonical_path.relative_to(project_root)
     if dry_run:
         pass
     return 0

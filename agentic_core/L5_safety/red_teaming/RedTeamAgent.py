@@ -329,7 +329,7 @@ class RedTeamAgent(SubatomicTestingMixin, SovereignBaseAgent):
         Returns:
             Dictionary with healing results following standard_heal format.
         """
-        violation_type = violation.get("type", "")
+        violation.get("type", "")
 
         # Red team findings require manual security review
         return {

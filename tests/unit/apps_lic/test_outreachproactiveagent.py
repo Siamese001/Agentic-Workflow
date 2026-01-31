@@ -60,7 +60,7 @@ class TestOutreachProactiveAgent:
             from apps_lic.engines.OutreachProactiveAgent import OutreachProactiveAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(OutreachProactiveAgent, "heal_repository") or any(
+            hasattr(OutreachProactiveAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(OutreachProactiveAgent)
             )
             # Not all agents need healing - this is informational

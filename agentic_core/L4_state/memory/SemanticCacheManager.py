@@ -274,12 +274,12 @@ class SemanticCacheManager:
         # Layer 1: Redis (Working Memory - Short-Term)
         self.redis_client = None
         self.redis_enabled = False
-        redis_error = self._init_redis()
+        self._init_redis()
 
         # Layer 2: Pinecone (Long-Term Memory - DNA)
         self.pinecone_index = None
         self.pinecone_enabled = False
-        pinecone_error = self._init_pinecone()
+        self._init_pinecone()
 
         # Embedding client (lazy-loaded)
         self._embedding_client = None

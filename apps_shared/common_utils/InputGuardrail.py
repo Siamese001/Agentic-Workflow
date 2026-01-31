@@ -418,7 +418,7 @@ class InputGuardrail:
 
         for char in text:
             # Check if character is in suspicious Unicode ranges
-            char_name = unicodedata.name(char, "")
+            unicodedata.name(char, "")
 
             # Check for homoglyph substitutions
             for normal_char, homoglyphs in self.unicode_homoglyphs.items():

@@ -1,7 +1,8 @@
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, memory, prompt, state
-# This boosts alignment detection — review and integrate appropriately
+"""RgResumeOrchestratorAgent - Resume generation orchestration.
+
+Orchestrates the complete resume generation process including engine, memory,
+prompt management, and state tracking.
+"""
 
 from __future__ import annotations
 
@@ -9,13 +10,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-"""Brief description of functionality and purpose."""
-
-"""Brief description of functionality and purpose."""
-
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.base_agents.timeout_decorator import timeout
-from apps_rg.shared.core.agent_base import RGAgentBase
+from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
 _logger = logging.getLogger(__name__)
 
@@ -34,7 +30,7 @@ _logger = logging.getLogger(__name__)
 
 # NAMING FIXED: RgResumeOrchestratorAgent → RgResumeOrchestratorAgent
 @dataclass
-class RgResumeOrchestratorAgent(SubatomicTestingMixin, RGAgentBase):
+class RgResumeOrchestratorAgent(RGAgentBase):
     """Orchestrate the multi-hop resume generation workflow."""
 
     master_resume: dict[str, Any] = field(default_factory=dict)

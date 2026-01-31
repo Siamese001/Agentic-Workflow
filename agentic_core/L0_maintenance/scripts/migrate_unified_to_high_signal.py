@@ -73,7 +73,7 @@ def migrate_unified():
 
             # Cleanup old directory if empty (or only contains __pycache__)
             remaining_items = list(old_path.iterdir())
-            remaining_files = [f for f in remaining_items if f.is_file()]
+            [f for f in remaining_items if f.is_file()]
             remaining_dirs = [d for d in remaining_items if d.is_dir()]
 
             # Remove __pycache__ if it exists

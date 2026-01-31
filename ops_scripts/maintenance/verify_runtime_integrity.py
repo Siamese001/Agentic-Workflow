@@ -76,13 +76,13 @@ def test_instantiation():
             cls = getattr(module, class_name)
 
             if "BaseAgent" in class_name:
-                instance = cls(ctx=None)
+                cls(ctx=None)
             elif "Bootstrap" in class_name:
-                instance = cls(project_root=Path("."))
+                cls(project_root=Path("."))
             elif "HallucinationHunter" in class_name:
-                instance = cls(ctx=None)
+                cls(ctx=None)
             else:
-                instance = cls()
+                cls()
 
             print(f"   ✅ {class_name} Instantiated")
         except ImportError as e:

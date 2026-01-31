@@ -60,7 +60,7 @@ class TestHistorianAgent:
             from agentic_core.L2_execution.tool_registry.HistorianAgent import HistorianAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(HistorianAgent, "heal_repository") or any(
+            hasattr(HistorianAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(HistorianAgent)
             )
             # Not all agents need healing - this is informational

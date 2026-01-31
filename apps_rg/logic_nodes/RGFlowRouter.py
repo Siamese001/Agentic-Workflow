@@ -8,7 +8,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from .thematic_analysis_node import ThematicAnalysisNode, ThematicAnalysisOutput
+from .ThematicAnalysisNode import ThematicAnalysisNode, ThematicAnalysisOutput
 
 logger = logging.getLogger(__name__)
 
@@ -369,7 +369,8 @@ class RGFlowRouter:
         if flow_result.flow_type in ["tailor_existing", "enhance_current"]:
             if not context.get("has_master_resume", False):
                 raise ValueError(
-                    f"ROUTING_VALIDATION_FAILED: Flow '{flow_result.flow_type}' requires master resume"
+                    f"ROUTING_VALIDATION_FAILED: Flow '{flow_result.flow_type}' "
+                    f"requires master resume"
                 )
 
         # Check if job description meets minimum length

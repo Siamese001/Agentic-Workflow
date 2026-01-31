@@ -205,12 +205,10 @@ class CodeInterpreterTool:
             Dictionary with overlap statistics
         """
         # Extract words from text
-        text_words = set(
-            w.lower().strip(".,!?;:") for w in text.split() if len(w) >= min_word_length
-        )
+        text_words = {w.lower().strip(".,!?;:") for w in text.split() if len(w) >= min_word_length}
 
         # Convert keyword set to lowercase
-        keywords = set(kw.lower() for kw in keyword_set)
+        keywords = {kw.lower() for kw in keyword_set}
 
         # Calculate overlap
         overlap = text_words & keywords
@@ -337,7 +335,7 @@ class CodeInterpreterTool:
             sentence_score = 0.5
 
         # Vocabulary diversity (unique words / total words)
-        unique_words = set(w.lower() for w in words)
+        unique_words = {w.lower() for w in words}
         diversity_ratio = len(unique_words) / len(words) if words else 0.0
 
         # Target: 0.6-0.8 diversity
@@ -551,7 +549,7 @@ def test_code_interpreter():
         "run_scoring_competition", candidates=candidates, strategic_brief=strategic_brief
     )
 
-    for i, result in enumerate(results):
+    for _i, result in enumerate(results):
         print(f"\nCandidate {result['candidate_index']} (Score: {result['total_score']:.3f}):")
         print(f"  Strategic alignment: {result['scores']['strategic_alignment']:.3f}")
         print(f"  Keyword density: {result['scores']['keyword_density']:.3f}")

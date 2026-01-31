@@ -98,8 +98,8 @@ except Exception as e:
             pytest.skip("MetaLearningAgent not available for isolation test")
 
         # Create two separate instances
-        agent_a = MetaLearningAgent()
-        agent_b = MetaLearningAgent()
+        MetaLearningAgent()
+        MetaLearningAgent()
 
         # Verify both start with empty/independent registries
         # The VERIFICATION_REGISTRY should be instance-specific due to field(default_factory=dict)

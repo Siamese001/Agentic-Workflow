@@ -29,7 +29,7 @@ def test_mission_script_integrity():
         assert hasattr(mission_module, "run_mission")
         print("test_mission_script_integrity: 100% PASS - Script is valid and importable.")
     except Exception as e:
-        assert False, f"Mission script failed integrity check: {e}"
+        raise AssertionError(f"Mission script failed integrity check: {e}")
 
 
 def test_mission_script_target_zones():
@@ -80,9 +80,9 @@ def test_agent_initialization():
         print("test_agent_initialization: 100% PASS - Agents initialized successfully.")
 
     except ImportError as e:
-        assert False, f"Failed to import required modules: {e}"
+        raise AssertionError(f"Failed to import required modules: {e}")
     except Exception as e:
-        assert False, f"Agent initialization failed: {e}"
+        raise AssertionError(f"Agent initialization failed: {e}")
 
 
 def test_mission_script_syntax():
@@ -101,9 +101,9 @@ def test_mission_script_syntax():
         print("test_mission_script_syntax: 100% PASS - Script syntax is valid.")
 
     except SyntaxError as e:
-        assert False, f"Mission script has syntax errors: {e}"
+        raise AssertionError(f"Mission script has syntax errors: {e}")
     except Exception as e:
-        assert False, f"Error reading mission script: {e}"
+        raise AssertionError(f"Error reading mission script: {e}")
 
 
 if __name__ == "__main__":

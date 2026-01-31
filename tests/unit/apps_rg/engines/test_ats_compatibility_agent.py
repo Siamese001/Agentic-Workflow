@@ -95,7 +95,7 @@ class TestATSCompatibilityAgent:
             {"skills": None},
         ]
 
-        for invalid_resume in invalid_resumes:
+        for _invalid_resume in invalid_resumes:
             try:
                 pass  # Would test actual processing
             except (TypeError, ValueError, KeyError):

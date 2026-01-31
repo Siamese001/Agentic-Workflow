@@ -44,7 +44,7 @@ def main():
     # Step 3: Validation Pass
     print("\n[PHASE 3] Running validation audit...")
     validator = PascalSovereigntyAgent(project_root=project_root, dry_run=True, validate_only=True)
-    validation_result = validator.run()
+    validator.run()
 
     total_violations = sum(validator.stats["violations"].values())
     print("\n=== VALIDATION AUDIT ===")

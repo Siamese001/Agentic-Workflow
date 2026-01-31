@@ -170,7 +170,7 @@ Return ONLY the python code for {primary}.
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - SherlockAgent provides diagnostic analysis

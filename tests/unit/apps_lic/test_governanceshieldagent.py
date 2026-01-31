@@ -60,7 +60,7 @@ class TestGovernanceShieldAgent:
             from apps_lic.engines.GovernanceShieldAgent import GovernanceShieldAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(GovernanceShieldAgent, "heal_repository") or any(
+            hasattr(GovernanceShieldAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(GovernanceShieldAgent)
             )
             # Not all agents need healing - this is informational

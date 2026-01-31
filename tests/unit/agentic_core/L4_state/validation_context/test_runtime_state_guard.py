@@ -97,7 +97,7 @@ class TestRuntimeStateGuard:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             state_file = root / "runtime_state.json"
-            backup_file = root / "runtime_state.json.bak"
+            root / "runtime_state.json.bak"
 
             # 1. Create corrupted state file with no backup
             with open(state_file, "w") as f:

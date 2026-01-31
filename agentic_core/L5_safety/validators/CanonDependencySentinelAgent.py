@@ -81,7 +81,7 @@ class ArchitectureDNAVisitor(ast.NodeVisitor):
             Dict with keys: status, details, artifacts, errors
         """
         try:
-            violation_type = violation.get("type", "")
+            violation.get("type", "")
             file_path = violation.get("file")
 
             if not file_path:
@@ -333,7 +333,7 @@ class AgentASTVisitor(ast.NodeVisitor):
                 is_stub = False
                 if item.name == "heal_repository":
                     has_heal_method = True
-            elif not isinstance(item, (ast.Pass, ast.Expr)):
+            elif not isinstance(item, ast.Pass | ast.Expr):
                 is_stub = False
 
         if node.name.endswith("Agent") and is_stub:
@@ -528,7 +528,7 @@ class CanonDependencySentinelAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - CanonDependencySentinelAgent monitors dependencies

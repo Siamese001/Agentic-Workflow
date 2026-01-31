@@ -9,10 +9,10 @@ Provides the foundational components for all RG agents:
 
 from __future__ import annotations
 
-from apps_rg.shared.core.agent_base import RGAgentBase
-from apps_rg.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_rg.shared.core.mixins import HealerMixin, SubatomicTestingMixin, mcp_hardened_mixin
-from apps_rg.shared.core.trace_registry import TraceRegistry
+from apps_rg.shared.core.mixins import HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
+from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
+from apps_rg.shared.core.StateTransaction import ImmutableStagingBuffer
+from apps_rg.shared.core.TraceRegistry import TraceRegistry
 
 __all__ = [
     "RGAgentBase",

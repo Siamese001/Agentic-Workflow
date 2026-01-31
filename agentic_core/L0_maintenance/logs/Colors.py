@@ -393,7 +393,7 @@ def main():
         print("   [SYSTEM] SOVEREIGN MODE ACTIVE: Auto-approval enabled.")
 
     # Global mission timeout: 30 minutes
-    MISSION_TIMEOUT = int(os.getenv("MISSION_TIMEOUT_SECONDS", "1800"))
+    int(os.getenv("MISSION_TIMEOUT_SECONDS", "1800"))
 
     print("\n[*] Canon Validator v3.2 - Full Repo Scan (Thin Wrapper)")
     print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
@@ -756,9 +756,9 @@ def main():
             # --- UNIFIED MISSION EXECUTION ---
             print(mission_header("SOVEREIGN HEAL (UNIFIED)", execute=execute_heal))
 
-            mission_start = datetime.now()
+            datetime.now()
             results = orchestrator.run_mission(mission_context)
-            mission_end = datetime.now()
+            datetime.now()
 
             # Update runtime state with execution timeline from results
             for i, agent_result in enumerate(results.get("agent_results", [])):

@@ -84,10 +84,10 @@ def main() -> int:
         return 0
     commit_message = get_commit_message(args.commit_msg_filename)
     if check_commit_message_override(commit_message):
-        for f in protected_modified:
+        for _f in protected_modified:
             pass
         return 0
-    for f in protected_modified:
+    for _f in protected_modified:
         pass
     return 1
 

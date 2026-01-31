@@ -2,7 +2,7 @@
 apps_rg.domain - Domain models and knowledge base for Resume Generation
 """
 
-from apps_rg.domain.knowledge_base import (
+from apps_rg.domain.PromptTemplate import (
     FROZEN_SNAPSHOT,
     KNodeDefinition,
     PromptTemplate,

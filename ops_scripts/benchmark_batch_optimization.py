@@ -44,7 +44,7 @@ def benchmark_batch_vs_immediate():
         guard_immediate._atomic_persist = spy_persist_immediate
 
         start_time = time.time()
-        for i in range(num_increments):
+        for _i in range(num_increments):
             guard_immediate.increment_metric("benchmark_metric")
         immediate_time = time.time() - start_time
 
@@ -62,7 +62,7 @@ def benchmark_batch_vs_immediate():
 
         start_time = time.time()
         with guard_batch:
-            for i in range(num_increments):
+            for _i in range(num_increments):
                 guard_batch.increment_metric("benchmark_metric")
         batch_time = time.time() - start_time
 

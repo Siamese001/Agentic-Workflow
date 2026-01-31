@@ -222,11 +222,11 @@ class RootCustomsAgent:
                     for key, value in obj.items():
                         full_key = f"{prefix}.{key}" if prefix else key
                         matches["json_keys"].append(key)
-                        if isinstance(value, (dict, list)):
+                        if isinstance(value, dict | list):
                             extract_keys(value, full_key)
                 elif isinstance(obj, list):
                     for i, item in enumerate(obj):
-                        if isinstance(item, (dict, list)):
+                        if isinstance(item, dict | list):
                             extract_keys(item, f"{prefix}[{i}]")
 
             extract_keys(data)

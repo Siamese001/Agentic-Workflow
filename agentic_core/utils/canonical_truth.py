@@ -151,7 +151,7 @@ def validate_health_components(components: dict[str, Any]) -> dict[str, Any]:
     if "weights" in components:
         weights = components["weights"]
         if isinstance(weights, dict) and all(
-            isinstance(k, str) and isinstance(v, (int, float)) for k, v in weights.items()
+            isinstance(k, str) and isinstance(v, int | float) for k, v in weights.items()
         ):
             results["valid"].append("weights")
         else:

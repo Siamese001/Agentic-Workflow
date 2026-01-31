@@ -48,16 +48,6 @@ def test_inheritance_audit():
     print("=" * 60)
 
     # Approved layer bases
-    APPROVED_BASES = {
-        "SovereignBaseAgent",
-        "L0MaintenanceBaseAgent",
-        "L1CognitionBaseAgent",
-        "L2ExecutionBaseAgent",
-        "L3OrchestrationBaseAgent",
-        "L4StateBaseAgent",
-        "L5SafetyBaseAgent",
-        "L6ObservabilityBaseAgent",
-    }
 
     # Check that each approved base exists
     base_paths = {

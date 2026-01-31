@@ -143,7 +143,7 @@ from collections import defaultdict, Counter
         imports = get_file_imports(complex_import_file)
 
         # All line numbers should be positive integers
-        for name, line_no in imports:
+        for _name, line_no in imports:
             assert isinstance(line_no, int)
             assert line_no > 0
 

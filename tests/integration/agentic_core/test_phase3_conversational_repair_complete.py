@@ -114,7 +114,7 @@ def test_async_sync_bridge_isolation():
 
         # All should succeed independently
         assert all(r["success"] for r in results), "All concurrent calls should succeed"
-        assert len(set(r["message"] for r in results)) == 1, "Should use same mock response"
+        assert len({r["message"] for r in results}) == 1, "Should use same mock response"
 
         print("✅ Async/Sync Bridge Isolation Verified")
 

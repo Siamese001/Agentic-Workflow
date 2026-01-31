@@ -60,7 +60,7 @@ class execute_resume_generation:
         """Execute action."""
         START: Any = time.time()
         try:
-            OUTPUT: Any = self._perform_action(action, params)
+            self._perform_action(action, params)
             duration_ms: Any = (time.time() - START) * 1000
             return ExecutionResult(
                 STATUS=ResultStatus.SUCCESS,

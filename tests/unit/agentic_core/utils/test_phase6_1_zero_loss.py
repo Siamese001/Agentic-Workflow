@@ -41,7 +41,7 @@ def test_tc25_data_discovery_accuracy():
     )
 
     # Test JSON file discovery
-    ssot_json_files = set(str(f) for f in get_json_files(PROJECT_ROOT))
+    ssot_json_files = {str(f) for f in get_json_files(PROJECT_ROOT)}
 
     # Manual os.walk with same exclusion logic
     manual_json_files = set()
@@ -74,7 +74,7 @@ def test_tc25_data_discovery_accuracy():
         return False
 
     # Test Markdown file discovery
-    ssot_md_files = set(str(f) for f in get_markdown_files(PROJECT_ROOT))
+    ssot_md_files = {str(f) for f in get_markdown_files(PROJECT_ROOT)}
 
     manual_md_files = set()
     for root, dirs, files in os.walk(PROJECT_ROOT):

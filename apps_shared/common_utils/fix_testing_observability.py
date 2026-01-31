@@ -172,7 +172,6 @@ def main():
 
     logging_added = 0
     testing_added = 0
-    errors = 0
 
     for file_path_str, class_names in sorted(by_file.items()):
         file_path = Path(file_path_str)

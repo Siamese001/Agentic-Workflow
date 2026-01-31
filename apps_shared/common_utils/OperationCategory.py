@@ -361,7 +361,7 @@ class ObservabilityOperationAdapter:
 
     def _aggregate_numeric(self, data: list[Any], method: str) -> dict[str, float] | None:
         """Aggregate numeric data."""
-        if not data or not all(isinstance(d, (int, float)) for d in data):
+        if not data or not all(isinstance(d, int | float) for d in data):
             return None
 
         if method == "sum":
@@ -406,7 +406,7 @@ class ObservabilityOperationAdapter:
             values["count"] = len(data)
 
             # Numeric aggregations
-            numeric_data = [d for d in data if isinstance(d, (int, float))]
+            numeric_data = [d for d in data if isinstance(d, int | float)]
             if numeric_data:
                 values["sum"] = sum(numeric_data)
                 values["average"] = values["sum"] / len(numeric_data)

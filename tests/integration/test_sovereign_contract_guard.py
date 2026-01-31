@@ -177,17 +177,16 @@ class SovereignContractGuard:
 
             # Try to instantiate with common constructor patterns
             try:
-                instance = cls()
+                cls()
             except TypeError:
                 try:
-                    instance = cls(project_root=PROJECT_ROOT)
+                    cls(project_root=PROJECT_ROOT)
                 except TypeError:
                     try:
-                        instance = cls(PROJECT_ROOT)
+                        cls(PROJECT_ROOT)
                     except Exception as e:
                         # If we can't instantiate, but import worked, that's still a success
                         logger.info(f"Could not instantiate {class_name} but import succeeded: {e}")
-                        instance = None
 
             result.success = True
             logger.info(f"✓ Successfully imported {class_name} from {file_path.name}")
@@ -327,7 +326,7 @@ class SovereignContractGuard:
             # Check for attribute shadowing
             method_names = {}
             for i, base_class in enumerate(mro):
-                for name, method in inspect.getmembers(base_class, predicate=inspect.isfunction):
+                for name, _method in inspect.getmembers(base_class, predicate=inspect.isfunction):
                     if name in method_names:
                         # Shadowing detected
                         result.shadowing_detected = True

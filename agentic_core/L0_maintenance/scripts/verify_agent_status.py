@@ -70,7 +70,7 @@ def extract_bases(class_node: ast.ClassDef) -> set[str]:
 def has_method(class_node: ast.ClassDef, method_name: str) -> bool:
     """Check if class has a specific method."""
     for item in class_node.body:
-        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
             if item.name == method_name:
                 return True
     return False

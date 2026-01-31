@@ -461,8 +461,7 @@ class ObservabilityExecutionEngine:
 
         # Metrics collection handler
         def _metrics_handler(context: dict[str, Any]) -> dict[str, Any]:
-            request = context["request"]
-            params = request.parameters
+            context["request"]
 
             return {
                 "metrics": {"cpu_usage": 45.2, "memory_usage": 67.8, "disk_usage": 23.5},
@@ -472,8 +471,7 @@ class ObservabilityExecutionEngine:
 
         # Log analysis handler
         def _log_analysis_handler(context: dict[str, Any]) -> dict[str, Any]:
-            request = context["request"]
-            params = request.parameters
+            context["request"]
 
             return {
                 "analysis": {"total_logs": 100, "error_count": 5, "warning_count": 10},
@@ -486,8 +484,7 @@ class ObservabilityExecutionEngine:
 
         # Trace analysis handler
         def _trace_analysis_handler(context: dict[str, Any]) -> dict[str, Any]:
-            request = context["request"]
-            params = request.parameters
+            context["request"]
 
             return {
                 "traces": [

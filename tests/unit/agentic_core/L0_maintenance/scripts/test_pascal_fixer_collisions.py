@@ -137,7 +137,7 @@ def test_error_handling_during_collision(fixer_env):
     # gets removed during the operation
 
     # Test with a non-existent target to trigger error path
-    non_existent_target = fixer_env / "non_existent.py"
+    fixer_env / "non_existent.py"
     result = fixer.resolve_collision_and_rename(violator, "non_existent.py")
 
     # Should succeed since there's no collision

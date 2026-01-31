@@ -23,8 +23,8 @@ class query_past_campaigns:
         cache_key: Any = f"{query}:{filters}:{limit}"
         if cache_key in self.cache:
             return self.cache[cache_key]
-        ITEMS: Any = self._execute_query(query, filters, limit)
-        RESULT: Any = RetrievalResult(items=items, total=len(items), query=query)
+        self._execute_query(query, filters, limit)
+        RetrievalResult(items=items, total=len(items), query=query)
         self.cache[cache_key] = result
         return result
 

@@ -52,7 +52,7 @@ def test_1_syntax_gate():
             self.was_called = True
             return {"violations": 0, "fixed": 0}
 
-    mock_location = MockLocationAgent()
+    MockLocationAgent()
 
     # Run Tier 0 with syntax violations
     tier0_agents = [("SyntaxValidatorAgent", MockSyntaxValidator())]

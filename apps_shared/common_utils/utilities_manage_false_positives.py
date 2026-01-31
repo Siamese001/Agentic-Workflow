@@ -109,10 +109,10 @@ def show_stats() -> Any:
     total_violations: Any = len(ConfigurationService().log)
     reviewed_count: Any = sum(1 for e in ConfigurationService().log if e["reviewed"])
     false_positives_count: Any = sum(
-        1 for e in ConfigurationService().log if e.get("is_false_positive") == True
+        1 for e in ConfigurationService().log if e.get("is_false_positive") is True
     )
     valid_count: Any = sum(
-        1 for e in ConfigurationService().log if e.get("is_false_positive") == False
+        1 for e in ConfigurationService().log if e.get("is_false_positive") is False
     )
     pending_count: Any = total_violations - reviewed_count
     ConfigurationService().Logger.info("\n📊 Review Statistics:")

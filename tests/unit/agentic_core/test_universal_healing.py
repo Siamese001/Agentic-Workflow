@@ -269,7 +269,7 @@ class TestUniversalHealing(unittest.TestCase):
                 if pascal_proceed and not dry_run:
                     pascal = self.mock_agents["pascal_sovereignty"](project_root=Path.cwd())
                     if hasattr(pascal, "heal_repository"):
-                        res = pascal.heal_repository(
+                        pascal.heal_repository(
                             target_territory=territory, dry_run=dry_run, auto_approve=True
                         )
 
@@ -309,7 +309,6 @@ class TestUniversalHealing(unittest.TestCase):
         # Execute Phase 2.5 logic
         territory = "L5_safety"  # Critical territory
         p1_loc = ["violation1", "violation2", "violation3"]
-        dry_run = False
 
         pascal_confidence = self.mock_decision_engine.calculate_healing_confidence(
             violations_count=len(p1_loc),

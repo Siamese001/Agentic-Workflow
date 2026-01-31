@@ -143,7 +143,7 @@ def test_tc7_graceful_fallback():
 
     for invalid_mode in invalid_modes:
         try:
-            orchestrator = get_orchestrator(invalid_mode)
+            get_orchestrator(invalid_mode)
             print(f"❌ FAIL: get_orchestrator('{invalid_mode}') should raise ValueError")
             return False
         except ValueError as e:
@@ -262,7 +262,7 @@ def test_deprecation_warnings():
     for class_name, cls in legacy_classes:
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
-            instance = cls()
+            cls()
 
             if len(w) == 0:
                 print(f"❌ FAIL: {class_name} should emit DeprecationWarning")

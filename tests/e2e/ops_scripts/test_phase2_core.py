@@ -50,7 +50,7 @@ def test_reasoning_toggles_validation():
         # Invalid branch count (too high)
         try:
             ReasoningToggles(tot_branches=10)
-            assert False, "Should have raised ValueError"
+            raise AssertionError("Should have raised ValueError")
         except ValueError as e:
             assert "tot_branches" in str(e)
 

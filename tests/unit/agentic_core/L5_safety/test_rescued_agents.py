@@ -227,9 +227,6 @@ def test_deadlock_detector():
     if heal_match:
         heal_body = heal_match.group(1)
         has_execute_check = "execute" in heal_body and "dry_run" in heal_body
-        has_delete_logic = (
-            "del self.monitored_tasks" in heal_body or "monitored_tasks[task_id]" in heal_body
-        )
         has_fixed = "fixed" in heal_body
         if has_execute_check and has_fixed:
             test_pass("DEAD-03", "Healing logic - execute mode increments 'fixed' count")

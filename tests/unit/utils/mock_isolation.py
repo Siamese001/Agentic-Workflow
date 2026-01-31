@@ -88,7 +88,7 @@ def enforce_mock_boundary(
                 return func(*args, **kwargs)
             finally:
                 # Clean up patches
-                for p, patcher in zip(patches, patchers):
+                for p, _patcher in zip(patches, patchers, strict=False):
                     p.__exit__(None, None, None)
 
         return wrapper
@@ -239,7 +239,7 @@ def track_mock_calls(
 
             finally:
                 # Clean up patches
-                for p, patcher in zip(patches, patchers):
+                for p, _patcher in zip(patches, patchers, strict=False):
                     p.__exit__(None, None, None)
 
         return wrapper
@@ -304,7 +304,7 @@ class MockIsolationContext:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Clean up patches
-        for p, patcher in zip(self.patches, self.patchers):
+        for p, _patcher in zip(self.patches, self.patchers, strict=False):
             p.__exit__(exc_type, exc_val, exc_tb)
 
         # Restore environment

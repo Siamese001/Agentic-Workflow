@@ -95,7 +95,7 @@ class TestCheckpointClearingLogic:
         checkpoint_path.write_text('{"test": "preserved"}')
 
         agent = CognitiveDispositionAgent(project_root=tmp_path)
-        processor = TieredBatchProcessor(
+        TieredBatchProcessor(
             agent=agent,
             checkpoint_file=str(checkpoint_path),
         )

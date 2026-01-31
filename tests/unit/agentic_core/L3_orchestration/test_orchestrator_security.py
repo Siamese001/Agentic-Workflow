@@ -298,9 +298,7 @@ class TestOrchestratorSecurityPerformance(unittest.TestCase):
         start_time = time.time()
 
         for module in test_modules:
-            is_allowed = any(
-                module == p or module.startswith(p + ".") for p in ALLOWED_MODULE_PREFIXES
-            )
+            any(module == p or module.startswith(p + ".") for p in ALLOWED_MODULE_PREFIXES)
             # Just compute the result, don't assert
 
         end_time = time.time()

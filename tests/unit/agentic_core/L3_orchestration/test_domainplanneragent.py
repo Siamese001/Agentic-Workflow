@@ -68,7 +68,7 @@ class TestDomainPlannerAgent:
             )
 
             # Check for heal_repository method
-            has_heal = hasattr(DomainPlannerAgent, "heal_repository") or any(
+            hasattr(DomainPlannerAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(DomainPlannerAgent)
             )
             # Not all agents need healing - this is informational

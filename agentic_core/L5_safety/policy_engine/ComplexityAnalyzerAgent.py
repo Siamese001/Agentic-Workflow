@@ -85,7 +85,7 @@ class ComplexityAnalyzerAgent(SovereignBaseAgent):
 
         violations = []
         for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 # 1. Cyclomatic Complexity
                 complexity = self._calculate_complexity(node)
                 if complexity > self._complexity_config.max_cyclomatic_complexity:
@@ -141,16 +141,14 @@ class ComplexityAnalyzerAgent(SovereignBaseAgent):
             # Branching nodes
             if isinstance(
                 child,
-                (
-                    ast.If,
-                    ast.While,
-                    ast.For,
-                    ast.AsyncFor,
-                    ast.ExceptHandler,
-                    ast.With,
-                    ast.AsyncWith,
-                    ast.Assert,
-                ),
+                ast.If
+                | ast.While
+                | ast.For
+                | ast.AsyncFor
+                | ast.ExceptHandler
+                | ast.With
+                | ast.AsyncWith
+                | ast.Assert,
             ):
                 complexity += 1
             # Boolean operators (and/or counts as branches)

@@ -219,7 +219,7 @@ class CoreSynthesisExecutor:
             # Find the class to insert into
             target_parts = file_info["synthesis_target"].split(".")
             target_class = target_parts[-1]
-            target_file = target_parts[0] + ".py"
+            target_parts[0] + ".py"
 
             for i, line in enumerate(lines):
                 if f"class {target_class}" in line:

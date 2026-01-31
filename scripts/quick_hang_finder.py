@@ -160,7 +160,7 @@ def main():
 
     if hangs:
         print(f"\n[!] HANGING MODULES ({len(hangs)}):")
-        for rel, mod in hangs:
+        for rel, _mod in hangs:
             print(f"   - {rel}")
 
     if slow:

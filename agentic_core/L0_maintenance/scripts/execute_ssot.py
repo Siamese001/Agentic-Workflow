@@ -884,7 +884,7 @@ def execute_phase1_discovery(
     """
     # [ENHANCEMENT] AST Validation Integration
     if not dry_run:
-        validator = ASTCodeQualityValidator(Path(os.getcwd()))
+        ASTCodeQualityValidator(Path(os.getcwd()))
         # In a real run, we would iterate territory files here
         pass
 
@@ -1562,7 +1562,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
 
     # [UNIFIED MANIFEST] Aggregate all findings from the state manager
     compliance_report = state_mgr.state.get("compliance_report", {})
-    decision_history = state_mgr.state.get("decision_history", [])
+    state_mgr.state.get("decision_history", [])
 
     # [CRITICAL FIX] Aggregate violations from ALL agents, not just ArchitectureGovernor
     # The compliance_report only has ArchitectureGovernor violations
@@ -1617,7 +1617,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
             violation_type = "IMPORT_IN_DOCS"
 
         # Add file-specific factors for confidence calculation
-        file_factors = {
+        {
             "has_test_functions": "def test_" in message,
             "has_sovereign_class": "class Sovereign" in message,
             "is_python_file": file_path.endswith(".py"),
@@ -1714,7 +1714,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
     # [DYNAMIC] Track actual agents executed from state manager
     completed_agents = state_mgr.state.get("completed_agents", [])
     # Extract unique agent names from completion history
-    agents_executed = list(set(agent["agent"] for agent in completed_agents))
+    agents_executed = list({agent["agent"] for agent in completed_agents})
 
     detailed_cert = {
         "meta": {

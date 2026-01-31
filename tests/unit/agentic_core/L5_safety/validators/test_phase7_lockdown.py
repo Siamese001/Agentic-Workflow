@@ -66,7 +66,6 @@ class TestFinalLockdownPurity:
         agent = ArchitectureGovernorAgent(project_root=clean_project)
 
         # Mock heal_repository to return 0 violations
-        original_heal = agent.heal_repository
 
         def mock_heal(*args, **kwargs):
             return {

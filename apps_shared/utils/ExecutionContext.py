@@ -88,7 +88,7 @@ class BaseRefiner:
 
         for key, weight in active_weights.items():
             if key in result:
-                if isinstance(result[key], (int, float)):
+                if isinstance(result[key], int | float):
                     result[key] = result[key] * weight
                 elif isinstance(result[key], list):
                     result[key] = result[key][: int(len(result[key]) * weight)]

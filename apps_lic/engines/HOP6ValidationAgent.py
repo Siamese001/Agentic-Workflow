@@ -122,8 +122,8 @@ class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
             }
 
         # Extract keywords > 4 chars from brief
-        brief_keywords = set(w.lower() for w in brief.split() if len(w) > 4)
-        text_words = set(w.lower() for w in text.split())
+        brief_keywords = {w.lower() for w in brief.split() if len(w) > 4}
+        text_words = {w.lower() for w in text.split()}
         overlap = brief_keywords.intersection(text_words)
 
         passed = len(overlap) >= min_match or len(brief_keywords) == 0

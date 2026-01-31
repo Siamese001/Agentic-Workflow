@@ -265,8 +265,8 @@ Output ONLY a JSON list of indices in order of relevance (e.g., [2, 0, 1])."""
 
         context_parts = ["### RELEVANT SOVEREIGN KNOWLEDGE"]
         for r in retrievals:
-            source = r["source"]
-            content = r["content"]
+            r["source"]
+            r["content"]
 
         return "\n".join(context_parts)
 
