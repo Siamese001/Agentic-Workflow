@@ -69,7 +69,7 @@ class KXNodeExecutor:
         """
         config = context.node_config
 
-        with create_span(f"kx_node.{config.node_id}.{config.element}") as span:
+        with create_span(f"kx_node.{config.node_id}.{config.element}"):
             set_span_attribute("kx.node_id", config.node_id)
             set_span_attribute("kx.element", config.element)
             set_span_attribute("kx.reasoning_strategy", config.reasoning_strategy.value)
@@ -127,7 +127,7 @@ class KXNodeExecutor:
             return []
 
         # Build query from context
-        query_text = f"{config.element}: {context.source_data.get('query', '')}"
+        f"{config.element}: {context.source_data.get('query', '')}"
 
         # Get query embedding (placeholder - would use actual embedding model)
         query_embedding = [0.1] * 1536  # Placeholder

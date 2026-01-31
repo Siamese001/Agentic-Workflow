@@ -26,7 +26,7 @@ def fix_imports():
     print("--- STARTING FINAL IMPORT REWIRING ---")
     fixed_count = 0
 
-    for root, dirs, files in os.walk(PROJECT_ROOT / "agentic_core"):
+    for root, _dirs, files in os.walk(PROJECT_ROOT / "agentic_core"):
         if "archived" in root:
             continue
 

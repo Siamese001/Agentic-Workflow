@@ -55,7 +55,7 @@ class TestBootstrapAgent:
             123,
         ]
 
-        for invalid_config in invalid_configs:
+        for _invalid_config in invalid_configs:
             try:
                 pass  # Would test actual bootstrap
             except (TypeError, ValueError):

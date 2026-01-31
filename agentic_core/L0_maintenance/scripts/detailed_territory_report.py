@@ -49,7 +49,7 @@ sections = [
     ("OTHER_Unknown", "UNKNOWN"),
 ]
 total = 0
-for key, title in sections:
+for key, _title in sections:
     if key not in by_territory:
         continue
     agents_list = by_territory[key]
@@ -61,7 +61,7 @@ for key, title in sections:
         mcp = "M" if a.get("mcp_hardened") else "-"
         subatomic = "S" if a.get("has_subatomic") else "-"
         loc = a.get("loc", 0)
-for key, title in sections:
+for key, _title in sections:
     if key in by_territory:
         count = len(by_territory[key])
         bar = "#" * (count // 3)

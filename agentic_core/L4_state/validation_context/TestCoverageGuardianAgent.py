@@ -743,12 +743,6 @@ def test_auto_generated_stub():
 
             elif violation_type == "coverage_tools_missing":
                 # Heal missing coverage tools by providing guidance
-                guidance = [
-                    "Install coverage tools: pip install coverage pytest-cov mutmut hypothesis",
-                    "Run coverage: coverage run -m pytest",
-                    "Run mutation testing: mutmut run",
-                    "Install property testing: pip install hypothesis",
-                ]
                 return {
                     "status": "partial_success",
                     "details": "Coverage tools missing - installation guidance provided",

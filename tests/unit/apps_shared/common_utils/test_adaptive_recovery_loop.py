@@ -55,7 +55,7 @@ class TestAdaptiveRecoveryLoop:
             {},
         ]
 
-        for invalid_callback in invalid_callbacks:
+        for _invalid_callback in invalid_callbacks:
             try:
                 pass  # Would test actual execution
             except (TypeError, ValueError):

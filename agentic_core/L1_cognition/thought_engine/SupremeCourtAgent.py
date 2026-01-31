@@ -117,7 +117,7 @@ class SupremeCourt(SovereignBaseAgent):
 
         # Judge Call
         prompt = f"Analyze these {len(opinions)} opinions for goal: {goal}. Return JSON with 'consensus_score' (float) and 'reasoning' (str)."
-        resp = await self.llm_generate(
+        await self.llm_generate(
             prompt, provider="openai", model=os.getenv("OPENAI_MODEL", "gpt-4o")
         )
 

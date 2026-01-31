@@ -149,7 +149,7 @@ class SovereignReport:
 
 
 def main():
-    target = Path("agentic_core")
+    Path("agentic_core")
 
     report = SovereignReport()
 

@@ -60,7 +60,7 @@ class TestHOP9IntegrationAgent:
             from apps_lic.engines.HOP9IntegrationAgent import HOP9IntegrationAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(HOP9IntegrationAgent, "heal_repository") or any(
+            hasattr(HOP9IntegrationAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(HOP9IntegrationAgent)
             )
             # Not all agents need healing - this is informational

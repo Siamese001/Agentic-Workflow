@@ -70,7 +70,7 @@ class TestOutreachValidationExecutorAgent:
             )
 
             # Check for heal_repository method
-            has_heal = hasattr(OutreachValidationExecutorAgent, "heal_repository") or any(
+            hasattr(OutreachValidationExecutorAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(OutreachValidationExecutorAgent)
             )
             # Not all agents need healing - this is informational

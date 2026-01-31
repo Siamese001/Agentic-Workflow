@@ -45,7 +45,7 @@ class TestMockBoundaryEnforcement:
                 try:
                     import psycopg2
 
-                    conn = psycopg2.connect("postgresql://test")
+                    psycopg2.connect("postgresql://test")
                     mock_db.assert_called_once()
                 except ImportError:
                     pass  # psycopg2 not installed, test passes
@@ -58,7 +58,7 @@ class TestMockBoundaryEnforcement:
                 try:
                     import redis
 
-                    r = redis.Redis(host="localhost")
+                    redis.Redis(host="localhost")
                     mock_redis.assert_called_once()
                 except ImportError:
                     pass  # redis not installed, test passes
@@ -71,7 +71,7 @@ class TestMockBoundaryEnforcement:
                 try:
                     import pymongo
 
-                    client = pymongo.MongoClient("mongodb://localhost")
+                    pymongo.MongoClient("mongodb://localhost")
                     mock_mongo.assert_called_once()
                 except ImportError:
                     pass  # pymongo not installed, test passes
@@ -127,7 +127,7 @@ class TestMockBoundaryEnforcement:
             assert value == "mocked_value"
 
             # Test environment modification doesn't affect real env
-            original_environ = dict(os.environ)
+            dict(os.environ)
             os.environ["NEW_VAR"] = "test"
 
             # The new variable should exist in the mocked environment

@@ -330,7 +330,7 @@ class FactLedger:
         count = 0
 
         for key, value in metrics.items():
-            if isinstance(value, (int, float)):
+            if isinstance(value, int | float):
                 # Determine unit based on key
                 unit = self._infer_unit_from_key(key)
 

@@ -374,7 +374,7 @@ def get_vector_store(config: dict[str, Any] | None = None) -> Any:
 
         def search(self, collection_name: str, query: str, n_results: int = 10):
             # Simple mock search
-            collection = self.collections.get(collection_name, [])
+            self.collections.get(collection_name, [])
             return {"ids": [[0]], "documents": [["Mock result"]], "metadatas": [[{}]]}
 
         def get_collection(self, name: str):

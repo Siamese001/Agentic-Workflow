@@ -223,7 +223,7 @@ def sweep_and_refactor():
 
     found_counts = {k: 0 for k in targets}
 
-    for root, dirs, files in os.walk(PROJECT_ROOT / "agentic_core"):
+    for root, _dirs, files in os.walk(PROJECT_ROOT / "agentic_core"):
         if "archived" in root:
             continue
 

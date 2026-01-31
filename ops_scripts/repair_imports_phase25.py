@@ -85,7 +85,7 @@ def reconstruct_rename_map():
 
     mapping = {}  # OldPascal -> NewSnake
 
-    for root, dirs, files in os.walk(ROOT_DIR):
+    for _root, dirs, files in os.walk(ROOT_DIR):
         dirs[:] = [d for d in dirs if d not in QUARANTINED_DIRS]
         for f in files:
             if not f.endswith(".py"):

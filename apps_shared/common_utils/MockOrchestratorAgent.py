@@ -125,7 +125,7 @@ def test_orchestrator_interface_2_1():
 
     try:
         # Attempt to instantiate abstract class directly
-        orchestrator = IOrchestratorAgent()
+        IOrchestratorAgent()
         print("❌ Test Case 2.1 FAILED: IOrchestratorAgent was instantiated (should be abstract)")
         return False
     except TypeError as e:

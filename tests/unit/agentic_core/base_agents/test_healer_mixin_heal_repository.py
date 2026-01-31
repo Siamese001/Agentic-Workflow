@@ -82,7 +82,7 @@ def test_heal_repository_cycle_detection():
     call_path = {"TestAgent"}
     result = agent.heal_repository(_call_path=call_path)
 
-    assert result.get("cycle_detected") == True, "Must detect cycle when agent already in call path"
+    assert result.get("cycle_detected") is True, "Must detect cycle when agent already in call path"
     assert result.get("skipped") == 1, "Must skip when cycle detected"
     print(f"✓ Cycle detection result: {result}")
 
@@ -102,7 +102,7 @@ def test_heal_repository_depth_limiting():
     # Exceed max depth
     result = agent.heal_repository(depth=10, max_depth=3)
 
-    assert result.get("depth_limited") == True, "Must detect depth limit exceeded"
+    assert result.get("depth_limited") is True, "Must detect depth limit exceeded"
     assert result.get("skipped") == 1, "Must skip when depth limited"
     print(f"✓ Depth limiting result: {result}")
 
@@ -144,7 +144,6 @@ def test_orchestrator_inherits_heal_repository():
     assert hasattr(orchestrator, "heal_repository"), "Orchestrator must have heal_repository"
 
     # Check that it comes from HealerMixin (not overridden)
-    method = orchestrator.__class__.heal_repository
 
     # Call it and verify it works
     result = orchestrator.heal_repository(dry_run=True)
@@ -182,7 +181,7 @@ def test_subclass_can_extend_heal_repository():
     agent = ExtendedAgent()
     result = agent.heal_repository()
 
-    assert agent.heal_called == True, "Custom logic must execute"
+    assert agent.heal_called is True, "Custom logic must execute"
     assert result.get("custom_field") == "extended", "Custom field must be present"
     assert "violations" in result, "Parent fields must be preserved"
     print(f"✓ Extended heal_repository result: {result}")

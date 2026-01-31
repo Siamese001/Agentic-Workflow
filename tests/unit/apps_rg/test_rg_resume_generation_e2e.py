@@ -224,11 +224,6 @@ class TestRGErrorRecovery:
 
     def test_llm_timeout_recovery(self):
         """Test recovery from LLM timeout."""
-        error_state = {
-            "stage": "content_generation",
-            "error": "timeout",
-            "retry_count": 1,
-        }
 
         recovery = {
             "action": "retry_with_shorter_prompt",

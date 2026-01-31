@@ -13,9 +13,9 @@ def check_for_duplicates():
         file_map[path.name].append(path)
     duplicates = {name: paths for name, paths in file_map.items() if len(paths) > 1}
     if duplicates:
-        for name, paths in sorted(duplicates.items()):
+        for _name, paths in sorted(duplicates.items()):
             for p in paths:
-                rel_path = p.relative_to(project_root)
+                p.relative_to(project_root)
         sys.exit(1)
     sys.exit(0)
 

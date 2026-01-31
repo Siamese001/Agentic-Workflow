@@ -130,7 +130,7 @@ class TestKeyDeprecationFast:
         try:
             from agentic_core.L5_safety.validators.CanonKeyValidator import CanonKeyValidator
 
-            validator = CanonKeyValidator()
+            CanonKeyValidator()
             # Should not crash with empty registry
             assert True
         except (ImportError, NameError, AttributeError):

@@ -11,7 +11,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from apps_rg.shared.core.agent_base import RGAgentBase as Agent
+from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase as Agent
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +79,7 @@ class Executive_Title_Composer(Agent):
 
     def __init__(
         self,
-        config: ReasoningConfig,
+        config: Any,
         word_count_min: int = 8,
         word_count_max: int = 13,
         char_limit: int = 90,
@@ -207,9 +207,10 @@ CRITICAL CONSTRAINTS (ZERO TOLERANCE):
 4. INDUSTRY-FIRST POSITIONING: Segment 1 MUST NOT contain technology keywords
 
 INDUSTRY-FIRST RULE (BLOCKING):
-- Segment 1 must lead with INDUSTRY/DOMAIN (e.g., "Healthcare", "Financial Services", "Enterprise SaaS")
+- Segment 1 must lead with INDUSTRY/DOMAIN
+  (e.g., "Healthcare", "Financial Services", "Enterprise SaaS")
 - Segment 1 MUST NOT contain: AI, ML, Python, AWS, Kubernetes, Docker, etc.
-- Technology keywords belong in Segment 3 (Value Proposition) ONLY
+- Technology keywords belong in Segment 3 (Value Proposition)
 
 TARGET INDUSTRY: {target_industry}
 TARGET ROLE: {target_role}
@@ -234,7 +235,8 @@ EXAMPLES (Industry-First VIOLATIONS - DO NOT USE):
 ❌ "AI/ML Leader | Healthcare Technology | Innovation" (tech in Segment 1)
 ❌ "Python Engineer | Cloud Architecture | SaaS" (tech in Segment 1)
 
-Generate the headline now ({self.word_count_min}-{self.word_count_max} words, ≤{self.char_limit} chars):
+Generate the headline now (
+{self.word_count_min}-{self.word_count_max} words, ≤{self.char_limit} chars):
 """
 
         return prompt

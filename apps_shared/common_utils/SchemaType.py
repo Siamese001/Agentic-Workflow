@@ -466,7 +466,7 @@ class InternalSchemaConverter:
             "abs": abs,
             "round": round,
             "timestamp_to_iso": lambda x: datetime.fromtimestamp(x).isoformat()
-            if isinstance(x, (int, float))
+            if isinstance(x, int | float)
             else x,
             "iso_to_timestamp": lambda x: datetime.fromisoformat(x).timestamp()
             if isinstance(x, str)

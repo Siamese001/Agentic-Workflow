@@ -273,15 +273,15 @@ def test_case_3_depth_constraint_persistence():
 
         call_path = set()
 
-        result_a = orchestrator.heal_repository(
+        orchestrator.heal_repository(
             dry_run=True, depth=0, max_depth=3, _call_path=call_path, chain_test="agent_a"
         )
 
-        result_b = executor.heal_repository(
+        executor.heal_repository(
             dry_run=True, depth=1, max_depth=3, _call_path=call_path, chain_test="agent_b"
         )
 
-        result_c = cognition.heal_repository(
+        cognition.heal_repository(
             dry_run=True, depth=2, max_depth=3, _call_path=call_path, chain_test="agent_c"
         )
 

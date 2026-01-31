@@ -85,7 +85,7 @@ class TestHOP1ProfileAnalysisAgent:
             [],
         ]
 
-        for invalid_profile in invalid_profiles:
+        for _invalid_profile in invalid_profiles:
             # Should handle gracefully
             try:
                 # Would test actual processing

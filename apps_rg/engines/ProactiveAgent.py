@@ -10,12 +10,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_rg.shared.core.agent_base import RGAgentBase
+from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
 
 @dataclass
-class ProactiveAgent(SubatomicTestingMixin, RGAgentBase):
+class ProactiveAgent(RGAgentBase):
     """
     Agent that proactively identifies and executes tasks.
     """
@@ -112,7 +111,7 @@ class ProactiveAgent(SubatomicTestingMixin, RGAgentBase):
         try:
             return {
                 "status": "skipped",
-                "details": f"ProactiveAgent heal() not yet implemented for {violation_type}",
+                "details": (f"ProactiveAgent heal() not yet implemented for {violation_type}"),
                 "artifacts": [],
                 "errors": [],
             }

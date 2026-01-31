@@ -163,7 +163,7 @@ class CodeDetectorAgent(SovereignBaseAgent):
             used = set()
 
             for node in ast.walk(tree):
-                if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+                if isinstance(node, ast.FunctionDef | ast.ClassDef):
                     defined.add(node.name)
                 elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
                     used.add(node.id)

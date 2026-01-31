@@ -198,7 +198,7 @@ class TestGravityFallbackToCognition:
         }
 
         # Process violation - should fall back to cognitive
-        result = agent._heal_violation(violation, auto_approve=True)
+        agent._heal_violation(violation, auto_approve=True)
 
         # Cognitive agent should have been called
         mock_cognitive.analyze_violation.assert_called_once()
@@ -467,7 +467,7 @@ class TestPhase11Integration:
         }
 
         # Process
-        result = agent._heal_violation(violation, auto_approve=True)
+        agent._heal_violation(violation, auto_approve=True)
 
         # Cognitive should have been called
         mock_cognitive.analyze_violation.assert_called_once()

@@ -147,7 +147,7 @@ def run_tiered_purge(
         )
 
         # Process
-        stats = processor.process_batch(violations)
+        processor.process_batch(violations)
 
         # Results
         Logger.info("")

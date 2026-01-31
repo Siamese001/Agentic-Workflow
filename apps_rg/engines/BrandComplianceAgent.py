@@ -13,12 +13,11 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_rg.shared.core.agent_base import RGAgentBase
+from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
 
 @dataclass
-class BrandComplianceAgent(SubatomicTestingMixin, RGAgentBase):
+class BrandComplianceAgent(RGAgentBase):
     """
     Ensures brand voice and professional tone.
 
@@ -156,7 +155,9 @@ class BrandComplianceAgent(SubatomicTestingMixin, RGAgentBase):
         try:
             return {
                 "status": "skipped",
-                "details": f"BrandComplianceAgent heal() not yet implemented for {violation_type}",
+                "details": (
+                    f"BrandComplianceAgent heal() not yet implemented for {violation_type}"
+                ),
                 "artifacts": [],
                 "errors": [],
             }

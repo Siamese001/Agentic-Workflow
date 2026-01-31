@@ -40,7 +40,7 @@ def test_location_agent_telemetry():
 
         # Simulate LocationAgent scanning multiple files
         with guard:
-            for i in range(50):  # Simulate scanning 50 files
+            for _i in range(50):  # Simulate scanning 50 files
                 guard.increment_metric("files_scanned")
 
         # Verify batching worked

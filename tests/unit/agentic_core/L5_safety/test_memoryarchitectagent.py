@@ -60,7 +60,7 @@ class TestMemoryArchitectAgent:
             from agentic_core.L5_safety.validators.MemoryArchitectAgent import MemoryArchitectAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(MemoryArchitectAgent, "heal_repository") or any(
+            hasattr(MemoryArchitectAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(MemoryArchitectAgent)
             )
             # Not all agents need healing - this is informational

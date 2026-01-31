@@ -97,7 +97,7 @@ class QueryDecomposer(SimpleAgentBase):
         score = 1  # Base score
 
         # Check for complexity indicators
-        for indicator_type, pattern in self.complexity_indicators.items():
+        for _indicator_type, pattern in self.complexity_indicators.items():
             if pattern.search(query):
                 score += 2
 

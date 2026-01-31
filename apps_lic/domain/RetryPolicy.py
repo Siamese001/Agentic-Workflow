@@ -195,7 +195,7 @@ class RetryPolicy:
         last_exception = None
 
         for attempt in range(retry_config.max_attempts):
-            start_time = time.time()
+            time.time()
 
             try:
                 # Execute function

@@ -39,7 +39,7 @@ for file_path in all_files:
     archives_path = PROJECT_ROOT / "archives"
     exists_archived = False
     if archives_path.exists():
-        for root, dirs, files in os.walk(archives_path):
+        for root, _dirs, files in os.walk(archives_path):
             if ".sovereign_healing_backup" in root:
                 continue
             if filename in files:

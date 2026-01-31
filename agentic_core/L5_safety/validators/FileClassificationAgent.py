@@ -337,7 +337,7 @@ class FileClassificationAgent(SovereignBaseAgent):
         # ensuring that 'from ..llm_mixin' correctly becomes 'from ..new_name' (or the new name).
 
         # Optimized: Scans in-memory file_registry instead of hitting disk rglob
-        for i, path in enumerate(self.file_registry):
+        for _i, path in enumerate(self.file_registry):
             if path.name == new_name or not path.exists():
                 continue
             try:

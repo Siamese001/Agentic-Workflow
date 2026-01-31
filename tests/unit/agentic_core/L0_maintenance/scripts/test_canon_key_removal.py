@@ -209,7 +209,7 @@ class TestCanonKeyRemoval:
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef) and node.name == "CanonBaseAgent":
                     # Should only have docstring and pass
-                    non_trivial = [n for n in node.body if not isinstance(n, (ast.Pass, ast.Expr))]
+                    non_trivial = [n for n in node.body if not isinstance(n, ast.Pass | ast.Expr)]
                     assert len(non_trivial) == 0, (
                         f"CanonBaseAgent should be hollow, found: {non_trivial}"
                     )

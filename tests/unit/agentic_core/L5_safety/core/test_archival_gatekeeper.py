@@ -67,7 +67,7 @@ class TestSingletonPattern:
     def test_reset_instance_clears_singleton(self, temp_project):
         """Verify reset clears the singleton."""
         ArchivalGatekeeper.reset_instance()
-        gk1 = ArchivalGatekeeper.get_instance(temp_project)
+        ArchivalGatekeeper.get_instance(temp_project)
         ArchivalGatekeeper.reset_instance()
 
         # Should require project_root again

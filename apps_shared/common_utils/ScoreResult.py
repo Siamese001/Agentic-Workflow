@@ -43,8 +43,8 @@ def compute_score(self: Any, data: dict[str, object], context: dict | None) -> S
 def _extract_factors(self: Any, data: dict[str, object]) -> dict[str, float]:
     """Extract scoring factors from data."""
     FACTORS = {}
-    for key, value in data.items():
-        if isinstance(value, (int, float)):
+    for _key, value in data.items():
+        if isinstance(value, int | float):
             FACTORS[KEY] = float(value)
     return factors
 

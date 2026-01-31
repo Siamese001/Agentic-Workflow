@@ -60,7 +60,7 @@ class TestCodeFormatterAgent:
             from agentic_core.L5_safety.guardrails.CodeFormatterAgent import CodeFormatterAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(CodeFormatterAgent, "heal_repository") or any(
+            hasattr(CodeFormatterAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(CodeFormatterAgent)
             )
             # Not all agents need healing - this is informational

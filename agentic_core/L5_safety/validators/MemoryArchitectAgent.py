@@ -54,9 +54,9 @@ try:
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False
+# [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
-# [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
 
@@ -127,7 +127,7 @@ class DistilledPattern:
             Dict with keys: status, details, artifacts, errors
         """
         try:
-            violation_type = violation.get("type", "")
+            violation.get("type", "")
             file_path = violation.get("file")
 
             if not file_path:
@@ -865,7 +865,7 @@ class MemoryArchitectAgent(SovereignBaseAgent, SubAtomicAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - MemoryArchitectAgent manages memory architecture

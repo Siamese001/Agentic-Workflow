@@ -220,7 +220,7 @@ def test_tc12_import_stability():
             if len(parts) == 2:
                 module_name, attr_name = parts
                 module = __import__(module_name, fromlist=[attr_name])
-                cls = getattr(module, attr_name)
+                getattr(module, attr_name)
                 successful_imports.append(class_name)
             else:
                 import_errors.append((class_name, "Invalid module path"))

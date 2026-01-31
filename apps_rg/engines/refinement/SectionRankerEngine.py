@@ -12,7 +12,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from apps_rg.engines.base.base_resume_engine import BaseRGEngine
+from apps_rg.engines.base.BaseRGEngine import BaseRGEngine
 
 Logger = logging.getLogger(__name__)
 
@@ -84,7 +84,7 @@ class SectionRankerEngine(BaseRGEngine):
 
         # Append orphans
         for section in content:
-            if isinstance(section, str) and section not in [v for v in section_mapping.values()]:
+            if isinstance(section, str) and section not in list(section_mapping.values()):
                 ranked_resume[section] = content[section]
 
         # 3. WRITE

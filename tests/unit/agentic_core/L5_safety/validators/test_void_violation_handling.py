@@ -70,7 +70,7 @@ class test_void_violation_handling:
         )
 
         # Should show options, not archive
-        assert result["applied"] == True
+        assert result["applied"] is True
         assert "PREVIEW" in result["action_taken"]
         assert "options" in result
         assert "1_relocate" in result["options"]
@@ -101,7 +101,7 @@ class test_void_violation_handling:
         mock_file = project_root / "agentic_core" / "unknown_folder" / "test_file.py"
         archives_root = project_root / "archives"
 
-        result = healer._apply_healing_strategy(
+        healer._apply_healing_strategy(
             file_path=mock_file,
             msg="VOID VIOLATION: test",
             archives_root=archives_root,
@@ -134,10 +134,10 @@ class TestSSOTSubfolderUpdate:
         from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
 
         # Valid path (L5_safety is in subfolders)
-        assert is_path_allowed("agentic_core/L5_safety/validators/test.py") == True
+        assert is_path_allowed("agentic_core/L5_safety/validators/test.py") is True
 
         # Invalid path (random_folder is NOT in subfolders)
-        assert is_path_allowed("agentic_core/random_nonexistent_folder/test.py") == False
+        assert is_path_allowed("agentic_core/random_nonexistent_folder/test.py") is False
 
 
 if __name__ == "__main__":

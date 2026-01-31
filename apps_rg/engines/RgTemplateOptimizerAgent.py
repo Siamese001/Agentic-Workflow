@@ -8,13 +8,13 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_rg.shared.core.agent_base import RGAgentBase
+from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
 
 @dataclass
-class RgTemplateOptimizerAgent(SubatomicTestingMixin, RGAgentBase):
+class RgTemplateOptimizerAgent(RGAgentBase):
     """
     Optimizes template selection based on job description.
 
@@ -101,7 +101,9 @@ class RgTemplateOptimizerAgent(SubatomicTestingMixin, RGAgentBase):
         try:
             return {
                 "status": "skipped",
-                "details": f"RgTemplateOptimizerAgent heal() not yet implemented for {violation_type}",
+                "details": (
+                    f"RgTemplateOptimizerAgent heal() not yet implemented for {violation_type}"
+                ),
                 "artifacts": [],
                 "errors": [],
             }

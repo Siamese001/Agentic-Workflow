@@ -60,7 +60,7 @@ class TestCostGovernorAgent:
             from agentic_core.L5_safety.guardrails.CostGovernorAgent import CostGovernorAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(CostGovernorAgent, "heal_repository") or any(
+            hasattr(CostGovernorAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(CostGovernorAgent)
             )
             # Not all agents need healing - this is informational

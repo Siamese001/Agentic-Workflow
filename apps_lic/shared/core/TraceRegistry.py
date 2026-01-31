@@ -62,7 +62,7 @@ class TraceRegistry(MCPHardenedMixin):
             # Ensure parent directory exists
             self.persistence_path.parent.mkdir(parents=True, exist_ok=True)
             # Create empty file
-            with self.persistence_path.open("w", encoding="utf-8") as f:
+            with self.persistence_path.open("w", encoding="utf-8"):
                 pass  # Just create empty file
 
     def _append_to_disk(self, trace: dict[str, Any]) -> None:

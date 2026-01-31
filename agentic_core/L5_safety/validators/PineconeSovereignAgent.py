@@ -522,7 +522,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
         def _heal_pinecone_violation(self, violation: dict) -> dict:
             """Internal heal method with standard_heal decorator."""
             violation_type = violation.get("type", "index_config")
-            path = violation.get("path", "")
+            violation.get("path", "")
             index_name = violation.get("index_name", self.index_name)
 
             Logger.info(f"[PINECONE] Healing {violation_type} violation for index {index_name}")

@@ -68,7 +68,7 @@ class TestPreCommitSovereignAgent:
             )
 
             # Check for heal_repository method
-            has_heal = hasattr(PreCommitSovereignAgent, "heal_repository") or any(
+            hasattr(PreCommitSovereignAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(PreCommitSovereignAgent)
             )
             # Not all agents need healing - this is informational

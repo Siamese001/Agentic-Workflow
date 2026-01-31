@@ -15,7 +15,7 @@ def count_top_level_defs(filepath: Path) -> int:
         return sum(
             1
             for n in tree.body
-            if isinstance(n, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef))
+            if isinstance(n, ast.FunctionDef | ast.ClassDef | ast.AsyncFunctionDef)
         )
     except Exception:
         return 0
@@ -46,7 +46,7 @@ def split_file_by_type(filepath: Path) -> None:
                 dataclasses.append(node)
             else:
                 classes.append(node)
-        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             functions.append(node)
     total_defs: Any = len(enums) + len(dataclasses) + len(classes) + len(functions)
     if total_defs <= 5:

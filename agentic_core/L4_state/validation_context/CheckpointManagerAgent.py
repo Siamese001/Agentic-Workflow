@@ -642,7 +642,7 @@ class CheckpointManagerAgent(SovereignBaseAgent):
             # Extract violation details
             violation_type = violation.get("type", "unknown")
             checkpoint_id = violation.get("checkpoint_id")
-            file_path = violation.get("file_path")
+            violation.get("file_path")
 
             if violation_type == "checkpoint_integrity":
                 # Heal checkpoint integrity issues

@@ -43,28 +43,36 @@ class AutonomousSovereignCore:
                 create_adaptive_learning_engine,
             )
         except ImportError:
-            create_adaptive_learning_engine = lambda: None
+
+            def create_adaptive_learning_engine():
+                return None
 
         try:
             from ..L3_orchestration.engines.proactive_resources import (
                 create_proactive_resource_manager,
             )
         except ImportError:
-            create_proactive_resource_manager = lambda: None
+
+            def create_proactive_resource_manager():
+                return None
 
         try:
             from ..L3_orchestration.engines.autonomous_execution import (
                 create_autonomous_execution_engine,
             )
         except ImportError:
-            create_autonomous_execution_engine = lambda: None
+
+            def create_autonomous_execution_engine():
+                return None
 
         try:
             from ..L3_orchestration.engines.self_recovering import (
                 create_self_recovering_orchestrator,
             )
         except ImportError:
-            create_self_recovering_orchestrator = lambda: None
+
+            def create_self_recovering_orchestrator():
+                return None
 
         # GRAVITY FIXED: Dynamic imports for autonomous components
         try:
@@ -72,19 +80,27 @@ class AutonomousSovereignCore:
                 create_autonomous_checkpoint_manager,
             )
         except ImportError:
-            create_autonomous_checkpoint_manager = lambda: None
+
+            def create_autonomous_checkpoint_manager():
+                return None
+
         try:
             from ..L5_safety.gravity.autonomous_state_guardian import (
                 create_autonomous_state_guardian,
             )
         except ImportError:
-            create_autonomous_state_guardian = lambda: None
+
+            def create_autonomous_state_guardian():
+                return None
+
         try:
             from ..L5_safety.gravity.self_updating_safety import (
                 create_self_updating_safety_engine,
             )
         except ImportError:
-            create_self_updating_safety_engine = lambda: None
+
+            def create_self_updating_safety_engine():
+                return None
 
         # Initialize all autonomous layers
         self.l1_learning = create_adaptive_learning_engine(autonomous_mode=True)

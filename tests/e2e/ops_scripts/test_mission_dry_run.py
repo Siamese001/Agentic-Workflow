@@ -6,8 +6,8 @@ Tests the actual execution flow without making changes to the repository.
 import sys
 from pathlib import Path
 
-# Add project root to path (tests/e2e/ops_scripts/ is 3 levels deep)
-project_root = Path(__file__).resolve().parent.parent.parent
+# Add project root to path
+project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
 

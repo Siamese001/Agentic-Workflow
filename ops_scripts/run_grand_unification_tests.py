@@ -60,7 +60,7 @@ async def test_resilience_to_garbage_input():
     try:
         result = await orch.run("Job")
     except Exception:
-        assert False, "Orchestrator crashed on empty input instead of handling gracefully"
+        raise AssertionError("Orchestrator crashed on empty input instead of handling gracefully")
 
     # Verify graceful handling - SUCCESS is acceptable if no crash occurred
     summary = ctx.trace.get_summary()

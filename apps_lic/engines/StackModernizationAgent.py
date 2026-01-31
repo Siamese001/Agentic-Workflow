@@ -205,7 +205,7 @@ class StackModernizationAgent:
             # Find matching transformation playbook
             detected_lower = [tech.lower() for tech in diagnostic.detected_legacy_tech]
 
-            for playbook_name, playbook in self.transformation_playbooks.items():
+            for _playbook_name, playbook in self.transformation_playbooks.items():
                 if any(legacy in detected_lower for legacy in playbook["legacy"]):
                     return self._create_thesis_from_playbook(playbook, diagnostic)
 

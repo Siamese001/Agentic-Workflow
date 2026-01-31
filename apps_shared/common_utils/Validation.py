@@ -71,7 +71,7 @@ class Validation:
             validation_result = self._validate_list(data, validation_result)
         elif isinstance(data, str):
             validation_result = self._validate_string(data, validation_result)
-        elif isinstance(data, (int, float)):
+        elif isinstance(data, int | float):
             validation_result = self._validate_number(data, validation_result)
         elif isinstance(data, bool):
             validation_result = self._validate_boolean(data, validation_result)

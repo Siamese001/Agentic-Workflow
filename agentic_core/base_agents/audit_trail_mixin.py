@@ -257,7 +257,7 @@ class AuditTrailMixin:
         def _sort_recursive(obj: Any) -> Any:
             if isinstance(obj, dict):
                 return sorted((k, _sort_recursive(v)) for k, v in obj.items())
-            elif isinstance(obj, (list, tuple)):
+            elif isinstance(obj, list | tuple):
                 return [_sort_recursive(item) for item in obj]
             return obj
 

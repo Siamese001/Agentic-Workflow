@@ -219,7 +219,7 @@ class TestEmptyFolderDeletion:
         assert empty_folder.exists()
 
         # Delete empty folders
-        deleted = agent.delete_empty_folders()
+        agent.delete_empty_folders()
 
         # Empty folder should be deleted
         assert not empty_folder.exists()

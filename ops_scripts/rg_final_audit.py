@@ -20,13 +20,12 @@ def audit_file(path: Path):
         return {"error": f"Parse Error: {e}"}
 
     issues = []
-    has_base = False
 
     # Check Imports
     for node in ast.walk(tree):
-        if isinstance(node, (ast.Import, ast.ImportFrom)):
+        if isinstance(node, ast.Import | ast.ImportFrom):
             module = node.module if hasattr(node, "module") else None
-            names = [n.name for n in node.names]
+            [n.name for n in node.names]
 
             # Check Forbidden
             if module and any(f in module for f in FORBIDDEN_IMPORTS):

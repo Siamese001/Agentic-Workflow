@@ -91,13 +91,13 @@ def main():
     for f in actionable:
         file_lower = f["file"].lower()
         if "deprecated" in file_lower or "@deprecated" in f["text"].lower():
-            action = "ARCHIVE"
+            pass
         elif "legacy" in file_lower:
-            action = "ARCHIVE"
+            pass
         elif "use " in f["text"].lower() and " instead" in f["text"].lower():
-            action = "ARCHIVE"
+            pass
         else:
-            action = "REVIEW"
+            pass
     for f in actionable:
         pass
 

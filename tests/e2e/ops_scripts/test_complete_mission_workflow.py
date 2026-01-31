@@ -132,7 +132,7 @@ def test_complete_mission_workflow():
         # 8. Final Mission Report
         print("\n📋 8. FINAL MISSION REPORT...")
         mission_time = time.time() - start_time
-        final_upgrades = state_guard.get_metric("upgrade_count", 0)
+        state_guard.get_metric("upgrade_count", 0)
 
         print(f"   ⏱️  Total mission time: {mission_time:.2f}s")
         print(f"   📁 Files scanned: {files_processed}")

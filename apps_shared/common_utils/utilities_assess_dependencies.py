@@ -17,7 +17,7 @@ def get_active_files(entry_points: Any, root_dir: Any) -> Any:
         finder.run_script(script)
     active_files: Any = set()
     abs_root: Any = os.path.abspath(root_dir)
-    for name, mod in finder.modules.items():
+    for _name, mod in finder.modules.items():
         if mod.__file__:
             abs_path: Any = os.path.abspath(mod.__file__)
             if abs_path.startswith(abs_root):
@@ -26,7 +26,7 @@ def get_active_files(entry_points: Any, root_dir: Any) -> Any:
     for ep in entry_points:
         rel_ep: Any = os.path.relpath(os.path.abspath(ep), abs_root)
         active_files.add(rel_ep)
-    return sorted(list(active_files))
+    return sorted(active_files)
 
 
 def main() -> Any:

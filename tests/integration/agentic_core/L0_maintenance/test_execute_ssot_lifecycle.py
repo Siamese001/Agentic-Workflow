@@ -146,7 +146,7 @@ class TestSovereignLifecycle(unittest.TestCase):
             (0.3, True, "LLM"),
         ]
 
-        for conf_val, expected_proceed, expected_type in test_cases:
+        for conf_val, expected_proceed, _expected_type in test_cases:
             score = execute_ssot.ConfidenceScore(value=conf_val, reasoning=f"Test {conf_val}")
             proceed, msg = decision_engine.should_proceed_with_healing(score)
             self.assertEqual(proceed, expected_proceed, f"Failed at {conf_val}")

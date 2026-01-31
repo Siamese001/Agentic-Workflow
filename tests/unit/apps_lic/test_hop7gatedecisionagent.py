@@ -60,7 +60,7 @@ class TestHOP7GateDecisionAgent:
             from apps_lic.engines.HOP7GateDecisionAgent import HOP7GateDecisionAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(HOP7GateDecisionAgent, "heal_repository") or any(
+            hasattr(HOP7GateDecisionAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(HOP7GateDecisionAgent)
             )
             # Not all agents need healing - this is informational

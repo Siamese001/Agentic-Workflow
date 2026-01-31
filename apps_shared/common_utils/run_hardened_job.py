@@ -68,7 +68,7 @@ def _initialize_orchestrator() -> None:
 
     from runtime.orchestration.hardened_orchestrator import HardenedWorkflowOrchestrator
 
-    ORCHESTRATOR = HardenedWorkflowOrchestrator(
+    HardenedWorkflowOrchestrator(
         workflow_spec=workflow_spec, run_base_dir="./pipeline_runs", storage_path="./state_storage"
     )
     logger.info("✅ Orchestrator initialized successfully")

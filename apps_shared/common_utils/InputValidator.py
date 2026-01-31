@@ -168,23 +168,23 @@ class InputValidator:
 
         # Length validation
         if rule.min_length is not None:
-            if isinstance(validated_value, (str, list, dict)):
+            if isinstance(validated_value, str | list | dict):
                 if len(validated_value) < rule.min_length:
                     raise InputValidationError(field, f"Minimum length is {rule.min_length}")
 
         if rule.max_length is not None:
-            if isinstance(validated_value, (str, list, dict)):
+            if isinstance(validated_value, str | list | dict):
                 if len(validated_value) > rule.max_length:
                     raise InputValidationError(field, f"Maximum length is {rule.max_length}")
 
         # Value validation
         if rule.min_value is not None:
-            if isinstance(validated_value, (int, float)):
+            if isinstance(validated_value, int | float):
                 if validated_value < rule.min_value:
                     raise InputValidationError(field, f"Minimum value is {rule.min_value}")
 
         if rule.max_value is not None:
-            if isinstance(validated_value, (int, float)):
+            if isinstance(validated_value, int | float):
                 if validated_value > rule.max_value:
                     raise InputValidationError(field, f"Maximum value is {rule.max_value}")
 
@@ -270,7 +270,7 @@ class InputValidator:
                     except Exception:
                         # Try timestamp
                         return datetime.fromtimestamp(float(value))
-                elif isinstance(value, (int, float)):
+                elif isinstance(value, int | float):
                     return datetime.fromtimestamp(value)
                 return value
             elif rule.validation_type == ValidationType.JSON:
@@ -284,7 +284,7 @@ class InputValidator:
             elif rule.validation_type == ValidationType.XML:
                 if isinstance(value, str):
                     # Parse XML to ensure it's valid
-                    root = ET.fromstring(value)
+                    ET.fromstring(value)
                     return value
                 raise ValueError("XML must be a string")
             else:
@@ -473,7 +473,7 @@ class ValidatedInput(BaseModel):
         """Check size limits."""
         if isinstance(v, str) and len(v) > 10000:
             raise ValueError("String too long")
-        if isinstance(v, (list, dict)) and len(v) > 1000:
+        if isinstance(v, list | dict) and len(v) > 1000:
             raise ValueError("Collection too large")
         return v
 

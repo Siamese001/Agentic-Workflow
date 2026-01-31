@@ -1175,7 +1175,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         # 2. fast-scan the repository using the Phase 3 agent logic
         # We instantiate it temporarily just to use its optimized scanner
-        scanner = PascalSovereigntyAgent(self.project_root)
+        PascalSovereigntyAgent(self.project_root)
         files = get_python_files_fast(self.project_root)
 
         # 3. Calculate Hashes
@@ -1248,7 +1248,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         """[PHASE 8] Saves immutable audit record."""
         self.audit_log_dir.mkdir(parents=True, exist_ok=True)
 
-        report = {
+        {
             "timestamp": datetime.utcnow().isoformat(),
             "audit_id": str(uuid.uuid4()),
             "structural_summary": structural_results,
@@ -1417,7 +1417,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         # Step 1: Gather all violations (dry run)
         Logger.info(f"[{agent_name}] Scanning for violations...")
-        scan_results = self.heal_repository(dry_run=True)
+        self.heal_repository(dry_run=True)
 
         # Extract violations from results
         violations = getattr(self, "violations", [])
@@ -1595,7 +1595,6 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         Returns:
             True if the violation was resolved, False otherwise
         """
-        agent_name = self.__class__.__name__
         cognitive = self._get_cognitive_agent()
 
         Logger.info(f"  [COGNITIVE] Analyzing: {file_path.name} ({violation_type})")

@@ -181,7 +181,7 @@ class RGSovereignAuditor:
                 return "PASSIVE_DATA", {"reason": "Contains only passive data models/enums"}
 
         # Enhanced agent detection - check for actual agent characteristics
-        agent_classes = [cls for cls in classes if cls.get("is_agent", False)]
+        [cls for cls in classes if cls.get("is_agent", False)]
 
         # Check for inheritance from agent bases
         agent_base_indicators = [
@@ -405,7 +405,7 @@ class RGSovereignAuditor:
         """Generate list of imposter agents needing rename."""
         nomenclature_fixes = []
 
-        for subdir_name, subdir_data in results["by_directory"].items():
+        for _subdir_name, subdir_data in results["by_directory"].items():
             for file_path, analysis in subdir_data.get("files", {}).items():
                 if "error" not in analysis and analysis["classification"] == "IMPOSTER_AGENT":
                     nomenclature_fixes.append(

@@ -371,7 +371,7 @@ class SafetyInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         Returns:
             Dictionary with violations_found, violations_fixed, errors, skipped.
         """
-        result = super().heal_repository(dry_run=dry_run, **kwargs)
+        super().heal_repository(dry_run=dry_run, **kwargs)
 
         if _call_path is None:
             _call_path = set()

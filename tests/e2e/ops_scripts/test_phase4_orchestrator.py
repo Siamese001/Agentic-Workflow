@@ -82,7 +82,7 @@ def test_persistent_tracing_integration():
         from apps_rg.shared.core.trace_registry import TraceRegistry
 
         ctx = SovereignContext()
-        orch = ResumeOrchestratorEngine(ctx, mission_id="test_tracing")
+        ResumeOrchestratorEngine(ctx, mission_id="test_tracing")
 
         # Verify trace registry is initialized
         assert hasattr(ctx, "trace"), "Missing trace registry"

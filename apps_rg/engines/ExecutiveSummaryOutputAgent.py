@@ -16,7 +16,7 @@ from agentic_core.schemas.models.reasoning_config import ReasoningConfig
 
 # [Diff Start: Fix Inheritance and Config]
 # Previous: from agent_core.agent import Agent
-from apps_rg.shared.core.agent_base import RGAgentBase
+from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
 # [Diff End]
 

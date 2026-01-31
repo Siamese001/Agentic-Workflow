@@ -16,6 +16,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, TypeVar
 
+from apps_rg.shared.mixins import HealerMixin, MCPHardenedMixin
+
 Logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
@@ -103,7 +105,7 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
                 timestamp=datetime.utcnow().timestamp(),
                 source_agent=source_agent,
                 value_hash=hash(str(snapshot))
-                if isinstance(snapshot, (str, int, float, tuple, frozenset))
+                if isinstance(snapshot, str | int | float | tuple | frozenset)
                 else hash(str(snapshot))
                 if isinstance(snapshot, dict)
                 else 0,

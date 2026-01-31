@@ -70,7 +70,7 @@ class TestFilesystemSSOTReconcilerAgent:
             )
 
             # Check for heal_repository method
-            has_heal = hasattr(FilesystemSSOTReconcilerAgent, "heal_repository") or any(
+            hasattr(FilesystemSSOTReconcilerAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(FilesystemSSOTReconcilerAgent)
             )
             # Not all agents need healing - this is informational

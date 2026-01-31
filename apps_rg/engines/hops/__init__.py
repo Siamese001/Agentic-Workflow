@@ -2,8 +2,8 @@
 HOP (Hierarchical Orchestration Process) Engines
 """
 
-from apps_rg.engines.hops.hop1_clerk_engine import ClerkExtractionEngine
-from apps_rg.engines.hops.hop2_enrichment_engine import DataEnrichmentEngine
+from apps_rg.engines.hops.ClerkExtractionEngine import ClerkExtractionEngine
+from apps_rg.engines.hops.DataEnrichmentEngine import DataEnrichmentEngine
 
 # Legacy alias for backward compatibility
 EnrichmentEngine = DataEnrichmentEngine

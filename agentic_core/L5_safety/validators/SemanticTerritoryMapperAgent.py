@@ -29,7 +29,7 @@ class SemanticTerritoryMapperAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
+        violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
         # Default implementation - SemanticTerritoryMapperAgent maps semantic territories

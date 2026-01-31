@@ -36,7 +36,7 @@ class TestCoreLogicSynthesis:
                 tree = ast.parse(content)
 
                 for node in ast.walk(tree):
-                    if isinstance(node, (ast.Import, ast.ImportFrom)):
+                    if isinstance(node, ast.Import | ast.ImportFrom):
                         module = getattr(node, "module", "") or ""
 
                         # Check for direct imports
@@ -205,7 +205,6 @@ class TestCoreLogicSynthesis:
 
             # Check it has required attributes/methods
             required_methods = ["__init__"]
-            required_attrs = ["ctx", "name", "python_files"]
 
             for method in required_methods:
                 assert hasattr(SovereignBaseAgent, method), f"Missing required method: {method}"

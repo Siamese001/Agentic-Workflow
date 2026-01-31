@@ -291,7 +291,7 @@ def test_3_depth_constraint_cycle():
         # Test 3c: Verify _call_path is cleaned up
         print("\n🔧 Testing _call_path cleanup...")
         fresh_path = set()
-        cleanup_result = cycle_agent.heal_repository(
+        cycle_agent.heal_repository(
             dry_run=True, execute=False, depth=0, max_depth=3, _call_path=fresh_path
         )
 

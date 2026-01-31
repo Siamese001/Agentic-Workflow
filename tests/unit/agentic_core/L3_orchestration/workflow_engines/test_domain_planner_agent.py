@@ -62,7 +62,7 @@ class TestDomainPlannerAgent:
             [],
         ]
 
-        for invalid_domain in invalid_domains:
+        for _invalid_domain in invalid_domains:
             try:
                 pass  # Would test actual planning
             except (TypeError, ValueError):

@@ -60,7 +60,7 @@ class TestHOP5GenerationAgent:
             from apps_lic.engines.HOP5GenerationAgent import HOP5GenerationAgent
 
             # Check for heal_repository method
-            has_heal = hasattr(HOP5GenerationAgent, "heal_repository") or any(
+            hasattr(HOP5GenerationAgent, "heal_repository") or any(
                 "heal" in str(m).lower() for m in dir(HOP5GenerationAgent)
             )
             # Not all agents need healing - this is informational

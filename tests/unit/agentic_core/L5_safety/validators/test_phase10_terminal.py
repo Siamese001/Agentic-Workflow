@@ -392,7 +392,7 @@ class TestPhase10TerminalIntegration:
         agent.heal_repository = mock_heal
 
         # Execute convergence
-        result = agent.execute_sovereign_convergence()
+        agent.execute_sovereign_convergence()
 
         # Capture baseline
         baseline = agent.capture_sovereign_baseline()

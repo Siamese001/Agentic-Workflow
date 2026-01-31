@@ -9,11 +9,10 @@ Phase 2 - Resilient Routing Layer
 import logging
 from typing import Any
 
-from agentic_core.base_agents.telemetry import SystemTelemetry
-
-# Previous: from runtime.shared.circuit_breaker import CircuitBreaker, CircuitBreakerState
 from apps_shared.common_utils.multi_provider_clients import Provider
 
+from agentic_core.base_agents.CircuitBreakerState import CircuitBreakerState
+from agentic_core.base_agents.SystemTelemetry import SystemTelemetry
 from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
 from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
 
@@ -57,7 +56,8 @@ class HardenedRouter:
         self.configs = configs or {
             tier.value: config for tier, config in DEFAULT_ROUTING_CONFIGS.items()
         }
-        self.telemetry = telemetry or get_telemetry()
+        # Telemetry is optional - use provided or None
+        self.telemetry = telemetry
 
         # Initialize hardened executors for each provider
         self.executors: dict[Provider, Any] = {}
@@ -78,7 +78,8 @@ class HardenedRouter:
                 elif provider == Provider.ANTHROPIC:
                     self.executors[provider] = HardenedAnthropicExecutor()
                 elif provider == Provider.GOOGLE:
-                    self.executors[provider] = HardenedGeminiExecutor()
+                    # HardenedGeminiExecutor not yet implemented
+                    logger.warning(f"HardenedGeminiExecutor not available for {provider}")
                 else:
                     logger.warning(f"No hardened executor available for provider: {provider}")
             except Exception as e:
@@ -122,7 +123,7 @@ class HardenedRouter:
         # Check circuit breaker state
         if hasattr(executor, "circuit_breaker"):
             state = executor.circuit_breaker.state
-            return state == CircuitState.CLOSED
+            return state == CircuitBreakerState.CLOSED
         elif hasattr(executor, "get_circuit_breaker_state"):
             state_str = executor.get_circuit_breaker_state()
             return state_str == "CLOSED"
@@ -148,7 +149,7 @@ class HardenedRouter:
         self.telemetry.log_metric(
             component="hardened_router",
             operation="routing_event",
-            status=OperationStatus.SUCCESS if not is_fallback else OperationStatus.RETRY,
+            status="SUCCESS" if not is_fallback else "RETRY",
             latency_ms=0.0,
             metadata={
                 "tier": tier,

@@ -48,7 +48,7 @@ class DocumentationAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAge
             Dict with keys: status, details, artifacts, errors
         """
         try:
-            violation_type = violation.get("type", "")
+            violation.get("type", "")
             file_path = violation.get("file")
 
             if not file_path:

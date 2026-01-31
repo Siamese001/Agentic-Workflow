@@ -8,7 +8,7 @@ the Sovereign Architecture pattern.
 
 from __future__ import annotations
 
-from apps_shared.common_utils.multi_provider_clients import Provider
+from apps_shared.common_utils.Provider import Provider
 
 # [Diff Start: Export AgentExecutor]
 from .AgentExecutor import (
@@ -26,8 +26,8 @@ from .CampaignPlannerAgent import CampaignPlannerAgent
 from .ContentQualityAgent import ContentQualityAgent, TestPilot
 from .ContentStrategyAgent import ContentStrategyAgent
 from .FactCheckAgent import FactCheckAgent
-from .hardened_openai_executor import HardenedOpenAIExecutor
 from .HardenedAnthropicExecutor import HardenedAnthropicExecutor
+from .HardenedOpenAIExecutor import HardenedOpenAIExecutor
 from .ProactiveAgent import ProactiveAgent
 from .RgHealingOrchestratorAgent import RgHealingOrchestratorAgent
 from .RgReflectionAgent import RgReflectionAgent
@@ -36,10 +36,12 @@ from .RgStrategicPlannerAgent import RgStrategicPlannerAgent
 from .RgTemplateOptimizerAgent import RgTemplateOptimizerAgent
 
 # Core Engine Components
-from .Router import HardenedRouter as Router
-from .schema import ProviderType, RouteConfig, RouterConfig, RouteResult, RoutingTier
+# Router, schema, and strategist_biowriter modules not yet implemented
+# from .Router import HardenedRouter as Router
+# from .schema import ProviderType, RouteConfig, RouterConfig, RouteResult, RoutingTier
 from .SectionBalanceAgent import SectionBalanceAgent
-from .strategist_biowriter import StrategistBioWriter
+
+# from .strategist_biowriter import StrategistBioWriter
 
 # [Diff End]
 

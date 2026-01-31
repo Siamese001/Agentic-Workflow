@@ -37,7 +37,7 @@ class TestNewSDKClientInitialization:
 
                 # Force re-initialization
                 agent._client = None
-                client = agent._get_client()
+                agent._get_client()
 
                 # Verify Client was called with API key
                 mock_client_class.assert_called_once_with(api_key="test_api_key")
@@ -121,7 +121,7 @@ class TestJSONModeEnforcement:
         agent._client = mock_client
 
         # Call _generate_llm_decision
-        decision = agent._generate_llm_decision(test_file, "ORPHAN", {})
+        agent._generate_llm_decision(test_file, "ORPHAN", {})
 
         # Verify generate_content was called
         mock_client.models.generate_content.assert_called_once()

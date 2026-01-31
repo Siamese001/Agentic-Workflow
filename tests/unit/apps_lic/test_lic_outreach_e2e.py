@@ -163,11 +163,6 @@ class TestLICOutreachE2E:
 
     def test_outreach_with_low_value_lead(self):
         """Test outreach workflow with low-value lead."""
-        low_value_profile = {
-            "name": "Test User",
-            "title": "Junior Developer",
-            "company": "Small Startup",
-        }
 
         # Should route to different template
         routing = {
@@ -186,11 +181,6 @@ class TestLICErrorRecovery:
     def test_research_timeout_recovery(self):
         """Test recovery from research timeout."""
         # Simulate timeout
-        error_state = {
-            "stage": "HOP2_Research",
-            "error": "timeout",
-            "retry_count": 1,
-        }
 
         # Recovery action
         recovery = {
@@ -204,11 +194,6 @@ class TestLICErrorRecovery:
     def test_llm_failure_recovery(self):
         """Test recovery from LLM failure."""
         # Simulate LLM failure
-        error_state = {
-            "stage": "HOP5_Generation",
-            "error": "llm_rate_limit",
-            "retry_count": 2,
-        }
 
         # Recovery with fallback provider
         recovery = {

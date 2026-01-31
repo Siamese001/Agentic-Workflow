@@ -7,14 +7,13 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_rg.shared.core.agent_base import RGAgentBase
+from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class CampaignPlannerAgent(SubatomicTestingMixin, RGAgentBase):
+class CampaignPlannerAgent(RGAgentBase):
     """
     Sovereign Campaign Planner.
     Orchestrates high-level campaign strategies and timeline alignment.

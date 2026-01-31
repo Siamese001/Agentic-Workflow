@@ -169,7 +169,6 @@ class TestSovereignFinalClosure:
         [INTERFACE COMPLETENESS] Verify AgentListMapping implements full Mapping interface.
         Tests all required Mapping methods are present and functional.
         """
-        test_data = {"key1": "value1", "key2": "value2"}
         mapping = load_hardened_agent_metadata(Path("agent_discovery_full.json"))
 
         # Test Mapping interface methods
@@ -196,7 +195,7 @@ class TestSovereignFinalClosure:
         for var_name in all_vars:
             if any(pattern in var_name.upper() for pattern in ghost_patterns):
                 if var_name not in ["__doc__", "__file__"]:  # Skip built-ins
-                    assert False, f"POTENTIAL GHOST VARIABLE DETECTED: {var_name}"
+                    raise AssertionError(f"POTENTIAL GHOST VARIABLE DETECTED: {var_name}")
 
 
 if __name__ == "__main__":

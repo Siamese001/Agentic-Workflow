@@ -48,7 +48,7 @@ def aggressive_cleanup():
             Logger.error(f"❌ Failed to delete {file}: {e}")
 
     # Remove __pycache__ directories
-    for root, dirs, files in os.walk("."):
+    for root, dirs, _files in os.walk("."):
         if "__pycache__" in dirs:
             pycache_path = os.path.join(root, "__pycache__")
             try:
@@ -83,7 +83,7 @@ def organize_structure():
     }
 
     moved_count = 0
-    for root, dirs, files in os.walk("/app"):
+    for root, _dirs, files in os.walk("/app"):
         for file in files:
             if file.endswith(".py"):
                 file_path = os.path.join(root, file)
@@ -316,7 +316,7 @@ def purge_everything(
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
 
     # 2. Target individual "clean" file clones and reports
-    for root, dirs, files in os.walk("."):
+    for root, _dirs, files in os.walk("."):
         for file in files:
             file_path = os.path.join(root, file)
             if "_clean.py" in file or file == "test_report.html":

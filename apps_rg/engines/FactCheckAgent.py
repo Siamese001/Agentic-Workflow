@@ -10,12 +10,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_rg.shared.core.agent_base import RGAgentBase
+from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
 
 @dataclass
-class FactCheckAgent(SubatomicTestingMixin, RGAgentBase):
+class FactCheckAgent(RGAgentBase):
     """
     Verifies claims against user profile.
 
@@ -56,7 +55,7 @@ class FactCheckAgent(SubatomicTestingMixin, RGAgentBase):
             self.record_pass("Fact-check skipped (no profile)")
             return
 
-        issues: List[str] = []
+        issues: list[str] = []
 
         # Check skills against profile (case-insensitive)
         resume_skills: set[str] = self._extract_skills(resume)
@@ -140,7 +139,7 @@ class FactCheckAgent(SubatomicTestingMixin, RGAgentBase):
         try:
             return {
                 "status": "skipped",
-                "details": f"FactCheckAgent heal() not yet implemented for {violation_type}",
+                "details": (f"FactCheckAgent heal() not yet implemented for {violation_type}"),
                 "artifacts": [],
                 "errors": [],
             }

@@ -242,7 +242,7 @@ def test_7_real_file_depth_verification():
     ]
 
     passed = 0
-    for rel_path_str, root_folder, expected_depth in test_files:
+    for rel_path_str, root_folder, _expected_depth in test_files:
         rel_path = Path(rel_path_str)
         full_path = PROJECT_ROOT / rel_path
 

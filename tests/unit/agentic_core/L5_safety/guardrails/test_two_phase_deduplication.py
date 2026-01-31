@@ -303,7 +303,7 @@ def test_8_execute_mode_archives_duplicates() -> tuple[bool, str]:
         result = agent.heal_phase_a(dry_run=False)
 
         # Check that files were archived
-        archive_dir = temp_dir / "archives" / "identity_duplicates"
+        temp_dir / "archives" / "identity_duplicates"
         if result["files_archived"] > 0:
             return True, f"Archived {result['files_archived']} duplicate files"
 

@@ -163,7 +163,7 @@ class FilesystemSSOTReconcilerAgent(
         """
         try:
             target = violation.get("file")
-            v_type = violation.get("type", "")
+            violation.get("type", "")
 
             if not target:
                 return {

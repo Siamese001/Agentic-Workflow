@@ -184,7 +184,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         )
 
         # Inline Scoped Graph Building (O(M) where M is files in scope)
-        python_files = [p for p in scan_root.rglob("*.py")]
+        python_files = list(scan_root.rglob("*.py"))
 
         # 1. Map files to module names
         module_map = {}

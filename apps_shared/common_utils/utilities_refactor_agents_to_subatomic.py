@@ -60,9 +60,6 @@ def remove_thinking_budget_over_limit(content: str) -> str:
 def add_engine_initialization(content: str, class_name: str) -> str:
     """Add engine initialization to __init__ method."""
     # Find __init__ method
-    init_pattern = (
-        rf"(class {class_name}.*?def __init__\(self.*?\):.*?(?:super\(\).__init__\(.*?\)|pass))"
-    )
 
     engine_init = """
         # Initialize shared Sub-Atomic Engine components

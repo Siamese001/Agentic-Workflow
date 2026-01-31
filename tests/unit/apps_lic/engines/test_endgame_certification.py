@@ -57,7 +57,7 @@ class TestEndgameCertification:
         caplog.set_level(logging.INFO)
 
         # Boot Agent
-        agent = CampaignPlannerAgent()
+        CampaignPlannerAgent()
 
         # Check Logs
         found_boot_signal = False
@@ -224,8 +224,8 @@ class TestEndgameCertification:
         assert rg_agent._session_id != lic_agent._session_id
 
         # 4. Verify both agents have audit enabled
-        assert rg_agent._audit_enabled == True
-        assert lic_agent._audit_enabled == True
+        assert rg_agent._audit_enabled is True
+        assert lic_agent._audit_enabled is True
 
         # 5. Trigger heal events on both agents
         rg_agent.log_heal_event(violations_found=1, violations_fixed=1, execution_time_ms=100.0)

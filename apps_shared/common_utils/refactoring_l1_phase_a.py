@@ -107,7 +107,10 @@ def test_l1_safety_planning_imports() -> None:
         from typing import Any
 
         SafetyPlan = Any
-        plan_safety_review = lambda: None
+
+        def plan_safety_review():
+            return None
+
         assert SafetyPlan is not None
         assert callable(plan_safety_review)
 
@@ -231,8 +234,7 @@ def run_all_tests() -> None:
     total = len(results)
 
     for name, result in results:
-        status = "PASS" if result else "FAIL"
-        symbol = "✓" if result else "✗"
+        pass
 
     if passed == total:
         return True

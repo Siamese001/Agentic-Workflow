@@ -11,12 +11,11 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_rg.shared.core.agent_base import RGAgentBase
+from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
 
 @dataclass
-class SectionBalanceAgent(SubatomicTestingMixin, RGAgentBase):
+class SectionBalanceAgent(RGAgentBase):
     """
     Ensures proper section balance and prioritization.
 
@@ -120,7 +119,7 @@ class SectionBalanceAgent(SubatomicTestingMixin, RGAgentBase):
         try:
             return {
                 "status": "skipped",
-                "details": f"SectionBalanceAgent heal() not yet implemented for {violation_type}",
+                "details": (f"SectionBalanceAgent heal() not yet implemented for {violation_type}"),
                 "artifacts": [],
                 "errors": [],
             }

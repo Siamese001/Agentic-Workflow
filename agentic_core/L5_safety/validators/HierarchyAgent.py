@@ -134,7 +134,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
                     "errors": ["Missing file path"],
                 }
 
-            file_path_obj = Path(file_path)
+            Path(file_path)
 
             # Dispatch based on violation type
             if violation_type == "STRUCTURE" or "MISSING" in violation_type:
@@ -1321,7 +1321,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         """
         try:
             target = violation.get("file")
-            v_type = violation.get("type", "")
+            violation.get("type", "")
 
             if not target:
                 return {"status": "skipped", "reason": "No target specified"}
@@ -1415,15 +1415,6 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
 
             # Approved subfolders for prompt_governance per Blueprint
             # meta_prompts, templates, scripts, version_registry, agents, registry
-            approved_subs = {
-                "meta_prompts",
-                "templates",
-                "scripts",
-                "version_registry",
-                "agents",
-                "registry",
-                "__pycache__",
-            }
 
             for item in search_path.iterdir():
                 # Flag any file sitting at the root level of the territory
