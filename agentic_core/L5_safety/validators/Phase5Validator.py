@@ -106,53 +106,29 @@ class Phase5Validator:
         return module_name, file_path
 
     def instantiate_agent(self, agent: dict) -> tuple[Any | None, str | None]:
-        """Attempt to instantiate an agent class."""
-        class_name = agent["class_name"]
+        """
+        Validate agent using deterministic Guardian test instead of runtime instantiation.
+        
+        This replaces the AI-Checking-AI pattern of runtime instantiation with static analysis.
+        """
+        import subprocess
+        
         rel_path = agent["path"]
-
-        try:
-            module_name, file_path = self.get_module_path(rel_path)
-
-            if not file_path.exists():
-                return None, f"File not found: {rel_path}"
-
-            # Load module
-            spec = importlib.util.spec_from_file_location(module_name, file_path)
-            if spec is None or spec.loader is None:
-                return None, "Could not load module spec"
-
-            module = importlib.util.module_from_spec(spec)
-            sys.modules[module_name] = module
-
-            try:
-                spec.loader.exec_module(module)
-            except Exception as e:
-                return None, f"Module exec error: {str(e)[:100]}"
-
-            # Get class
-            if not hasattr(module, class_name):
-                return None, f"Class {class_name} not found in module"
-
-            cls = getattr(module, class_name)
-
-            # Try to instantiate (with no args first, then common patterns)
-            try:
-                instance = cls()
-                return instance, None
-            except TypeError:
-                # Try with common arg patterns
-                try:
-                    instance = cls(config={})
-                    return instance, None
-                except:
-                    try:
-                        instance = cls(Path("."))
-                        return instance, None
-                    except:
-                        return None, "Instantiation requires args"
-
-        except Exception as e:
-            return None, f"Error: {str(e)[:100]}"
+        file_path = self.project_root / rel_path
+        
+        if not file_path.exists():
+            return None, f"File not found: {rel_path}"
+        
+        # Run the Guardian test for agent validation
+        result = subprocess.run([
+            "python", "tests/guardian/test_agent_validation.py",
+            str(file_path)
+        ], capture_output=True, text=True, cwd=self.project_root)
+        
+        if result.returncode == 0:
+            return True, None  # Return True to indicate validation passed
+        else:
+            return None, result.stdout.strip()
 
     def run_self_tests(self, instance: Any, agent: dict) -> tuple[bool, str | None]:
         """Run self-tests on an agent instance."""
