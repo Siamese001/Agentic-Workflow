@@ -81,6 +81,7 @@ class CanonSwarmScheduler:
             TheStrategist,
             TypeEnforcer,
         )
+
         from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import (
             CodeEnforcerAgent,
             StructuralEngineer,

@@ -11,8 +11,9 @@ import logging
 import re
 from dataclasses import dataclass, field
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.shared.core.agent_base import LICAgentBase
+
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 logger = logging.getLogger(__name__)
 

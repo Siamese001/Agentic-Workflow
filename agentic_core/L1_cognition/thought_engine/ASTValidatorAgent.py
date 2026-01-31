@@ -22,9 +22,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
 
 # GRAVITY FIXED: Dynamic import for MCPHardenedMixin
 MCPHardenedMixin = _mod.MCPHardenedMixin

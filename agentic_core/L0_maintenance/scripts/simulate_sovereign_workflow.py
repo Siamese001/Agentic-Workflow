@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 # Import Sovereign Agents
 from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier
 from apps_lic.engines.BiasDetectorAgent import BiasDetectorSpecialist
+
 from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
 
 # Setup Console Logging

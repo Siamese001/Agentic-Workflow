@@ -14,15 +14,16 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from pathlib import Path
 from typing import Any
 
+from agentic_core.prompt_governance.rendering.SovereignPromptRenderer import (
+    get_sovereign_prompt_renderer,
+)
+from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
+
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.prompt_governance.rendering.SovereignPromptRenderer import (
-    get_sovereign_prompt_renderer,
-)
-from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 
 # Template content loading for registry
 TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"

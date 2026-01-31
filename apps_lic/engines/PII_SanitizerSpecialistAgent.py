@@ -7,11 +7,10 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from pydantic import BaseModel, Field
-
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
+from pydantic import BaseModel, Field
 
 
 def track_metrics(name):

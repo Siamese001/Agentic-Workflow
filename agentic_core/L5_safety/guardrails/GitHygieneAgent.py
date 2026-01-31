@@ -22,10 +22,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from agentic_core.utils.security import safe_git_execute
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.security import safe_git_execute
 
 
 @dataclass

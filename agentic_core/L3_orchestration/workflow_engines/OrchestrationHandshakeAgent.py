@@ -19,10 +19,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
 
 
 class OrchestrationHandshakeAgent(

@@ -19,10 +19,11 @@ import logging
 import os
 from typing import Any
 
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L1_cognition.thought_engine.ValidationProtocol import ValidationProtocol
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO").upper())
 Logger = logging.getLogger(__name__)
@@ -70,6 +71,7 @@ class ValidationOrchestratorAgent(SovereignBaseAgent):
         from agentic_core.canon_agents_core import SystemArchitect
         from agentic_core.canon_agents_quality import NamingAgent, SafetyInspectorAgent
         from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
+
         from archives.void_violations.BudgetAgent import BudgetAgent
         from archives.void_violations.DocumentationAgent import DocumentationAgent
         from archives.void_violations.PatternEnforcerAgent import PatternEnforcerAgent
