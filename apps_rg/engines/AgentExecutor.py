@@ -10,20 +10,20 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-# [Diff Start: Fix Imports for Move]
-# Previous: from .multi_provider_clients import (...)
-from apps_shared.common_utils.multi_provider_clients import (
-    Provider,
-    get_client,
-    get_instructor_client,
-    get_litellm_completion,
-)
-
 # Previous: from .observability_clients import (...)
 from apps_shared.common_utils.observability_clients import (
     create_span,
     record_exception,
     set_span_attribute,
+)
+
+# [Diff Start: Fix Imports for Move]
+# Previous: from .multi_provider_clients import (...)
+from apps_shared.common_utils.Provider import (
+    Provider,
+    get_client,
+    get_instructor_client,
+    get_litellm_completion,
 )
 
 # [Diff End]
@@ -574,7 +574,7 @@ class AgentExecutor:
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse JSON response: {e}")
             logger.error(f"Raw content: {content}")
-            raise ValueError(f"Invalid JSON response from model: {e}")
+            raise ValueError(f"Invalid JSON response from model: {e}") from e
 
 
 def create_agent_executor(

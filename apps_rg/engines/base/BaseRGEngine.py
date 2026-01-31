@@ -6,16 +6,18 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any
 
-from pydantic import BaseModel
+try:
+    from pydantic import BaseModel
+except ImportError:
+    BaseModel = Any  # type: ignore
 
 # Import mixins - fall back to stubs if not available
 try:
-    from agentic_core.base_agents.mcp_hardened_mixin import mcp_hardened_mixin
-
-    from agentic_core.base_agents.healer_mixin import healer_mixin
+    from apps_rg.shared.mixins import HealerMixin, MCPHardenedMixin
 
     MIXINS_AVAILABLE = True
 except ImportError:
+    MIXINS_AVAILABLE = False
 
     class MCPHardenedMixin:
         """Stub MCPHardenedMixin for standalone usage."""
@@ -39,7 +41,6 @@ except ImportError:
         ) -> dict[str, int]:
             return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
 
-    MIXINS_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 

@@ -20,7 +20,7 @@ def test_configuration_parity():
     print("\n1. Testing Configuration Parity...")
 
     try:
-        from apps_rg.domain.config.loader import load_rg_specs, reload_config
+        from apps_rg.domain.config import load_rg_specs, reload_config
 
         # Test auto-loading
         specs = load_rg_specs()
@@ -52,7 +52,7 @@ def test_reasoning_toggles_parity():
     print("\n2. Testing Reasoning Toggles Parity...")
 
     try:
-        from apps_rg.shared.reasoning.toggles import get_toggles
+        from apps_rg.shared.reasoning import get_toggles
 
         # Test default toggles
         toggles = get_toggles()

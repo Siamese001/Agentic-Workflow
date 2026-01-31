@@ -20,13 +20,12 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_rg.logic_nodes.skill_extractor_node import SkillExtractorNode
-from apps_rg.shared.core.agent_base import RGAgentBase
+from apps_rg.logic_nodes.SkillExtractorNode import SkillExtractorNode
+from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
 
 @dataclass
-class ContentQualityAgent(SubatomicTestingMixin, RGAgentBase):
+class ContentQualityAgent(RGAgentBase):
     """
     Validates resume content quality.
 
@@ -185,7 +184,8 @@ class ContentQualityAgent(SubatomicTestingMixin, RGAgentBase):
             # Check confidence score
             if skill_analysis.extraction_result.confidence_score < 0.6:
                 issues.append(
-                    f"Low skill extraction confidence ({skill_analysis.extraction_result.confidence_score:.2f})"
+                    f"Low skill extraction confidence "
+                    f"({skill_analysis.extraction_result.confidence_score:.2f})"
                 )
 
         except Exception as e:
@@ -265,7 +265,7 @@ class ContentQualityAgent(SubatomicTestingMixin, RGAgentBase):
         try:
             return {
                 "status": "skipped",
-                "details": f"ContentQualityAgent heal() not yet implemented for {violation_type}",
+                "details": (f"ContentQualityAgent heal() not yet implemented for {violation_type}"),
                 "artifacts": [],
                 "errors": [],
             }
