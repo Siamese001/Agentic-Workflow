@@ -14,8 +14,9 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from apps_rg.engines.base.base_resume_engine import BaseRGEngine
 from apps_rg.logic_nodes.skill_extractor_node import SkillExtractorNode
+
+from apps_rg.engines.base.BaseRGEngine import BaseRGEngine
 
 Logger = logging.getLogger(__name__)
 
@@ -100,7 +101,7 @@ class GapClosureEngine(BaseRGEngine):
         competencies = []
 
         # Generate competencies for each gap skill
-        for i, skill in enumerate(gap_skills[:6]):  # Ensure exactly 6
+        for _i, skill in enumerate(gap_skills[:6]):  # Ensure exactly 6
             title = f"{skill} Leadership"
             description = (
                 f"Demonstrated expertise in {skill} with measurable impact and team collaboration."
@@ -123,7 +124,8 @@ class GapClosureEngine(BaseRGEngine):
             ),
             (
                 "Change Management",
-                "Leading organizational change with effective communication and stakeholder engagement.",
+                "Leading organizational change with effective communication "
+                "and stakeholder engagement.",
             ),
             (
                 "Results Orientation",

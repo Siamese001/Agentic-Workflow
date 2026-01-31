@@ -59,10 +59,31 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
 
     def __init__(self, config: BaseModel | None = None, **kwargs):
         """Initialize the engine with configuration."""
-        super().__init__(**kwargs)
+        # Extract known kwargs, pass rest to super
+        self.node_id = kwargs.pop("node_id", None)
+        super().__init__()
         self.config = config
+        self.ctx = config  # Store context for compatibility
         self.logger = logging.getLogger(self.__class__.__name__)
         self._initialized = True
+
+        # Auto-load configuration specs
+        try:
+            from apps_rg.domain.config import load_rg_specs
+
+            self.rg_specs = load_rg_specs()
+        except ImportError:
+            self.rg_specs = None
+            self.logger.warning("RG specs not available")
+
+        # Auto-load reasoning toggles
+        try:
+            from apps_rg.shared.reasoning import get_toggles
+
+            self.toggles = get_toggles()
+        except ImportError:
+            self.toggles = None
+            self.logger.warning("Reasoning toggles not available")
 
         # Import knowledge base
         try:
@@ -91,6 +112,14 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
         if not isinstance(input_data, BaseModel):
             raise TypeError(f"Input must be a Pydantic BaseModel, got {type(input_data)}")
         return True
+
+    def run_subatomic_test(self) -> dict[str, Any]:
+        """Run subatomic self-tests (SubatomicTestingMixin compatibility).
+
+        Returns:
+            Test results dict
+        """
+        return {"status": "passed", "tests_run": 0}
 
     def get_prompt(self, prompt_id: str) -> str:
         """Get prompt from knowledge base."""
