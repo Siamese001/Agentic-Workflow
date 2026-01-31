@@ -123,20 +123,19 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
             }
 
     def validate_agent_autonomy(self, agent_file: Path) -> list[str]:
-        """AST-based check for required autonomy methods."""
-        violations = []
-        try:
-            content = agent_file.read_text(encoding="utf-8", errors="ignore")
-            tree = ast.parse(content)
-            method_names = {
-                node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
-            }
-            for req_method in self.required_methods:
-                if req_method not in method_names:
-                    violations.append(req_method)
-        except Exception:
-            violations = list(self.required_methods)
-        return violations
+        """Delegate autonomy validation to deterministic Guardian test."""
+        import subprocess
+
+        # Run the Guardian test for autonomy compliance
+        result = subprocess.run(
+            ["python", "tests/guardian/test_agent_autonomy.py", str(agent_file)],
+            capture_output=True,
+            text=True,
+            cwd=self.project_root,
+        )
+
+        # Return empty list if compliant, required methods if violations
+        return [] if result.returncode == 0 else self.required_methods
 
     def run(self) -> list[tuple[Path, str]]:
         """Scan repository for autonomy and script violations."""
