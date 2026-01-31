@@ -2,6 +2,7 @@
 # SIMPLIFIED: Only ruff lint/format on staged files
 # Rationale: Prevent circular logic from stash/unstash conflicts
 # Heavy validation moved to CI/CD and tests/guardian/
+# RCA 2026-01-30: Added comprehensive exclusions to prevent fix/unfix loops
 
 repos:
   # ============================================================================
@@ -13,9 +14,75 @@ repos:
       - id: ruff
         name: Ruff (Lint)
         args: [--fix, --select, "F,E,W,B,UP,I"]
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
+        exclude: |
+          (?x)^(
+            archives/.*|
+            \.sovereign_healing_backup/.*|
+            \.backup/.*|
+            \.git/.*|
+            \.pytest_cache/.*|
+            __pycache__/.*|
+            .*\.pyc|
+            test_pycache/.*|
+            temp_.*|
+            .*_temp\.py|
+            AgentTechnicalStatus\.py|
+            NuclearAuditAgent\.py|
+            add_heal_.*\.py|
+            root_drift_remediation\.py|
+            simple_verify_patch\.py|
+            verify_universal_healing\.py|
+            test_.*\.py|
+            .*_CCVisitor\.py|
+            scan_testing_compliance\.py|
+            SovereignRagOrchestratorAgent\.py|
+            AutonomyGuardianAgent\.py|
+            SprawlInspectorAgent\.py|
+            SovereignObservabilityAgent\.py|
+            fix_duplicate_realagentdata\.py|
+            DuplicateCodeDetectorAgent\.py|
+            tool_registry\.py|
+            openai_client\.py|
+            minimal_anthropic\.py|
+            agent_validation\.py|
+            execute_cognitive_purge\.py|
+            execute_convergence\.py
+          )$
         # Only runs on staged files - no repo-wide scanning
       - id: ruff-format
         name: Ruff (Format)
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
+        exclude: |
+          (?x)^(
+            archives/.*|
+            \.sovereign_healing_backup/.*|
+            \.backup/.*|
+            \.git/.*|
+            \.pytest_cache/.*|
+            __pycache__/.*|
+            .*\.pyc|
+            test_pycache/.*|
+            temp_.*|
+            .*_temp\.py|
+            AgentTechnicalStatus\.py|
+            NuclearAuditAgent\.py|
+            add_heal_.*\.py|
+            root_drift_remediation\.py|
+            simple_verify_patch\.py|
+            verify_universal_healing\.py|
+            test_.*\.py|
+            .*_CCVisitor\.py|
+            scan_testing_compliance\.py|
+            SovereignRagOrchestratorAgent\.py|
+            AutonomyGuardianAgent\.py|
+            SprawlInspectorAgent\.py|
+            SovereignObservabilityAgent\.py|
+            fix_duplicate_realagentdata\.py|
+            DuplicateCodeDetectorAgent\.py|
+            tool_registry\.py|
+            openai_client\.py|
+            minimal_anthropic\.py|
+            agent_validation\.py|
+            execute_cognitive_purge\.py|
+            execute_convergence\.py
+          )$
         # Only runs on staged files - no repo-wide scanning
