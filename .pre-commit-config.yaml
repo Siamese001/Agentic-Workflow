@@ -18,6 +18,7 @@ repos:
         name: Ruff (Format)
         exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
         # Only runs on staged files - no repo-wide scanning
+        # RCA FIX: Standard ruff-format - verify script will catch uncommitted changes
 
   # ============================================================================
   # TIER 2: Constitutional Rules Only
@@ -40,3 +41,12 @@ repos:
         pass_filenames: false
         always_run: true
         # Enforces repository hygiene by purging all __pycache__ folders before commit.
+
+      # RCA FIX: Verify no uncommitted changes after all hooks run
+      - id: verify-clean-commit
+        name: Verify Clean Commit (RCA Fix)
+        entry: python verify_clean_commit.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        # Ensures pre-commit hooks don't leave uncommitted changes (RCA from UNCOMMITTED_CHANGES_RCA.md)
