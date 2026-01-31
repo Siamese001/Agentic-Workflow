@@ -1,18 +1,20 @@
 ============================================================
 GUARDIAN ARCHITECTURAL HEALTH REPORT
 ============================================================
-Generated: 2026-01-30 23:49:55
-Exit Status: PASS
+Generated: 2026-01-31 05:17:03
+Exit Status: FAIL
 
 EXECUTION SUMMARY:
-  Total Tests Run: 37
-  Passed: 33
+  Total Tests Run: 0
+  Passed: 0
   Failed: 0
-  Skipped: 4
+  Skipped: 0
 
 ✅ ALL GUARDIAN GATES PASSED
 
-ARCHITECTURAL HEALTH: ✅ OPTIMAL
-All architectural integrity checks passed.
-The codebase maintains structural integrity.
+ARCHITECTURAL HEALTH: ⚠️  COMPROMISED
+Architectural violations detected.
+Please review failed tests and remediate issues.
+
+RECOMMENDED ACTIONS:
 ============================================================
