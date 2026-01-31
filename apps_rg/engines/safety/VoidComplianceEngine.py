@@ -13,7 +13,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from apps_rg.engines.base.base_resume_engine import BaseRGEngine
+from apps_rg.engines.base.BaseRGEngine import BaseRGEngine
 
 Logger = logging.getLogger(__name__)
 

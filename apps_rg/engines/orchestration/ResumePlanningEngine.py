@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from apps_rg.engines.base.base_resume_engine import BaseRGEngine
+from apps_rg.engines.base.BaseRGEngine import BaseRGEngine
 from apps_rg.logic_nodes.resume_section_node import ResumeSectionNode
 
 Logger = logging.getLogger(__name__)
