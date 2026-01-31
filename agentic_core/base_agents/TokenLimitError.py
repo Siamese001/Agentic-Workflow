@@ -16,7 +16,7 @@ from typing import Any
 from agentic_core.L4_state.ledger.CircuitBreaker import CircuitBreakerOpenError, get_breaker
 
 from .ErrorRecoveryManager import ErrorRecoveryManager
-from .telemetry import SystemTelemetry, get_telemetry
+from .SystemTelemetry import SystemTelemetry, get_telemetry
 
 
 class TokenLimitError(Exception):
