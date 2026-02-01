@@ -1,0 +1,33 @@
+# HOP5 Generation Agent Configuration
+# Extracted from HOP5GenerationAgent.py - Phase 1 Optimization
+
+generation_parameters:
+  default_temperature: 0.7
+  max_tokens: 1000
+  model: "gpt-4-turbo"
+
+message_templates:
+  connection_request:
+    max_length: 300
+    tone: "professional"
+    include_call_to_action: true
+  direct_message:
+    max_length: 2000
+    tone: "conversational"
+    include_personalization: true
+  inmail:
+    max_length: 2000
+    tone: "formal"
+    include_value_proposition: true
+
+generation_rules:
+  check_message_length: true
+  validate_tone: true
+  ensure_personalization: true
+  include_call_to_action: true
+
+quality_controls:
+  min_quality_score: 0.8
+  check_grammar: true
+  check_spelling: true
+  check_appropriateness: true

@@ -1,0 +1,39 @@
+# Brand Compliance Agent Configuration
+# Extracted from BrandComplianceAgent.py - Phase 1 Optimization
+
+forbidden_phrases:
+  - "i am"
+  - "i'm"
+  - "my name is"  # First person in summary
+  - "responsible for"  # Weak phrasing
+  - "duties included"  # Passive
+  - "helped with"  # Vague
+  - "worked on"  # Vague
+  - "etc."  # Unprofessional
+  - "stuff"  # Informal
+  - "things"  # Vague
+  - "very"  # Weak intensifier
+  - "really"  # Weak intensifier
+
+power_verbs:
+  - "achieved"
+  - "delivered"
+  - "drove"
+  - "led"
+  - "managed"
+  - "developed"
+  - "created"
+  - "implemented"
+  - "optimized"
+  - "increased"
+  - "reduced"
+  - "improved"
+  - "launched"
+  - "designed"
+  - "built"
+
+compliance_rules:
+  require_power_verbs_in_experience: true
+  check_forbidden_phrases_all_sections: true
+  case_sensitive_checking: false
+  professional_tone_validation: true
