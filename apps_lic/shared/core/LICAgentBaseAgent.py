@@ -5,7 +5,6 @@ PHASE 3 META-LEARNING (Feb 2026):
 - MetaLearningClientMixin activation for LIC domain
 - Domain-specific healing pattern memory (similarity_threshold=0.92)
 - Campaign pattern learning and compliance rule memory
-- Redis/Pinecone integration for outreach optimization
 """
 
 from __future__ import annotations
@@ -15,8 +14,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
-# CORE SOCKETING: Align with Phase 20 Hardened Standards
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+# CORE SOCKETING: Align with Phase 2A Unified Base Class
+from agentic_core.base_agents.AppBaseAgent import AppBaseAgent
 
 Logger = logging.getLogger(__name__)
 
@@ -40,15 +39,11 @@ except ImportError:
 
 
 @dataclass
-class LICAgentBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
+class LICAgentBase(MetaLearningMixin, AppBaseAgent, HealerMixin):
     """
     LICAgentBase: Sovereign Foundation for 'Linked-In Canonical' (LIC).
 
-    [PHASE 3] Meta-Learning Integration:
-    - Inherits MetaLearningClientMixin from SovereignBaseAgent
-    - Domain automatically set to 'apps_lic' for cache isolation
-    - Higher similarity threshold (0.92) for stricter pattern matching
-    - Campaign pattern learning and compliance rule memory
+    Inherits from AppBaseAgent for unified app-level capabilities.
     """
 
     # Domain-specific LIC configuration
@@ -58,6 +53,7 @@ class LICAgentBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
     # [PHASE 25] Infrastructure Config (STRICTER)
     _namespace: str = field(default="apps_lic", init=False)
     _similarity_threshold: float = field(default=0.92, init=False)
+    _resource_prefix: str = field(default="lic", init=False)
 
     # [PHASE 3] Meta-Learning Domain Override
     _ml_domain: str = field(default="apps_lic", init=False)

@@ -15,22 +15,18 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
-from agentic_core.base_agents.meta_learning_mixin import MetaLearningMixin
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+# CORE SOCKETING: Align with Phase 2A Unified Base Class
+from agentic_core.base_agents.AppBaseAgent import AppBaseAgent
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class RGAgentBase(MetaLearningMixin, SovereignBaseAgent):
+class RGAgentBase(AppBaseAgent):
     """
     RGAgentBase: The Sovereign Foundation for all 'Resume Generation' Agents.
 
-    [PHASE 3] Meta-Learning Integration:
-    - Inherits MetaLearningClientMixin from SovereignBaseAgent
-    - Domain automatically set to 'apps_rg' for cache isolation
-    - Standard similarity threshold (0.85) for pattern matching
-    - Resume quality pattern learning and ATS compatibility memory
+    Inherits from AppBaseAgent for unified app-level capabilities.
     """
 
     # Domain-specific RG configuration
@@ -40,15 +36,13 @@ class RGAgentBase(MetaLearningMixin, SovereignBaseAgent):
     # [PHASE 25] Infrastructure Config
     _namespace: str = field(default="apps_rg", init=False)
     _similarity_threshold: float = field(default=0.85, init=False)
-
-    # [PHASE 3] Meta-Learning Domain Override
-    _ml_domain: str = field(default="apps_rg", init=False)
+    _resource_prefix: str = field(default="rg", init=False)
 
     def __post_init__(self) -> None:
         """
         Initialize RG-specific capabilities after Core hardening.
         """
-        # CRITICAL: Trigger Core Security Validation in SovereignBaseAgent
+        # CRITICAL: Trigger Core Security Validation via AppBaseAgent
         super().__post_init__()
 
         # RG Domain Validation
