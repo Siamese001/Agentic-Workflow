@@ -1,0 +1,142 @@
+# Unified Agent Configuration Schema
+# Phase 1.2: Configuration System Integration
+# 
+# This schema defines the standard configuration structure for all UnifiedAgent instances.
+# Each agent category has specific configuration sections that are validated on load.
+
+# ============================================================================
+# VALIDATOR CATEGORY SCHEMA
+# ============================================================================
+validator:
+  description: "Configuration schema for validator agents"
+  required_fields:
+    - validation_rules
+  optional_fields:
+    - forbidden_content
+    - required_content
+    - thresholds
+    - patterns
+    - stop_words
+  defaults:
+    validation_rules: {}
+    forbidden_content: []
+    required_content: []
+    thresholds:
+      min_score: 0.3
+      max_issues: 10
+    patterns: {}
+    stop_words:
+      - the
+      - and
+      - for
+      - with
+      - that
+      - this
+
+# ============================================================================
+# ORCHESTRATOR CATEGORY SCHEMA
+# ============================================================================
+orchestrator:
+  description: "Configuration schema for orchestrator agents"
+  required_fields:
+    - workflow_steps
+  optional_fields:
+    - signal_handlers
+    - retry_config
+    - timeout_config
+  defaults:
+    workflow_steps: []
+    signal_handlers: {}
+    retry_config:
+      max_retries: 3
+      retry_delay_seconds: 1
+      exponential_backoff: true
+    timeout_config:
+      step_timeout_seconds: 30
+      total_timeout_seconds: 300
+
+# ============================================================================
+# HEALER CATEGORY SCHEMA
+# ============================================================================
+healer:
+  description: "Configuration schema for healer agents"
+  required_fields: []
+  optional_fields:
+    - healing_rules
+    - auto_fix
+    - dry_run_default
+    - backup_before_fix
+  defaults:
+    healing_rules: {}
+    auto_fix: false
+    dry_run_default: true
+    backup_before_fix: true
+
+# ============================================================================
+# GENERIC CATEGORY SCHEMA
+# ============================================================================
+generic:
+  description: "Configuration schema for generic agents"
+  required_fields: []
+  optional_fields:
+    - execution_mode
+    - logging_level
+  defaults:
+    execution_mode: "standard"
+    logging_level: "INFO"
+
+# ============================================================================
+# EXECUTOR CATEGORY SCHEMA
+# ============================================================================
+executor:
+  description: "Configuration schema for executor agents"
+  required_fields: []
+  optional_fields:
+    - execution_timeout
+    - retry_on_failure
+    - max_retries
+  defaults:
+    execution_timeout: 60
+    retry_on_failure: true
+    max_retries: 3
+
+# ============================================================================
+# MONITOR CATEGORY SCHEMA
+# ============================================================================
+monitor:
+  description: "Configuration schema for monitor agents"
+  required_fields: []
+  optional_fields:
+    - monitoring_interval
+    - alert_thresholds
+    - metrics_to_track
+  defaults:
+    monitoring_interval: 60
+    alert_thresholds: {}
+    metrics_to_track: []
+
+# ============================================================================
+# ANALYZER CATEGORY SCHEMA
+# ============================================================================
+analyzer:
+  description: "Configuration schema for analyzer agents (inherits from validator)"
+  inherits_from: validator
+  additional_fields:
+    - analysis_depth
+    - output_format
+  defaults:
+    analysis_depth: "standard"
+    output_format: "json"
+
+# ============================================================================
+# GOVERNOR CATEGORY SCHEMA
+# ============================================================================
+governor:
+  description: "Configuration schema for governor agents (inherits from validator)"
+  inherits_from: validator
+  additional_fields:
+    - governance_rules
+    - enforcement_mode
+  defaults:
+    governance_rules: {}
+    enforcement_mode: "warn"
