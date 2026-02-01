@@ -48,7 +48,6 @@ class TestRefactorIntegrity(unittest.TestCase):
         not the old or missing 'Agent' class.
         """
         from agentic_core.base_agents.agent_base import RGAgentBase
-        from apps_rg.engines.strategist_biowriter import StrategistBioWriter
 
         # Instantiate with mocks to check MRO
         agent_instance = StrategistBioWriter(config=None, reasoning=None)

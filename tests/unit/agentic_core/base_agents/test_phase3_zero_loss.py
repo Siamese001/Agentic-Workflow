@@ -196,7 +196,7 @@ def test_tc12_import_stability():
 
     # Canonical BaseAgent files that should exist
     canonical_bases = [
-        ("L0MaintenanceBaseAgent", "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent"),
+        ("L0MaintenanceBaseAgent", "agentic_core.base_agents.L0MaintenanceBaseAgent"),
         ("L1CognitionBaseAgent", "agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent"),
         ("L2ExecutionBaseAgent", "agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent"),
         (

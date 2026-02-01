@@ -7,7 +7,6 @@ import asyncio
 from datetime import datetime
 from pathlib import Path
 
-from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

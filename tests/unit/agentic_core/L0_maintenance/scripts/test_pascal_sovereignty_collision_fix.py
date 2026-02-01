@@ -6,12 +6,11 @@ Test case for PascalSovereigntyFixer collision handling fix
 import sys
 import tempfile
 from pathlib import Path
+from agentic_core.L0_maintenance.scripts.pascal_sovereignty_fixer import PascalSovereigntyFixer
 
 # Add the project root to Python path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
-
-from agentic_core.L0_maintenance.scripts.PascalSovereigntyFixer import PascalSovereigntyFixer
 
 
 def test_collision_handling():

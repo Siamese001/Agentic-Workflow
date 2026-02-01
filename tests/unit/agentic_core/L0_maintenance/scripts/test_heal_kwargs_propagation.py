@@ -18,7 +18,7 @@ sys.path.insert(0, str(project_root))
 
 def test_l0_kwargs_propagation():
     """Test L0MaintenanceBaseAgent accepts unknown kwargs."""
-    from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+    from agentic_core.base_agents.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 
     agent = L0MaintenanceBaseAgent()
 
