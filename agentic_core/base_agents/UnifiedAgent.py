@@ -467,6 +467,251 @@ class GenericStrategy(BaseStrategy):
         return result
 
 
+class LocationHealingStrategy(HealingStrategy):
+    """
+    Location-specific healing strategy for file moves, deletions, and import fixing.
+
+    FACADE PATTERN: Encapsulates the LocationHealerAgent logic while delegating
+    to the unified strategy pattern.
+
+    Handles:
+    - Safe file moves with collision handling
+    - Safe file deletions with backup
+    - Backup directory management
+    - Import path fixing after moves
+    - Post-heal validation
+    - Archive operations
+    """
+
+    def __init__(self, config: Dict[str, Any]) -> None:
+        """Initialize with location healing configuration."""
+        super().__init__(config)
+        self.project_root = config.get("project_root")
+        self.backup_enabled = config.get("backup_enabled", True)
+        self.auto_fix_imports = config.get("auto_fix_imports", True)
+
+    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> HealingResult:
+        """Execute location healing logic via unified strategy."""
+        agent.log_info("Executing location healing...")
+
+        violations_found = 0
+        violations_fixed = 0
+        errors: List[str] = []
+        skipped: List[str] = []
+        artifacts: List[Dict[str, Any]] = []
+
+        # Delegate to the actual healer methods on the agent if available
+        violation = kwargs.get("violation")
+        if violation and hasattr(agent, "heal"):
+            result = agent.heal(violation)
+            if result.get("status") == "success":
+                violations_fixed = 1
+            violations_found = 1
+            if result.get("errors"):
+                errors.extend(result["errors"])
+            if result.get("artifacts"):
+                artifacts.extend([{"path": a} for a in result["artifacts"]])
+
+        return HealingResult(
+            violations_found=violations_found,
+            violations_fixed=violations_fixed,
+            errors=errors,
+            skipped=skipped,
+            artifacts=artifacts,
+        )
+
+    def heal_repository(
+        self, agent: "UnifiedAgent", dry_run: bool, execute: bool, **kwargs: Any
+    ) -> Dict[str, Any]:
+        """Heal repository location violations."""
+        # Delegate to agent's heal_repository if available
+        if hasattr(agent, "heal_repository"):
+            return agent.heal_repository(dry_run=dry_run, execute=execute, **kwargs)
+
+        return {
+            "violations_found": 0,
+            "violations_fixed": 0,
+            "files_moved": 0,
+            "files_deleted": 0,
+            "backups_created": 0,
+            "status": "NO_VIOLATIONS",
+        }
+
+
+class StructuralValidatorStrategy(ValidatorStrategy):
+    """
+    Structural validation strategy for gravity, hierarchy, naming, and documentation.
+
+    FACADE PATTERN: Encapsulates the StructuralValidatorAgent logic while delegating
+    to the unified strategy pattern.
+
+    Handles:
+    - Layer gravity enforcement (L0-L6)
+    - Hierarchy compliance validation
+    - Naming convention enforcement
+    - Documentation validation
+    """
+
+    def __init__(self, config: Dict[str, Any]) -> None:
+        """Initialize with structural validation configuration."""
+        super().__init__(config)
+        self.enable_gravity = config.get("enable_gravity", True)
+        self.enable_hierarchy = config.get("enable_hierarchy", True)
+        self.enable_naming = config.get("enable_naming", True)
+        self.enable_documentation = config.get("enable_documentation", True)
+        self.agent_suffix = config.get("agent_suffix", "Agent")
+
+    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> ValidationResult:
+        """Execute structural validation logic via unified strategy."""
+        agent.log_info("Executing structural validation...")
+
+        issues: List[str] = []
+        suggestions: List[str] = []
+
+        # Delegate to the actual validator methods on the agent if available
+        file_path = kwargs.get("file_path")
+        if file_path and hasattr(agent, "validate_file"):
+            from pathlib import Path
+
+            violations = agent.validate_file(Path(file_path))
+            issues = [v.message for v in violations]
+            suggestions = [v.suggested_fix for v in violations if v.suggested_fix]
+
+        return ValidationResult(
+            passed=len(issues) == 0,
+            issues=issues,
+            suggestions=suggestions,
+            metadata={"validator": "StructuralValidatorAgent"},
+        )
+
+
+class CodeValidatorStrategy(ValidatorStrategy):
+    """
+    Code-specific validation strategy for syntax, canon, async, and print validation.
+
+    FACADE PATTERN: Encapsulates the CodeValidatorAgent logic while delegating
+    to the unified strategy pattern.
+
+    Handles:
+    - Syntax error detection
+    - Canonical pattern compliance
+    - Async/await usage validation
+    - Print statement policy enforcement
+    """
+
+    def __init__(self, config: Dict[str, Any]) -> None:
+        """Initialize with code validation configuration."""
+        super().__init__(config)
+        self.check_syntax = config.get("check_syntax", True)
+        self.check_canon = config.get("check_canon", True)
+        self.check_async = config.get("check_async", True)
+        self.check_prints = config.get("check_prints", True)
+        self.print_policy = config.get("print_policy", "warn")
+
+    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> ValidationResult:
+        """Execute code validation logic via unified strategy."""
+        agent.log_info("Executing code validation...")
+
+        issues: List[str] = []
+        suggestions: List[str] = []
+
+        # Delegate to the actual validator methods on the agent if available
+        file_path = kwargs.get("file_path")
+        if file_path and hasattr(agent, "validate_file"):
+            from pathlib import Path
+
+            violations = agent.validate_file(Path(file_path))
+            issues = [f"{v.issue} at line {v.line_number}" for v in violations]
+            suggestions = [v.suggested_fix for v in violations if v.suggested_fix]
+
+        return ValidationResult(
+            passed=len(issues) == 0,
+            issues=issues,
+            suggestions=suggestions,
+            metadata={"validator": "CodeValidatorAgent"},
+        )
+
+
+class StructureHealingStrategy(HealingStrategy):
+    """
+    Structure-specific healing strategy for gravity, hierarchy, naming, and territory.
+
+    FACADE PATTERN: Encapsulates the StructureHealerAgent logic while delegating
+    to the unified strategy pattern.
+
+    Handles:
+    - Gravity violation healing (layer import rules)
+    - Hierarchy compliance healing
+    - Naming convention enforcement
+    - Territory/location healing
+    - Blueprint compliance healing
+    """
+
+    def __init__(self, config: Dict[str, Any]) -> None:
+        """Initialize with structure healing configuration."""
+        super().__init__(config)
+        self.enable_gravity = config.get("enable_gravity", True)
+        self.enable_hierarchy = config.get("enable_hierarchy", True)
+        self.enable_naming = config.get("enable_naming", True)
+        self.enable_territory = config.get("enable_territory", True)
+        self.dry_run = config.get("dry_run", True)
+
+    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> HealingResult:
+        """Execute structure healing logic via unified strategy."""
+        agent.log_info("Executing structure healing...")
+
+        kwargs.get("dry_run", self.dry_run)  # Reserved for future use
+        violations_found = 0
+        violations_fixed = 0
+        errors: List[str] = []
+        skipped: List[str] = []
+        artifacts: List[Dict[str, Any]] = []
+
+        # Delegate to the actual healer methods on the agent if available
+        file_path = kwargs.get("file_path")
+        if file_path and hasattr(agent, "heal_all"):
+            from pathlib import Path
+
+            actions = agent.heal_all(Path(file_path))
+            violations_found = len(actions)
+            violations_fixed = len([a for a in actions if a.applied])
+            artifacts = [{"action": str(a)} for a in actions]
+
+        return HealingResult(
+            violations_found=violations_found,
+            violations_fixed=violations_fixed,
+            errors=errors,
+            skipped=skipped,
+            artifacts=artifacts,
+        )
+
+    def heal_repository(
+        self, agent: "UnifiedAgent", dry_run: bool, execute: bool, **kwargs: Any
+    ) -> Dict[str, Any]:
+        """Heal repository structure violations."""
+        violations_found = 0
+        violations_fixed = 0
+        errors: List[str] = []
+        actions: List[str] = []
+
+        # Delegate to agent's heal_all if file_path provided
+        file_path = kwargs.get("file_path")
+        if file_path and hasattr(agent, "heal_all"):
+            from pathlib import Path
+
+            result_actions = agent.heal_all(Path(file_path))
+            violations_found = len(result_actions)
+            violations_fixed = len([a for a in result_actions if a.applied])
+            actions = [str(a) for a in result_actions]
+
+        return {
+            "violations_found": violations_found,
+            "violations_fixed": violations_fixed,
+            "errors": errors,
+            "actions": actions,
+        }
+
+
 # Strategy factory for creating appropriate strategies
 STRATEGY_MAP: Dict[AgentCategory, type] = {
     AgentCategory.VALIDATOR: ValidatorStrategy,
@@ -590,8 +835,12 @@ __all__ = [
     "HealingResult",
     "BaseStrategy",
     "ValidatorStrategy",
+    "StructuralValidatorStrategy",
+    "CodeValidatorStrategy",
     "OrchestrationStrategy",
     "HealingStrategy",
+    "LocationHealingStrategy",
+    "StructureHealingStrategy",
     "GenericStrategy",
     "STRATEGY_MAP",
 ]

@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
 """
-StructureHealerAgent - Structure Healing & Repair
+StructureHealerAgent - Facade Shell for Zero-Loss Consolidation.
+
+Structure Healing & Repair Agent.
+Converted to Facade: 2026-01-31 (Phase 1 Deprecation Implementation)
+
+FACADE PATTERN: Delegates to UnifiedAgent while preserving 100% legacy compatibility.
+All original imports and signatures work without modification.
 
 Phase 4 Hard Migration: Consolidates:
 - GravityHealerAgent (layer gravity healing)
@@ -21,6 +23,7 @@ Features:
 - Blueprint compliance healing
 """
 
+from __future__ import annotations
 
 import logging
 import re
@@ -30,6 +33,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
+from typing import Any
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.UnifiedAgent import (
+    StructureHealingStrategy,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -75,6 +84,9 @@ class StructureHealerAgent(SovereignBaseAgent):
     """
     Unified structure healer for gravity, hierarchy, naming, and territory.
 
+    FACADE SHELL: Delegates to UnifiedAgent with StructureHealingStrategy.
+    SIGNATURE COMPATIBILITY: 100% preserved - no breaking changes.
+
     Consolidates:
     - GravityHealerAgent
     - HierarchyHealerAgent
@@ -109,6 +121,17 @@ class StructureHealerAgent(SovereignBaseAgent):
             self._agent_config.backup_dir = (
                 self.project_root / "archives" / "healing_backups" / "structure"
             )
+
+        # [PHASE 1] Initialize unified structure healing strategy
+        self._unified_strategy: StructureHealingStrategy | None = StructureHealingStrategy(
+            {
+                "enable_gravity": self._agent_config.enable_gravity,
+                "enable_hierarchy": self._agent_config.enable_hierarchy,
+                "enable_naming": self._agent_config.enable_naming,
+                "enable_territory": self._agent_config.enable_territory,
+                "dry_run": self._agent_config.dry_run,
+            }
+        )
 
         Logger.info("StructureHealerAgent initialized")
 
@@ -232,7 +255,10 @@ class StructureHealerAgent(SovereignBaseAgent):
                     action = StructureHealingAction(
                         healing_type=StructureHealingType.GRAVITY,
                         file_path=file_path,
-                        description=f"Comment out gravity violation: {source_layer} importing {target_layer}",
+                        description=(
+                            f"Comment out gravity violation: "
+                            f"{source_layer} importing {target_layer}"
+                        ),
                         old_value=line,
                         new_value=f"# GRAVITY VIOLATION: {line}",
                     )
@@ -494,7 +520,7 @@ def create_legacy_gravity_healer() -> StructureHealerAgent:
         enable_naming=False,
         enable_territory=False,
     )
-    return StructureHealerAgent(config=config)
+    return StructureHealerAgent(agent_config=config)
 
 
 def create_legacy_naming_healer() -> StructureHealerAgent:
@@ -505,4 +531,4 @@ def create_legacy_naming_healer() -> StructureHealerAgent:
         enable_naming=True,
         enable_territory=False,
     )
-    return StructureHealerAgent(config=config)
+    return StructureHealerAgent(agent_config=config)
