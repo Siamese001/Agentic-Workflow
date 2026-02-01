@@ -9,8 +9,6 @@ Phase 2 - Resilient Routing Layer
 import logging
 from typing import Any
 
-from apps_shared.common_utils.multi_provider_clients import Provider
-
 from agentic_core.base_agents.CircuitBreakerState import CircuitBreakerState
 from agentic_core.base_agents.SystemTelemetry import SystemTelemetry
 from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
@@ -19,6 +17,7 @@ from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
 # [Diff Start: Updated Imports for Relocation]
 # Previous: from runtime.shared.HardenedAnthropicExecutor import HardenedAnthropicExecutor
 from apps_rg.engines.HardenedAnthropicExecutor import HardenedAnthropicExecutor
+from apps_shared.common_utils.multi_provider_clients import Provider
 
 # [Diff End]
 from .schema import DEFAULT_ROUTING_CONFIGS, RouteConfig, RoutingTier

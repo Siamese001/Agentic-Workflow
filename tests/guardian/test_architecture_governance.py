@@ -4,10 +4,9 @@ Deterministic Guardian Test for Architecture Governance
 Tests layer boundaries, naming conventions, and structural compliance.
 """
 
-import sys
 import ast
+import sys
 from pathlib import Path
-from typing import List, Tuple
 
 # Layer hierarchy (lower layers cannot import from higher layers)
 LAYER_HIERARCHY = {
@@ -21,7 +20,7 @@ LAYER_HIERARCHY = {
 }
 
 
-def get_layer_from_path(file_path: Path) -> Tuple[str, int]:
+def get_layer_from_path(file_path: Path) -> tuple[str, int]:
     """
     Extract layer from file path.
 
@@ -35,7 +34,7 @@ def get_layer_from_path(file_path: Path) -> Tuple[str, int]:
     return ("unknown", -1)
 
 
-def check_gravity_violations(file_path: Path) -> List[str]:
+def check_gravity_violations(file_path: Path) -> list[str]:
     """
     Check for gravity violations (lower layers importing from higher layers).
 
@@ -77,7 +76,7 @@ def check_gravity_violations(file_path: Path) -> List[str]:
     return violations
 
 
-def check_naming_convention(file_path: Path) -> List[str]:
+def check_naming_convention(file_path: Path) -> list[str]:
     """
     Check that agent files follow naming conventions.
 

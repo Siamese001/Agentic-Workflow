@@ -14,9 +14,8 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from apps_rg.logic_nodes.skill_extractor_node import SkillExtractorNode
-
 from apps_rg.engines.base.BaseRGEngine import BaseRGEngine
+from apps_rg.logic_nodes.skill_extractor_node import SkillExtractorNode
 
 Logger = logging.getLogger(__name__)
 

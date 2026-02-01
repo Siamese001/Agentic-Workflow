@@ -26,9 +26,8 @@ class TestLICCompleteSwarmCompliance:
         Dynamically find every class in apps_lic.engines ending in 'Agent' or 'Architect'
         and verify it adheres to the Sovereign Standard.
         """
-        from apps_lic.shared.core.agent_base import LICAgentBase
-
         import apps_lic.engines as engine_pkg
+        from apps_lic.shared.core.agent_base import LICAgentBase
 
         package_path = Path(engine_pkg.__file__).parent
 

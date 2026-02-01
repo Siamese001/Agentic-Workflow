@@ -20,11 +20,10 @@ from typing import Any
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.base_agents.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
-
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Sovereign Hardening Mixins – Phase 35
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin

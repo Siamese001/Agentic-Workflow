@@ -65,7 +65,6 @@ from typing import Any
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.base_agents.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
-
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
@@ -82,7 +81,9 @@ except ImportError:
 from agentic_core.base_agents.timeout_decorator import timeout
 
 try:
-    from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
+    from agentic_core.base_agents.subatomic_testing_mixin import (
+        subatomic_testing_mixin,  # noqa: F401
+    )
 except ImportError:
 
     class SubatomicTestingMixin:

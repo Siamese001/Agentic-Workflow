@@ -79,7 +79,9 @@ class TestLicTemplateOptimizerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.LicTemplateOptimizerAgent import LicTemplateOptimizerAgent  # noqa: F401
+                from apps_lic.engines.LicTemplateOptimizerAgent import (
+                    LicTemplateOptimizerAgent,  # noqa: F401
+                )
             except (ImportError, NameError, AttributeError):
                 pass
 

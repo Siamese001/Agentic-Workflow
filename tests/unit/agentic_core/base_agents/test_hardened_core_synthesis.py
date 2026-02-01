@@ -119,7 +119,9 @@ class TestHardenedCoreSynthesis:
     def test_structural_healing_mixin_exists(self):
         """Test that StructuralHealingMixin exists and has salvaged methods."""
         try:
-            from agentic_core.base_agents.structural_healing_mixin import structural_healing_mixin  # noqa: F401
+            from agentic_core.base_agents.structural_healing_mixin import (
+                structural_healing_mixin,  # noqa: F401
+            )
 
             assert is_dataclass(StructuralHealingMixin), "StructuralHealingMixin must be @dataclass"
 
@@ -244,9 +246,8 @@ class TestHardenedCoreSynthesis:
     def test_canonical_schema_compliance(self):
         """Test that heal_repository methods use canonical schema."""
         try:
-            from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin  # noqa: F401
-
             from agentic_core.base_agents.healer_mixin import healer_mixin  # noqa: F401
+            from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin  # noqa: F401
 
             # Test HealerMixin
             healer_method = HealerMixin.heal_repository
@@ -294,11 +295,16 @@ class TestHardenedCoreSynthesis:
     def test_error_boundary_integration(self):
         """Test that proper exception hierarchy is integrated."""
         try:
-            from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin  # noqa: F401
-
             from agentic_core.base_agents.healer_mixin import healer_mixin  # noqa: F401
-            from agentic_core.base_agents.structural_healing_mixin import structural_healing_mixin  # noqa: F401
-            from agentic_core.domain.exceptions import HealerError, HygieneError, StructuralError  # noqa: F401
+            from agentic_core.base_agents.structural_healing_mixin import (
+                structural_healing_mixin,  # noqa: F401
+            )
+            from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin  # noqa: F401
+            from agentic_core.domain.exceptions import (  # noqa: F401
+                HealerError,
+                HygieneError,
+                StructuralError,
+            )
 
             # Test that mixins exist and have proper structure
             assert hasattr(HealerMixin, "heal_repository"), "HealerMixin missing heal_repository"

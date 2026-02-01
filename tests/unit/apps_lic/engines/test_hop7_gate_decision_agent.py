@@ -79,7 +79,9 @@ class TestHOP7GateDecisionAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP7GateDecisionAgent import HOP7GateDecisionAgent  # noqa: F401
+                from apps_lic.engines.HOP7GateDecisionAgent import (
+                    HOP7GateDecisionAgent,  # noqa: F401
+                )
             except (ImportError, NameError, AttributeError):
                 pass
 

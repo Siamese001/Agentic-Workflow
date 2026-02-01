@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.validators.HierarchyHealerAgent import HierarchyHealerAgent
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
