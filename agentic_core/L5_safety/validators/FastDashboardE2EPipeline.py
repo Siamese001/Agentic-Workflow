@@ -19,12 +19,11 @@ import re
 import sys
 from pathlib import Path
 
-from agentic_core.utils.security import safe_execute
-
 from agentic_core.L5_safety.validators.structure_blueprint import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )
+from agentic_core.utils.security import safe_execute
 
 
 class FastDashboardE2EPipeline:

@@ -21,10 +21,6 @@ def test_registry_mapping():
     print("=" * 60)
 
     # Import unified agents directly to test the mapping
-    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
-        StructureValidatorAgent,
-    )
-
     from agentic_core.L1_cognition.thought_engine.ASTValidatorAgent import (
         ASTValidatorAgent,
     )
@@ -35,6 +31,9 @@ def test_registry_mapping():
         StateManagementAgent,
     )
     from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import CodeEnforcerAgent
+    from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
+        StructureValidatorAgent,
+    )
 
     # Define the mapping inline (mirrors SubAtomicRegistryAgent)
     def _get_unified_agent_mapping():

@@ -1,7 +1,7 @@
 # tests/guardian/test_agent_autonomy_comprehensive.py
-import tempfile
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 GUARDIAN_TEST = Path(__file__).parent / "test_agent_autonomy.py"

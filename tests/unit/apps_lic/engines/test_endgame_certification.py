@@ -26,9 +26,8 @@ class TestEndgameCertification:
         """
         Verify that placing a 'dirty' file in the Core triggers a fatal crash.
         """
-        from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier
-
         from agentic_core.domain.exceptions import ConfigurationError
+        from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier
 
         core_path = Path("agentic_core/base_agents")
         dirty_file = core_path / "malicious_script.tmp"
@@ -82,10 +81,9 @@ class TestEndgameCertification:
         Verify that apps_lic and apps_rg are using the EXACT same base class memory address.
         This proves there is no 'Split-Brain'.
         """
-        from apps_lic.shared.core.agent_base import LICAgentBase
-
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
+        from apps_lic.shared.core.agent_base import LICAgentBase
 
         # Check Method Resolution Order
         rg_mro = RGAgentBase.mro()
@@ -209,7 +207,6 @@ class TestEndgameCertification:
         trigger a heal event, write to the Black Box, and pass the Integrity Lock check.
         """
         from agentic_core.domain.sovereign_lock import CoreIntegrityVerifier
-
         from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
         from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
 

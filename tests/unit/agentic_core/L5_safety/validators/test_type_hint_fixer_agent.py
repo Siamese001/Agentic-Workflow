@@ -91,7 +91,9 @@ class TestTypeHintFixerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.TypeHintFixerAgent import TypeHintFixerAgent  # noqa: F401
+                from agentic_core.L5_safety.validators.TypeHintFixerAgent import (
+                    TypeHintFixerAgent,  # noqa: F401
+                )
             except (ImportError, NameError, AttributeError):
                 pass
 

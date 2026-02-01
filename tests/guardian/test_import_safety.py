@@ -33,7 +33,7 @@ import sys
 import threading
 from collections import defaultdict
 from pathlib import Path
-from typing import List, Dict, Any, Set
+from typing import Any
 
 import pytest
 
@@ -1400,16 +1400,16 @@ class TestGravityCompliance:
         """
         print("\n=== ADVANCED IMPORT PATTERN VALIDATION ===")
 
-        violations: List[Dict[str, Any]] = []
+        violations: list[dict[str, Any]] = []
 
         # Build import graph for circular dependency detection
-        import_graph: Dict[str, Set[str]] = {}
+        import_graph: dict[str, set[str]] = {}
         python_files = self._get_all_python_files(self.SOURCE_DIRECTORIES)
 
         # First pass: build import graph
         for file_path in python_files:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 tree = ast.parse(content, filename=str(file_path))
@@ -1450,13 +1450,13 @@ class TestGravityCompliance:
                 continue
 
         # Check for circular dependencies
-        def find_circular_dependencies(graph: Dict[str, Set[str]]) -> List[List[str]]:
+        def find_circular_dependencies(graph: dict[str, set[str]]) -> list[list[str]]:
             """Find circular dependencies using DFS."""
             visited = set()
             rec_stack = set()
             cycles = []
 
-            def dfs(node: str, path: List[str]):
+            def dfs(node: str, path: list[str]):
                 if node in rec_stack:
                     # Found a cycle
                     cycle_start = path.index(node)
@@ -1490,7 +1490,7 @@ class TestGravityCompliance:
         # Second pass: Check other import patterns
         for file_path in python_files:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     lines = f.readlines()
 
                 rel_path = str(file_path.relative_to(PROJECT_ROOT))

@@ -4,13 +4,13 @@ Deterministic Guardian Test for Agent Validation
 Tests agent compliance without runtime instantiation.
 """
 
-import sys
 import ast
+import sys
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
 
-def check_agent_structure(file_path: Path) -> Dict[str, Any]:
+def check_agent_structure(file_path: Path) -> dict[str, Any]:
     """
     Check agent structure using static analysis.
 

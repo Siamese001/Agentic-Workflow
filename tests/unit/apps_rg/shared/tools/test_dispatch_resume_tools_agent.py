@@ -81,7 +81,9 @@ class TestDispatchResumeToolsAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.shared.tools.DispatchResumeToolsAgent import DispatchResumeToolsAgent  # noqa: F401
+                from apps_rg.shared.tools.DispatchResumeToolsAgent import (
+                    DispatchResumeToolsAgent,  # noqa: F401
+                )
             except (ImportError, NameError, AttributeError):
                 pass
 

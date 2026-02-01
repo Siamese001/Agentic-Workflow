@@ -36,12 +36,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.L5_safety.gravity.unified_validator import UnifiedSSOTValidator
 from scripts.purge_cache import purge_repository_cache  # Integrated Maintenance Hook
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass

@@ -41,8 +41,9 @@ def test_knowledge_base_node_configs():
 
 def test_base_engine_structure():
     """Test BaseRGEngine structure."""
-    from apps_rg.engines.base.base_resume_agent import BaseRGEngine
     from pydantic import BaseModel
+
+    from apps_rg.engines.base.base_resume_agent import BaseRGEngine
 
     class TestInput(BaseModel):
         data: str
@@ -153,8 +154,9 @@ def test_orchestrator_structure():
 
 def test_pydantic_validation():
     """Test that Pydantic models enforce validation."""
-    from apps_rg.engines.hops.hop1_clerk_engine import ClerkInput
     from pydantic import ValidationError
+
+    from apps_rg.engines.hops.hop1_clerk_engine import ClerkInput
 
     # Valid input
     valid = ClerkInput(master_resume={})

@@ -70,7 +70,9 @@ class TestAdaptiveRecoveryLoop:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_shared.common_utils.AdaptiveRecoveryLoop import AdaptiveRecoveryLoop  # noqa: F401
+                from apps_shared.common_utils.AdaptiveRecoveryLoop import (
+                    AdaptiveRecoveryLoop,  # noqa: F401
+                )
             except ImportError:
                 pass
 

@@ -1,7 +1,7 @@
 # tests/guardian/test_agent_validation_comprehensive.py
-import tempfile
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 GUARDIAN_TEST = Path(__file__).parent / "test_agent_validation.py"
