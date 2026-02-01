@@ -8,6 +8,12 @@ PHASE 9 MIGRATION (Jan 2026):
 - Native capabilities: Config, LLM, Embedding, Healing, Validation.
 - Resolves "Opt-In" drift by enforcing capabilities at the root.
 
+PHASE 2 META-LEARNING (Feb 2026):
+- MetaLearningClientMixin integration for healing pattern memory.
+- Redis hot-path caching for expensive AST analysis results.
+- Pinecone semantic retrieval for successful healing strategies.
+- Domain isolation for apps_lic and apps_rg territories.
+
 L0 DNA FLATTENING:
 infrastructure_mixin consolidates core capabilities (legacy).
 New Mixins provide Gateway access (modern).
@@ -26,6 +32,7 @@ from typing import Any
 
 from agentic_core.base_agents.audit_trail_mixin import AuditTrailMixin
 from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
+from agentic_core.base_agents.meta_learning_client_mixin import MetaLearningClientMixin
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [PHASE 9] Global Architecture Injection
@@ -50,6 +57,7 @@ class SovereignBaseAgent(
     HealingStrategyMixin,
     ValidatorMixin,
     AuditTrailMixin,  # ADDED: Black Box telemetry
+    MetaLearningClientMixin,  # [PHASE 2] Meta-Learning integration
 ):
     """
     Sovereign Single Source of Truth (SSOT) Root.
@@ -133,6 +141,7 @@ class SovereignBaseAgent(
             "healing": hasattr(self, "heal_repository"),
             "validation": hasattr(self, "validate_repository"),
             "testing": hasattr(self, "run_subatomic_tests"),
+            "meta_learning": hasattr(self, "ml_recall_healing_pattern"),
             "security_validated": True,
             "mro_hardened": True,
             "project_root": str(self.project_root),
