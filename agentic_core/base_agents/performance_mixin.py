@@ -102,6 +102,9 @@ class PerformanceConfig:
     lazy_init_enabled: bool = True
     batch_size: int = 100
     async_pool_size: int = 10
+    # [HARDENING] Memory protection limits
+    max_batch_queues: int = 50  # Maximum number of batch queues
+    max_batch_queue_size: int = 10000  # Maximum items per batch queue
 
 
 class PerformanceMixin:
@@ -171,6 +174,8 @@ class PerformanceMixin:
         lazy_init_enabled: bool | None = None,
         batch_size: int | None = None,
         async_pool_size: int | None = None,
+        max_batch_queues: int | None = None,
+        max_batch_queue_size: int | None = None,
     ) -> None:
         """
         Configure performance optimization settings.
@@ -183,7 +188,26 @@ class PerformanceMixin:
             lazy_init_enabled: Enable/disable lazy initialization
             batch_size: Default batch size for operations
             async_pool_size: Size of async operation pool
+            max_batch_queues: Maximum number of batch queues
+            max_batch_queue_size: Maximum items per batch queue
+
+        Raises:
+            ValueError: If any parameter is invalid
         """
+        # [HARDENING] Validate inputs
+        if cache_max_size is not None and cache_max_size <= 0:
+            raise ValueError("cache_max_size must be positive")
+        if cache_default_ttl is not None and cache_default_ttl <= 0:
+            raise ValueError("cache_default_ttl must be positive")
+        if batch_size is not None and batch_size <= 0:
+            raise ValueError("batch_size must be positive")
+        if async_pool_size is not None and async_pool_size <= 0:
+            raise ValueError("async_pool_size must be positive")
+        if max_batch_queues is not None and max_batch_queues <= 0:
+            raise ValueError("max_batch_queues must be positive")
+        if max_batch_queue_size is not None and max_batch_queue_size <= 0:
+            raise ValueError("max_batch_queue_size must be positive")
+
         with self._perf_lock:
             if cache_enabled is not None:
                 self._perf_config.cache_enabled = cache_enabled
@@ -200,6 +224,10 @@ class PerformanceMixin:
             if async_pool_size is not None:
                 self._perf_config.async_pool_size = async_pool_size
                 self._async_semaphore = None  # Reset semaphore
+            if max_batch_queues is not None:
+                self._perf_config.max_batch_queues = max_batch_queues
+            if max_batch_queue_size is not None:
+                self._perf_config.max_batch_queue_size = max_batch_queue_size
 
         Logger.info(f"[PERF] Configuration updated: {self._perf_config}")
 
@@ -520,10 +548,30 @@ class PerformanceMixin:
 
         Returns:
             Current queue size
+
+        Raises:
+            ValueError: If queue limits are exceeded
         """
         with self._perf_lock:
+            # [HARDENING] Check queue count limit
+            if (
+                queue_name not in self._batch_queues
+                and len(self._batch_queues) >= self._perf_config.max_batch_queues
+            ):
+                raise ValueError(
+                    f"Maximum batch queues ({self._perf_config.max_batch_queues}) exceeded"
+                )
+
             if queue_name not in self._batch_queues:
                 self._batch_queues[queue_name] = []
+
+            # [HARDENING] Check queue size limit
+            if len(self._batch_queues[queue_name]) >= self._perf_config.max_batch_queue_size:
+                raise ValueError(
+                    f"Batch queue '{queue_name}' size limit "
+                    f"({self._perf_config.max_batch_queue_size}) exceeded"
+                )
+
             self._batch_queues[queue_name].append(item)
             return len(self._batch_queues[queue_name])
 

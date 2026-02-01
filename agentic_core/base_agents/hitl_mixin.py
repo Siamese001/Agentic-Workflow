@@ -101,6 +101,9 @@ class HITLConfig:
     default_escalation_chain: list[str] = field(
         default_factory=lambda: ["team_lead", "manager", "director"]
     )
+    # [HARDENING] Memory protection limits
+    max_pending_approvals: int = 100  # Prevent unbounded pending queue
+    max_history_size: int = 10000  # Prevent unbounded history growth
 
 
 class ApprovalRequiredError(Exception):
@@ -202,6 +205,8 @@ class HITLMixin:
         escalation_timeout_seconds: float | None = None,
         max_escalation_levels: int | None = None,
         default_escalation_chain: list[str] | None = None,
+        max_pending_approvals: int | None = None,
+        max_history_size: int | None = None,
     ) -> None:
         """
         Configure HITL behavior.
@@ -214,7 +219,24 @@ class HITLMixin:
             escalation_timeout_seconds: Timeout before escalation
             max_escalation_levels: Maximum escalation levels
             default_escalation_chain: Default escalation chain
+            max_pending_approvals: Maximum pending approval requests
+            max_history_size: Maximum approval history entries
+
+        Raises:
+            ValueError: If any parameter is invalid
         """
+        # [HARDENING] Validate inputs
+        if default_timeout_seconds is not None and default_timeout_seconds <= 0:
+            raise ValueError("default_timeout_seconds must be positive")
+        if escalation_timeout_seconds is not None and escalation_timeout_seconds <= 0:
+            raise ValueError("escalation_timeout_seconds must be positive")
+        if max_escalation_levels is not None and max_escalation_levels <= 0:
+            raise ValueError("max_escalation_levels must be positive")
+        if max_pending_approvals is not None and max_pending_approvals <= 0:
+            raise ValueError("max_pending_approvals must be positive")
+        if max_history_size is not None and max_history_size <= 0:
+            raise ValueError("max_history_size must be positive")
+
         with self._hitl_lock:
             if enabled is not None:
                 self._hitl_config.enabled = enabled
@@ -230,6 +252,10 @@ class HITLMixin:
                 self._hitl_config.max_escalation_levels = max_escalation_levels
             if default_escalation_chain is not None:
                 self._hitl_config.default_escalation_chain = default_escalation_chain
+            if max_pending_approvals is not None:
+                self._hitl_config.max_pending_approvals = max_pending_approvals
+            if max_history_size is not None:
+                self._hitl_config.max_history_size = max_history_size
 
         Logger.info(f"[HITL] Configuration updated: {self._hitl_config}")
 
@@ -298,6 +324,19 @@ class HITLMixin:
         )
 
         with self._hitl_lock:
+            # [HARDENING] Check pending approvals limit
+            if len(self._pending_approvals) >= self._hitl_config.max_pending_approvals:
+                # Expire oldest pending requests to make room
+                oldest_id = min(
+                    self._pending_approvals.keys(),
+                    key=lambda k: self._pending_approvals[k].created_at,
+                )
+                oldest = self._pending_approvals.pop(oldest_id)
+                oldest.status = ApprovalStatus.TIMEOUT
+                oldest.resolved_at = time.time()
+                self._approval_history.append(oldest)
+                Logger.warning(f"[HITL] Evicted oldest pending request {oldest_id} due to limit")
+
             self._pending_approvals[request.request_id] = request
 
         Logger.info(f"[HITL] Created approval request: {request.request_id} for '{operation_name}'")
@@ -399,6 +438,9 @@ class HITLMixin:
             del self._pending_approvals[request_id]
             self._approval_history.append(request)
 
+            # [HARDENING] Trim history if exceeds limit
+            self._trim_history_if_needed()
+
         Logger.info(f"[HITL] Request {request_id} APPROVED by {approved_by}")
 
         # Trigger callback if registered
@@ -445,6 +487,9 @@ class HITLMixin:
             # Move to history
             del self._pending_approvals[request_id]
             self._approval_history.append(request)
+
+            # [HARDENING] Trim history if exceeds limit
+            self._trim_history_if_needed()
 
         Logger.info(f"[HITL] Request {request_id} REJECTED by {rejected_by}: {notes}")
 
@@ -550,6 +595,15 @@ class HITLMixin:
                 callback(request)
             except Exception as e:
                 Logger.error(f"[HITL] Callback error for '{request.operation_name}': {e}")
+
+    def _trim_history_if_needed(self) -> None:
+        """[HARDENING] Trim approval history if it exceeds the configured limit."""
+        # Must be called with _hitl_lock held
+        if len(self._approval_history) > self._hitl_config.max_history_size:
+            # Remove oldest entries (keep most recent)
+            excess = len(self._approval_history) - self._hitl_config.max_history_size
+            self._approval_history = self._approval_history[excess:]
+            Logger.debug(f"[HITL] Trimmed {excess} old history entries")
 
     def get_hitl_status(self) -> dict[str, Any]:
         """

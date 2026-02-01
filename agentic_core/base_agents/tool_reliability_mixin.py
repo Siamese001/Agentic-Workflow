@@ -150,6 +150,9 @@ class ToolReliabilityMixin:
         self._circuit_opened_at: dict[str, float] = {}
         self._half_open_calls: dict[str, int] = {}
 
+        # [HARDENING] Thread safety lock for tool health tracking
+        self._reliability_lock = __import__("threading").RLock()
+
         # Initialization flag
         self._tool_reliability_initialized = True
 
@@ -176,7 +179,22 @@ class ToolReliabilityMixin:
             exponential_base: Base for exponential backoff
             jitter: Whether to add random jitter to delays
             retryable_exceptions: Exception types that trigger retry
+
+        Raises:
+            ValueError: If any parameter is invalid
         """
+        # [HARDENING] Validate inputs
+        if not tool_name or not tool_name.strip():
+            raise ValueError("tool_name cannot be empty")
+        if max_retries < 0:
+            raise ValueError("max_retries must be non-negative")
+        if base_delay_seconds < 0:
+            raise ValueError("base_delay_seconds must be non-negative")
+        if max_delay_seconds < base_delay_seconds:
+            raise ValueError("max_delay_seconds must be >= base_delay_seconds")
+        if exponential_base < 1.0:
+            raise ValueError("exponential_base must be >= 1.0")
+
         self._retry_policies[tool_name] = RetryPolicy(
             max_retries=max_retries,
             base_delay_seconds=base_delay_seconds,
@@ -205,7 +223,22 @@ class ToolReliabilityMixin:
             success_threshold: Successes to close from half-open
             timeout_seconds: Time before trying half-open
             half_open_max_calls: Max calls allowed in half-open state
+
+        Raises:
+            ValueError: If any parameter is invalid
         """
+        # [HARDENING] Validate inputs
+        if not tool_name or not tool_name.strip():
+            raise ValueError("tool_name cannot be empty")
+        if failure_threshold <= 0:
+            raise ValueError("failure_threshold must be positive")
+        if success_threshold <= 0:
+            raise ValueError("success_threshold must be positive")
+        if timeout_seconds <= 0:
+            raise ValueError("timeout_seconds must be positive")
+        if half_open_max_calls <= 0:
+            raise ValueError("half_open_max_calls must be positive")
+
         self._circuit_configs[tool_name] = CircuitBreakerConfig(
             failure_threshold=failure_threshold,
             success_threshold=success_threshold,
@@ -270,46 +303,48 @@ class ToolReliabilityMixin:
 
     def _record_success(self, tool_name: str) -> None:
         """Record successful tool call."""
-        health = self._ensure_tool_health(tool_name)
-        health.total_calls += 1
-        health.successful_calls += 1
-        health.last_success_time = time.time()
-        health.consecutive_failures = 0
-        health.consecutive_successes += 1
+        with self._reliability_lock:
+            health = self._ensure_tool_health(tool_name)
+            health.total_calls += 1
+            health.successful_calls += 1
+            health.last_success_time = time.time()
+            health.consecutive_failures = 0
+            health.consecutive_successes += 1
 
-        config = self._circuit_configs.get(tool_name)
-        if config and health.circuit_state == CircuitState.HALF_OPEN:
-            if health.consecutive_successes >= config.success_threshold:
-                health.circuit_state = CircuitState.CLOSED
-                health.consecutive_successes = 0
-                Logger.info(f"[RELIABILITY] Circuit for '{tool_name}' CLOSED")
+            config = self._circuit_configs.get(tool_name)
+            if config and health.circuit_state == CircuitState.HALF_OPEN:
+                if health.consecutive_successes >= config.success_threshold:
+                    health.circuit_state = CircuitState.CLOSED
+                    health.consecutive_successes = 0
+                    Logger.info(f"[RELIABILITY] Circuit for '{tool_name}' CLOSED")
 
     def _record_failure(self, tool_name: str, error: Exception) -> None:
         """Record failed tool call."""
-        health = self._ensure_tool_health(tool_name)
-        health.total_calls += 1
-        health.failed_calls += 1
-        health.last_failure_time = time.time()
-        health.last_error = str(error)
-        health.consecutive_successes = 0
-        health.consecutive_failures += 1
+        with self._reliability_lock:
+            health = self._ensure_tool_health(tool_name)
+            health.total_calls += 1
+            health.failed_calls += 1
+            health.last_failure_time = time.time()
+            health.last_error = str(error)
+            health.consecutive_successes = 0
+            health.consecutive_failures += 1
 
-        config = self._circuit_configs.get(tool_name)
-        if config:
-            if health.circuit_state == CircuitState.HALF_OPEN:
-                # Failed in half-open, reopen circuit
-                health.circuit_state = CircuitState.OPEN
-                self._circuit_opened_at[tool_name] = time.time()
-                Logger.warning(
-                    f"[RELIABILITY] Circuit for '{tool_name}' reopened after half-open failure"
-                )
-            elif health.consecutive_failures >= config.failure_threshold:
-                health.circuit_state = CircuitState.OPEN
-                self._circuit_opened_at[tool_name] = time.time()
-                Logger.warning(
-                    f"[RELIABILITY] Circuit for '{tool_name}' OPENED after "
-                    f"{health.consecutive_failures} consecutive failures"
-                )
+            config = self._circuit_configs.get(tool_name)
+            if config:
+                if health.circuit_state == CircuitState.HALF_OPEN:
+                    # Failed in half-open, reopen circuit
+                    health.circuit_state = CircuitState.OPEN
+                    self._circuit_opened_at[tool_name] = time.time()
+                    Logger.warning(
+                        f"[RELIABILITY] Circuit for '{tool_name}' reopened after half-open failure"
+                    )
+                elif health.consecutive_failures >= config.failure_threshold:
+                    health.circuit_state = CircuitState.OPEN
+                    self._circuit_opened_at[tool_name] = time.time()
+                    Logger.warning(
+                        f"[RELIABILITY] Circuit for '{tool_name}' OPENED after "
+                        f"{health.consecutive_failures} consecutive failures"
+                    )
 
     async def with_retry(
         self,
@@ -447,21 +482,22 @@ class ToolReliabilityMixin:
         Returns:
             Dictionary with health metrics
         """
-        health = self._tool_health.get(tool_name)
-        if not health:
-            return {"tool_name": tool_name, "status": "unknown"}
+        with self._reliability_lock:
+            health = self._tool_health.get(tool_name)
+            if not health:
+                return {"tool_name": tool_name, "status": "unknown"}
 
-        return {
-            "tool_name": health.tool_name,
-            "total_calls": health.total_calls,
-            "successful_calls": health.successful_calls,
-            "failed_calls": health.failed_calls,
-            "success_rate": health.success_rate,
-            "is_healthy": health.is_healthy,
-            "circuit_state": health.circuit_state.value,
-            "consecutive_failures": health.consecutive_failures,
-            "last_error": health.last_error,
-        }
+            return {
+                "tool_name": health.tool_name,
+                "total_calls": health.total_calls,
+                "successful_calls": health.successful_calls,
+                "failed_calls": health.failed_calls,
+                "success_rate": health.success_rate,
+                "is_healthy": health.is_healthy,
+                "circuit_state": health.circuit_state.value,
+                "consecutive_failures": health.consecutive_failures,
+                "last_error": health.last_error,
+            }
 
     def get_all_tool_health(self) -> dict[str, dict[str, Any]]:
         """
@@ -479,14 +515,15 @@ class ToolReliabilityMixin:
         Args:
             tool_name: Name of the tool
         """
-        health = self._tool_health.get(tool_name)
-        if health:
-            health.circuit_state = CircuitState.CLOSED
-            health.consecutive_failures = 0
-            health.consecutive_successes = 0
-            self._circuit_opened_at.pop(tool_name, None)
-            self._half_open_calls.pop(tool_name, None)
-            Logger.info(f"[RELIABILITY] Circuit breaker reset for '{tool_name}'")
+        with self._reliability_lock:
+            health = self._tool_health.get(tool_name)
+            if health:
+                health.circuit_state = CircuitState.CLOSED
+                health.consecutive_failures = 0
+                health.consecutive_successes = 0
+                self._circuit_opened_at.pop(tool_name, None)
+                self._half_open_calls.pop(tool_name, None)
+                Logger.info(f"[RELIABILITY] Circuit breaker reset for '{tool_name}'")
 
 
 __all__ = [
