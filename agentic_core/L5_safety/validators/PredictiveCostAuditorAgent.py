@@ -24,12 +24,11 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 Logger: Any = logging.getLogger(__name__)
 

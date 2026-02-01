@@ -1111,7 +1111,6 @@ class TestMetaLearningKGIntegration:
         from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
-
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
@@ -1159,7 +1158,6 @@ class TestMetaLearningKGIntegration:
         from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
-
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
@@ -1213,7 +1211,6 @@ class TestMetaLearningKGIntegration:
         from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
-
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
@@ -1265,7 +1262,6 @@ class TestMetaLearningKGIntegration:
         from agentic_core.base_agents.knowledge_graph_bridge import (
             KnowledgeGraphBridge,
         )
-
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )

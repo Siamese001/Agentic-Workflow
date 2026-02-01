@@ -5,8 +5,6 @@ Ensures no AI agents are validating other AI agents through heuristic analysis.
 """
 
 from pathlib import Path
-from typing import List, Tuple
-
 
 # Patterns that indicate AI-checking-AI violations
 VIOLATION_PATTERNS = [
@@ -38,7 +36,7 @@ ALLOWED_FILES = [
 ]
 
 
-def check_file_for_violations(file_path: Path) -> List[str]:
+def check_file_for_violations(file_path: Path) -> list[str]:
     """
     Check a Python file for AI-checking-AI violation patterns.
 
@@ -70,7 +68,7 @@ def check_file_for_violations(file_path: Path) -> List[str]:
     return violations
 
 
-def scan_validators() -> Tuple[int, int, List[Tuple[Path, List[str]]]]:
+def scan_validators() -> tuple[int, int, list[tuple[Path, list[str]]]]:
     """
     Scan all L5 safety validators for AI-checking-AI violations.
 

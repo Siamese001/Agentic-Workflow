@@ -91,7 +91,9 @@ class TestToolsmithAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent  # noqa: F401
+                from agentic_core.L2_execution.tool_registry.ToolsmithAgent import (
+                    ToolsmithAgent,  # noqa: F401
+                )
             except (ImportError, NameError, AttributeError):
                 pass
 

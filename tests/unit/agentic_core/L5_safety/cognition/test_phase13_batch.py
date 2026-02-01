@@ -34,13 +34,12 @@ class TestBatchCheckpointing:
 
     def test_batch_checkpointing(self, clean_project, mock_violations):
         """[Phase 13] Verify checkpoint saves and resumes correctly."""
+        from agentic_core.L5_safety.cognition.CognitiveBatchProcessor import (
+            CognitiveBatchProcessor,
+        )
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
             DispositionDecision,
-        )
-
-        from agentic_core.L5_safety.cognition.CognitiveBatchProcessor import (
-            CognitiveBatchProcessor,
         )
 
         checkpoint_file = clean_project / "test_checkpoint.json"
@@ -90,12 +89,11 @@ class TestBatchCheckpointing:
 
     def test_checkpoint_persistence(self, clean_project):
         """[Phase 13] Verify checkpoint persists across instances."""
-        from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
-            CognitiveDispositionAgent,
-        )
-
         from agentic_core.L5_safety.cognition.CognitiveBatchProcessor import (
             CognitiveBatchProcessor,
+        )
+        from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
+            CognitiveDispositionAgent,
         )
 
         checkpoint_file = clean_project / "test_checkpoint.json"
@@ -148,13 +146,12 @@ class TestRateLimitingAdherence:
     @patch("time.sleep")
     def test_rate_limiting_adherence(self, mock_sleep, clean_project, mock_violations):
         """[Phase 13] Verify sleep interval is respected."""
+        from agentic_core.L5_safety.cognition.CognitiveBatchProcessor import (
+            CognitiveBatchProcessor,
+        )
         from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
             DispositionDecision,
-        )
-
-        from agentic_core.L5_safety.cognition.CognitiveBatchProcessor import (
-            CognitiveBatchProcessor,
         )
 
         cognitive = CognitiveDispositionAgent(project_root=clean_project)
@@ -188,12 +185,11 @@ class TestRateLimitingAdherence:
 
     def test_exponential_backoff_on_retry(self, clean_project):
         """[Phase 13] Verify exponential backoff on retries."""
-        from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
-            CognitiveDispositionAgent,
-        )
-
         from agentic_core.L5_safety.cognition.CognitiveBatchProcessor import (
             CognitiveBatchProcessor,
+        )
+        from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
+            CognitiveDispositionAgent,
         )
 
         cognitive = CognitiveDispositionAgent(project_root=clean_project)
@@ -347,12 +343,11 @@ class TestPhase13Integration:
 
     def test_batch_processor_statistics(self, clean_project):
         """[Phase 13] Verify batch processor statistics calculation."""
-        from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
-            CognitiveDispositionAgent,
-        )
-
         from agentic_core.L5_safety.cognition.CognitiveBatchProcessor import (
             CognitiveBatchProcessor,
+        )
+        from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
+            CognitiveDispositionAgent,
         )
 
         cognitive = CognitiveDispositionAgent(project_root=clean_project)
@@ -377,12 +372,11 @@ class TestPhase13Integration:
 
     def test_checkpoint_clear(self, clean_project):
         """[Phase 13] Verify checkpoint can be cleared."""
-        from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
-            CognitiveDispositionAgent,
-        )
-
         from agentic_core.L5_safety.cognition.CognitiveBatchProcessor import (
             CognitiveBatchProcessor,
+        )
+        from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
+            CognitiveDispositionAgent,
         )
 
         checkpoint_file = clean_project / "checkpoint.json"
@@ -425,12 +419,11 @@ class TestPhase13Integration:
 
     def test_batch_processor_error_handling(self, clean_project):
         """[Phase 13] Verify batch processor handles errors gracefully."""
-        from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
-            CognitiveDispositionAgent,
-        )
-
         from agentic_core.L5_safety.cognition.CognitiveBatchProcessor import (
             CognitiveBatchProcessor,
+        )
+        from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
+            CognitiveDispositionAgent,
         )
 
         cognitive = CognitiveDispositionAgent(project_root=clean_project)

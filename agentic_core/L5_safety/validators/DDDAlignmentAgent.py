@@ -32,7 +32,9 @@ except ImportError:
 
 
 try:
-    from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
+    from agentic_core.base_agents.subatomic_testing_mixin import (
+        subatomic_testing_mixin,  # noqa: F401
+    )
 except ImportError:
 
     class SubatomicTestingMixin:

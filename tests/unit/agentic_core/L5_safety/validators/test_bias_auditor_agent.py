@@ -77,7 +77,9 @@ class TestBiasAuditorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.BiasAuditorAgent import BiasAuditorAgent  # noqa: F401
+                from agentic_core.L5_safety.validators.BiasAuditorAgent import (
+                    BiasAuditorAgent,  # noqa: F401
+                )
             except (ImportError, NameError, AttributeError):
                 pass
 

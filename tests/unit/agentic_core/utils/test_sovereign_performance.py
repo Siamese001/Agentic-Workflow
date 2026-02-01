@@ -263,12 +263,11 @@ class TestCrossAgentScanConsistency:
 
     def test_scanner_used_by_structural_validator(self, mock_project):
         """[Phase 5] Verify StructuralValidatorAgent uses SovereignScanner."""
-        from agentic_core.utils.sovereign_scanner import SovereignScanner
-
         from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
             StructuralValidatorAgent,
             StructureConfig,
         )
+        from agentic_core.utils.sovereign_scanner import SovereignScanner
 
         # Create validator
         config = StructureConfig(project_root=mock_project)

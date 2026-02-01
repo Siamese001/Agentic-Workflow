@@ -102,7 +102,9 @@ class TestHOP1ProfileAnalysisAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent  # noqa: F401
+                from apps_lic.engines.HOP1ProfileAnalysisAgent import (
+                    HOP1ProfileAnalysisAgent,  # noqa: F401
+                )
             except (ImportError, NameError, AttributeError):
                 pass
 

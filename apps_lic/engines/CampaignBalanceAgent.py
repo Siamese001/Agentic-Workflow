@@ -10,9 +10,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps_lic.shared.core.agent_base import LICAgentBase
-
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.shared.core.agent_base import LICAgentBase
 
 
 @dataclass

@@ -12,10 +12,10 @@ handled by pre-commit hooks. It runs comprehensive checks on:
 Moved from pre-commit to Guardian for comprehensive validation.
 """
 
-import pytest
-from pathlib import Path
-from typing import List, Dict
 import sys
+from pathlib import Path
+
+import pytest
 
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -24,13 +24,13 @@ if str(PROJECT_ROOT) not in sys.path:
 
 # Import validation functions
 from scripts.validate_structure import (
-    validate_territory,
-    validate_subfolder_structure,
-    validate_forbidden_patterns,
-    validate_base_agent_location,
-    VALID_TERRITORIES,
-    FORBIDDEN_PATTERNS,
     BASE_AGENT_CANONICAL_DIR,
+    FORBIDDEN_PATTERNS,
+    VALID_TERRITORIES,
+    validate_base_agent_location,
+    validate_forbidden_patterns,
+    validate_subfolder_structure,
+    validate_territory,
 )
 
 
@@ -52,7 +52,7 @@ class TestComprehensiveSSOTStructure:
         """
         print("\n=== COMPREHENSIVE SSOT FILE PLACEMENT VALIDATION ===")
 
-        violations: List[Dict[str, str]] = []
+        violations: list[dict[str, str]] = []
         python_files = list(PROJECT_ROOT.rglob("*.py"))
 
         # Skip excluded directories
@@ -132,7 +132,7 @@ class TestComprehensiveSSOTStructure:
         """
         print("\n=== PACKAGE STRUCTURE COMPLETENESS VALIDATION ===")
 
-        missing_inits: List[str] = []
+        missing_inits: list[str] = []
 
         # Check all directories that should have __init__.py
         for territory in VALID_TERRITORIES:
@@ -180,7 +180,7 @@ class TestComprehensiveSSOTStructure:
         """
         print("\n=== FORBIDDEN DIRECTORY USAGE VALIDATION ===")
 
-        violations: List[Dict[str, str]] = []
+        violations: list[dict[str, str]] = []
 
         # Check each forbidden pattern
         for pattern, description in FORBIDDEN_PATTERNS:
@@ -219,7 +219,7 @@ class TestComprehensiveSSOTStructure:
         """
         print("\n=== TEST FILE PLACEMENT VALIDATION ===")
 
-        misplaced_tests: List[str] = []
+        misplaced_tests: list[str] = []
 
         # Find all test files outside tests/ directory
         for territory in VALID_TERRITORIES:
@@ -263,7 +263,7 @@ class TestComprehensiveSSOTStructure:
         """
         print("\n=== CONSTITUTIONAL BASE AGENT LOCATION CHECK ===")
 
-        violations: List[Dict[str, str]] = []
+        violations: list[dict[str, str]] = []
 
         # Find all *BaseAgent.py files
         for file_path in PROJECT_ROOT.rglob("*BaseAgent.py"):

@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 import redis
+
 from agentic_core.schemas.models.anomaly_report import AnomalyReport
 
 
