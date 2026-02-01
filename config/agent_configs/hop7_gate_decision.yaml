@@ -1,0 +1,30 @@
+# HOP7 Gate Decision Agent Configuration
+# Extracted from HOP7GateDecisionAgent.py - Phase 1 Optimization
+
+gate_thresholds:
+  overall_quality_threshold: 0.8
+  factual_accuracy_threshold: 0.9
+  strategic_alignment_threshold: 0.7
+  content_quality_threshold: 0.6
+
+decision_rules:
+  approve_on_high_score: true
+  reject_on_critical_errors: true
+  allow_revision_loop: true
+  require_minimum_quality: true
+
+factual_failure_rules:
+  - "LIC-E015"
+  - "STRATEGIC_ALIGNMENT"
+  - "SENDER_GROUNDING_MISMATCH"
+  - "FACTUAL_INACCURACY"
+
+loop_limits:
+  max_factual_loops: 2
+  max_creative_retries: 3
+  max_total_iterations: 5
+
+decision_logic:
+  check_all_categories: true
+  weight_factual_higher: true
+  allow_strategic_override: false

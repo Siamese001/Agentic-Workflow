@@ -1,0 +1,66 @@
+# ATS Compatibility Agent Configuration
+# Extracted from ATSCompatibilityAgent.py - Phase 1 Optimization
+
+standard_headers:
+  summary:
+    - "summary"
+    - "professional summary"
+    - "profile"
+    - "objective"
+  experience:
+    - "experience"
+    - "work experience"
+    - "employment history"
+    - "work history"
+  skills:
+    - "skills"
+    - "technical skills"
+    - "core competencies"
+    - "expertise"
+  education:
+    - "education"
+    - "academic background"
+    - "qualifications"
+
+ats_unfriendly_patterns:
+  - "[│┃┆┇┊┋]"  # Box drawing characters
+  - "[★☆●○◆◇■□▪▫]"  # Decorative bullets
+  - "[\u2500-\u257F]"  # Box drawing
+  - "<table"  # HTML tables
+  - "<img"  # Images
+
+allowed_non_standard_sections:
+  - "contact"
+  - "projects"
+  - "certifications"
+  - "achievements"
+
+keyword_optimization:
+  min_score_threshold: 0.3
+  stop_words:
+    - "the"
+    - "and"
+    - "for"
+    - "with"
+    - "you"
+    - "are"
+    - "will"
+    - "have"
+    - "this"
+    - "that"
+    - "from"
+    - "they"
+    - "been"
+    - "were"
+    - "being"
+    - "their"
+    - "would"
+    - "could"
+    - "should"
+    - "about"
+    - "which"
+    - "when"
+    - "what"
+    - "where"
+    - "there"
+    - "here"

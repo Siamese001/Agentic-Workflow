@@ -1,0 +1,32 @@
+# HOP6 Validation Agent Configuration
+# Extracted from HOP6ValidationAgent.py - Phase 1 Optimization
+
+validation_rules:
+  content_cleanliness:
+    check_placeholder_text: true
+    check_grammar_errors: true
+    check_spelling_errors: true
+  strategic_alignment:
+    check_sender_grounding: true
+    check_job_relevance: true
+    check_target_audience: true
+  factual_accuracy:
+    verify_claims: true
+    check_exaggerations: true
+    validate_data_points: true
+
+severity_thresholds:
+  critical: 0.9
+  high: 0.7
+  medium: 0.5
+  low: 0.3
+
+validation_categories:
+  - "content_cleanliness"
+  - "strategic_alignment"
+  - "factual_accuracy"
+
+error_handling:
+  max_validation_loops: 3
+  fail_fast_on_critical: true
+  allow_partial_validation: false

@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
+from apps_shared.config.config_loader import load_agent_config
 
 
 @dataclass
@@ -27,24 +28,20 @@ class ATSCompatibilityAgent(RGAgentBase):
     - No tables/graphics references
     """
 
-    STANDARD_HEADERS = {
-        "summary": ["summary", "professional summary", "profile", "objective"],
-        "experience": ["experience", "work experience", "employment history", "work history"],
-        "skills": ["skills", "technical skills", "core competencies", "expertise"],
-        "education": ["education", "academic background", "qualifications"],
-    }
-
-    ATS_UNFRIENDLY_PATTERNS = [
-        r"[│┃┆┇┊┋]",  # Box drawing characters
-        r"[★☆●○◆◇■□▪▫]",  # Decorative bullets
-        r"[\u2500-\u257F]",  # Box drawing
-        r"<table",  # HTML tables
-        r"<img",  # Images
-    ]
-
     def __post_init__(self) -> None:
         """Initialize ATS compatibility agent."""
         super().__post_init__()
+
+        # Load configuration from centralized config system
+        self._config = load_agent_config("ats_compatibility")
+
+        # Extract configuration values
+        self.STANDARD_HEADERS = self._config.get("standard_headers", {})
+        self.ATS_UNFRIENDLY_PATTERNS = self._config.get("ats_unfriendly_patterns", [])
+        self.allowed_non_standard_sections = self._config.get("allowed_non_standard_sections", [])
+        self.keyword_config = self._config.get("keyword_optimization", {})
+        self.min_score_threshold = self.keyword_config.get("min_score_threshold", 0.3)
+        self.stop_words = set(self.keyword_config.get("stop_words", []))
 
     async def execute(self) -> None:
         """
@@ -89,18 +86,13 @@ class ATSCompatibilityAgent(RGAgentBase):
                     is_standard = True
                     break
 
-            if not is_standard and normalized not in [
-                "contact",
-                "projects",
-                "certifications",
-                "achievements",
-            ]:
+            if not is_standard and normalized not in self.allowed_non_standard_sections:
                 issues.append(f"Non-standard section header: {section_name}")
 
         # Check keyword optimization if job description available
         if job_desc:
             keyword_score = self._calculate_keyword_score(resume, job_desc)
-            if keyword_score < 0.3:
+            if keyword_score < self.min_score_threshold:
                 issues.append(f"Low keyword match ({keyword_score:.0%})")
 
         if issues:
@@ -124,36 +116,8 @@ class ATSCompatibilityAgent(RGAgentBase):
         # Extract keywords from job description
         job_words = set(re.findall(r"\b[a-zA-Z]{3,}\b", job_desc.lower()))
 
-        # Common words to ignore
-        stop_words = {
-            "the",
-            "and",
-            "for",
-            "with",
-            "you",
-            "are",
-            "will",
-            "have",
-            "this",
-            "that",
-            "from",
-            "they",
-            "been",
-            "were",
-            "being",
-            "their",
-            "would",
-            "could",
-            "should",
-            "about",
-            "which",
-            "when",
-            "what",
-            "where",
-            "there",
-            "here",
-        }
-        job_words -= stop_words
+        # Use configured stop words
+        job_words -= self.stop_words
 
         if not job_words:
             return 1.0

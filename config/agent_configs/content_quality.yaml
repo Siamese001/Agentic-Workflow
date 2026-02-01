@@ -1,0 +1,31 @@
+# Content Quality Agent Configuration
+# Extracted from ContentQualityAgent.py - Phase 1 Optimization
+
+placeholder_patterns:
+  - "\\[(?:NAME|COMPANY|TITLE|PLACEHOLDER|YOUR_NAME|INSERT)\\]"  # [PLACEHOLDER] style
+  - "\\{(?:name|company|title|placeholder|your_name|insert)\\}"  # {placeholder} style
+  - "<(?:NAME|COMPANY|TITLE|PLACEHOLDER)>"  # <PLACEHOLDER> style
+  - "\\bTODO\\b"
+  - "\\bTBD\\b"
+  - "\\bFIXME\\b"
+  - "\\bXXX\\b"
+  - "Lorem ipsum"
+  - "PLACEHOLDER"
+
+min_section_lengths:
+  summary: 50
+  experience: 100
+  skills: 20
+  education: 30
+
+quality_metrics:
+  min_sentence_count: 3
+  max_placeholder_count: 0
+  require_quantified_achievements: true
+  min_achievement_count: 2
+
+validation_rules:
+  check_sentence_structure: true
+  check_placeholder_text: true
+  check_quantified_achievements: true
+  check_minimum_length: true

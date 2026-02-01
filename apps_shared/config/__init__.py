@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Shared configuration for operational agents."""
+
+from __future__ import annotations
 
 from apps_shared.config.operational_config import (
     OPERATIONAL_ALLOWED_DUPLICATES,
@@ -10,6 +10,12 @@ from apps_shared.config.operational_config import (
     is_excluded_path,
     should_scan_directory,
 )
+from apps_shared.config.config_loader import (
+    ConfigLoader,
+    ConfigLoadResult,
+    get_config_loader,
+    load_agent_config,
+)
 
 __all__ = [
     "OPERATIONAL_EXCLUDED_DIRS",
@@ -18,4 +24,8 @@ __all__ = [
     "is_excluded_path",
     "is_allowed_duplicate",
     "should_scan_directory",
+    "ConfigLoader",
+    "ConfigLoadResult",
+    "get_config_loader",
+    "load_agent_config",
 ]

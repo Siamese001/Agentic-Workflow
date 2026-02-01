@@ -1,0 +1,26 @@
+# Campaign Balance Agent Configuration
+# Extracted from CampaignBalanceAgent.py - Phase 1 Optimization
+
+balance_thresholds:
+  max_leads_per_message: 100
+  min_leads_per_message: 1
+
+campaign_requirements:
+  require_campaign_name: true
+  require_campaign_goal: true
+  require_message_templates: true
+  require_lead_list: true
+
+validation_rules:
+  check_lead_message_ratio: true
+  check_campaign_structure: true
+  validate_required_elements: true
+
+campaign_structure:
+  required_fields:
+    - "name"
+    - "goal"
+  optional_fields:
+    - "description"
+    - "target_audience"
+    - "timeline"

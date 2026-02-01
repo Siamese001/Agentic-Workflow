@@ -1,0 +1,32 @@
+# Section Balance Agent Configuration
+# Extracted from SectionBalanceAgent.py - Phase 1 Optimization
+
+required_sections:
+  - "summary"
+  - "experience"
+  - "skills"
+
+recommended_sections:
+  - "education"
+  - "projects"
+  - "certifications"
+
+max_section_ratios:
+  summary: 0.40  # Max 40% of total
+  experience: 0.70  # Max 70% of total
+  skills: 0.40  # Max 40% of total
+  education: 0.30  # Max 30% of total
+
+balance_rules:
+  check_required_sections: true
+  check_recommended_sections: true
+  check_section_ratios: true
+  validate_content_distribution: true
+
+section_priorities:
+  summary: 1
+  experience: 2
+  skills: 3
+  education: 4
+  projects: 5
+  certifications: 6

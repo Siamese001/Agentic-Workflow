@@ -1,0 +1,27 @@
+# HOP4 Routing Agent Configuration
+# Extracted from HOP4RoutingAgent.py - Phase 1 Optimization
+
+routing_rules:
+  default_route: "INMAIL"
+  premium_required: false
+
+available_routes:
+  - "CONNECTION_REQUEST"
+  - "DIRECT_MESSAGE"
+  - "INMAIL"
+
+route_conditions:
+  CONNECTION_REQUEST:
+    connection_status: "NOT_CONNECTED"
+    prior_message_count: 0
+  DIRECT_MESSAGE:
+    connection_status: "CONNECTED"
+  INMAIL:
+    connection_status: "NOT_CONNECTED"
+    prior_message_count_gt: 0
+
+routing_logic:
+  check_premium_availability: true
+  check_connection_status: true
+  allow_route_override: true
+  validate_route_constraints: true

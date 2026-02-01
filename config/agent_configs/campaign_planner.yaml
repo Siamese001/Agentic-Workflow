@@ -1,0 +1,24 @@
+# Campaign Planner Agent Configuration
+# Extracted from CampaignPlannerAgent.py - Phase 1 Optimization
+
+agent_defaults:
+  name: "CampaignPlannerAgent"
+  campaign_id: "default_campaign"
+  strategy_model: "gpt-4-turbo"
+
+channel_configuration:
+  default_active_channels:
+    - "email"
+    - "social"
+  available_channels:
+    - "email"
+    - "social"
+    - "sms"
+    - "push"
+    - "web"
+
+strategy_parameters:
+  default_timeline_days: 30
+  max_concurrent_campaigns: 5
+  auto_optimization_enabled: true
+  performance_tracking_enabled: true

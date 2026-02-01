@@ -1,0 +1,35 @@
+# Deliverability Agent Configuration
+# Extracted from DeliverabilityAgent.py - Phase 1 Optimization
+
+deliverability_rules:
+  email_format:
+    require_valid_sender: true
+    check_spam_keywords: true
+    validate_subject_line: true
+  content_rules:
+    max_links_per_message: 3
+    max_images_per_message: 1
+    avoid_spam_triggers: true
+
+spam_keywords:
+  - "free"
+  - "money back"
+  - "guarantee"
+  - "risk free"
+  - "limited time"
+  - "act now"
+  - "click here"
+  - "congratulations"
+  - "winner"
+
+email_validation:
+  check_mx_records: true
+  verify_domain_exists: true
+  validate_email_format: true
+  check_disposable_emails: true
+
+reputation_checks:
+  check_sender_reputation: true
+  monitor_domain_health: true
+  track_complaint_rates: true
+  validate_ip_reputation: true
