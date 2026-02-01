@@ -67,9 +67,10 @@ class OrchestrationResult:
     completed: bool
     stage: str
     signals: List[str]
-    artifacts: List[Dict[str, Any]]
-    next_actions: List[str]
+    artifacts: List[Dict[str, Any]] = field(default_factory=list)
+    next_actions: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
@@ -80,6 +81,7 @@ class OrchestrationResult:
             "artifacts": self.artifacts,
             "next_actions": self.next_actions,
             "errors": self.errors,
+            "metadata": self.metadata,
         }
 
 
