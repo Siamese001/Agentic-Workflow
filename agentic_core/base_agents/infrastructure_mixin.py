@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 infrastructure_mixin - Unified Gatekeeper for Agent Infrastructure
 
@@ -29,10 +27,13 @@ HARDENING:
     preventing silent failures that lead to hard-to-debug issues.
 """
 
+from __future__ import annotations
 
 import logging
 from typing import Any
 
+from agentic_core.base_agents.context_management_mixin import ContextManagementMixin
+from agentic_core.base_agents.cost_guardrail_mixin import CostGuardrailMixin
 from agentic_core.base_agents.healer_mixin import HealerMixin
 from agentic_core.base_agents.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
@@ -43,6 +44,8 @@ Logger = logging.getLogger(__name__)
 
 
 class InfrastructureMixin(
+    CostGuardrailMixin,  # [PHASE 1] Cost control and budget enforcement
+    ContextManagementMixin,  # [PHASE 1] Context standardization and overflow prevention
     PineconeVectorMixin,
     HealerMixin,
     MCPHardenedMixin,
@@ -53,15 +56,18 @@ class InfrastructureMixin(
     Unified infrastructure mixin combining all standard agent capabilities.
 
     This mixin provides:
-    1. Healing capabilities (HealerMixin)
-    2. MCP hardening (MCPHardenedMixin)
-    3. Subatomic testing (SubatomicTestingMixin)
-    4. Prompt injection protection (instructional_injection_mixin)
-    5. Distributed tracing (TracingMixin) [INJECTED Jan 2026]
-    6. State verification to catch initialization failures
+    1. Cost guardrails (CostGuardrailMixin) [PHASE 1 Jan 2026]
+    2. Context management (ContextManagementMixin) [PHASE 1 Jan 2026]
+    3. Healing capabilities (HealerMixin)
+    4. MCP hardening (MCPHardenedMixin)
+    5. Subatomic testing (SubatomicTestingMixin)
+    6. Distributed tracing (TracingMixin) [INJECTED Jan 2026]
+    7. State verification to catch initialization failures
 
     MRO Order (L0 DNA Flattening):
-        ConcreteAgent -> infrastructure_mixin -> HealerMixin -> MCPHardenedMixin -> SubatomicTestingMixin -> instructional_injection_mixin -> object
+        ConcreteAgent -> infrastructure_mixin -> CostGuardrailMixin ->
+        ContextManagementMixin -> HealerMixin -> MCPHardenedMixin ->
+        SubatomicTestingMixin -> TracingMixin -> object
 
     Critical Requirements:
         - Subclasses MUST call super().__init__() in their __init__
