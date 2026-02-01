@@ -111,7 +111,6 @@ def test_orchestrator_ssot():
 
     try:
         from agentic_core.L3_orchestration.orchestrator_registry import get_orchestrator
-
         from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
 
         # Test unified mode

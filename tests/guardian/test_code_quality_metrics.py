@@ -12,12 +12,12 @@ handled by pre-commit hooks or not validated at all. It includes:
 Moved from pre-commit to Guardian for comprehensive validation.
 """
 
-import pytest
 import ast
-from pathlib import Path
-from typing import List, Dict
 import sys
 from collections import defaultdict
+from pathlib import Path
+
+import pytest
 
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -45,8 +45,8 @@ class TestCodeQualityMetrics:
         MONOLITH_THRESHOLD = 800  # lines of code (excluding comments/blank)
         MAX_FILE_SIZE = 50000  # bytes (50KB)
 
-        large_files: List[Dict[str, int]] = []
-        oversized_files: List[Dict[str, int]] = []
+        large_files: list[dict[str, int]] = []
+        oversized_files: list[dict[str, int]] = []
 
         # Check all Python files
         for file_path in PROJECT_ROOT.rglob("*.py"):
@@ -81,7 +81,7 @@ class TestCodeQualityMetrics:
 
             # Count lines of code (excluding comments and blank lines)
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     lines = f.readlines()
 
                 code_lines = 0
@@ -152,7 +152,7 @@ class TestCodeQualityMetrics:
 
         COMPLEXITY_THRESHOLD = 15  # Maximum complexity per function
 
-        complex_functions: List[Dict[str, int]] = []
+        complex_functions: list[dict[str, int]] = []
 
         def calculate_complexity(node: ast.AST) -> int:
             """Calculate cyclomatic complexity for an AST node."""
@@ -199,7 +199,7 @@ class TestCodeQualityMetrics:
                 continue
 
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 tree = ast.parse(content, filename=str(file_path))
@@ -246,9 +246,9 @@ class TestCodeQualityMetrics:
         """
         print("\n=== DOCUMENTATION COVERAGE VALIDATION ===")
 
-        undocumented_modules: List[str] = []
-        undocumented_classes: List[Dict[str, str]] = []
-        undocumented_functions: List[Dict[str, str]] = []
+        undocumented_modules: list[str] = []
+        undocumented_classes: list[dict[str, str]] = []
+        undocumented_functions: list[dict[str, str]] = []
 
         # Analyze all Python files
         for file_path in PROJECT_ROOT.rglob("*.py"):
@@ -276,7 +276,7 @@ class TestCodeQualityMetrics:
             rel_path = str(file_path.relative_to(PROJECT_ROOT))
 
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 # Check module docstring
@@ -376,7 +376,7 @@ class TestCodeQualityMetrics:
         """
         print("\n=== IMPORT ORGANIZATION VALIDATION ===")
 
-        import_violations: List[Dict[str, str]] = []
+        import_violations: list[dict[str, str]] = []
 
         # Analyze all Python files
         for file_path in PROJECT_ROOT.rglob("*.py"):
@@ -401,7 +401,7 @@ class TestCodeQualityMetrics:
             rel_path = str(file_path.relative_to(PROJECT_ROOT))
 
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     lines = f.readlines()
 
                 # Check import organization

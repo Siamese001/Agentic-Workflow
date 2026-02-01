@@ -1,9 +1,10 @@
 # tests/guardian/test_core_components_comprehensive.py
-import pytest
-import tempfile
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
+
+import pytest
 
 GUARDIAN_TEST = Path(__file__).parent / "test_core_components.py"
 
