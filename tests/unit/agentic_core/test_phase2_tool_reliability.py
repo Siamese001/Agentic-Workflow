@@ -578,14 +578,16 @@ class TestEdgeCases:
 
     def test_delay_calculation_respects_max(self, reliability_agent):
         """Test delay calculation respects maximum."""
+        # Configure with valid parameters where max > base
         reliability_agent.configure_tool_retry(
             "test_tool",
-            base_delay_seconds=10.0,
+            base_delay_seconds=1.0,
             max_delay_seconds=5.0,
             exponential_base=2.0,
             jitter=False,
         )
 
+        # After 5 attempts: 1.0 * 2^5 = 32.0, but should be capped at 5.0
         delay = reliability_agent._calculate_delay("test_tool", 5)
         assert delay <= 5.0
 

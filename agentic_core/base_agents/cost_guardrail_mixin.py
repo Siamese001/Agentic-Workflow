@@ -160,7 +160,24 @@ class CostGuardrailMixin:
             max_recursive_depth: Maximum recursive call depth
             max_loop_iterations: Maximum iterations in a loop
             alert_threshold_pct: Percentage of budget at which to alert (0.0-1.0)
+
+        Raises:
+            ValueError: If any parameter is invalid (negative or out of range)
         """
+        # [HARDENING] Validate all inputs before applying
+        if max_tokens_per_request is not None and max_tokens_per_request <= 0:
+            raise ValueError("max_tokens_per_request must be positive")
+        if max_tokens_per_session is not None and max_tokens_per_session <= 0:
+            raise ValueError("max_tokens_per_session must be positive")
+        if max_cost_per_session_usd is not None and max_cost_per_session_usd <= 0:
+            raise ValueError("max_cost_per_session_usd must be positive")
+        if max_recursive_depth is not None and max_recursive_depth <= 0:
+            raise ValueError("max_recursive_depth must be positive")
+        if max_loop_iterations is not None and max_loop_iterations <= 0:
+            raise ValueError("max_loop_iterations must be positive")
+        if alert_threshold_pct is not None and not (0.0 < alert_threshold_pct <= 1.0):
+            raise ValueError("alert_threshold_pct must be between 0.0 and 1.0")
+
         with self._cost_lock:
             if max_tokens_per_request is not None:
                 self._budget_config.max_tokens_per_request = max_tokens_per_request
