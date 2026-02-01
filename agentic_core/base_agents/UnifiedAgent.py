@@ -431,9 +431,21 @@ class HealingStrategy(BaseStrategy):
         """Heal repository violations."""
         import asyncio
 
-        result = asyncio.get_event_loop().run_until_complete(
-            self.execute(agent, dry_run=dry_run, **kwargs)
-        )
+        # Handle case where event loop is already running (e.g., in pytest-asyncio)
+        try:
+            asyncio.get_running_loop()
+            # If we're in a running loop, create a new task
+            import concurrent.futures
+
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(
+                    asyncio.run, self.execute(agent, dry_run=dry_run, **kwargs)
+                )
+                result = future.result()
+        except RuntimeError:
+            # No running loop, safe to use run_until_complete
+            result = asyncio.run(self.execute(agent, dry_run=dry_run, **kwargs))
+
         return result.to_dict()
 
 
