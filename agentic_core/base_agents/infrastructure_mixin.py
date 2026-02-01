@@ -36,6 +36,7 @@ from agentic_core.base_agents.context_management_mixin import ContextManagementM
 from agentic_core.base_agents.cost_guardrail_mixin import CostGuardrailMixin
 from agentic_core.base_agents.healer_mixin import HealerMixin
 from agentic_core.base_agents.hitl_mixin import HITLMixin
+from agentic_core.base_agents.performance_mixin import PerformanceMixin
 from agentic_core.base_agents.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.base_agents.tool_reliability_mixin import ToolReliabilityMixin
@@ -50,6 +51,7 @@ class InfrastructureMixin(
     ContextManagementMixin,  # [PHASE 1] Context standardization and overflow prevention
     ToolReliabilityMixin,  # [PHASE 2] Retry logic and fallback mechanisms
     HITLMixin,  # [PHASE 3] Human-in-the-loop approval workflows
+    PerformanceMixin,  # [PHASE 4] Caching, lazy init, performance monitoring
     PineconeVectorMixin,  # [PHASE 2] Vector memory (existing)
     HealerMixin,
     MCPHardenedMixin,
@@ -64,18 +66,19 @@ class InfrastructureMixin(
     2. Context management (ContextManagementMixin) [PHASE 1 Jan 2026]
     3. Tool reliability (ToolReliabilityMixin) [PHASE 2 Feb 2026]
     4. Human-in-the-loop (HITLMixin) [PHASE 3 Feb 2026]
-    5. Vector memory (PineconeVectorMixin) [PHASE 2 Feb 2026]
-    6. Healing capabilities (HealerMixin)
-    7. MCP hardening (MCPHardenedMixin)
-    8. Subatomic testing (SubatomicTestingMixin)
-    9. Distributed tracing (TracingMixin) [PHASE 2 Feb 2026]
-    10. State verification to catch initialization failures
+    5. Performance optimization (PerformanceMixin) [PHASE 4 Feb 2026]
+    6. Vector memory (PineconeVectorMixin) [PHASE 2 Feb 2026]
+    7. Healing capabilities (HealerMixin)
+    8. MCP hardening (MCPHardenedMixin)
+    9. Subatomic testing (SubatomicTestingMixin)
+    10. Distributed tracing (TracingMixin) [PHASE 2 Feb 2026]
+    11. State verification to catch initialization failures
 
     MRO Order (L0 DNA Flattening):
         ConcreteAgent -> infrastructure_mixin -> CostGuardrailMixin ->
         ContextManagementMixin -> ToolReliabilityMixin -> HITLMixin ->
-        PineconeVectorMixin -> HealerMixin -> MCPHardenedMixin ->
-        SubatomicTestingMixin -> TracingMixin -> object
+        PerformanceMixin -> PineconeVectorMixin -> HealerMixin ->
+        MCPHardenedMixin -> SubatomicTestingMixin -> TracingMixin -> object
 
     Critical Requirements:
         - Subclasses MUST call super().__init__() in their __init__
