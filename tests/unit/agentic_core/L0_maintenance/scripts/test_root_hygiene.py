@@ -6,7 +6,7 @@ Rationale:
 
 import pytest
 
-from agentic_core.L0_maintenance.scripts.RootHygieneEnforcer import enforce_root_hygiene
+from agentic_core.L0_maintenance.scripts.root_hygiene_enforcer import enforce_root_hygiene
 
 
 @pytest.fixture

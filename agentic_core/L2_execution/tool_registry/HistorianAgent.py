@@ -42,7 +42,7 @@ def _lazy_load_git():
 
 
 try:
-    from watchdog.events import FileSystemEventHandler
+    from watchdog.events import FileSystemEventhandler
 
     WATCHDOG_AVAILABLE = True
 except ImportError:

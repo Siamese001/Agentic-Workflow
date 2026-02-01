@@ -207,7 +207,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
+from agentic_core.base_agents.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from dotenv import load_dotenv
 
 @dataclass

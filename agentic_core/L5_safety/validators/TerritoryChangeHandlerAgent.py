@@ -15,7 +15,7 @@ from typing import Any
 
 # Required for File System Watching
 try:
-    from watchdog.events import FileSystemEventHandler
+    from watchdog.events import FileSystemEventhandler
     from watchdog.observers import Observer
 except ImportError:
     Observer = object

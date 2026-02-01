@@ -30,7 +30,7 @@ Logger = logging.getLogger(__name__)
 
 # L5 Watchman: File System Monitoring
 try:
-    from watchdog.events import FileSystemEventHandler
+    from watchdog.events import FileSystemEventhandler
     from watchdog.observers import Observer
 
     WATCHDOG_AVAILABLE = True
@@ -72,7 +72,6 @@ def _get_imports():
         approval_event,
         start_intervention_server,
     )
-    from agentic_core.L2_execution.tool_registry.infrastructure import WatchmanHandler
 
     # GRAVITY FIX: Removed all scripts.CanonValidatorAgent imports
     # These agents need to be moved to agentic_core or refactored

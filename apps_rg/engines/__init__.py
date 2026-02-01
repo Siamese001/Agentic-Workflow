@@ -41,7 +41,7 @@ from .RgTemplateOptimizerAgent import RgTemplateOptimizerAgent
 # from .schema import ProviderType, RouteConfig, RouterConfig, RouteResult, RoutingTier
 from .SectionBalanceAgent import SectionBalanceAgent
 
-# from .strategist_biowriter import StrategistBioWriter
+# from .strategist_biowriter import strategist_bio_writer
 
 # [Diff End]
 

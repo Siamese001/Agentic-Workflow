@@ -37,7 +37,7 @@ def test_root_end_guarantee():
     test_cases = [
         (
             "L0MaintenanceBaseAgent",
-            "agentic_core.L0_maintenance.scripts.L0MaintenanceBaseAgent",
+            "agentic_core.base_agents.L0MaintenanceBaseAgent",
             "L0MaintenanceBaseAgent",
         ),
         (
