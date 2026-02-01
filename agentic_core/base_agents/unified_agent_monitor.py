@@ -45,6 +45,9 @@ class AggregatedMetrics:
     max_execution_time_ms: float = 0.0
     executions_by_category: dict[str, int] = field(default_factory=dict)
     executions_by_strategy: dict[str, int] = field(default_factory=dict)
+    # Phase 4: Facade migration tracking
+    facade_executions: int = 0
+    facade_agents: dict[str, int] = field(default_factory=dict)
 
 
 class UnifiedAgentMonitor:
@@ -101,6 +104,30 @@ class UnifiedAgentMonitor:
         self._metrics.append(metric)
         self._update_aggregated(metric)
 
+    def record_facade_execution(
+        self,
+        facade_agent: str,
+        strategy_type: str,
+        execution_time_ms: float,
+        success: bool,
+    ) -> None:
+        """Record a facade agent execution for migration monitoring."""
+        self._aggregated.facade_executions += 1
+
+        if facade_agent not in self._aggregated.facade_agents:
+            self._aggregated.facade_agents[facade_agent] = 0
+        self._aggregated.facade_agents[facade_agent] += 1
+
+        # Also record as regular execution
+        self.record_execution(
+            agent_name=facade_agent,
+            category="facade",
+            strategy_type=strategy_type,
+            execution_time_ms=execution_time_ms,
+            success=success,
+            metadata={"is_facade": True},
+        )
+
     def _update_aggregated(self, metric: ExecutionMetrics) -> None:
         """Update aggregated metrics."""
         self._aggregated.total_executions += 1
@@ -154,6 +181,37 @@ class UnifiedAgentMonitor:
             "avg_execution_time_ms": self._aggregated.avg_execution_time_ms,
             "categories_active": list(self._aggregated.executions_by_category.keys()),
             "strategies_active": list(self._aggregated.executions_by_strategy.keys()),
+            # Phase 4: Facade migration metrics
+            "facade_executions": self._aggregated.facade_executions,
+            "facade_agents_active": list(self._aggregated.facade_agents.keys()),
+        }
+
+    def get_facade_migration_status(self) -> dict[str, Any]:
+        """Get facade migration status for Phase 4 monitoring."""
+        converted_facades = [
+            "StructureHealerAgent",
+            "CodeValidatorAgent",
+            "StructuralValidatorAgent",
+            "LocationHealerAgent",
+        ]
+
+        facade_usage = {
+            agent: self._aggregated.facade_agents.get(agent, 0) for agent in converted_facades
+        }
+
+        total_facade_calls = sum(facade_usage.values())
+
+        return {
+            "migration_phase": "Phase 4 - Monitoring",
+            "converted_facades": converted_facades,
+            "facade_usage": facade_usage,
+            "total_facade_calls": total_facade_calls,
+            "facades_with_activity": [agent for agent, count in facade_usage.items() if count > 0],
+            "migration_health": (
+                "healthy"
+                if total_facade_calls > 0 or self._aggregated.total_executions == 0
+                else "no_facade_activity"
+            ),
         }
 
     def get_recent_metrics(self, count: int = 100) -> list[ExecutionMetrics]:

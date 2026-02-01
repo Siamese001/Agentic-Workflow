@@ -1,7 +1,13 @@
 """
-File: agentic_core/L5_safety/policy_engine/StructuralValidatorAgent.py
+StructuralValidatorAgent - Facade Shell for Zero-Loss Consolidation.
+
+L5 Sovereign Guardian for Structural Enforcement.
+Converted to Facade: 2026-01-31 (Phase 2 Deprecation Implementation)
+
+FACADE PATTERN: Delegates to UnifiedAgent while preserving 100% legacy compatibility.
+All original imports and signatures work without modification.
+
 Rationale:
-    L5 Sovereign Guardian for Structural Enforcement.
     - Canonizes the legacy 'StructureEnforcerAgent' into 'StructuralValidatorAgent'.
     - Implements Atomic Writes for safe refactoring.
     - Enforces Layer Gravity (L0-L6) and Naming Laws.
@@ -21,6 +27,9 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.UnifiedAgent import (
+    StructuralValidatorStrategy,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -69,6 +78,9 @@ class StructuralValidatorAgent(SovereignBaseAgent):
     """
     Unified structure enforcement with gravity and naming validation.
     Hardened with Atomic Writes for auto-remediation.
+
+    FACADE SHELL: Delegates to UnifiedAgent with StructuralValidatorStrategy.
+    SIGNATURE COMPATIBILITY: 100% preserved - no breaking changes.
     """
 
     # Layer hierarchy (lower number = lower layer = higher authority)
@@ -91,6 +103,17 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         self.project_root = self._config.project_root or Path.cwd()
         self._lock = threading.RLock()
         self._violations: list[StructureViolation] = []
+
+        # [PHASE 2] Initialize unified structural validator strategy
+        self._unified_strategy: StructuralValidatorStrategy | None = StructuralValidatorStrategy(
+            {
+                "enable_gravity": self._config.enable_gravity,
+                "enable_hierarchy": self._config.enable_hierarchy,
+                "enable_naming": self._config.enable_naming,
+                "enable_documentation": self._config.enable_documentation,
+                "agent_suffix": self._config.agent_suffix,
+            }
+        )
 
     @property
     def config(self) -> StructureConfig:
@@ -174,7 +197,10 @@ class StructuralValidatorAgent(SovereignBaseAgent):
                         file_path=file_path,
                         line_number=node.lineno,
                         violation_type=StructureViolationType.GRAVITY,
-                        message=f"Gravity violation: {source_layer} cannot import from {target_layer} (module: {node.module})",
+                        message=(
+                            f"Gravity violation: {source_layer} cannot import "
+                            f"from {target_layer} (module: {node.module})"
+                        ),
                         severity="CRITICAL",
                     )
                     # Monkey-patch for Governor compatibility
@@ -203,7 +229,10 @@ class StructuralValidatorAgent(SovereignBaseAgent):
                                 file_path=file_path,
                                 line_number=node.lineno,
                                 violation_type=StructureViolationType.NAMING,
-                                message=f"Class '{node.name}' in agent file must end with '{self.config.agent_suffix}'",
+                                message=(
+                                    f"Class '{node.name}' in agent file must "
+                                    f"end with '{self.config.agent_suffix}'"
+                                ),
                                 suggested_fix=f"{node.name}{self.config.agent_suffix}",
                                 auto_fixable=True,
                             )

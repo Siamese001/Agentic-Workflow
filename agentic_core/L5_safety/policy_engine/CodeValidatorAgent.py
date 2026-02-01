@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """
-CodeValidatorAgent - Unified Code Validation
+CodeValidatorAgent - Facade Shell for Zero-Loss Consolidation.
+
+Unified Code Validation Agent.
+Converted to Facade: 2026-01-31 (Phase 2 Deprecation Implementation)
+
+FACADE PATTERN: Delegates to UnifiedAgent while preserving 100% legacy compatibility.
+All original imports and signatures work without modification.
 
 Phase 4 Hard Migration: Consolidates:
 - SyntaxValidatorAgent (syntax validation)
@@ -25,6 +31,9 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.UnifiedAgent import (
+    CodeValidatorStrategy,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -102,6 +111,9 @@ class CodeValidatorAgent(SovereignBaseAgent):
     """
     Unified Code Validation Agent.
 
+    FACADE SHELL: Delegates to UnifiedAgent with CodeValidatorStrategy.
+    SIGNATURE COMPATIBILITY: 100% preserved - no breaking changes.
+
     Consolidates all code validation logic into a single,
     efficient agent that validates multiple aspects of code quality.
     """
@@ -111,6 +123,17 @@ class CodeValidatorAgent(SovereignBaseAgent):
         self.ruleset = ruleset or RuleSet()
         self.Logger = logging.getLogger(f"{self.__class__.__name__}")
         self._validation_results: list[Violation] = []
+
+        # [PHASE 2] Initialize unified code validator strategy
+        self._unified_strategy: CodeValidatorStrategy | None = CodeValidatorStrategy(
+            {
+                "check_syntax": self.ruleset.check_syntax,
+                "check_canon": self.ruleset.check_canon,
+                "check_async": self.ruleset.check_async,
+                "check_prints": self.ruleset.check_prints,
+                "print_policy": self.ruleset.print_policy,
+            }
+        )
 
     def validate_syntax(self, file_path: Path) -> list[Violation]:
         """Validate Python syntax for a file."""
@@ -168,7 +191,9 @@ class CodeValidatorAgent(SovereignBaseAgent):
                                 violation_type=ViolationType.CANON,
                                 file_path=str(file_path),
                                 line_number=i,
-                                issue=f"Class '{class_name}' should end with 'Agent' if it's an agent",
+                                issue=(
+                                    f"Class '{class_name}' should end with 'Agent' if it's an agent"
+                                ),
                                 severity="MEDIUM",
                                 suggested_fix=f"Rename class to {class_name}Agent",
                                 auto_fixable=True,

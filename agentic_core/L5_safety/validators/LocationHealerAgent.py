@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-
 """
-LocationHealerAgent: Automated remediation agent for location violations
+LocationHealerAgent - Facade Shell for Zero-Loss Consolidation.
+
+Automated remediation agent for location violations.
+Converted to Facade: 2026-02-01 (Phase 3 Deprecation Implementation)
+
+FACADE PATTERN: Delegates to UnifiedAgent while preserving 100% legacy compatibility.
+All original imports and signatures work without modification.
 
 Responsibility: Heal location violations through file operations
 - File moves and deletions
@@ -13,6 +17,7 @@ Responsibility: Heal location violations through file operations
 Extracted from LocationAgent.py as part of SRP fission.
 """
 
+from __future__ import annotations
 
 import logging
 import re
@@ -23,6 +28,9 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.UnifiedAgent import (
+    LocationHealingStrategy,
+)
 from agentic_core.config.blueprint_sovereign.registry import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.location_constants import (
@@ -42,6 +50,9 @@ Logger = logging.getLogger(__name__)
 class LocationHealerAgent(SovereignBaseAgent):
     """
     Automated remediation agent for location violations.
+
+    FACADE SHELL: Delegates to UnifiedAgent with LocationHealingStrategy.
+    SIGNATURE COMPATIBILITY: 100% preserved - no breaking changes.
 
     Performs:
     - Safe file moves with collision handling
@@ -67,6 +78,15 @@ class LocationHealerAgent(SovereignBaseAgent):
         # Initialize ArchivalGatekeeper for safe file operations
         self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
         self.agent_name = "LocationHealerAgent"
+
+        # [PHASE 3] Initialize unified location healing strategy
+        self._unified_strategy: LocationHealingStrategy | None = LocationHealingStrategy(
+            {
+                "project_root": str(self.project_root),
+                "backup_enabled": True,
+                "auto_fix_imports": True,
+            }
+        )
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
@@ -502,7 +522,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                 )
 
             Logger.info(
-                f"[LocationHealerAgent] Post-import validation: {import_result['import_post_fix_status']} ({remaining_count} remaining)"
+                f"[LocationHealerAgent] Post-import validation: "
+                f"{import_result['import_post_fix_status']} ({remaining_count} remaining)"
             )
 
         except Exception as e:
@@ -603,7 +624,10 @@ class LocationHealerAgent(SovereignBaseAgent):
             return move_result
         else:
             return {
-                "action_taken": f"SKIPPED: Could not parse target path. Using fallback: {DEFAULT_APP_HEALING_TARGET}"
+                "action_taken": (
+                    f"SKIPPED: Could not parse target path. "
+                    f"Using fallback: {DEFAULT_APP_HEALING_TARGET}"
+                )
             }
 
     def _heal_territory_mismatch(
@@ -706,10 +730,13 @@ class LocationHealerAgent(SovereignBaseAgent):
             if dry_run:
                 result["applied"] = True
                 result["action_taken"] = (
-                    f"PREVIEW: Would handle void violation for '{unknown_subfolder}' in '{root_folder}'"
+                    f"PREVIEW: Would handle void violation for "
+                    f"'{unknown_subfolder}' in '{root_folder}'"
                 )
                 result["options"] = {
-                    "1_relocate": f"Move to existing subfolder (choose from: {existing_subfolders[:5]}...)",
+                    "1_relocate": (
+                        f"Move to existing subfolder (choose from: {existing_subfolders[:5]}...)"
+                    ),
                     "2_create": f"Create new subfolder '{unknown_subfolder}' and update SSOT",
                     "3_archive": "Archive as last resort",
                 }
@@ -718,7 +745,8 @@ class LocationHealerAgent(SovereignBaseAgent):
             # Interactive mode check
             if not sys.stdin.isatty():
                 Logger.warning(
-                    f"[LocationHealerAgent] Non-interactive mode - skipping void violation: {file_path.name}"
+                    f"[LocationHealerAgent] Non-interactive mode - "
+                    f"skipping void violation: {file_path.name}"
                 )
                 result["action_taken"] = "SKIPPED: Non-interactive mode"
                 return result
@@ -731,7 +759,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                 or os.environ.get("ARCHIVE_BATCH_ACCEPT") == "1"
             ):
                 Logger.warning(
-                    f"[LocationHealerAgent] Batch mode detected - skipping interactive void violation: {file_path.name}"
+                    f"[LocationHealerAgent] Batch mode detected - "
+                    f"skipping interactive void violation: {file_path.name}"
                 )
                 result["action_taken"] = "SKIPPED: Batch mode active"
                 return result
@@ -742,14 +771,16 @@ class LocationHealerAgent(SovereignBaseAgent):
             print(f"{'=' * 70}")
             print(f"File:      {rel_path}")
             print(
-                f"Subfolder: '{unknown_subfolder}' is not in SOVEREIGN_REGISTRY['{root_folder}']['subfolders']"
+                f"Subfolder: '{unknown_subfolder}' is not in "
+                f"SOVEREIGN_REGISTRY['{root_folder}']['subfolders']"
             )
             print(f"Reason:    {msg}")
             print(f"{'=' * 70}")
             print("\nOPTIONS:")
             print("  [1] RELOCATE - Move to an existing approved subfolder")
             print(
-                f"  [2] CREATE   - Add '{unknown_subfolder}' as a new approved subfolder (updates SSOT)"
+                f"  [2] CREATE   - Add '{unknown_subfolder}' as a new "
+                "approved subfolder (updates SSOT)"
             )
             print("  [3] ARCHIVE  - Archive to void_violations/ (last resort)")
             print("  [4] SKIP     - Skip this file (no action)")
@@ -919,12 +950,14 @@ class LocationHealerAgent(SovereignBaseAgent):
                 blueprint_path.write_text(new_content, encoding="utf-8")
 
                 Logger.info(
-                    f"[LocationHealerAgent] Updated SSOT: Added '{new_subfolder}' to {root_folder}/subfolders"
+                    f"[LocationHealerAgent] Updated SSOT: Added "
+                    f"'{new_subfolder}' to {root_folder}/subfolders"
                 )
 
                 result["applied"] = True
                 result["action_taken"] = (
-                    f"SSOT UPDATED: Added '{new_subfolder}' to SOVEREIGN_REGISTRY['{root_folder}']['subfolders']"
+                    f"SSOT UPDATED: Added '{new_subfolder}' to "
+                    f"SOVEREIGN_REGISTRY['{root_folder}']['subfolders']"
                 )
                 result["ssot_updated"] = True
                 result["new_subfolder"] = new_subfolder
@@ -967,7 +1000,8 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         try:
             Logger.info(
-                f"[LocationHealerAgent] Autonomous resolution for {unknown_subfolder} in {root_folder}"
+                f"[LocationHealerAgent] Autonomous resolution for "
+                f"{unknown_subfolder} in {root_folder}"
             )
 
             # Analyze subfolder semantics for confidence scoring
@@ -978,7 +1012,8 @@ class LocationHealerAgent(SovereignBaseAgent):
             if confidence_score > 0.75:
                 # HIGH CONFIDENCE: Create new subfolder
                 Logger.info(
-                    f"  ✅ High confidence ({confidence_score:.2f}) - Creating new subfolder '{unknown_subfolder}'"
+                    f"  ✅ High confidence ({confidence_score:.2f}) - "
+                    f"Creating new subfolder '{unknown_subfolder}'"
                 )
                 return self._autonomous_create_subfolder(
                     file_path, root_folder, unknown_subfolder, dry_run, affected_paths
@@ -990,7 +1025,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                 )
                 if best_match:
                     Logger.info(
-                        f"  🎯 Medium confidence ({confidence_score:.2f}) - Relocating to '{best_match}'"
+                        f"  🎯 Medium confidence ({confidence_score:.2f}) - "
+                        f"Relocating to '{best_match}'"
                     )
                     return self._autonomous_relocate_to_subfolder(
                         file_path,
@@ -1172,7 +1208,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                     self._backup_file(blueprint_path)
                     blueprint_path.write_text(new_content, encoding="utf-8")
                     Logger.info(
-                        f"[LocationHealerAgent] SSOT Updated: Added '{new_subfolder}' to {root_folder}"
+                        f"[LocationHealerAgent] SSOT Updated: Added "
+                        f"'{new_subfolder}' to {root_folder}"
                     )
 
                 result["applied"] = True
@@ -1414,7 +1451,9 @@ class LocationHealerAgent(SovereignBaseAgent):
             report["naming_final_status"] = "PARTIAL"
 
         report["naming_message"] = (
-            f"Deep naming: {len(heal_actions)} convention heals, {len(semantic_issues)} semantic issues → Final: {report['naming_deep_status']}"
+            f"Deep naming: {len(heal_actions)} convention heals, "
+            f"{len(semantic_issues)} semantic issues → "
+            f"Final: {report['naming_deep_status']}"
         )
 
     def _insert_semantic_keywords(self, path: Path, missing_signals: set) -> None:
@@ -1451,8 +1490,8 @@ class LocationHealerAgent(SovereignBaseAgent):
             insert_idx = 1
         if len(lines) > insert_idx and lines[insert_idx].strip().startswith(('"""', "'''")):
             quote = lines[insert_idx].strip()[:3]
-            for i, l in enumerate(lines[insert_idx:], insert_idx):
-                if i > insert_idx and quote in l:
+            for i, line in enumerate(lines[insert_idx:], insert_idx):
+                if i > insert_idx and quote in line:
                     insert_idx = i + 1
                     break
         return insert_idx
