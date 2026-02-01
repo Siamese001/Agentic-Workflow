@@ -37,6 +37,7 @@ from agentic_core.base_agents.cost_guardrail_mixin import CostGuardrailMixin
 from agentic_core.base_agents.healer_mixin import HealerMixin
 from agentic_core.base_agents.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.tool_reliability_mixin import ToolReliabilityMixin
 from agentic_core.base_agents.tracing_mixin import TracingMixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 
@@ -46,11 +47,12 @@ Logger = logging.getLogger(__name__)
 class InfrastructureMixin(
     CostGuardrailMixin,  # [PHASE 1] Cost control and budget enforcement
     ContextManagementMixin,  # [PHASE 1] Context standardization and overflow prevention
-    PineconeVectorMixin,
+    ToolReliabilityMixin,  # [PHASE 2] Retry logic and fallback mechanisms
+    PineconeVectorMixin,  # [PHASE 2] Vector memory (existing)
     HealerMixin,
     MCPHardenedMixin,
     SubatomicTestingMixin,
-    TracingMixin,  # [ENFORCED] Root-level observability
+    TracingMixin,  # [PHASE 2] Distributed tracing (existing)
 ):
     """
     Unified infrastructure mixin combining all standard agent capabilities.
@@ -58,16 +60,19 @@ class InfrastructureMixin(
     This mixin provides:
     1. Cost guardrails (CostGuardrailMixin) [PHASE 1 Jan 2026]
     2. Context management (ContextManagementMixin) [PHASE 1 Jan 2026]
-    3. Healing capabilities (HealerMixin)
-    4. MCP hardening (MCPHardenedMixin)
-    5. Subatomic testing (SubatomicTestingMixin)
-    6. Distributed tracing (TracingMixin) [INJECTED Jan 2026]
-    7. State verification to catch initialization failures
+    3. Tool reliability (ToolReliabilityMixin) [PHASE 2 Feb 2026]
+    4. Vector memory (PineconeVectorMixin) [PHASE 2 Feb 2026]
+    5. Healing capabilities (HealerMixin)
+    6. MCP hardening (MCPHardenedMixin)
+    7. Subatomic testing (SubatomicTestingMixin)
+    8. Distributed tracing (TracingMixin) [PHASE 2 Feb 2026]
+    9. State verification to catch initialization failures
 
     MRO Order (L0 DNA Flattening):
         ConcreteAgent -> infrastructure_mixin -> CostGuardrailMixin ->
-        ContextManagementMixin -> HealerMixin -> MCPHardenedMixin ->
-        SubatomicTestingMixin -> TracingMixin -> object
+        ContextManagementMixin -> ToolReliabilityMixin -> PineconeVectorMixin ->
+        HealerMixin -> MCPHardenedMixin -> SubatomicTestingMixin ->
+        TracingMixin -> object
 
     Critical Requirements:
         - Subclasses MUST call super().__init__() in their __init__
