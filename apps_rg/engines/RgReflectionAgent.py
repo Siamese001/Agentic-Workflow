@@ -3,20 +3,35 @@ RgReflectionAgent - Extracted for one-class-per-file pattern.
 
 Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
+
+PHASE 5 META-LEARNING (Feb 2026):
+- Redis/Pinecone integration for reflection pattern memory
+- Execution insight caching and recall
+- Quality pattern learning for resume generation
+- Cross-session learning persistence
 """
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Any
 
 from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
+
+Logger = logging.getLogger(__name__)
 
 
 @dataclass
 class RgReflectionAgent(RGAgentBase):
     """
     Learns from execution and records insights.
+
+    [PHASE 5] Meta-Learning Integration:
+    - Caches execution insights for future recall
+    - Learns quality patterns from successful generations
+    - Persists learning across sessions via Redis/Pinecone
+    - Domain-specific pattern matching (apps_rg)
 
     Analyzes:
     - What worked
@@ -27,6 +42,7 @@ class RgReflectionAgent(RGAgentBase):
     def __post_init__(self) -> None:
         """Initialize reflection agent."""
         super().__post_init__()
+        Logger.debug(f"[{self.__class__.__name__}] Meta-Learning reflection agent initialized")
 
     async def execute(self) -> None:
         """
@@ -103,3 +119,117 @@ class RgReflectionAgent(RGAgentBase):
                 "artifacts": [],
                 "errors": [str(e)],
             }
+
+    # ==================== PHASE 5: META-LEARNING METHODS ====================
+
+    def ml_cache_execution_insight(
+        self,
+        insight_id: str,
+        insight_data: dict[str, Any],
+    ) -> bool:
+        """
+        Cache an execution insight for future recall.
+
+        Args:
+            insight_id: Unique insight identifier
+            insight_data: Insight data (cycle, signals, outcome, etc.)
+
+        Returns:
+            True if cached successfully
+        """
+        cache_key = f"execution_insight:{insight_id}"
+        return self.ml_cache_set(cache_key, insight_data)
+
+    def ml_recall_execution_insight(
+        self,
+        insight_id: str,
+    ) -> dict[str, Any] | None:
+        """
+        Recall a cached execution insight.
+
+        Args:
+            insight_id: Unique insight identifier
+
+        Returns:
+            Cached insight data or None
+        """
+        cache_key = f"execution_insight:{insight_id}"
+        return self.ml_cache_get(cache_key)
+
+    def ml_cache_quality_pattern(
+        self,
+        pattern_id: str,
+        pattern_data: dict[str, Any],
+    ) -> bool:
+        """
+        Cache a successful quality pattern.
+
+        Args:
+            pattern_id: Unique pattern identifier
+            pattern_data: Quality pattern data
+
+        Returns:
+            True if cached successfully
+        """
+        cache_key = f"quality_pattern:{pattern_id}"
+        return self.ml_cache_set(cache_key, pattern_data)
+
+    def ml_recall_quality_pattern(
+        self,
+        pattern_id: str,
+    ) -> dict[str, Any] | None:
+        """
+        Recall a cached quality pattern.
+
+        Args:
+            pattern_id: Unique pattern identifier
+
+        Returns:
+            Cached pattern data or None
+        """
+        cache_key = f"quality_pattern:{pattern_id}"
+        return self.ml_cache_get(cache_key)
+
+    def ml_record_reflection_success(
+        self,
+        context_hash: str,
+        insights: dict[str, Any],
+        quality_score: float,
+    ) -> bool:
+        """
+        Record a successful reflection for future learning.
+
+        Args:
+            context_hash: Hash of the execution context
+            insights: Reflection insights
+            quality_score: Quality score achieved
+
+        Returns:
+            True if recorded successfully
+        """
+        if quality_score >= 0.7:  # Only cache high-quality reflections
+            cache_key = f"reflection_success:{context_hash}"
+            return self.ml_cache_set(
+                cache_key,
+                {
+                    "insights": insights,
+                    "quality_score": quality_score,
+                },
+            )
+        return False
+
+    def ml_recall_similar_reflection(
+        self,
+        context_hash: str,
+    ) -> dict[str, Any] | None:
+        """
+        Recall a similar successful reflection.
+
+        Args:
+            context_hash: Hash of the execution context
+
+        Returns:
+            Cached reflection data or None
+        """
+        cache_key = f"reflection_success:{context_hash}"
+        return self.ml_cache_get(cache_key)
