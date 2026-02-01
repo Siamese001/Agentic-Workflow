@@ -35,6 +35,7 @@ from typing import Any
 from agentic_core.base_agents.context_management_mixin import ContextManagementMixin
 from agentic_core.base_agents.cost_guardrail_mixin import CostGuardrailMixin
 from agentic_core.base_agents.healer_mixin import HealerMixin
+from agentic_core.base_agents.hitl_mixin import HITLMixin
 from agentic_core.base_agents.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.base_agents.tool_reliability_mixin import ToolReliabilityMixin
@@ -48,6 +49,7 @@ class InfrastructureMixin(
     CostGuardrailMixin,  # [PHASE 1] Cost control and budget enforcement
     ContextManagementMixin,  # [PHASE 1] Context standardization and overflow prevention
     ToolReliabilityMixin,  # [PHASE 2] Retry logic and fallback mechanisms
+    HITLMixin,  # [PHASE 3] Human-in-the-loop approval workflows
     PineconeVectorMixin,  # [PHASE 2] Vector memory (existing)
     HealerMixin,
     MCPHardenedMixin,
@@ -61,18 +63,19 @@ class InfrastructureMixin(
     1. Cost guardrails (CostGuardrailMixin) [PHASE 1 Jan 2026]
     2. Context management (ContextManagementMixin) [PHASE 1 Jan 2026]
     3. Tool reliability (ToolReliabilityMixin) [PHASE 2 Feb 2026]
-    4. Vector memory (PineconeVectorMixin) [PHASE 2 Feb 2026]
-    5. Healing capabilities (HealerMixin)
-    6. MCP hardening (MCPHardenedMixin)
-    7. Subatomic testing (SubatomicTestingMixin)
-    8. Distributed tracing (TracingMixin) [PHASE 2 Feb 2026]
-    9. State verification to catch initialization failures
+    4. Human-in-the-loop (HITLMixin) [PHASE 3 Feb 2026]
+    5. Vector memory (PineconeVectorMixin) [PHASE 2 Feb 2026]
+    6. Healing capabilities (HealerMixin)
+    7. MCP hardening (MCPHardenedMixin)
+    8. Subatomic testing (SubatomicTestingMixin)
+    9. Distributed tracing (TracingMixin) [PHASE 2 Feb 2026]
+    10. State verification to catch initialization failures
 
     MRO Order (L0 DNA Flattening):
         ConcreteAgent -> infrastructure_mixin -> CostGuardrailMixin ->
-        ContextManagementMixin -> ToolReliabilityMixin -> PineconeVectorMixin ->
-        HealerMixin -> MCPHardenedMixin -> SubatomicTestingMixin ->
-        TracingMixin -> object
+        ContextManagementMixin -> ToolReliabilityMixin -> HITLMixin ->
+        PineconeVectorMixin -> HealerMixin -> MCPHardenedMixin ->
+        SubatomicTestingMixin -> TracingMixin -> object
 
     Critical Requirements:
         - Subclasses MUST call super().__init__() in their __init__
