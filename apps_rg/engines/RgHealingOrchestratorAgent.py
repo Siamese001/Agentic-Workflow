@@ -5,15 +5,24 @@ Originally from: SignalRouterAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 
 Orchestrates the complete self-healing process for resume generation.
+
+PHASE 4 META-LEARNING (Feb 2026):
+- MetaLearningClient integration for healing pattern memory
+- Healing cycle strategy caching and recall
+- Convergence pattern optimization via learned patterns
+- Healing depth tracking to prevent infinite loops
 """
 
 from __future__ import annotations
 
+import logging
 import time
 from dataclasses import dataclass, field
 from typing import Any
 
 from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
+
+Logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -23,6 +32,12 @@ class RgHealingOrchestratorAgent(RGAgentBase):
 
     Manages multiple healing cycles with convergence detection, budget tracking,
     and automatic rollback on critical failures.
+
+    [PHASE 4] Meta-Learning Integration:
+    - Caches successful healing strategies for future recall
+    - Learns optimal cycle strategies based on signal patterns
+    - Tracks healing depth to prevent infinite loops
+    - Domain-specific pattern matching (apps_rg)
 
     Attributes:
         ctx: Resume engine context containing resume state
@@ -43,6 +58,7 @@ class RgHealingOrchestratorAgent(RGAgentBase):
             from .context import ResumeEngineContext
 
             self.ctx = ResumeEngineContext()
+        Logger.debug(f"[{self.__class__.__name__}] Meta-Learning healing orchestrator initialized")
 
     async def run(self) -> dict[str, Any]:
         """
@@ -182,3 +198,113 @@ class RgHealingOrchestratorAgent(RGAgentBase):
                 "artifacts": [],
                 "errors": [str(e)],
             }
+
+    # ==================== PHASE 4: META-LEARNING HEALING ====================
+
+    def ml_determine_strategy(
+        self,
+        cycle_num: int,
+        signals: set[str],
+    ) -> str:
+        """
+        Determine optimal healing strategy using meta-learning.
+
+        Args:
+            cycle_num: Current cycle number
+            signals: Current active signals
+
+        Returns:
+            Strategy name
+        """
+        # Generate cache key from signals
+        signal_key = ":".join(sorted(signals)) if signals else "no_signals"
+        cache_key = f"strategy:{cycle_num}:{signal_key}"
+
+        # Try to recall a successful strategy
+        cached_strategy = self.ml_cache_get(cache_key)
+        if cached_strategy:
+            Logger.info(f"[{self.__class__.__name__}] Using cached strategy for cycle {cycle_num}")
+            return cached_strategy.get("strategy", "default")
+
+        # Fall back to default strategy
+        return "default"
+
+    def ml_record_strategy_success(
+        self,
+        cycle_num: int,
+        signals: set[str],
+        strategy: str,
+        result: dict[str, Any],
+    ) -> bool:
+        """
+        Record a successful strategy for future recall.
+
+        Args:
+            cycle_num: Cycle number
+            signals: Signals that were present
+            strategy: Strategy that was used
+            result: Result of the strategy
+
+        Returns:
+            True if recorded successfully
+        """
+        if result.get("converged", False) or result.get("status") == "success":
+            signal_key = ":".join(sorted(signals)) if signals else "no_signals"
+            cache_key = f"strategy:{cycle_num}:{signal_key}"
+            return self.ml_cache_set(
+                cache_key,
+                {
+                    "strategy": strategy,
+                    "converged": result.get("converged", False),
+                },
+            )
+        return False
+
+    def ml_cache_convergence_pattern(
+        self,
+        pattern_id: str,
+        pattern_data: dict[str, Any],
+    ) -> bool:
+        """
+        Cache a successful convergence pattern.
+
+        Args:
+            pattern_id: Unique pattern identifier
+            pattern_data: Convergence pattern data
+
+        Returns:
+            True if cached successfully
+        """
+        cache_key = f"convergence_pattern:{pattern_id}"
+        return self.ml_cache_set(cache_key, pattern_data)
+
+    def ml_recall_convergence_pattern(
+        self,
+        pattern_id: str,
+    ) -> dict[str, Any] | None:
+        """
+        Recall a cached convergence pattern.
+
+        Args:
+            pattern_id: Unique pattern identifier
+
+        Returns:
+            Cached pattern data or None
+        """
+        cache_key = f"convergence_pattern:{pattern_id}"
+        return self.ml_cache_get(cache_key)
+
+    def ml_heal_with_learning(
+        self,
+        violation: dict[str, Any],
+    ) -> dict[str, Any]:
+        """
+        Heal a violation using meta-learning enhanced strategy.
+
+        Args:
+            violation: The violation to heal
+
+        Returns:
+            Healing result dictionary
+        """
+        return self.ml_enhanced_heal(violation, lambda v, **kw: self.heal(v))
