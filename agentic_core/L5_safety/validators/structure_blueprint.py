@@ -271,7 +271,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
     "reports": {
         "depth": 2,
         "purpose": "Generated reports and analysis outputs.",
-        "subfolders": ["coverage_html", "telemetry", "audit"],
+        "subfolders": ["coverage_html", "telemetry", "audit", "plans"],
     },
     "scripts": {
         "depth": 2,
@@ -4140,6 +4140,19 @@ PROJECT_ROOT_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
         "notes": "Categorized documentation: technical, project, analysis, and guides",
         "file_patterns": ["*.md", "*.rst", "*.txt", "*.pdf", "*.docx", "*.html"],
         "keywords": ["doc", "guide", "manual", "readme", "tutorial", "specification"],
+    },
+    "reports": {
+        "purpose": "Generated reports, analysis outputs, and implementation plans",
+        "content_types": [
+            "coverage_reports",
+            "telemetry_data",
+            "audit_reports",
+            "implementation_plans",
+        ],
+        "execution_allowed": False,
+        "notes": "SSOT location for all implementation plans and generated reports",
+        "file_patterns": ["*.html", "*.json", "*.md", "*.xml", "*.csv"],
+        "keywords": ["report", "coverage", "telemetry", "audit", "plan", "implementation"],
     },
     "tests": {
         "purpose": "Test files and test data",
