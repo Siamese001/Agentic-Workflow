@@ -1,12 +1,12 @@
 ============================================================
 GUARDIAN ARCHITECTURAL HEALTH REPORT
 ============================================================
-Generated: 2026-02-01 22:46:01
+Generated: 2026-02-01 22:58:05
 Exit Status: PASS
 
 EXECUTION SUMMARY:
-  Total Tests Run: 20
-  Passed: 20
+  Total Tests Run: 54
+  Passed: 54
   Failed: 0
   Skipped: 0
 
