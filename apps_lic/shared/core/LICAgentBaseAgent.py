@@ -10,6 +10,11 @@ PHASE 1.1 GUARDRAILS INTEGRATION (Feb 2026):
 - MetaLearningGuardrails integration for security and safety
 - Cache poisoning protection, healing depth tracking
 - Domain isolation enforcement, rate limiting
+
+PHASE 2.1 META-LEARNING CLIENT (Feb 2026):
+- Full MetaLearningClient integration for Redis/Pinecone
+- Pattern storage and retrieval with semantic search
+- Healing pattern memory with domain isolation
 """
 
 from __future__ import annotations
@@ -26,6 +31,13 @@ from agentic_core.base_agents.AppBaseAgent import AppBaseAgent
 from agentic_core.L1_cognition.meta_learning.guardrails import (
     MetaLearningGuardrails,
     get_guardrails,
+)
+
+# PHASE 2.1: MetaLearningClient Integration
+from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+    MetaLearningClient,
+    HealingPattern,
+    get_meta_learning_client,
 )
 
 Logger = logging.getLogger(__name__)
@@ -80,6 +92,9 @@ class LICAgentBase(MetaLearningMixin, AppBaseAgent, HealerMixin):
     _guardrails: MetaLearningGuardrails = field(default=None, init=False)
     _lic_ttl: int = field(default=7200, init=False)  # 2 hours for LIC domain (longer campaigns)
 
+    # [PHASE 2.1] MetaLearningClient Integration
+    _meta_client: MetaLearningClient = field(default=None, init=False)
+
     def __post_init__(self) -> None:
         """
         Initialize LIC capabilities after Core hardening.
@@ -94,7 +109,13 @@ class LICAgentBase(MetaLearningMixin, AppBaseAgent, HealerMixin):
         # [PHASE 1.1] Initialize Guardrails with LIC-specific configuration
         self._initialize_guardrails()
 
-        Logger.debug(f"[{self.__class__.__name__}] LIC Meta-Learning activated with guardrails")
+        # [PHASE 2.1] Initialize MetaLearningClient
+        self._initialize_meta_client()
+
+        Logger.debug(
+            f"[{self.__class__.__name__}] LIC Meta-Learning activated with "
+            "guardrails and MetaLearningClient"
+        )
 
     def _initialize_guardrails(self) -> None:
         """Initialize guardrails with LIC-specific configuration (stricter thresholds)."""
@@ -106,6 +127,116 @@ class LICAgentBase(MetaLearningMixin, AppBaseAgent, HealerMixin):
             f"[{self.__class__.__name__}] Guardrails initialized "
             f"(threshold={self._similarity_threshold})"
         )
+
+    def _initialize_meta_client(self) -> None:
+        """Initialize MetaLearningClient with LIC-specific configuration."""
+        self._meta_client = get_meta_learning_client()
+        Logger.debug(f"[{self.__class__.__name__}] MetaLearningClient initialized")
+
+    # ==================== PHASE 2.1: META-LEARNING CLIENT METHODS ====================
+
+    def store_healing_pattern(
+        self,
+        violation: dict[str, Any],
+        healing_result: dict[str, Any],
+    ) -> str | None:
+        """
+        Store a successful healing pattern for future recall.
+
+        Args:
+            violation: The violation that was healed
+            healing_result: The successful healing result
+
+        Returns:
+            Pattern ID if stored successfully, None otherwise
+        """
+        if self._meta_client is None:
+            self._initialize_meta_client()
+
+        # Validate with guardrails
+        if not self.validate_domain_pattern({"domain": "apps_lic", **violation}):
+            return None
+
+        return self._meta_client.store_healing_pattern(violation, healing_result, domain="apps_lic")
+
+    def retrieve_healing_patterns(
+        self,
+        violation: dict[str, Any],
+        top_k: int = 3,
+    ) -> list[HealingPattern]:
+        """
+        Retrieve similar healing patterns for a violation.
+
+        Args:
+            violation: Current violation to find patterns for
+            top_k: Maximum number of patterns to retrieve
+
+        Returns:
+            List of similar healing patterns
+        """
+        if self._meta_client is None:
+            self._initialize_meta_client()
+
+        return self._meta_client.retrieve_healing_patterns(
+            violation,
+            domain="apps_lic",
+            top_k=top_k,
+            min_similarity=self._similarity_threshold,
+        )
+
+    def ml_check_healing_depth(self, violation_id: str) -> bool:
+        """
+        Check healing depth using MetaLearningClient.
+
+        Args:
+            violation_id: Unique violation identifier
+
+        Returns:
+            True if healing can proceed, False if depth limit reached
+        """
+        if self._meta_client is None:
+            self._initialize_meta_client()
+
+        return self._meta_client.check_healing_depth(self.__class__.__name__, violation_id)
+
+    def ml_increment_healing_depth(self, violation_id: str) -> int:
+        """
+        Increment healing depth using MetaLearningClient.
+
+        Args:
+            violation_id: Unique violation identifier
+
+        Returns:
+            Current depth after increment
+        """
+        if self._meta_client is None:
+            self._initialize_meta_client()
+
+        return self._meta_client.increment_healing_depth(self.__class__.__name__, violation_id)
+
+    def ml_reset_healing_depth(self, violation_id: str) -> None:
+        """
+        Reset healing depth after successful healing.
+
+        Args:
+            violation_id: Unique violation identifier
+        """
+        if self._meta_client is None:
+            self._initialize_meta_client()
+
+        self._meta_client.reset_healing_depth(self.__class__.__name__, violation_id)
+
+    def get_meta_learning_stats(self) -> dict[str, Any]:
+        """
+        Get meta-learning statistics for monitoring.
+
+        Returns:
+            Dictionary with meta-learning statistics
+        """
+        if self._meta_client is None:
+            self._initialize_meta_client()
+
+        return self._meta_client.get_stats()
 
     def get_lic_context(self) -> dict[str, Any]:
         return {
