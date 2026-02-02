@@ -7,7 +7,6 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 HierarchyAgent - Unified Hierarchy Management
@@ -54,7 +53,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
+class HierarchyAgent(SovereignBaseAgent):
     """
     Unified Hierarchy Management Agent
 
@@ -523,7 +522,9 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         results: dict[str, Any],
     ) -> None:
         """Relocate a single file to approved L2 layer."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import check_forbidden_signals
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            check_forbidden_signals,
+        )
 
         try:
             # ARTIFACT ROUTING NEGATIVE LOGIC CHECK
@@ -617,7 +618,9 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         results: dict[str, Any],
     ) -> None:
         """Relocate a single file to approved L3 territory."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import check_forbidden_signals
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            check_forbidden_signals,
+        )
 
         try:
             # ARTIFACT ROUTING NEGATIVE LOGIC CHECK

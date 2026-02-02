@@ -19,11 +19,10 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
+class LocationValidatorAgent(SovereignBaseAgent):
     """
     Pure validation agent for territorial compliance.
 
@@ -448,7 +447,9 @@ class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
 
     def _is_forbidden_app_import(self, module: str) -> bool:
         """Check if module is a forbidden app import."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import FORBIDDEN_APP_MODULES
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            FORBIDDEN_APP_MODULES,
+        )
 
         return module.startswith(("apps_rg.", "apps_lic.")) or module in FORBIDDEN_APP_MODULES
 
@@ -459,7 +460,9 @@ class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
         1. Core layer gravity (L1-L5 import direction)
         2. App-layer horizontal isolation (apps_shared independence)
         """
-        from agentic_core.L5_safety.validators.structure_blueprint_config import LAYER_FORBIDDEN_IMPORTS
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            LAYER_FORBIDDEN_IMPORTS,
+        )
 
         if not current_l1:
             return None
@@ -676,7 +679,9 @@ class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
         violations = []
 
         # Check for forbidden prefixes
-        from agentic_core.L5_safety.validators.structure_blueprint_config import has_forbidden_layer_prefix
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            has_forbidden_layer_prefix,
+        )
 
         forbidden_prefix = has_forbidden_layer_prefix(file_path.name)
         if forbidden_prefix:
@@ -698,7 +703,9 @@ class LocationValidatorAgent(SovereignBaseAgent, SubatomicTestingMixin):
 
         Phase 4.1 Upgrade: Universal root scanning using SOVEREIGN_TERRITORIES.
         """
-        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_TERRITORIES
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            SOVEREIGN_TERRITORIES,
+        )
 
         violations = []
         compliant_files = 0
