@@ -9,7 +9,7 @@ Rationale:
     Integration Features:
     - Inherits from SovereignBaseAgent for full infrastructure support
     - Implements standard agent interface for execute_ssot.py orchestration
-    - Preserves all original PascalSovereigntyFixer functionality
+    - Preserves all original file classification functionality
     - Adds heal_repository() method for standard healing chain integration
 
     Hardening Features (Architecture Hallucination Prevention):

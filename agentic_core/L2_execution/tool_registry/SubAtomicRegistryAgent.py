@@ -144,7 +144,7 @@ def _get_phase3_manager_enforcer_mapping() -> dict[str, type]:
         "DocEnforcerAgent": StructureEnforcerAgent,
         "ASCIIEnforcerAgent": StructureEnforcerAgent,
         "StrictDocEnforcerAgent": StructureEnforcerAgent,
-        "PascalSovereigntyEnforcerAgent": StructureEnforcerAgent,
+        "FileClassificationEnforcerAgent": StructureEnforcerAgent,
     }
 
 

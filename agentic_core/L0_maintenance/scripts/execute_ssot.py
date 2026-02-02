@@ -490,7 +490,7 @@ class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
 class SovereignDecisionEngine(EnhancedAutonomousDecisionEngine):
     """
     [HARDENED] Sovereign Decision Engine with strict token-based access control.
-    Synthesizes patterns from PascalSovereigntyAgent for cycle detection and resource protection.
+    Synthesizes patterns from FileClassificationAgent for cycle detection and resource protection.
     """
 
     def __init__(
@@ -756,7 +756,7 @@ def execute_phase2_reconciliation(
     """
     PHASE 2: EXECUTE HEALING (HARDENED)
     Critical Path: Modifications occur here. Must strictly adhere to decision engine.
-    Enhanced with atomic operations and sovereignty patterns from PascalSovereigntyAgent.
+    Enhanced with atomic operations and sovereignty patterns from FileClassificationAgent.
     Returns: Dict conforming to HEAL_RESULT_SCHEMA
     """
     reconciliation_log = []

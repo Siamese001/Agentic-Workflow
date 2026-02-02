@@ -54,8 +54,8 @@ from agentic_core.base_agents.timeout_decorator import timeout
 
 # [PHASE 24] Integrate L0 Maintenance Capability
 from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
-from agentic_core.L5_safety.validators.PascalSovereigntyAgent import (
-    PascalSovereigntyAgent,
+from agentic_core.L5_safety.validators.FileClassificationAgent import (
+    FileClassificationAgent,
     get_python_files_fast,
 )
 from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
@@ -1173,7 +1173,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         # 2. fast-scan the repository using the Phase 3 agent logic
         # We instantiate it temporarily just to use its optimized scanner
-        PascalSovereigntyAgent(self.project_root)
+        FileClassificationAgent(self.project_root)
         files = get_python_files_fast(self.project_root)
 
         # 3. Calculate Hashes
