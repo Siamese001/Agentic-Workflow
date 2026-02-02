@@ -573,23 +573,6 @@ class FileClassificationAgent(SovereignBaseAgent):
             target = f"{clean_stem}.py"
             return target if target != path.name else None
 
-        if file_type == "UTILITY":
-            return None
-
-        # --- TEST STANDARDIZATION ---
-        # Handle TEST files before AST parsing (tests may not have classes)
-        if file_type == "TEST":
-            name = path.stem
-            # Regex to convert PascalCase/camelCase to snake_case
-            s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-            snake_name = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
-
-            # Ensure test_ prefix if missing
-            if not snake_name.startswith("test_"):
-                snake_name = f"test_{snake_name}"
-
-            return f"{snake_name}.py"
-
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"))
             classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
@@ -635,7 +618,10 @@ class FileClassificationAgent(SovereignBaseAgent):
             return None
 
     def heal(self, violation: dict) -> dict:
-        """Heal Pascal naming violations using standard_heal decorator pattern.
+        """Heal naming violations using unified classification logic.
+
+        Uses the same classify_file() and get_compliant_name() methods as the
+        main audit to ensure consistent detection and healing behavior.
 
         Args:
             violation: Dictionary containing violation details with keys:
@@ -644,107 +630,58 @@ class FileClassificationAgent(SovereignBaseAgent):
                 - severity: Severity level of the violation
 
         Returns:
-            Dictionary with healing results following standard_heal format:
-                - violations_fixed: Number of violations fixed
-                - violations_found: Total violations found
-                - errors: Number of errors encountered
-                - skipped: Number of violations skipped
+            Dictionary with healing results following standard_heal format.
         """
+        violation_type = violation.get("type", "naming")
+        path = violation.get("path", "")
 
-        def _heal_pascal_violation(self, violation: dict) -> dict:
-            """Internal heal method with standard_heal decorator."""
-            violation_type = violation.get("type", "naming")
-            path = violation.get("path", "")
+        Logger.info(f"[HEAL] Processing {violation_type} violation at {path}")
 
-            Logger.info(f"[PASCAL] Healing {violation_type} violation at {path}")
+        if violation_type != "naming":
+            Logger.warning(f"  Unknown violation type: {violation_type}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
-            if violation_type == "naming":
-                # Fix Pascal naming convention violations
-                file_path = Path(path)
+        file_path = Path(path)
 
-                # Check if it's an agent that needs renaming
-                if file_path.suffix == ".py":
-                    stem = file_path.stem
+        # Validate file exists and is Python
+        if not file_path.exists():
+            Logger.warning(f"  File does not exist: {path}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
-                    # If it doesn't follow Agent.py pattern
-                    if not stem.endswith("Agent"):
-                        # Determine correct naming based on content
-                        try:
-                            with open(file_path, encoding="utf-8") as f:
-                                content = f.read()
+        if file_path.suffix != ".py":
+            Logger.info(f"  Non-Python file {path}, skipping")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
-                            # Check if it's actually an agent class
-                            if "class " in content and "Agent" in content:
-                                # Extract the actual class name
-                                import re
+        try:
+            # Use unified classification logic (same as main audit)
+            file_type = self.classify_file(file_path)
 
-                                class_match = re.search(r"class (\w+Agent)", content)
-                                if class_match:
-                                    class_name = class_match.group(1)
-                                    new_path = file_path.parent / f"{class_name}.py"
-
-                                    if not new_path.exists():
-                                        file_path.rename(new_path)
-                                        Logger.info(f"  Renamed {path} -> {new_path}")
-                                        return {
-                                            "violations_fixed": 1,
-                                            "violations_found": 1,
-                                            "errors": 0,
-                                            "skipped": 0,
-                                        }
-                                    else:
-                                        Logger.warning(f"  Target {new_path} already exists")
-                                        return {
-                                            "violations_fixed": 0,
-                                            "violations_found": 1,
-                                            "errors": 0,
-                                            "skipped": 1,
-                                        }
-                                else:
-                                    # Add Agent suffix
-                                    new_path = file_path.parent / f"{stem}Agent.py"
-                                    if not new_path.exists():
-                                        file_path.rename(new_path)
-                                        Logger.info(f"  Renamed {path} -> {new_path}")
-                                        return {
-                                            "violations_fixed": 1,
-                                            "violations_found": 1,
-                                            "errors": 0,
-                                            "skipped": 0,
-                                        }
-                                    else:
-                                        Logger.warning(f"  Target {new_path} already exists")
-                                        return {
-                                            "violations_fixed": 0,
-                                            "violations_found": 1,
-                                            "errors": 0,
-                                            "skipped": 1,
-                                        }
-                            else:
-                                Logger.info(f"  File {path} is not an agent, skipping")
-                                return {
-                                    "violations_fixed": 0,
-                                    "violations_found": 1,
-                                    "errors": 0,
-                                    "skipped": 1,
-                                }
-                        except Exception as e:
-                            Logger.error(f"  Error processing {path}: {e}")
-                            return {
-                                "violations_fixed": 0,
-                                "violations_found": 1,
-                                "errors": 1,
-                                "skipped": 0,
-                            }
-                else:
-                    Logger.info(f"  Non-Python file {path}, skipping")
-                    return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
-            else:
-                Logger.warning(f"  Unknown violation type: {violation_type}")
+            if file_type == "IGNORE":
+                Logger.info(f"  File {path} is IGNORE type, skipping")
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
-        # Call the internal heal method
-        return _heal_pascal_violation(self, violation)
+            # Use unified naming logic (same as main audit)
+            new_name = self.get_compliant_name(file_path, file_type)
+
+            if not new_name or new_name == file_path.name:
+                Logger.info(f"  File {path} is already compliant")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+
+            new_path = file_path.parent / new_name
+
+            if new_path.exists():
+                Logger.warning(f"  Target {new_path} already exists")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+
+            # Perform the rename
+            file_path.rename(new_path)
+            Logger.info(f"  Renamed {path} -> {new_path}")
+
+            return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+
+        except Exception as e:
+            Logger.error(f"  Error processing {path}: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
     @standard_heal
     def heal_repository(
