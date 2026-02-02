@@ -66,7 +66,8 @@ def _get_imports():
     """
     # Import ALL self-healing agents from CanonValidatorAgent (ZERO CAPABILITY LOSS)
     # WatchmanHandler is in agentic_core (not in scripts/CanonValidatorAgent)
-    from agentic_core.canon_scheduler import CanonSwarmScheduler
+    # DEPRECATED: CanonSwarmScheduler removed - scheduling handled differently now
+    # from agentic_core.canon_scheduler import CanonSwarmScheduler
     from agentic_core.InterventionServer import (
         FASTAPI_AVAILABLE,
         approval_event,

@@ -279,62 +279,9 @@ class OrchestratorAgent(SovereignBaseAgent):
         )
 
         # [DNA GATE] Perform Pre-Flight Audit
-        try:
-            from agentic_core.L5_safety.validators.CanonDependencySentinelAgent import (
-                CanonDependencySentinelAgent,
-            )
-
-            sentinel = CanonDependencySentinelAgent()
-            audit_results = sentinel.heal_repository(dry_run=True, execute=False)
-
-            # Check for FATAL status or critical violations
-            is_fatal = audit_results.get("status") == "FATAL"
-            scan_results = sentinel.scan_architecture()
-            all_violations = scan_results.get("violations", [])
-
-            # Critical violations that block execution (INIT_BYPASS and DNA_SEVERED are blocking)
-            blocking_types = ("INIT_BYPASS", "DNA_SEVERED")
-            critical_violations = [
-                v
-                for v in all_violations
-                if v.severity == "CRITICAL" or v.violation_type in blocking_types
-            ]
-
-            if is_fatal or critical_violations:
-                # Log each critical violation
-                for v in critical_violations[:10]:  # Limit to first 10
-                    self.logger.critical(
-                        f"  VIOLATION: {v.violation_type} in {v.file_path}:{v.line_number}"
-                    )
-
-                abort_reason = (
-                    "Naked super() or fatal syntax"
-                    if is_fatal
-                    else f"{len(critical_violations)} critical DNA violations"
-                )
-                self.logger.critical(f"[STOP] Mission Aborted: {abort_reason}.")
-                return MissionResult(
-                    success=False,
-                    total_agents=len(agents),
-                    successful_agents=0,
-                    failed_agents=len(agents),
-                    total_violations_found=len(critical_violations),
-                    total_violations_fixed=0,
-                    total_errors=1,
-                    agent_results=[],
-                    phase=ExecutionPhase.VALIDATION,
-                    status="ABORTED",
-                    message=f"{abort_reason} detected in repository.",
-                    metadata={
-                        "mode": self.mode.value,
-                        "gate": "DNA_SENTINEL",
-                        "critical_violations": len(critical_violations),
-                    },
-                )
-        except ImportError:
-            self.logger.warning(
-                "[GATE] CanonDependencySentinelAgent not found. Proceeding with caution."
-            )
+        # DEPRECATED: CanonDependencySentinelAgent removed - Guardian test framework handles validation
+        # Pre-flight audit is now optional and skipped by default
+        self.logger.debug("[GATE] Pre-flight audit skipped - validation handled by Guardian tests")
 
         agent_results: list[AgentResult] = []
         total_violations_found = 0

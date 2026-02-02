@@ -56,8 +56,8 @@ except ImportError:
     QualityThresholds = None
     ClaimAnalysis = None
 
-# AST Validator base class
-from .ast_validator import CanonASTValidator, parse_and_validate
+# AST Validator base class - DEPRECATED: CanonASTValidator removed
+# from .ast_validator import CanonASTValidator, parse_and_validate
 
 __all__ = [
     "ReflectionEngine",

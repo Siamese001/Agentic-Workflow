@@ -14,7 +14,6 @@ This consolidation eliminates ~200 lines of duplicated boilerplate while
 maintaining 100% validation rigor and identical violation detection.
 
 Territory: agentic_core/L1_cognition/thought_engine/
-Canon Alignment: AST-based code quality validation
 """
 
 import ast
@@ -24,14 +23,39 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator
 
-# GRAVITY FIXED: Dynamic import for MCPHardenedMixin
-MCPHardenedMixin = _mod.MCPHardenedMixin
+
+class ASTValidatorBase(ast.NodeVisitor):
+    """Base class for AST validation with TYPE_CHECKING block support."""
+    
+    def __init__(self):
+        self.violations: list[dict[str, Any]] = []
+        self.in_type_checking: bool = False
+        self._current_file: str = ""
+    
+    def report(self, message: str, node: ast.AST) -> None:
+        """Report a violation found during AST traversal."""
+        self.violations.append({
+            "message": message,
+            "line": getattr(node, "lineno", 0),
+            "col": getattr(node, "col_offset", 0),
+            "file": self._current_file,
+        })
+    
+    def visit_If(self, node: ast.If) -> Any:
+        """Track TYPE_CHECKING blocks to skip validation inside them."""
+        # Check if this is a TYPE_CHECKING block
+        if isinstance(node.test, ast.Name) and node.test.id == "TYPE_CHECKING":
+            old_state = self.in_type_checking
+            self.in_type_checking = True
+            self.generic_visit(node)
+            self.in_type_checking = old_state
+            return
+        self.generic_visit(node)
 
 
 @dataclass
-class ASTValidatorAgent(SovereignBaseAgent, CanonASTValidator):
+class ASTValidatorAgent(SovereignBaseAgent, ASTValidatorBase):
     """
     Unified AST validator replacing 5 micro-agents.
 

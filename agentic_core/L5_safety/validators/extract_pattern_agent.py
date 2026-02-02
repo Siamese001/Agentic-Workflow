@@ -53,7 +53,14 @@ import ast
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+
+# DEPRECATED: CanonBaseAgentInterface removed - use Protocol instead
+try:
+    from agentic_core.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+except ImportError:
+    class CanonBaseAgentInterface(Protocol):
+        pass
+
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import mcp_hardened_mixin
 from agentic_core.L5_safety.validators.structure_blueprint import (
