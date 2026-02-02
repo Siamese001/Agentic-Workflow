@@ -1,10 +1,10 @@
 """
-File: agentic_core/L5_safety/validators/PascalSovereigntyAgent.py
-Path: agentic_core/L5_safety/validators/PascalSovereigntyAgent.py
+File: agentic_core/L5_safety/validators/FileClassificationAgent.py
+Path: agentic_core/L5_safety/validators/FileClassificationAgent.py
 Rationale:
-    Canonizes the PascalSovereigntyFixer as a first-class L5 Agent.
-    Relocated from L0_maintenance/scripts to L5_safety/validators to
-    centralize enforcement and enable auto-discovery by execute_ssot.py.
+    Comprehensive file classification and naming enforcement agent.
+    Provides intelligent file categorization and naming enforcement
+    across all architectural layers with AST-based analysis.
 
     Integration Features:
     - Inherits from SovereignBaseAgent for full infrastructure support
@@ -42,6 +42,12 @@ except ImportError:
     def standard_heal(func):
         """Fallback decorator when full infrastructure unavailable."""
         return func
+
+
+# Logger for healing operations
+import logging
+
+Logger = logging.getLogger(__name__)
 
 
 # SSOT Integration with fast-fail pruning
@@ -130,7 +136,9 @@ class FileClassificationAgent(SovereignBaseAgent):
         return {
             "success": success == 0,
             "stats": self.stats,
-            "summary": f"Renamed: {self.stats['renamed']}, Collisions: {self.stats['collisions_resolved']}",
+            "summary": (
+                f"Renamed: {self.stats['renamed']}, Collisions: {self.stats['collisions_resolved']}"
+            ),
         }
 
     def _orchestrate_audit(self, root: Path) -> int:
@@ -166,7 +174,7 @@ class FileClassificationAgent(SovereignBaseAgent):
                         # [HARDENED] Update in-memory tracker AFTER successful file operation
                         dest = path.parent / new_name
 
-                        # Only update registry if the file exists and wasn't deleted (duplicate merge)
+                        # Only update registry if file exists and wasn't deleted
                         if dest.exists():
                             self.file_registry[idx] = dest
                             # Update imports only after registry is updated
@@ -252,7 +260,7 @@ class FileClassificationAgent(SovereignBaseAgent):
             return "TEST"
 
         # [PRIORITY 3] SCRIPT Detection: Ops/Maintenance Scripts
-        # Logic: If it's in a script directory, it must remain snake_case regardless of class content.
+        # Logic: Scripts must remain snake_case regardless of class content.
         if "ops_scripts" in path.parts or ("scripts" in path.parts and "agents" not in path.parts):
             return "SCRIPT"
 
@@ -352,7 +360,7 @@ class FileClassificationAgent(SovereignBaseAgent):
                     if not self.dry_run:
                         path.write_text(new_content, encoding="utf-8")
                     count += 1
-            except:
+            except Exception:
                 continue
         return count
 
@@ -370,7 +378,7 @@ class FileClassificationAgent(SovereignBaseAgent):
                     print("[WARNING] Windows LongPathsEnabled is NOT set to 1.")
                     if not self.dry_run:
                         return False
-            except:
+            except Exception:
                 pass
         return True
 
@@ -432,9 +440,7 @@ class FileClassificationAgent(SovereignBaseAgent):
                 dest_content = dest.read_bytes()
 
                 if src_content == dest_content:
-                    print(
-                        "  [ANALYSIS] Files are IDENTICAL. Remediation: Deleting redundant violator."
-                    )
+                    print("  [ANALYSIS] Files are IDENTICAL. Deleting redundant.")
                     print(f"  [ACTION] DELETE {src.name}")
 
                     # [HARDENED] Atomic delete with verification
@@ -450,9 +456,7 @@ class FileClassificationAgent(SovereignBaseAgent):
 
                 else:
                     # Divergent content: Rename to .CONFLICT to preserve data
-                    print(
-                        "  [ANALYSIS] Files are DIFFERENT. Remediation: Preserving data via conflict rename."
-                    )
+                    print("  [ANALYSIS] Files are DIFFERENT. Conflict rename.")
                     timestamp = int(time.time())
                     conflict_name = f"{dest_name}.CONFLICT_{timestamp}"
                     conflict_path = src.parent / conflict_name
@@ -518,7 +522,7 @@ class FileClassificationAgent(SovereignBaseAgent):
                 print("  [WARNING] Temp file still exists after rename - cleaning up")
                 try:
                     temp.unlink()
-                except:
+                except Exception:
                     pass  # Best effort cleanup
 
             print(f"  [SUCCESS] {src.name} -> {dest_name}")
@@ -627,7 +631,7 @@ class FileClassificationAgent(SovereignBaseAgent):
             # Note: TEST handling is done earlier in the method (before AST parsing)
 
             return f"{target_name}.py"
-        except:
+        except Exception:
             return None
 
     def heal(self, violation: dict) -> dict:
@@ -646,9 +650,7 @@ class FileClassificationAgent(SovereignBaseAgent):
                 - errors: Number of errors encountered
                 - skipped: Number of violations skipped
         """
-        from agentic_core.base_agents.decorators import standard_heal
 
-        @standard_heal
         def _heal_pascal_violation(self, violation: dict) -> dict:
             """Internal heal method with standard_heal decorator."""
             violation_type = violation.get("type", "naming")
