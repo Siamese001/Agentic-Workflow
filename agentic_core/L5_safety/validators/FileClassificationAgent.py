@@ -326,6 +326,175 @@ class FileClassificationAgent(SovereignBaseAgent):
         else:
             return "UTILITY"
 
+    # ========================================================================
+    # PHASE 1: Enhanced Detection Methods
+    # ========================================================================
+
+    def _is_true_agent(self, node: ast.ClassDef, file_path: Path) -> bool:
+        """
+        Enhanced agent detection with multiple criteria.
+
+        Checks:
+        1. Naming convention (ends with Agent)
+        2. Inheritance from base agents
+        3. Decorator-based detection
+        4. Method-based detection (execute, act, heal, run)
+        5. Structural context (in agents/ directory)
+        """
+        # Check 1: Naming convention
+        if node.name.endswith("Agent"):
+            return True
+
+        # Check 2: Inheritance from base agents
+        base_agents = {
+            "SovereignBaseAgent",
+            "L0MaintenanceBaseAgent",
+            "L1CognitionBaseAgent",
+            "L2ExecutionBaseAgent",
+            "L3OrchestrationBaseAgent",
+            "L4StateBaseAgent",
+            "L5SafetyBaseAgent",
+            "L6ObservabilityBaseAgent",
+        }
+        for base in node.bases:
+            if isinstance(base, ast.Name):
+                if base.id in base_agents or "Agent" in base.id:
+                    return True
+            elif isinstance(base, ast.Attribute):
+                if base.attr in base_agents or "Agent" in base.attr:
+                    return True
+
+        # Check 3: Decorator-based detection
+        agent_decorators = {"agent", "sovereign_agent", "register_agent"}
+        for decorator in node.decorator_list:
+            if isinstance(decorator, ast.Name):
+                if decorator.id in agent_decorators:
+                    return True
+            elif isinstance(decorator, ast.Attribute):
+                if decorator.attr in agent_decorators:
+                    return True
+
+        # Check 4: Method-based detection
+        agent_methods = {"execute", "act", "heal", "run"}
+        for item in node.body:
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if item.name in agent_methods:
+                    return True
+
+        # Check 5: Structural context
+        if "agents" in file_path.parts:
+            return True
+
+        return False
+
+    def _is_service_class(self, node: ast.ClassDef, file_path: Path) -> bool:
+        """
+        Detect service classes with dependency injection patterns.
+
+        Checks:
+        1. @service decorator
+        2. Constructor with service_container/injector/container parameter
+        3. Name ends with Service
+        """
+        # Check 1: @service decorator
+        for decorator in node.decorator_list:
+            if isinstance(decorator, ast.Name) and decorator.id == "service":
+                return True
+            elif isinstance(decorator, ast.Attribute) and decorator.attr == "service":
+                return True
+
+        # Check 2: Constructor with DI parameters
+        di_params = {"service_container", "injector", "container", "dependencies"}
+        for item in node.body:
+            if isinstance(item, ast.FunctionDef) and item.name == "__init__":
+                for arg in item.args.args:
+                    if arg.arg in di_params:
+                        return True
+
+        # Check 3: Name ends with Service
+        if node.name.endswith("Service"):
+            return True
+
+        return False
+
+    def _is_factory_class(self, node: ast.ClassDef) -> bool:
+        """
+        Detect factory classes for object creation.
+
+        Checks:
+        1. Name ends with Factory
+        2. Has create_* or make_* methods
+        3. Has @factory decorator
+        """
+        # Check 1: Naming convention
+        if node.name.endswith("Factory"):
+            return True
+
+        # Check 2: Factory methods
+        for item in node.body:
+            if isinstance(item, ast.FunctionDef):
+                if item.name.startswith("create_") or item.name.startswith("make_"):
+                    return True
+
+        # Check 3: @factory decorator
+        for decorator in node.decorator_list:
+            if isinstance(decorator, ast.Name) and decorator.id == "factory":
+                return True
+
+        return False
+
+    def _is_async_agent(self, node: ast.ClassDef, file_path: Path) -> bool:
+        """
+        Detect async-based agents.
+
+        Checks:
+        1. Has async execute/act/run methods
+        2. Has async context manager methods
+        """
+        has_async_agent_methods = False
+
+        for item in node.body:
+            if isinstance(item, ast.AsyncFunctionDef):
+                if item.name in ("execute", "act", "run", "heal"):
+                    has_async_agent_methods = True
+                elif item.name in ("__aenter__", "__aexit__"):
+                    has_async_agent_methods = True
+
+        return has_async_agent_methods
+
+    def _is_adapter_class(self, node: ast.ClassDef) -> bool:
+        """
+        Detect adapter/wrapper classes.
+
+        Checks:
+        1. Name ends with Adapter, Wrapper, or Bridge
+        2. Has adapt/wrap/bridge methods
+        3. Wraps another object (has _wrapped or _adaptee attribute)
+        """
+        # Check 1: Naming convention
+        adapter_suffixes = ("Adapter", "Wrapper", "Bridge", "Proxy")
+        if any(node.name.endswith(suffix) for suffix in adapter_suffixes):
+            return True
+
+        # Check 2: Adapter methods
+        adapter_methods = {"adapt", "wrap", "bridge", "unwrap"}
+        for item in node.body:
+            if isinstance(item, ast.FunctionDef):
+                if item.name in adapter_methods:
+                    return True
+
+        # Check 3: Wrapped object pattern in __init__
+        for item in node.body:
+            if isinstance(item, ast.FunctionDef) and item.name == "__init__":
+                for stmt in ast.walk(item):
+                    if isinstance(stmt, ast.Assign):
+                        for target in stmt.targets:
+                            if isinstance(target, ast.Attribute):
+                                if target.attr in ("_wrapped", "_adaptee", "_delegate"):
+                                    return True
+
+        return False
+
     def update_imports(self, old_name: str, new_name: str) -> int:
         """Refactors imports using the in-memory registry to avoid O(N²) disk hits."""
         count = 0
