@@ -27,7 +27,7 @@ class TestBootstrapAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L0_maintenance.scripts.bootstrap_agent import bootstrap_agent
+            from agentic_core.L0_maintenance.scripts.bootstrap_agent_validator import bootstrap_agent
 
             return BootstrapAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -70,7 +70,7 @@ class TestBootstrapAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L0_maintenance.scripts.bootstrap_agent import (
+                from agentic_core.L0_maintenance.scripts.bootstrap_agent_validator import (
                     BootstrapAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

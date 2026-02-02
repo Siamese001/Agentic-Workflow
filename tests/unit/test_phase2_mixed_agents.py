@@ -14,11 +14,11 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_maintenance.deterministic.ATSValidationDeterministic import (
+from agentic_core.L0_maintenance.deterministic.ats_validation_deterministic_validator import (
     ATSValidationDeterministic,
     ATSValidationResult,
 )
-from agentic_core.L0_maintenance.deterministic.ContentQualityDeterministic import (
+from agentic_core.L0_maintenance.deterministic.content_quality_deterministic_validator import (
     ContentQualityDeterministic,
     QualityValidationResult,
 )
