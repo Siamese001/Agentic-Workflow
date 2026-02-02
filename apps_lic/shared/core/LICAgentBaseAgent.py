@@ -179,6 +179,75 @@ class LICAgentBase(MetaLearningMixin, AppBaseAgent, HealerMixin):
         cache_key = f"compliance_rule:{rule_id}"
         return self.ml_cache_get(cache_key)
 
+    # ==================== PHASE 1.2: DOMAIN ISOLATION ====================
+
+    def get_namespaced_cache_key(self, key: str) -> str:
+        """
+        Generate a namespaced cache key for LIC domain isolation.
+
+        Args:
+            key: Base cache key
+
+        Returns:
+            Namespaced key with apps_lic prefix
+        """
+        return f"apps_lic:{self._resource_prefix}:{key}"
+
+    def validate_domain_pattern(self, pattern: dict[str, Any]) -> bool:
+        """
+        Validate that a pattern belongs to the LIC domain.
+
+        Args:
+            pattern: Pattern to validate
+
+        Returns:
+            True if pattern is valid for LIC domain
+        """
+        # Check domain field if present (both "domain" and "_domain" metadata)
+        domain_value = pattern.get("domain") or pattern.get("_domain")
+        if domain_value:
+            if domain_value != "apps_lic":
+                Logger.warning(
+                    f"[{self.__class__.__name__}] Rejected cross-domain pattern: {domain_value}"
+                )
+                return False
+        return True
+
+    def isolate_cache_operation(
+        self,
+        operation: str,
+        key: str,
+        value: Any = None,
+    ) -> tuple[bool, Any]:
+        """
+        Perform a cache operation with domain isolation.
+
+        Args:
+            operation: 'get', 'set', or 'delete'
+            key: Cache key (will be namespaced)
+            value: Value for set operations
+
+        Returns:
+            Tuple of (success, result)
+        """
+        namespaced_key = self.get_namespaced_cache_key(key)
+
+        # Validate key
+        if not self.guardrails_validate_cache_key(namespaced_key):
+            return (False, None)
+
+        # For set operations, validate value
+        if operation == "set" and value is not None:
+            if not self.guardrails_validate_cache_value(value):
+                return (False, None)
+
+            # Add domain metadata
+            if isinstance(value, dict):
+                value["_domain"] = "apps_lic"
+                value["_namespace"] = self._namespace
+
+        return (True, namespaced_key)
+
     # ==================== PHASE 1.1: GUARDRAILS METHODS ====================
 
     def guardrails_validate_cache_key(self, key: str) -> bool:
