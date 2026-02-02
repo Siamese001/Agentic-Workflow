@@ -94,7 +94,7 @@ class SafetyStrategy:
 
                 return HygieneGuardianAgent(project_root=self.project_root)
             elif agent_name == "NamingAgent":
-                from agentic_core.L5_safety.validators.NamingAgent import NamingAgent
+                from agentic_core.L5_safety.validators.naming_agent_validator import NamingAgent
 
                 return NamingAgent(project_root=self.project_root)
             elif agent_name == "LocationAgent":
