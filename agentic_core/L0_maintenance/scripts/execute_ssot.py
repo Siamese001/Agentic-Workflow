@@ -1391,6 +1391,53 @@ def execute_phase1_discovery_impl(
             "LocationAgent", True, f"Violations: 0 | Conf: {confidence.value:.2f}"
         )
 
+    # [PHASE 1 ENHANCEMENT] Early File Classification Detection
+    # Run FileClassificationAgent in discovery phase to catch naming violations early
+    classification_violations = []
+    classification_scan_result = {}
+    try:
+        state_mgr.update_agent("FileClassificationAgent", "L5 - Safety (Early Detection)")
+        file_classifier = agents["file_classification"](project_root=Path.cwd())
+
+        # Run classification scan on territory (validate_only mode for detection)
+        file_classifier.validate_only = True
+        file_classifier.dry_run = True  # Don't make changes during discovery
+        classification_scan_result = file_classifier.run(target_territory=territory) or {}
+
+        # Extract violations from stats
+        if hasattr(file_classifier, "stats") and file_classifier.stats.get("violations"):
+            for vtype, count in file_classifier.stats["violations"].items():
+                if count > 0:
+                    classification_violations.append(
+                        {
+                            "type": "CLASSIFICATION",
+                            "subtype": vtype,
+                            "count": count,
+                            "territory": territory,
+                        }
+                    )
+
+        classification_count = len(classification_violations)
+        state_mgr.complete_agent(
+            "FileClassificationAgent",
+            True,
+            f"Early detection: {classification_count} classification issues",
+        )
+
+        # Store classification results for later phases
+        state_mgr.state["classification_violations"] = classification_violations
+        state_mgr.state["classification_scan_result"] = classification_scan_result
+
+        logger.info(
+            f"📋 FileClassificationAgent early detection: {classification_count} issues found"
+        )
+
+    except Exception as e:
+        logger.warning(f"FileClassificationAgent early detection failed: {e}")
+        state_mgr.complete_agent("FileClassificationAgent", False, f"Early detection error: {e}")
+        state_mgr.state["classification_violations"] = []
+        state_mgr.state["classification_scan_result"] = {}
+
     return drift_report, violations, location_scan_result
 
 
