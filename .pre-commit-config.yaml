@@ -44,3 +44,12 @@ repos:
         pass_filenames: false
         always_run: true
         # Ensures pre-commit hooks don't leave uncommitted changes (RCA from UNCOMMITTED_CHANGES_RCA.md)
+
+      # SSOT Enforcement: Check report locations
+      - id: check-report-location
+        name: Check Report Location (SSOT)
+        entry: python scripts/hooks/validate_report_location.py --staged-only
+        language: system
+        pass_filenames: false
+        always_run: true
+        # Enforces SSOT compliance by ensuring all reports are in docs/reports/
