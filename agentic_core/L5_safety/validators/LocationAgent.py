@@ -323,7 +323,9 @@ class LocationAgent(SovereignBaseAgent):
         """Lazy NamingAgent - created on first access to avoid circular init."""
         if self._naming_agent is None:
             try:
-                from agentic_core.L5_safety.validators.NamingAgent import get_naming_agent
+                from agentic_core.L5_safety.validators.naming_agent_validator import (
+                    get_naming_agent,
+                )
 
                 self._naming_agent = get_naming_agent(self.project_root)
             except (ImportError, RecursionError):

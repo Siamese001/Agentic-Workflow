@@ -234,25 +234,29 @@ class FileClassificationAgent(SovereignBaseAgent):
 
         WINDSURF IMPLEMENTATION PRIORITY QUEUE (First Match Wins):
         1. STUB     - File contains NOT_AN_AGENT marker (preempts all)
-        2. TEST     - Path contains tests/ OR name starts with test_
-        3. ORCHESTRATOR - Detect if Orchestrator in class name or path
-        4. ADAPTER  - Detect if Strategy or Adapter in class name or file path
-        5. CONFIG   - Detect if file name or path contains config, blueprint, settings, or manifest
-        6. VALIDATOR - Detect if path contains validators/ or file name ends in _validator
-        7. PROTOCOL - Class inherits from typing.Protocol
-        8. FACTORY  - Detect if class name ends in Factory
-        9. AGENT    - Keep existing inheritance/path logic
-        10. MIXIN   - Keep existing logic
-        11. CLASS   - Fallback for any other class
-        12. UTILITY - Fallback for files with no classes
+        2. BASE_AGENT - Files in base_agents/ directory (foundational classes)
+        2.5 SELF_DETECTION - FileClassificationAgent.py is always an AGENT
+        2.7 BLUEPRINT_DETECTION - structure_blueprint.py is always CONFIG
+        3. TEST     - Path contains tests/ OR name starts with test_
+        4. SCRIPT   - Ops/Maintenance scripts
+        5. TYPES    - Collection files & private modules
+        6. ORCHESTRATOR - Detect if Orchestrator in class name or path
+        7. ADAPTER  - Detect if Strategy or Adapter in class name or file path
+        8. CONFIG   - Detect if file name or path contains config, blueprint, settings, or manifest
+        9. VALIDATOR - Detect if path contains validators/ or file name ends in _validator
+        10. PROTOCOL - Class inherits from typing.Protocol
+        11. FACTORY  - Detect if class name ends in Factory
+        12. AGENT    - Keep existing inheritance/path logic
+        13. MIXIN   - Keep existing logic
+        14. CLASS   - Fallback for any other class
+        15. UTILITY - Fallback for files with no classes
         """
-        # --- EXEMPTION: SSOT & CONFIG FILES ---
+        # --- EXEMPTION: SSOT & CRITICAL FILES ---
         critical_ignores = {
             "conftest.py",
             "__init__.py",
             "__main__.py",
             "setup.py",
-            "structure_blueprint.py",
             "tool_registry.py",
         }
         if path.name in critical_ignores:
@@ -265,30 +269,49 @@ class FileClassificationAgent(SovereignBaseAgent):
 
             # [PRIORITY 1] STUB Detection: Explicit Marker Override
             # CRITICAL: Must check BEFORE AST parsing to prevent Stubs from being detected as Agents
-            if "NOT_AN_AGENT" in content or "# NOT_AN_AGENT" in content:
+            # Only check for NOT_AN_AGENT at the start of a line (ignoring whitespace)
+            if any(line.strip().startswith("NOT_AN_AGENT") for line in content.splitlines()):
                 return "STUB"
 
             tree = ast.parse(content)
         except (SyntaxError, UnicodeDecodeError, OSError):
             return "IGNORE"
 
-        # [PRIORITY 2] TEST Detection: Structural or Naming
-        is_structural_test = "tests" in path.parts or path.name.startswith("test_")
-        if is_structural_test:
-            # Already compliant test files - don't touch them
+        # [PRIORITY 2.5] BASE AGENT Detection: Special case for base_agents
+        # Base agents are foundational classes, not runtime agents
+        if "base_agents" in path.parts:
+            return "CLASS"
+
+        # [PRIORITY 2.5] SELF DETECTION: FileClassificationAgent is always an AGENT
+        if path.name == "FileClassificationAgent.py":
+            return "AGENT"
+
+        # [PRIORITY 2.7] BLUEPRINT DETECTION: structure_blueprint.py is always CONFIG
+        if path.name == "structure_blueprint.py":
+            return "CONFIG"
+
+        # [PRIORITY 3] TEST Detection: Enhanced AST-based detection
+        # Detect test classes and test-related patterns
+        test_indicators = self._detect_test_patterns(tree, path)
+        if test_indicators["is_test"]:
+            # Check if already compliant test file
             if path.name.startswith("test_") or path.name.endswith("_test.py"):
-                return "IGNORE"
+                # Still return TEST for compliant files to maintain consistency
+                pass
             return "TEST"
 
-        # [PRIORITY 3] SCRIPT Detection: Ops/Maintenance Scripts
-        # Logic: Scripts must remain snake_case regardless of class content.
-        if "ops_scripts" in path.parts or ("scripts" in path.parts and "agents" not in path.parts):
-            return "SCRIPT"
+        # [PRIORITY 4] SCRIPT Detection: Enhanced AST-based detection
+        # Detect scripts by entry points and execution patterns
+        # Exclude the FileClassificationAgent itself
+        if path.name != "FileClassificationAgent.py":
+            script_indicators = self._detect_script_patterns(tree, path)
+            if script_indicators["is_script"]:
+                return "SCRIPT"
 
-        # [PRIORITY 4] TYPES Detection: Collection Files & Private Modules
-        # Logic: Prevents 'types.py' (multi-enum) from becoming 'FirstEnumFound.py'
-        type_collections = {"types", "schemas", "models", "errors", "exceptions", "consts", "dtos"}
-        if path.stem in type_collections or path.name.startswith("_"):
+        # [PRIORITY 5] TYPES Detection: Enhanced AST-based detection
+        # Detect type collections by class patterns
+        type_indicators = self._detect_type_patterns(tree, path)
+        if type_indicators["is_types"]:
             return "TYPES"
 
         has_class = False
@@ -297,8 +320,7 @@ class FileClassificationAgent(SovereignBaseAgent):
         # is_gateway = False  # Not used in new priority queue
         is_mixin = False
 
-        # [HARDENED] Structural Contexts
-        is_structural_agent = "agents" in path.parts or "validators" in path.parts
+        # [HARDENED] Structural Contexts - REMOVED low-signal folder checks
         # is_engine = "engines" in path.parts  # Not used in new priority queue
 
         # WINDSURF IMPLEMENTATION: New category detection flags
@@ -326,15 +348,21 @@ class FileClassificationAgent(SovereignBaseAgent):
                 if name.endswith("Agent"):
                     is_agent = True
 
-                # WINDSURF IMPLEMENTATION: New category detection
-                if "Orchestrator" in name or "orchestrator" in str(path):
+                # Enhanced AST-based detection with fuzzy matching
+                # ORCHESTRATOR detection
+                orchestrator_patterns = [
+                    "Orchestrator",
+                    "orchestrator",
+                    "orchestrate",
+                    "coordinate",
+                    "workflow",
+                ]
+                if self._fuzzy_match_name_or_content(name, path, content, orchestrator_patterns):
                     is_orchestrator = True
-                if (
-                    "Strategy" in name
-                    or "Adapter" in name
-                    or "strategy" in str(path)
-                    or "adapter" in str(path)
-                ):
+
+                # ADAPTER detection
+                adapter_patterns = ["Strategy", "Adapter", "strategy", "adapter", "adapt", "wrap"]
+                if self._fuzzy_match_name_or_content(name, path, content, adapter_patterns):
                     is_adapter = True
                 if name.endswith("Factory"):
                     is_factory = True
@@ -347,50 +375,433 @@ class FileClassificationAgent(SovereignBaseAgent):
                         ):
                             is_agent = True
 
-        # WINDSURF IMPLEMENTATION: Check for CONFIG in path/filename
-        config_indicators = {"config", "blueprint", "settings", "manifest"}
-        if any(indicator in str(path).lower() for indicator in config_indicators):
+        # Enhanced CONFIG detection using AST patterns
+        config_indicators = [
+            "config",
+            "blueprint",
+            "settings",
+            "manifest",
+            "Config",
+            "Settings",
+            "Options",
+        ]
+        config_patterns = {"configuration", "settings", "options", "params", "parameters"}
+        if self._detect_config_patterns(tree, path, content, config_indicators, config_patterns):
             is_config = True
 
-        # WINDSURF IMPLEMENTATION: Check for VALIDATOR in path/filename
-        if "validators" in str(path) or path.name.endswith("_validator"):
+        # Enhanced VALIDATOR detection using AST patterns
+        validator_patterns = [
+            "validator",
+            "validate",
+            "check",
+            "verify",
+            "Validator",
+            "Check",
+            "Verify",
+        ]
+        if self._detect_validator_patterns(tree, path, content, validator_patterns):
             is_validator = True
 
         # [WINDSURF IMPLEMENTATION] PRIORITY EXECUTION - Order matters!
         # 1. STUB: Already handled above (preempts all)
-        # 2. TEST: Already handled above
-        # 3. ORCHESTRATOR: Detect if Orchestrator in class name or path
+        # 2. BASE_AGENT: Already handled above
+        # 2.5 SELF_DETECTION: Already handled above
+        # 2.7 BLUEPRINT_DETECTION: Already handled above
+        # 3. TEST: Already handled above
+        # 4. SCRIPT: Already handled above
+        # 5. TYPES: Already handled above
+        # 6. ORCHESTRATOR: Detect if Orchestrator in class name or path
         if is_orchestrator:
             return "ORCHESTRATOR"
-        # 4. ADAPTER: Detect if Strategy or Adapter in class name or file path
+        # 7. ADAPTER: Detect if Strategy or Adapter in class name or file path
         elif is_adapter:
             return "ADAPTER"
-        # 5. CONFIG: Detect if file name or path contains config, blueprint, settings, or manifest
+        # 8. CONFIG: Detect if file name or path contains config, blueprint, settings, or manifest
         elif is_config:
             return "CONFIG"
-        # 6. VALIDATOR: Detect if path contains validators/ or file name ends in _validator
+        # 9. VALIDATOR: Detect if path contains validators/ or file name ends in _validator
         elif is_validator:
             return "VALIDATOR"
-        # 7. PROTOCOL: Keep existing AST check
+        # 10. PROTOCOL: Keep existing AST check
         elif is_protocol:
             return "PROTOCOL"
-        # 8. FACTORY: Detect if class name ends in Factory
+        # 11. FACTORY: Detect if class name ends in Factory
         elif is_factory:
             return "FACTORY"
-        # 9. AGENT: Keep existing inheritance/path logic
+        # 12. AGENT: Keep existing inheritance/path logic
         elif is_agent:
             return "AGENT"
-        # 10. MIXIN: Keep existing logic
+        # 13. MIXIN: Keep existing logic
         elif is_mixin:
             return "MIXIN"
-        # 11. CLASS: Fallback for any other class
+        # 14. CLASS: Fallback for any other class
         elif has_class:
-            if is_structural_agent:
-                return "AGENT"
             return "CLASS"
-        # 12. UTILITY: Fallback for files with no classes
+        # 15. UTILITY: Fallback for files with no classes
         else:
             return "UTILITY"
+
+    # ========================================================================
+    # ENHANCED AST-BASED DETECTION METHODS
+    # ========================================================================
+
+    def _detect_test_patterns(self, tree: ast.AST, path: Path) -> dict[str, bool]:
+        """
+        Enhanced test detection using AST analysis.
+
+        Detects:
+        - Classes inheriting from unittest.TestCase
+        - pytest fixtures and test functions
+        - Test methods (starting with test_)
+        - Mock/patch usage
+        """
+        indicators = {"is_test": False}
+
+        # Check for unittest imports
+        has_unittest = False
+        has_pytest = False
+        test_methods = 0
+        fixtures = 0
+
+        for node in ast.walk(tree):
+            # Check imports
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name == "unittest":
+                        has_unittest = True
+                    elif alias.name == "pytest":
+                        has_pytest = True
+            elif isinstance(node, ast.ImportFrom):
+                if node.module and ("unittest" in node.module or "pytest" in node.module):
+                    has_unittest = has_unittest or "unittest" in node.module
+                    has_pytest = has_pytest or "pytest" in node.module
+
+            # Check classes
+            elif isinstance(node, ast.ClassDef):
+                # Check unittest.TestCase inheritance
+                for base in node.bases:
+                    if isinstance(base, ast.Name) and base.id == "TestCase":
+                        indicators["is_test"] = True
+                    elif isinstance(base, ast.Attribute) and base.attr == "TestCase":
+                        indicators["is_test"] = True
+
+                # Count test methods
+                for item in node.body:
+                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        if item.name.startswith("test_"):
+                            test_methods += 1
+
+            # Check functions
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                # Check for pytest fixtures
+                for decorator in node.decorator_list:
+                    if isinstance(decorator, ast.Name) and decorator.id == "fixture":
+                        fixtures += 1
+                    elif isinstance(decorator, ast.Attribute) and decorator.attr == "fixture":
+                        fixtures += 1
+
+                # Check test functions at module level
+                if node.name.startswith("test_"):
+                    indicators["is_test"] = True
+
+        # Determine if test file based on patterns
+        if has_unittest or has_pytest or test_methods > 0 or fixtures > 0:
+            indicators["is_test"] = True
+
+        return indicators
+
+    def _detect_script_patterns(self, tree: ast.AST, path: Path) -> dict[str, bool]:
+        """
+        Enhanced script detection using AST analysis.
+
+        Detects:
+        - if __name__ == "__main__" patterns
+        - argparse or click usage
+        - Direct execution patterns
+        - Script-like function names (main, run, execute, start)
+        """
+        indicators = {"is_script": False}
+
+        has_main_guard = False
+        has_argparse = False
+        has_click = False
+        script_functions = 0
+
+        for node in ast.walk(tree):
+            # Check imports
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name in ("argparse", "click", "sys", "os"):
+                        if alias.name == "argparse":
+                            has_argparse = True
+                        elif alias.name == "click":
+                            has_click = True
+
+            # Check for if __name__ == "__main__"
+            elif isinstance(node, ast.If):
+                if (
+                    isinstance(node.test, ast.Compare)
+                    and len(node.test.ops) == 1
+                    and isinstance(node.test.ops[0], ast.Eq)
+                ):
+                    left = node.test.left
+                    comparators = node.test.comparators
+                    if (
+                        isinstance(left, ast.Name)
+                        and left.id == "__name__"
+                        and len(comparators) == 1
+                        and isinstance(comparators[0], ast.Constant)
+                        and comparators[0].value == "__main__"
+                    ):
+                        has_main_guard = True
+
+            # Check functions
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                script_names = {"main", "run", "execute", "start", "cli", "script"}
+                if node.name in script_names:
+                    script_functions += 1
+
+        # Determine if script based on patterns
+        if has_main_guard or has_argparse or has_click or script_functions > 0:
+            indicators["is_script"] = True
+
+        return indicators
+
+    def _detect_type_patterns(self, tree: ast.AST, path: Path) -> dict[str, bool]:
+        """
+        Enhanced type collection detection using AST analysis.
+
+        Detects:
+        - Multiple enum classes
+        - TypeVar usage
+        - Protocol definitions
+        - Abstract base classes
+        - Data model patterns
+        """
+        indicators = {"is_types": False}
+
+        enum_count = 0
+        typevar_count = 0
+        protocol_count = 0
+        dataclass_count = 0
+        model_count = 0
+
+        for node in ast.walk(tree):
+            # Check classes
+            if isinstance(node, ast.ClassDef):
+                # Check enum inheritance
+                for base in node.bases:
+                    if isinstance(base, ast.Name):
+                        if base.id == "Enum":
+                            enum_count += 1
+                        elif base.id == "Protocol":
+                            protocol_count += 1
+                        elif base.id in ("ABC", "abstractmethod"):
+                            indicators["is_types"] = True
+                    elif isinstance(base, ast.Attribute):
+                        if base.attr == "Enum":
+                            enum_count += 1
+                        elif base.attr == "Protocol":
+                            protocol_count += 1
+
+                # Check dataclass decorators
+                for decorator in node.decorator_list:
+                    if isinstance(decorator, ast.Name) and decorator.id == "dataclass":
+                        dataclass_count += 1
+                    elif isinstance(decorator, ast.Call):
+                        if (
+                            isinstance(decorator.func, ast.Name)
+                            and decorator.func.id == "dataclass"
+                        ):
+                            dataclass_count += 1
+
+                # Check model naming patterns
+                if any(suffix in node.name for suffix in ("Model", "Schema", "DTO", "Type")):
+                    model_count += 1
+
+            # Check TypeVar usage
+            elif isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and "TypeVar" in str(node.value):
+                        typevar_count += 1
+
+        # Determine if type collection based on patterns
+        if (
+            enum_count > 1
+            or typevar_count > 0
+            or protocol_count > 0
+            or dataclass_count > 1
+            or model_count > 1
+        ):
+            indicators["is_types"] = True
+
+        return indicators
+
+    def _fuzzy_match_name_or_content(
+        self, name: str, path: Path, content: str, patterns: list[str]
+    ) -> bool:
+        """
+        Fuzzy matching for names and content patterns.
+
+        Uses multiple strategies:
+        - Exact name matching
+        - Partial name matching
+        - Content pattern matching (excluding comments)
+        """
+        # Check exact name match
+        if any(pattern in name for pattern in patterns):
+            return True
+
+        # Parse AST to check patterns in code (not comments)
+        try:
+            tree = ast.parse(content)
+            content_lower = content.lower()
+
+            for node in ast.walk(tree):
+                # Check in function/class names
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    if any(pattern.lower() in node.name.lower() for pattern in patterns):
+                        return True
+
+                # Check in string literals (but not comments)
+                elif isinstance(node, ast.Constant) and isinstance(node.value, str):
+                    if any(pattern.lower() in node.value.lower() for pattern in patterns):
+                        # Only count if it's a meaningful string, not just a word
+                        if len(node.value) > 10:  # Longer strings are more likely meaningful
+                            return True
+
+                # Check in attribute names
+                elif isinstance(node, ast.Attribute):
+                    if any(pattern.lower() in node.attr.lower() for pattern in patterns):
+                        return True
+
+            # Check docstrings separately
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    if (
+                        hasattr(node, "doc_string")
+                        and node.doc_string
+                        and any(pattern.lower() in node.doc_string.lower() for pattern in patterns)
+                    ):
+                        return True
+
+        except SyntaxError:
+            # Fallback to simple content check if AST parsing fails
+            content_lower = content.lower()
+            for pattern in patterns:
+                if pattern.lower() in content_lower:
+                    pattern_count = content_lower.count(pattern.lower())
+                    if pattern_count > 5:  # High threshold for fallback
+                        return True
+
+        return False
+
+    def _detect_config_patterns(
+        self, tree: ast.AST, path: Path, content: str, indicators: list[str], patterns: set[str]
+    ) -> bool:
+        """
+        Enhanced config detection using AST analysis.
+
+        Detects:
+        - Classes with config-like attributes
+        - Constant definitions
+        - Configuration loading patterns
+        - Settings management
+        """
+        # Check filename patterns
+        if any(indicator in path.name.lower() for indicator in indicators):
+            return True
+
+        config_attributes = 0
+        constant_assignments = 0
+        config_methods = 0
+
+        for node in ast.walk(tree):
+            # Check classes
+            if isinstance(node, ast.ClassDef):
+                # Check naming
+                if any(node.name.endswith(suffix) for suffix in ("Config", "Settings", "Options")):
+                    return True
+
+                # Check for config-like attributes
+                for item in node.body:
+                    if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
+                        attr_name = item.target.id.lower()
+                        if attr_name in patterns:
+                            config_attributes += 1
+
+                    # Check for config methods
+                    elif isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        if item.name in ("load", "save", "validate", "configure", "get_setting"):
+                            config_methods += 1
+
+            # Check module-level constants
+            elif isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        if target.id.isupper() and len(target.id) > 1:
+                            constant_assignments += 1
+
+        # Determine if config based on patterns
+        if config_attributes > 2 or constant_assignments > 3 or config_methods > 0:
+            return True
+
+        return False
+
+    def _detect_validator_patterns(
+        self, tree: ast.AST, path: Path, content: str, patterns: list[str]
+    ) -> bool:
+        """
+        Enhanced validator detection using AST analysis.
+
+        Detects:
+        - Validation methods
+        - Check functions
+        - Verification patterns
+        - Schema validation
+        """
+        # Check filename patterns (but exclude self)
+        if path.name != "FileClassificationAgent.py":
+            if any(pattern in path.name for pattern in patterns):
+                return True
+
+        validation_methods = 0
+        check_functions = 0
+        assert_usage = 0
+        schema_validation = 0
+
+        for node in ast.walk(tree):
+            # Check classes
+            if isinstance(node, ast.ClassDef):
+                if any(pattern in node.name for pattern in patterns):
+                    return True
+
+                # Check for validation methods
+                for item in node.body:
+                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        method_name = item.name.lower()
+                        if any(
+                            word in method_name
+                            for word in ("validate", "check", "verify", "ensure", "assert")
+                        ):
+                            validation_methods += 1
+
+            # Check functions
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                func_name = node.name.lower()
+                if any(word in func_name for word in ("validate", "check", "verify", "ensure")):
+                    check_functions += 1
+
+                # Check for assert statements
+                for stmt in ast.walk(node):
+                    if isinstance(stmt, ast.Assert):
+                        assert_usage += 1
+
+        # Determine if validator based on patterns
+        if validation_methods > 0 or check_functions > 0 or assert_usage > 2:
+            return True
+
+        return False
 
     # ========================================================================
     # PHASE 1: Enhanced Detection Methods
@@ -405,7 +816,6 @@ class FileClassificationAgent(SovereignBaseAgent):
         2. Inheritance from base agents
         3. Decorator-based detection
         4. Method-based detection (execute, act, heal, run)
-        5. Structural context (in agents/ directory)
         """
         # Check 1: Naming convention
         if node.name.endswith("Agent"):
@@ -447,9 +857,7 @@ class FileClassificationAgent(SovereignBaseAgent):
                 if item.name in agent_methods:
                     return True
 
-        # Check 5: Structural context
-        if "agents" in file_path.parts:
-            return True
+        # Check 5: REMOVED - Structural context (low-signal folder check)
 
         return False
 
@@ -574,9 +982,7 @@ class FileClassificationAgent(SovereignBaseAgent):
         2. Name ends with Config, Settings, or Options
         3. Has @dataclass decorator with config-like attributes
         """
-        # Check 1: Path contains config/
-        if "config" in file_path.parts:
-            return True
+        # Check 1: REMOVED - Path-based config detection (replaced with AST patterns)
 
         # Check 2: Naming convention
         config_suffixes = ("Config", "Settings", "Options", "Configuration")

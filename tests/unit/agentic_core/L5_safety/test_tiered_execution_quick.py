@@ -40,7 +40,7 @@ def test_implementation_structure():
         ),
         (
             "NamingAgent import",
-            "from agentic_core.L5_safety.validators.NamingAgent import get_naming_agent",
+            "from agentic_core.L5_safety.validators.naming_agent_validator import get_naming_agent",
         ),
         (
             "ImportAgent import",
