@@ -80,9 +80,17 @@ FileType = Literal[
     "ENGINE",
     "STUB",
     "TEST",
-    "SCRIPT",  # NEW: For ops_scripts and maintenance tools
-    "TYPES",  # NEW: For schemas/types/enums/collections
+    "SCRIPT",  # For ops_scripts and maintenance tools
+    "TYPES",  # For schemas/types/enums/collections
     "GATEWAY",
+    # PHASE 3: New categories
+    "SERVICE",  # Service classes with dependency injection
+    "FACTORY",  # Factory pattern classes
+    "ASYNC_AGENT",  # Async-based agents
+    "ADAPTER",  # Adapter/wrapper/proxy classes
+    "CONFIG",  # Configuration classes
+    "MODEL",  # Data model classes (Pydantic, dataclass)
+    "REPOSITORY",  # Repository pattern classes
     "IGNORE",
 ]
 
@@ -121,9 +129,17 @@ class FileClassificationAgent(SovereignBaseAgent):
                 "ENGINE": 0,
                 "STUB": 0,
                 "TEST": 0,
-                "SCRIPT": 0,  # NEW: Script category
-                "TYPES": 0,  # NEW: Types category
+                "SCRIPT": 0,
+                "TYPES": 0,
                 "GATEWAY": 0,
+                # PHASE 3: New categories
+                "SERVICE": 0,
+                "FACTORY": 0,
+                "ASYNC_AGENT": 0,
+                "ADAPTER": 0,
+                "CONFIG": 0,
+                "MODEL": 0,
+                "REPOSITORY": 0,
             },
         }
         # CACHE: Track file paths in memory to avoid repetitive disk scanning (O(1) lookups)
