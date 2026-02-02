@@ -1733,6 +1733,26 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
             }
             all_violations.append(violation_dict)
 
+    # [PHASE 3 ENHANCEMENT] Get FileClassificationAgent violations from early detection
+    classification_violations = state_mgr.state.get("classification_violations", [])
+    for class_violation in classification_violations:
+        if isinstance(class_violation, dict):
+            subtype = class_violation.get("subtype", "UNKNOWN")
+            count = class_violation.get("count", 1)
+            violation_dict = {
+                "type": "CLASSIFICATION",
+                "subtype": subtype,
+                "source": "FileClassificationAgent",
+                "file": class_violation.get("file", "multiple"),
+                "message": f"{subtype} violation: {count} file(s) need attention",
+                "severity": "medium",
+                "recommended_action": f"Run FileClassificationAgent to fix {subtype} issues",
+                "llm_triggered": decision_engine.enable_llm,
+                "confidence": round(class_violation.get("confidence", 0.7), 3),
+                "count": count,
+            }
+            all_violations.append(violation_dict)
+
     violation_count = len(all_violations)
     status = "COMPLIANT" if violation_count == 0 else "NON-COMPLIANT"
 
