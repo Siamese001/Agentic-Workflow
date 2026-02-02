@@ -227,6 +227,115 @@ class RGAgentBase(AppBaseAgent):
             "meta_learning_domain": self._ml_domain,
         }
 
+    # ==================== PHASE 2.2: ENHANCED PATTERN CACHING ====================
+
+    def cache_pattern_with_metadata(
+        self,
+        pattern_type: str,
+        pattern_id: str,
+        pattern_data: dict[str, Any],
+        success_count: int = 0,
+    ) -> bool:
+        """
+        Cache a pattern with full metadata for enhanced learning.
+
+        Args:
+            pattern_type: Type of pattern (resume_quality, ats_compat, etc.)
+            pattern_id: Unique pattern identifier
+            pattern_data: Pattern data
+            success_count: Number of successful applications
+
+        Returns:
+            True if cached successfully
+        """
+        import time
+
+        # Check rate limit and capacity
+        if not self.check_and_enforce_rate_limit("pattern"):
+            return False
+        if not self.check_cache_capacity():
+            return False
+
+        # Build enhanced metadata
+        enhanced_data = {
+            **pattern_data,
+            "_metadata": {
+                "pattern_type": pattern_type,
+                "domain": "apps_rg",
+                "created_at": time.time(),
+                "success_count": success_count,
+                "similarity_threshold": self._similarity_threshold,
+            },
+        }
+
+        # Use isolated cache operation
+        success, namespaced_key = self.isolate_cache_operation(
+            "set", f"{pattern_type}:{pattern_id}", enhanced_data
+        )
+        if not success:
+            return False
+
+        try:
+            result = self.ml_cache_set(namespaced_key, enhanced_data)
+            if result:
+                self.update_cache_metrics(1)
+            return result
+        except Exception as e:
+            Logger.error(f"[{self.__class__.__name__}] Enhanced cache failed: {e}")
+            return False
+
+    def retrieve_pattern_with_metadata(
+        self,
+        pattern_type: str,
+        pattern_id: str,
+    ) -> dict[str, Any] | None:
+        """
+        Retrieve a pattern with its metadata.
+
+        Args:
+            pattern_type: Type of pattern
+            pattern_id: Pattern identifier
+
+        Returns:
+            Pattern data with metadata or None
+        """
+        if not self.check_and_enforce_rate_limit("request"):
+            return None
+
+        namespaced_key = self.get_namespaced_cache_key(f"{pattern_type}:{pattern_id}")
+        try:
+            return self.ml_cache_get(namespaced_key)
+        except Exception as e:
+            Logger.error(f"[{self.__class__.__name__}] Pattern retrieval failed: {e}")
+            return None
+
+    def increment_pattern_success(
+        self,
+        pattern_type: str,
+        pattern_id: str,
+    ) -> bool:
+        """
+        Increment success count for a pattern (learning signal).
+
+        Args:
+            pattern_type: Type of pattern
+            pattern_id: Pattern identifier
+
+        Returns:
+            True if updated successfully
+        """
+        pattern = self.retrieve_pattern_with_metadata(pattern_type, pattern_id)
+        if pattern is None:
+            return False
+
+        metadata = pattern.get("_metadata", {})
+        metadata["success_count"] = metadata.get("success_count", 0) + 1
+        pattern["_metadata"] = metadata
+
+        return self.cache_pattern_with_metadata(
+            pattern_type, pattern_id, pattern, metadata["success_count"]
+        )
+
     # ==================== RG-SPECIFIC META-LEARNING ====================
 
     def ml_cache_resume_quality_pattern(
