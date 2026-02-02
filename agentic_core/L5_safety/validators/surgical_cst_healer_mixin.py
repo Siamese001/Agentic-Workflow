@@ -18,6 +18,11 @@ from .surgical_context import (
     SurgicalContext,
     ViolationConstraint,
 )
+from .cst_transformers import (
+    create_import_remover,
+    create_docstring_inserter,
+    create_bare_except_fixer,
+)
 
 
 @dataclass
@@ -183,16 +188,31 @@ class SurgicalCSTHealerMixin:
             source_code = context.file_path.read_text(encoding="utf-8")
             cst_tree = cst.parse_module(source_code)
 
-            # Create CST transformer
-            transformer = SurgicalCSTTransformer(context)
+            # Determine which transformer to use based on violations
+            total_modifications = 0
 
-            # Apply transformations
-            modified_cst = cst_tree.visit(transformer)
+            # Handle import removals
+            import_remover = create_import_remover(context.violations)
+            if import_remover:
+                cst_tree = cst_tree.visit(import_remover)
+                total_modifications += import_remover.modifications_made
+
+            # Handle docstring insertions
+            docstring_inserter = create_docstring_inserter(context.violations)
+            if docstring_inserter:
+                cst_tree = cst_tree.visit(docstring_inserter)
+                total_modifications += docstring_inserter.modifications_made
+
+            # Handle bare except fixes
+            bare_except_fixer = create_bare_except_fixer(context.violations)
+            if bare_except_fixer:
+                cst_tree = cst_tree.visit(bare_except_fixer)
+                total_modifications += bare_except_fixer.modifications_made
 
             # Check if any modifications were made
-            if transformer.modifications_made > 0:
+            if total_modifications > 0:
                 # Generate code with CST (preserves formatting and comments)
-                modified_code = modified_cst.code
+                modified_code = cst_tree.code
 
                 # Write the modified code back
                 context.file_path.write_text(modified_code, encoding="utf-8")
@@ -200,14 +220,14 @@ class SurgicalCSTHealerMixin:
                 return {
                     "status": "success",
                     "violations_found": len(context.violations),
-                    "violations_fixed": transformer.modifications_made,
+                    "violations_fixed": total_modifications,
                     "errors": 0,
-                    "skipped": len(context.violations) - transformer.modifications_made,
-                    "details": f"Fixed {transformer.modifications_made} violations using CST",
+                    "skipped": len(context.violations) - total_modifications,
+                    "details": f"Fixed {total_modifications} violations using CST transformers",
                     "artifacts": [
                         {
                             "type": "cst_modification",
-                            "modifications_made": transformer.modifications_made,
+                            "modifications_made": total_modifications,
                             "preserved_formatting": True,
                         }
                     ],
