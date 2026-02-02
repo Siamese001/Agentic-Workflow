@@ -193,17 +193,40 @@ class SovereignBaseAgent(
 
     def heal(self, violation: dict[str, Any], **kwargs) -> dict[str, Any]:
         """
-        Default interface compliance for the Healer Protocol.
-
-        Satisfies the PreFlightValidator requirement for all 150+ agents.
-        Specific agents (like CanonBaseAgent) must override this for active healing.
+        Enhanced healing interface with meta-learning integration.
 
         Args:
             violation: Dictionary detailing the detected violation.
             **kwargs: Future-proofing for protocol expansions.
 
         Returns:
-            Dict containing status and metadata.
+            Dict containing status and metadata with meta-learning enhancement.
+        """
+        # Use meta-learning enhanced heal if available
+        if hasattr(self, "ml_enhanced_heal") and hasattr(self, "_do_heal"):
+            return self.ml_enhanced_heal(violation, self._do_heal, **kwargs)
+
+        # Fallback to default implementation
+        return {
+            "status": "skipped",
+            "reason": "default_base_implementation",
+            "handler": self.__class__.__name__,
+            "violation_id": violation.get("id", "unknown"),
+        }
+
+    def _do_heal(self, violation: dict[str, Any], **kwargs) -> dict[str, Any]:
+        """
+        Actual healing implementation to be called by meta-learning enhanced heal.
+
+        Subclasses should override this method instead of heal() to benefit
+        from meta-learning capabilities.
+
+        Args:
+            violation: Dictionary detailing the detected violation.
+            **kwargs: Additional arguments for healing.
+
+        Returns:
+            Dict containing healing result.
         """
         return {
             "status": "skipped",
