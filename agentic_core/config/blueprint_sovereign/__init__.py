@@ -19,9 +19,10 @@ L5_safety/validators/structure_blueprint.py
 
 # SSOT Exports - Import from structure_blueprint (actual SSOT location)
 try:
-    from agentic_core.L5_safety.validators.structure_blueprint import CANON_SIGNALS
+    # CANON_SIGNALS has been deprecated and removed
+    pass
 except ImportError:
-    CANON_SIGNALS = set()
+    pass
 
 # Define constants
 DEFAULT_EXCLUDE_DIRS = {

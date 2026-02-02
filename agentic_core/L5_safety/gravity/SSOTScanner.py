@@ -71,20 +71,20 @@ class SSOTScanner:
         "semantic_memory": "L2",  # Semantic memory is L2
     }
 
-    # Canonical signals for Phase 4 compliance
-    CANON_SIGNALS: set[str] = {
-        "healing",
-        "testing",
-        "validation",
-        "execution",
-        "orchestration",
-        "state",
-        "safety",
-        "cognition",
-        "intent",
-        "learning",
-        "planning",
-    }
+    # DEPRECATED: CANON_SIGNALS removed - replaced by dynamic validation
+    # SOVEREIGN_SIGNALS: set[str] = {
+    #     "healing",
+    #     "testing",
+    #     "validation",
+    #     "execution",
+    #     "orchestration",
+    #     "state",
+    #     "safety",
+    #     "cognition",
+    #     "intent",
+    #     "learning",
+    #     "planning",
+    # }
 
     def __init__(self, project_root: Path):
         """

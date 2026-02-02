@@ -10,9 +10,17 @@ UPDATED: Uses SOVEREIGN_TERRITORIES and checks HealerMixin capabilities directly
 import sys
 from pathlib import Path
 
-# Add project root to path (go up 4 levels: scripts -> L0_maintenance -> agentic_core -> project_root)
+# Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+# Import HealerMixin
+try:
+    from agentic_core.L5_safety.gravity.gravity_agent import HealerMixin
+except ImportError:
+    # Fallback for testing
+    class HealerMixin:
+        pass
 
 
 class TestConsolidatedMigration:
@@ -112,19 +120,13 @@ class TestConsolidatedMigration:
     def test_legacy_registry_status(self):
         """Check status of legacy CANON_VALIDATION_REGISTRY."""
         try:
-            # Try to import - if it fails, that's GOOD (means it's gone)
-            try:
-                from agentic_core.L5_safety.validators.structure_blueprint import (
-                    CANON_VALIDATION_REGISTRY,
-                )
+            # Registry has been removed - verify it's gone
+            import agentic_core.L5_safety.validators.structure_blueprint as sb
 
-                # If it exists but is empty or doesn't have keys 17/19, that's also OK
-                has_legacy_keys = 17 in CANON_VALIDATION_REGISTRY or 19 in CANON_VALIDATION_REGISTRY
-                if has_legacy_keys:
-                    print("⚠️  CANON_VALIDATION_REGISTRY still has legacy keys 17/19")
-            except (ImportError, NameError, AttributeError):
-                # This is GOOD - means it's been removed
-                pass
+            assert not hasattr(sb, "CANON_VALIDATION_REGISTRY"), (
+                "CANON_VALIDATION_REGISTRY should have been removed"
+            )
+            print("✅ CANON_VALIDATION_REGISTRY successfully removed")
 
             self.passed += 1
             print("✅ test_legacy_registry_status PASSED")

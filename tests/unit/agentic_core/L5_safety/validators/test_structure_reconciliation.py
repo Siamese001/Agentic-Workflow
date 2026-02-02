@@ -25,7 +25,8 @@ class TestStructureReconciliation:
 
     def test_apps_shared_modernization(self):
         """
-        CRITICAL: Verify apps_shared no longer contains evicted folders 'base_agents' or 'common_utils'.
+        CRITICAL: Verify apps_shared no longer contains evicted folders
+        'base_agents' or 'common_utils'.
         """
         shared_folders = sb.SOVEREIGN_REGISTRY["apps_shared"]["subfolders"]
 
@@ -98,12 +99,15 @@ class TestStructureReconciliation:
 
     def test_canon_validation_registry_eviction_list(self):
         """
-        CRITICAL: Verify CANON_VALIDATION_REGISTRY lists core_extensions as evicted.
+        CRITICAL: Verify CANON_VALIDATION_REGISTRY has been removed.
         """
-        forbidden = sb.CANON_VALIDATION_REGISTRY.get("forbidden_patterns", [])
-        assert "agentic_core/utils/core_extensions" in forbidden, (
-            "core_extensions not listed in CANON_VALIDATION_REGISTRY forbidden_patterns"
-        )
+        # Registry has been removed - verify it's gone
+        try:
+            _ = sb.CANON_VALIDATION_REGISTRY
+            pytest.fail("CANON_VALIDATION_REGISTRY should have been removed")
+        except (AttributeError, NameError):
+            # This is expected - registry has been removed
+            pass
 
     def test_sovereign_registry_note_updated(self):
         """
@@ -153,25 +157,15 @@ class TestReconciliationIntegrity:
 
     def test_evicted_folders_consistency(self):
         """
-        CRITICAL: Verify all evicted folders in CANON_VALIDATION_REGISTRY are actually evicted.
+        CRITICAL: Verify evicted folders consistency after registry removal.
         """
-        forbidden = sb.CANON_VALIDATION_REGISTRY.get("forbidden_patterns", [])
-
-        # Check each evicted folder is not in active registries
-        for evicted_path in forbidden:
-            if "apps_shared" in evicted_path:
-                folder_name = evicted_path.split("/")[-1]
-                assert folder_name not in sb.APPS_SHARED_SUBFOLDER_MAP, (
-                    f"Evicted folder {folder_name} still in APPS_SHARED_SUBFOLDER_MAP"
-                )
-
-            if "core_extensions" in evicted_path:
-                assert evicted_path not in sb.L4_APPROVED_FOLDERS, (
-                    f"Evicted path {evicted_path} still in L4_APPROVED_FOLDERS"
-                )
-                assert evicted_path not in sb.AST_PLACEMENT_SIGNALS, (
-                    f"Evicted path {evicted_path} still in AST_PLACEMENT_SIGNALS"
-                )
+        # Registry has been removed - verify core_extensions is still properly evicted
+        assert "core_extensions" not in sb.APPS_SHARED_SUBFOLDER_MAP, (
+            "core_extensions should remain evicted from APPS_SHARED_SUBFOLDER_MAP"
+        )
+        assert "core_extensions" not in sb.CORE_SUBFOLDER_MAP.get("utils", []), (
+            "core_extensions should remain evicted from CORE_SUBFOLDER_MAP"
+        )
 
 
 if __name__ == "__main__":

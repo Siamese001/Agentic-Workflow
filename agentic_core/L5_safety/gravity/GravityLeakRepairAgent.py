@@ -159,7 +159,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             "rationale": fix.rationale,
         }
         self.ml_cache_set(cache_key, fix_dict, ttl=3600)
-        
+
         return fix
 
     def _suggest_utils_import(self, import_statement: str) -> str:
@@ -396,6 +396,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         Returns:
             Dictionary with healing results following standard_heal format.
         """
+
         def _heal_gravity_violation(violation: dict) -> dict:
             path = violation.get("path", "")
             import_statement = violation.get("import_statement", "")
@@ -420,7 +421,12 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                             "rationale": fix.rationale,
                         }
                         self.ml_store_healing_pattern(violation, healing_result)
-                        return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+                        return {
+                            "violations_fixed": 1,
+                            "violations_found": 1,
+                            "errors": 0,
+                            "skipped": 0,
+                        }
                 except Exception as e:
                     self.logger.error(f"[GRAVITY_LEAK_REPAIR] Failed to heal: {e}")
                     return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}

@@ -14,10 +14,19 @@ import ast
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock
+import pytest
 
 # Add project root to path
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+# Import HealerMixin
+try:
+    from agentic_core.L5_safety.gravity.gravity_agent import HealerMixin
+except ImportError:
+    # Fallback for testing
+    class HealerMixin:
+        pass
 
 
 class TestCanonKeyRemoval:
@@ -31,81 +40,26 @@ class TestCanonKeyRemoval:
         self.errors = []
 
     def test_ssot_registry_integrity(self):
-        """Verify Registry Extraction in Blueprint."""
+        """Verify Registry Extraction in Blueprint - DEPRECATED."""
         try:
+            # Registry has been removed - this test now validates removal
             from agentic_core.L5_safety.validators.structure_blueprint import (
-                CANON_VALIDATION_REGISTRY,
+                SOVEREIGN_TERRITORIES,
             )
 
-            # Check key 0 exists and has correct method
-            assert 0 in CANON_VALIDATION_REGISTRY, "Key 0 missing from registry"
-            assert CANON_VALIDATION_REGISTRY[0]["method"] == "check_key_00_no_hardcoded_secrets", (
-                "Key 0 method mismatch"
+            # Verify the registry is gone by checking it's not in the module
+            import agentic_core.L5_safety.validators.structure_blueprint as sb
+
+            assert not hasattr(sb, "CANON_VALIDATION_REGISTRY"), (
+                "CANON_VALIDATION_REGISTRY should have been removed"
             )
 
-            # Check key 6 has CRITICAL criticality
-            assert 6 in CANON_VALIDATION_REGISTRY, "Key 6 missing from registry"
-            assert CANON_VALIDATION_REGISTRY[6]["criticality"] == "CRITICAL", (
-                "Key 6 criticality mismatch"
-            )
+            # Verify SOVEREIGN_TERRITORIES still works as replacement
+            assert "agentic_core" in SOVEREIGN_TERRITORIES
+            print("✅ Canon registry successfully removed, SOVEREIGN_TERRITORIES available")
 
-            # Check we have all expected keys
-            expected_keys = {
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                10,
-                11,
-                12,
-                13,
-                14,
-                15,
-                16,
-                17,
-                18,
-                19,
-                20,
-                21,
-                22,
-                23,
-                24,
-                25,
-                26,
-                27,
-                28,
-                29,
-                30,
-                31,
-                32,
-                33,
-                34,
-                36,
-                37,
-                38,
-                39,
-                40,
-                41,
-                42,
-                43,
-                44,
-                45,
-                46,
-                47,
-                49,
-                50,
-            }
-            actual_keys = set(CANON_VALIDATION_REGISTRY.keys())
-            missing = expected_keys - actual_keys
-            assert not missing, f"Missing keys: {missing}"
-
-            self.passed += 1
-            print("✅ test_ssot_registry_integrity PASSED")
+        except ImportError as e:
+            pytest.fail(f"Structure blueprint import failed: {e}")
         except Exception as e:
             self.failed += 1
             self.errors.append(f"test_ssot_registry_integrity: {e}")
@@ -239,9 +193,9 @@ class TestCanonKeyRemoval:
                 assert "CANON KEY 51" not in content, "Template should not reference 'CANON KEY 51'"
 
                 # Should have new Sovereign Validation reference
-                assert (
-                    "Sovereign Validation" in content or "CANON_VALIDATION_REGISTRY" in content
-                ), "Template should reference Sovereign Validation"
+                assert "Sovereign Validation" in content, (
+                    "Template should reference Sovereign Validation"
+                )
 
             self.passed += 1
             print("✅ test_templates_cleansed PASSED")
@@ -251,25 +205,18 @@ class TestCanonKeyRemoval:
             print(f"❌ test_templates_cleansed FAILED: {e}")
 
     def test_healer_mixin_has_all_stub_methods(self):
-        """Verify HealerMixin has stub methods for all registry keys."""
+        """Verify HealerMixin functionality after registry removal."""
         try:
-            from agentic_core.L5_safety.validators.structure_blueprint import (
-                CANON_VALIDATION_REGISTRY,
-            )
-
+            # Test that HealerMixin still works without canon registry
             class MockAgent(HealerMixin):
                 def __init__(self):
                     self.logger = MagicMock()
 
             agent = MockAgent()
 
-            missing_methods = []
-            for key_id, rule in CANON_VALIDATION_REGISTRY.items():
-                method_name = rule["method"]
-                if not hasattr(agent, method_name):
-                    missing_methods.append(f"Key {key_id}: {method_name}")
-
-            assert len(missing_methods) == 0, f"Missing methods in HealerMixin: {missing_methods}"
+            # Verify mixin has basic healing functionality
+            assert hasattr(agent, "heal")
+            print("✅ HealerMixin functionality preserved after registry removal")
 
             self.passed += 1
             print("✅ test_healer_mixin_has_all_stub_methods PASSED")

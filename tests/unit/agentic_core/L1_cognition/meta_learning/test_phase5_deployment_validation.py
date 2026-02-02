@@ -14,7 +14,6 @@ Success Criteria:
 """
 
 import sys
-import time
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -35,7 +34,6 @@ class TestStagingEnvironmentValidation:
     def test_meta_learning_client_initialization(self):
         """Test MetaLearningClient initializes correctly."""
         from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
-            MetaLearningClient,
             get_meta_learning_client,
         )
 
@@ -96,9 +94,7 @@ class TestStagingEnvironmentValidation:
 class TestProductionRolloutReadiness:
     """Test production rollout readiness."""
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_sovereign_base_agent_production_ready(self, mock_integrity):
         """Test SovereignBaseAgent is production ready."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -112,9 +108,7 @@ class TestProductionRolloutReadiness:
         assert capabilities["security_validated"] is True
         assert capabilities["mro_hardened"] is True
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_heal_method_production_safe(self, mock_integrity):
         """Test heal method is production safe."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -219,9 +213,7 @@ class TestPostDeploymentOptimization:
 class TestPhase5Integration:
     """Phase 5 integration tests."""
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_end_to_end_healing_cycle(self, mock_integrity):
         """Test end-to-end healing cycle in production-like environment."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent

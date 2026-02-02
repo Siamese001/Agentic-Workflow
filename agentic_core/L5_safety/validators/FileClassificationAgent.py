@@ -83,14 +83,12 @@ FileType = Literal[
     "SCRIPT",  # For ops_scripts and maintenance tools
     "TYPES",  # For schemas/types/enums/collections
     "GATEWAY",
-    # PHASE 3: New categories
-    "SERVICE",  # Service classes with dependency injection
-    "FACTORY",  # Factory pattern classes
-    "ASYNC_AGENT",  # Async-based agents
-    "ADAPTER",  # Adapter/wrapper/proxy classes
-    "CONFIG",  # Configuration classes
-    "MODEL",  # Data model classes (Pydantic, dataclass)
-    "REPOSITORY",  # Repository pattern classes
+    # WINDSURF IMPLEMENTATION: New architectural categories
+    "ORCHESTRATOR",
+    "VALIDATOR",
+    "FACTORY",
+    "CONFIG",
+    "ADAPTER",
     "IGNORE",
 ]
 
@@ -132,14 +130,12 @@ class FileClassificationAgent(SovereignBaseAgent):
                 "SCRIPT": 0,
                 "TYPES": 0,
                 "GATEWAY": 0,
-                # PHASE 3: New categories
-                "SERVICE": 0,
+                # WINDSURF IMPLEMENTATION: New architectural categories
+                "ORCHESTRATOR": 0,
+                "VALIDATOR": 0,
                 "FACTORY": 0,
-                "ASYNC_AGENT": 0,
-                "ADAPTER": 0,
                 "CONFIG": 0,
-                "MODEL": 0,
-                "REPOSITORY": 0,
+                "ADAPTER": 0,
             },
         }
         # CACHE: Track file paths in memory to avoid repetitive disk scanning (O(1) lookups)
@@ -217,6 +213,12 @@ class FileClassificationAgent(SovereignBaseAgent):
         print(f"  - Scripts: {self.stats['violations']['SCRIPT']}")
         print(f"  - Types:   {self.stats['violations']['TYPES']}")
         print(f"  - Gateways: {self.stats['violations']['GATEWAY']}")
+        # WINDSURF IMPLEMENTATION: New categories summary
+        print(f"  - Orchestrators: {self.stats['violations']['ORCHESTRATOR']}")
+        print(f"  - Validators: {self.stats['violations']['VALIDATOR']}")
+        print(f"  - Factories: {self.stats['violations']['FACTORY']}")
+        print(f"  - Configs: {self.stats['violations']['CONFIG']}")
+        print(f"  - Adapters: {self.stats['violations']['ADAPTER']}")
         if not self.dry_run:
             print(f"Files Renamed:        {self.stats['renamed']}")
             print(f"Imports Fixed:        {self.stats['imports_fixed']}")
@@ -230,16 +232,19 @@ class FileClassificationAgent(SovereignBaseAgent):
         """
         Analyze file AST to determine architectural role with STRICT PRIORITY ORDERING.
 
-        PRIORITY QUEUE (First Match Wins):
-        1. STUB     - File contains NOT_AN_AGENT marker (MUST preempt AGENT)
+        WINDSURF IMPLEMENTATION PRIORITY QUEUE (First Match Wins):
+        1. STUB     - File contains NOT_AN_AGENT marker (preempts all)
         2. TEST     - Path contains tests/ OR name starts with test_
-        3. PROTOCOL - Class inherits from typing.Protocol
-        4. GATEWAY  - Class name contains "Gateway"
-        5. ENGINE   - Path contains engines/ AND has class
-        6. MIXIN    - Class name ends in "Mixin"
-        7. AGENT    - Inherits *Agent OR path in agents/validators
-        8. CLASS    - Any other class
-        9. UTILITY  - No class definitions
+        3. ORCHESTRATOR - Detect if Orchestrator in class name or path
+        4. ADAPTER  - Detect if Strategy or Adapter in class name or file path
+        5. CONFIG   - Detect if file name or path contains config, blueprint, settings, or manifest
+        6. VALIDATOR - Detect if path contains validators/ or file name ends in _validator
+        7. PROTOCOL - Class inherits from typing.Protocol
+        8. FACTORY  - Detect if class name ends in Factory
+        9. AGENT    - Keep existing inheritance/path logic
+        10. MIXIN   - Keep existing logic
+        11. CLASS   - Fallback for any other class
+        12. UTILITY - Fallback for files with no classes
         """
         # --- EXEMPTION: SSOT & CONFIG FILES ---
         critical_ignores = {
@@ -289,12 +294,19 @@ class FileClassificationAgent(SovereignBaseAgent):
         has_class = False
         is_agent = False
         is_protocol = False
-        is_gateway = False
+        # is_gateway = False  # Not used in new priority queue
         is_mixin = False
 
         # [HARDENED] Structural Contexts
         is_structural_agent = "agents" in path.parts or "validators" in path.parts
-        is_engine = "engines" in path.parts
+        # is_engine = "engines" in path.parts  # Not used in new priority queue
+
+        # WINDSURF IMPLEMENTATION: New category detection flags
+        is_orchestrator = False
+        is_adapter = False
+        is_config = False
+        is_validator = False
+        is_factory = False
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
@@ -309,12 +321,23 @@ class FileClassificationAgent(SovereignBaseAgent):
                         is_protocol = True
 
                 # Name-based checks
-                if "Gateway" in name:
-                    is_gateway = True
                 if name.endswith("Mixin"):
                     is_mixin = True
                 if name.endswith("Agent"):
                     is_agent = True
+
+                # WINDSURF IMPLEMENTATION: New category detection
+                if "Orchestrator" in name or "orchestrator" in str(path):
+                    is_orchestrator = True
+                if (
+                    "Strategy" in name
+                    or "Adapter" in name
+                    or "strategy" in str(path)
+                    or "adapter" in str(path)
+                ):
+                    is_adapter = True
+                if name.endswith("Factory"):
+                    is_factory = True
 
                 # Inheritance Check for Agents (if not already found)
                 if not is_agent:
@@ -324,21 +347,48 @@ class FileClassificationAgent(SovereignBaseAgent):
                         ):
                             is_agent = True
 
-        # [PRIORITY EXECUTION] - Order matters!
-        if is_protocol:
+        # WINDSURF IMPLEMENTATION: Check for CONFIG in path/filename
+        config_indicators = {"config", "blueprint", "settings", "manifest"}
+        if any(indicator in str(path).lower() for indicator in config_indicators):
+            is_config = True
+
+        # WINDSURF IMPLEMENTATION: Check for VALIDATOR in path/filename
+        if "validators" in str(path) or path.name.endswith("_validator"):
+            is_validator = True
+
+        # [WINDSURF IMPLEMENTATION] PRIORITY EXECUTION - Order matters!
+        # 1. STUB: Already handled above (preempts all)
+        # 2. TEST: Already handled above
+        # 3. ORCHESTRATOR: Detect if Orchestrator in class name or path
+        if is_orchestrator:
+            return "ORCHESTRATOR"
+        # 4. ADAPTER: Detect if Strategy or Adapter in class name or file path
+        elif is_adapter:
+            return "ADAPTER"
+        # 5. CONFIG: Detect if file name or path contains config, blueprint, settings, or manifest
+        elif is_config:
+            return "CONFIG"
+        # 6. VALIDATOR: Detect if path contains validators/ or file name ends in _validator
+        elif is_validator:
+            return "VALIDATOR"
+        # 7. PROTOCOL: Keep existing AST check
+        elif is_protocol:
             return "PROTOCOL"
-        elif is_gateway:
-            return "GATEWAY"
-        elif is_engine and has_class:
-            return "ENGINE"
-        elif is_mixin:
-            return "MIXIN"
+        # 8. FACTORY: Detect if class name ends in Factory
+        elif is_factory:
+            return "FACTORY"
+        # 9. AGENT: Keep existing inheritance/path logic
         elif is_agent:
             return "AGENT"
+        # 10. MIXIN: Keep existing logic
+        elif is_mixin:
+            return "MIXIN"
+        # 11. CLASS: Fallback for any other class
         elif has_class:
             if is_structural_agent:
                 return "AGENT"
             return "CLASS"
+        # 12. UTILITY: Fallback for files with no classes
         else:
             return "UTILITY"
 
@@ -876,6 +926,40 @@ class FileClassificationAgent(SovereignBaseAgent):
                 target_name = target_name.replace("Agent", "")
                 if not target_name.endswith("Stub"):
                     target_name += "Stub"
+
+            # WINDSURF IMPLEMENTATION: New naming conventions
+            elif file_type == "ORCHESTRATOR":
+                # Force PascalCase and ensure Orchestrator suffix
+                if not target_name.endswith("Orchestrator"):
+                    target_name += "Orchestrator"
+
+            elif file_type == "ADAPTER":
+                # Force PascalCase and ensure Strategy suffix (for Strategy patterns)
+                if "Strategy" not in target_name:
+                    # If it's an Adapter, ensure Adapter suffix
+                    if "Adapter" not in target_name:
+                        target_name += "Strategy"  # Default to Strategy for consistency
+
+            elif file_type == "FACTORY":
+                # Force PascalCase and ensure Factory suffix
+                if not target_name.endswith("Factory"):
+                    target_name += "Factory"
+
+            elif file_type == "VALIDATOR":
+                # Force snake_case and ensure validator suffix
+                # Convert PascalCase to snake_case
+                s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", target_name)
+                target_name = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+                if not target_name.endswith("_validator"):
+                    target_name += "_validator"
+
+            elif file_type == "CONFIG":
+                # Force snake_case and ensure config suffix
+                # Convert PascalCase to snake_case
+                s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", target_name)
+                target_name = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+                if not target_name.endswith("_config"):
+                    target_name += "_config"
 
             # Note: TEST handling is done earlier in the method (before AST parsing)
 

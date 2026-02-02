@@ -12,7 +12,6 @@ import re
 from pathlib import Path
 
 from agentic_core.L5_safety.validators.structure_blueprint import (
-    CANON_SIGNALS,
     CORE_SUBFOLDER_MAP,
     FORBIDDEN_PATTERNS,
     FORBIDDEN_ROOT_FOLDERS,
@@ -30,7 +29,19 @@ CANONICAL_DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.it
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 # [PURGE] All hardcoded sets deleted - now derived from blueprint
 FORBIDDEN_FILE_PATTERNS = FORBIDDEN_PATTERNS
-HIGH_SIGNAL_KEYWORDS = CANON_SIGNALS
+HIGH_SIGNAL_KEYWORDS = {
+    "healing",
+    "testing",
+    "validation",
+    "execution",
+    "orchestration",
+    "state",
+    "safety",
+    "cognition",
+    "intent",
+    "learning",
+    "planning",
+}  # DEPRECATED: Replaced hardcoded CANON_SIGNALS
 
 # [DESIGN UNIFICATION] Derive all allowed stages from the SSOT
 ALLOWED_CORE_STAGES = set()

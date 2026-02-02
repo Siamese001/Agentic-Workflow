@@ -353,7 +353,7 @@ class TestEnhancedSovereignBaseAgent:
 
 class TestCacheStrategyManager:
     """Test CacheStrategyManager for healing depth tracking."""
-    
+
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_healing_depth_via_manager(self):
         """Test healing depth tracking through CacheStrategyManager."""
@@ -518,23 +518,25 @@ class TestTop12AgentsIntegration:
 
     def test_gravity_leak_repair_agent_caching(self, mock_ml_infrastructure):
         """Test GravityLeakRepairAgent AST analysis caching."""
-        with patch('agentic_core.L5_safety.gravity.GravityLeakRepairAgent.SovereignBaseAgent.__post_init__'):
+        with patch(
+            "agentic_core.L5_safety.gravity.GravityLeakRepairAgent.SovereignBaseAgent.__post_init__"
+        ):
             agent = agentic_core.L5_safety.gravity.GravityLeakRepairAgent()
-            
+
             # Inject mock ML client
             agent.ml_cache_get = mock_ml_infrastructure.cache_get
             agent.ml_cache_set = mock_ml_infrastructure.cache_set
             agent.ml_recall_healing_pattern = mock_ml_infrastructure.retrieve_healing_patterns
             agent.ml_store_healing_pattern = mock_ml_infrastructure.store_healing_pattern
-            
+
             # Test caching of analysis results
             fix = agent.analyze_violation(
                 Path("/test/file.py"),
                 "from agentic_core.L0_maintenance.scripts import helper",
                 "L5",
-                "L0"
+                "L0",
             )
-            
+
             # Verify cache operations
             mock_ml_infrastructure.cache_get.assert_called()
             mock_ml_infrastructure.cache_set.assert_called_once()
@@ -542,21 +544,21 @@ class TestTop12AgentsIntegration:
 
     def test_ats_compatibility_agent_performance(self, mock_ml_infrastructure):
         """Test ATSCompatibilityAgent validation caching."""
-        with patch('apps_rg.engines.ATSCompatibilityAgent.RGAgentBase.__post_init__'):
+        with patch("apps_rg.engines.ATSCompatibilityAgent.RGAgentBase.__post_init__"):
             agent = apps_rg.engines.ATSCompatibilityAgent()
-            
+
             # Mock strategy with ML integration
             strategy = agent._unified_strategy
             strategy._agent = agent
             agent.ml_cache_get = mock_ml_infrastructure.cache_get
             agent.ml_cache_set = mock_ml_infrastructure.cache_set
-            
+
             # Test validation caching
             resume = {"experience": ["Software Engineer"], "education": ["BS CS"]}
             job_desc = "Looking for software engineer with computer science degree"
-            
+
             score = strategy._calculate_keyword_score(resume, job_desc)
-            
+
             # Verify cache operations
             mock_ml_infrastructure.cache_get.assert_called()
             mock_ml_infrastructure.cache_set.assert_called()
@@ -570,20 +572,17 @@ class TestTop12AgentsIntegration:
                 "pattern_id": "threat_123",
                 "threat_type": "sql_injection",
                 "pattern_signature": "SELECT.*FROM.*WHERE",
-                "healing_strategy": {
-                    "action": "sanitize_input",
-                    "rule": "parameterized_queries"
-                }
+                "healing_strategy": {"action": "sanitize_input", "rule": "parameterized_queries"},
             }
         ]
-        
+
         # Test pattern recall for similar threats
         violation = {
             "type": "security_threat",
             "threat_type": "sql_injection",
-            "pattern": "SELECT * FROM users WHERE id = " + str(123)
+            "pattern": "SELECT * FROM users WHERE id = " + str(123),
         }
-        
+
         # Verify pattern matching
         patterns = mock_ml_infrastructure.retrieve_healing_patterns(violation, "agentic_core")
         assert len(patterns) > 0
@@ -593,7 +592,7 @@ class TestTop12AgentsIntegration:
         """Test healing orchestrator depth tracking."""
         # Test depth limit enforcement
         mock_ml_infrastructure.check_healing_depth.return_value = False
-        
+
         # Verify depth limit prevents infinite loops
         can_heal = mock_ml_infrastructure.check_healing_depth("violation_123")
         assert not can_heal
@@ -603,7 +602,7 @@ class TestTop12AgentsIntegration:
         # Test domain-specific pattern retrieval
         lic_violation = {"type": "lic_domain_violation", "domain": "apps_lic"}
         rg_violation = {"type": "rg_domain_violation", "domain": "apps_rg"}
-        
+
         # Mock domain-specific responses
         def mock_retrieve(violation, domain, top_k=5):
             if domain == "apps_lic":
@@ -612,13 +611,13 @@ class TestTop12AgentsIntegration:
                 return [{"strategy": "rg_specific_fix"}]
             else:
                 return [{"strategy": "core_fix"}]
-        
+
         mock_ml_infrastructure.retrieve_healing_patterns.side_effect = mock_retrieve
-        
+
         # Test domain isolation
         lic_patterns = mock_ml_infrastructure.retrieve_healing_patterns(lic_violation, "apps_lic")
         rg_patterns = mock_ml_infrastructure.retrieve_healing_patterns(rg_violation, "apps_rg")
-        
+
         assert lic_patterns[0]["strategy"] == "lic_specific_fix"
         assert rg_patterns[0]["strategy"] == "rg_specific_fix"
 
@@ -626,11 +625,11 @@ class TestTop12AgentsIntegration:
         """Test TTL expiration handling."""
         # Simulate expired cache entry
         mock_ml_infrastructure.cache_get.return_value = None  # Expired
-        
+
         # Verify cache miss triggers re-analysis
         cached_value = mock_ml_infrastructure.cache_get("expired_key")
         assert cached_value is None
-        
+
         # Verify new value is cached
         mock_ml_infrastructure.cache_set("new_key", {"data": "fresh"}, ttl=3600)
         mock_ml_infrastructure.cache_set.assert_called_with("new_key", {"data": "fresh"}, ttl=3600)
@@ -639,7 +638,7 @@ class TestTop12AgentsIntegration:
         """Test recovery from malformed cache data."""
         # Mock malformed cache data
         mock_ml_infrastructure.cache_get.return_value = {"invalid": "structure"}
-        
+
         # Test graceful degradation
         try:
             # This should handle malformed data gracefully
@@ -655,21 +654,21 @@ class TestTop12AgentsIntegration:
         # Setup high cache hit scenario
         cache_hits = 0
         total_requests = 100
-        
+
         def mock_cache_get(key):
             nonlocal cache_hits
             if "cached" in key:
                 cache_hits += 1
                 return {"cached": True, "data": "result"}
             return None
-        
+
         mock_ml_infrastructure.cache_get.side_effect = mock_cache_get
-        
+
         # Simulate requests
         for i in range(total_requests):
             key = f"cached_key_{i}" if i % 2 == 0 else f"uncached_key_{i}"
             mock_ml_infrastructure.cache_get(key)
-        
+
         # Calculate hit ratio
         hit_ratio = cache_hits / total_requests
         assert hit_ratio >= 0.5  # At least 50% hit ratio
@@ -679,17 +678,17 @@ class TestTop12AgentsIntegration:
         # Test that multiple agents can use ML infrastructure without conflicts
         agents = [
             "GravityLeakRepairAgent",
-            "ATSCompatibilityAgent", 
+            "ATSCompatibilityAgent",
             "SelfUpdatingSafetyEngineAgent",
             "LicHealingOrchestratorAgent",
-            "RgHealingOrchestratorAgent"
+            "RgHealingOrchestratorAgent",
         ]
-        
+
         # Simulate concurrent access
         for agent_name in agents:
             mock_ml_infrastructure.cache_get(f"{agent_name}_key")
             mock_ml_infrastructure.cache_set(f"{agent_name}_result", {"agent": agent_name})
-        
+
         # Verify all agents operated successfully
         assert mock_ml_infrastructure.cache_get.call_count == len(agents)
         assert mock_ml_infrastructure.cache_set.call_count == len(agents)

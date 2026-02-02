@@ -157,7 +157,8 @@ class CanonTokenError(CanonError):
 
 
 # Exception hierarchy for easy catching
-CANON_EXCEPTIONS = (
+# DEPRECATED: CANON_EXCEPTIONS renamed to SOVEREIGN_EXCEPTIONS
+SOVEREIGN_EXCEPTIONS = (
     CanonError,
     CanonViolationError,
     MemorySyncError,
