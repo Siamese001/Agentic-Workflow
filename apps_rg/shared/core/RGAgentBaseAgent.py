@@ -260,6 +260,136 @@ class RGAgentBase(AppBaseAgent):
 
         return (True, namespaced_key)
 
+    # ==================== PHASE 1.3: RATE LIMITING & CACHE MANAGEMENT ====================
+
+    def check_and_enforce_rate_limit(self, operation: str = "request") -> bool:
+        """
+        Check and enforce rate limits for cache operations.
+
+        Args:
+            operation: Type of operation ('request' or 'pattern')
+
+        Returns:
+            True if operation is allowed, False if rate limited
+        """
+        if self._guardrails is None:
+            self._initialize_guardrails()
+
+        allowed = self._guardrails.check_rate_limit("apps_rg", operation)
+        if not allowed:
+            Logger.warning(f"[{self.__class__.__name__}] Rate limit exceeded for {operation}")
+        return allowed
+
+    def check_cache_capacity(self) -> bool:
+        """
+        Check if cache has capacity for new entries.
+
+        Returns:
+            True if cache can accept new entries, False if at capacity
+        """
+        if self._guardrails is None:
+            self._initialize_guardrails()
+
+        return self._guardrails.check_cache_size_limit("apps_rg")
+
+    def update_cache_metrics(self, delta: int = 1) -> None:
+        """
+        Update cache size metrics after cache operations.
+
+        Args:
+            delta: Change in cache size (+1 for add, -1 for remove)
+        """
+        if self._guardrails is None:
+            self._initialize_guardrails()
+
+        self._guardrails.update_cache_size("apps_rg", delta)
+
+    def safe_cache_set(
+        self,
+        key: str,
+        value: Any,
+        validate_rate: bool = True,
+    ) -> bool:
+        """
+        Safely set a cache value with rate limiting and size checks.
+
+        Args:
+            key: Cache key
+            value: Value to cache
+            validate_rate: Whether to check rate limits
+
+        Returns:
+            True if cached successfully, False otherwise
+        """
+        # Check rate limit
+        if validate_rate and not self.check_and_enforce_rate_limit("request"):
+            return False
+
+        # Check cache capacity
+        if not self.check_cache_capacity():
+            Logger.warning(f"[{self.__class__.__name__}] Cache at capacity")
+            return False
+
+        # Validate and isolate
+        success, namespaced_key = self.isolate_cache_operation("set", key, value)
+        if not success:
+            return False
+
+        # Perform the actual cache operation (delegate to parent)
+        try:
+            result = self.ml_cache_set(namespaced_key, value)
+            if result:
+                self.update_cache_metrics(1)
+            return result
+        except Exception as e:
+            Logger.error(f"[{self.__class__.__name__}] Cache set failed: {e}")
+            return False
+
+    def safe_cache_get(self, key: str, validate_rate: bool = True) -> Any:
+        """
+        Safely get a cache value with rate limiting.
+
+        Args:
+            key: Cache key
+            validate_rate: Whether to check rate limits
+
+        Returns:
+            Cached value or None
+        """
+        # Check rate limit
+        if validate_rate and not self.check_and_enforce_rate_limit("request"):
+            return None
+
+        namespaced_key = self.get_namespaced_cache_key(key)
+
+        try:
+            return self.ml_cache_get(namespaced_key)
+        except Exception as e:
+            Logger.error(f"[{self.__class__.__name__}] Cache get failed: {e}")
+            return None
+
+    def get_cache_health(self) -> dict[str, Any]:
+        """
+        Get cache health metrics for monitoring.
+
+        Returns:
+            Dictionary with cache health information
+        """
+        if self._guardrails is None:
+            self._initialize_guardrails()
+
+        stats = self._guardrails.get_stats()
+        return {
+            "domain": "apps_rg",
+            "cache_size": stats.get("cache_sizes", {}).get("apps_rg", 0),
+            "request_rate": stats.get("request_rates", {}).get("apps_rg", 0),
+            "pattern_rate": stats.get("pattern_rates", {}).get("apps_rg", 0),
+            "active_healing_cycles": len(
+                stats.get("depth_trackers", {}).get(self.__class__.__name__, {})
+            ),
+            "healthy": True,
+        }
+
     # ==================== PHASE 1.1: GUARDRAILS METHODS ====================
 
     def guardrails_validate_cache_key(self, key: str) -> bool:
