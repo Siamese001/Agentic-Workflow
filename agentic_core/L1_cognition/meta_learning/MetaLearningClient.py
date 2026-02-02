@@ -427,51 +427,71 @@ class MetaLearningClient:
         violation: dict[str, Any],
         domain: str = "agentic_core",
         top_k: int = 3,
+        min_similarity: float | None = None,
     ) -> list[HealingPattern]:
         """
-        Retrieve similar healing patterns from Pinecone.
+        Retrieve similar healing patterns from Pinecone with enhanced guardrails.
 
         Args:
-            violation: The violation to find patterns for
-            domain: Domain context
-            top_k: Number of patterns to retrieve
+            violation: Current violation to find patterns for
+            domain: Domain context for namespacing
+            top_k: Maximum number of patterns to retrieve
+            min_similarity: Override default similarity threshold
 
         Returns:
-            List of similar healing patterns above similarity threshold
+            List of similar healing patterns sorted by similarity
         """
-        threshold = self.domain_thresholds.get(domain, self.similarity_threshold)
-        patterns: list[HealingPattern] = []
+        if not self._pinecone_index:
+            return []
 
-        if self._pinecone_index:
-            try:
-                embedding = self._generate_embedding(violation)
-                if embedding:
-                    results = self._pinecone_index.query(
-                        vector=embedding,
-                        top_k=top_k,
-                        namespace=f"{PINECONE_NAMESPACE_PREFIX}:{domain}",
-                        include_metadata=True,
-                    )
+        # Generate embedding for current violation
+        try:
+            embedding = self._generate_embedding(violation)
+            if not embedding:
+                return []
+        except Exception as e:
+            Logger.warning(f"[MetaLearningClient] Failed to generate embedding: {e}")
+            return []
 
-                    for match in results.get("matches", []):
-                        if match.get("score", 0) >= threshold:
-                            pattern = HealingPattern.from_dict(match.get("metadata", {}))
-                            patterns.append(pattern)
+        # Use domain-specific threshold if not overridden
+        effective_threshold = min_similarity or self.domain_thresholds.get(
+            domain, DEFAULT_SIMILARITY_THRESHOLD
+        )
 
-                    self.stats["pattern_retrievals"] += 1
-                    self._update_domain_stats(domain, "pattern_retrievals")
-            except Exception as e:
-                Logger.warning(f"[MetaLearningClient] Pinecone query failed: {e}")
+        # Query Pinecone with namespace
+        namespace = f"{PINECONE_NAMESPACE_PREFIX}_{domain}"
 
-        # Fallback: check Redis cache
-        if not patterns:
-            error_signature = self._generate_error_signature(violation)
-            cache_key = f"pattern:{error_signature}"
-            cached = self.cache_get(cache_key, domain)
-            if cached:
-                patterns.append(HealingPattern.from_dict(cached))
+        try:
+            results = self._pinecone_index.query(
+                vector=embedding,
+                top_k=top_k,
+                namespace=namespace,
+                include_metadata=True,
+            )
 
-        return patterns
+            patterns = []
+            for match in results.matches:
+                # Apply similarity threshold guardrail
+                if match.score >= effective_threshold:
+                    pattern_data = match.metadata
+                    pattern_data["embedding"] = match.values if hasattr(match, "values") else None
+                    pattern = HealingPattern.from_dict(pattern_data)
+                    pattern.similarity_score = match.score
+                    patterns.append(pattern)
+
+            self.stats["pattern_retrievals"] += 1
+            self._update_domain_stats(domain, "pattern_retrievals")
+
+            Logger.info(
+                f"[MetaLearningClient] Retrieved {len(patterns)} patterns for {domain} "
+                f"(threshold={effective_threshold:.2f})"
+            )
+
+            return patterns
+
+        except Exception as e:
+            Logger.error(f"[MetaLearningClient] Pattern retrieval failed: {e}")
+            return []
 
     def _generate_embedding(self, violation: dict[str, Any]) -> list[float] | None:
         """Generate embedding for a violation using the embedding service."""
