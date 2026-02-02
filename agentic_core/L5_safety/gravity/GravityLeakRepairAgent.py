@@ -82,6 +82,11 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         """
         Analyze a gravity violation and recommend a fix.
 
+        [META-LEARNING] Enhanced with caching and pattern recall:
+        - Caches AST analysis results to prevent redundant parsing
+        - Recalls successful fix strategies for similar violations
+        - Stores successful patterns for future use
+
         Args:
             file_path: File with the violation
             import_statement: The problematic import
@@ -91,11 +96,40 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         Returns:
             GravityFix with recommended solution
         """
+        # Create violation signature for caching/recall
+        violation = {
+            "type": "gravity_violation",
+            "file_path": str(file_path),
+            "import_statement": import_statement,
+            "file_layer": file_layer,
+            "import_layer": import_layer,
+        }
+
+        # Try to recall a successful pattern first
+        cached_pattern = self.ml_recall_healing_pattern(violation)
+        if cached_pattern:
+            self.logger.info(f"[GravityLeakRepairAgent] Using cached fix pattern for {file_path}")
+            return GravityFix(
+                file_path=file_path,
+                line_number=cached_pattern.get("line_number", 0),
+                old_import=import_statement,
+                new_import=cached_pattern.get("new_import", "# TODO: Create abstraction layer"),
+                fix_type=cached_pattern.get("fix_type", "ABSTRACT"),
+                rationale=cached_pattern.get("rationale", "Meta-learning recalled pattern"),
+            )
+
+        # Check cache for file analysis
+        cache_key = f"gravity_analysis:{file_path}:{hash(import_statement)}"
+        cached_analysis = self.ml_cache_get(cache_key)
+        if cached_analysis:
+            self.logger.debug(f"[GravityLeakRepairAgent] Using cached analysis for {file_path}")
+            return GravityFix(**cached_analysis)
+
         # Determine fix strategy based on violation pattern
 
         # Strategy 1: If importing from L0, likely a shared utility
         if import_layer == "L0":
-            return GravityFix(
+            fix = GravityFix(
                 file_path=file_path,
                 line_number=0,
                 old_import=import_statement,
@@ -106,7 +140,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
         # Strategy 2: Cross-layer dependency - suggest abstraction
         else:
-            return GravityFix(
+            fix = GravityFix(
                 file_path=file_path,
                 line_number=0,
                 old_import=import_statement,
@@ -114,6 +148,19 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 fix_type="ABSTRACT",
                 rationale=f"Create abstraction layer to decouple {file_layer} from {import_layer}",
             )
+
+        # Cache the analysis result (TTL: 1 hour)
+        fix_dict = {
+            "file_path": fix.file_path,
+            "line_number": fix.line_number,
+            "old_import": fix.old_import,
+            "new_import": fix.new_import,
+            "fix_type": fix.fix_type,
+            "rationale": fix.rationale,
+        }
+        self.ml_cache_set(cache_key, fix_dict, ttl=3600)
+        
+        return fix
 
     def _suggest_utils_import(self, import_statement: str) -> str:
         """
@@ -331,7 +378,12 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         }
 
     def heal(self, violation: dict) -> dict:
-        """Heal gravity leak violations using standard_heal decorator pattern.
+        """Heal gravity leak violations using meta-learning enhanced pattern.
+
+        [META-LEARNING] Uses ml_enhanced_heal for:
+        - Pattern recall from successful gravity fixes
+        - Depth tracking to prevent infinite loops
+        - Storage of successful patterns for future use
 
         Args:
             violation: Dictionary containing violation details with keys:
@@ -344,27 +396,39 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         Returns:
             Dictionary with healing results following standard_heal format.
         """
-        path = violation.get("path", "")
-        import_statement = violation.get("import_statement", "")
-        file_layer = violation.get("file_layer", "")
-        import_layer = violation.get("import_layer", "")
+        def _heal_gravity_violation(violation: dict) -> dict:
+            path = violation.get("path", "")
+            import_statement = violation.get("import_statement", "")
+            file_layer = violation.get("file_layer", "")
+            import_layer = violation.get("import_layer", "")
 
-        if path and import_statement:
-            try:
-                fix = self.analyze_violation(
-                    file_path=Path(path),
-                    import_statement=import_statement,
-                    file_layer=file_layer,
-                    import_layer=import_layer,
-                )
-                result = self.apply_fix(fix, dry_run=False)
-                if result.get("status") == "fixed":
-                    return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
-            except Exception as e:
-                self.logger.error(f"[GRAVITY_LEAK_REPAIR] Failed to heal: {e}")
-                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+            if path and import_statement:
+                try:
+                    fix = self.analyze_violation(
+                        file_path=Path(path),
+                        import_statement=import_statement,
+                        file_layer=file_layer,
+                        import_layer=import_layer,
+                    )
+                    result = self.apply_fix(fix, dry_run=False)
+                    if result.get("status") == "fixed":
+                        # Store successful pattern for meta-learning
+                        healing_result = {
+                            "status": "fixed",
+                            "fix_type": fix.fix_type,
+                            "new_import": fix.new_import,
+                            "rationale": fix.rationale,
+                        }
+                        self.ml_store_healing_pattern(violation, healing_result)
+                        return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
+                except Exception as e:
+                    self.logger.error(f"[GRAVITY_LEAK_REPAIR] Failed to heal: {e}")
+                    return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
-        return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+
+        # Use meta-learning enhanced healing
+        return self.ml_enhanced_heal(violation, _heal_gravity_violation)
 
 
 def get_gravity_leak_repair_agent(project_root: Path = None) -> GravityLeakRepairAgent:

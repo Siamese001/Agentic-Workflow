@@ -108,7 +108,27 @@ class ATSValidatorStrategy(ValidatorStrategy):
         return None
 
     def _calculate_keyword_score(self, resume: dict[str, Any], job_desc: str) -> float:
-        """Calculate keyword match score between resume and job description."""
+        """
+        Calculate keyword match score between resume and job description.
+        
+        [META-LEARNING] Enhanced with caching:
+        - Caches keyword analysis results for similar resumes
+        - Recalls scoring patterns for similar job descriptions
+        - Optimizes repeated validations
+        """
+        # Create cache key from resume and job description signatures
+        resume_sig = self._get_resume_signature(resume)
+        job_sig = self._get_job_signature(job_desc)
+        cache_key = f"ats_score:{resume_sig}:{job_sig}"
+        
+        # Try to get cached result
+        if hasattr(self, '_agent') and hasattr(self._agent, 'ml_cache_get'):
+            cached_score = self._agent.ml_cache_get(cache_key)
+            if cached_score is not None:
+                self._agent.log_debug(f"[ATS] Using cached score: {cached_score:.0%}")
+                return cached_score
+        
+        # Calculate score
         job_words = set(re.findall(r"\b[a-zA-Z]{3,}\b", job_desc.lower()))
         job_words -= self.stop_words
 
@@ -117,8 +137,26 @@ class ATSValidatorStrategy(ValidatorStrategy):
 
         resume_text = json.dumps(resume).lower()
         matches = sum(1 for word in job_words if word in resume_text)
+        score = matches / len(job_words)
+        
+        # Cache the result (TTL: 30 minutes)
+        if hasattr(self, '_agent') and hasattr(self._agent, 'ml_cache_set'):
+            self._agent.ml_cache_set(cache_key, score, ttl=1800)
+        
+        return score
 
-        return matches / len(job_words)
+    def _get_resume_signature(self, resume: dict[str, Any]) -> str:
+        """Generate a signature for resume caching."""
+        # Use section names and lengths as signature
+        sections = [(k, len(str(v))) for k, v in resume.items() if not k.startswith("_")]
+        return str(hash(tuple(sorted(sections))) % 10000)
+    
+    def _get_job_signature(self, job_desc: str) -> str:
+        """Generate a signature for job description caching."""
+        # Use first 200 chars and word count as signature
+        preview = job_desc[:200]
+        word_count = len(job_desc.split())
+        return str(hash((preview, word_count)) % 10000)
 
 
 @dataclass
