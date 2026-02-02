@@ -19,7 +19,7 @@ from .surgical_context import (
     SurgicalContext,
     ViolationConstraint,
 )
-from .surgical_healer_mixin import SurgicalHealerMixin
+from .surgical_cst_healer_mixin import SurgicalCSTHealerMixin
 
 T = TypeVar("T")
 
@@ -207,7 +207,7 @@ class SurgicalHealingAdapter:
                 details="No context provided",
             )
 
-        result = self._healer.heal_surgical(context)
+        result = self._healer.heal_surgical_cst(context)
 
         return SurgicalHealingResult(
             status=result.get("status", "unknown"),
@@ -236,8 +236,8 @@ class SurgicalHealingAdapter:
         return "Module"
 
 
-class _InternalSurgicalHealer(SurgicalHealerMixin):
-    """Internal healer class that uses the mixin."""
+class _InternalSurgicalHealer(SurgicalCSTHealerMixin):
+    """Internal healer class that uses the CST mixin."""
 
     pass
 

@@ -1,0 +1,713 @@
+[
+  {
+    "agent_name": "AgentCategory",
+    "file_path": "agentic_core\\base_agents\\UnifiedAgent.py",
+    "detection_method": "_scan_violations",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns List[Dict[str, Any]], healer uses unstructured params",
+    "line_number": 123
+  },
+  {
+    "agent_name": "AgentCategory",
+    "file_path": "agentic_core\\base_agents\\UnifiedAgent.py",
+    "detection_method": "_scan_violations",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns List[Dict[str, Any]], healer uses unstructured params",
+    "line_number": 430
+  },
+  {
+    "agent_name": "AgentCategory",
+    "file_path": "agentic_core\\base_agents\\UnifiedAgent.py",
+    "detection_method": "_scan_violations",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns List[Dict[str, Any]], healer uses unstructured params",
+    "line_number": 523
+  },
+  {
+    "agent_name": "AgentCategory",
+    "file_path": "agentic_core\\base_agents\\UnifiedAgent.py",
+    "detection_method": "_scan_violations",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns List[Dict[str, Any]], healer uses unstructured params",
+    "line_number": 688
+  },
+  {
+    "agent_name": "AgentCategory",
+    "file_path": "agentic_core\\base_agents\\UnifiedAgent.py",
+    "detection_method": "_scan_violations",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns List[Dict[str, Any]], healer uses unstructured params",
+    "line_number": 801
+  },
+  {
+    "agent_name": "ASTValidatorAgent",
+    "file_path": "agentic_core\\L1_cognition\\thought_engine\\ast_validator_agent_validator.py",
+    "detection_method": "validate_bare_except",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns list[dict[str, Any]], healer uses unstructured params",
+    "line_number": 175
+  },
+  {
+    "agent_name": "ASTValidatorAgent",
+    "file_path": "agentic_core\\L1_cognition\\thought_engine\\ast_validator_agent_validator.py",
+    "detection_method": "validate_empty_except",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns list[dict[str, Any]], healer uses unstructured params",
+    "line_number": 175
+  },
+  {
+    "agent_name": "ASTValidatorAgent",
+    "file_path": "agentic_core\\L1_cognition\\thought_engine\\ast_validator_agent_validator.py",
+    "detection_method": "validate_eval_exec",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns list[dict[str, Any]], healer uses unstructured params",
+    "line_number": 175
+  },
+  {
+    "agent_name": "ASTValidatorAgent",
+    "file_path": "agentic_core\\L1_cognition\\thought_engine\\ast_validator_agent_validator.py",
+    "detection_method": "validate_dangerous_builtins",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns list[dict[str, Any]], healer uses unstructured params",
+    "line_number": 175
+  },
+  {
+    "agent_name": "ASTValidatorAgent",
+    "file_path": "agentic_core\\L1_cognition\\thought_engine\\ast_validator_agent_validator.py",
+    "detection_method": "validate_debugger",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns list[dict[str, Any]], healer uses unstructured params",
+    "line_number": 175
+  },
+  {
+    "agent_name": "ASTValidatorAgent",
+    "file_path": "agentic_core\\L1_cognition\\thought_engine\\ast_validator_agent_validator.py",
+    "detection_method": "validate_all",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, list[dict[str, Any]]], healer uses unstructured params",
+    "line_number": 175
+  },
+  {
+    "agent_name": "SubAtomicRegistryAgent",
+    "file_path": "agentic_core\\L2_execution\\tool_registry\\sub_atomic_registry_agent.py",
+    "detection_method": "_get_phase4_detector_healer_router_executor_mapping",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, type], healer uses unstructured params",
+    "line_number": 443
+  },
+  {
+    "agent_name": "ValidationOrchestratorAgent",
+    "file_path": "agentic_core\\L2_execution\\tool_registry\\validation_orchestrator_agent.py",
+    "detection_method": "check_cache",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any] | None, healer uses unstructured params",
+    "line_number": 314
+  },
+  {
+    "agent_name": "NervousSystemAgent",
+    "file_path": "agentic_core\\L3_orchestration\\workflow_engines\\nervous_system_agent.py",
+    "detection_method": "validate_architecture",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 800
+  },
+  {
+    "agent_name": "CheckpointManagerAgent",
+    "file_path": "agentic_core\\L4_state\\validation_context\\checkpoint_manager_agent.py",
+    "detection_method": "list_checkpoints",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns list[dict[str, Any]], healer uses unstructured params",
+    "line_number": 719
+  },
+  {
+    "agent_name": "AutonomousThreatEvolutionAgent",
+    "file_path": "agentic_core\\L5_safety\\guardrails\\autonomous_threat_evolution_agent.py",
+    "detection_method": "_load_recent_detections",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns list[dict], healer uses unstructured params",
+    "line_number": 104
+  },
+  {
+    "agent_name": "input_validation_guardrail_agent_config",
+    "file_path": "agentic_core\\L5_safety\\guardrails\\input_validation_guardrail_agent_config.py",
+    "detection_method": "_detect_pii",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 212
+  },
+  {
+    "agent_name": "input_validation_guardrail_agent_config",
+    "file_path": "agentic_core\\L5_safety\\guardrails\\input_validation_guardrail_agent_config.py",
+    "detection_method": "_detect_prompt_injection",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 212
+  },
+  {
+    "agent_name": "input_validation_guardrail_agent_config",
+    "file_path": "agentic_core\\L5_safety\\guardrails\\input_validation_guardrail_agent_config.py",
+    "detection_method": "_detect_bias",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 212
+  },
+  {
+    "agent_name": "input_validation_guardrail_agent_config",
+    "file_path": "agentic_core\\L5_safety\\guardrails\\input_validation_guardrail_agent_config.py",
+    "detection_method": "_validate_format",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 212
+  },
+  {
+    "agent_name": "CodeHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\code_healer_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_imports",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: split",
+    "line_number": 275
+  },
+  {
+    "agent_name": "CodeHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\code_healer_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_imports",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Direct file I/O with path string",
+    "line_number": 275
+  },
+  {
+    "agent_name": "CodeHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\code_healer_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_imports",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: join",
+    "line_number": 275
+  },
+  {
+    "agent_name": "CodeHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\code_healer_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_imports",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: split",
+    "line_number": 275
+  },
+  {
+    "agent_name": "CodeHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\code_healer_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_canon",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: split",
+    "line_number": 349
+  },
+  {
+    "agent_name": "CodeHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\code_healer_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_canon",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Direct file I/O with path string",
+    "line_number": 349
+  },
+  {
+    "agent_name": "CodeHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\code_healer_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_canon",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: join",
+    "line_number": 349
+  },
+  {
+    "agent_name": "CodeHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\code_healer_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_canon",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: replace",
+    "line_number": 349
+  },
+  {
+    "agent_name": "CodeHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\code_healer_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_canon",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: replace",
+    "line_number": 349
+  },
+  {
+    "agent_name": "CodeHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\code_healer_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_structural",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: split",
+    "line_number": 409
+  },
+  {
+    "agent_name": "CodeHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\code_healer_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_structural",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Direct file I/O with path string",
+    "line_number": 409
+  },
+  {
+    "agent_name": "CodeHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\code_healer_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_structural",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: join",
+    "line_number": 409
+  },
+  {
+    "agent_name": "AgentPermission",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\security_manager_agent_types.py",
+    "detection_method": "restore_checkpoint",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any] | None, healer uses unstructured params",
+    "line_number": 126
+  },
+  {
+    "agent_name": "StructureHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\structure_healer_agent_types.py",
+    "detection_method": null,
+    "healing_method": "heal_naming",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Direct file I/O with path string",
+    "line_number": 181
+  },
+  {
+    "agent_name": "StructureHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\structure_healer_agent_types.py",
+    "detection_method": null,
+    "healing_method": "heal_naming",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Direct file I/O with path string",
+    "line_number": 181
+  },
+  {
+    "agent_name": "StructureHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\structure_healer_agent_types.py",
+    "detection_method": null,
+    "healing_method": "heal_gravity",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: split",
+    "line_number": 228
+  },
+  {
+    "agent_name": "StructureHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\structure_healer_agent_types.py",
+    "detection_method": null,
+    "healing_method": "heal_gravity",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Direct file I/O with path string",
+    "line_number": 228
+  },
+  {
+    "agent_name": "StructureHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\structure_healer_agent_types.py",
+    "detection_method": null,
+    "healing_method": "heal_gravity",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Direct file I/O with path string",
+    "line_number": 228
+  },
+  {
+    "agent_name": "StructureHealerAgent",
+    "file_path": "agentic_core\\L5_safety\\policy_engine\\structure_healer_agent_types.py",
+    "detection_method": null,
+    "healing_method": "heal_gravity",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: join",
+    "line_number": 228
+  },
+  {
+    "agent_name": "ArchitectureGovernorAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\ArchitectureGovernorAgent.py",
+    "detection_method": "_orchestrate_guardian_scan",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 250
+  },
+  {
+    "agent_name": "ArchitectureGovernorAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\ArchitectureGovernorAgent.py",
+    "detection_method": "validate_architectural_patterns",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 250
+  },
+  {
+    "agent_name": "ArchitectureGovernorAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\ArchitectureGovernorAgent.py",
+    "detection_method": "_check_baseline_drift",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns list[dict[str, Any]], healer uses unstructured params",
+    "line_number": 250
+  },
+  {
+    "agent_name": "AutonomyGuardianAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\autonomy_guardian_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_repository",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: replace",
+    "line_number": 244
+  },
+  {
+    "agent_name": "AutonomyGuardianAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\autonomy_guardian_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_repository",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: split",
+    "line_number": 244
+  },
+  {
+    "agent_name": "AutonomyGuardianAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\autonomy_guardian_agent.py",
+    "detection_method": null,
+    "healing_method": "heal_repository",
+    "asymmetry_type": "String-based Operations",
+    "evidence": "Uses string operation: join",
+    "line_number": 244
+  },
+  {
+    "agent_name": "CodeDeduplicationAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\code_deduplication_agent.py",
+    "detection_method": "detect_dead_code",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 707
+  },
+  {
+    "agent_name": "CodeDeduplicationAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\code_deduplication_agent.py",
+    "detection_method": "scan_dead_code",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 707
+  },
+  {
+    "agent_name": "CompositeGuardrailAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\composite_guardrail_agent_types.py",
+    "detection_method": "check",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 394
+  },
+  {
+    "agent_name": "CompositeGuardrailAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\composite_guardrail_agent_types.py",
+    "detection_method": "check",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 394
+  },
+  {
+    "agent_name": "CompositeGuardrailAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\composite_guardrail_agent_types.py",
+    "detection_method": "check",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 394
+  },
+  {
+    "agent_name": "CompositeGuardrailAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\composite_guardrail_agent_types.py",
+    "detection_method": "check",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 394
+  },
+  {
+    "agent_name": "CompositeGuardrailAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\composite_guardrail_agent_types.py",
+    "detection_method": "check",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 394
+  },
+  {
+    "agent_name": "CompositeGuardrailAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\composite_guardrail_agent_types.py",
+    "detection_method": "check",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 394
+  },
+  {
+    "agent_name": "CompositeGuardrailAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\composite_guardrail_agent_types.py",
+    "detection_method": "check",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 394
+  },
+  {
+    "agent_name": "CompositeGuardrailAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\composite_guardrail_agent_types.py",
+    "detection_method": "check",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 394
+  },
+  {
+    "agent_name": "CredentialScannerAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\credential_scanner_agent_types.py",
+    "detection_method": "scan_for_credentials",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 397
+  },
+  {
+    "agent_name": "FileClassificationAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\FileClassificationAgent.py",
+    "detection_method": "_detect_test_patterns",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, bool], healer uses unstructured params",
+    "line_number": 1443
+  },
+  {
+    "agent_name": "FileClassificationAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\FileClassificationAgent.py",
+    "detection_method": "_detect_script_patterns",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, bool], healer uses unstructured params",
+    "line_number": 1443
+  },
+  {
+    "agent_name": "FileClassificationAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\FileClassificationAgent.py",
+    "detection_method": "_detect_type_patterns",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, bool], healer uses unstructured params",
+    "line_number": 1443
+  },
+  {
+    "agent_name": "FilesystemSSOTReconcilerAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\FilesystemSSOTReconcilerAgent.py",
+    "detection_method": "_detect_drift",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns list[dict[str, Any]], healer uses unstructured params",
+    "line_number": 112
+  },
+  {
+    "agent_name": "FilesystemSSOTReconcilerAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\FilesystemSSOTReconcilerAgent.py",
+    "detection_method": "_detect_drift",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns list[dict[str, Any]], healer uses unstructured params",
+    "line_number": 1338
+  },
+  {
+    "agent_name": "FilesystemSSOTReconcilerAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\FilesystemSSOTReconcilerAgent.py",
+    "detection_method": "detect_root_drift",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 112
+  },
+  {
+    "agent_name": "FilesystemSSOTReconcilerAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\FilesystemSSOTReconcilerAgent.py",
+    "detection_method": "detect_root_drift",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 1338
+  },
+  {
+    "agent_name": "FilesystemSSOTReconcilerAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\FilesystemSSOTReconcilerAgent.py",
+    "detection_method": "scan_root_folders",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 112
+  },
+  {
+    "agent_name": "FilesystemSSOTReconcilerAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\FilesystemSSOTReconcilerAgent.py",
+    "detection_method": "scan_root_folders",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 1338
+  },
+  {
+    "agent_name": "GovernanceAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
+    "detection_method": "_check_nesting_depth",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns list[dict[str, Any]], healer uses unstructured params",
+    "line_number": 1007
+  },
+  {
+    "agent_name": "GovernanceAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
+    "detection_method": "check_complexity",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns list[dict[str, Any]], healer uses unstructured params",
+    "line_number": 1007
+  },
+  {
+    "agent_name": "GovernanceAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
+    "detection_method": "validate_architecture",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 1007
+  },
+  {
+    "agent_name": "HierarchyAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\HierarchyagentStrategy.py",
+    "detection_method": "scan_root_violations",
+    "healing_method": "heal_hierarchy",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 1132
+  },
+  {
+    "agent_name": "HierarchyAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\HierarchyagentStrategy.py",
+    "detection_method": "scan_root_violations",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 1255
+  },
+  {
+    "agent_name": "HierarchyAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\HierarchyagentStrategy.py",
+    "detection_method": "scan_root_violations",
+    "healing_method": "heal_root_violations",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 1459
+  },
+  {
+    "agent_name": "MCPGuardianAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\MCPGuardianAgent.py",
+    "detection_method": "scan_codebase",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 288
+  },
+  {
+    "agent_name": "NamingAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\naming_agent_validator.py",
+    "detection_method": "scan_repository_duplicates",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict, healer uses unstructured params",
+    "line_number": 60
+  },
+  {
+    "agent_name": "PineconeSovereignAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\pinecone_sovereign_agent.py",
+    "detection_method": "health_check",
+    "healing_method": "health_check",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict, healer uses unstructured params",
+    "line_number": 481
+  },
+  {
+    "agent_name": "PineconeSovereignAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\pinecone_sovereign_agent.py",
+    "detection_method": "health_check",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict, healer uses unstructured params",
+    "line_number": 525
+  },
+  {
+    "agent_name": "PreCommitSovereignAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\pre_commit_sovereign_agent.py",
+    "detection_method": "validate_staged_files",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 81
+  },
+  {
+    "agent_name": "ReportLocationAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\ReportLocationAgent.py",
+    "detection_method": "validate",
+    "healing_method": "heal",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 239
+  },
+  {
+    "agent_name": "RootHygieneAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\root_hygiene_agent.py",
+    "detection_method": "scan_root_violations",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 291
+  },
+  {
+    "agent_name": "SystemArchitectAgent",
+    "file_path": "agentic_core\\L5_safety\\validators\\system_architect_agent.py",
+    "detection_method": "validate_core_architecture",
+    "healing_method": "heal_repository",
+    "asymmetry_type": "Detection/Healing Mismatch",
+    "evidence": "Detector returns dict[str, Any], healer uses unstructured params",
+    "line_number": 400
+  }
+]
