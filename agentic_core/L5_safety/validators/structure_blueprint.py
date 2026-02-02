@@ -486,7 +486,7 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
         "agentic_core/L2_execution/mcp",  # 26 files - added per SSOT review
         "agentic_core/L4_state/validation_context",  # 41 files - added per SSOT review
         "agentic_core/schemas/models",  # 42 files - added per SSOT review
-        # agentic_core/utils/core_extensions EVICTED per CANON_VALIDATION_REGISTRY
+        # agentic_core/utils/core_extensions EVICTED - deprecated system removed
         "agentic_core/config/blueprint_sovereign",  # 20 files - added per SSOT review
         "agentic_core/prompt_governance/meta_prompts",
         "agentic_core/prompt_governance/templates",
@@ -766,61 +766,6 @@ TESTS_L2_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
 # Type-safe aliases
 agentic_core_registry: Final[Mapping[str, Sequence[str]]] = CORE_SUBFOLDER_MAP
 TESTS_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = TESTS_L2_SUBFOLDER_MAP
-
-CANON_SIGNALS: Final[frozenset[str]] = frozenset(
-    {
-        "agent",
-        "manager",
-        "engine",
-        "validator",
-        "healer",
-        "auditor",
-        "enforcer",
-        "detector",
-        "orchestrator",
-        "coordinator",
-        "pruner",
-        "mapper",
-        "handler",
-        "guardian",
-        "governor",
-        "sentinel",
-        "strategy",
-        "reasoning",
-        "fission",
-        "workflow",
-        "state",
-        "memory",
-        "cache",
-        "safety",
-        "guardrail",
-        "prompt",
-        "persona",
-        "schema",
-        "blueprint",
-        "template",
-        "context",
-        "ledger",
-        "Historian",
-        "audit",
-        "coverage",
-        "vector",
-        "embedding",
-        "pinecone",
-        "redis",
-        "compliance",
-        "drift",
-        "hierarchy",
-        "Span",
-        "depth",
-        "naming",
-        "rescue",
-        "integrity",
-        "gravity",
-        "subatomic",
-        "gemini",
-    }
-)
 
 # === APP-SPECIFIC FILE PLACEMENT RULES ===
 # Files with these prefixes MUST be placed in their respective app folders, NOT agentic_core
@@ -1214,7 +1159,7 @@ NAMING_CONVENTIONS: Final[Mapping[str, Mapping[str, Any]]] = {
         "extensions": [".py"],
         "min_words": 2,
         "max_words": 3,
-        "require_signal": True,  # Must contain CANON_SIGNALS keyword
+        # "require_signal": True,  # DEPRECATED: CANON_SIGNALS removed
     },
     # Python core modules - snake_case, high-signal, 2-3 words
     "core_module": {
@@ -1225,7 +1170,7 @@ NAMING_CONVENTIONS: Final[Mapping[str, Mapping[str, Any]]] = {
         "extensions": [".py"],
         "min_words": 2,
         "max_words": 3,
-        "require_signal": True,
+        # "require_signal": True,  # DEPRECATED: CANON_SIGNALS removed
     },
     # Python base classes - snake_case ending with _base
     "base_class": {
@@ -2433,7 +2378,7 @@ L2_TO_L1_MAP: Final[Mapping[str, str]] = {
     "validators": "L5_safety",
     "gravity": "L5_safety",
     "red_teaming": "L5_safety",
-    # "core_extensions": "utils",  # EVICTED per CANON_VALIDATION_REGISTRY
+    # "core_extensions": "utils",  # EVICTED - deprecated system removed
     "naming": "utils",
     "wrappers": "utils",
     "general_helpers": "utils",
@@ -4045,18 +3990,6 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
 }
 SEMANTIC_L2_REGISTRY: Final[Mapping[str, Any]] = semantic_l2_registry
 
-# =============================================================================
-# SOVEREIGN CANON REGISTRY (DEPRECATED)
-# =============================================================================
-# ALL NUMERIC KEYS (0-50) HAVE BEEN DEPRECATED.
-# Logic moved to dynamic validation handlers and specific L5 agents.
-# This registry is kept as an empty schema for backward compatibility during transition.
-# =============================================================================
-
-SAFETY_VALIDATION_REGISTRY: dict[int, dict[str, Any]] = {
-    # DEPRECATION STATUS: 100% COMPLETE
-    # Numeric keys removed to prevent structural coupling with legacy canon.
-}
 
 # =============================================================================
 # PROJECT ROOT STRUCTURE

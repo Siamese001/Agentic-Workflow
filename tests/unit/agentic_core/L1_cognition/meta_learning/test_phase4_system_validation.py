@@ -15,7 +15,6 @@ Success Criteria:
 
 import sys
 import time
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -273,9 +272,7 @@ class TestMonitoringObservability:
 class TestPhase4Integration:
     """Phase 4 integration tests."""
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_full_system_stability(self, mock_integrity):
         """Test full system remains stable under load."""
         from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (

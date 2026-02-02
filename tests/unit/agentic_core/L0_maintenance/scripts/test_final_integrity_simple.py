@@ -109,7 +109,6 @@ def test_structure_blueprint_completeness():
 
     required_components = [
         "SOVEREIGN_REGISTRY",
-        "CANON_VALIDATION_REGISTRY",
         "CORE_SUBFOLDER_MAP",
         "VARIABLE_DEPTH_SUBFOLDERS",
     ]
@@ -137,9 +136,7 @@ def test_no_ghost_variables():
         lines = content.split("\n")
         for i, line in enumerate(lines):
             if pattern in line.upper() and not line.strip().startswith("#") and '"""' not in line:
-                # Allow certain legitimate uses
-                if "CANON_VALIDATION_REGISTRY" in line or "canon_validator" in line:
-                    continue
+                # No exceptions for canon registry since it should be gone
                 raise AssertionError(
                     f"POTENTIAL GHOST VARIABLE DETECTED at line {i + 1}: {line.strip()}"
                 )

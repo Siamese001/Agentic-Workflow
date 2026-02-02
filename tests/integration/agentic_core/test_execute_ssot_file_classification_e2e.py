@@ -11,7 +11,7 @@ These tests verify the complete workflow of FileClassificationAgent integration.
 
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -24,9 +24,7 @@ class TestE2EAllPhasesPresent:
 
     def test_all_phase_enhancements_exist(self):
         """Verify all phase enhancement markers exist in execute_ssot.py."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -37,9 +35,7 @@ class TestE2EAllPhasesPresent:
 
     def test_file_classification_agent_imported(self):
         """Verify FileClassificationAgent is properly imported."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -48,9 +44,7 @@ class TestE2EAllPhasesPresent:
 
     def test_file_classification_agent_in_agents_dict(self):
         """Verify FileClassificationAgent is registered in agents dictionary."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -62,9 +56,7 @@ class TestE2EPhase1EarlyDetection:
 
     def test_early_detection_in_phase1_discovery(self):
         """Verify early detection is in execute_phase1_discovery_impl."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -74,15 +66,13 @@ class TestE2EPhase1EarlyDetection:
 
         # Should be associated with FileClassificationAgent
         phase1_pos = content.find("PHASE 1 ENHANCEMENT")
-        section = content[phase1_pos:phase1_pos + 2000]
+        section = content[phase1_pos : phase1_pos + 2000]
         assert "FileClassificationAgent" in section
         assert "classification_violations" in section
 
     def test_early_detection_uses_validate_only(self):
         """Verify early detection uses validate_only mode."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -91,9 +81,7 @@ class TestE2EPhase1EarlyDetection:
 
     def test_early_detection_stores_in_state(self):
         """Verify early detection stores results in state manager."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -106,23 +94,22 @@ class TestE2EPhase2ConfidenceCalculation:
 
     def test_confidence_calc_retrieves_classification_violations(self):
         """Verify confidence calculation retrieves classification violations."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
         # Find Phase 2 enhancement
         phase2_pos = content.find("PHASE 2 ENHANCEMENT")
-        phase2_section = content[phase2_pos:phase2_pos + 1000]
+        phase2_section = content[phase2_pos : phase2_pos + 1000]
 
-        assert 'state_mgr.state.get(\n                            "classification_violations"' in phase2_section
+        assert (
+            'state_mgr.state.get(\n                            "classification_violations"'
+            in phase2_section
+        )
 
     def test_confidence_calc_combines_violations(self):
         """Verify confidence calculation combines all violation types."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -130,9 +117,7 @@ class TestE2EPhase2ConfidenceCalculation:
 
     def test_confidence_calc_adds_classification_type(self):
         """Verify CLASSIFICATION type is added to violation_types."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -144,9 +129,7 @@ class TestE2EPhase3IntegratedReporting:
 
     def test_phase3_in_phase5_certification(self):
         """Verify Phase 3 enhancement is in Phase 5 certification function."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -161,9 +144,7 @@ class TestE2EPhase3IntegratedReporting:
 
     def test_classification_violations_in_all_violations(self):
         """Verify classification violations are added to all_violations."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -172,15 +153,13 @@ class TestE2EPhase3IntegratedReporting:
 
     def test_classification_violation_structure(self):
         """Verify classification violation dict has correct structure."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
         # Find Phase 3 section
         phase3_pos = content.find("PHASE 3 ENHANCEMENT")
-        phase3_section = content[phase3_pos:phase3_pos + 1500]
+        phase3_section = content[phase3_pos : phase3_pos + 1500]
 
         assert '"type": "CLASSIFICATION"' in phase3_section
         assert '"subtype": subtype' in phase3_section
@@ -197,9 +176,7 @@ class TestE2EDataFlow:
         mock_state_mgr.state = {}
 
         # Phase 1: Store classification violations
-        classification_violations = [
-            {"type": "CLASSIFICATION", "subtype": "NAMING", "count": 2}
-        ]
+        classification_violations = [{"type": "CLASSIFICATION", "subtype": "NAMING", "count": 2}]
         mock_state_mgr.state["classification_violations"] = classification_violations
 
         # Phase 2: Retrieve classification violations
@@ -242,9 +219,7 @@ class TestE2EDataFlow:
         # Simulate all violation sources
         arch_violations = [{"type": "ARCH"}]
         location_violations = [{"type": "LOCATION"}, {"type": "LOCATION"}]
-        classification_violations = [
-            {"type": "CLASSIFICATION", "subtype": "NAMING"}
-        ]
+        classification_violations = [{"type": "CLASSIFICATION", "subtype": "NAMING"}]
         hygiene_violations = [{"type": "HYGIENE"}]
 
         all_violations = []
@@ -266,9 +241,7 @@ class TestE2EErrorHandling:
 
     def test_phase1_error_handling(self):
         """Test Phase 1 error handling doesn't crash workflow."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -281,9 +254,7 @@ class TestE2EErrorHandling:
         mock_state_mgr = MagicMock()
         mock_state_mgr.state = {}
 
-        classification_violations = mock_state_mgr.state.get(
-            "classification_violations", []
-        )
+        classification_violations = mock_state_mgr.state.get("classification_violations", [])
 
         all_violations = []
         for class_violation in classification_violations:
@@ -303,6 +274,7 @@ class TestIntegrationFileClassificationAgent:
             from agentic_core.L5_safety.validators.FileClassificationAgent import (
                 FileClassificationAgent,
             )
+
             assert FileClassificationAgent is not None
         except ImportError as e:
             pytest.fail(f"Failed to import FileClassificationAgent: {e}")

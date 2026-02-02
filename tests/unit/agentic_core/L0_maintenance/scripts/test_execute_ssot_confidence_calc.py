@@ -20,9 +20,7 @@ class TestPhase2ConfidenceCalculation:
 
     def test_confidence_calc_code_exists(self):
         """Verify enhanced confidence calculation code is present."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -33,20 +31,19 @@ class TestPhase2ConfidenceCalculation:
 
     def test_confidence_calc_includes_classification_violations(self):
         """Verify confidence calculation includes classification violations."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
         # Check that classification violations are retrieved from state
-        assert 'state_mgr.state.get(\n                            "classification_violations"' in content
+        assert (
+            'state_mgr.state.get(\n                            "classification_violations"'
+            in content
+        )
 
     def test_confidence_calc_combines_violations(self):
         """Verify total violations combines location and classification."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -56,9 +53,7 @@ class TestPhase2ConfidenceCalculation:
 
     def test_confidence_calc_adds_classification_type(self):
         """Verify CLASSIFICATION type is added when violations exist."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -67,9 +62,7 @@ class TestPhase2ConfidenceCalculation:
 
     def test_confidence_calc_uses_total_violations(self):
         """Verify confidence calculation uses total_violations."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -83,9 +76,7 @@ class TestPhase2ConfidenceCalculationLogic:
     def test_total_violations_with_both_types(self):
         """Test total violations calculation with both location and classification."""
         p1_loc = [{"type": "LOCATION", "file": "test1.py"}]
-        classification_violations = [
-            {"type": "CLASSIFICATION", "subtype": "NAMING", "count": 2}
-        ]
+        classification_violations = [{"type": "CLASSIFICATION", "subtype": "NAMING", "count": 2}]
 
         total_violations = (len(p1_loc) if p1_loc else 0) + len(classification_violations)
 
@@ -204,9 +195,7 @@ class TestPhase2CodePosition:
 
     def test_phase2_after_phase1_early_detection(self):
         """Verify Phase 2 enhancement comes after Phase 1 early detection."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -219,9 +208,7 @@ class TestPhase2CodePosition:
 
     def test_phase2_before_healing_decision(self):
         """Verify Phase 2 enhancement comes before healing decision."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -232,9 +219,7 @@ class TestPhase2CodePosition:
         )
 
         # Phase 2 should come before healing decision
-        assert healing_decision_pos > phase2_pos, (
-            "Phase 2 should be before healing decision"
-        )
+        assert healing_decision_pos > phase2_pos, "Phase 2 should be before healing decision"
 
 
 if __name__ == "__main__":

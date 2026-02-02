@@ -22,7 +22,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 # Mock problematic imports before any imports
-sys.modules['agentic_core.L5_safety.validators.PascalSovereigntyAgent'] = MagicMock()
+sys.modules["agentic_core.L5_safety.validators.PascalSovereigntyAgent"] = MagicMock()
 
 
 # =============================================================================
@@ -33,9 +33,7 @@ sys.modules['agentic_core.L5_safety.validators.PascalSovereigntyAgent'] = MagicM
 class TestArchitectureGovernorAgentIntegration:
     """Test ArchitectureGovernorAgent meta-learning integration."""
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_heal_method_uses_meta_learning(self, mock_integrity):
         """Verify heal() method integrates with meta-learning."""
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
@@ -55,9 +53,7 @@ class TestArchitectureGovernorAgentIntegration:
         assert "status" in result
         assert isinstance(result, dict)
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_heal_dispatches_by_violation_type(self, mock_integrity):
         """Verify heal() dispatches to correct handler based on violation type."""
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
@@ -81,9 +77,7 @@ class TestArchitectureGovernorAgentIntegration:
         result = agent._do_heal(unknown_violation)
         assert result["status"] == "skipped"
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_meta_learning_mixin_available(self, mock_integrity):
         """Verify meta-learning mixin methods are available."""
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
@@ -99,9 +93,7 @@ class TestArchitectureGovernorAgentIntegration:
         assert hasattr(agent, "ml_cache_set")
         assert hasattr(agent, "ml_check_healing_depth")
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_heal_repository_still_works(self, mock_integrity):
         """Verify heal_repository() method still works after integration."""
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
@@ -123,9 +115,7 @@ class TestArchitectureGovernorAgentIntegration:
 class TestHierarchyAgentIntegration:
     """Test HierarchyAgent meta-learning integration."""
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_heal_method_exists(self, mock_integrity):
         """Verify heal() method exists and has correct signature."""
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
@@ -135,9 +125,7 @@ class TestHierarchyAgentIntegration:
         assert hasattr(agent, "heal")
         assert callable(agent.heal)
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_heal_returns_correct_structure(self, mock_integrity):
         """Verify heal() returns correct structure."""
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
@@ -154,9 +142,7 @@ class TestHierarchyAgentIntegration:
         assert "status" in result
         assert isinstance(result, dict)
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_meta_learning_mixin_available(self, mock_integrity):
         """Verify meta-learning mixin methods are available."""
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
@@ -169,9 +155,7 @@ class TestHierarchyAgentIntegration:
         assert hasattr(agent, "ml_cache_get")
         assert hasattr(agent, "ml_cache_set")
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_create_missing_structure_still_works(self, mock_integrity):
         """Verify create_missing_structure() still works."""
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
@@ -190,9 +174,7 @@ class TestHierarchyAgentIntegration:
 class TestCodeHealerAgentIntegration:
     """Test CodeHealerAgent meta-learning integration."""
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_agent_inherits_from_sovereign_base(self, mock_integrity):
         """Verify CodeHealerAgent inherits from SovereignBaseAgent."""
         from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
@@ -206,9 +188,7 @@ class TestCodeHealerAgentIntegration:
 
         assert isinstance(agent, SovereignBaseAgent)
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_meta_learning_mixin_available(self, mock_integrity):
         """Verify meta-learning mixin methods are available."""
         from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
@@ -223,9 +203,7 @@ class TestCodeHealerAgentIntegration:
         assert hasattr(agent, "ml_cache_get")
         assert hasattr(agent, "ml_cache_set")
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_heal_all_method_exists(self, mock_integrity):
         """Verify heal_all() method exists."""
         from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
@@ -284,9 +262,7 @@ class TestLocationAgentIntegration:
 class TestPhase2Integration:
     """Integration tests for Phase 2 high-impact agents."""
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_all_agents_have_meta_learning(self, mock_integrity):
         """Verify all Phase 2 agents have meta-learning capabilities."""
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
@@ -304,22 +280,20 @@ class TestPhase2Integration:
         ]
 
         for agent in agents:
-            assert hasattr(
-                agent, "ml_recall_healing_pattern"
-            ), f"{agent.__class__.__name__} missing ml_recall_healing_pattern"
-            assert hasattr(
-                agent, "ml_store_healing_pattern"
-            ), f"{agent.__class__.__name__} missing ml_store_healing_pattern"
-            assert hasattr(
-                agent, "ml_cache_get"
-            ), f"{agent.__class__.__name__} missing ml_cache_get"
-            assert hasattr(
-                agent, "ml_cache_set"
-            ), f"{agent.__class__.__name__} missing ml_cache_set"
+            assert hasattr(agent, "ml_recall_healing_pattern"), (
+                f"{agent.__class__.__name__} missing ml_recall_healing_pattern"
+            )
+            assert hasattr(agent, "ml_store_healing_pattern"), (
+                f"{agent.__class__.__name__} missing ml_store_healing_pattern"
+            )
+            assert hasattr(agent, "ml_cache_get"), (
+                f"{agent.__class__.__name__} missing ml_cache_get"
+            )
+            assert hasattr(agent, "ml_cache_set"), (
+                f"{agent.__class__.__name__} missing ml_cache_set"
+            )
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_agents_domain_detection(self, mock_integrity):
         """Verify agents correctly detect their domain."""
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
@@ -336,9 +310,7 @@ class TestPhase2Integration:
 class TestPhase2PerformanceBaseline:
     """Performance baseline tests for Phase 2 agents."""
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_heal_performance(self, mock_integrity):
         """Test heal operation performance."""
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
@@ -372,9 +344,7 @@ class TestPhase2PerformanceBaseline:
         elapsed = time.time() - start_time
 
         # Should complete in < 1 second
-        assert (
-            elapsed < 1.0
-        ), f"Path compliance checks took {elapsed:.2f}s, expected < 1s"
+        assert elapsed < 1.0, f"Path compliance checks took {elapsed:.2f}s, expected < 1s"
 
 
 if __name__ == "__main__":

@@ -252,13 +252,61 @@ class PineconeSovereignAgent(SovereignBaseAgent):
 
     def _get_sparse_vector(self, text: str) -> dict[str, Any]:
         """Extracts keywords from blueprint signals for hybrid search"""
-        from agentic_core.L5_safety.validators.structure_blueprint import CANON_SIGNALS
+        # DEPRECATED: CANON_SIGNALS removed - use hardcoded signals for now
+        SOVEREIGN_SIGNALS = {
+            "agent",
+            "manager",
+            "engine",
+            "validator",
+            "healer",
+            "auditor",
+            "enforcer",
+            "detector",
+            "orchestrator",
+            "coordinator",
+            "pruner",
+            "mapper",
+            "handler",
+            "guardian",
+            "governor",
+            "sentinel",
+            "strategy",
+            "reasoning",
+            "fission",
+            "workflow",
+            "state",
+            "memory",
+            "cache",
+            "safety",
+            "guardrail",
+            "prompt",
+            "persona",
+            "schema",
+            "blueprint",
+            "template",
+            "context",
+            "ledger",
+            "audit",
+            "coverage",
+            "vector",
+            "embedding",
+            "pinecone",
+            "redis",
+            "compliance",
+            "drift",
+            "hierarchy",
+            "depth",
+            "naming",
+            "rescue",
+            "integrity",
+            "gravity",
+        }
 
         text_low = text.lower()
         # Simple TF-based sparse vector
         indices = []
         values = []
-        for i, word in enumerate(sorted(CANON_SIGNALS)):
+        for i, word in enumerate(sorted(SOVEREIGN_SIGNALS)):
             count = text_low.count(word.lower())
             if count > 0:
                 indices.append(i)

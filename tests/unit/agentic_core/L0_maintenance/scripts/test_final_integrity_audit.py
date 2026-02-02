@@ -156,7 +156,6 @@ class TestSovereignFinalClosure:
             "APPS_LIC_DIR",
             "APPS_SHARED_DIR",
             "SOVEREIGN_REGISTRY",
-            "CANON_VALIDATION_REGISTRY",
         ]
 
         for const in required_constants:

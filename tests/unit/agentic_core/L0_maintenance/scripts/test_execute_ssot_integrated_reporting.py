@@ -20,9 +20,7 @@ class TestPhase3IntegratedReporting:
 
     def test_phase3_enhancement_code_exists(self):
         """Verify Phase 3 enhancement code is present."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -32,9 +30,7 @@ class TestPhase3IntegratedReporting:
 
     def test_classification_violations_retrieved_from_state(self):
         """Verify classification violations are retrieved from state manager."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -43,9 +39,7 @@ class TestPhase3IntegratedReporting:
 
     def test_classification_violations_added_to_all_violations(self):
         """Verify classification violations are added to all_violations list."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -56,9 +50,7 @@ class TestPhase3IntegratedReporting:
 
     def test_classification_violation_dict_structure(self):
         """Verify classification violation dict has correct structure."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -168,9 +160,7 @@ class TestPhase3StateManagerIntegration:
             ]
         }
 
-        classification_violations = mock_state_mgr.state.get(
-            "classification_violations", []
-        )
+        classification_violations = mock_state_mgr.state.get("classification_violations", [])
 
         assert len(classification_violations) == 2
 
@@ -179,9 +169,7 @@ class TestPhase3StateManagerIntegration:
         mock_state_mgr = MagicMock()
         mock_state_mgr.state = {}
 
-        classification_violations = mock_state_mgr.state.get(
-            "classification_violations", []
-        )
+        classification_violations = mock_state_mgr.state.get("classification_violations", [])
 
         assert classification_violations == []
 
@@ -191,9 +179,7 @@ class TestPhase3CodePosition:
 
     def test_phase3_in_phase5_certification(self):
         """Verify Phase 3 enhancement is in Phase 5 certification."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -208,9 +194,7 @@ class TestPhase3CodePosition:
 
     def test_phase3_after_hygiene_violations(self):
         """Verify Phase 3 enhancement comes after RootHygieneAgent violations."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -219,23 +203,17 @@ class TestPhase3CodePosition:
         phase3_pos = content.find("PHASE 3 ENHANCEMENT")
 
         # Phase 3 should come after hygiene violations
-        assert phase3_pos > hygiene_pos, (
-            "Phase 3 should be after RootHygieneAgent violations"
-        )
+        assert phase3_pos > hygiene_pos, "Phase 3 should be after RootHygieneAgent violations"
 
     def test_phase3_before_violation_count(self):
         """Verify Phase 3 enhancement comes before violation count calculation."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
         # Find positions
         phase3_pos = content.find("PHASE 3 ENHANCEMENT")
-        violation_count_pos = content.find(
-            "violation_count = len(all_violations)", phase3_pos
-        )
+        violation_count_pos = content.find("violation_count = len(all_violations)", phase3_pos)
 
         # Phase 3 should come before violation count
         assert violation_count_pos > phase3_pos, (
@@ -248,9 +226,7 @@ class TestPhase3AllPhasesIntegration:
 
     def test_all_phase_markers_present(self):
         """Verify all phase enhancement markers are present."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
@@ -261,9 +237,7 @@ class TestPhase3AllPhasesIntegration:
 
     def test_phases_in_correct_order(self):
         """Verify phases are in correct logical order within their functions."""
-        execute_ssot_path = (
-            PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
-        )
+        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 

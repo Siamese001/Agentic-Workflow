@@ -42,7 +42,7 @@ class MetaLearningClientMixin:
 
     Domain Isolation:
         Automatically determines domain from agent class name or explicit setting.
-    
+
     Safety Features:
         - Input validation and sanitization
         - Rate limiting and cache size limits
@@ -102,13 +102,11 @@ class MetaLearningClientMixin:
         if MetaLearningClientMixin._ml_guardrails is None:
             try:
                 from agentic_core.L1_cognition.meta_learning.guardrails import get_guardrails
-                
+
                 MetaLearningClientMixin._ml_guardrails = get_guardrails()
                 Logger.debug(f"[{self.__class__.__name__}] Guardrails initialized")
             except Exception as e:
-                Logger.warning(
-                    f"[{self.__class__.__name__}] Guardrails unavailable: {e}"
-                )
+                Logger.warning(f"[{self.__class__.__name__}] Guardrails unavailable: {e}")
 
     def _get_ml_domain(self) -> str:
         """
@@ -154,22 +152,24 @@ class MetaLearningClientMixin:
         """
         self._ensure_ml_client()
         self._ensure_ml_guardrails()
-        
+
         if MetaLearningClientMixin._ml_client is None:
             return None
-        
+
         domain = self._get_ml_domain()
-        
+
         # Sanitize violation data
         if MetaLearningClientMixin._ml_guardrails is not None:
             violation = MetaLearningClientMixin._ml_guardrails.sanitize_violation_data(violation)
-        
+
         # Check rate limits for pattern operations
         if MetaLearningClientMixin._ml_guardrails is not None:
             if not MetaLearningClientMixin._ml_guardrails.check_rate_limit(domain, "pattern"):
-                Logger.warning(f"[{self.__class__.__name__}] Pattern rate limited for domain: {domain}")
+                Logger.warning(
+                    f"[{self.__class__.__name__}] Pattern rate limited for domain: {domain}"
+                )
                 return None
-        
+
         try:
             patterns = MetaLearningClientMixin._ml_client.retrieve_healing_patterns(
                 violation, domain, top_k=1
@@ -177,19 +177,25 @@ class MetaLearningClientMixin:
 
             if patterns:
                 pattern = patterns[0]
-                
+
                 # Validate domain isolation
                 if MetaLearningClientMixin._ml_guardrails is not None:
-                    if not MetaLearningClientMixin._ml_guardrails.validate_domain_isolation(domain, pattern):
+                    if not MetaLearningClientMixin._ml_guardrails.validate_domain_isolation(
+                        domain, pattern
+                    ):
                         Logger.warning(f"[{self.__class__.__name__}] Cross-domain pattern rejected")
                         return None
-                    
+
                     # Check similarity threshold
                     similarity = pattern.get("similarity_score", 0.0)
-                    min_threshold = MetaLearningClientMixin._ml_guardrails.guardrails.min_similarity_threshold
-                    
+                    min_threshold = (
+                        MetaLearningClientMixin._ml_guardrails.guardrails.min_similarity_threshold
+                    )
+
                     if similarity < min_threshold:
-                        Logger.debug(f"[{self.__class__.__name__}] Pattern below similarity threshold: {similarity:.2f} < {min_threshold:.2f}")
+                        Logger.debug(
+                            f"[{self.__class__.__name__}] Pattern below similarity threshold: {similarity:.2f} < {min_threshold:.2f}"
+                        )
                         return None
 
                 Logger.info(
@@ -199,7 +205,7 @@ class MetaLearningClientMixin:
                 return pattern.get("healing_strategy", pattern)
 
             return None
-            
+
         except Exception as e:
             Logger.error(f"[{self.__class__.__name__}] Pattern recall failed: {e}")
             return None
@@ -221,7 +227,7 @@ class MetaLearningClientMixin:
         """
         self._ensure_ml_client()
         self._ensure_ml_guardrails()
-        
+
         if MetaLearningClientMixin._ml_client is None:
             return None
 
@@ -230,15 +236,17 @@ class MetaLearningClientMixin:
             return None
 
         domain = self._get_ml_domain()
-        
+
         # Sanitize violation data
         if MetaLearningClientMixin._ml_guardrails is not None:
             violation = MetaLearningClientMixin._ml_guardrails.sanitize_violation_data(violation)
-        
+
         # Check rate limits for pattern operations
         if MetaLearningClientMixin._ml_guardrails is not None:
             if not MetaLearningClientMixin._ml_guardrails.check_rate_limit(domain, "pattern"):
-                Logger.warning(f"[{self.__class__.__name__}] Pattern rate limited for domain: {domain}")
+                Logger.warning(
+                    f"[{self.__class__.__name__}] Pattern rate limited for domain: {domain}"
+                )
                 return None
 
         try:
@@ -250,7 +258,7 @@ class MetaLearningClientMixin:
                 Logger.info(f"[{self.__class__.__name__}] Stored healing pattern: {pattern_id}")
 
             return pattern_id
-            
+
         except Exception as e:
             Logger.error(f"[{self.__class__.__name__}] Pattern storage failed: {e}")
             return None
@@ -269,24 +277,24 @@ class MetaLearningClientMixin:
         """
         self._ensure_ml_client()
         self._ensure_ml_guardrails()
-        
+
         if MetaLearningClientMixin._ml_client is None:
             return None
-        
+
         # Validate cache key
         if MetaLearningClientMixin._ml_guardrails is not None:
             if not MetaLearningClientMixin._ml_guardrails.validate_cache_key(key):
                 Logger.warning(f"[{self.__class__.__name__}] Invalid cache key: {key}")
                 return None
-        
+
         domain = self._get_ml_domain()
-        
+
         # Check rate limits
         if MetaLearningClientMixin._ml_guardrails is not None:
             if not MetaLearningClientMixin._ml_guardrails.check_rate_limit(domain, "request"):
                 Logger.warning(f"[{self.__class__.__name__}] Rate limited for domain: {domain}")
                 return None
-        
+
         try:
             return MetaLearningClientMixin._ml_client.cache_get(key, domain)
         except Exception as e:
@@ -307,40 +315,40 @@ class MetaLearningClientMixin:
         """
         self._ensure_ml_client()
         self._ensure_ml_guardrails()
-        
+
         if MetaLearningClientMixin._ml_client is None:
             return False
-        
+
         domain = self._get_ml_domain()
-        
+
         # Validate inputs
         if MetaLearningClientMixin._ml_guardrails is not None:
             if not MetaLearningClientMixin._ml_guardrails.validate_cache_key(key):
                 Logger.warning(f"[{self.__class__.__name__}] Invalid cache key: {key}")
                 return False
-            
+
             if not MetaLearningClientMixin._ml_guardrails.validate_cache_value(value):
                 Logger.warning(f"[{self.__class__.__name__}] Invalid cache value")
                 return False
-            
+
             if not MetaLearningClientMixin._ml_guardrails.check_cache_size_limit(domain):
                 Logger.warning(f"[{self.__class__.__name__}] Cache size limit reached: {domain}")
                 return False
-            
+
             if not MetaLearningClientMixin._ml_guardrails.check_rate_limit(domain, "request"):
                 Logger.warning(f"[{self.__class__.__name__}] Rate limited for domain: {domain}")
                 return False
-            
+
             # Validate and normalize TTL
             ttl = MetaLearningClientMixin._ml_guardrails.validate_ttl(ttl)
-        
+
         try:
             success = MetaLearningClientMixin._ml_client.cache_set(key, value, domain, ttl)
-            
+
             # Update cache size tracking
             if success and MetaLearningClientMixin._ml_guardrails is not None:
                 MetaLearningClientMixin._ml_guardrails.update_cache_size(domain, 1)
-            
+
             return success
         except Exception as e:
             Logger.error(f"[{self.__class__.__name__}] Cache set failed: {e}")
@@ -368,7 +376,7 @@ class MetaLearningClientMixin:
             True if healing can proceed, False if depth limit reached
         """
         self._ensure_ml_guardrails()
-        
+
         if MetaLearningClientMixin._ml_guardrails is None:
             return True  # Allow healing if guardrails unavailable
 
@@ -387,7 +395,7 @@ class MetaLearningClientMixin:
             Current depth after increment
         """
         self._ensure_ml_guardrails()
-        
+
         if MetaLearningClientMixin._ml_guardrails is None:
             return 0
 
@@ -403,7 +411,7 @@ class MetaLearningClientMixin:
             violation_id: Unique identifier for the violation
         """
         self._ensure_ml_guardrails()
-        
+
         if MetaLearningClientMixin._ml_guardrails is None:
             return
 

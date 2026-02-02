@@ -32,9 +32,7 @@ sys.modules["agentic_core.L5_safety.validators.PascalSovereigntyAgent"] = MagicM
 class TestHygieneGuardianAgentIntegration:
     """Test HygieneGuardianAgent meta-learning integration."""
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_agent_exists(self, mock_integrity):
         """Verify HygieneGuardianAgent can be imported."""
         from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
@@ -44,9 +42,7 @@ class TestHygieneGuardianAgentIntegration:
         agent = HygieneGuardianAgent(project_root=Path.cwd())
         assert agent is not None
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_heal_method_exists(self, mock_integrity):
         """Verify heal() method exists."""
         from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
@@ -57,9 +53,7 @@ class TestHygieneGuardianAgentIntegration:
         assert hasattr(agent, "heal")
         assert callable(agent.heal)
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_heal_returns_correct_structure(self, mock_integrity):
         """Verify heal() returns correct structure."""
         from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
@@ -73,9 +67,7 @@ class TestHygieneGuardianAgentIntegration:
         assert "status" in result
         assert isinstance(result, dict)
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_inherits_from_sovereign_base(self, mock_integrity):
         """Verify agent inherits from SovereignBaseAgent."""
         from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
@@ -95,9 +87,7 @@ class TestHygieneGuardianAgentIntegration:
 class TestGravityLeakRepairAgentIntegration:
     """Test GravityLeakRepairAgent meta-learning integration."""
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_agent_exists(self, mock_integrity):
         """Verify GravityLeakRepairAgent can be imported."""
         from agentic_core.L5_safety.gravity.GravityLeakRepairAgent import (
@@ -107,9 +97,7 @@ class TestGravityLeakRepairAgentIntegration:
         agent = GravityLeakRepairAgent(project_root=Path.cwd())
         assert agent is not None
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_inherits_from_sovereign_base(self, mock_integrity):
         """Verify agent inherits from SovereignBaseAgent."""
         from agentic_core.L5_safety.gravity.GravityLeakRepairAgent import (
@@ -120,9 +108,7 @@ class TestGravityLeakRepairAgentIntegration:
         agent = GravityLeakRepairAgent(project_root=Path.cwd())
         assert isinstance(agent, SovereignBaseAgent)
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_meta_learning_mixin_available(self, mock_integrity):
         """Verify meta-learning mixin methods are available."""
         from agentic_core.L5_safety.gravity.GravityLeakRepairAgent import (
@@ -178,9 +164,7 @@ class TestArchivalGatekeeperIntegration:
 class TestPhase3Integration:
     """Integration tests for Phase 3 medium-impact agents."""
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_all_agents_have_meta_learning(self, mock_integrity):
         """Verify all Phase 3 agents have meta-learning capabilities."""
         from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
@@ -196,16 +180,14 @@ class TestPhase3Integration:
         ]
 
         for agent in agents:
-            assert hasattr(
-                agent, "ml_recall_healing_pattern"
-            ), f"{agent.__class__.__name__} missing ml_recall_healing_pattern"
-            assert hasattr(
-                agent, "ml_store_healing_pattern"
-            ), f"{agent.__class__.__name__} missing ml_store_healing_pattern"
+            assert hasattr(agent, "ml_recall_healing_pattern"), (
+                f"{agent.__class__.__name__} missing ml_recall_healing_pattern"
+            )
+            assert hasattr(agent, "ml_store_healing_pattern"), (
+                f"{agent.__class__.__name__} missing ml_store_healing_pattern"
+            )
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_agents_domain_detection(self, mock_integrity):
         """Verify agents correctly detect their domain."""
         from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
@@ -220,9 +202,7 @@ class TestPhase3Integration:
 class TestPhase3PerformanceBaseline:
     """Performance baseline tests for Phase 3 agents."""
 
-    @patch(
-        "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-    )
+    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_hygiene_agent_performance(self, mock_integrity):
         """Test HygieneGuardianAgent performance."""
         from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
