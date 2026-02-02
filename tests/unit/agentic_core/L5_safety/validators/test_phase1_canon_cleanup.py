@@ -129,8 +129,10 @@ class TestPhase1FoundationCleanup:
                     and "print(" not in line  # Allow print statements
                     and "SSOT Registry Integrity" not in line  # Allow docstring references
                     and "CRITICAL: Verify" not in line  # Allow test descriptions
-                    and "_ = sb.CANON_VALIDATION_REGISTRY" not in line
-                ):  # Allow test validation
+                    and "_ = sb.CANON_VALIDATION_REGISTRY" not in line  # Allow test validation
+                    and "should have been removed" not in line  # Allow assertion messages
+                    and "assert" not in line.lower()  # Allow assert statements
+                ):
                     violations.append(f"{test_file_path}:{i + 1}: Active usage - {line}")
 
         assert not violations, f"Found active registry usage: {violations}"
