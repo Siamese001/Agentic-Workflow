@@ -1,0 +1,511 @@
+"""
+ForwardRollingConfig - Feature Flags and Configuration for Gradual Rollout.
+
+[PHASE 4] Implements feature flags, traffic routing, and configuration
+management for gradual rollout of Forward-Rolling Recursion.
+
+ROLLOUT SAFETY: Gradual traffic migration with instant rollback
+CONFIGURATION: Centralized settings with runtime updates
+
+Author: Cascade
+Date: February 2026
+Phase: 4 - Gradual Rollout
+"""
+
+from __future__ import annotations
+
+import hashlib
+import logging
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional, Set
+
+Logger = logging.getLogger(__name__)
+
+
+class ExecutionMode(str, Enum):
+    """Execution mode for orchestration."""
+
+    STATIC_DAG = "static_dag"
+    FORWARD_ROLLING = "forward_rolling"
+    HYBRID = "hybrid"
+
+
+class RolloutStage(str, Enum):
+    """Rollout stage for gradual deployment."""
+
+    DISABLED = "disabled"
+    CANARY = "canary"  # 5%
+    EARLY_ADOPTER = "early_adopter"  # 25%
+    PARTIAL = "partial"  # 50%
+    MAJORITY = "majority"  # 75%
+    FULL = "full"  # 100%
+
+
+# Rollout percentages for each stage
+ROLLOUT_PERCENTAGES = {
+    RolloutStage.DISABLED: 0,
+    RolloutStage.CANARY: 5,
+    RolloutStage.EARLY_ADOPTER: 25,
+    RolloutStage.PARTIAL: 50,
+    RolloutStage.MAJORITY: 75,
+    RolloutStage.FULL: 100,
+}
+
+
+@dataclass
+class FeatureFlag:
+    """Feature flag configuration."""
+
+    name: str
+    enabled: bool
+    rollout_percentage: int = 100
+    allowed_agents: Set[str] = field(default_factory=set)
+    blocked_agents: Set[str] = field(default_factory=set)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = field(default_factory=lambda: datetime.now().isoformat())
+    updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
+
+
+@dataclass
+class RolloutConfig:
+    """Configuration for Forward-Rolling Recursion rollout."""
+
+    stage: RolloutStage = RolloutStage.DISABLED
+    execution_mode: ExecutionMode = ExecutionMode.STATIC_DAG
+    max_depth: int = 50
+    enable_context_pruning: bool = True
+    enable_adaptive_depth: bool = True
+    enable_monitoring: bool = True
+    fallback_on_error: bool = True
+    sticky_routing: bool = True
+    metrics_sampling_rate: float = 1.0
+
+
+class ForwardRollingConfig:
+    """
+    Configuration manager for Forward-Rolling Recursion rollout.
+
+    Features:
+    - Feature flags with percentage-based rollout
+    - Sticky routing for consistent user experience
+    - Runtime configuration updates
+    - Instant rollback capability
+    - A/B testing support
+    """
+
+    def __init__(
+        self,
+        initial_stage: RolloutStage = RolloutStage.DISABLED,
+        config_update_callback: Optional[Callable[[RolloutConfig], None]] = None,
+    ):
+        """
+        Initialize configuration manager.
+
+        Args:
+            initial_stage: Initial rollout stage
+            config_update_callback: Callback when config changes
+        """
+        self._config = RolloutConfig(stage=initial_stage)
+        self._feature_flags: Dict[str, FeatureFlag] = {}
+        self._routing_cache: Dict[str, ExecutionMode] = {}
+        self._config_update_callback = config_update_callback
+        self._rollback_history: List[RolloutConfig] = []
+
+        # Initialize default feature flags
+        self._init_default_flags()
+
+        Logger.info(f"[ForwardRollingConfig] Initialized with stage={initial_stage.value}")
+
+    def _init_default_flags(self) -> None:
+        """Initialize default feature flags."""
+        default_flags = [
+            FeatureFlag(
+                name="forward_rolling_enabled",
+                enabled=False,
+                rollout_percentage=0,
+            ),
+            FeatureFlag(
+                name="context_pruning",
+                enabled=True,
+                rollout_percentage=100,
+            ),
+            FeatureFlag(
+                name="adaptive_depth",
+                enabled=True,
+                rollout_percentage=100,
+            ),
+            FeatureFlag(
+                name="monitoring",
+                enabled=True,
+                rollout_percentage=100,
+            ),
+            FeatureFlag(
+                name="circuit_breaker",
+                enabled=True,
+                rollout_percentage=100,
+            ),
+        ]
+
+        for flag in default_flags:
+            self._feature_flags[flag.name] = flag
+
+    def get_execution_mode(self, agent_id: str, mission_id: str = "") -> ExecutionMode:
+        """
+        Determine execution mode for a specific agent/mission.
+
+        Uses sticky routing to ensure consistent experience.
+
+        Args:
+            agent_id: Agent identifier
+            mission_id: Optional mission identifier
+
+        Returns:
+            ExecutionMode to use for this request
+        """
+        # Check sticky routing cache
+        cache_key = f"{agent_id}:{mission_id}" if mission_id else agent_id
+        if self._config.sticky_routing and cache_key in self._routing_cache:
+            return self._routing_cache[cache_key]
+
+        # Determine mode based on rollout stage
+        mode = self._calculate_execution_mode(agent_id, mission_id)
+
+        # Cache for sticky routing
+        if self._config.sticky_routing:
+            self._routing_cache[cache_key] = mode
+
+        return mode
+
+    def _calculate_execution_mode(self, agent_id: str, mission_id: str) -> ExecutionMode:
+        """Calculate execution mode based on rollout configuration."""
+        # Check if forward rolling is globally disabled
+        if self._config.stage == RolloutStage.DISABLED:
+            return ExecutionMode.STATIC_DAG
+
+        # Check feature flag
+        fr_flag = self._feature_flags.get("forward_rolling_enabled")
+        if fr_flag and not fr_flag.enabled:
+            return ExecutionMode.STATIC_DAG
+
+        # Check agent blocklist
+        if fr_flag and agent_id in fr_flag.blocked_agents:
+            return ExecutionMode.STATIC_DAG
+
+        # Check agent allowlist (if non-empty, only allowed agents get FR)
+        if fr_flag and fr_flag.allowed_agents and agent_id not in fr_flag.allowed_agents:
+            return ExecutionMode.STATIC_DAG
+
+        # Percentage-based routing
+        rollout_pct = ROLLOUT_PERCENTAGES.get(self._config.stage, 0)
+        if self._should_route_to_forward_rolling(agent_id, mission_id, rollout_pct):
+            return self._config.execution_mode
+        else:
+            return ExecutionMode.STATIC_DAG
+
+    def _should_route_to_forward_rolling(
+        self, agent_id: str, mission_id: str, percentage: int
+    ) -> bool:
+        """
+        Determine if request should be routed to Forward-Rolling.
+
+        Uses consistent hashing for deterministic routing.
+
+        Args:
+            agent_id: Agent identifier
+            mission_id: Mission identifier
+            percentage: Rollout percentage (0-100)
+
+        Returns:
+            True if should use Forward-Rolling
+        """
+        if percentage >= 100:
+            return True
+        if percentage <= 0:
+            return False
+
+        # Use consistent hashing for deterministic routing
+        hash_input = f"{agent_id}:{mission_id}".encode()
+        hash_value = int(hashlib.md5(hash_input).hexdigest(), 16)
+        bucket = hash_value % 100
+
+        return bucket < percentage
+
+    def set_rollout_stage(self, stage: RolloutStage) -> None:
+        """
+        Set the rollout stage.
+
+        Args:
+            stage: New rollout stage
+        """
+        # Save for rollback
+        self._rollback_history.append(
+            RolloutConfig(
+                stage=self._config.stage,
+                execution_mode=self._config.execution_mode,
+                max_depth=self._config.max_depth,
+                enable_context_pruning=self._config.enable_context_pruning,
+                enable_adaptive_depth=self._config.enable_adaptive_depth,
+                enable_monitoring=self._config.enable_monitoring,
+                fallback_on_error=self._config.fallback_on_error,
+                sticky_routing=self._config.sticky_routing,
+            )
+        )
+
+        self._config.stage = stage
+
+        # Update feature flag
+        fr_flag = self._feature_flags.get("forward_rolling_enabled")
+        if fr_flag:
+            fr_flag.enabled = stage != RolloutStage.DISABLED
+            fr_flag.rollout_percentage = ROLLOUT_PERCENTAGES.get(stage, 0)
+            fr_flag.updated_at = datetime.now().isoformat()
+
+        # Clear routing cache when stage changes
+        self._routing_cache.clear()
+
+        # Invoke callback
+        if self._config_update_callback:
+            self._config_update_callback(self._config)
+
+        Logger.info(f"[ForwardRollingConfig] Rollout stage set to {stage.value}")
+
+    def rollback(self) -> bool:
+        """
+        Rollback to previous configuration.
+
+        Returns:
+            True if rollback successful
+        """
+        if not self._rollback_history:
+            Logger.warning("[ForwardRollingConfig] No rollback history available")
+            return False
+
+        previous_config = self._rollback_history.pop()
+        self._config = previous_config
+
+        # Update feature flag
+        fr_flag = self._feature_flags.get("forward_rolling_enabled")
+        if fr_flag:
+            fr_flag.enabled = previous_config.stage != RolloutStage.DISABLED
+            fr_flag.rollout_percentage = ROLLOUT_PERCENTAGES.get(previous_config.stage, 0)
+
+        # Clear routing cache
+        self._routing_cache.clear()
+
+        Logger.info(f"[ForwardRollingConfig] Rolled back to stage {previous_config.stage.value}")
+        return True
+
+    def emergency_disable(self) -> None:
+        """Emergency disable of Forward-Rolling Recursion."""
+        self.set_rollout_stage(RolloutStage.DISABLED)
+        self._config.execution_mode = ExecutionMode.STATIC_DAG
+
+        # Force disable feature flag
+        fr_flag = self._feature_flags.get("forward_rolling_enabled")
+        if fr_flag:
+            fr_flag.enabled = False
+            fr_flag.rollout_percentage = 0
+
+        Logger.critical("[ForwardRollingConfig] EMERGENCY DISABLE activated")
+
+    def set_feature_flag(
+        self,
+        name: str,
+        enabled: bool,
+        rollout_percentage: int = 100,
+        allowed_agents: Optional[Set[str]] = None,
+        blocked_agents: Optional[Set[str]] = None,
+    ) -> FeatureFlag:
+        """
+        Set or update a feature flag.
+
+        Args:
+            name: Flag name
+            enabled: Whether flag is enabled
+            rollout_percentage: Percentage of traffic (0-100)
+            allowed_agents: Set of allowed agent IDs
+            blocked_agents: Set of blocked agent IDs
+
+        Returns:
+            Updated FeatureFlag
+        """
+        if name in self._feature_flags:
+            flag = self._feature_flags[name]
+            flag.enabled = enabled
+            flag.rollout_percentage = min(max(rollout_percentage, 0), 100)
+            if allowed_agents is not None:
+                flag.allowed_agents = allowed_agents
+            if blocked_agents is not None:
+                flag.blocked_agents = blocked_agents
+            flag.updated_at = datetime.now().isoformat()
+        else:
+            flag = FeatureFlag(
+                name=name,
+                enabled=enabled,
+                rollout_percentage=min(max(rollout_percentage, 0), 100),
+                allowed_agents=allowed_agents or set(),
+                blocked_agents=blocked_agents or set(),
+            )
+            self._feature_flags[name] = flag
+
+        Logger.info(
+            f"[ForwardRollingConfig] Feature flag '{name}' "
+            f"set to enabled={enabled}, rollout={rollout_percentage}%"
+        )
+        return flag
+
+    def is_feature_enabled(self, name: str, agent_id: str = "") -> bool:
+        """
+        Check if a feature is enabled for an agent.
+
+        Args:
+            name: Feature flag name
+            agent_id: Optional agent ID for percentage-based check
+
+        Returns:
+            True if feature is enabled
+        """
+        flag = self._feature_flags.get(name)
+        if not flag or not flag.enabled:
+            return False
+
+        # Check blocklist
+        if agent_id and agent_id in flag.blocked_agents:
+            return False
+
+        # Check allowlist
+        if flag.allowed_agents and agent_id not in flag.allowed_agents:
+            return False
+
+        # Percentage check
+        if flag.rollout_percentage < 100 and agent_id:
+            return self._should_route_to_forward_rolling(agent_id, "", flag.rollout_percentage)
+
+        return True
+
+    def get_feature_flag(self, name: str) -> Optional[FeatureFlag]:
+        """Get a feature flag by name."""
+        return self._feature_flags.get(name)
+
+    def get_all_feature_flags(self) -> Dict[str, FeatureFlag]:
+        """Get all feature flags."""
+        return self._feature_flags.copy()
+
+    def update_config(self, **kwargs) -> None:
+        """
+        Update configuration values.
+
+        Args:
+            **kwargs: Configuration values to update
+        """
+        for key, value in kwargs.items():
+            if hasattr(self._config, key):
+                setattr(self._config, key, value)
+                Logger.info(f"[ForwardRollingConfig] Config {key} set to {value}")
+
+        if self._config_update_callback:
+            self._config_update_callback(self._config)
+
+    def get_config(self) -> RolloutConfig:
+        """Get current configuration."""
+        return self._config
+
+    def get_rollout_percentage(self) -> int:
+        """Get current rollout percentage."""
+        return ROLLOUT_PERCENTAGES.get(self._config.stage, 0)
+
+    def get_routing_stats(self) -> Dict[str, Any]:
+        """Get routing statistics."""
+        total_cached = len(self._routing_cache)
+        mode_counts = {}
+        for mode in self._routing_cache.values():
+            mode_counts[mode.value] = mode_counts.get(mode.value, 0) + 1
+
+        return {
+            "total_cached_routes": total_cached,
+            "mode_distribution": mode_counts,
+            "rollout_stage": self._config.stage.value,
+            "rollout_percentage": self.get_rollout_percentage(),
+            "sticky_routing_enabled": self._config.sticky_routing,
+        }
+
+    def clear_routing_cache(self) -> int:
+        """Clear routing cache and return count cleared."""
+        count = len(self._routing_cache)
+        self._routing_cache.clear()
+        Logger.info(f"[ForwardRollingConfig] Cleared {count} cached routes")
+        return count
+
+    def add_agent_to_allowlist(self, flag_name: str, agent_id: str) -> bool:
+        """Add agent to a feature flag's allowlist."""
+        flag = self._feature_flags.get(flag_name)
+        if flag:
+            flag.allowed_agents.add(agent_id)
+            flag.updated_at = datetime.now().isoformat()
+            return True
+        return False
+
+    def add_agent_to_blocklist(self, flag_name: str, agent_id: str) -> bool:
+        """Add agent to a feature flag's blocklist."""
+        flag = self._feature_flags.get(flag_name)
+        if flag:
+            flag.blocked_agents.add(agent_id)
+            flag.updated_at = datetime.now().isoformat()
+            return True
+        return False
+
+    def remove_agent_from_allowlist(self, flag_name: str, agent_id: str) -> bool:
+        """Remove agent from a feature flag's allowlist."""
+        flag = self._feature_flags.get(flag_name)
+        if flag and agent_id in flag.allowed_agents:
+            flag.allowed_agents.remove(agent_id)
+            flag.updated_at = datetime.now().isoformat()
+            return True
+        return False
+
+    def remove_agent_from_blocklist(self, flag_name: str, agent_id: str) -> bool:
+        """Remove agent from a feature flag's blocklist."""
+        flag = self._feature_flags.get(flag_name)
+        if flag and agent_id in flag.blocked_agents:
+            flag.blocked_agents.remove(agent_id)
+            flag.updated_at = datetime.now().isoformat()
+            return True
+        return False
+
+    def export_config(self) -> Dict[str, Any]:
+        """Export current configuration as dictionary."""
+        return {
+            "config": {
+                "stage": self._config.stage.value,
+                "execution_mode": self._config.execution_mode.value,
+                "max_depth": self._config.max_depth,
+                "enable_context_pruning": self._config.enable_context_pruning,
+                "enable_adaptive_depth": self._config.enable_adaptive_depth,
+                "enable_monitoring": self._config.enable_monitoring,
+                "fallback_on_error": self._config.fallback_on_error,
+                "sticky_routing": self._config.sticky_routing,
+                "metrics_sampling_rate": self._config.metrics_sampling_rate,
+            },
+            "feature_flags": {
+                name: {
+                    "enabled": flag.enabled,
+                    "rollout_percentage": flag.rollout_percentage,
+                    "allowed_agents": list(flag.allowed_agents),
+                    "blocked_agents": list(flag.blocked_agents),
+                }
+                for name, flag in self._feature_flags.items()
+            },
+            "rollout_percentage": self.get_rollout_percentage(),
+        }
+
+
+__all__ = [
+    "ForwardRollingConfig",
+    "ExecutionMode",
+    "RolloutStage",
+    "RolloutConfig",
+    "FeatureFlag",
+    "ROLLOUT_PERCENTAGES",
+]
