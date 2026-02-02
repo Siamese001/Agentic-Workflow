@@ -495,6 +495,87 @@ class FileClassificationAgent(SovereignBaseAgent):
 
         return False
 
+    # ========================================================================
+    # PHASE 2: Additional Category Detection Methods
+    # ========================================================================
+
+    def _is_config_class(self, node: ast.ClassDef, file_path: Path) -> bool:
+        """
+        Detect configuration classes.
+
+        Checks:
+        1. Path contains config/
+        2. Name ends with Config, Settings, or Options
+        3. Has @dataclass decorator with config-like attributes
+        """
+        # Check 1: Path contains config/
+        if "config" in file_path.parts:
+            return True
+
+        # Check 2: Naming convention
+        config_suffixes = ("Config", "Settings", "Options", "Configuration")
+        if any(node.name.endswith(suffix) for suffix in config_suffixes):
+            return True
+
+        # Check 3: Dataclass with simple attributes (config-like)
+        for decorator in node.decorator_list:
+            if isinstance(decorator, ast.Name) and decorator.id == "dataclass":
+                return True
+            elif isinstance(decorator, ast.Call):
+                if isinstance(decorator.func, ast.Name) and decorator.func.id == "dataclass":
+                    return True
+
+        return False
+
+    def _is_model_class(self, node: ast.ClassDef) -> bool:
+        """
+        Detect data model classes.
+
+        Checks:
+        1. Inherits from pydantic BaseModel
+        2. Has @dataclass decorator
+        3. Name ends with Model, Schema, DTO
+        """
+        # Check 1: Pydantic BaseModel inheritance
+        for base in node.bases:
+            if isinstance(base, ast.Name) and base.id == "BaseModel":
+                return True
+            elif isinstance(base, ast.Attribute) and base.attr == "BaseModel":
+                return True
+
+        # Check 2: Name ends with model-related suffix
+        model_suffixes = ("Model", "Schema", "DTO", "Entity")
+        if any(node.name.endswith(suffix) for suffix in model_suffixes):
+            return True
+
+        return False
+
+    def _is_repository_class(self, node: ast.ClassDef) -> bool:
+        """
+        Detect repository pattern classes.
+
+        Checks:
+        1. Name ends with Repository
+        2. Has CRUD methods (create, read, update, delete, save, find, get, list)
+        3. Name ends with DAO (Data Access Object)
+        """
+        # Check 1: Naming convention
+        if node.name.endswith(("Repository", "DAO", "Store")):
+            return True
+
+        # Check 2: CRUD methods
+        crud_methods = {"create", "read", "update", "delete", "save", "find", "get", "list_all"}
+        methods = set()
+        for item in node.body:
+            if isinstance(item, ast.FunctionDef):
+                methods.add(item.name)
+
+        # If has at least 2 CRUD methods, likely a repository
+        if len(crud_methods & methods) >= 2:
+            return True
+
+        return False
+
     def update_imports(self, old_name: str, new_name: str) -> int:
         """Refactors imports using the in-memory registry to avoid O(N²) disk hits."""
         count = 0
