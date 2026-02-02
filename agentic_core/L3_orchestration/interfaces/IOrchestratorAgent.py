@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 IOrchestratorAgent Protocol - Phase 1 Foundation
 
@@ -20,6 +18,7 @@ Date: January 19, 2026
 Phase: 1 - Foundation & Zero-Loss Protocols
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
@@ -46,6 +45,10 @@ class ExecutionContext:
     Context passed through orchestrator execution chain.
 
     Provides shared state and configuration for mission execution.
+
+    [PHASE 1] Forward-Rolling Recursion Enhancement:
+    - accumulated_context: Zero-loss context preservation across successor spawns
+    - successor_chain tracking in metadata for DNA integrity
     """
 
     dry_run: bool = True
@@ -55,6 +58,7 @@ class ExecutionContext:
     phase: ExecutionPhase = ExecutionPhase.PLANNING
     call_path: list[str] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
+    accumulated_context: dict[str, Any] = field(default_factory=dict)
 
     def with_depth(self, new_depth: int) -> ExecutionContext:
         """Create new context with updated depth."""
@@ -66,6 +70,7 @@ class ExecutionContext:
             phase=self.phase,
             call_path=self.call_path.copy(),
             metadata=self.metadata.copy(),
+            accumulated_context=self.accumulated_context.copy(),
         )
 
     def with_phase(self, new_phase: ExecutionPhase) -> ExecutionContext:
@@ -78,7 +83,31 @@ class ExecutionContext:
             phase=new_phase,
             call_path=self.call_path.copy(),
             metadata=self.metadata.copy(),
+            accumulated_context=self.accumulated_context.copy(),
         )
+
+    def with_accumulated_context(self, new_context: dict[str, Any]) -> ExecutionContext:
+        """Create new context with merged accumulated_context for DNA preservation."""
+        merged = self.accumulated_context.copy()
+        merged.update(new_context)
+        return ExecutionContext(
+            dry_run=self.dry_run,
+            execute=self.execute,
+            max_depth=self.max_depth,
+            current_depth=self.current_depth,
+            phase=self.phase,
+            call_path=self.call_path.copy(),
+            metadata=self.metadata.copy(),
+            accumulated_context=merged,
+        )
+
+    def get_successor_chain(self) -> list[str]:
+        """Get the current successor chain from metadata."""
+        return self.metadata.get("successor_chain", [])
+
+    def get_depth(self) -> int:
+        """Get current recursion depth from metadata or current_depth."""
+        return self.metadata.get("depth", self.current_depth)
 
 
 @dataclass
