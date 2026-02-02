@@ -92,6 +92,19 @@ def initialize() -> dict[str, Any]:
         Logger.warning(f"[Sovereign Integration] Dependency integration unavailable: {e}")
         results["errors"].append(f"dependency_healing_integration: {e}")
 
+    # Operational Healing (Historian, CostGovernor, TaskDecomposition)
+    try:
+        from agentic_core.L5_safety.validators.operational_healing_integration import (
+            register_operational_healing,
+        )
+
+        op_result = register_operational_healing()
+        results["strategies"].extend(op_result.get("registered", []))
+        results["errors"].extend(op_result.get("errors", []))
+    except ImportError as e:
+        Logger.warning(f"[Sovereign Integration] Operational integration unavailable: {e}")
+        results["errors"].append(f"operational_healing_integration: {e}")
+
     _REGISTERED = True
     results["status"] = "initialized" if not results["errors"] else "partial"
 
