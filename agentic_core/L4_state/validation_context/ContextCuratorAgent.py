@@ -6,7 +6,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import logging
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     TESTS_DIR,
 )
 

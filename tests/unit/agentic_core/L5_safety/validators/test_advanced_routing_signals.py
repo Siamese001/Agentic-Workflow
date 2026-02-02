@@ -1,4 +1,4 @@
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     SOVEREIGN_TERRITORIES,
     get_correct_app_path,
     is_app_specific_file,

@@ -67,7 +67,7 @@ class TestGatekeeperSinglePointOfApproval:
         """Gatekeeper should auto-approve when SOVEREIGN_AUTO_APPROVE=1."""
         os.environ["SOVEREIGN_AUTO_APPROVE"] = "1"
 
-        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+        from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 
         ArchivalGatekeeper.reset_instance()
         gk = ArchivalGatekeeper.get_instance(tmp_path)
@@ -92,7 +92,7 @@ class TestEndToEndNoPrompts:
     @patch("builtins.input")
     def test_hierarchy_agent_execute_no_input_called(self, mock_input, setup_env, tmp_path):
         """HierarchyAgent should never call input() when env vars are set."""
-        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+        from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
         from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
 
         ArchivalGatekeeper.reset_instance()

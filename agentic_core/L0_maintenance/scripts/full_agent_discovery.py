@@ -35,7 +35,7 @@ import json
 from typing import Any, Dict, List
 
 # CRITICAL SSOT Imports - ALL directory constants MUST come from structure_blueprint.py
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,

@@ -201,7 +201,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
 
                     if action == "archive":
                         # Archive the file
-                        from agentic_core.L5_safety.core.ArchivalGatekeeper import (
+                        from agentic_core.L5_safety.core.archival_gatekeeper_config import (
                             ArchivalGatekeeper,
                         )
 

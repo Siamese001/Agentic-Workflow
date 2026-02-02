@@ -20,7 +20,7 @@ import time
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     SCRIPTS_DIR,
 )
 from agentic_core.shared.interfaces import ActionRequest, ActionResult, IActionPlane

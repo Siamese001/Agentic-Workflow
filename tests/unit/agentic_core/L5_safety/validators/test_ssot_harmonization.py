@@ -48,7 +48,7 @@ def test_global_excluded_dirs():
     print("=" * 60)
 
     try:
-        from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS
+        from agentic_core.L5_safety.validators.structure_blueprint_config import GLOBAL_EXCLUDED_DIRS
 
         required_entries = [
             "__pycache__",
@@ -84,7 +84,7 @@ def test_is_path_allowed():
     print("=" * 60)
 
     try:
-        from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
+        from agentic_core.L5_safety.validators.structure_blueprint_config import is_path_allowed
 
         # These paths should ALL be allowed (no false positives)
         valid_paths = [
@@ -142,7 +142,7 @@ def test_sovereign_index_ssot():
     content = index_path.read_text(encoding="utf-8")
 
     if (
-        "from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS"
+        "from agentic_core.L5_safety.validators.structure_blueprint_config import GLOBAL_EXCLUDED_DIRS"
         in content
     ):
         test_pass("IMPORT", "Imports GLOBAL_EXCLUDED_DIRS from SSOT")

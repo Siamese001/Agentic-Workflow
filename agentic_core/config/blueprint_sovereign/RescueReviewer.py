@@ -78,7 +78,7 @@ class RescueReviewer:
             print("[OK] Archive is empty. Sovereignty is pure.")
             return
         print(f"\n--- SOVEREIGN ARCHIVE REVIEW (Auto-Home: {auto_home}) ---")
-        from agentic_core.L5_safety.validators.structure_blueprint import (
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
             CANON_SIGNALS,
             DEFAULT_CORE_HEALING_TERRITORY,
         )

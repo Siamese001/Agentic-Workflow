@@ -92,7 +92,7 @@ except ImportError:
         pass
 
 
-from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 
 Logger = logging.getLogger(__name__)
 
@@ -374,7 +374,7 @@ class FilesystemSSOTReconcilerAgent(
 
         # [STRICT SCOPE] Filter roots based on target territory
         if target_territory:
-            from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
+            from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_TERRITORIES
 
             # Logic: If territory is a root (apps_lic), scan only that. Else target agentic_core.
             if target_territory in SOVEREIGN_TERRITORIES and target_territory != "agentic_core":

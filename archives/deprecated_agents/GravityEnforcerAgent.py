@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Dict, Set, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.config.blueprint_sovereign.structure_blueprint_config import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 

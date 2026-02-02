@@ -49,7 +49,7 @@ def test_is_path_allowed_valid_sovereign():
     print("Test 1: is_path_allowed - Valid Sovereign Paths")
     print("=" * 70)
 
-    from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
+    from agentic_core.L5_safety.validators.structure_blueprint_config import is_path_allowed
 
     # Test Valid Core Path (L2 Execution is in SOVEREIGN_REGISTRY)
     if is_path_allowed("agentic_core/L2_execution/tool_registry/SomeAgent.py"):
@@ -82,7 +82,7 @@ def test_is_path_allowed_invalid_paths():
     print("Test 2: is_path_allowed - Invalid Paths")
     print("=" * 70)
 
-    from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
+    from agentic_core.L5_safety.validators.structure_blueprint_config import is_path_allowed
 
     # Invalid Root
     if not is_path_allowed("random_folder/script.py"):
@@ -109,7 +109,7 @@ def test_is_path_allowed_depth_check():
     print("Test 3: is_path_allowed - Depth Handling")
     print("=" * 70)
 
-    from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
+    from agentic_core.L5_safety.validators.structure_blueprint_config import is_path_allowed
 
     # Deeply nested valid path (is_path_allowed only checks root + subfolder)
     if is_path_allowed("agentic_core/L2_execution/tool_registry/extra/deep/file.py"):
@@ -266,7 +266,7 @@ def test_fs_agent_safety_brake_valid_file():
 
     # Check is_path_allowed import
     if (
-        "from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed"
+        "from agentic_core.L5_safety.validators.structure_blueprint_config import is_path_allowed"
         in content
     ):
         test_pass("IMPORT", "is_path_allowed imported from SSOT")

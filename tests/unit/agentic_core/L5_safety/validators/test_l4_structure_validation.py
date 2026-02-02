@@ -34,7 +34,7 @@ sys.path.insert(0, str(project_root))
 def test_1_l4_subfolder_map_exists() -> tuple[bool, str]:
     """Test 1: Verify L4_SUBFOLDER_MAP exists in structure_blueprint."""
     try:
-        from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
+        from agentic_core.L5_safety.validators.structure_blueprint_config import L4_SUBFOLDER_MAP
 
         if not L4_SUBFOLDER_MAP:
             return False, "L4_SUBFOLDER_MAP is empty"
@@ -47,7 +47,7 @@ def test_1_l4_subfolder_map_exists() -> tuple[bool, str]:
 def test_2_l4_approved_folders_exists() -> tuple[bool, str]:
     """Test 2: Verify L4_APPROVED_FOLDERS exists."""
     try:
-        from agentic_core.L5_safety.validators.structure_blueprint import L4_APPROVED_FOLDERS
+        from agentic_core.L5_safety.validators.structure_blueprint_config import L4_APPROVED_FOLDERS
 
         if not L4_APPROVED_FOLDERS:
             return False, "L4_APPROVED_FOLDERS is empty"
@@ -59,7 +59,7 @@ def test_2_l4_approved_folders_exists() -> tuple[bool, str]:
 
 def test_3_l4_map_has_required_folders() -> tuple[bool, str]:
     """Test 3: Verify L4_SUBFOLDER_MAP has all required high-complexity folders."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_SUBFOLDER_MAP
 
     required_folders = [
         "dashboards",  # L6_observability/dashboards
@@ -81,7 +81,7 @@ def test_3_l4_map_has_required_folders() -> tuple[bool, str]:
 
 def test_4_l4_approved_folders_match_map() -> tuple[bool, str]:
     """Test 4: Verify L4_APPROVED_FOLDERS matches L4_SUBFOLDER_MAP keys."""
-    from agentic_core.L5_safety.validators.structure_blueprint import (
+    from agentic_core.L5_safety.validators.structure_blueprint_config import (
         L4_APPROVED_FOLDERS,
         L4_SUBFOLDER_MAP,
     )
@@ -104,7 +104,7 @@ def test_4_l4_approved_folders_match_map() -> tuple[bool, str]:
 
 def test_5_dashboards_has_js_subfolders() -> tuple[bool, str]:
     """Test 5: Verify dashboards L4 map includes JS subfolders."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_SUBFOLDER_MAP
 
     dashboards = L4_SUBFOLDER_MAP.get("dashboards", {})
 
@@ -123,7 +123,7 @@ def test_5_dashboards_has_js_subfolders() -> tuple[bool, str]:
 
 def test_6_scripts_has_healing_subfolder() -> tuple[bool, str]:
     """Test 6: Verify scripts L4 map includes healing subfolder."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_SUBFOLDER_MAP
 
     scripts = L4_SUBFOLDER_MAP.get("scripts", {})
 
@@ -138,7 +138,7 @@ def test_6_scripts_has_healing_subfolder() -> tuple[bool, str]:
 
 def test_7_workflow_engines_has_dag_subfolder() -> tuple[bool, str]:
     """Test 7: Verify workflow_engines L4 map includes DAG subfolder."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_SUBFOLDER_MAP
 
     workflow_engines = L4_SUBFOLDER_MAP.get("workflow_engines", {})
 
@@ -153,7 +153,7 @@ def test_7_workflow_engines_has_dag_subfolder() -> tuple[bool, str]:
 
 def test_8_guardrails_has_security_subfolder() -> tuple[bool, str]:
     """Test 8: Verify guardrails L4 map includes security subfolder."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_SUBFOLDER_MAP
 
     guardrails = L4_SUBFOLDER_MAP.get("guardrails", {})
 
@@ -168,7 +168,7 @@ def test_8_guardrails_has_security_subfolder() -> tuple[bool, str]:
 
 def test_9_l4_approved_folders_are_valid_paths() -> tuple[bool, str]:
     """Test 9: Verify L4_APPROVED_FOLDERS contains valid path patterns."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_APPROVED_FOLDERS
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_APPROVED_FOLDERS
 
     invalid_paths = []
     for path in L4_APPROVED_FOLDERS:
@@ -190,7 +190,7 @@ def test_9_l4_approved_folders_are_valid_paths() -> tuple[bool, str]:
 
 def test_10_l4_folders_exist_on_disk() -> tuple[bool, str]:
     """Test 10: Verify L4-approved folders actually exist on disk."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_APPROVED_FOLDERS
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_APPROVED_FOLDERS
 
     missing_folders = []
     existing_folders = []
@@ -210,7 +210,7 @@ def test_10_l4_folders_exist_on_disk() -> tuple[bool, str]:
 
 def test_11_l4_map_values_are_dicts() -> tuple[bool, str]:
     """Test 11: Verify L4_SUBFOLDER_MAP values are dictionaries."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_SUBFOLDER_MAP
 
     invalid_entries = []
     for folder, subfolders in L4_SUBFOLDER_MAP.items():
@@ -225,7 +225,7 @@ def test_11_l4_map_values_are_dicts() -> tuple[bool, str]:
 
 def test_12_l4_subfolder_values_are_lists() -> tuple[bool, str]:
     """Test 12: Verify L4 subfolder values are lists."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_SUBFOLDER_MAP
 
     invalid_entries = []
     for folder, subfolders in L4_SUBFOLDER_MAP.items():
@@ -241,7 +241,7 @@ def test_12_l4_subfolder_values_are_lists() -> tuple[bool, str]:
 
 def test_13_core_subfolder_map_unchanged() -> tuple[bool, str]:
     """Test 13: Verify CORE_SUBFOLDER_MAP still works correctly."""
-    from agentic_core.L5_safety.validators.structure_blueprint import CORE_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import CORE_SUBFOLDER_MAP
 
     # Check key layers exist
     required_layers = [
@@ -264,7 +264,7 @@ def test_13_core_subfolder_map_unchanged() -> tuple[bool, str]:
 
 def test_14_l4_folders_have_high_file_count() -> tuple[bool, str]:
     """Test 14: Verify L4-approved folders actually have high file counts."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_APPROVED_FOLDERS
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_APPROVED_FOLDERS
 
     low_count_folders = []
     high_count_folders = []
@@ -295,7 +295,7 @@ def test_14_l4_folders_have_high_file_count() -> tuple[bool, str]:
 
 def test_15_no_duplicate_l4_definitions() -> tuple[bool, str]:
     """Test 15: Verify no duplicate subfolder definitions in L4_SUBFOLDER_MAP."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_SUBFOLDER_MAP
 
     all_subfolders = []
     duplicates = []
@@ -315,7 +315,7 @@ def test_15_no_duplicate_l4_definitions() -> tuple[bool, str]:
 
 def test_16_l4_approved_folders_is_set() -> tuple[bool, str]:
     """Test 16: Verify L4_APPROVED_FOLDERS is a set (for O(1) lookup)."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_APPROVED_FOLDERS
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_APPROVED_FOLDERS
 
     if not isinstance(L4_APPROVED_FOLDERS, set):
         return False, f"L4_APPROVED_FOLDERS is {type(L4_APPROVED_FOLDERS)}, should be set"
@@ -325,7 +325,7 @@ def test_16_l4_approved_folders_is_set() -> tuple[bool, str]:
 
 def test_17_thought_engine_has_reasoning_subfolder() -> tuple[bool, str]:
     """Test 17: Verify thought_engine L4 map includes reasoning subfolder."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_SUBFOLDER_MAP
 
     thought_engine = L4_SUBFOLDER_MAP.get("thought_engine", {})
 
@@ -340,7 +340,7 @@ def test_17_thought_engine_has_reasoning_subfolder() -> tuple[bool, str]:
 
 def test_18_tool_registry_has_core_subfolder() -> tuple[bool, str]:
     """Test 18: Verify tool_registry L4 map includes core subfolder."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_SUBFOLDER_MAP
 
     tool_registry = L4_SUBFOLDER_MAP.get("tool_registry", {})
 
@@ -360,7 +360,7 @@ def test_18_tool_registry_has_core_subfolder() -> tuple[bool, str]:
 
 def is_l4_approved(folder_path: str) -> bool:
     """Check if a folder path is approved for L4 depth."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_APPROVED_FOLDERS
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_APPROVED_FOLDERS
 
     # Normalize path
     normalized = folder_path.replace("\\", "/")
@@ -396,7 +396,7 @@ def test_19_is_l4_approved_helper_works() -> tuple[bool, str]:
 
 def test_20_core_extensions_has_mixins_subfolder() -> tuple[bool, str]:
     """Test 20: Verify core_extensions L4 map includes mixins subfolder."""
-    from agentic_core.L5_safety.validators.structure_blueprint import L4_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import L4_SUBFOLDER_MAP
 
     core_extensions = L4_SUBFOLDER_MAP.get("core_extensions", {})
 

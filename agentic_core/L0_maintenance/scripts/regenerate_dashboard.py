@@ -69,10 +69,10 @@ def regenerate_data_only():
     print("=" * 70)
 
     # Import SSOT definitions
-    from agentic_core.L0_maintenance.scripts.territory_ssot_definitions import (
+    from agentic_core.L0_maintenance.scripts.territory_ssot_definitions_config import (
         get_territory_sort_key,
     )
-    from agentic_core.L5_safety.validators.dashboard_ssot_definitions import (
+    from agentic_core.L5_safety.validators.dashboard_ssot_definitions_config import (
         COL_CANONICAL_INHERITANCE,
         COL_CODE_QUALITY,
         COL_COMPLEXITY_HEALTH,

@@ -14,7 +14,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from apps_shared.config.config_loader import (
+from apps_shared.config.config_loader_config import (
     ConfigLoadResult,
     get_config_loader,
     load_agent_config,

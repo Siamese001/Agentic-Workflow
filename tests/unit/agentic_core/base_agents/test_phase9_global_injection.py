@@ -9,7 +9,7 @@ from dataclasses import dataclass
 def test_global_injection_capabilities():
     """Verify SovereignBaseAgent natively possesses all Phase 4-6 capabilities."""
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+    from agentic_core.config.sovereign_config_manager_config import SovereignConfigManager
 
     @dataclass
     class ConcreteAgent(SovereignBaseAgent):

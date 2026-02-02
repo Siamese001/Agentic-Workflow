@@ -19,8 +19,8 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     ARCHIVES_DIR,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )

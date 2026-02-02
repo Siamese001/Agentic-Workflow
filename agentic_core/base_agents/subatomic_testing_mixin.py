@@ -25,7 +25,7 @@ except (ImportError, AttributeError):
         pass
 
 
-from agentic_core.schemas.models.AnomalyReport import AnomalyReport, AnomalySeverity
+from agentic_core.schemas.models.anomaly_report_config import AnomalyReport, AnomalySeverity
 
 # Import instructional injection patterns for all agents
 try:

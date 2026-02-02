@@ -24,7 +24,7 @@ import pytest
 project_root = Path(__file__).parent.parent.parent.resolve()
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.core.ArchivalGatekeeper import (
+from agentic_core.L5_safety.core.archival_gatekeeper_config import (
     ARCHIVE_BATCH_ACCEPT_ENV,
     ArchivalGatekeeper,
     ArchivalOperation,

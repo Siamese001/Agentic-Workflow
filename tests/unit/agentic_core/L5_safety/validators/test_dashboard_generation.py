@@ -14,7 +14,7 @@ from pathlib import Path
 # SSOT: Import canonical definitions for dashboard testing
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     REPORTS_DIR,
 )
 

@@ -137,7 +137,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         >>> is_path_compliant('agentic_core/L1/L2/L3/L4/L5/deep.py')  # Too deep
         False
     """
-    from agentic_core.L5_safety.validators.structure_blueprint import (
+    from agentic_core.L5_safety.validators.structure_blueprint_config import (
         SOVEREIGN_TERRITORIES,
         get_validated_project_root,
     )
@@ -191,7 +191,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
 
 from fnmatch import fnmatch
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     APP_SPECIFIC_TARGET_SUBFOLDER,
     AST_DOMAIN_HIT_THRESHOLD,  # Flexible depth exemptions (Option A)
     PROJECT_ROOT_METADATA,  # [ENHANCED] Imported for smart routing
@@ -201,7 +201,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
 
 # Optional prompt registry for meta-learning
 try:
-    from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
+    from agentic_core.prompt_governance.version_registry.prompt_registry_config import registers_prompt
 except ImportError:
     # Fallback decorator for testing
     def registers_prompt(**kwargs):
@@ -1307,7 +1307,7 @@ class LocationAgent(SovereignBaseAgent):
                             from agentic_core.L4_state.validation_context.RuntimeStateGuard import (
                                 RuntimeStateGuard,
                             )
-                            from agentic_core.L5_safety.validators.structure_blueprint import (
+                            from agentic_core.L5_safety.validators.structure_blueprint_config import (
                                 HEALING_CONFIG,
                             )
 

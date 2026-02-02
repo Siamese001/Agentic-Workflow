@@ -5,7 +5,7 @@ Tests for centralized configuration loading system.
 
 import pytest
 from pathlib import Path
-from apps_shared.config.config_loader import (
+from apps_shared.config.config_loader_config import (
     ConfigLoader,
     ConfigLoadResult,
     load_agent_config,

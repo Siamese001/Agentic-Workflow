@@ -22,7 +22,7 @@ class TestLLMGatewayConfigIntegration:
 
     def setup_method(self):
         """Reset singletons before each test."""
-        from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.config.sovereign_config_manager_config import SovereignConfigManager
         from agentic_core.L2_execution.mcp.SovereignLLMGateway import SovereignLLMGateway
 
         SovereignLLMGateway.reset_instance()
@@ -34,7 +34,7 @@ class TestLLMGatewayConfigIntegration:
 
     def teardown_method(self):
         """Clean up singletons after each test."""
-        from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.config.sovereign_config_manager_config import SovereignConfigManager
         from agentic_core.L2_execution.mcp.SovereignLLMGateway import SovereignLLMGateway
 
         SovereignLLMGateway.reset_instance()
@@ -116,7 +116,7 @@ class TestHealingOrchestratorConfigIntegration:
 
     def setup_method(self):
         """Reset singletons before each test."""
-        from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.config.sovereign_config_manager_config import SovereignConfigManager
         from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
             HealingSovereignOrchestrator,
         )
@@ -129,7 +129,7 @@ class TestHealingOrchestratorConfigIntegration:
 
     def teardown_method(self):
         """Clean up singletons after each test."""
-        from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.config.sovereign_config_manager_config import SovereignConfigManager
         from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
             HealingSovereignOrchestrator,
         )
@@ -173,7 +173,7 @@ class TestValidatorOrchestratorConfigIntegration:
 
     def setup_method(self):
         """Reset singletons before each test."""
-        from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.config.sovereign_config_manager_config import SovereignConfigManager
         from agentic_core.L5_safety.validators.ValidatorOrchestrator import ValidatorOrchestrator
 
         ValidatorOrchestrator.reset_instance()
@@ -183,7 +183,7 @@ class TestValidatorOrchestratorConfigIntegration:
 
     def teardown_method(self):
         """Clean up singletons after each test."""
-        from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.config.sovereign_config_manager_config import SovereignConfigManager
         from agentic_core.L5_safety.validators.ValidatorOrchestrator import ValidatorOrchestrator
 
         ValidatorOrchestrator.reset_instance()
@@ -223,7 +223,7 @@ class TestEmbeddingAgentConfigIntegration:
 
     def setup_method(self):
         """Reset singletons before each test."""
-        from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.config.sovereign_config_manager_config import SovereignConfigManager
         from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import EmbeddingSovereignAgent
 
         EmbeddingSovereignAgent.reset_instance()
@@ -233,7 +233,7 @@ class TestEmbeddingAgentConfigIntegration:
 
     def teardown_method(self):
         """Clean up singletons after each test."""
-        from agentic_core.config.SovereignConfigManager import SovereignConfigManager
+        from agentic_core.config.sovereign_config_manager_config import SovereignConfigManager
         from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import EmbeddingSovereignAgent
 
         EmbeddingSovereignAgent.reset_instance()

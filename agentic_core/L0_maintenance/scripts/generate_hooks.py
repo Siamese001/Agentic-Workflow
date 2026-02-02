@@ -18,7 +18,7 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_TERRITORIES
+from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_TERRITORIES
 
 
 def sync_pre_commit(dry_run: bool = False):

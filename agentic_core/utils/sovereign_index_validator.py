@@ -38,7 +38,7 @@ from pathlib import Path
 
 # [SSOT] Import exclusion patterns from the single source of truth
 try:
-    from agentic_core.L5_safety.validators.structure_blueprint import GLOBAL_EXCLUDED_DIRS
+    from agentic_core.L5_safety.validators.structure_blueprint_config import GLOBAL_EXCLUDED_DIRS
 
     _SSOT_EXCLUSIONS_AVAILABLE = True
 except ImportError:

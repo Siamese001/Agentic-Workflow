@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.validators.structure_blueprint import SAFETY_VALIDATION_REGISTRY
+from agentic_core.L5_safety.validators.structure_blueprint_config import SAFETY_VALIDATION_REGISTRY
 
 
 class TestDownstreamDeprecation:

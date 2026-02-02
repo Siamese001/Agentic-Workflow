@@ -7,7 +7,7 @@ Provides configuration loading and schema definitions.
 from __future__ import annotations
 
 from apps_rg.domain.config.AgentSpec import RGAgentSpecs
-from apps_rg.domain.config.SovereignConfigLoader import (
+from apps_rg.domain.config.sovereign_config_loader_config import (
     get_config_path,
     load_rg_specs,
     reload_config,

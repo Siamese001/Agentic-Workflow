@@ -63,7 +63,7 @@ except ImportError:
 
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import mcp_hardened_mixin
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     SOVEREIGN_TERRITORIES,
     CORE_SUBFOLDER_MAP,
 )

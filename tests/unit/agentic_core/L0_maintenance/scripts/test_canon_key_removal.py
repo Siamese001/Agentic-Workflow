@@ -43,12 +43,12 @@ class TestCanonKeyRemoval:
         """Verify Registry Extraction in Blueprint - DEPRECATED."""
         try:
             # Registry has been removed - this test now validates removal
-            from agentic_core.L5_safety.validators.structure_blueprint import (
+            from agentic_core.L5_safety.validators.structure_blueprint_config import (
                 SOVEREIGN_TERRITORIES,
             )
 
             # Verify the registry is gone by checking it's not in the module
-            import agentic_core.L5_safety.validators.structure_blueprint as sb
+            import agentic_core.L5_safety.validators.structure_blueprint_config as sb
 
             assert not hasattr(sb, "CANON_VALIDATION_REGISTRY"), (
                 "CANON_VALIDATION_REGISTRY should have been removed"

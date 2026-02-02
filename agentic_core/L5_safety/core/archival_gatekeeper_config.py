@@ -36,7 +36,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import ARCHIVES_DIR
+from agentic_core.L5_safety.validators.structure_blueprint_config import ARCHIVES_DIR
 
 # Configure module logger
 logging.basicConfig(level=logging.INFO)

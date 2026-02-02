@@ -10,7 +10,7 @@ from typing import Any
 Logger: Any = logging.getLogger(__name__)
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
 )

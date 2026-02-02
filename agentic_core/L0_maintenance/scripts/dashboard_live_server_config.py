@@ -17,7 +17,7 @@ from pathlib import Path
 from livereload import Server
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.L5_safety.validators.structure_blueprint import DASHBOARD_DIR
+from agentic_core.L5_safety.validators.structure_blueprint_config import DASHBOARD_DIR
 from agentic_core.utils.security import safe_execute
 
 # Project root (adjust if script location changes)

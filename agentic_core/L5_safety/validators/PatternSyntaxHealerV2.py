@@ -119,13 +119,13 @@ class PatternSyntaxHealerV2:
         Fix Pattern 1: Malformed imports inside structure_blueprint blocks.
 
         Example:
-        from agentic_core.L5_safety.validators.structure_blueprint import (
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
         from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
             SOVEREIGN_REGISTRY,
         )
 
         Should be:
-        from agentic_core.L5_safety.validators.structure_blueprint import (
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
             SOVEREIGN_REGISTRY,
         )
 
@@ -135,7 +135,7 @@ class PatternSyntaxHealerV2:
 
         # Pattern: Find structure_blueprint import blocks with embedded imports
         pattern = re.compile(
-            r"(from agentic_core\.config\.blueprint_sovereign\.structure_blueprint import \(\n)"
+            r"(from agentic_core\.config\.blueprint_sovereign\.structure_blueprint_config import \(\n)"
             r"((?:from [^\n]+\n)+)"  # One or more malformed imports
             r"(\s+SOVEREIGN_REGISTRY,\n\s+CORE_SUBFOLDER_MAP,\n\))",
             re.MULTILINE,
@@ -159,7 +159,7 @@ class PatternSyntaxHealerV2:
 
         # Also handle simpler cases where imports are just embedded
         simple_pattern = re.compile(
-            r"(from agentic_core\.config\.blueprint_sovereign\.structure_blueprint import \(\n)"
+            r"(from agentic_core\.config\.blueprint_sovereign\.structure_blueprint_config import \(\n)"
             r"(from agentic_core\.[^\n]+\n)"
             r"(\s+SOVEREIGN_REGISTRY,)",
             re.MULTILINE,

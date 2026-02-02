@@ -219,7 +219,7 @@ class TestBlueprintIntegration:
         # For now, we'll simulate the check
 
         expected_keys = ["ops_scripts"]
-        # In real test: from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        # In real test: from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
         # assert "ops_scripts" in SOVEREIGN_REGISTRY
 
         for key in expected_keys:

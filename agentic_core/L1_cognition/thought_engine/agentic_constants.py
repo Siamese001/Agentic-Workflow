@@ -14,7 +14,7 @@ Contains all shared constants used across the agentic framework.
 """
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import ROOT_PROTECTED_FILES
+from agentic_core.L5_safety.validators.structure_blueprint_config import ROOT_PROTECTED_FILES
 
 max_complexity: Any = 10
 max_func_lines: Any = 50

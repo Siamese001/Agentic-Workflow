@@ -127,7 +127,7 @@ def test_peer_intelligence_auditor():
     print("=" * 70)
 
     try:
-        from agentic_core.L2_execution.tool_registry.PeerIntelligenceAuditorAgent import (
+        from agentic_core.L2_execution.tool_registry.peer_intelligence_auditor_agent_config import (
             PeerIntelligenceAuditorAgent,
         )
 
@@ -157,7 +157,7 @@ def test_dag_mutator():
     print("=" * 70)
 
     try:
-        from archives.void_violations.DAGMutatorAgent import DAGConfig, DAGMutatorAgent
+        from archives.void_violations.dag_mutator_agent_config import DAGConfig, DAGMutatorAgent
 
         config = DAGConfig()
         agent = DAGMutatorAgent(config=config)

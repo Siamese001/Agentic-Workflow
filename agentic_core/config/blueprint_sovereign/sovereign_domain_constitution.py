@@ -7,7 +7,7 @@ L0-L6 Sovereign Stack Hierarchy established.
 """
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     L0_MAINTENANCE_DIR,
     L1_COGNITION_DIR,
     L2_EXECUTION_DIR,

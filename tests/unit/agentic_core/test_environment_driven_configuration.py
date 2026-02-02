@@ -19,7 +19,7 @@ except (ImportError, NameError, AttributeError):
     ModelConfig = RAGConfig = GovernorConfig = None
 
 try:
-    from apps_shared.common_utils.NodeNegotiator import NegotiationConfig
+    from apps_shared.common_utils.node_negotiator_config import NegotiationConfig
 except (ImportError, NameError, AttributeError):
     NegotiationConfig = None
 

@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 # Import SSOT for namespace validation
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_TERRITORIES,
 )

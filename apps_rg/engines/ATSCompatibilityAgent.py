@@ -23,7 +23,7 @@ from agentic_core.base_agents.UnifiedAgent import (
     ValidatorStrategy,
 )
 from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
-from apps_shared.config.config_loader import load_agent_config
+from apps_shared.config.config_loader_config import load_agent_config
 
 
 class ATSValidatorStrategy(ValidatorStrategy):

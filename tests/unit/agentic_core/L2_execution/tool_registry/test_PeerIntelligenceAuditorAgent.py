@@ -13,7 +13,7 @@ import pytest
 
 # Import the agent
 try:
-    from agentic_core.L2_execution.tool_registry.PeerIntelligenceAuditorAgent import (
+    from agentic_core.L2_execution.tool_registry.peer_intelligence_auditor_agent_config import (
         PeerIntelligenceAuditorAgent,
     )
 except (ImportError, NameError, AttributeError, TypeError) as e:

@@ -27,7 +27,7 @@ from agentic_core.utils.ssot_discovery_validator import get_python_files
 # Migration patterns: (regex_pattern, replacement)
 MIGRATION_MAP: dict[str, str] = {
     # Structure blueprint -> config
-    r"from agentic_core\.L5_safety\.validators\.structure_blueprint import": "from agentic_core.config import",
+    r"from agentic_core\.L5_safety\.validators\.structure_blueprint_config import": "from agentic_core.config import",
     # Unified agents -> unified API
     r"from agentic_core\.L5_safety\.unified\.CodeValidatorAgent import CodeValidatorAgent": "from agentic_core.unified import CodeValidatorAgent",
     r"from agentic_core\.L5_safety\.unified\.StructureValidatorAgent import StructureValidatorAgent": "from agentic_core.unified import StructureValidatorAgent",

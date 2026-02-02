@@ -32,7 +32,7 @@ from agentic_core.base_agents.UnifiedAgent import (
     LocationHealingStrategy,
 )
 from agentic_core.config.blueprint_sovereign.registry import SOVEREIGN_REGISTRY
-from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.location_constants import (
     ARCHIVE_SUBFOLDERS,
     DEFAULT_APP_HEALING_TARGET,
@@ -210,7 +210,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
     def safe_create_directory(self, relative_path: str) -> Path:
         """Safely create a directory within the project root."""
-        from agentic_core.L5_safety.validators.structure_blueprint import safe_path_join
+        from agentic_core.L5_safety.validators.structure_blueprint_config import safe_path_join
 
         target = safe_path_join(self.project_root, relative_path)
         if not target.exists():

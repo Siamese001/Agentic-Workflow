@@ -32,7 +32,7 @@ class TestPIIRedactionInGraph:
 
     def test_pii_redacted_before_graph_write(self):
         """Test that email in context is redacted before graph write."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import PII_Sanitizer
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import PII_Sanitizer
 
         # Context with PII
         context_with_pii = "User john.doe@example.com requested a file move"
@@ -47,7 +47,7 @@ class TestPIIRedactionInGraph:
 
     def test_learn_with_feedback_sanitizes_context(self):
         """Test that learn_with_feedback sanitizes context before graph write."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import PII_Sanitizer
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import PII_Sanitizer
 
         # Create a mock memory with sanitizer
         mock_memory = MagicMock()
@@ -93,7 +93,7 @@ class TestPIIRedactionInGraph:
 
     def test_multiple_pii_types_redacted(self):
         """Test that multiple PII types are all redacted."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import PII_Sanitizer
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import PII_Sanitizer
 
         context = (
             "User admin@company.com from IP 192.168.1.100 "
@@ -233,7 +233,7 @@ class TestEmbeddingRetryLogic:
 
     def test_retry_on_transient_failure(self):
         """Test that transient failures are retried."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import SemanticCacheManager
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import SemanticCacheManager
 
         # Create manager with mocked client
         manager = SemanticCacheManager.__new__(SemanticCacheManager)
@@ -267,7 +267,7 @@ class TestEmbeddingRetryLogic:
 
     def test_all_retries_exhausted(self):
         """Test that None is returned when all retries fail."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import SemanticCacheManager
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import SemanticCacheManager
 
         manager = SemanticCacheManager.__new__(SemanticCacheManager)
         manager._lock = threading.RLock()
@@ -397,7 +397,7 @@ class TestPhase25Integration:
 
     def test_sanitizer_accessible_from_memory(self):
         """Test that sanitizer is accessible from SemanticCacheManager."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             PII_Sanitizer,
         )
 
@@ -421,7 +421,7 @@ class TestPhase25Integration:
         """Test that SemanticCacheManager has retry logic."""
         import inspect
 
-        from agentic_core.L4_state.memory.SemanticCacheManager import SemanticCacheManager
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import SemanticCacheManager
 
         source = inspect.getsource(SemanticCacheManager._get_embedding)
 

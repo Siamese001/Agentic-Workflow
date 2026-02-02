@@ -248,7 +248,7 @@ class TestSecretDetection:
 
     def test_pii_sanitizer_prevents_leaks(self):
         """Test that PII_Sanitizer prevents API key leaks."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import PII_Sanitizer
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import PII_Sanitizer
 
         # Test content with API key
         content = "API_KEY=sk-abc123456789012345678901234567890123456789"

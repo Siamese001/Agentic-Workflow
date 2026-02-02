@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     L0_MAINTENANCE_DIR,
 )
 

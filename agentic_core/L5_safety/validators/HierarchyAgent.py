@@ -31,7 +31,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 from agentic_core.L5_safety.gravity.mission_utils import (
     get_best_target_l1,
     get_best_target_l2,
@@ -39,7 +39,7 @@ from agentic_core.L5_safety.gravity.mission_utils import (
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 # [SSOT IMPORT] Master Constitution is the absolute source of truth
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     ALLOWED_DUPLICATE_FILENAMES,
     CORE_SUBFOLDER_MAP,
     ROOT_PROTECTED_FILES,
@@ -447,7 +447,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
 
             # Skip whitelisted root files (conftest.py, pytest.ini)
             if len(rel.parts) == 1:
-                from agentic_core.L5_safety.validators.structure_blueprint import (
+                from agentic_core.L5_safety.validators.structure_blueprint_config import (
                     TESTS_ROOT_FILE_WHITELIST,
                 )
 
@@ -523,7 +523,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         results: dict[str, Any],
     ) -> None:
         """Relocate a single file to approved L2 layer."""
-        from agentic_core.L5_safety.validators.structure_blueprint import check_forbidden_signals
+        from agentic_core.L5_safety.validators.structure_blueprint_config import check_forbidden_signals
 
         try:
             # ARTIFACT ROUTING NEGATIVE LOGIC CHECK
@@ -617,7 +617,7 @@ class HierarchyAgent(SovereignBaseAgent, SubatomicTestingMixin):
         results: dict[str, Any],
     ) -> None:
         """Relocate a single file to approved L3 territory."""
-        from agentic_core.L5_safety.validators.structure_blueprint import check_forbidden_signals
+        from agentic_core.L5_safety.validators.structure_blueprint_config import check_forbidden_signals
 
         try:
             # ARTIFACT ROUTING NEGATIVE LOGIC CHECK

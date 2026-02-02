@@ -335,7 +335,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
         Syncs the index with the structure_blueprint.py constants.
         Safe to run multiple times (uses upsert).
         """
-        from agentic_core.L5_safety.validators.structure_blueprint import TERRITORY_EXAMPLES
+        from agentic_core.L5_safety.validators.structure_blueprint_config import TERRITORY_EXAMPLES
 
         vectors = []
         for territory, example in TERRITORY_EXAMPLES.items():

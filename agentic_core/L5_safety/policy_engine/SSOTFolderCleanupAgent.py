@@ -89,7 +89,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
     def _load_ssot_config(self) -> None:
         """Load SSOT configuration from structure_blueprint."""
         try:
-            from agentic_core.L5_safety.validators.structure_blueprint import (
+            from agentic_core.L5_safety.validators.structure_blueprint_config import (
                 CORE_SUBFOLDER_MAP,
                 L4_APPROVED_FOLDERS,
                 SOVEREIGN_REGISTRY,
@@ -154,7 +154,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
     def _get_archival_gatekeeper(self):
         """Lazy-load ArchivalGatekeeper."""
         if self._archival_gatekeeper is None:
-            from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+            from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 
             self._archival_gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
         return self._archival_gatekeeper

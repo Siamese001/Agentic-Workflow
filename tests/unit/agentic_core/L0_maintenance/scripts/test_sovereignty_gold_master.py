@@ -61,7 +61,7 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         """Edge Case: Triple-dot relative imports (from ...module)."""
         old_mod = "config_mixin"
         new_mod = "ConfigMixin"
-        content = "from ...config_mixin import Config"
+        content = "from ...config_mixin_config import Config"
 
         regex_from = re.compile(
             r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)"
@@ -69,7 +69,7 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
 
         self.assertIn(
-            "from ...config_mixin import", updated, "Triple-dot relative import should be preserved"
+            "from ...config_mixin_config import", updated, "Triple-dot relative import should be preserved"
         )
 
     def test_mixin_acronym_consistency(self):

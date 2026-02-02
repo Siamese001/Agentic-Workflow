@@ -7,7 +7,7 @@ import logging
 import sys
 from datetime import datetime, timezone
 
-from agentic_core.config.settings import get_settings
+from agentic_core.config.settings_config import get_settings
 
 
 class JSONFormatter(logging.Formatter):
