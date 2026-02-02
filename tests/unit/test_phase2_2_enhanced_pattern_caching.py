@@ -90,7 +90,7 @@ class TestLICEnhancedPatternCaching:
 
     def test_lic_cache_pattern_with_metadata_adds_metadata(self):
         """Test LIC cache_pattern_with_metadata adds proper metadata."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -108,7 +108,7 @@ class TestLICEnhancedPatternCaching:
 
     def test_lic_cache_pattern_respects_rate_limit(self):
         """Test LIC cache_pattern_with_metadata respects rate limits."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -129,7 +129,7 @@ class TestLICEnhancedPatternCaching:
 
     def test_lic_retrieve_pattern_with_metadata(self):
         """Test LIC retrieve_pattern_with_metadata works correctly."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -180,7 +180,7 @@ class TestPatternSuccessTracking:
 
     def test_lic_increment_pattern_success(self):
         """Test LIC increment_pattern_success updates count."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()

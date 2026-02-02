@@ -34,7 +34,7 @@ class TestChaosEngineeringAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.red_teaming.ChaosEngineeringAgent import (
+            from agentic_core.L5_safety.red_teaming.chaos_engineering_agent_validator import (
                 ChaosEngineeringAgent,
             )
 
@@ -83,7 +83,7 @@ class TestChaosEngineeringAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.red_teaming.ChaosEngineeringAgent import (
+                from agentic_core.L5_safety.red_teaming.chaos_engineering_agent_validator import (
                     ChaosEngineeringAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

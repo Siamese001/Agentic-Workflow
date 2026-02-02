@@ -44,7 +44,7 @@ def flush_and_align() -> Any:
     print("\n[*] FLUSHING __init__.py FILES...")
     flush_count: Any = 0
     # Phase 6.8: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for init_file in [f for f in get_python_files(CORE) if f.name == "__init__.py"]:
         print(f"  [!] Flushing: {init_file.relative_to(ROOT)}")
@@ -61,7 +61,7 @@ def flush_and_align() -> Any:
     ]
     count: Any = 0
     # Phase 6.8: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(ROOT):
         if "legacy_code" in str(py_file) or "data" in str(py_file):

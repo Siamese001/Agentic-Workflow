@@ -5,7 +5,7 @@ Deterministic I/O operations extracted from agents.
 
 from __future__ import annotations
 
-from apps_shared.scripts.io_operations import (
+from apps_shared.scripts.io_operations_validator import (
     FileOperations,
     DataCollectionOperations,
     MonitoringOperations,

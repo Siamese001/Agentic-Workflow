@@ -124,7 +124,7 @@ def test_tc36_legacy_extraction_parity():
             content = script.read_text(encoding="utf-8")
 
             # Check for ssot_discovery import
-            has_ssot_import = "from agentic_core.utils.ssot_discovery import" in content
+            has_ssot_import = "from agentic_core.utils.ssot_discovery_validator import" in content
 
             # Check for rglob usage (should be minimal or none)
             rglob_count = content.count(".rglob(")
@@ -212,7 +212,7 @@ def test_phase6_4_file_coverage():
         "analyze_and_extract.py",
     ]
 
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     files_using_ssot = 0
 
@@ -220,7 +220,7 @@ def test_phase6_4_file_coverage():
         if py_file.name in refactored_files:
             try:
                 content = py_file.read_text(encoding="utf-8", errors="ignore")
-                if "from agentic_core.utils.ssot_discovery import" in content:
+                if "from agentic_core.utils.ssot_discovery_validator import" in content:
                     files_using_ssot += 1
                     print(f"   ✓ {py_file.name}")
             except:

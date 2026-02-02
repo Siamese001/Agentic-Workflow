@@ -7,7 +7,7 @@ import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.utils.ssot_discovery import get_python_files
+from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 """
 L6 Sovereign Code Graph & Governance Infrastructure

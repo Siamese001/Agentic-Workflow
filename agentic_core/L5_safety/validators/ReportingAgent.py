@@ -34,7 +34,7 @@ from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,  # Comprehensive exclusion set (.git, venv, __pycache__, etc.)
 )
-from agentic_core.utils.ssot_discovery import get_python_files
+from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 # Additional reporting-specific exclusions (stubs, backups)
 SCOPE_SUMMARY_EXCLUSIONS = {

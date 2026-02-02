@@ -18,7 +18,7 @@ from pathlib import Path
 
 # SSOT: Import canonical layer inference (Phase 3 Migration)
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
-from agentic_core.L5_safety.validators.canonical_truth import get_canonical_layer
+from agentic_core.L5_safety.validators.canonical_truth_validator import get_canonical_layer
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
@@ -160,7 +160,7 @@ def main():
 
     # Scan all Python files in agentic_core
     # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(AGENTIC_CORE):
         if "__pycache__" in str(py_file) or ".sovereign_healing_backup" in str(py_file):

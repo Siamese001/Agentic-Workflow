@@ -5,7 +5,7 @@ from __future__ import annotations
 "Brief description of functionality and purpose."
 from typing import Any
 
-from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
+from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
 
 
 def analyze_and_extract() -> None:

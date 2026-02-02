@@ -20,7 +20,7 @@ def analyze_all_agents():
     agents_with_methods = []
 
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(Path(AGENTIC_CORE_DIR)):
         try:
@@ -106,7 +106,7 @@ def find_violation_specific_agents():
     }
 
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(Path(AGENTIC_CORE_DIR)):
         try:

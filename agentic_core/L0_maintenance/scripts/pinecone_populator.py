@@ -172,7 +172,7 @@ class PineconePopulator:
             print(f"  ⚠️  {CORE_EXTENSIONS_DIR} not found. Skipping.")
             return
 
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for file_path in get_python_files(CORE_EXTENSIONS_DIR):
             if file_path.name.startswith("__"):
@@ -228,7 +228,7 @@ class PineconePopulator:
         records = []
 
         # Phase 6: Use ssot_discovery instead of rglob for MD files
-        from agentic_core.utils.ssot_discovery import get_markdown_files
+        from agentic_core.utils.ssot_discovery_validator import get_markdown_files
 
         all_files = get_markdown_files(PROJECT_ROOT)
 
@@ -296,7 +296,7 @@ class PineconePopulator:
         for pattern in rca_patterns:
             if pattern:
                 # Absolute Zero: Use ssot_discovery instead of glob
-                from agentic_core.utils.ssot_discovery import get_python_files
+                from agentic_core.utils.ssot_discovery_validator import get_python_files
 
                 if "*" in str(pattern):
                     rca_files.extend(list(get_python_files(pattern.parent)))
@@ -354,7 +354,7 @@ class PineconePopulator:
             return
 
         # Phase 4.1: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for file_path in get_python_files(AGENTIC_CORE_DIR):
             path_str = str(file_path)
@@ -453,7 +453,7 @@ class PineconePopulator:
             print(f"  ⚠️  {BLUEPRINT_DIR} not found. Skipping.")
             return
 
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for file_path in get_python_files(BLUEPRINT_DIR):
             if file_path.name.startswith("__"):

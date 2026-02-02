@@ -135,7 +135,7 @@ def test_case_1_shallow_nesting_fix():
         else:
             # Check alternative location
             # Phase 6.8: Use ssot_discovery instead of rglob
-            from agentic_core.utils.ssot_discovery import get_python_files
+            from agentic_core.utils.ssot_discovery_validator import get_python_files
 
             nested_files = [
                 f
@@ -156,7 +156,7 @@ def test_case_1_shallow_nesting_fix():
 
         # Verify NOT in archives
         # Phase 6.8: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         archives_dir = test_root / "archives"
         archives = (

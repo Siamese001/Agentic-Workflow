@@ -54,7 +54,7 @@ def _get_python_files(project_root: Path) -> list[Path]:
     Uses the cached FileCache mechanism for O(1) subsequent calls.
     """
     # Phase 6.1: Use ssot_discovery for standardized, cached file discovery
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     return get_python_files(project_root)
 
@@ -660,7 +660,7 @@ class LocationAgent(SovereignBaseAgent):
                     target_path = self.project_root / target_territory
 
                 if target_path.exists():
-                    from agentic_core.utils.ssot_discovery import get_all_files
+                    from agentic_core.utils.ssot_discovery_validator import get_all_files
 
                     all_files_dict = get_all_files(target_path)
                     # Flatten all files into a single list

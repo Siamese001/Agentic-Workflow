@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 import tempfile
 import shutil
-from apps_shared.scripts.io_operations import (
+from apps_shared.scripts.io_operations_validator import (
     FileOperations,
     DataCollectionOperations,
     MonitoringOperations,

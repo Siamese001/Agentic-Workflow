@@ -91,7 +91,7 @@ def run_all_tests():
     try:
         sample_dir = project_root / AGENTIC_CORE_DIR / "L2_execution"
         # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         python_files = [str(f) for f in get_python_files(sample_dir)][:15]
 

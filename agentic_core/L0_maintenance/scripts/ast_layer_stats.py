@@ -77,7 +77,7 @@ def find_test_file(agent_path: Path, agent_class: str) -> bool:
     ]
 
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for test_file in [f for f in get_python_files(tests_dir) if f.name.startswith("test_")]:
         if test_file.name in patterns:
@@ -230,7 +230,7 @@ def main():
     ]
 
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for scan_dir in scan_dirs:
         if not scan_dir.exists():

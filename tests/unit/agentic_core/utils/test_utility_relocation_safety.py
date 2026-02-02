@@ -36,7 +36,7 @@ class TestDependencyIsolation:
         violations = []
 
         # Phase 6.8: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(apps_shared_dir):
             try:
@@ -70,7 +70,7 @@ class TestDependencyIsolation:
         violations = []
 
         # Phase 6.8: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(apps_shared_dir):
             try:
@@ -135,7 +135,7 @@ class TestCircularDependencyPrevention:
         }
 
         # Phase 6.8: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(territory_dir):
             imports = self._extract_imports(py_file)

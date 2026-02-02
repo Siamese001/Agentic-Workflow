@@ -61,7 +61,7 @@ def validate_depth_precision(project_root: Path) -> dict:
     violations = []
 
     # Phase 6.5: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(project_root)) + list(
         get_data_files(project_root, extensions=[".json", ".md", ".yaml", ".yml"])
@@ -90,7 +90,7 @@ def validate_tests_depth(project_root: Path) -> dict:
     violations = []
 
     # Phase 6.5: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(project_root)) + list(
         get_data_files(project_root, extensions=[".json", ".md", ".yaml", ".yml"])
@@ -119,7 +119,7 @@ def validate_universal_depth(project_root: Path) -> dict:
     violations = []
 
     # Phase 6.5: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_data_files
+    from agentic_core.utils.ssot_discovery_validator import get_data_files
 
     target_exts = [".json", ".md", ".yaml", ".yml", ".toml", ".txt"]
     for file_path in get_data_files(project_root, extensions=target_exts):

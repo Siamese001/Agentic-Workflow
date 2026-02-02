@@ -16,7 +16,7 @@ def extract_net_incremental() -> None:
     existing_files: Any = get_existing_files()
     extracted_files: Any = []
     # Phase 6.8: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(source_dir):
         FILENAME: Any = py_file.name

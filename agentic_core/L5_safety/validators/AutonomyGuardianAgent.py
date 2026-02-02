@@ -146,7 +146,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def _check_forbidden_runner_scripts(self, violations: list[tuple[Path, str]]) -> None:
         """Check for forbidden runner scripts."""
         # Phase 6.7: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for dir_path in self.forbidden_dirs:
             dir_obj = self.project_root / dir_path
@@ -319,7 +319,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 )
                 agentic_core_dir = self.project_root / "agentic_core"
                 # Phase 6.7: Use ssot_discovery instead of rglob
-                from agentic_core.utils.ssot_discovery import get_agent_files
+                from agentic_core.utils.ssot_discovery_validator import get_agent_files
 
                 agent_paths = list(get_agent_files(agentic_core_dir))
 

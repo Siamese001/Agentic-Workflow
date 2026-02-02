@@ -256,7 +256,7 @@ class SovereignPromptRenderer:
         Returns:
             List of template names relative to template_root
         """
-        from agentic_core.utils.ssot_discovery import get_data_files
+        from agentic_core.utils.ssot_discovery_validator import get_data_files
 
         jinja_files = get_data_files(self.template_root, extensions=[".jinja"])
         return [p.relative_to(self.template_root).as_posix() for p in jinja_files if p.is_file()]

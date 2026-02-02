@@ -12,7 +12,7 @@ from unittest.mock import Mock, patch
 # Test imports - these will need to be implemented
 try:
     from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
-    from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+    from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 except ImportError as e:
     pytest.skip(f"Apps not yet enhanced with pattern learning: {e}", allow_module_level=True)
 

@@ -20,9 +20,9 @@ import argparse
 import re
 from pathlib import Path
 
-from agentic_core.utils.file_utils import safe_read_file, safe_write_file
+from agentic_core.utils.file_utils_validator import safe_read_file, safe_write_file
 from agentic_core.utils.project_root import get_project_root
-from agentic_core.utils.ssot_discovery import get_python_files
+from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 # Migration patterns: (regex_pattern, replacement)
 MIGRATION_MAP: dict[str, str] = {

@@ -64,7 +64,7 @@ def test_fuzzy_matching():
     sample_dir = project_root / AGENTIC_CORE_DIR / "L2_execution"
     if sample_dir.exists():
         # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         python_files = [str(f) for f in get_python_files(sample_dir)][:10]
         print(f"\nScanning {len(python_files)} sample files from L2_execution...")

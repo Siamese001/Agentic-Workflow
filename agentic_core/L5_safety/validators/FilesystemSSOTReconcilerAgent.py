@@ -454,7 +454,7 @@ class FilesystemSSOTReconcilerAgent(
         agentic_core = self.project_root / "agentic_core"
 
         # Sub-20: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_agent_files
+        from agentic_core.utils.ssot_discovery_validator import get_agent_files
 
         for py_file in get_agent_files(agentic_core):
             if any(skip in py_file.parts for skip in ["__pycache__", ".git", "archives"]):

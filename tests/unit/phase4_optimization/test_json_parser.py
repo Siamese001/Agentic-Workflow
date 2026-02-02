@@ -4,7 +4,7 @@ Tests for native Python JSON parsing utilities.
 """
 
 import pytest
-from apps_shared.utils.json_parser import JsonParser, ParseResult
+from apps_shared.utils.json_parser_validator import JsonParser, ParseResult
 
 
 class TestParseResult:

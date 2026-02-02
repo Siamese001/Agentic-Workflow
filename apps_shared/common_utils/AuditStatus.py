@@ -34,7 +34,7 @@ except ImportError:
     check_underscore_fields = None
 
 try:
-    from agentic_core.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
+    from agentic_core.L0_maintenance.scripts.guard_ddd_alignment_validator import validate_ddd_alignment
 except ImportError:
     validate_ddd_alignment = None
 
@@ -46,7 +46,7 @@ def validate_schema_ssot(target_path: str) -> tuple[float, list[str]]:
         return 100.0, []
     issues = []
     # Absolute Zero: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_data_files
+    from agentic_core.utils.ssot_discovery_validator import get_data_files
 
     json_files = list(get_data_files(schema_dir, extensions=[".json"]))
     failures = sum(1 for jf in json_files if not _is_valid_json(jf, issues))
@@ -69,7 +69,7 @@ def validate_prompt_ssot(target_path: str) -> tuple[float, list[str]]:
     if not prompt_dir.exists():
         return 0.0, ["Directory Missing"]
     issues = []
-    from agentic_core.utils.ssot_discovery import get_markdown_files
+    from agentic_core.utils.ssot_discovery_validator import get_markdown_files
 
     prompt_files = list(get_markdown_files(prompt_dir))
     failures = 0

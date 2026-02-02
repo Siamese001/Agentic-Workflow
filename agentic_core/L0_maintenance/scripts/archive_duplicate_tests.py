@@ -21,7 +21,7 @@ def main():
     """Find all test files in directory."""
     seen = {}
     # Phase 6.9: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(test_dir):
         if py_file.name.startswith("test_"):

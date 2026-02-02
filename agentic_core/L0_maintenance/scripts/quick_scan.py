@@ -26,7 +26,7 @@ def progress_bar(current, total, width=40):
 
 # Scan tests
 # Phase 6.7: Use ssot_discovery instead of rglob
-from agentic_core.utils.ssot_discovery import get_python_files
+from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 test_files = list(get_python_files(Path(TESTS_UNIT_DIR)))
 

@@ -86,7 +86,7 @@ def test_inheritance_audit():
         live_path = PROJECT_ROOT / "agentic_core"
         found_in_live = False
         # Phase 6.8: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(live_path):
             if py_file.name == f"{deprecated}.py":
@@ -289,7 +289,7 @@ def test_orchestrator_count():
     ]
 
     # Phase 6.8: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(agentic_core):
         if "Orchestrator" not in py_file.name:
@@ -339,7 +339,7 @@ def test_baseagent_count():
     baseagent_files = []
 
     # Phase 6.8: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(agentic_core):
         if "BaseAgent" in py_file.name:

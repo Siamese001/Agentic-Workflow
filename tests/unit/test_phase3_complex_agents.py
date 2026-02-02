@@ -13,11 +13,11 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_maintenance.deterministic.GovernanceShieldDeterministic import (
+from agentic_core.L0_maintenance.deterministic.governance_shield_deterministic_validator import (
     GovernanceResult,
     GovernanceShieldDeterministic,
 )
-from agentic_core.L0_maintenance.deterministic.HOPValidationDeterministic import (
+from agentic_core.L0_maintenance.deterministic.hop_validation_deterministic_validator import (
     HOP1ProfileDeterministic,
     HOP3DataExtractionDeterministic,
     HOP4ConditionDeterministic,

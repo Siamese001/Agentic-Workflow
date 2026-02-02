@@ -22,7 +22,7 @@ class TestOutreachValidationExecutorAgent:
     def test_class_exists(self):
         """Verify the class can be imported."""
         try:
-            from apps_lic.engines.OutreachValidationExecutorAgent import (
+            from apps_lic.engines.outreach_validation_executor_agent_validator import (
                 OutreachValidationExecutorAgent,
             )
 
@@ -34,7 +34,7 @@ class TestOutreachValidationExecutorAgent:
     def test_class_is_agent(self):
         """Verify the class follows agent patterns."""
         try:
-            from apps_lic.engines.OutreachValidationExecutorAgent import (
+            from apps_lic.engines.outreach_validation_executor_agent_validator import (
                 OutreachValidationExecutorAgent,
             )
 
@@ -46,7 +46,7 @@ class TestOutreachValidationExecutorAgent:
     def test_instantiation_with_mocks(self):
         """Test that the agent can be instantiated with mocked dependencies."""
         try:
-            from apps_lic.engines.OutreachValidationExecutorAgent import (
+            from apps_lic.engines.outreach_validation_executor_agent_validator import (
                 OutreachValidationExecutorAgent,
             )
 
@@ -65,7 +65,7 @@ class TestOutreachValidationExecutorAgent:
     def test_has_healing_capability(self):
         """Verify healing methods exist if agent has healing."""
         try:
-            from apps_lic.engines.OutreachValidationExecutorAgent import (
+            from apps_lic.engines.outreach_validation_executor_agent_validator import (
                 OutreachValidationExecutorAgent,
             )
 
@@ -81,7 +81,7 @@ class TestOutreachValidationExecutorAgent:
     def test_key_methods_exist(self):
         """Verify key methods are defined."""
         try:
-            from apps_lic.engines.OutreachValidationExecutorAgent import (
+            from apps_lic.engines.outreach_validation_executor_agent_validator import (
                 OutreachValidationExecutorAgent,
             )
 

@@ -108,7 +108,7 @@ def main():
     # Find all Python files
     all_files = []
     # Phase 6.8: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for scan_dir in SCAN_DIRS:
         dir_path = PROJECT_ROOT / scan_dir

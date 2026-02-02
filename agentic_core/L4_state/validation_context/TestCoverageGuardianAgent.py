@@ -155,7 +155,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
             return []
 
         # Phase 6.5: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(core_path):
             if "__init__" in str(py_file):
@@ -269,7 +269,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
         candidates = []
         target_layers = ["L4_state", "L3_orchestration", "L2_execution"]
         # Phase 6.5: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(self.project_root / AGENTIC_CORE_DIR):
             if not any(layer in str(py_file) for layer in target_layers):

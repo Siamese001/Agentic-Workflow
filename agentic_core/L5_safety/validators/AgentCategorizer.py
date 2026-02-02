@@ -116,7 +116,7 @@ class AgentCategorizer:
     def scan_folder(self) -> dict[str, list[str]]:
         """Scan folder and categorize all agents."""
         # Sub-20: Use ssot_discovery instead of glob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         py_files = list(get_python_files(self.folder_path))
 

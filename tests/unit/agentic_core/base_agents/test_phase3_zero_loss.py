@@ -253,7 +253,7 @@ def test_base_agent_count():
     print("BONUS: BaseAgent File Count")
     print("=" * 60)
 
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     # Find all *BaseAgent.py files
     all_files = get_python_files(PROJECT_ROOT / "agentic_core")

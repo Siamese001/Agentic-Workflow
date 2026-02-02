@@ -35,7 +35,7 @@ class TestAutonomicMonitorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L6_observability.agents.AutonomicMonitorAgent import (
+            from agentic_core.L6_observability.agents.autonomic_monitor_agent_validator import (
                 AutonomicMonitorAgent,
             )
 
@@ -92,7 +92,7 @@ class TestAutonomicMonitorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L6_observability.agents.AutonomicMonitorAgent import (
+                from agentic_core.L6_observability.agents.autonomic_monitor_agent_validator import (
                     AutonomicMonitorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

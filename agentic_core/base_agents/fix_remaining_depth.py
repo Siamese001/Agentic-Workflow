@@ -21,7 +21,7 @@ def move_remaining() -> Any:
         stage.mkdir(exist_ok=True)
         (stage / "__init__.py").write_text('"""Stage module."""\n')
         # Phase 6.8: Use ssot_discovery instead of glob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for f in get_python_files(knowledge_dir):
             if f.name != "__init__.py" and f.parent == knowledge_dir:
@@ -36,7 +36,7 @@ def move_remaining() -> Any:
         stage.mkdir(exist_ok=True)
         (stage / "__init__.py").write_text('"""Stage module."""\n')
         # Phase 6.8: Use ssot_discovery instead of glob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for f in get_python_files(thought_nodes):
             if f.name != "__init__.py" and f.parent == thought_nodes:

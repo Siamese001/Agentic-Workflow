@@ -44,7 +44,7 @@ from agentic_core.domain.core_integrity_verifier_validator import CoreIntegrityV
 
 # Attempt to import SSOT discovery - fallback to manual discovery if unavailable
 try:
-    from agentic_core.utils.ssot_discovery import get_agent_paths
+    from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 
     SSOT_DISCOVERY_AVAILABLE = True
 except ImportError:

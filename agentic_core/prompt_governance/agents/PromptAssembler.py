@@ -131,7 +131,7 @@ You are {role}. Your objective is {objective}.
         template_dir = Path("./templates/prompts")
         template_dir.mkdir(parents=True, exist_ok=True)
 
-        from agentic_core.utils.ssot_discovery import get_data_files
+        from agentic_core.utils.ssot_discovery_validator import get_data_files
 
         xml_files = list(get_data_files(template_dir, extensions=[".xml"]))
         for file_path in xml_files:

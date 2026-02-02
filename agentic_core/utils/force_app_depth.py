@@ -70,7 +70,7 @@ def force_app_depth() -> Any:
         if not (app_p1 / "__init__.py").exists():
             (app_p1 / "__init__.py").write_text('"""App Core Implementation"""\n')
         # Phase 6.6: Use ssot_discovery instead of glob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(app_path):
             if py_file.name == "__init__.py":

@@ -35,7 +35,7 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.utils.ssot_discovery import get_data_files
+from agentic_core.utils.ssot_discovery_validator import get_data_files
 
 Logger = logging.getLogger(__name__)
 
