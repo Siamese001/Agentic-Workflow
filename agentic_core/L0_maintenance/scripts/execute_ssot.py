@@ -2381,9 +2381,20 @@ Examples:
 
                         # [UNIVERSAL HEALING] Phase 2.5: Sovereignty Enforcement (Pascal/Header/Naming)
                         # Now integrated with confidence-based decision engine
+                        # [PHASE 2 ENHANCEMENT] Include classification violations in confidence calc
+                        classification_violations = state_mgr.state.get(
+                            "classification_violations", []
+                        )
+                        total_violations = (len(p1_loc) if p1_loc else 0) + len(
+                            classification_violations
+                        )
+                        violation_types = ["SOVEREIGNTY", "NAMING", "HEADER"]
+                        # Add CLASSIFICATION type if we have classification violations
+                        if classification_violations:
+                            violation_types.append("CLASSIFICATION")
                         pascal_confidence = decision_engine.calculate_healing_confidence(
-                            violations_count=len(p1_loc) if p1_loc else 0,
-                            violation_types=["SOVEREIGNTY", "NAMING", "HEADER"],
+                            violations_count=total_violations,
+                            violation_types=violation_types,
                             territory=territory,
                         )
                         pascal_proceed, pascal_reason = decision_engine.should_proceed_with_healing(
