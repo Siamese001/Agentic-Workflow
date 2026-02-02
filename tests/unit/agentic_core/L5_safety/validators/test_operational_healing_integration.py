@@ -5,6 +5,8 @@ Tests for the final orphan agent rewiring:
 - HistorianLoggingStrategy
 - CostGovernorStrategy
 - TaskDecompositionStrategy
+
+FUNCTIONAL TESTS: Verify agents are actually registered and working.
 """
 
 from __future__ import annotations
@@ -17,6 +19,195 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[5]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+
+class TestSingletonPatternFixed:
+    """Tests to verify the singleton pattern is properly fixed."""
+
+    def setup_method(self):
+        """Reset singleton before each test."""
+        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+            HealingSovereignOrchestrator,
+        )
+
+        HealingSovereignOrchestrator.reset_instance()
+
+    def test_singleton_returns_same_instance(self):
+        """Verify HealingSovereignOrchestrator returns the same instance."""
+        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+            HealingSovereignOrchestrator,
+        )
+
+        instance1 = HealingSovereignOrchestrator()
+        instance2 = HealingSovereignOrchestrator()
+
+        assert instance1 is instance2
+
+    def test_singleton_preserves_registered_strategies(self):
+        """Verify strategies persist across singleton access."""
+        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+            HealingSovereignOrchestrator,
+            get_healing_orchestrator,
+        )
+        from agentic_core.L5_safety.validators.operational_healing_integration import (
+            get_historian_strategy,
+        )
+
+        # Register via first access
+        orchestrator1 = HealingSovereignOrchestrator()
+        orchestrator1.register_strategy("test_strategy", get_historian_strategy())
+
+        # Verify via second access
+        orchestrator2 = get_healing_orchestrator()
+        assert "test_strategy" in orchestrator2._strategies
+
+    def test_get_healing_orchestrator_returns_singleton(self):
+        """Verify get_healing_orchestrator returns the singleton."""
+        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+            HealingSovereignOrchestrator,
+            get_healing_orchestrator,
+        )
+
+        direct = HealingSovereignOrchestrator()
+        via_getter = get_healing_orchestrator()
+
+        assert direct is via_getter
+
+
+class TestFullIntegrationFunctional:
+    """Functional tests verifying agents are actually working."""
+
+    def setup_method(self):
+        """Reset and initialize before each test."""
+        from agentic_core.L5_safety.validators import register_all_validators
+
+        register_all_validators.reset()
+
+    def test_all_strategies_registered_and_accessible(self):
+        """Verify all 5 strategies are registered after initialization."""
+        from agentic_core.L5_safety.validators import register_all_validators
+        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+            get_healing_orchestrator,
+        )
+
+        result = register_all_validators.initialize()
+
+        assert result["status"] == "initialized"
+        assert len(result["strategies"]) == 5
+
+        orchestrator = get_healing_orchestrator()
+        registered = list(orchestrator._strategies.keys())
+
+        assert "chaos_resilience" in registered
+        assert "dependency_pruning" in registered
+        assert "historian_logging" in registered
+        assert "cost_governor" in registered
+        assert "task_decomposition" in registered
+
+    def test_historian_strategy_executes(self):
+        """Verify HistorianLoggingStrategy can execute."""
+        from agentic_core.L5_safety.validators import register_all_validators
+        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+            get_healing_orchestrator,
+        )
+
+        register_all_validators.initialize()
+        orchestrator = get_healing_orchestrator()
+
+        strategy = orchestrator._strategies.get("historian_logging")
+        assert strategy is not None
+
+        result = strategy.heal(
+            {"type": "event_logging", "agent": "TestAgent", "status": "test"},
+            {},
+        )
+
+        assert isinstance(result, dict)
+        assert "success" in result
+
+    def test_cost_governor_strategy_executes(self):
+        """Verify CostGovernorStrategy can execute."""
+        from agentic_core.L5_safety.validators import register_all_validators
+        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+            get_healing_orchestrator,
+        )
+
+        register_all_validators.initialize()
+        orchestrator = get_healing_orchestrator()
+
+        strategy = orchestrator._strategies.get("cost_governor")
+        assert strategy is not None
+
+        result = strategy.heal(
+            {"type": "cost_tracking", "model": "gpt-4", "input_tokens": 100},
+            {},
+        )
+
+        assert isinstance(result, dict)
+        assert "success" in result
+
+    def test_task_decomposition_strategy_executes(self):
+        """Verify TaskDecompositionStrategy can execute."""
+        from agentic_core.L5_safety.validators import register_all_validators
+        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+            get_healing_orchestrator,
+        )
+
+        register_all_validators.initialize()
+        orchestrator = get_healing_orchestrator()
+
+        strategy = orchestrator._strategies.get("task_decomposition")
+        assert strategy is not None
+
+        result = strategy.heal(
+            {"type": "task_decomposition", "prompt": "Test task"},
+            {"dry_run": True},
+        )
+
+        assert isinstance(result, dict)
+        assert "success" in result
+
+    def test_chaos_resilience_strategy_executes(self):
+        """Verify ChaosResilienceStrategy can execute."""
+        from agentic_core.L5_safety.validators import register_all_validators
+        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+            get_healing_orchestrator,
+        )
+
+        register_all_validators.initialize()
+        orchestrator = get_healing_orchestrator()
+
+        strategy = orchestrator._strategies.get("chaos_resilience")
+        assert strategy is not None
+
+        result = strategy.heal(
+            {"type": "resilience_check"},
+            {"dry_run": True},
+        )
+
+        assert isinstance(result, dict)
+        assert "success" in result
+
+    def test_dependency_pruning_strategy_executes(self):
+        """Verify DependencyPruningStrategy can execute."""
+        from agentic_core.L5_safety.validators import register_all_validators
+        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+            get_healing_orchestrator,
+        )
+
+        register_all_validators.initialize()
+        orchestrator = get_healing_orchestrator()
+
+        strategy = orchestrator._strategies.get("dependency_pruning")
+        assert strategy is not None
+
+        result = strategy.heal(
+            {"type": "dependency_cleanup"},
+            {"dry_run": True},
+        )
+
+        assert isinstance(result, dict)
+        assert "success" in result
 
 
 class TestHistorianLoggingStrategy:
@@ -292,9 +483,11 @@ class TestSemanticDebuggerAgentDeleted:
         assert not agent_path.exists(), "SemanticDebuggerAgent.py should be deleted"
 
     def test_semantic_debugger_not_importable(self):
-        """Test SemanticDebuggerAgent cannot be imported."""
-        with pytest.raises(ImportError):
-            pass
+        """Test SemanticDebuggerAgent cannot be imported from validators."""
+        import importlib.util
+
+        spec = importlib.util.find_spec("agentic_core.L5_safety.validators.SemanticDebuggerAgent")
+        assert spec is None, "SemanticDebuggerAgent should not be importable"
 
 
 # Run tests if executed directly

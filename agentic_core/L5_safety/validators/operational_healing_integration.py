@@ -1,6 +1,8 @@
 """
 Operational Healing Integration Module - Final Orphan Agent Rewiring
 
+# NOT_AN_AGENT - These are adapter/wrapper classes, not sovereign agents
+
 Integrates remaining orphan agents into the healing infrastructure:
 - HistorianAgent: Event logging strategy
 - CostGovernorAgent: Budget tracking strategy

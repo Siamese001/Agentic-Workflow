@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import logging
 import time
-from dataclasses import dataclass, field
 from typing import Any, Protocol
 
 from agentic_core.config.SovereignConfigManager import get_sovereign_config
@@ -33,7 +32,6 @@ class HealingStrategy(Protocol):
         ...
 
 
-@dataclass
 class HealingSovereignOrchestrator:
     """
     Unified Healing Orchestrator - Single point of truth for all healing operations.
@@ -41,25 +39,12 @@ class HealingSovereignOrchestrator:
     [PHASE 5 MIGRATION] Absorbed from:
     - healing_strategies.py (9 strategies)
     - healing_healing_engine.py
+
+    [FIX] Proper singleton pattern - removed @dataclass to prevent field reinitialization.
     """
 
     _instance: HealingSovereignOrchestrator | None = None
-
-    # [PHASE 6] configuration now managed by SovereignConfigManager
-
-    # State
-    _strategies: dict[str, HealingStrategy] = field(default_factory=dict)
-
-    operation_stats: dict[str, Any] = field(
-        default_factory=lambda: {
-            "total_heals": 0,
-            "successful_heals": 0,
-            "failed_heals": 0,
-            "by_strategy": {},
-        }
-    )
-
-    audit_log: list[dict[str, Any]] = field(default_factory=list)
+    _initialized: bool = False
 
     def __new__(cls):
         """Singleton constructor."""
@@ -67,10 +52,26 @@ class HealingSovereignOrchestrator:
             cls._instance = super().__new__(cls)
         return cls._instance
 
+    def __init__(self):
+        """Initialize only once."""
+        if HealingSovereignOrchestrator._initialized:
+            return
+
+        self._strategies: dict[str, HealingStrategy] = {}
+        self.operation_stats: dict[str, Any] = {
+            "total_heals": 0,
+            "successful_heals": 0,
+            "failed_heals": 0,
+            "by_strategy": {},
+        }
+        self.audit_log: list[dict[str, Any]] = []
+        HealingSovereignOrchestrator._initialized = True
+
     @classmethod
     def reset_instance(cls):
         """[TESTING ONLY] Reset singleton state."""
         cls._instance = None
+        cls._initialized = False
 
     @property
     def config(self):
