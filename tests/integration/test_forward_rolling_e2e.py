@@ -17,11 +17,11 @@ import pytest
 from agentic_core.L3_orchestration.interfaces import (
     ExecutionContext,
 )
-from agentic_core.L3_orchestration.workflow_engines.ContextPruningStrategy import (
+from agentic_core.L3_orchestration.workflow_engines.context_pruning_strategy_types import (
     AdaptiveDepthManager,
     ContextPruningStrategy,
 )
-from agentic_core.L3_orchestration.workflow_engines.ForwardRollingConfig import (
+from agentic_core.L3_orchestration.workflow_engines.forward_rolling_config_types import (
     ExecutionMode,
     ForwardRollingConfig,
     RolloutStage,
@@ -29,12 +29,12 @@ from agentic_core.L3_orchestration.workflow_engines.ForwardRollingConfig import 
 from agentic_core.L3_orchestration.workflow_engines.ForwardRollingFacade import (
     ForwardRollingFacade,
 )
-from agentic_core.L3_orchestration.workflow_engines.RecursionMonitor import (
+from agentic_core.L3_orchestration.workflow_engines.recursion_monitor_types import (
     AlertSeverity,
     HealthStatus,
     RecursionMonitor,
 )
-from agentic_core.L3_orchestration.workflow_engines.RecursiveOrchestrator import (
+from agentic_core.L3_orchestration.workflow_engines.recursive_orchestrator_types import (
     RecursiveOrchestrator,
     SuccessorSpec,
 )

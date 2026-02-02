@@ -36,7 +36,7 @@ class TestCodeEnforcerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.unified.CodeEnforcerAgent import CodeEnforcerAgent
+            from agentic_core.L5_safety.unified.code_enforcer_agent_types import CodeEnforcerAgent
 
             return CodeEnforcerAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -83,7 +83,7 @@ class TestCodeEnforcerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.unified.CodeEnforcerAgent import (
+                from agentic_core.L5_safety.unified.code_enforcer_agent_types import (
                     CodeEnforcerAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

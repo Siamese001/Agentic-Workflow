@@ -11,8 +11,8 @@ from __future__ import annotations
 
 from apps_rg.shared.core.mixins import HealerMixin, MCPHardenedMixin, SubatomicTestingMixin
 from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
-from apps_rg.shared.core.StateTransaction import ImmutableStagingBuffer
-from apps_rg.shared.core.TraceRegistry import TraceRegistry
+from apps_rg.shared.core.state_transaction_types import ImmutableStagingBuffer
+from apps_rg.shared.core.trace_registry_types import TraceRegistry
 
 __all__ = [
     "RGAgentBase",

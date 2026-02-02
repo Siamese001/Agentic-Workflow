@@ -222,7 +222,7 @@ class DomainContextManager:
         Returns:
             Tuple of (pattern_data, source_domain) or (None, None)
         """
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             get_meta_learning_client,
         )
 
@@ -270,7 +270,7 @@ class DomainContextManager:
         Returns:
             Dict mapping domain to success status
         """
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             get_meta_learning_client,
         )
 

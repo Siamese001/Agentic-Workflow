@@ -90,7 +90,7 @@ class TestPhase2SingleASTPass(unittest.TestCase):
 
     def test_single_ast_pass_efficiency(self):
         """Verify single-pass is faster than multiple passes."""
-        from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
+        from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
             CodeValidatorAgent,
             RuleSet,
         )
@@ -143,7 +143,7 @@ class TestPhase3ResourceConcurrency(unittest.TestCase):
 
     def test_resource_concurrency(self):
         """10+ agents requesting budget simultaneously."""
-        from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import (
+        from agentic_core.L5_safety.policy_engine.resource_manager_agent_types import (
             ResourceConfig,
             ResourceManagerAgent,
             ResourceType,
@@ -184,7 +184,7 @@ class TestPhase3BudgetHardCap(unittest.TestCase):
 
     def test_budget_hard_cap(self):
         """Execution halted at 100% exhaustion."""
-        from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import (
+        from agentic_core.L5_safety.policy_engine.resource_manager_agent_types import (
             ResourceConfig,
             ResourceManagerAgent,
             ResourceType,
@@ -207,7 +207,7 @@ class TestPhase3SovereigntyProtection(unittest.TestCase):
 
     def test_sovereignty_protection(self):
         """Block L3/L4 modifying L5 without exception."""
-        from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import (
+        from agentic_core.L5_safety.policy_engine.code_enforcer_agent_types import (
             CodeEnforcerAgent,
             EnforcementConfig,
         )
@@ -231,7 +231,7 @@ class TestPhase3NamingCompliance(unittest.TestCase):
 
     def test_naming_law_compliance(self):
         """Force-rename non-compliant classes."""
-        from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_enforcer_agent_types import (
             StructureConfig,
             StructureEnforcerAgent,
         )
@@ -254,7 +254,7 @@ class TestPhase4DeadlockDetection(unittest.TestCase):
 
     def test_deadlock_detection(self):
         """Correctly identify circular wait conditions."""
-        from agentic_core.L5_safety.policy_engine.CodeDetectorAgent import (
+        from agentic_core.L5_safety.policy_engine.code_detector_agent_types import (
             CodeDetectorAgent,
             DetectionType,
         )
@@ -292,7 +292,7 @@ class TestPhase4PromptInjectionBlock(unittest.TestCase):
 
     def test_prompt_injection_block(self):
         """Flag 100% of standard injection patterns."""
-        from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import (
+        from agentic_core.L5_safety.policy_engine.safety_detector_agent_types import (
             SafetyDetectorAgent,
         )
 
@@ -387,7 +387,7 @@ class TestPhase4IntegrityGateBlocking(unittest.TestCase):
 
     def test_integrity_gate_blocking(self):
         """Block execution on high-severity violations."""
-        from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import (
+        from agentic_core.L5_safety.policy_engine.safety_detector_agent_types import (
             SafetyDetectorAgent,
         )
         from agentic_core.L5_safety.policy_engine.SafetyExecutorAgent import (

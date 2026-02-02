@@ -30,7 +30,7 @@ def test_registry_mapping():
     from agentic_core.L4_state.validation_context.StateManagementAgent import (
         StateManagementAgent,
     )
-    from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import CodeEnforcerAgent
+    from agentic_core.L5_safety.policy_engine.code_enforcer_agent_types import CodeEnforcerAgent
     from agentic_core.L5_safety.policy_engine.StructureValidatorAgent import (
         StructureValidatorAgent,
     )

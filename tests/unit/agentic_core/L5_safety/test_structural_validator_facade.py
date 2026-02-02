@@ -95,7 +95,7 @@ class TestStructuralValidatorAgentFacade:
     def agent(self):
         """Create StructuralValidatorAgent instance."""
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):
-            from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+            from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
                 StructuralValidatorAgent,
                 StructureConfig,
             )
@@ -176,7 +176,7 @@ class TestStructureTypes:
 
     def test_structure_violation_type_class(self):
         """Test StructureViolationType class exists."""
-        from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+        from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
             StructureViolationType,
         )
 
@@ -188,7 +188,7 @@ class TestStructureTypes:
 
     def test_structure_violation_dataclass(self):
         """Test StructureViolation dataclass exists."""
-        from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+        from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
             StructureViolation,
             StructureViolationType,
         )
@@ -206,7 +206,7 @@ class TestStructureTypes:
 
     def test_structure_config_dataclass(self):
         """Test StructureConfig dataclass exists."""
-        from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+        from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
             StructureConfig,
         )
 
@@ -224,7 +224,7 @@ class TestLegacyCompatibility:
 
     def test_import_compatibility(self):
         """Test original import still works."""
-        from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+        from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
             StructuralValidatorAgent,
         )
 
@@ -232,7 +232,7 @@ class TestLegacyCompatibility:
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
-        from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+        from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
             StructuralValidatorAgent,
         )
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -241,7 +241,7 @@ class TestLegacyCompatibility:
 
     def test_violations_property(self):
         """Test violations property exists."""
-        from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+        from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
             StructuralValidatorAgent,
             StructureConfig,
         )
@@ -255,7 +255,7 @@ class TestLegacyCompatibility:
 
     def test_check_duplicates_method(self):
         """Test check_duplicates method exists."""
-        from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+        from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
             StructuralValidatorAgent,
             StructureConfig,
         )
@@ -275,7 +275,7 @@ class TestValidationFunctionality:
     def agent(self):
         """Create StructuralValidatorAgent instance."""
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):
-            from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+            from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
                 StructuralValidatorAgent,
                 StructureConfig,
             )

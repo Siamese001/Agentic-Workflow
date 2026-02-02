@@ -20,7 +20,7 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
-from apps_rg.logic_nodes.SkillExtractorNode import SkillExtractorNode
+from apps_rg.logic_nodes.skill_extractor_node_types import SkillExtractorNode
 from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
 

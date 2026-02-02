@@ -62,7 +62,7 @@ except ImportError:
     SafetyInspectorAgent = None
 
 try:
-    from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import CodeEnforcerAgent
+    from agentic_core.L5_safety.policy_engine.code_enforcer_agent_types import CodeEnforcerAgent
 except ImportError:
     CodeEnforcerAgent = None
 

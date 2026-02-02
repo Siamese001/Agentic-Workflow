@@ -323,7 +323,7 @@ def register_operational_healing() -> dict[str, Any]:
     errors = []
 
     try:
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             get_healing_orchestrator,
         )
 

@@ -170,7 +170,7 @@ def register_dependency_healing(project_root: Path | None = None) -> dict[str, A
     errors = []
 
     try:
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             get_healing_orchestrator,
         )
 

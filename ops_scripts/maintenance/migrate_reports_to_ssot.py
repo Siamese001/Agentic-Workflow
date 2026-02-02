@@ -30,7 +30,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.utils.report_location_validator import (  # noqa: E402
+from agentic_core.utils.report_location_validator_types import (  # noqa: E402
     SSOT_REPORTS_DIR,
     ReportLocationValidator,
 )

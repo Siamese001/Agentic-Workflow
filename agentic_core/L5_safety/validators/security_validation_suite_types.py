@@ -67,7 +67,7 @@ class RedTeamValidationSuite:
             return
 
         try:
-            from agentic_core.L5_safety.validators.red_team_integration import (
+            from agentic_core.L5_safety.validators.red_team_integration_types import (
                 get_adversarial_validator,
                 get_boundary_validator,
             )

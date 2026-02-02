@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from apps_shared.utils.resource_manager import (
+from apps_shared.utils.resource_manager_types import (
     ResourceConfig,
     ResourceKey,
     ResourceManager,
@@ -419,7 +419,7 @@ class TestGetResourceManager:
     def test_singleton_instance(self):
         """Test that get_resource_manager returns singleton."""
         # Reset singleton for test
-        import apps_shared.utils.resource_manager as rm_module
+        import apps_shared.utils.resource_manager_types as rm_module
 
         rm_module._resource_manager = None
 

@@ -75,7 +75,7 @@ class TestRuntimeMutability:
         """
         CRITICAL: ReasoningConfig was marked KEEP. It must NOT be frozen.
         """
-        from agentic_core.schemas.models.ReasoningConfig import ReasoningConfig
+        from agentic_core.schemas.models.reasoning_config_types import ReasoningConfig
 
         try:
             config = ReasoningConfig()

@@ -8,7 +8,7 @@ import os
 from unittest.mock import patch
 
 
-from apps_shared.utils.health_check import (
+from apps_shared.utils.health_check_types import (
     CheckResult,
     CommonChecks,
     HealthChecker,
@@ -332,7 +332,7 @@ class TestGetHealthChecker:
 
     def test_singleton_instance(self):
         """Test that get_health_checker returns singleton."""
-        import apps_shared.utils.health_check as hc_module
+        import apps_shared.utils.health_check_types as hc_module
 
         hc_module._health_checker = None
 
@@ -349,7 +349,7 @@ class TestGetReadinessGate:
 
     def test_singleton_instance(self):
         """Test that get_readiness_gate returns singleton."""
-        import apps_shared.utils.health_check as hc_module
+        import apps_shared.utils.health_check_types as hc_module
 
         hc_module._readiness_gate = None
 

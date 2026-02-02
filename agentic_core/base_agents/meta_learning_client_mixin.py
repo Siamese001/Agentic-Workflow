@@ -60,7 +60,7 @@ class MetaLearningClientMixin:
         """Ensure MetaLearningClient is initialized (lazy loading)."""
         if MetaLearningClientMixin._ml_client is None:
             try:
-                from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+                from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
                     get_meta_learning_client,
                 )
 
@@ -73,7 +73,7 @@ class MetaLearningClientMixin:
         """Ensure HealingMemoryEmbedder is initialized (lazy loading)."""
         if MetaLearningClientMixin._ml_embedder is None:
             try:
-                from agentic_core.L1_cognition.meta_learning.HealingMemoryEmbedder import (
+                from agentic_core.L1_cognition.meta_learning.healing_memory_embedder_types import (
                     get_healing_memory_embedder,
                 )
 
@@ -88,7 +88,7 @@ class MetaLearningClientMixin:
         """Ensure CacheStrategyManager is initialized (lazy loading)."""
         if MetaLearningClientMixin._ml_cache_manager is None:
             try:
-                from agentic_core.L1_cognition.meta_learning.CacheStrategyManager import (
+                from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
                     get_cache_strategy_manager,
                 )
 

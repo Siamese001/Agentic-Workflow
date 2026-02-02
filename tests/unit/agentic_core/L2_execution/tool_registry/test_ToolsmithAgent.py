@@ -13,7 +13,7 @@ import pytest
 
 # Import the agent
 try:
-    from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent
+    from agentic_core.L2_execution.tool_registry.toolsmith_agent_types import ToolsmithAgent
 except (ImportError, NameError, AttributeError, TypeError) as e:
     pytest.skip(f"Cannot import ToolsmithAgent: {e}", allow_module_level=True)
 

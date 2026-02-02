@@ -168,7 +168,7 @@ class MetaLearningMixin(BaseMetaLearner):
             with MetaLearningMixin._graph_lock:
                 if MetaLearningMixin._graph_bridge is None:
                     try:
-                        from agentic_core.L4_state.memory.GraphMemoryBridge import (
+                        from agentic_core.L4_state.memory.graph_memory_bridge_types import (
                             GraphMemoryBridge,
                         )
 

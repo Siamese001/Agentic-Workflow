@@ -55,7 +55,7 @@ def initialize() -> dict[str, Any]:
 
     # Red Team Validators
     try:
-        from agentic_core.L5_safety.validators.red_team_integration import (
+        from agentic_core.L5_safety.validators.red_team_integration_types import (
             register_red_team_validators,
         )
 
@@ -68,7 +68,7 @@ def initialize() -> dict[str, Any]:
 
     # Chaos Engineering Healing
     try:
-        from agentic_core.L5_safety.validators.chaos_healing_integration import (
+        from agentic_core.L5_safety.validators.chaos_healing_integration_types import (
             register_chaos_healing,
         )
 
@@ -81,7 +81,7 @@ def initialize() -> dict[str, Any]:
 
     # Dependency Pruning Healing
     try:
-        from agentic_core.L5_safety.validators.dependency_healing_integration import (
+        from agentic_core.L5_safety.validators.dependency_healing_integration_types import (
             register_dependency_healing,
         )
 
@@ -94,7 +94,7 @@ def initialize() -> dict[str, Any]:
 
     # Operational Healing (Historian, CostGovernor, TaskDecomposition)
     try:
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             register_operational_healing,
         )
 
@@ -137,7 +137,7 @@ def get_integration_status() -> dict[str, Any]:
 
     # Check ValidatorOrchestrator
     try:
-        from agentic_core.L5_safety.validators.ValidatorOrchestrator import (
+        from agentic_core.L5_safety.validators.validator_orchestrator_types import (
             get_validator_orchestrator,
         )
 
@@ -149,7 +149,7 @@ def get_integration_status() -> dict[str, Any]:
 
     # Check HealingSovereignOrchestrator
     try:
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             get_healing_orchestrator,
         )
 
@@ -201,7 +201,7 @@ def reset() -> None:
 
     # Reset orchestrator singletons if available
     try:
-        from agentic_core.L5_safety.validators.ValidatorOrchestrator import (
+        from agentic_core.L5_safety.validators.validator_orchestrator_types import (
             ValidatorOrchestrator,
         )
 
@@ -210,7 +210,7 @@ def reset() -> None:
         pass
 
     try:
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             HealingSovereignOrchestrator,
         )
 

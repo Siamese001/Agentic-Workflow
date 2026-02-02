@@ -20,10 +20,10 @@ Agents:
 - StructureHealerAgent: Gravity healing, naming fixes, territory healing
 """
 
-from agentic_core.L5_safety.policy_engine.CodeDetectorAgent import CodeDetectorAgent
-from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import CodeEnforcerAgent
+from agentic_core.L5_safety.policy_engine.code_detector_agent_types import CodeDetectorAgent
+from agentic_core.L5_safety.policy_engine.code_enforcer_agent_types import CodeEnforcerAgent
 from agentic_core.L5_safety.policy_engine.CodeHealerAgent import CodeHealerAgent
-from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
+from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
     CodeValidatorAgent,
     RuleSet,
     ValidationReport,
@@ -34,14 +34,14 @@ from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
     create_legacy_print_validator,
     create_legacy_syntax_validator,
 )
-from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import ResourceManagerAgent
-from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import SafetyDetectorAgent
+from agentic_core.L5_safety.policy_engine.resource_manager_agent_types import ResourceManagerAgent
+from agentic_core.L5_safety.policy_engine.safety_detector_agent_types import SafetyDetectorAgent
 from agentic_core.L5_safety.policy_engine.SafetyExecutorAgent import SafetyExecutorAgent
-from agentic_core.L5_safety.policy_engine.SecurityManagerAgent import SecurityManagerAgent
-from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import (
+from agentic_core.L5_safety.policy_engine.security_manager_agent_types import SecurityManagerAgent
+from agentic_core.L5_safety.policy_engine.structure_enforcer_agent_types import (
     StructureEnforcerAgent,
 )
-from agentic_core.L5_safety.policy_engine.StructureHealerAgent import StructureHealerAgent
+from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import StructureHealerAgent
 
 __all__ = [
     # Sovereign agents (canonical namespace)

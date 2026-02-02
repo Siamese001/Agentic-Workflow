@@ -10,9 +10,9 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import CodeEnforcerAgent
+from agentic_core.L5_safety.policy_engine.code_enforcer_agent_types import CodeEnforcerAgent
 from agentic_core.L5_safety.policy_engine.CodeHealerAgent import CodeHealerAgent
-from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import CodeValidatorAgent
+from agentic_core.L5_safety.policy_engine.code_validator_agent_types import CodeValidatorAgent
 
 
 @pytest.fixture

@@ -36,7 +36,7 @@ class TestSecurityManagerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.unified.SecurityManagerAgent import SecurityManagerAgent
+            from agentic_core.L5_safety.unified.security_manager_agent_types import SecurityManagerAgent
 
             return SecurityManagerAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -83,7 +83,7 @@ class TestSecurityManagerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.unified.SecurityManagerAgent import (
+                from agentic_core.L5_safety.unified.security_manager_agent_types import (
                     SecurityManagerAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

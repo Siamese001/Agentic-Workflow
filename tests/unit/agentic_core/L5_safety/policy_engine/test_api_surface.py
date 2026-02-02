@@ -21,7 +21,7 @@ def test_unified_api_exports():
     """Verify cleaner import paths for Agents."""
     # New clean import
     # Old deep import
-    from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import (
+    from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
         CodeValidatorAgent as Original,
     )
     from agentic_core.unified import CodeValidatorAgent
@@ -43,7 +43,7 @@ def test_unified_structure_validator_export():
 
 def test_unified_code_enforcer_export():
     """Verify CodeEnforcerAgent is exported."""
-    from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import (
+    from agentic_core.L5_safety.policy_engine.code_enforcer_agent_types import (
         CodeEnforcerAgent as Original,
     )
     from agentic_core.unified import CodeEnforcerAgent
@@ -53,7 +53,7 @@ def test_unified_code_enforcer_export():
 
 def test_unified_resource_manager_export():
     """Verify ResourceManagerAgent is exported."""
-    from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import (
+    from agentic_core.L5_safety.policy_engine.resource_manager_agent_types import (
         ResourceManagerAgent as Original,
     )
     from agentic_core.unified import ResourceManagerAgent

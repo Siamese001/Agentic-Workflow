@@ -17,11 +17,11 @@ from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
 
 # LIC Sovereign Architecture Imports
 from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
-from apps_lic.shared.core.TraceRegistry import TraceRegistry
+from apps_lic.shared.core.trace_registry_types import TraceRegistry
 
 # Domain Imports
 try:
-    from apps_shared.utils.vector_memory import VectorMemoryStore
+    from apps_shared.utils.vector_memory_types import VectorMemoryStore
 except ImportError:
     VectorMemoryStore = None  # Allow stub mode
 

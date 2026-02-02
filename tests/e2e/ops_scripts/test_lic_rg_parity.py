@@ -80,7 +80,7 @@ def test_trace_registry_parity():
     try:
         import tempfile
 
-        from apps_rg.shared.core.TraceRegistry import TraceRegistry
+        from apps_rg.shared.core.trace_registry_types import TraceRegistry
 
         # Test persistence
         with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False) as f:
@@ -217,7 +217,7 @@ def test_gap_closure_validation():
     try:
         import tempfile
 
-        from apps_rg.shared.core.TraceRegistry import TraceRegistry
+        from apps_rg.shared.core.trace_registry_types import TraceRegistry
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False) as f:
             trace_path = Path(f.name)

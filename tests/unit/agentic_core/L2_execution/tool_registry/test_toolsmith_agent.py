@@ -36,7 +36,7 @@ class TestToolsmithAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent
+            from agentic_core.L2_execution.tool_registry.toolsmith_agent_types import ToolsmithAgent
 
             return ToolsmithAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -91,7 +91,7 @@ class TestToolsmithAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L2_execution.tool_registry.ToolsmithAgent import (
+                from agentic_core.L2_execution.tool_registry.toolsmith_agent_types import (
                     ToolsmithAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
