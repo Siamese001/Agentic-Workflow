@@ -42,7 +42,7 @@ PYTHON_STDLIB_MODULES = set()
 VALIDATED_FILE_EXTENSIONS = {".py", ".pyi"}
 
 # Backward compatibility: Re-export from structure_blueprint
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     FORBIDDEN_FOLDER_PATTERN,
     FORBIDDEN_ROOT_FOLDERS,
     ROOT_PROTECTED_FILES,

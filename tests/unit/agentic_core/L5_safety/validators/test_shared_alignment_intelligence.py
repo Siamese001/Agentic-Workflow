@@ -11,7 +11,7 @@ from unittest.mock import patch
 import pytest
 
 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     AST_DOMAIN_HIT_THRESHOLD,
 )
 

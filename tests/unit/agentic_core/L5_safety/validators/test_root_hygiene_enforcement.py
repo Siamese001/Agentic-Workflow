@@ -11,7 +11,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
+from agentic_core.L5_safety.validators.structure_blueprint_config import is_path_allowed
 
 
 def test_root_hygiene_enforcement():

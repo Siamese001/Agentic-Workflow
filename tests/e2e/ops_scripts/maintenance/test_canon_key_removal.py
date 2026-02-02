@@ -36,7 +36,7 @@ class TestCanonKeyRemoval:
     def test_ssot_registry_integrity(self):
         """Verify SOVEREIGN_TERRITORIES integrity for Safety Layer."""
         try:
-            from agentic_core.L5_safety.validators.structure_blueprint import (
+            from agentic_core.L5_safety.validators.structure_blueprint_config import (
                 SOVEREIGN_TERRITORIES,
             )
 

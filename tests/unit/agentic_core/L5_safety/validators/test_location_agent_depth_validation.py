@@ -81,7 +81,7 @@ def test_variable_depth_subfolders_exist():
 
     try:
         # [SSOT] VARIABLE_DEPTH_SUBFOLDERS is now defined in structure_blueprint.py
-        from agentic_core.L5_safety.validators.structure_blueprint import VARIABLE_DEPTH_SUBFOLDERS
+        from agentic_core.L5_safety.validators.structure_blueprint_config import VARIABLE_DEPTH_SUBFOLDERS
 
         if VARIABLE_DEPTH_SUBFOLDERS:
             test_pass(
@@ -170,7 +170,7 @@ def test_is_path_allowed_function():
     print("=" * 70)
 
     try:
-        from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
+        from agentic_core.L5_safety.validators.structure_blueprint_config import is_path_allowed
 
         # These should all be allowed
         allowed_paths = [

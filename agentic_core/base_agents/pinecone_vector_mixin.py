@@ -18,7 +18,7 @@ import time
 from enum import Enum
 from typing import Any
 
-from agentic_core.config.feature_flags import (
+from agentic_core.config.feature_flags_config import (
     CACHE_METRICS_ENABLED,
     GRACEFUL_DEGRADATION,
     USE_PINECONE,

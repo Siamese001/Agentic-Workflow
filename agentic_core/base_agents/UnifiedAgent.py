@@ -756,7 +756,7 @@ class UnifiedAgent(SovereignBaseAgent):
     def _load_unified_config(self) -> Dict[str, Any]:
         """Load configuration for the unified agent."""
         try:
-            from apps_shared.config.config_loader import load_agent_config
+            from apps_shared.config.config_loader_config import load_agent_config
 
             return load_agent_config(self._config_name)
         except ImportError:

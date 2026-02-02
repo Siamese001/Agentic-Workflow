@@ -15,7 +15,7 @@ import logging
 import time
 from typing import Any, Protocol
 
-from agentic_core.config.SovereignConfigManager import get_sovereign_config
+from agentic_core.config.sovereign_config_manager_config import get_sovereign_config
 
 Logger = logging.getLogger(__name__)
 

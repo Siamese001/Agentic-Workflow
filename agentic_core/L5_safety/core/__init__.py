@@ -7,7 +7,7 @@ Modules:
 - ArchivalGatekeeper: Singleton service for all destructive file operations
 """
 
-from agentic_core.L5_safety.core.ArchivalGatekeeper import (
+from agentic_core.L5_safety.core.archival_gatekeeper_config import (
     ArchivalGatekeeper,
     ArchivalOperation,
     ArchivalResult,

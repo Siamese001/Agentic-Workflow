@@ -50,7 +50,7 @@ class TestGlobalSystemIntegrity:
         """
         Verify the L5 Validators enforce the structure globally.
         """
-        from agentic_core.L5_safety.validators.structure_blueprint import CANON_VALIDATION_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint_config import CANON_VALIDATION_REGISTRY
 
         # Verify CANON_VALIDATION_REGISTRY structure is correct
         assert "required_dirs" in CANON_VALIDATION_REGISTRY
@@ -135,7 +135,7 @@ class TestGlobalSystemIntegrity:
         """
         Verify CANON_VALIDATION_REGISTRY enforces V2.5 structure.
         """
-        from agentic_core.L5_safety.validators.structure_blueprint import CANON_VALIDATION_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint_config import CANON_VALIDATION_REGISTRY
 
         # Verify registry structure
         assert "required_dirs" in CANON_VALIDATION_REGISTRY

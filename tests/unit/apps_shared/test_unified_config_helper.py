@@ -23,7 +23,7 @@ from apps_shared.config.unified_config_helper import (
     UnifiedConfigLoader,
     get_unified_config_loader,
 )
-from apps_shared.config.config_loader import ConfigLoadResult
+from apps_shared.config.config_loader_config import ConfigLoadResult
 
 
 class TestCategoryDefaults:

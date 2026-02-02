@@ -13,7 +13,7 @@ def test_audit_trail_logging(tmp_path):
     os.environ["SOVEREIGN_AUTO_APPROVE"] = "1"
 
     try:
-        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+        from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
         from agentic_core.L5_safety.validators.ssot_relocator import SSOTRelocator
 
         # Reset gatekeeper singleton

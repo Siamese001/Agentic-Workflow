@@ -30,7 +30,7 @@ class SemanticCacheMixin:
     def semantic_cache(self):
         """Lazy-load canonical SemanticCacheManager singleton."""
         if self._semantic_cache is None:
-            from agentic_core.L4_state.memory.SemanticCacheManager import SemanticCacheManager
+            from agentic_core.L4_state.memory.semantic_cache_manager_config import SemanticCacheManager
 
             self._semantic_cache = SemanticCacheManager()
         return self._semantic_cache

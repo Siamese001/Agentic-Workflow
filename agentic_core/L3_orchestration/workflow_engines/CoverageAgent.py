@@ -205,7 +205,7 @@ class CoverageAgent(SovereignBaseAgent):
 
     def _inject_synthetic_exercises(self, layer: str) -> None:
         """Enqueue safe no-op tasks targeting layer — direct metric increment."""
-        from agentic_core.L5_safety.validators.structure_blueprint import EXERCISER_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint_config import EXERCISER_REGISTRY
 
         exerciser_class_name = EXERCISER_REGISTRY.get(layer, "GeneralExerciserAgent")
         for _i in range(self.synthetic_tasks_per_trigger):

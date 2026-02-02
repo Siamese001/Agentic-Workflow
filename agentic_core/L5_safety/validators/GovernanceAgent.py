@@ -54,7 +54,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 
 # GRAVITY FIXED: Explicit import for MCPHardenedMixin
 try:
@@ -363,7 +363,7 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self.Logger = logging.getLogger(__name__)
         self.DependencyGraph = DependencyGraph()
         try:
-            from agentic_core.L5_safety.validators.structure_blueprint import (
+            from agentic_core.L5_safety.validators.structure_blueprint_config import (
                 ROOT_PROTECTED_FILES,
                 SOVEREIGN_REGISTRY,
             )

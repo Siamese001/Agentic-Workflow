@@ -31,7 +31,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     SOVEREIGN_EXCLUDED_FOLDERS,  # Comprehensive exclusion set (.git, venv, __pycache__, etc.)
 )
 from agentic_core.utils.ssot_discovery_validator import get_python_files

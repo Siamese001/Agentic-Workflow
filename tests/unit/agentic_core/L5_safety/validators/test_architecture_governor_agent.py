@@ -642,25 +642,25 @@ class TestPhase3RootWhitelist:
 
     def test_root_whitelist_includes_coverage(self):
         """Test that .coverage is in ROOT_PROTECTED_FILES."""
-        from agentic_core.L5_safety.validators.structure_blueprint import ROOT_PROTECTED_FILES
+        from agentic_core.L5_safety.validators.structure_blueprint_config import ROOT_PROTECTED_FILES
 
         assert ".coverage" in ROOT_PROTECTED_FILES
 
     def test_root_whitelist_includes_pytest_ini(self):
         """Test that pytest.ini is in ROOT_PROTECTED_FILES."""
-        from agentic_core.L5_safety.validators.structure_blueprint import ROOT_PROTECTED_FILES
+        from agentic_core.L5_safety.validators.structure_blueprint_config import ROOT_PROTECTED_FILES
 
         assert "pytest.ini" in ROOT_PROTECTED_FILES
 
     def test_root_whitelist_includes_tox_ini(self):
         """Test that tox.ini is in ROOT_PROTECTED_FILES."""
-        from agentic_core.L5_safety.validators.structure_blueprint import ROOT_PROTECTED_FILES
+        from agentic_core.L5_safety.validators.structure_blueprint_config import ROOT_PROTECTED_FILES
 
         assert "tox.ini" in ROOT_PROTECTED_FILES
 
     def test_root_whitelist_includes_python_version(self):
         """Test that .python-version is in ROOT_PROTECTED_FILES."""
-        from agentic_core.L5_safety.validators.structure_blueprint import ROOT_PROTECTED_FILES
+        from agentic_core.L5_safety.validators.structure_blueprint_config import ROOT_PROTECTED_FILES
 
         assert ".python-version" in ROOT_PROTECTED_FILES
 

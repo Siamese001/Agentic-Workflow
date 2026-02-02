@@ -106,7 +106,7 @@ class TieredBatchProcessor:
         """
         if self._semantic_cache is None and self.use_semantic_cache:
             try:
-                from agentic_core.L5_safety.cognition.SemanticCacheManager import (
+                from agentic_core.L5_safety.cognition.semantic_cache_manager_config import (
                     SemanticCacheManager,
                 )
 

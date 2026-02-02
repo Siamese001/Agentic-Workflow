@@ -43,7 +43,7 @@ DASHBOARD_PATH = (
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import SSOT definitions
-from agentic_core.L5_safety.validators.dashboard_ssot_definitions import (
+from agentic_core.L5_safety.validators.dashboard_ssot_definitions_config import (
     FIELD_CYCLOMATIC_COMPLEXITY,
     FIELD_DOCUMENTED_PCT,
     FIELD_HAS_HEALING,

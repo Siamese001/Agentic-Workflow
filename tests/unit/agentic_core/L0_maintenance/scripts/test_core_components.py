@@ -72,7 +72,7 @@ def test_manifest_guardian():
 
             # Test ManifestGuardian
             sys.path.insert(0, "c:/Git/Agentic-Workflow")
-            from agentic_core.L0_maintenance.security.ManifestGuardian import ManifestGuardian
+            from agentic_core.L0_maintenance.security.manifest_guardian_config import ManifestGuardian
 
             start_time = time.time()
             checksum = ManifestGuardian.seal_manifest()

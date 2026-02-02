@@ -10,7 +10,7 @@ from apps_shared.config.operational_config import (
     is_excluded_path,
     should_scan_directory,
 )
-from apps_shared.config.config_loader import (
+from apps_shared.config.config_loader_config import (
     ConfigLoader,
     ConfigLoadResult,
     get_config_loader,

@@ -43,7 +43,7 @@ except ImportError:
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 try:
-    from agentic_core.L5_safety.validators.structure_blueprint import (
+    from agentic_core.L5_safety.validators.structure_blueprint_config import (
         CORE_SUBFOLDER_MAP,  # noqa: F401
         SOVEREIGN_REGISTRY,  # noqa: F401
     )

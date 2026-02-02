@@ -18,7 +18,7 @@ if not project_root:
     sys.exit(1)
 sys.path.insert(0, str(project_root))
 try:
-    from agentic_core.L5_safety.validators.structure_blueprint import CORE_SUBFOLDER_MAP
+    from agentic_core.L5_safety.validators.structure_blueprint_config import CORE_SUBFOLDER_MAP
 except ImportError:
     print("[!] Critical Failure: Cannot find CORE_SUBFOLDER_MAP in structure_blueprint.py")
     sys.exit(1)

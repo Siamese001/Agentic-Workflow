@@ -19,7 +19,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import VARIABLE_DEPTH_SUBFOLDERS from SSOT
-from agentic_core.L5_safety.validators.structure_blueprint import VARIABLE_DEPTH_SUBFOLDERS
+from agentic_core.L5_safety.validators.structure_blueprint_config import VARIABLE_DEPTH_SUBFOLDERS
 
 PASSED = 0
 FAILED = 0
@@ -93,7 +93,7 @@ def test_case_1_shallow_nesting_fix():
 
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
 
@@ -206,7 +206,7 @@ def test_case_2_deep_flattening_fix():
 
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
 
@@ -368,7 +368,7 @@ def test_case_4_idempotency():
 
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
 
@@ -628,7 +628,7 @@ def test_case_7_app_leaking_two_step():
 
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
 
@@ -828,7 +828,7 @@ def test_case_10_batch_big_bang():
 
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
         expected_depth = SOVEREIGN_REGISTRY.get("agentic_core", {}).get("depth", 3)

@@ -15,7 +15,7 @@ from pathlib import Path
 
 # SSOT Integration
 try:
-    from agentic_core.L5_safety.validators.structure_blueprint import get_python_files
+    from agentic_core.L5_safety.validators.structure_blueprint_config import get_python_files
 except ImportError:
 
     def get_python_files(root: Path):

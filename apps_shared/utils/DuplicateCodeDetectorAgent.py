@@ -18,7 +18,7 @@ import ast
 import hashlib
 import logging
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     GLOBAL_EXCLUDED_DIRS,
     L0_MAINTENANCE_DIR,
     L1_COGNITION_DIR,

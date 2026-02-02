@@ -10,7 +10,7 @@ from typing import Any
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     get_validated_project_root,
     has_forbidden_layer_prefix,
     is_broken_backup_file,

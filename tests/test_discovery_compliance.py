@@ -33,7 +33,7 @@ from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
     refresh_discovery_cache,
     validate_agent_structure,
 )
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,

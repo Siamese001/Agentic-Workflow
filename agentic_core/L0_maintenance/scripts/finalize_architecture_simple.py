@@ -112,7 +112,7 @@ def step_3_seal_architecture():
 
     try:
         # Import ManifestGuardian directly
-        from agentic_core.L0_maintenance.security.ManifestGuardian import ManifestGuardian
+        from agentic_core.L0_maintenance.security.manifest_guardian_config import ManifestGuardian
 
         checksum = ManifestGuardian.seal_manifest()
         logger.info("🔒 MANIFEST LOCKED.")

@@ -7,7 +7,7 @@ Ensures all test directories have __init__.py for Python package recognition.
 import os
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint import TESTS_L2_SUBFOLDER_MAP
+from agentic_core.L5_safety.validators.structure_blueprint_config import TESTS_L2_SUBFOLDER_MAP
 
 
 def align_tests_structure(root_path: Any) -> Any:

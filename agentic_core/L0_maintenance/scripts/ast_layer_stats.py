@@ -5,7 +5,7 @@ import ast
 from collections import defaultdict
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.structure_blueprint import (
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )

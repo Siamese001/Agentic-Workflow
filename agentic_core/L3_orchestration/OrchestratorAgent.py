@@ -49,7 +49,7 @@ from agentic_core.L3_orchestration.interfaces import (
     MissionResult,
 )
 from agentic_core.L5_safety.validators.decorators import standard_heal
-from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
+from agentic_core.L5_safety.validators.structure_blueprint_config import get_validated_project_root
 
 # [PHASE 2] SSOT Discovery Integration
 from agentic_core.utils.ssot_discovery_validator import get_agent_paths

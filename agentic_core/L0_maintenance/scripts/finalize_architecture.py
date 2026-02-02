@@ -10,7 +10,7 @@ PROJECT_ROOT = Path(os.getcwd())
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.discovery import AgentRegistry
-from agentic_core.L0_maintenance.security.ManifestGuardian import ManifestGuardian
+from agentic_core.L0_maintenance.security.manifest_guardian_config import ManifestGuardian
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

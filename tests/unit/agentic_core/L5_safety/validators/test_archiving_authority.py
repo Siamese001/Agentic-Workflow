@@ -276,7 +276,7 @@ class TestGatekeeperImportPresence:
         source = source_path.read_text()
 
         assert (
-            "from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper"
+            "from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper"
             in source
         )
 
@@ -288,7 +288,7 @@ class TestGatekeeperImportPresence:
         source = source_path.read_text()
 
         assert (
-            "from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper"
+            "from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper"
             in source
         )
 
@@ -304,7 +304,7 @@ class TestGatekeeperImportPresence:
         source = source_path.read_text()
 
         assert (
-            "from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper"
+            "from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper"
             in source
         )
 

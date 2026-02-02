@@ -128,7 +128,7 @@ def test_deep_violation_flattening():
 
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
 
@@ -237,7 +237,7 @@ def test_shallow_violation_nesting():
 
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
 
@@ -353,7 +353,7 @@ def test_idempotency():
 
     try:
         from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
 

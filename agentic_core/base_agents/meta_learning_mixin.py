@@ -116,7 +116,7 @@ class MetaLearningMixin(BaseMetaLearner):
             with MetaLearningMixin._memory_lock:
                 if MetaLearningMixin._memory is None:
                     try:
-                        from agentic_core.L4_state.memory.SemanticCacheManager import (
+                        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
                             SemanticCacheManager,
                         )
 

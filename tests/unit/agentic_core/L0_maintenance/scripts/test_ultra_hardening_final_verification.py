@@ -29,7 +29,7 @@ class TestSovereignFinalClosure:
         forbidden = ["CANON_KEY_EXCEPTIONS", "ACTIVE_CANON_KEYS", "CANON_KEY_TO_FOLDER_MAP"]
 
         # Import the module to check runtime attributes
-        import agentic_core.L5_safety.validators.structure_blueprint as structure_blueprint
+        import agentic_core.L5_safety.validators.structure_blueprint_config as structure_blueprint
 
         current_vars = dir(structure_blueprint)
         for f in forbidden:
@@ -80,7 +80,7 @@ class TestSovereignFinalClosure:
         [SSOT] Verify root directory constants are present and correctly typed.
         Ensures path stability for all downstream agents.
         """
-        import agentic_core.L5_safety.validators.structure_blueprint as structure_blueprint
+        import agentic_core.L5_safety.validators.structure_blueprint_config as structure_blueprint
 
         # Verify root directory constants exist
         assert structure_blueprint.AGENTIC_CORE_DIR == "agentic_core"
@@ -166,7 +166,7 @@ class TestSovereignFinalClosure:
         [FINAL] Verify all hardened root directory constants are properly Final.
         Ensures complete SSOT path hardening.
         """
-        import agentic_core.L5_safety.validators.structure_blueprint as blueprint
+        import agentic_core.L5_safety.validators.structure_blueprint_config as blueprint
 
         # Check Final annotations on root constants
         root_constants = ["AGENTIC_CORE_DIR", "APPS_RG_DIR", "APPS_LIC_DIR", "APPS_SHARED_DIR"]

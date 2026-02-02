@@ -232,7 +232,7 @@ def test_7_real_file_depth_verification():
     print("TEST 7: Real File Depth Verification")
     print("=" * 60)
 
-    from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+    from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
     # Test specific files that were reported as violations
     test_files = [
@@ -275,7 +275,7 @@ def test_8_no_false_positives():
     print("TEST 8: No False Positives")
     print("=" * 60)
 
-    from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+    from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
     # Sample valid files at correct depth
     valid_files = [

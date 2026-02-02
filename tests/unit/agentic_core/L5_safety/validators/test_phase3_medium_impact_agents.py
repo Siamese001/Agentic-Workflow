@@ -133,14 +133,14 @@ class TestArchivalGatekeeperIntegration:
 
     def test_gatekeeper_exists(self):
         """Verify ArchivalGatekeeper can be imported."""
-        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+        from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 
         gatekeeper = ArchivalGatekeeper.get_instance(Path.cwd())
         assert gatekeeper is not None
 
     def test_gatekeeper_singleton_pattern(self):
         """Verify ArchivalGatekeeper uses singleton pattern."""
-        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+        from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 
         gk1 = ArchivalGatekeeper.get_instance(Path.cwd())
         gk2 = ArchivalGatekeeper.get_instance(Path.cwd())
@@ -149,7 +149,7 @@ class TestArchivalGatekeeperIntegration:
 
     def test_safe_archive_method_exists(self):
         """Verify safe_archive method exists."""
-        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+        from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 
         gatekeeper = ArchivalGatekeeper.get_instance(Path.cwd())
         assert hasattr(gatekeeper, "safe_archive")

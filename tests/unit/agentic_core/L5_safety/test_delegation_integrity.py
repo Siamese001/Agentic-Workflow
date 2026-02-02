@@ -186,7 +186,7 @@ class TestArchivalGatekeeperImports:
 
         assert "ArchivalGatekeeper" in content, (
             "GovernanceAgent.py does not import ArchivalGatekeeper. "
-            "Add: from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper"
+            "Add: from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper"
         )
 
     def test_ssot_relocator_imports_gatekeeper(self, disable_path_shield):
@@ -195,7 +195,7 @@ class TestArchivalGatekeeperImports:
 
         assert "ArchivalGatekeeper" in content, (
             "ssot_relocator.py does not import ArchivalGatekeeper. "
-            "Add: from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper"
+            "Add: from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper"
         )
 
     def test_filesystem_imports_gatekeeper(self, disable_path_shield):
@@ -204,7 +204,7 @@ class TestArchivalGatekeeperImports:
 
         assert "ArchivalGatekeeper" in content, (
             "filesystem.py does not import ArchivalGatekeeper. "
-            "Add: from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper"
+            "Add: from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper"
         )
 
 

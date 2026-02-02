@@ -123,7 +123,7 @@ class TestSSOTSubfolderUpdate:
 
     def test_sovereign_registry_has_agentic_core_subfolders(self):
         """Verify SOVEREIGN_REGISTRY has subfolders for agentic_core."""
-        from agentic_core.L5_safety.validators.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         assert "agentic_core" in SOVEREIGN_REGISTRY
         assert "subfolders" in SOVEREIGN_REGISTRY["agentic_core"]
@@ -131,7 +131,7 @@ class TestSSOTSubfolderUpdate:
 
     def test_is_path_allowed_checks_subfolders(self):
         """Verify is_path_allowed checks subfolder membership."""
-        from agentic_core.L5_safety.validators.structure_blueprint import is_path_allowed
+        from agentic_core.L5_safety.validators.structure_blueprint_config import is_path_allowed
 
         # Valid path (L5_safety is in subfolders)
         assert is_path_allowed("agentic_core/L5_safety/validators/test.py") is True

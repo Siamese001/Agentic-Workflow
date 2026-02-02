@@ -36,7 +36,7 @@ class TestPeerIntelligenceAuditorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L2_execution.ToolRegistry.PeerIntelligenceAuditorAgent import (
+            from agentic_core.L2_execution.ToolRegistry.peer_intelligence_auditor_agent_config import (
                 PeerIntelligenceAuditorAgent,
             )
 
@@ -89,7 +89,7 @@ class TestPeerIntelligenceAuditorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L2_execution.ToolRegistry.PeerIntelligenceAuditorAgent import (
+                from agentic_core.L2_execution.ToolRegistry.peer_intelligence_auditor_agent_config import (
                     PeerIntelligenceAuditorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

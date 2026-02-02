@@ -22,7 +22,7 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer_validator import (
     get_sovereign_prompt_renderer,
 )
-from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
+from agentic_core.prompt_governance.version_registry.prompt_registry_config import registers_prompt
 
 # Template content loading for registry
 TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"

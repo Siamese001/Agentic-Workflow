@@ -4,7 +4,7 @@ Unit tests for Security Utilities.
 Tests Phase 5A - Security Hardening.
 """
 
-from apps_shared.utils.security_utils import (
+from apps_shared.utils.security_utils_config import (
     InputSanitizer,
     InputValidator,
     RateLimiter,

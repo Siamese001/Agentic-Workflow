@@ -252,7 +252,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
         never creating backward edges.
         """
         # Import here to avoid circular imports
-        from agentic_core.L3_orchestration.workflow_engines.DAGMutatorAgent import (
+        from agentic_core.L3_orchestration.workflow_engines.dag_mutator_agent_config import (
             DAGMutation,
             HopSpec,
             MutationAction,

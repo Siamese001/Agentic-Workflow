@@ -185,7 +185,7 @@ class test_phase3_consolidation(unittest.TestCase):
 
         # Verify mixin delegates to L4
         has_l4_import = (
-            "from agentic_core.L4_state.memory.SemanticCacheManager import SemanticCacheManager"
+            "from agentic_core.L4_state.memory.semantic_cache_manager_config import SemanticCacheManager"
             in content
         )
         has_semantic_recall = "async def semantic_recall" in content

@@ -16,7 +16,7 @@ class TestSingletonEnforcement:
 
     def test_singleton_get_instance(self):
         """[Phase 20] Verify get_instance returns the same instance."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -44,7 +44,7 @@ class TestSingletonEnforcement:
 
     def test_singleton_direct_instantiation_blocked(self):
         """[Phase 20] Verify direct instantiation raises RuntimeError."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -78,7 +78,7 @@ class TestSingletonEnforcement:
         """[Phase 20] Verify singleton is thread-safe."""
         import threading
 
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -123,7 +123,7 @@ class TestInstinctiveBypass:
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -166,7 +166,7 @@ class TestInstinctiveBypass:
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -215,7 +215,7 @@ class TestDNASegregation:
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -298,7 +298,7 @@ class TestLobotomyResilience:
 
     def test_lobotomy_resilience_redis_down(self):
         """[Phase 20] Verify agent works when Redis is down (resilient mode)."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -334,7 +334,7 @@ class TestLobotomyResilience:
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -376,7 +376,7 @@ class TestLobotomyResilience:
         """[Phase 20] Verify STATELESS warning is logged when Redis unavailable (resilient mode)."""
         import logging
 
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -470,7 +470,7 @@ class TestCircuitBreaker:
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -616,7 +616,7 @@ class TestStrictModeCompliance:
 
     def test_strict_mode_raises_on_infrastructure_failure(self):
         """[Phase 20] Verify STRICT_MODE raises CriticalInfrastructureError when Redis down."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             CriticalInfrastructureError,
             SemanticCacheManager,
         )
@@ -651,7 +651,7 @@ class TestStrictModeCompliance:
 
     def test_resilient_mode_survives_infrastructure_failure(self):
         """[Phase 20] Verify non-STRICT_MODE degrades gracefully when Redis down."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -699,7 +699,7 @@ class TestTraceSampling:
 
     def test_trace_sampling_rate_zero_skips_all(self):
         """[Phase 20] Verify sampling_rate=0.0 skips all traces."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -740,7 +740,7 @@ class TestTraceSampling:
 
     def test_trace_sampling_rate_one_captures_all(self):
         """[Phase 20] Verify sampling_rate=1.0 captures all traces."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -785,7 +785,7 @@ class TestMemoryLifecycle:
 
     def test_promotion_requires_feedback_threshold(self):
         """[Phase 20] Verify promotion requires feedback_score >= threshold."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -833,7 +833,7 @@ class TestMemoryLifecycle:
 
     def test_promotion_succeeds_with_high_feedback(self):
         """[Phase 20] Verify promotion succeeds with feedback_score >= threshold."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -893,7 +893,7 @@ class TestPII_Sanitizer:
 
     def test_pii_sanitizer_passthrough(self):
         """[Phase 20] Verify PII_Sanitizer is currently a pass-through."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import PII_Sanitizer
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import PII_Sanitizer
 
         test_content = "This is test content with email@example.com"
 
@@ -1114,7 +1114,7 @@ class TestMetaLearningKGIntegration:
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -1161,7 +1161,7 @@ class TestMetaLearningKGIntegration:
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -1214,7 +1214,7 @@ class TestMetaLearningKGIntegration:
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 
@@ -1265,7 +1265,7 @@ class TestMetaLearningKGIntegration:
         from agentic_core.base_agents.meta_learning_mixin import (
             MetaLearningMixin,
         )
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             SemanticCacheManager,
         )
 

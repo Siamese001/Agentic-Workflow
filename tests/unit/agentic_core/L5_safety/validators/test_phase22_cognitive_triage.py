@@ -324,7 +324,7 @@ class MisplacedValidator:
         """Test that ArchivalGatekeeper respects dry_run mode."""
         project_root, misplaced_file = project_with_violation
 
-        from agentic_core.L5_safety.core.ArchivalGatekeeper import ArchivalGatekeeper
+        from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 
         gatekeeper = ArchivalGatekeeper.get_instance(project_root)
 

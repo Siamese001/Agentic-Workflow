@@ -50,7 +50,7 @@ def needs_import(file_path: Path) -> bool:
         content = file_path.read_text(encoding="utf-8")
         # Check if already imports ARCHIVES_DIR
         if (
-            "from agentic_core.L5_safety.validators.structure_blueprint import ARCHIVES_DIR"
+            "from agentic_core.L5_safety.validators.structure_blueprint_config import ARCHIVES_DIR"
             in content
         ):
             return False
@@ -85,7 +85,7 @@ def add_import(file_path: Path, dry_run: bool = True) -> bool:
 
         # Insert import
         new_import = (
-            "from agentic_core.L5_safety.validators.structure_blueprint import ARCHIVES_DIR"
+            "from agentic_core.L5_safety.validators.structure_blueprint_config import ARCHIVES_DIR"
         )
         lines.insert(import_line + 1, new_import)
 

@@ -26,7 +26,7 @@ class TestPII_Sanitizer:
     @pytest.fixture
     def sanitizer(self):
         """Get the PII_Sanitizer class."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import PII_Sanitizer
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import PII_Sanitizer
 
         return PII_Sanitizer
 
@@ -322,7 +322,7 @@ class TestPhase21Integration:
 
     def test_pii_sanitizer_in_semantic_cache(self):
         """Test that PII_Sanitizer is used in SemanticCacheManager."""
-        from agentic_core.L4_state.memory.SemanticCacheManager import (
+        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
             PII_Sanitizer,
         )
 
