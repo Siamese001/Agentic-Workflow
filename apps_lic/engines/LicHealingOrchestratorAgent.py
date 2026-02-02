@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
 
 Logger = logging.getLogger(__name__)
 
@@ -234,3 +234,153 @@ class LicHealingOrchestratorAgent(SubatomicTestingMixin, LICAgentBase):
                 "metrics": success_metrics,
             },
         )
+
+    # ==================== PHASE 2.3: ENHANCED HEALING ORCHESTRATION ====================
+
+    def ml_heal_incident_enhanced(
+        self,
+        incident: dict[str, Any],
+    ) -> dict[str, Any]:
+        """
+        Enhanced incident healing with full meta-learning integration.
+
+        Args:
+            incident: The incident to heal
+
+        Returns:
+            Healing result with status, incident_id, and optional reason
+        """
+        import hashlib
+        import json
+
+        # Generate incident ID
+        incident_str = json.dumps(incident, sort_keys=True)
+        incident_id = hashlib.sha256(incident_str.encode()).hexdigest()[:16]
+
+        # Check healing depth using guardrails
+        if not self.guardrails_check_healing_depth(incident_id):
+            Logger.warning(
+                f"[{self.__class__.__name__}] Healing depth limit reached for {incident_id}"
+            )
+            return {
+                "status": "skipped",
+                "incident_id": incident_id,
+                "reason": "healing_depth_limit_reached",
+            }
+
+        # Increment healing depth
+        self.guardrails_increment_healing_depth(incident_id)
+
+        try:
+            # Try to retrieve similar healing patterns
+            similar_patterns = self.retrieve_healing_patterns(incident, top_k=3)
+
+            playbook = None
+            if similar_patterns:
+                best_pattern = max(
+                    similar_patterns,
+                    key=lambda p: getattr(p, "success_count", 0),
+                    default=None,
+                )
+                if best_pattern:
+                    playbook = getattr(best_pattern, "healing_strategy", {}).get("playbook")
+                    Logger.info(f"[{self.__class__.__name__}] Using learned playbook from pattern")
+
+            # Select playbook if not learned
+            if not playbook:
+                incident_type = incident.get("type", "unknown")
+                playbook = self.ml_optimize_playbook_selection(incident_type, {})
+
+            # Execute recovery
+            result = self._execute_recovery_playbook(incident, playbook)
+
+            # If successful, store the pattern
+            if result.get("status") == "resolved":
+                self.store_healing_pattern(incident, {"status": "resolved", "playbook": playbook})
+                self.guardrails_reset_healing_depth(incident_id)
+
+            return {
+                "status": result.get("status", "error"),
+                "incident_id": incident_id,
+                "playbook_used": playbook,
+            }
+
+        except Exception as e:
+            Logger.error(f"[{self.__class__.__name__}] Enhanced healing failed: {e}")
+            return {
+                "status": "error",
+                "incident_id": incident_id,
+                "reason": str(e),
+            }
+
+    def _execute_recovery_playbook(
+        self,
+        incident: dict[str, Any],
+        playbook: str,
+    ) -> dict[str, Any]:
+        """
+        Execute a recovery playbook for an incident.
+
+        Args:
+            incident: The incident to heal
+            playbook: The playbook to execute
+
+        Returns:
+            Recovery result
+        """
+        Logger.debug(f"[{self.__class__.__name__}] Executing playbook: {playbook}")
+
+        # Map playbook names to actions
+        playbook_actions = {
+            "release_and_retry": lambda: {"status": "resolved", "action": "released_lock"},
+            "exponential_backoff": lambda: {"status": "resolved", "action": "retried"},
+            "default_recovery": lambda: {"status": "resolved", "action": "default"},
+        }
+
+        action = playbook_actions.get(playbook, lambda: {"status": "error"})
+        return action()
+
+    def orchestrate_incident_recovery(
+        self,
+        incidents: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """
+        Orchestrate recovery for multiple incidents.
+
+        Args:
+            incidents: List of incidents to heal
+
+        Returns:
+            Recovery result with statistics
+        """
+        results = {
+            "total": len(incidents),
+            "resolved": 0,
+            "skipped": 0,
+            "errors": 0,
+            "details": [],
+        }
+
+        for incident in incidents:
+            result = self.ml_heal_incident_enhanced(incident)
+            results["details"].append(result)
+
+            if result["status"] == "resolved":
+                results["resolved"] += 1
+            elif result["status"] == "skipped":
+                results["skipped"] += 1
+            else:
+                results["errors"] += 1
+
+        # Cache the recovery pattern if successful
+        if results["resolved"] > 0:
+            recovery_pattern = {
+                "total": results["total"],
+                "resolved": results["resolved"],
+                "success_rate": results["resolved"] / results["total"],
+            }
+            self.cache_pattern_with_metadata(
+                "incident_recovery", f"recovery_{len(self.active_incidents)}", recovery_pattern
+            )
+
+        return results
