@@ -37,7 +37,7 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.config.config_mixin import ConfigMixin
-from agentic_core.domain.CoreIntegrityVerifier import CoreIntegrityVerifier, emergency_shutdown
+from agentic_core.domain.core_integrity_verifier_validator import CoreIntegrityVerifier, emergency_shutdown
 from agentic_core.domain.HealerError import ConfigurationError, SovereignError
 from agentic_core.L2_execution.mcp.embedding_mixin import EmbeddingMixin
 from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin

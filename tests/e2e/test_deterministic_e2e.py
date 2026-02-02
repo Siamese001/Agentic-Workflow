@@ -15,13 +15,13 @@ from __future__ import annotations
 import time
 
 
-from agentic_core.L0_maintenance.deterministic.ATSValidationDeterministic import (
+from agentic_core.L0_maintenance.deterministic.ats_validation_deterministic_validator import (
     ATSValidationDeterministic,
 )
-from agentic_core.L0_maintenance.deterministic.CampaignBalanceDeterministic import (
+from agentic_core.L0_maintenance.deterministic.campaign_balance_deterministic_validator import (
     CampaignBalanceDeterministic,
 )
-from agentic_core.L0_maintenance.deterministic.ContentQualityDeterministic import (
+from agentic_core.L0_maintenance.deterministic.content_quality_deterministic_validator import (
     ContentQualityDeterministic,
 )
 from agentic_core.L0_maintenance.deterministic.DeliverabilityDeterministic import (
