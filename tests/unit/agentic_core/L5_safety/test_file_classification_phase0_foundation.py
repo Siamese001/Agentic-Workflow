@@ -36,6 +36,7 @@ class TestPhase0FileTypeBaseline:
         # Get the args from the Literal type
         current_categories = FileType.__args__
 
+        # After all enhancements: 19 categories
         expected = {
             "AGENT",
             "CLASS",
@@ -48,6 +49,13 @@ class TestPhase0FileTypeBaseline:
             "SCRIPT",
             "TYPES",
             "GATEWAY",
+            "SERVICE",
+            "FACTORY",
+            "ASYNC_AGENT",
+            "ADAPTER",
+            "CONFIG",
+            "MODEL",
+            "REPOSITORY",
             "IGNORE",
         }
 
@@ -57,8 +65,8 @@ class TestPhase0FileTypeBaseline:
         """Verify current category count for baseline."""
         from agentic_core.L5_safety.validators.FileClassificationAgent import FileType
 
-        # Current implementation has 12 categories
-        assert len(FileType.__args__) == 12
+        # After all enhancements: 19 categories
+        assert len(FileType.__args__) == 19
 
 
 class TestPhase0AgentInstantiation:
