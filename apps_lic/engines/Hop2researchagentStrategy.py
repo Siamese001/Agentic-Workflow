@@ -27,7 +27,7 @@ except ImportError:
 
 
 @dataclass
-class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
+class HOP2ResearchAgent(LICAgentBase):
     """
     LIC Sovereign Strategist.
 

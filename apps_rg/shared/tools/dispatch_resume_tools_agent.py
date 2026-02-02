@@ -1,20 +1,29 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, validator, workflow
+# Suggested keywords: engine, guardrail, memory, orchestrator, prompt, validator
 # This boosts alignment detection — review and integrate appropriately
-
+"""DispatchResumeToolsAgent - Resume domain executor with Titanium RAG integration."""
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
-
-"""Brief description of functionality and purpose."""
-
-"Brief description of functionality and purpose."
 import time
-from typing import Any
+from dataclasses import dataclass, field
+from typing import Any, NamedTuple
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger: Any = logging.getLogger(__name__)
+
+
+class ExecutionResult(NamedTuple):
+    """Result of an execution action."""
+
+    SUCCESS: bool
+    OUTPUT: Any = None
+    ERROR: str | None = None
+    duration_ms: float = 0.0
+
+
 try:
     from titanium_rag_pipeline import (
         get_pipeline_stats,
@@ -23,30 +32,36 @@ try:
     )
 
     TITANIUM_AVAILABLE: Any = True
-    LOGGER.info("Titanium RAG Pipeline imported successfully")
+    Logger.info("Titanium RAG Pipeline imported successfully")
 except ImportError as e:
     TITANIUM_AVAILABLE: Any = False
-    LOGGER.warning(f"Titanium RAG Pipeline not available: {e}")
+    Logger.warning(f"Titanium RAG Pipeline not available: {e}")
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+# MRO Refactoring Phase 1: Now inherits from SovereignBaseAgent for full infrastructure
 @dataclass
-class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
+class DispatchResumeToolsAgent(SovereignBaseAgent):
     """Executor for resume domain with Titanium RAG integration."""
 
-    def __init__(self, config: dict[str, object] | None = None) -> None:
-        self.CONFIG = config or {}
-        self.TIMEOUT = self.config.get("timeout", 30.0)
-        self.titanium_enabled = self.config.get("use_titanium_search", True) and TITANIUM_AVAILABLE
+    config_dict: dict[str, object] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        """Initialize after dataclass construction with sovereign infrastructure."""
+        super().__post_init__()
+        self.TIMEOUT = self.config_dict.get("timeout", 30.0)
+        self.titanium_enabled = (
+            self.config_dict.get("use_titanium_search", True) and TITANIUM_AVAILABLE
+        )
         if self.titanium_enabled:
-            LOGGER.info("Initialized with Titanium RAG Pipeline")
+            Logger.info("Initialized with Titanium RAG Pipeline")
         else:
-            LOGGER.info("Initialized with legacy search")
-        LOGGER.info(f"Initialized {self.__class__.__name__}")
+            Logger.info("Initialized with legacy search")
+        Logger.info(f"Initialized {self.__class__.__name__}")
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L3 compliance."""
-        assert hasattr(self, "CONFIG"), "Missing CONFIG"
+        assert hasattr(self, "config_dict"), "Missing config_dict"
         return True
 
     def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
@@ -64,7 +79,7 @@ class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
 
     def _perform_action(self, action: str, params: dict[str, object]) -> object:
         """Perform the action."""
-        LOGGER.info(f"Executing {action} with {params}")
+        Logger.info(f"Executing {action} with {params}")
         if action == "search":
             return self._handle_search(params)
         elif action == "search_with_sources":
@@ -165,4 +180,4 @@ class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
 
 def execute(action: str, params: dict[str, object], config: dict | None = None) -> ExecutionResult:
     """Execute action."""
-    return DispatchResumeToolsAgent(config).execute(action, params)
+    return DispatchResumeToolsAgent(config_dict=config or {}).execute(action, params)
