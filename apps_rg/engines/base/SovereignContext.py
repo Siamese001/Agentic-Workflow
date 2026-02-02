@@ -12,8 +12,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps_rg.shared.core.StateTransaction import ImmutableStagingBuffer
-from apps_rg.shared.core.TraceRegistry import TraceRegistry
+from apps_rg.shared.core.state_transaction_types import ImmutableStagingBuffer
+from apps_rg.shared.core.trace_registry_types import TraceRegistry
 from apps_rg.shared.reasoning.ReasoningToggles import ReasoningToggles, get_toggles
 
 

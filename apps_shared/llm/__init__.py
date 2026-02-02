@@ -5,7 +5,7 @@ Prompt optimization and context management for high-reasoning agents.
 
 from __future__ import annotations
 
-from apps_shared.llm.prompt_optimizer import (
+from apps_shared.llm.prompt_optimizer_types import (
     PromptOptimizer,
     PromptTemplate,
     OptimizedPrompt,

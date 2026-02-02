@@ -35,7 +35,7 @@ class TestCompositeGuardrailAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.CompositeGuardrailAgent import (
+            from agentic_core.L5_safety.validators.composite_guardrail_agent_types import (
                 CompositeGuardrailAgent,
             )
 
@@ -92,7 +92,7 @@ class TestCompositeGuardrailAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.CompositeGuardrailAgent import (
+                from agentic_core.L5_safety.validators.composite_guardrail_agent_types import (
                     CompositeGuardrailAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

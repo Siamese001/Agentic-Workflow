@@ -6,7 +6,7 @@ ValidatorMixin - Unified Validation Access for Agents
 
 from typing import Any
 
-from agentic_core.L5_safety.validators.ValidatorOrchestrator import (
+from agentic_core.L5_safety.validators.validator_orchestrator_types import (
     ValidatorOrchestrator,
     get_validator_orchestrator,
 )

@@ -73,7 +73,7 @@ class HealingOrchestrationSuite:
             return
 
         try:
-            from agentic_core.L5_safety.validators.chaos_healing_integration import (
+            from agentic_core.L5_safety.validators.chaos_healing_integration_types import (
                 get_chaos_strategy,
             )
 
@@ -82,7 +82,7 @@ class HealingOrchestrationSuite:
             Logger.warning(f"[HealingSuite] Could not import chaos strategy: {e}")
 
         try:
-            from agentic_core.L5_safety.validators.dependency_healing_integration import (
+            from agentic_core.L5_safety.validators.dependency_healing_integration_types import (
                 get_dependency_strategy,
             )
 

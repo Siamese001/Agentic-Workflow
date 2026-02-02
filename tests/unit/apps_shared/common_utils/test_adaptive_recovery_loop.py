@@ -27,7 +27,7 @@ class TestAdaptiveRecoveryLoop:
     def recovery_class(self):
         """Import recovery class with mocked dependencies."""
         try:
-            from apps_shared.common_utils.AdaptiveRecoveryLoop import AdaptiveRecoveryLoop
+            from apps_shared.common_utils.adaptive_recovery_loop_types import AdaptiveRecoveryLoop
 
             return AdaptiveRecoveryLoop
         except ImportError as e:
@@ -70,7 +70,7 @@ class TestAdaptiveRecoveryLoop:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_shared.common_utils.AdaptiveRecoveryLoop import (
+                from apps_shared.common_utils.adaptive_recovery_loop_types import (
                     AdaptiveRecoveryLoop,  # noqa: F401
                 )
             except ImportError:

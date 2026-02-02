@@ -21,8 +21,8 @@ class FinalSystemIntegrityTest(unittest.TestCase):
     def test_ssot_engines_resolution(self):
         """Case 2: Confirm agents are resolvable in the 'engines' subfolder."""
         try:
-            from apps_lic.engines.CompetitorReconAgent import CompetitorReconAgent
-            from apps_lic.engines.StackModernizationAgent import StackModernizationAgent
+            from apps_lic.engines.competitor_recon_agent_types import CompetitorReconAgent
+            from apps_lic.engines.stack_modernization_agent_types import StackModernizationAgent
 
             recon = CompetitorReconAgent()
             stack = StackModernizationAgent()
@@ -36,7 +36,7 @@ class FinalSystemIntegrityTest(unittest.TestCase):
 
     def test_logic_persistence(self):
         """Case 3: Verify the extracted logic (BioTech) is active in the new location."""
-        from apps_lic.engines.CompetitorReconAgent import MockIntelProvider
+        from apps_lic.engines.competitor_recon_agent_types import MockIntelProvider
 
         provider = MockIntelProvider()
         competitors = provider.get_competitors("X", "biotech")

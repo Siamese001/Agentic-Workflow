@@ -24,7 +24,7 @@ from apps_rg.engines.quality.ContentQualityEngine import ContentQualityEngine
 from apps_rg.engines.refinement.ContentOptimizerEngine import ContentOptimizerEngine
 from apps_rg.engines.refinement.SectionRankerEngine import SectionRankerEngine
 from apps_rg.engines.safety.ATSCompatibilityEngine import ATSCompatibilityEngine
-from apps_rg.shared.core.TraceRegistry import TraceRegistry
+from apps_rg.shared.core.trace_registry_types import TraceRegistry
 
 Logger = logging.getLogger(__name__)
 

@@ -172,7 +172,7 @@ class MetaLearningObservability:
     def _check_meta_learning_client(self) -> None:
         """Check MetaLearningClient health."""
         try:
-            from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+            from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
                 get_meta_learning_client,
             )
 
@@ -212,7 +212,7 @@ class MetaLearningObservability:
     def _check_cache_strategy_manager(self) -> None:
         """Check CacheStrategyManager health."""
         try:
-            from agentic_core.L1_cognition.meta_learning.CacheStrategyManager import (
+            from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
                 get_cache_strategy_manager,
             )
 
@@ -236,7 +236,7 @@ class MetaLearningObservability:
     def _check_domain_context_manager(self) -> None:
         """Check DomainContextManager health."""
         try:
-            from agentic_core.L1_cognition.meta_learning.DomainContextManager import (
+            from agentic_core.L1_cognition.meta_learning.domain_context_manager_types import (
                 get_domain_context_manager,
             )
 

@@ -23,7 +23,7 @@ Logger = logging.getLogger(__name__)
 
 # HARDENING: Import immutable constitution as contract reference
 try:
-    from agentic_core.prompt_governance.PromptEntry import (
+    from agentic_core.prompt_governance.prompt_entry_types import (
         PromptEntry,
         get_constitution,
     )

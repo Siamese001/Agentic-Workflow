@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from apps_shared.utils.vector_memory import (
+from apps_shared.utils.vector_memory_types import (
     VectorMemoryConfig,
     VectorMemoryStore,
     VectorSearchResult,

@@ -17,7 +17,7 @@ from agentic_core.L3_orchestration.interfaces import (
     ExecutionContext,
     ExecutionPhase,
 )
-from agentic_core.L3_orchestration.workflow_engines.RecursiveOrchestrator import (
+from agentic_core.L3_orchestration.workflow_engines.recursive_orchestrator_types import (
     RecursiveOrchestrator,
     SuccessorSpec,
 )

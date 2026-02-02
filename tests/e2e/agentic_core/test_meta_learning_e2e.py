@@ -39,7 +39,7 @@ class TestEndToEndHealingCycle:
     def test_full_healing_cycle_with_caching(self, mock_integrity):
         """Test complete healing cycle: detect -> cache check -> heal -> store."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -96,7 +96,7 @@ class TestEndToEndHealingCycle:
         from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
             HygieneGuardianAgent,
         )
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -137,7 +137,7 @@ class TestCrossDomainIntegration:
 
     def test_domain_isolation_e2e(self):
         """Test domain isolation across complete workflows."""
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -169,7 +169,7 @@ class TestCrossDomainIntegration:
 
     def test_domain_specific_thresholds_e2e(self):
         """Test domain-specific thresholds are applied correctly."""
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -198,7 +198,7 @@ class TestPerformanceIntegration:
     def test_healing_performance_at_scale(self, mock_integrity):
         """Test healing performance with many violations."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -224,7 +224,7 @@ class TestPerformanceIntegration:
 
     def test_cache_performance_at_scale(self):
         """Test cache performance with large datasets."""
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -257,7 +257,7 @@ class TestGuardrailsIntegration:
 
     def test_healing_depth_prevents_infinite_loops(self):
         """Test healing depth tracking prevents infinite loops."""
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -285,7 +285,7 @@ class TestGuardrailsIntegration:
 
     def test_input_validation_prevents_cache_poisoning(self):
         """Test input validation prevents cache poisoning."""
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -305,7 +305,7 @@ class TestGuardrailsIntegration:
 
     def test_ttl_expiration_works(self):
         """Test TTL expiration prevents stale cache."""
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             CacheEntry,
         )
 
@@ -362,7 +362,7 @@ class TestFullSystemIntegration:
 
     def test_statistics_aggregation(self):
         """Test statistics are aggregated correctly across operations."""
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -390,7 +390,7 @@ class TestFullSystemIntegration:
     def test_system_stability_under_load(self, mock_integrity):
         """Test system remains stable under sustained load."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -428,7 +428,7 @@ class TestRollbackProcedures:
 
     def test_singleton_reset_works(self):
         """Test singleton reset for rollback."""
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
             get_meta_learning_client,
         )
@@ -452,7 +452,7 @@ class TestRollbackProcedures:
 
     def test_graceful_degradation(self):
         """Test system degrades gracefully when services unavailable."""
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
         )
 

@@ -22,7 +22,7 @@ class TestToolsmithAgent:
     def test_class_exists(self):
         """Verify the class can be imported."""
         try:
-            from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent
+            from agentic_core.L2_execution.tool_registry.toolsmith_agent_types import ToolsmithAgent
 
             assert ToolsmithAgent is not None
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -32,7 +32,7 @@ class TestToolsmithAgent:
     def test_class_is_agent(self):
         """Verify the class follows agent patterns."""
         try:
-            from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent
+            from agentic_core.L2_execution.tool_registry.toolsmith_agent_types import ToolsmithAgent
 
             # Check it's a class
             assert isinstance(ToolsmithAgent, type)
@@ -42,7 +42,7 @@ class TestToolsmithAgent:
     def test_instantiation_with_mocks(self):
         """Test that the agent can be instantiated with mocked dependencies."""
         try:
-            from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent
+            from agentic_core.L2_execution.tool_registry.toolsmith_agent_types import ToolsmithAgent
 
             # Try to instantiate with common agent patterns
             with patch.multiple(ToolsmithAgent, __init__=lambda self: None, create=True):
@@ -57,7 +57,7 @@ class TestToolsmithAgent:
     def test_has_healing_capability(self):
         """Verify healing methods exist if agent has healing."""
         try:
-            from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent
+            from agentic_core.L2_execution.tool_registry.toolsmith_agent_types import ToolsmithAgent
 
             # Check for heal_repository method
             hasattr(ToolsmithAgent, "heal_repository") or any(
@@ -71,7 +71,7 @@ class TestToolsmithAgent:
     def test_key_methods_exist(self):
         """Verify key methods are defined."""
         try:
-            from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent
+            from agentic_core.L2_execution.tool_registry.toolsmith_agent_types import ToolsmithAgent
 
             # Get all public methods
             methods = [m for m in dir(ToolsmithAgent) if not m.startswith("_")]

@@ -291,7 +291,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
         # Get violations from StructuralValidatorAgent
         try:
-            from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+            from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
                 StructuralValidatorAgent,
                 StructureConfig,
             )

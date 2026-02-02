@@ -26,7 +26,7 @@ class TestSingletonPatternFixed:
 
     def setup_method(self):
         """Reset singleton before each test."""
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             HealingSovereignOrchestrator,
         )
 
@@ -34,7 +34,7 @@ class TestSingletonPatternFixed:
 
     def test_singleton_returns_same_instance(self):
         """Verify HealingSovereignOrchestrator returns the same instance."""
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             HealingSovereignOrchestrator,
         )
 
@@ -45,11 +45,11 @@ class TestSingletonPatternFixed:
 
     def test_singleton_preserves_registered_strategies(self):
         """Verify strategies persist across singleton access."""
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             HealingSovereignOrchestrator,
             get_healing_orchestrator,
         )
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             get_historian_strategy,
         )
 
@@ -63,7 +63,7 @@ class TestSingletonPatternFixed:
 
     def test_get_healing_orchestrator_returns_singleton(self):
         """Verify get_healing_orchestrator returns the singleton."""
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             HealingSovereignOrchestrator,
             get_healing_orchestrator,
         )
@@ -86,7 +86,7 @@ class TestFullIntegrationFunctional:
     def test_all_strategies_registered_and_accessible(self):
         """Verify all 5 strategies are registered after initialization."""
         from agentic_core.L5_safety.validators import register_all_validators
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             get_healing_orchestrator,
         )
 
@@ -107,7 +107,7 @@ class TestFullIntegrationFunctional:
     def test_historian_strategy_executes(self):
         """Verify HistorianLoggingStrategy can execute."""
         from agentic_core.L5_safety.validators import register_all_validators
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             get_healing_orchestrator,
         )
 
@@ -128,7 +128,7 @@ class TestFullIntegrationFunctional:
     def test_cost_governor_strategy_executes(self):
         """Verify CostGovernorStrategy can execute."""
         from agentic_core.L5_safety.validators import register_all_validators
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             get_healing_orchestrator,
         )
 
@@ -149,7 +149,7 @@ class TestFullIntegrationFunctional:
     def test_task_decomposition_strategy_executes(self):
         """Verify TaskDecompositionStrategy can execute."""
         from agentic_core.L5_safety.validators import register_all_validators
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             get_healing_orchestrator,
         )
 
@@ -170,7 +170,7 @@ class TestFullIntegrationFunctional:
     def test_chaos_resilience_strategy_executes(self):
         """Verify ChaosResilienceStrategy can execute."""
         from agentic_core.L5_safety.validators import register_all_validators
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             get_healing_orchestrator,
         )
 
@@ -191,7 +191,7 @@ class TestFullIntegrationFunctional:
     def test_dependency_pruning_strategy_executes(self):
         """Verify DependencyPruningStrategy can execute."""
         from agentic_core.L5_safety.validators import register_all_validators
-        from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import (
+        from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
             get_healing_orchestrator,
         )
 
@@ -215,7 +215,7 @@ class TestHistorianLoggingStrategy:
 
     def test_strategy_creation(self):
         """Test HistorianLoggingStrategy can be instantiated."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             HistorianLoggingStrategy,
         )
 
@@ -225,7 +225,7 @@ class TestHistorianLoggingStrategy:
 
     def test_can_heal_supported_types(self):
         """Test can_heal returns True for supported violation types."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             HistorianLoggingStrategy,
         )
 
@@ -238,7 +238,7 @@ class TestHistorianLoggingStrategy:
 
     def test_can_heal_unsupported_types(self):
         """Test can_heal returns False for unsupported violation types."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             HistorianLoggingStrategy,
         )
 
@@ -250,7 +250,7 @@ class TestHistorianLoggingStrategy:
 
     def test_heal_returns_dict(self):
         """Test heal returns proper dict format."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             HistorianLoggingStrategy,
         )
 
@@ -267,7 +267,7 @@ class TestHistorianLoggingStrategy:
 
     def test_get_historian_strategy_singleton(self):
         """Test get_historian_strategy returns singleton."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             get_historian_strategy,
         )
 
@@ -281,7 +281,7 @@ class TestCostGovernorStrategy:
 
     def test_strategy_creation(self):
         """Test CostGovernorStrategy can be instantiated."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             CostGovernorStrategy,
         )
 
@@ -291,7 +291,7 @@ class TestCostGovernorStrategy:
 
     def test_strategy_creation_with_budget(self):
         """Test CostGovernorStrategy can be created with custom budget."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             CostGovernorStrategy,
         )
 
@@ -300,7 +300,7 @@ class TestCostGovernorStrategy:
 
     def test_can_heal_supported_types(self):
         """Test can_heal returns True for supported violation types."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             CostGovernorStrategy,
         )
 
@@ -313,7 +313,7 @@ class TestCostGovernorStrategy:
 
     def test_can_heal_unsupported_types(self):
         """Test can_heal returns False for unsupported violation types."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             CostGovernorStrategy,
         )
 
@@ -324,7 +324,7 @@ class TestCostGovernorStrategy:
 
     def test_heal_returns_dict(self):
         """Test heal returns proper dict format."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             CostGovernorStrategy,
         )
 
@@ -341,7 +341,7 @@ class TestCostGovernorStrategy:
 
     def test_get_cost_governor_strategy_singleton(self):
         """Test get_cost_governor_strategy returns singleton."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             get_cost_governor_strategy,
         )
 
@@ -355,7 +355,7 @@ class TestTaskDecompositionStrategy:
 
     def test_strategy_creation(self):
         """Test TaskDecompositionStrategy can be instantiated."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             TaskDecompositionStrategy,
         )
 
@@ -365,7 +365,7 @@ class TestTaskDecompositionStrategy:
 
     def test_can_heal_supported_types(self):
         """Test can_heal returns True for supported violation types."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             TaskDecompositionStrategy,
         )
 
@@ -378,7 +378,7 @@ class TestTaskDecompositionStrategy:
 
     def test_can_heal_unsupported_types(self):
         """Test can_heal returns False for unsupported violation types."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             TaskDecompositionStrategy,
         )
 
@@ -389,7 +389,7 @@ class TestTaskDecompositionStrategy:
 
     def test_heal_returns_dict(self):
         """Test heal returns proper dict format."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             TaskDecompositionStrategy,
         )
 
@@ -406,7 +406,7 @@ class TestTaskDecompositionStrategy:
 
     def test_get_decomposition_strategy_singleton(self):
         """Test get_decomposition_strategy returns singleton."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             get_decomposition_strategy,
         )
 
@@ -420,7 +420,7 @@ class TestOperationalHealingRegistration:
 
     def test_register_operational_healing_returns_status(self):
         """Test register_operational_healing returns proper status."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             register_operational_healing,
         )
 
@@ -434,7 +434,7 @@ class TestOperationalHealingRegistration:
 
     def test_get_integration_status(self):
         """Test get_integration_status returns proper format."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             get_integration_status,
         )
 
@@ -452,7 +452,7 @@ class TestOperationalHealingIntegration:
 
     def test_strategies_registered_with_orchestrator(self):
         """Test strategies are registered with HealingSovereignOrchestrator."""
-        from agentic_core.L5_safety.validators.operational_healing_integration import (
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
             register_operational_healing,
         )
 

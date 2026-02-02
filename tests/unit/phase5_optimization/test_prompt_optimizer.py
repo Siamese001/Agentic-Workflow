@@ -4,7 +4,7 @@ Tests for LLM prompt optimization utilities.
 """
 
 import pytest
-from apps_shared.llm.prompt_optimizer import (
+from apps_shared.llm.prompt_optimizer_types import (
     PromptOptimizer,
     PromptTemplate,
     OptimizedPrompt,

@@ -61,10 +61,10 @@ class TestE2EInitializationWorkflow:
     def test_e2e_initialization_with_suites(self):
         """E2E: Initialize and verify suites are ready."""
         from agentic_core.L5_safety.validators import register_all_validators
-        from agentic_core.L5_safety.validators.security_validation_suite import (
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
             get_security_suite,
         )
-        from agentic_core.L5_safety.validators.healing_orchestration_suite import (
+        from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             get_healing_suite,
         )
 
@@ -89,7 +89,7 @@ class TestE2ESecurityValidation:
 
     def test_e2e_security_scan_workflow(self):
         """E2E: Complete security scan workflow."""
-        from agentic_core.L5_safety.validators.security_validation_suite import (
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
             run_security_validation,
             get_security_suite,
         )
@@ -123,7 +123,7 @@ class TestE2ESecurityValidation:
 
     def test_e2e_individual_validator_workflow(self):
         """E2E: Run individual validators in sequence."""
-        from agentic_core.L5_safety.validators.security_validation_suite import (
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
             get_security_suite,
         )
 
@@ -153,7 +153,7 @@ class TestE2EHealingOperations:
 
     def test_e2e_healing_workflow(self):
         """E2E: Complete healing workflow."""
-        from agentic_core.L5_safety.validators.healing_orchestration_suite import (
+        from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             run_healing_operation,
             get_healing_suite,
         )
@@ -189,7 +189,7 @@ class TestE2EHealingOperations:
 
     def test_e2e_individual_strategy_workflow(self):
         """E2E: Run individual strategies in sequence."""
-        from agentic_core.L5_safety.validators.healing_orchestration_suite import (
+        from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             get_healing_suite,
         )
 
@@ -215,7 +215,7 @@ class TestE2EHealingOperations:
 
     def test_e2e_resilience_check_workflow(self):
         """E2E: Specific resilience check workflow."""
-        from agentic_core.L5_safety.validators.healing_orchestration_suite import (
+        from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             get_healing_suite,
         )
 
@@ -227,7 +227,7 @@ class TestE2EHealingOperations:
 
     def test_e2e_dependency_cleanup_workflow(self):
         """E2E: Specific dependency cleanup workflow."""
-        from agentic_core.L5_safety.validators.healing_orchestration_suite import (
+        from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             get_healing_suite,
         )
 
@@ -243,10 +243,10 @@ class TestE2ECombinedWorkflow:
 
     def test_e2e_security_then_healing_workflow(self):
         """E2E: Security validation followed by healing."""
-        from agentic_core.L5_safety.validators.security_validation_suite import (
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
             run_security_validation,
         )
-        from agentic_core.L5_safety.validators.healing_orchestration_suite import (
+        from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             run_healing_operation,
         )
 
@@ -279,10 +279,10 @@ class TestE2ECombinedWorkflow:
     def test_e2e_full_pipeline(self):
         """E2E: Complete pipeline from init to validation to healing."""
         from agentic_core.L5_safety.validators import register_all_validators
-        from agentic_core.L5_safety.validators.security_validation_suite import (
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
             run_security_validation,
         )
-        from agentic_core.L5_safety.validators.healing_orchestration_suite import (
+        from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             run_healing_operation,
         )
 
@@ -316,7 +316,7 @@ class TestE2EErrorRecovery:
 
     def test_e2e_recovery_from_invalid_validator(self):
         """E2E: System recovers from invalid validator request."""
-        from agentic_core.L5_safety.validators.security_validation_suite import (
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
             get_security_suite,
         )
 
@@ -335,7 +335,7 @@ class TestE2EErrorRecovery:
 
     def test_e2e_recovery_from_invalid_strategy(self):
         """E2E: System recovers from invalid strategy request."""
-        from agentic_core.L5_safety.validators.healing_orchestration_suite import (
+        from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             get_healing_suite,
         )
 
@@ -354,10 +354,10 @@ class TestE2EErrorRecovery:
 
     def test_e2e_recovery_from_malformed_input(self):
         """E2E: System handles malformed input gracefully."""
-        from agentic_core.L5_safety.validators.security_validation_suite import (
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
             run_security_validation,
         )
-        from agentic_core.L5_safety.validators.healing_orchestration_suite import (
+        from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             run_healing_operation,
         )
 
@@ -387,7 +387,7 @@ class TestE2EPerformanceUnderLoad:
 
     def test_e2e_multiple_sequential_validations(self):
         """E2E: Multiple sequential security validations."""
-        from agentic_core.L5_safety.validators.security_validation_suite import (
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
             run_security_validation,
         )
 
@@ -410,7 +410,7 @@ class TestE2EPerformanceUnderLoad:
 
     def test_e2e_multiple_sequential_healings(self):
         """E2E: Multiple sequential healing operations."""
-        from agentic_core.L5_safety.validators.healing_orchestration_suite import (
+        from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             run_healing_operation,
         )
 
@@ -434,10 +434,10 @@ class TestE2EPerformanceUnderLoad:
 
     def test_e2e_alternating_validation_healing(self):
         """E2E: Alternating between validation and healing."""
-        from agentic_core.L5_safety.validators.security_validation_suite import (
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
             run_security_validation,
         )
-        from agentic_core.L5_safety.validators.healing_orchestration_suite import (
+        from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             run_healing_operation,
         )
 

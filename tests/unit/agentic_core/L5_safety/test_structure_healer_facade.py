@@ -106,7 +106,7 @@ class TestStructureHealerAgentFacade:
     @pytest.fixture
     def agent(self):
         """Create StructureHealerAgent instance."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             StructureHealerAgent,
         )
 
@@ -183,7 +183,7 @@ class TestStructureHealingTypes:
 
     def test_structure_healing_type_enum(self):
         """Test StructureHealingType enum exists."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             StructureHealingType,
         )
 
@@ -195,7 +195,7 @@ class TestStructureHealingTypes:
 
     def test_structure_healing_action_dataclass(self):
         """Test StructureHealingAction dataclass exists."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             StructureHealingAction,
             StructureHealingType,
         )
@@ -213,7 +213,7 @@ class TestStructureHealingTypes:
 
     def test_structure_healer_config_dataclass(self):
         """Test StructureHealerConfig dataclass exists."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             StructureHealerConfig,
         )
 
@@ -231,7 +231,7 @@ class TestLegacyCompatibility:
 
     def test_import_compatibility(self):
         """Test original import still works."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             StructureHealerAgent,
         )
 
@@ -239,7 +239,7 @@ class TestLegacyCompatibility:
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             StructureHealerAgent,
         )
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -248,7 +248,7 @@ class TestLegacyCompatibility:
 
     def test_factory_functions_exist(self):
         """Test factory functions exist."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             create_legacy_gravity_healer,
             create_legacy_naming_healer,
         )
@@ -258,7 +258,7 @@ class TestLegacyCompatibility:
 
     def test_factory_gravity_healer(self):
         """Test create_legacy_gravity_healer creates correct config."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             create_legacy_gravity_healer,
         )
 
@@ -268,7 +268,7 @@ class TestLegacyCompatibility:
 
     def test_factory_naming_healer(self):
         """Test create_legacy_naming_healer creates correct config."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             create_legacy_naming_healer,
         )
 
@@ -278,7 +278,7 @@ class TestLegacyCompatibility:
 
     def test_backup_file_method(self):
         """Test _backup_file method exists."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             StructureHealerAgent,
         )
 
@@ -288,7 +288,7 @@ class TestLegacyCompatibility:
 
     def test_extract_layer_method(self):
         """Test _extract_layer method exists."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             StructureHealerAgent,
         )
 
@@ -298,7 +298,7 @@ class TestLegacyCompatibility:
 
     def test_is_valid_gravity_method(self):
         """Test _is_valid_gravity method exists."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             StructureHealerAgent,
         )
 
@@ -313,7 +313,7 @@ class TestHealingFunctionality:
     @pytest.fixture
     def agent(self):
         """Create StructureHealerAgent instance."""
-        from agentic_core.L5_safety.policy_engine.StructureHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
             StructureHealerAgent,
         )
 

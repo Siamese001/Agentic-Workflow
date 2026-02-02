@@ -8,7 +8,7 @@ import time
 
 import pytest
 
-from apps_shared.utils.performance_monitor import (
+from apps_shared.utils.performance_monitor_types import (
     MetricsCollector,
     PerformanceMonitor,
     PerformanceThresholds,
@@ -325,7 +325,7 @@ class TestGetPerformanceMonitor:
 
     def test_singleton_instance(self):
         """Test that get_performance_monitor returns singleton."""
-        import apps_shared.utils.performance_monitor as pm_module
+        import apps_shared.utils.performance_monitor_types as pm_module
 
         pm_module._global_monitor = None
 

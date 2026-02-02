@@ -8,13 +8,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 # Test all refactored components for environment-driven configuration
 try:
-    from agentic_core.runtime.shared_runtime.SignalQuality import QualityThresholds
+    from agentic_core.runtime.shared_runtime.signal_quality_types import QualityThresholds
 except (ImportError, NameError, AttributeError):
     # Skip SignalQuality tests if module not available
     QualityThresholds = None
 
 try:
-    from agentic_core.schemas.models.ReasoningConfig import GovernorConfig, ModelConfig, RAGConfig
+    from agentic_core.schemas.models.reasoning_config_types import GovernorConfig, ModelConfig, RAGConfig
 except (ImportError, NameError, AttributeError):
     ModelConfig = RAGConfig = GovernorConfig = None
 
@@ -209,7 +209,7 @@ class TestEnvironmentDrivenConfiguration(unittest.TestCase):
     @patch.dict(os.environ, {"SIGNAL_MIN_CLAIM_CONFIDENCE": "0.8"})
     def test_signal_quality_claim_analysis_integration(self):
         """Test that claim analysis uses environment-driven confidence."""
-        from agentic_core.runtime.shared_runtime.SignalQuality import ClaimAnalyzer
+        from agentic_core.runtime.shared_runtime.signal_quality_types import ClaimAnalyzer
 
         analyzer = ClaimAnalyzer()
         content = "According to a study, this approach works well."

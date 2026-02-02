@@ -116,7 +116,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
     def _get_structure_validator(self):
         """Lazy-load StructuralValidatorAgent to avoid circular imports."""
         if self._structure_validator is None:
-            from agentic_core.L5_safety.policy_engine.StructuralValidatorAgent import (
+            from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
                 StructuralValidatorAgent,
                 StructureConfig,
             )
