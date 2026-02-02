@@ -35,7 +35,7 @@ class TestMessageDiversityValidatorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.MessageDiversityValidatorAgent import (
+            from apps_lic.engines.message_diversity_validator_agent_validator import (
                 MessageDiversityValidatorAgent,
             )
 
@@ -94,7 +94,7 @@ class TestMessageDiversityValidatorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.MessageDiversityValidatorAgent import (
+                from apps_lic.engines.message_diversity_validator_agent_validator import (
                     MessageDiversityValidatorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

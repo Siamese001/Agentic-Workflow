@@ -51,7 +51,7 @@ def _get_unified_agent_mapping() -> dict[str, type]:
         Dictionary mapping legacy agent IDs to unified agent classes.
     """
     # Import unified agents lazily to avoid circular dependencies
-    from agentic_core.L1_cognition.thought_engine.ASTValidatorAgent import (
+    from agentic_core.L1_cognition.thought_engine.ast_validator_agent_validator import (
         ASTValidatorAgent,
     )
     from agentic_core.L4_state.validation_context.CheckpointManagerAgent import (
@@ -325,7 +325,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
         """Deep crawl of all .py files to find callables"""
         methods = []
         # Phase 6.8: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(self.root):
             if "archives" in str(py_file):

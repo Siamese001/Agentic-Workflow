@@ -91,7 +91,7 @@ def validate_dashboard_ssot() -> tuple[bool, list[str]]:
 
     # Scan all Python files
     # Final True 20: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(project_root):
         if should_exclude(py_file):

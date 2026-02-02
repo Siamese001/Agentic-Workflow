@@ -45,7 +45,7 @@ from typing import Any
 
 # SSOT discovery - replaces rglob
 try:
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     SSOT_AVAILABLE = True
 except ImportError:
@@ -111,7 +111,7 @@ except ImportError:
     FIELD_BASE_CLASSES = "base_classes"
 
 # SSOT: Import canonical functions (Phase 3 Migration)
-from agentic_core.L5_safety.validators.canonical_truth import categorize_agent, get_canonical_layer
+from agentic_core.L5_safety.validators.canonical_truth_validator import categorize_agent, get_canonical_layer
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,

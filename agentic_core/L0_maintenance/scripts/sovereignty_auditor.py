@@ -25,7 +25,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
-from agentic_core.utils.ssot_discovery import get_python_files
+from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 
 class SovereigntyAuditor:

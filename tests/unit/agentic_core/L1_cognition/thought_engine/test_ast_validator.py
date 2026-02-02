@@ -119,7 +119,7 @@ def run_unified_validator(source: str, file_path: Path) -> dict[str, list[dict[s
         Dictionary with grouped violations
     """
     try:
-        from agentic_core.L1_cognition.thought_engine.ASTValidatorAgent import (
+        from agentic_core.L1_cognition.thought_engine.ast_validator_agent_validator import (
             ASTValidatorAgent,
         )
 
@@ -214,7 +214,7 @@ def run_chaos_test() -> dict[str, Any]:
     source = chaos_file.read_text(encoding="utf-8")
 
     # Run unified validator
-    from agentic_core.L1_cognition.thought_engine.ASTValidatorAgent import (
+    from agentic_core.L1_cognition.thought_engine.ast_validator_agent_validator import (
         ASTValidatorAgent,
     )
 
@@ -265,7 +265,7 @@ def run_self_tests() -> dict[str, Any]:
     Returns:
         Self-test results
     """
-    from agentic_core.L1_cognition.thought_engine.ASTValidatorAgent import (
+    from agentic_core.L1_cognition.thought_engine.ast_validator_agent_validator import (
         ASTValidatorAgent,
     )
 

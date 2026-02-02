@@ -209,7 +209,7 @@ def main():
 
     """Find all agent files to rename."""
     # Phase 6.9: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_agent_files
+    from agentic_core.utils.ssot_discovery_validator import get_agent_files
 
     agent_files = list(get_agent_files(root_dir=root))
     agent_files = [f for f in agent_files if should_process_file(f)]

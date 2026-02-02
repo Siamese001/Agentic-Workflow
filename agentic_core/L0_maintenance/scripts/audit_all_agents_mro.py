@@ -34,7 +34,7 @@ def find_all_agent_classes(root_dir: Path) -> list[tuple[str, type]]:
     """Scan for all agent files."""
     agents = []
     # Phase 6.9: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_agent_files
+    from agentic_core.utils.ssot_discovery_validator import get_agent_files
 
     agents = list(get_agent_files(root_dir))
 

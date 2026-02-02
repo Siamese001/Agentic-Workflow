@@ -8,8 +8,8 @@ from pydantic import ValidationError
 
 # Target Modules (Hardened)
 from agentic_core.schemas.models.AnomalyReport import AnomalyReport, AnomalySeverity
-from agentic_core.schemas.models.ConsensusVerdict import ConsensusVerdict
-from agentic_core.schemas.models.SafetyProfile import SafetyProfile
+from agentic_core.schemas.models.consensus_verdict_validator import ConsensusVerdict
+from agentic_core.schemas.models.safety_profile_validator import SafetyProfile
 
 
 class TestHardenedContracts:

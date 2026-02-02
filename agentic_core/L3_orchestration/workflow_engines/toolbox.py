@@ -29,7 +29,7 @@ def repository_list_files(directory: Any = ".") -> Any:
         # Phase 6.8: Use ssot_discovery instead of glob
         from pathlib import Path
 
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         return [str(f) for f in get_python_files(Path(directory))]
     except Exception as e:

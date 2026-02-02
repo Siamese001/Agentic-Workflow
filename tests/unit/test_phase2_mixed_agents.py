@@ -315,7 +315,7 @@ class TestHOPValidationDeterministicPhase2:
 
     def test_hop1_profile_classification(self) -> None:
         """Test 1: HOP1 profile classification is deterministic."""
-        from agentic_core.L0_maintenance.deterministic.HOPValidationDeterministic import (
+        from agentic_core.L0_maintenance.deterministic.hop_validation_deterministic_validator import (
             HOP1ProfileDeterministic,
         )
 
@@ -346,7 +346,7 @@ class TestHOPValidationDeterministicPhase2:
 
     def test_hop3_data_extraction(self) -> None:
         """Test 2: HOP3 data extraction is deterministic."""
-        from agentic_core.L0_maintenance.deterministic.HOPValidationDeterministic import (
+        from agentic_core.L0_maintenance.deterministic.hop_validation_deterministic_validator import (
             HOP3DataExtractionDeterministic,
         )
 
@@ -365,7 +365,7 @@ class TestHOPValidationDeterministicPhase2:
 
     def test_hop4_condition_checking(self) -> None:
         """Test 3: HOP4 condition checking is deterministic."""
-        from agentic_core.L0_maintenance.deterministic.HOPValidationDeterministic import (
+        from agentic_core.L0_maintenance.deterministic.hop_validation_deterministic_validator import (
             HOP4ConditionDeterministic,
         )
 
@@ -384,7 +384,7 @@ class TestHOPValidationDeterministicPhase2:
 
     def test_hop6_placeholder_validation(self) -> None:
         """Test 4: HOP6 placeholder validation is deterministic."""
-        from agentic_core.L0_maintenance.deterministic.HOPValidationDeterministic import (
+        from agentic_core.L0_maintenance.deterministic.hop_validation_deterministic_validator import (
             HOP6PlaceholderDeterministic,
         )
 
@@ -400,7 +400,7 @@ class TestHOPValidationDeterministicPhase2:
 
     def test_hop7_gate_decision(self) -> None:
         """Test 5: HOP7 gate decision is deterministic."""
-        from agentic_core.L0_maintenance.deterministic.HOPValidationDeterministic import (
+        from agentic_core.L0_maintenance.deterministic.hop_validation_deterministic_validator import (
             HOP7GateDecisionDeterministic,
         )
 
@@ -421,7 +421,7 @@ class TestHOPValidationDeterministicPhase2:
 
     def test_unified_hop_validation(self) -> None:
         """Test 6: Unified HOP validation works correctly."""
-        from agentic_core.L0_maintenance.deterministic.HOPValidationDeterministic import (
+        from agentic_core.L0_maintenance.deterministic.hop_validation_deterministic_validator import (
             HOPValidationDeterministic,
         )
 

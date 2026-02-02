@@ -14,7 +14,7 @@ import re
 from typing import Any
 
 from apps_rg.engines.base.BaseRGEngine import BaseRGEngine
-from apps_rg.engines.safety.HallucinationDetector import HallucinationDetector
+from apps_rg.engines.safety.hallucination_detector_validator import HallucinationDetector
 
 Logger = logging.getLogger(__name__)
 

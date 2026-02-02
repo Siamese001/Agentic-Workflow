@@ -15,7 +15,7 @@ from pathlib import Path
 
 # SSOT Integration
 try:
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 except ImportError:
 
     def get_python_files(root: Path):

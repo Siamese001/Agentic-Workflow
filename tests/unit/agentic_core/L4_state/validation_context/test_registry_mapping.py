@@ -21,7 +21,7 @@ def test_registry_mapping():
     print("=" * 60)
 
     # Import unified agents directly to test the mapping
-    from agentic_core.L1_cognition.thought_engine.ASTValidatorAgent import (
+    from agentic_core.L1_cognition.thought_engine.ast_validator_agent_validator import (
         ASTValidatorAgent,
     )
     from agentic_core.L4_state.validation_context.CheckpointManagerAgent import (

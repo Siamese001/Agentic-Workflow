@@ -298,7 +298,7 @@ class UnifiedSSOTValidator:
         stats = self.scanner.get_compliance_stats()
         report.total_agents = stats["total_agents"]
         # Phase 6.5: Use ssot_discovery instead of glob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         report.total_files_scanned = len(list(get_python_files(self.project_root)))
 
@@ -343,7 +343,7 @@ class UnifiedSSOTValidator:
             return violations
 
         # Phase 6.5: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(agentic_core):
             # Determine source layer from file path

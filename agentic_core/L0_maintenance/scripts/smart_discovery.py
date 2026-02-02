@@ -63,7 +63,7 @@ log = logging.getLogger("smart_discovery")
 def _scan_python_files() -> list[Path]:
     """Return list of all non-excluded .py files."""
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     return list(get_python_files(PROJECT_ROOT))
 

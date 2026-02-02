@@ -19,7 +19,7 @@ import boto3
 import git
 from botocore.exceptions import ClientError
 from core.qdrant_cache import QdrantCache
-from core.semantic_gatekeeper import SemanticGatekeeper
+from core.semantic_gatekeeper_validator import SemanticGatekeeper
 
 from schemas.canon_models import CanonEntry
 

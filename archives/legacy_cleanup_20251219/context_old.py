@@ -28,7 +28,7 @@ from apps_shared.config.reliability import rate_limited_retry
 # Shared Utilities
 from apps_shared.domain.constants import EXCLUDED_DIRS
 from apps_shared.utils.file_io import get_python_files, write_compliant_file
-from apps_shared.utils.text_processing import clean_llm_code
+from apps_shared.utils.text_processing_validator import clean_llm_code
 
 # ==============================================================================
 # LEVEL 6: SOVEREIGN ARCHITECTURE

@@ -31,7 +31,7 @@ for t in sorted(territories, key=lambda x: x.get("Heal Cap %", 100)):
 
 # Now let's find agents in the repository that might match these territories
 # Phase 4.1: Use ssot_discovery instead of rglob
-from agentic_core.utils.ssot_discovery import get_agent_files
+from agentic_core.utils.ssot_discovery_validator import get_agent_files
 
 print("\n=== Searching for agents in L1 Cognition ===")
 l1_agents = list(get_agent_files(Path("C:/Git/Agentic-Workflow/agentic_core/L1_cognition")))

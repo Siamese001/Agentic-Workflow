@@ -106,7 +106,7 @@ def test_tc39_checkpoint_manager_recovery():
         content = checkpoint_manager.read_text(encoding="utf-8")
 
         # Check for ssot_discovery import
-        has_ssot_import = "from agentic_core.utils.ssot_discovery import get_data_files" in content
+        has_ssot_import = "from agentic_core.utils.ssot_discovery_validator import get_data_files" in content
 
         # Check for glob usage (should be none)
         glob_count = content.count(".glob(")
@@ -162,7 +162,7 @@ def test_tc40_unified_validator_compliance():
         content = unified_validator.read_text(encoding="utf-8")
 
         # Check for ssot_discovery import
-        has_ssot_import = "from agentic_core.utils.ssot_discovery import" in content
+        has_ssot_import = "from agentic_core.utils.ssot_discovery_validator import" in content
 
         # Check for rglob usage (should be minimal or none)
         rglob_count = content.count(".rglob(")
@@ -223,14 +223,14 @@ def test_phase6_5_reduction():
     ]
 
     files_using_ssot = 0
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(PROJECT_ROOT / "agentic_core"):
         if py_file.name in refactored_files:
             try:
                 content = py_file.read_text(encoding="utf-8", errors="ignore")
                 if (
-                    "from agentic_core.utils.ssot_discovery import" in content
+                    "from agentic_core.utils.ssot_discovery_validator import" in content
                     or "ssot_discovery" in content
                 ):
                     files_using_ssot += 1

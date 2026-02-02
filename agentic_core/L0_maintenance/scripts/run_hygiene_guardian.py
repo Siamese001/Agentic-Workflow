@@ -23,7 +23,7 @@ def scan_temp_artifacts(root: Path) -> list[Path]:
     """Scan for temporary artifacts without removing them."""
     artifacts = []
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_data_files
+    from agentic_core.utils.ssot_discovery_validator import get_data_files
 
     # Get all files with common artifact extensions
     for path in get_data_files(root, extensions=[".pyc", ".pyo", ".tmp", ".bak", ".swp"]):

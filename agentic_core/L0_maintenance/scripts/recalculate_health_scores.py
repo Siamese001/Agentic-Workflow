@@ -17,7 +17,7 @@ DASHBOARD_PATH = (
 
 sys.path.insert(0, str(PROJECT_ROOT))
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
-from agentic_core.L5_safety.validators.canonical_truth import calculate_health_score
+from agentic_core.L5_safety.validators.canonical_truth_validator import calculate_health_score
 
 
 def main():

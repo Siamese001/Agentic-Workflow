@@ -390,7 +390,7 @@ class DDDAlignmentAgent(SovereignBaseAgent):
 
         # Use ssot_discovery for consistent file discovery
         try:
-            from agentic_core.utils.ssot_discovery import get_python_files
+            from agentic_core.utils.ssot_discovery_validator import get_python_files
 
             python_files = list(get_python_files(target))
         except ImportError:

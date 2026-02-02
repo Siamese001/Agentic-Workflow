@@ -60,7 +60,7 @@ class RescueReviewer:
             if not path.exists():
                 continue
             # Phase 6.6: Use ssot_discovery instead of rglob
-            from agentic_core.utils.ssot_discovery import get_python_files
+            from agentic_core.utils.ssot_discovery_validator import get_python_files
 
             for py_file in get_python_files(path):
                 try:
@@ -84,7 +84,7 @@ class RescueReviewer:
         )
 
         # Phase 6.6: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for arch_file in get_python_files(self.archive_path):
             rel: Any = arch_file.relative_to(self.archive_path)

@@ -18,7 +18,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 import pytest
 
 try:
-    from agentic_core.utils.file_utils import (
+    from agentic_core.utils.file_utils_validator import (
         ensure_directory,
         file_exists,
         safe_read_file,
@@ -29,7 +29,7 @@ try:
     )
 except (ImportError, NameError, AttributeError):
     # Fallback to archived location for legacy tests
-    from archives.location_violations.file_utils import (
+    from archives.location_violations.file_utils_validator import (
         ensure_directory,
         file_exists,
         safe_read_file,

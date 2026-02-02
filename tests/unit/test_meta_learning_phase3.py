@@ -63,7 +63,7 @@ class TestLICAgentBaseMetaLearning:
                 "CoreIntegrityVerifier.verify_core_integrity"
             ),
         ):
-            from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+            from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
             agent = LICAgentBase()
             assert agent._ml_domain == "apps_lic"
@@ -87,7 +87,7 @@ class TestLICAgentBaseMetaLearning:
                 "CoreIntegrityVerifier.verify_core_integrity"
             ),
         ):
-            from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+            from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
             agent = LICAgentBase()
 
@@ -115,7 +115,7 @@ class TestLICAgentBaseMetaLearning:
                 "CoreIntegrityVerifier.verify_core_integrity"
             ),
         ):
-            from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+            from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
             agent = LICAgentBase()
 
@@ -150,7 +150,7 @@ class TestLICAgentBaseMetaLearning:
                 "CoreIntegrityVerifier.verify_core_integrity"
             ),
         ):
-            from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+            from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
             agent = LICAgentBase()
 
@@ -185,7 +185,7 @@ class TestLICAgentBaseMetaLearning:
                 "CoreIntegrityVerifier.verify_core_integrity"
             ),
         ):
-            from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+            from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
             agent = LICAgentBase()
             context = agent.get_lic_context()
@@ -419,7 +419,7 @@ class TestCrossDomainIsolation:
                 "CoreIntegrityVerifier.verify_core_integrity"
             ),
         ):
-            from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+            from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
             from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
             lic_agent = LICAgentBase()
@@ -454,7 +454,7 @@ class TestCrossDomainIsolation:
                 "CoreIntegrityVerifier.verify_core_integrity"
             ),
         ):
-            from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+            from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
             from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 
             lic_agent = LICAgentBase()

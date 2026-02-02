@@ -38,7 +38,7 @@ def main() -> Any:
     """Brief description of functionality and purpose."""
     target_dir: Any = project_root / TARGET_ROOT
     # Absolute Zero: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     python_files: Any = list(get_python_files(target_dir))
     print(f"--- SOVEREIGN HEALING START: {TARGET_ROOT} ---")

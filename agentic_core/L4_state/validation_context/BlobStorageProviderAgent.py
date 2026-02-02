@@ -164,7 +164,7 @@ class LocalDiskAdapter:
             List of blob keys
         """
         blobs: Any = []
-        from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
 
         all_files = list(get_python_files(self.base_path)) + list(get_data_files(self.base_path))
         for path in all_files:

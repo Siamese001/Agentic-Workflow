@@ -128,7 +128,7 @@ class ASTEnforcementMixin:
         total_pascal = 0
 
         # Phase 4: Use ssot_discovery instead of rglob for performance
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         all_files = get_python_files(repo_root)
 

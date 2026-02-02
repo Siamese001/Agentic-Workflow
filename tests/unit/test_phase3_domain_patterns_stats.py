@@ -83,7 +83,7 @@ class TestLICDomainPatterns:
 
     def test_lic_campaign_pattern_caching(self):
         """Test LIC campaign pattern caching."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -98,7 +98,7 @@ class TestLICDomainPatterns:
 
     def test_lic_compliance_rule_caching(self):
         """Test LIC compliance rule caching."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -138,7 +138,7 @@ class TestStatisticsAndMonitoring:
 
     def test_lic_get_cache_health_returns_domain_stats(self):
         """Test LIC get_cache_health includes domain."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -168,7 +168,7 @@ class TestStatisticsAndMonitoring:
 
     def test_lic_guardrails_get_stats_returns_structure(self):
         """Test LIC guardrails_get_stats returns proper structure."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()

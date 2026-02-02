@@ -24,12 +24,12 @@ except (ImportError, NameError, AttributeError):
     NegotiationConfig = None
 
 try:
-    from apps_rg.shared.tools.ValidationResult import SectionIntegratorConfig
+    from apps_rg.shared.tools.validation_result_validator import SectionIntegratorConfig
 except (ImportError, NameError, AttributeError):
     SectionIntegratorConfig = None
 
 try:
-    from apps_lic.shared.tools.SafetyProfile import BudgetProfile
+    from apps_lic.shared.tools.safety_profile_validator import BudgetProfile
 except (ImportError, NameError, AttributeError):
     BudgetProfile = None
 

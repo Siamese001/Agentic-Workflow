@@ -29,7 +29,7 @@ def main():
             continue
 
         # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(dir_path):
             if "__pycache__" in str(py_file) or "__init__.py" == py_file.name:

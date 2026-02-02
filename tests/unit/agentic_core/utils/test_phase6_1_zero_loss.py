@@ -34,7 +34,7 @@ def test_tc25_data_discovery_accuracy():
     print("TC-25: Data Discovery Accuracy")
     print("=" * 60)
 
-    from agentic_core.utils.ssot_discovery import (
+    from agentic_core.utils.ssot_discovery_validator import (
         DEFAULT_EXCLUDE_DIRS,
         get_json_files,
         get_markdown_files,

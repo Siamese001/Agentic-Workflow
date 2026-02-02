@@ -19,7 +19,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     ROOT_WHITELIST,
     SOVEREIGN_REGISTRY,
 )
-from agentic_core.utils.ssot_discovery import get_python_files
+from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 Logger = logging.getLogger(__name__)
 

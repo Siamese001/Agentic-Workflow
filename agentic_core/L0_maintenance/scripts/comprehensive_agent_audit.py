@@ -31,7 +31,7 @@ def analyze_agents():
 
     """Find all agent files."""
     # Phase 6.9: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_agent_files
+    from agentic_core.utils.ssot_discovery_validator import get_agent_files
 
     root_dir = get_validated_project_root()
     agent_files = list(get_agent_files(root_dir))

@@ -164,7 +164,7 @@ class TestLICMetaLearningClientIntegration:
 
     def test_lic_has_meta_client_attribute(self):
         """Test LICAgentBase has _meta_client attribute."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -175,7 +175,7 @@ class TestLICMetaLearningClientIntegration:
 
     def test_lic_store_healing_pattern_validates_domain(self):
         """Test LIC store_healing_pattern validates domain."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -195,7 +195,7 @@ class TestLICMetaLearningClientIntegration:
 
     def test_lic_store_healing_pattern_rejects_wrong_domain(self):
         """Test LIC store_healing_pattern rejects RG domain patterns."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -213,7 +213,7 @@ class TestLICMetaLearningClientIntegration:
 
     def test_lic_retrieve_healing_patterns_uses_stricter_threshold(self):
         """Test LIC retrieve_healing_patterns uses stricter threshold (0.92)."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -239,7 +239,7 @@ class TestLICMetaLearningClientIntegration:
 
     def test_lic_ml_check_healing_depth(self):
         """Test LIC ml_check_healing_depth delegates to meta client."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -256,7 +256,7 @@ class TestLICMetaLearningClientIntegration:
 
     def test_lic_get_meta_learning_stats(self):
         """Test LIC get_meta_learning_stats returns stats."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -298,7 +298,7 @@ class TestCrossDomainPatternIsolation:
 
     def test_lic_cannot_store_rg_patterns(self):
         """Test LIC agent cannot store patterns for RG domain."""
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(LICAgentBase, "__post_init__", lambda self: None):
             agent = LICAgentBase()
@@ -316,7 +316,7 @@ class TestCrossDomainPatternIsolation:
     def test_domains_use_different_thresholds(self):
         """Test RG and LIC use different similarity thresholds."""
         from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
-        from apps_lic.shared.core.LICAgentBaseAgent import LICAgentBase
+        from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
 
         with patch.object(RGAgentBase, "__post_init__", lambda self: None):
             with patch.object(LICAgentBase, "__post_init__", lambda self: None):

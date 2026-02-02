@@ -412,7 +412,7 @@ class SSOTRelocator:
 
                 # Move all files from source to target
                 # Final True 20: Use ssot_discovery instead of rglob
-                from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
+                from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
 
                 all_items = list(get_python_files(source)) + list(get_data_files(source))
                 for item in all_items:

@@ -17,7 +17,7 @@ Resolves SSOT violations by providing canonical implementations for:
 3. Agent categorization, territory mapping, etc.
 
 USAGE:
-    from agentic_core.utils.canonical_truth import (
+    from agentic_core.utils.canonical_truth_validator import (
         calculate_health_score,
         get_canonical_layer
     )

@@ -23,7 +23,7 @@ from typing import Any
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.base_agents.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.ssot_discovery import get_python_files
+from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 
 @dataclass

@@ -8,7 +8,7 @@ from pathlib import Path
 
 # SSOT: Import canonical layer inference (Phase 3 Migration)
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
-from agentic_core.L5_safety.validators.canonical_truth import get_canonical_layer
+from agentic_core.L5_safety.validators.canonical_truth_validator import get_canonical_layer
 from agentic_core.L5_safety.validators.structure_blueprint import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -28,7 +28,7 @@ ROOT = Path(".")
 def find_duplicates():
     """Find duplicate filenames across approved folders."""
     # Phase 4.1: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     files_by_name = defaultdict(list)
     for folder in APPROVED_FOLDERS:
@@ -46,7 +46,7 @@ def find_gravity_violations():
     violations = []
 
     # Phase 4.1: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(ROOT / AGENTIC_CORE_DIR):
         file_layer = get_canonical_layer(py_file)
@@ -81,7 +81,7 @@ def find_gravity_violations():
 def find_syntax_errors():
     """Find files with syntax errors."""
     # Phase 4.1: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     errors = []
     for folder in APPROVED_FOLDERS:
@@ -101,7 +101,7 @@ def find_syntax_errors():
 def find_naming_violations():
     """Find files with naming convention violations."""
     # Phase 4.1: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     violations = []
     for folder in APPROVED_FOLDERS:

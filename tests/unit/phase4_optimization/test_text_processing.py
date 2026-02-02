@@ -4,7 +4,7 @@ Tests for native Python text processing utilities.
 """
 
 import pytest
-from apps_shared.utils.text_processing import TextProcessor, TextMatch
+from apps_shared.utils.text_processing_validator import TextProcessor, TextMatch
 
 
 class TestTextMatch:

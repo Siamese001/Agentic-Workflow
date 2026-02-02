@@ -55,7 +55,7 @@ SKIP_DIRS = {
 def find_files_to_update(root: Path) -> list[Path]:
     """Find all files that may need updating."""
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_data_files, get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
 
     files = list(get_python_files(root)) + list(
         get_data_files(root, extensions=[".json", ".md", ".yaml", ".yml"])

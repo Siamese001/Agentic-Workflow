@@ -105,7 +105,7 @@ def validate_observability_footprint(target_dir: str) -> tuple[float, list[str]]
     total_files = 0
 
     # Phase 6.8: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for path in get_python_files(Path(target_dir)):
         total_files += 1

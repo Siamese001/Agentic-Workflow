@@ -41,7 +41,7 @@ def get_folder_scope_summary(project_root):
     summary = {}
     skip = SOVEREIGN_EXCLUDED_FOLDERS | {"tests"}
     # Phase 6.8: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for f in Path(project_root).iterdir():
         if f.is_dir() and f.name not in skip:

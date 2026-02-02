@@ -293,7 +293,7 @@ def test_legacy_key_elimination():
 
     import re
 
-    from agentic_core.utils.ssot_discovery import get_python_files
+    from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     # Scan for legacy 'violations' key usage (without _found suffix)
     legacy_pattern = re.compile(r"['\"]violations['\"](?!_found)")

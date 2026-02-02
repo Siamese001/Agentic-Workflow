@@ -160,7 +160,7 @@ class AdaptiveLearningEngine:
 
                 shutil.copy2(self.storage_path, backup)
                 # Sub-20: Use ssot_discovery instead of glob
-                from agentic_core.utils.ssot_discovery import get_data_files
+                from agentic_core.utils.ssot_discovery_validator import get_data_files
 
                 all_files = get_data_files(self.backup_dir, extensions=[".json"])
                 backups = sorted(

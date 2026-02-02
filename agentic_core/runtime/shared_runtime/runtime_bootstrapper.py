@@ -8,7 +8,7 @@ import logging
 from typing import Any
 
 from agentic_core.L0_maintenance.logs.TelemetryRecorder import TelemetryRecorder
-from agentic_core.L1_cognition.boundaries.semantic_gatekeeper import semantic_gatekeeper
+from agentic_core.L1_cognition.boundaries.semantic_gatekeeper_validator import semantic_gatekeeper
 from agentic_core.L1_cognition.thought_engine.StructuredEngine import StructuredEngine
 from agentic_core.L2_execution.action_handlers.sandbox import DockerSandbox
 from agentic_core.L2_execution.tool_registry.mcp_manager import MCPConnectionManager
@@ -20,8 +20,8 @@ from agentic_core.L4_state.session_manager.disk_adapter import LocalDiskAdapter
 from agentic_core.L5_safety.guardrails.airlock import AirlockProtocol
 from agentic_core.L5_safety.guardrails.membrane import InputMembrane
 from agentic_core.L5_safety.guardrails.PiiVault import PIIVault
-from agentic_core.L5_safety.validators.ConstitutionalOverseer import ConstitutionalOverseer
-from agentic_core.L5_safety.validators.CostGovernor import CostGovernor
+from agentic_core.L5_safety.validators.constitutional_overseer_validator import ConstitutionalOverseer
+from agentic_core.L5_safety.validators.cost_governor_validator import CostGovernor
 from agentic_core.runtime.P1_core.SubatomicHop import SubatomicHop
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

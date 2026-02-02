@@ -51,7 +51,7 @@ from agentic_core.L5_safety.validators.structure_blueprint import (
     get_validated_project_root,
     validate_path_within_project,
 )
-from agentic_core.utils.ssot_discovery import (
+from agentic_core.utils.ssot_discovery_validator import (
     get_agent_by_name,
     get_agents_by_layer,
     get_healers,

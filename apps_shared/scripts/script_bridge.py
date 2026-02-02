@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 from dataclasses import dataclass
 import logging
 
-from apps_shared.scripts.io_operations import (
+from apps_shared.scripts.io_operations_validator import (
     FileOperations,
     DataCollectionOperations,
     MonitoringOperations,

@@ -52,7 +52,7 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint import get_validated_project_root
 
 # [PHASE 2] SSOT Discovery Integration
-from agentic_core.utils.ssot_discovery import get_agent_paths
+from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 
 Logger = logging.getLogger(__name__)
 

@@ -93,7 +93,7 @@ def main():
             continue
 
         # Operation Zero: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery import get_python_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(territory):
             if add_ssot_import(py_file):
