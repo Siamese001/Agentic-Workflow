@@ -1,0 +1,303 @@
+"""
+CST-based Surgical Healing Mixin - Zero-Loss Healing Implementation
+
+Replaces AST-based healing with LibCST to preserve comments, whitespace,
+and formatting while applying surgical modifications.
+
+This is the CST Pivot implementation to prevent data loss.
+"""
+
+from __future__ import annotations
+
+import libcst as cst
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+
+from .surgical_context import (
+    ASTCoordinate,
+    SurgicalContext,
+    ViolationConstraint,
+)
+
+
+@dataclass
+class CSTModification:
+    """Represents a CST modification operation."""
+
+    node_type: str
+    line_number: int
+    operation: str  # "insert", "delete", "replace"
+    new_content: Optional[str] = None
+    old_content: Optional[str] = None
+
+
+class SurgicalCSTTransformer(cst.CSTTransformer):
+    """CST transformer that applies surgical modifications while preserving formatting."""
+
+    def __init__(self, context: SurgicalContext):
+        self.context = context
+        self.modifications_made = 0
+        self.modifications: List[CSTModification] = []
+
+        # Convert violations to CST modifications
+        self._prepare_modifications()
+
+    def _prepare_modifications(self):
+        """Convert violation constraints to CST modifications."""
+        for violation in self.context.violations:
+            if violation.target_coordinate:
+                mod = CSTModification(
+                    node_type=violation.constraint_type,
+                    line_number=violation.target_coordinate.line,
+                    operation=violation.fix_type,
+                    new_content=violation.expected_pattern,
+                    old_content=violation.actual_pattern,
+                )
+                self.modifications.append(mod)
+
+    def leave_ClassDef(
+        self, original_node: cst.ClassDef, updated_node: cst.ClassDef
+    ) -> cst.ClassDef:
+        """Handle ClassDef nodes."""
+        return self._apply_modifications_if_needed(original_node, updated_node, "ClassDef")
+
+    def leave_FunctionDef(
+        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef
+    ) -> cst.FunctionDef:
+        """Handle FunctionDef nodes."""
+        return self._apply_modifications_if_needed(original_node, updated_node, "FunctionDef")
+
+    def leave_Import(self, original_node: cst.Import, updated_node: cst.Import) -> cst.Import:
+        """Handle Import nodes."""
+        return self._apply_modifications_if_needed(original_node, updated_node, "Import")
+
+    def leave_ImportFrom(
+        self, original_node: cst.ImportFrom, updated_node: cst.ImportFrom
+    ) -> cst.ImportFrom:
+        """Handle ImportFrom nodes."""
+        return self._apply_modifications_if_needed(original_node, updated_node, "ImportFrom")
+
+    def leave_SimpleStatementLine(
+        self, original_node: cst.SimpleStatementLine, updated_node: cst.SimpleStatementLine
+    ) -> cst.SimpleStatementLine:
+        """Handle SimpleStatementLine nodes (for bare except, etc.)."""
+        return self._apply_modifications_if_needed(
+            original_node, updated_node, "SimpleStatementLine"
+        )
+
+    def _apply_modifications_if_needed(
+        self, original_node: cst.CSTNode, updated_node: cst.CSTNode, node_type: str
+    ) -> cst.CSTNode:
+        """Apply modifications if this node matches any violation."""
+        if not hasattr(original_node, "position") or not original_node.position:
+            return updated_node
+
+        line_num = original_node.position.line
+
+        # Find modifications for this line and node type
+        line_mods = [m for m in self.modifications if m.line_number == line_num]
+
+        if not line_mods:
+            return updated_node
+
+        # Apply modifications
+        result_node = updated_node
+
+        for mod in line_mods:
+            if mod.operation == "insert" and mod.new_content:
+                result_node = self._apply_insertion(result_node, mod)
+                self.modifications_made += 1
+            elif mod.operation == "delete":
+                result_node = self._apply_deletion(result_node, mod)
+                self.modifications_made += 1
+            elif mod.operation == "replace" and mod.new_content:
+                result_node = self._apply_replacement(result_node, mod)
+                self.modifications_made += 1
+
+        return result_node
+
+    def _apply_insertion(self, node: cst.CSTNode, modification: CSTModification) -> cst.CSTNode:
+        """Apply insertion modification."""
+        if isinstance(node, cst.ClassDef) or isinstance(node, cst.FunctionDef):
+            # Insert docstring as first statement in body
+            docstring = cst.SimpleStatementLine(
+                body=[cst.Expr(value=cst.SimpleString(value=f'"{modification.new_content}"'))]
+            )
+
+            new_body = [docstring] + list(node.body.body)
+            new_module_body = cst.Module(body=new_body)
+
+            if isinstance(node, cst.ClassDef):
+                return node.with_changes(body=new_module_body)
+            else:  # FunctionDef
+                return node.with_changes(body=new_module_body)
+
+        return node
+
+    def _apply_deletion(self, node: cst.CSTNode, modification: CSTModification) -> cst.CSTNode:
+        """Apply deletion modification."""
+        if isinstance(node, cst.Import) or isinstance(node, cst.ImportFrom):
+            # For imports, we need to remove them from the module
+            # This is handled at the module level
+            return cst.RemoveFromParent()
+
+        return node
+
+    def _apply_replacement(self, node: cst.CSTNode, modification: CSTModification) -> cst.CSTNode:
+        """Apply replacement modification."""
+        if isinstance(node, cst.SimpleStatementLine):
+            # Handle bare except replacement
+            if "bare_except" in modification.node_type:
+                except_handler = cst.ExceptHandler(
+                    body=cst.IndentBlock(
+                        body=[
+                            cst.SimpleStatementLine(body=[cst.Expr(value=cst.Name(value="pass"))])
+                        ]
+                    )
+                )
+                return cst.SimpleStatementLine(body=[except_handler])
+
+        return node
+
+
+class SurgicalCSTHealerMixin:
+    """
+    CST-based Surgical Healing Mixin.
+
+    Uses LibCST for zero-loss healing that preserves comments, whitespace,
+    and formatting while applying precise surgical modifications.
+    """
+
+    def heal_surgical_cst(self, context: SurgicalContext) -> Dict[str, Any]:
+        """
+        Perform surgical healing using LibCST for zero-loss modifications.
+
+        Args:
+            context: SurgicalContext with all violation details
+
+        Returns:
+            Dict with healing results
+        """
+        try:
+            # Parse source with CST (preserves all formatting)
+            source_code = context.file_path.read_text(encoding="utf-8")
+            cst_tree = cst.parse_module(source_code)
+
+            # Create CST transformer
+            transformer = SurgicalCSTTransformer(context)
+
+            # Apply transformations
+            modified_cst = cst_tree.visit(transformer)
+
+            # Check if any modifications were made
+            if transformer.modifications_made > 0:
+                # Generate code with CST (preserves formatting and comments)
+                modified_code = modified_cst.code
+
+                # Write the modified code back
+                context.file_path.write_text(modified_code, encoding="utf-8")
+
+                return {
+                    "status": "success",
+                    "violations_found": len(context.violations),
+                    "violations_fixed": transformer.modifications_made,
+                    "errors": 0,
+                    "skipped": len(context.violations) - transformer.modifications_made,
+                    "details": f"Fixed {transformer.modifications_made} violations using CST",
+                    "artifacts": [
+                        {
+                            "type": "cst_modification",
+                            "modifications_made": transformer.modifications_made,
+                            "preserved_formatting": True,
+                        }
+                    ],
+                }
+            else:
+                return {
+                    "status": "success",
+                    "violations_found": len(context.violations),
+                    "violations_fixed": 0,
+                    "errors": 0,
+                    "skipped": len(context.violations),
+                    "details": "No modifications needed",
+                    "artifacts": [],
+                }
+
+        except Exception as e:
+            return {
+                "status": "error",
+                "violations_found": len(context.violations),
+                "violations_fixed": 0,
+                "errors": 1,
+                "skipped": len(context.violations),
+                "details": f"CST healing failed: {str(e)}",
+                "artifacts": [
+                    {
+                        "type": "error",
+                        "error": str(e),
+                    }
+                ],
+            }
+
+    def _create_cst_insertion_node(self, violation: ViolationConstraint) -> Optional[cst.CSTNode]:
+        """Create CST node for insertion."""
+        if violation.constraint_type == "missing_file_classification":
+            # Create a comment statement
+            pattern = violation.expected_pattern or "# FILE_CLASSIFICATION: UNKNOWN"
+            return cst.SimpleStatementLine(body=[cst.Expr(value=cst.SimpleString(value=pattern))])
+
+        return None
+
+    def _find_cst_node_by_coordinate(
+        self, tree: cst.Module, coordinate: ASTCoordinate
+    ) -> Optional[cst.CSTNode]:
+        """Find CST node at specific coordinate."""
+
+        class CoordinateFinder(cst.CSTVisitor):
+            def __init__(self, target_line: int):
+                self.target_line = target_line
+                self.found_node = None
+
+            def visit_ClassDef(self, node: cst.ClassDef) -> bool:
+                if (
+                    hasattr(node, "position")
+                    and node.position
+                    and node.position.line == self.target_line
+                ):
+                    self.found_node = node
+                    return False  # Don't visit children
+                return True
+
+            def visit_FunctionDef(self, node: cst.FunctionDef) -> bool:
+                if (
+                    hasattr(node, "position")
+                    and node.position
+                    and node.position.line == self.target_line
+                ):
+                    self.found_node = node
+                    return False  # Don't visit children
+                return True
+
+            def visit_Import(self, node: cst.Import) -> bool:
+                if (
+                    hasattr(node, "position")
+                    and node.position
+                    and node.position.line == self.target_line
+                ):
+                    self.found_node = node
+                    return False
+                return True
+
+            def visit_ImportFrom(self, node: cst.ImportFrom) -> bool:
+                if (
+                    hasattr(node, "position")
+                    and node.position
+                    and node.position.line == self.target_line
+                ):
+                    self.found_node = node
+                    return False
+                return True
+
+        finder = CoordinateFinder(coordinate.line)
+        tree.visit(finder)
+        return finder.found_node
