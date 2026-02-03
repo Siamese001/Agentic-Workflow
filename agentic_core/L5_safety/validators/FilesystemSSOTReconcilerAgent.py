@@ -68,7 +68,8 @@ from agentic_core.base_agents.L0MaintenanceBaseAgent import L0MaintenanceBaseAge
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
-# GRAVITY FIXED (Upward Leak): from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
+# GRAVITY FIXED (Upward Leak):
+# from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
 # Use correct MCP mixin location
 try:
     from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
@@ -374,7 +375,9 @@ class FilesystemSSOTReconcilerAgent(
 
         # [STRICT SCOPE] Filter roots based on target territory
         if target_territory:
-            from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_TERRITORIES
+            from agentic_core.L5_safety.validators.structure_blueprint_config import (
+                SOVEREIGN_TERRITORIES,
+            )
 
             # Logic: If territory is a root (apps_lic), scan only that. Else target agentic_core.
             if target_territory in SOVEREIGN_TERRITORIES and target_territory != "agentic_core":
@@ -481,7 +484,8 @@ class FilesystemSSOTReconcilerAgent(
                 Logger.debug(f"Failed to parse {py_file}: {e}")
 
         Logger.info(
-            f"Agent scan complete: {len(self.actual_agents)} agents, {len(self.actual_signals)} signals discovered"
+            f"Agent scan complete: {len(self.actual_agents)} agents, "
+            f"{len(self.actual_signals)} signals discovered"
         )
 
     def _load_current_blueprint(self) -> dict[str, Any]:
@@ -759,10 +763,49 @@ class FilesystemSSOTReconcilerAgent(
         return proposals
 
     def _apply_filesystem_alignment(self, proposals: list[dict[str, Any]]) -> list[str]:
-        """Executes the terraforming actions on disk."""
+        """Executes the terraforming actions on disk with SurgicalContext logging."""
+        from agentic_core.L5_safety.validators.surgical_context import (
+            SurgicalContext,
+            ASTCoordinate,
+            ViolationConstraint,
+        )
+
         applied_logs = []
 
         Logger.info(f"Applying {len(proposals)} filesystem alignment actions...")
+
+        # Create SurgicalContext for logging/verification
+        violations = []
+        for prop in proposals:
+            coord = ASTCoordinate(
+                line=1,
+                column=0,
+                node_id=f"filesystem_{prop['action']}",
+                node_type="FilesystemOperation",
+            )
+            violation = ViolationConstraint(
+                constraint_type="filesystem_drift",
+                severity="warning",
+                message=(f"{prop['action']}: {prop.get('target', prop.get('source', 'unknown'))}"),
+                fix_type="filesystem",
+            )
+            violation.target_coordinate = coord
+            violations.append(violation)
+
+        # Create context for audit trail
+        context = SurgicalContext(
+            file_path=self.blueprint_file,
+            file_content="",  # Not applicable for filesystem ops
+            ast_tree=None,
+            violations=violations,
+            target_coordinates=[v.target_coordinate for v in violations],
+            detector_agent="FilesystemSSOTReconcilerAgent",
+            detection_method="_apply_filesystem_alignment",
+            detection_timestamp=datetime.now().isoformat(),
+            violation_id=(f"filesystem_alignment_{datetime.now().strftime('%Y%m%d_%H%M%S')}"),
+        )
+
+        Logger.info(f"SurgicalContext created for {len(context.violations)} filesystem operations")
 
         for prop in proposals:
             if prop["action"] == "CREATE_FOLDER":
@@ -871,7 +914,8 @@ class FilesystemSSOTReconcilerAgent(
         Logger.warning(f"Could not find exact insertion point for {root}, appending at end")
         return (
             content
-            + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\nsovereign_registry['{root}']['subfolders'].extend({folders})\n"
+            + "\n# Auto-added by FilesystemSSOTReconcilerAgent\n"
+            + f"sovereign_registry['{root}']['subfolders'].extend({folders})\n"
         )
 
     def _apply_core_map_update(self, content: str, l1_folder: str, folders: list[str]) -> str:
@@ -899,7 +943,8 @@ class FilesystemSSOTReconcilerAgent(
         Logger.warning(f"Could not find exact insertion point for {l1_folder}, appending at end")
         return (
             content
-            + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\ncore_subfolder_map['{l1_folder}'].extend({folders})\n"
+            + "\n# Auto-added by FilesystemSSOTReconcilerAgent\n"
+            + f"core_subfolder_map['{l1_folder}'].extend({folders})\n"
         )
 
     def _apply_signals_update(self, content: str, signals: list[str]) -> str:
@@ -928,7 +973,8 @@ class FilesystemSSOTReconcilerAgent(
         Logger.warning("Could not find exact insertion point for CANON_SIGNALS, appending at end")
         return (
             content
-            + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\nCANON_SIGNALS.update({set(signals)})\n"
+            + "\n# Auto-added by FilesystemSSOTReconcilerAgent\n"
+            + f"CANON_SIGNALS.update({set(signals)})\n"
         )
 
     def _request_user_approval(self, proposals: list[dict[str, Any]]) -> bool:
