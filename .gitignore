@@ -65,3 +65,4 @@ guardian_report.txt
 
 # Agent discovery artifacts (auto-generated)
 agent_discovery_full.manifest.json
+.backup/guardian_tests/

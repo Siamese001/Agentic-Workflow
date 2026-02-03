@@ -172,3 +172,74 @@ def guardian_session_marker():
     Automatically mark all guardian tests
     """
     pass
+
+
+# =============================================================================
+# SESSION-SCOPED FIXTURES - Shared across all Guardian tests
+# =============================================================================
+
+
+@pytest.fixture(scope="session")
+def agent_registry():
+    """
+    Session-scoped agent registry for all tests.
+    Caches agent discovery to improve test performance.
+    """
+    from tests.guardian.base import GuardianTestBase
+
+    registry = {}
+
+    for agent_file in GuardianTestBase.scan_agents():
+        tree = GuardianTestBase.parse_ast(agent_file)
+        if tree:
+            agent_classes = GuardianTestBase.find_agent_classes(tree)
+            registry[str(agent_file)] = {
+                "file_path": agent_file,
+                "agent_classes": [cls.name for cls in agent_classes],
+                "layer": GuardianTestBase.check_layer_hierarchy(agent_file)["layer"],
+            }
+
+    return registry
+
+
+@pytest.fixture(scope="session")
+def layer_hierarchy():
+    """Shared layer hierarchy data."""
+    return {
+        "L0_maintenance": 0,
+        "L1_cognition": 1,
+        "L2_execution": 2,
+        "L3_orchestration": 3,
+        "L4_state": 4,
+        "L5_safety": 5,
+        "L6_observability": 6,
+    }
+
+
+@pytest.fixture(scope="session")
+def guardian_performance_baseline():
+    """Baseline performance metrics for Guardian tests."""
+    return {
+        "max_test_time_seconds": 30,
+        "max_memory_mb": 100,
+        "max_agents_to_scan": 300,
+    }
+
+
+@pytest.fixture(scope="session")
+def critical_files():
+    """List of critical files that must exist."""
+    return [
+        "agentic_core/L3_orchestration/workflow_engines/SovereignMcpRouterAgent.py",
+        "agentic_core/L5_safety/guardrails/MCPSovereignAuthority.py",
+        "agentic_core/L2_execution/mcp/SovereignPineconeMcpClientAgent.py",
+        "agentic_core/L2_execution/mcp/SovereignMCPGatewayAgent.py",
+        "agentic_core/L2_execution/tool_registry/WebSearchTools.py",
+        "agentic_core/base_agents/SovereignBaseAgent.py",
+    ]
+
+
+@pytest.fixture(scope="session")
+def territories():
+    """List of code territories to scan."""
+    return ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]

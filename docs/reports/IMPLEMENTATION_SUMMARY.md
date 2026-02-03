@@ -200,7 +200,7 @@ If you want to actually reduce violations automatically:
    - Monolith splitting
    - MRO conflicts
 
-See: `.windsurf/plans/guardian-design-options-51bef9.md` for full implementation plan.
+See: `docs/reports/plans/guardian-design-options-51bef9.md` for full implementation plan.
 
 ## Commit
 
@@ -213,6 +213,6 @@ Convert Guardian tests to pure reporting with remediation guidance
 ## Documentation
 
 - **Remediation Guide:** `tests/guardian/REMEDIATION_GUIDE.md`
-- **Design Options:** `.windsurf/plans/guardian-design-options-51bef9.md`
-- **Current State Analysis:** `.windsurf/plans/guardian-current-state-analysis-529681.md`
+- **Design Options:** `docs/reports/plans/guardian-design-options-51bef9.md`
+- **Current State Analysis:** `docs/reports/plans/guardian-current-state-analysis-529681.md`
 - **This Summary:** `tests/guardian/IMPLEMENTATION_SUMMARY.md`

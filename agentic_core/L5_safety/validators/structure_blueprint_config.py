@@ -376,6 +376,7 @@ TESTS_AUTOGEN_DIR: str = "tests/autogen"
 REPORTS_DIR: str = "reports"
 ARCHIVES_DIR: str = "archives"
 COVERAGE_HTML_DIR: str = "reports/coverage_html"
+DOCS_REPORTS_PLANS: str = "docs/reports/plans"
 
 # ============================================================================
 # === L4 SUBFOLDER MAP (Depth-4 Structure for Complex L3 Folders) ===

@@ -118,8 +118,8 @@ Implement a comprehensive phased approach to ensure all reports are stored in th
 - **2.2a**: Pilot selection (1 hour)
 - **2.2b**: Pilot execution (4 hours)
 - **2.2c**: Pilot validation (3 hours)
-- **2.3a**: Test framework extension (4 hours)
-- **2.3b**: Compliance test creation (4 hours)
+- **3.1a**: Test framework extension (4 hours)
+- **3.1b**: Compliance test creation (4 hours)
 
 ### **Phase 3 Sub-Phases**
 - **3.1a**: Hook activation (2 hours)
