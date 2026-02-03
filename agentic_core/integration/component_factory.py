@@ -1,0 +1,202 @@
+"""
+Component Factory for creating protocol-compliant components.
+
+Provides factory functions for creating verification gates, review queues,
+detection emitters, and meta-learning services with proper feature flag integration.
+"""
+
+import logging
+from typing import Any, Dict, Optional
+
+from agentic_core.primitives.feature_flags import FeatureFlagManager
+from agentic_core.primitives.dependency_resolver import DynamicLoader
+from agentic_core.interfaces.verification_protocol import VerificationGateProtocol
+from agentic_core.interfaces.review_protocol import HumanReviewProtocol
+from agentic_core.interfaces.detection_protocol import DetectionSignalProtocol
+from agentic_core.interfaces.meta_learning_protocol import MetaLearningProtocol
+
+logger = logging.getLogger(__name__)
+
+
+class ComponentFactory:
+    """Factory for creating protocol-compliant components.
+
+    Manages singleton instances of components and provides proper
+    feature flag integration for all component creation.
+    """
+
+    _instances: Dict[str, Any] = {}
+
+    @classmethod
+    def get_verification_gate(
+        cls,
+        use_adapter: bool = True,
+    ) -> Optional[VerificationGateProtocol]:
+        """Get verification gate instance.
+
+        Args:
+            use_adapter: If True, use protocol-compliant adapter
+
+        Returns:
+            VerificationGateProtocol instance or None if disabled
+        """
+        if not FeatureFlagManager.is_enabled("ENABLE_VERIFICATION_GATE"):
+            logger.debug("ComponentFactory: Verification gate disabled")
+            return None
+
+        cache_key = "verification_gate"
+        if cache_key in cls._instances:
+            return cls._instances[cache_key]
+
+        if use_adapter:
+            try:
+                from agentic_core.L5_safety.adapters.verification_gate_adapter import (
+                    VerificationGateAdapter,
+                )
+
+                instance = VerificationGateAdapter()
+                cls._instances[cache_key] = instance
+                return instance
+            except ImportError:
+                logger.warning("ComponentFactory: Could not load adapter")
+
+        # Fall back to dynamic loader
+        instance = DynamicLoader.create_instance("verification")
+        if instance:
+            cls._instances[cache_key] = instance
+        return instance
+
+    @classmethod
+    def get_human_review_queue(
+        cls,
+        use_adapter: bool = True,
+    ) -> Optional[HumanReviewProtocol]:
+        """Get human review queue instance.
+
+        Args:
+            use_adapter: If True, use protocol-compliant adapter
+
+        Returns:
+            HumanReviewProtocol instance or None if disabled
+        """
+        if not FeatureFlagManager.is_enabled("ENABLE_HITL_WORKFLOW"):
+            logger.debug("ComponentFactory: HITL workflow disabled")
+            return None
+
+        cache_key = "human_review"
+        if cache_key in cls._instances:
+            return cls._instances[cache_key]
+
+        if use_adapter:
+            try:
+                from agentic_core.L5_safety.adapters.human_review_adapter import (
+                    HumanReviewAdapter,
+                )
+
+                instance = HumanReviewAdapter()
+                cls._instances[cache_key] = instance
+                return instance
+            except ImportError:
+                logger.warning("ComponentFactory: Could not load adapter")
+
+        instance = DynamicLoader.create_instance("review")
+        if instance:
+            cls._instances[cache_key] = instance
+        return instance
+
+    @classmethod
+    def get_detection_emitter(cls) -> Optional[DetectionSignalProtocol]:
+        """Get detection signal emitter instance.
+
+        Returns:
+            DetectionSignalProtocol instance or None if disabled
+        """
+        if not FeatureFlagManager.is_enabled("ENABLE_DETECTION_SIGNAL"):
+            logger.debug("ComponentFactory: Detection signal disabled")
+            return None
+
+        cache_key = "detection_emitter"
+        if cache_key in cls._instances:
+            return cls._instances[cache_key]
+
+        instance = DynamicLoader.create_instance("detection")
+        if instance:
+            cls._instances[cache_key] = instance
+        return instance
+
+    @classmethod
+    def get_meta_learning_service(cls) -> Optional[MetaLearningProtocol]:
+        """Get meta-learning service instance.
+
+        Returns:
+            MetaLearningProtocol instance or None if disabled
+        """
+        if not FeatureFlagManager.is_enabled("ENABLE_META_LEARNING"):
+            logger.debug("ComponentFactory: Meta-learning disabled")
+            return None
+
+        cache_key = "meta_learning"
+        if cache_key in cls._instances:
+            return cls._instances[cache_key]
+
+        instance = DynamicLoader.create_instance("meta_learning")
+        if instance:
+            cls._instances[cache_key] = instance
+        return instance
+
+    @classmethod
+    def clear_instances(cls) -> None:
+        """Clear all cached instances."""
+        cls._instances.clear()
+        logger.info("ComponentFactory: Cleared all instances")
+
+    @classmethod
+    def get_component_status(cls) -> Dict[str, Any]:
+        """Get status of all components.
+
+        Returns:
+            Dictionary with component availability and flag status
+        """
+        return {
+            "verification_gate": {
+                "flag_enabled": FeatureFlagManager.is_enabled("ENABLE_VERIFICATION_GATE"),
+                "instance_cached": "verification_gate" in cls._instances,
+            },
+            "human_review": {
+                "flag_enabled": FeatureFlagManager.is_enabled("ENABLE_HITL_WORKFLOW"),
+                "instance_cached": "human_review" in cls._instances,
+            },
+            "detection_emitter": {
+                "flag_enabled": FeatureFlagManager.is_enabled("ENABLE_DETECTION_SIGNAL"),
+                "instance_cached": "detection_emitter" in cls._instances,
+            },
+            "meta_learning": {
+                "flag_enabled": FeatureFlagManager.is_enabled("ENABLE_META_LEARNING"),
+                "instance_cached": "meta_learning" in cls._instances,
+            },
+        }
+
+
+# Convenience functions
+def get_verification_gate(
+    use_adapter: bool = True,
+) -> Optional[VerificationGateProtocol]:
+    """Get verification gate instance."""
+    return ComponentFactory.get_verification_gate(use_adapter)
+
+
+def get_human_review_queue(
+    use_adapter: bool = True,
+) -> Optional[HumanReviewProtocol]:
+    """Get human review queue instance."""
+    return ComponentFactory.get_human_review_queue(use_adapter)
+
+
+def get_detection_emitter() -> Optional[DetectionSignalProtocol]:
+    """Get detection signal emitter instance."""
+    return ComponentFactory.get_detection_emitter()
+
+
+def get_meta_learning_service() -> Optional[MetaLearningProtocol]:
+    """Get meta-learning service instance."""
+    return ComponentFactory.get_meta_learning_service()
