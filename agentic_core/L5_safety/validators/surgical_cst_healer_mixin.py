@@ -22,6 +22,10 @@ from .cst_transformers import (
     create_import_remover,
     create_docstring_inserter,
     create_bare_except_fixer,
+    create_future_import_inserter,
+    create_trailing_whitespace_fixer,
+    create_blank_line_normalizer,
+    create_type_hint_inserter,
 )
 
 
@@ -208,6 +212,30 @@ class SurgicalCSTHealerMixin:
             if bare_except_fixer:
                 cst_tree = cst_tree.visit(bare_except_fixer)
                 total_modifications += bare_except_fixer.modifications_made
+
+            # Handle future import insertions
+            future_import_inserter = create_future_import_inserter(context.violations)
+            if future_import_inserter:
+                cst_tree = cst_tree.visit(future_import_inserter)
+                total_modifications += future_import_inserter.modifications_made
+
+            # Handle structural fixes - trailing whitespace
+            whitespace_fixer = create_trailing_whitespace_fixer(context.violations)
+            if whitespace_fixer:
+                cst_tree = cst_tree.visit(whitespace_fixer)
+                total_modifications += whitespace_fixer.modifications_made
+
+            # Handle structural fixes - blank line normalization
+            blank_line_normalizer = create_blank_line_normalizer(context.violations)
+            if blank_line_normalizer:
+                cst_tree = cst_tree.visit(blank_line_normalizer)
+                total_modifications += blank_line_normalizer.modifications_made
+
+            # Handle type hint insertions
+            type_hint_inserter = create_type_hint_inserter(context.violations)
+            if type_hint_inserter:
+                cst_tree = cst_tree.visit(type_hint_inserter)
+                total_modifications += type_hint_inserter.modifications_made
 
             # Check if any modifications were made
             if total_modifications > 0:

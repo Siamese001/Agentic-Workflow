@@ -371,24 +371,31 @@ class CodeHealerAgent(SovereignBaseAgent, SurgicalCSTHealerMixin):
                             break
                 else:
                     Logger.error(
-                        f"CST healing failed for {file_path}: {result.get('details', 'Unknown error')}"
+                        f"CST healing failed for {file_path}: "
+                        f"{result.get('details', 'Unknown error')}"
                     )
 
         self._actions.extend(actions)
         return actions
 
     def heal_canon(self, file_path: Path) -> list[HealingAction]:
-        """Fix canon compliance issues."""
+        """Fix canon compliance issues using CST-based surgical healing."""
         actions = []
 
         try:
             content = file_path.read_text(encoding="utf-8")
-        except Exception:
+        except Exception as e:
+            Logger.error(f"Failed to read {file_path}: {e}")
+            return actions
+
+        try:
+            tree = ast.parse(content)
+        except SyntaxError as e:
+            Logger.error(f"Failed to parse {file_path}: {e}")
             return actions
 
         lines = content.split("\n")
-        new_lines = lines.copy()
-        modified = False
+        violations = []
 
         # Check for missing __future__ import
         has_future = any("from __future__" in line for line in lines[:10])
@@ -403,9 +410,21 @@ class CodeHealerAgent(SovereignBaseAgent, SurgicalCSTHealerMixin):
             )
             actions.append(action)
 
-            if not self._agent_config.dry_run:
-                modified = True
-                action.applied = True
+            # Create violation for CST healing
+            coordinate = ASTCoordinate(
+                line=1,
+                column=0,
+                node_id="missing_future_import",
+                node_type="Module",
+            )
+            violation = ViolationConstraint(
+                constraint_type="missing_future_import",
+                severity="warning",
+                message="Missing __future__ annotations import",
+                fix_type="insert",
+            )
+            violation.target_coordinate = coordinate
+            violations.append(violation)
 
         # Check for bare except clauses
         for i, line in enumerate(lines):
@@ -420,35 +439,68 @@ class CodeHealerAgent(SovereignBaseAgent, SurgicalCSTHealerMixin):
                 )
                 actions.append(action)
 
-                if not self._agent_config.dry_run:
-                    new_lines[i] = line.replace("except:", "except Exception:")
-                    modified = True
-                    action.applied = True
+                # Create violation for CST healing
+                coordinate = ASTCoordinate(
+                    line=i + 1,
+                    column=0,
+                    node_id=f"bare_except_{i + 1}",
+                    node_type="ExceptHandler",
+                )
+                violation = ViolationConstraint(
+                    constraint_type="bare_except",
+                    severity="warning",
+                    message=f"Bare except clause at line {i + 1}",
+                    fix_type="replace",
+                )
+                violation.target_coordinate = coordinate
+                violations.append(violation)
 
-        if modified:
-            new_content = "\n".join(new_lines)
-            if self.atomic_write(file_path, new_content):
+        # Apply CST-based surgical healing if not dry run
+        if violations and not self._agent_config.dry_run:
+            context = SurgicalContext(
+                file_path=file_path,
+                file_content=content,
+                ast_tree=tree,
+                violations=violations,
+                detector_agent="CodeHealerAgent",
+                detection_method="heal_canon",
+                violation_id=f"canon_violations_{file_path.name}",
+            )
+
+            result = self.heal_surgical_cst(context)
+            if result["status"] == "success" and result["violations_fixed"] > 0:
+                # Mark actions as applied
                 for action in actions:
-                    if not action.applied:
-                        action.applied = True
+                    action.applied = True
             else:
-                Logger.error(f"Failed to apply atomic write to {file_path}")
+                Logger.error(
+                    f"CST canon healing failed for {file_path}: "
+                    f"{result.get('details', 'Unknown error')}"
+                )
 
         self._actions.extend(actions)
         return actions
 
     def heal_structural(self, file_path: Path) -> list[HealingAction]:
-        """Fix structural issues."""
+        """Fix structural issues using CST-based surgical healing."""
         actions = []
 
         try:
             content = file_path.read_text(encoding="utf-8")
-        except Exception:
+        except Exception as e:
+            Logger.error(f"Failed to read {file_path}: {e}")
+            return actions
+
+        try:
+            tree = ast.parse(content)
+        except SyntaxError as e:
+            Logger.error(f"Failed to parse {file_path}: {e}")
             return actions
 
         lines = content.split("\n")
-        new_lines = lines.copy()
-        modified = False
+        violations = []
+        has_trailing_whitespace = False
+        has_excessive_blanks = False
 
         # Check for trailing whitespace
         for i, line in enumerate(lines):
@@ -462,11 +514,7 @@ class CodeHealerAgent(SovereignBaseAgent, SurgicalCSTHealerMixin):
                     new_code=repr(line.rstrip()),
                 )
                 actions.append(action)
-
-                if not self._agent_config.dry_run:
-                    new_lines[i] = line.rstrip()
-                    modified = True
-                    action.applied = True
+                has_trailing_whitespace = True
 
         # Check for multiple blank lines
         blank_count = 0
@@ -483,17 +531,65 @@ class CodeHealerAgent(SovereignBaseAgent, SurgicalCSTHealerMixin):
                         new_code="(removed)",
                     )
                     actions.append(action)
+                    has_excessive_blanks = True
             else:
                 blank_count = 0
 
-        if modified:
-            new_content = "\n".join(new_lines)
-            if self.atomic_write(file_path, new_content):
+        # Create violations for CST healing
+        if has_trailing_whitespace:
+            coordinate = ASTCoordinate(
+                line=1,
+                column=0,
+                node_id="trailing_whitespace",
+                node_type="Module",
+            )
+            violation = ViolationConstraint(
+                constraint_type="trailing_whitespace",
+                severity="warning",
+                message="Trailing whitespace detected",
+                fix_type="replace",
+            )
+            violation.target_coordinate = coordinate
+            violations.append(violation)
+
+        if has_excessive_blanks:
+            coordinate = ASTCoordinate(
+                line=1,
+                column=0,
+                node_id="excessive_blank_lines",
+                node_type="Module",
+            )
+            violation = ViolationConstraint(
+                constraint_type="excessive_blank_lines",
+                severity="warning",
+                message="Excessive blank lines detected",
+                fix_type="replace",
+            )
+            violation.target_coordinate = coordinate
+            violations.append(violation)
+
+        # Apply CST-based surgical healing if not dry run
+        if violations and not self._agent_config.dry_run:
+            context = SurgicalContext(
+                file_path=file_path,
+                file_content=content,
+                ast_tree=tree,
+                violations=violations,
+                detector_agent="CodeHealerAgent",
+                detection_method="heal_structural",
+                violation_id=f"structural_violations_{file_path.name}",
+            )
+
+            result = self.heal_surgical_cst(context)
+            if result["status"] == "success" and result["violations_fixed"] > 0:
+                # Mark actions as applied
                 for action in actions:
-                    if not action.applied:
-                        action.applied = True
+                    action.applied = True
             else:
-                Logger.error(f"Failed to apply atomic write to {file_path}")
+                Logger.error(
+                    f"CST structural healing failed for {file_path}: "
+                    f"{result.get('details', 'Unknown error')}"
+                )
 
         self._actions.extend(actions)
         return actions
