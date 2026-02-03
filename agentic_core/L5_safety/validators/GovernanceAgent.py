@@ -54,6 +54,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 
 # GRAVITY FIXED: Explicit import for MCPHardenedMixin
@@ -325,7 +326,7 @@ class DependencyGraph:
 
 
 # NAMING CANON COMPLIANCE — renamed to GovernanceAgent for discovery and sovereignty — 2025-12-30
-class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class GovernanceAgent(SovereignBaseAgent, SubatomicTestingMixin):
     """
     Enforces architectural governance laws and constraints.
 
@@ -646,19 +647,16 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """
         Calculate cyclomatic complexity for an AST node.
 
+        CONSOLIDATED: Delegates to shared L4 utility.
+        See agentic_core.L4_state.utils.complexity_analyzer
+
         Args:
             node: AST node to analyze
 
         Returns:
             Cyclomatic complexity score
         """
-        complexity = 1
-        for child in ast.walk(node):
-            if isinstance(child, ast.If | ast.For | ast.While | ast.ExceptHandler):
-                complexity += 1
-            elif isinstance(child, ast.BoolOp):
-                complexity += len(child.values) - 1
-        return complexity
+        return calculate_mccabe_complexity(node)
 
     def _check_nesting_depth(self, file_path: str) -> list[dict[str, Any]]:
         """

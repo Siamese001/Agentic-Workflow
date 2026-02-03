@@ -30,6 +30,12 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.UnifiedAgent import (
     StructuralValidatorStrategy,
 )
+from agentic_core.L4_state.utils.layer_gravity import (
+    GRAVITY_RULES,
+    LAYER_ORDER,
+    extract_layer_from_module,
+    extract_layer_from_path,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -83,19 +89,10 @@ class StructuralValidatorAgent(SovereignBaseAgent):
     SIGNATURE COMPATIBILITY: 100% preserved - no breaking changes.
     """
 
-    # Layer hierarchy (lower number = lower layer = higher authority)
-    LAYER_ORDER = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
-
-    # Gravity rules: L(N) can only import from L(0..N)
-    GRAVITY_RULES = {
-        "L0": {"L0"},
-        "L1": {"L0", "L1"},
-        "L2": {"L0", "L1", "L2"},
-        "L3": {"L0", "L1", "L2", "L3"},
-        "L4": {"L0", "L1", "L2", "L3", "L4"},
-        "L5": {"L0", "L1", "L2", "L3", "L4", "L5"},
-        "L6": {"L0", "L1", "L2", "L3", "L4", "L5", "L6"},
-    }
+    # [CONSOLIDATED] Layer constants moved to agentic_core.L4_state.utils.layer_gravity
+    # These class-level references preserved for backwards compatibility
+    LAYER_ORDER = LAYER_ORDER
+    GRAVITY_RULES = GRAVITY_RULES
 
     def __init__(self, config: StructureConfig | None = None):
         super().__init__()
@@ -164,17 +161,12 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         return violations
 
     def _extract_layer(self, path: Path) -> str | None:
-        path_str = str(path)
-        for layer in self.LAYER_ORDER.keys():
-            if f"/{layer}_" in path_str or f"\\{layer}_" in path_str:
-                return layer
-        return None
+        """CONSOLIDATED: Delegates to shared L4 utility."""
+        return extract_layer_from_path(path)
 
     def _extract_layer_from_module(self, module: str) -> str | None:
-        for layer in self.LAYER_ORDER.keys():
-            if f".{layer}_" in module or module.startswith(f"{layer}_") or f"_{layer}_" in module:
-                return layer
-        return None
+        """CONSOLIDATED: Delegates to shared L4 utility."""
+        return extract_layer_from_module(module)
 
     def _check_gravity(self, file_path: Path, content: str) -> list[StructureViolation]:
         violations = []

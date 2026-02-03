@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Optional, Set
 
 import libcst as cst
 
+from agentic_core.L5_safety.security.verification_gate import VerificationGate
 from .surgical_context import (
     ASTCoordinate,
     SurgicalContext,
@@ -71,14 +72,16 @@ class UnifiedCSTHealer:
     ordering and conflict resolution.
     """
 
-    def __init__(self, config: Optional[HealingConfig] = None):
+    def __init__(self, config: Optional[HealingConfig] = None, context_manager=None):
         """
         Initialize the unified healer.
 
         Args:
             config: Healing configuration (uses defaults if not provided)
+            context_manager: Optional L4ContextManager for verification gate
         """
         self.config = config or HealingConfig()
+        self.verification_gate = VerificationGate(context_manager=context_manager)
         self._transformer_order = [
             "future_import",  # Must come first
             "import",
@@ -148,6 +151,23 @@ class UnifiedCSTHealer:
             detection_timestamp=datetime.now().isoformat(),
             violation_id=f"unified_heal_{file_path.name}",
         )
+
+        # [VERIFICATION GATE] Pre-flight check to prevent Epistemic Cascade
+        if not self.verification_gate.verify_modification(context):
+            Logger.warning(
+                f"Verification Gate blocked healing for {file_path}: Hallucination detected"
+            )
+            return HealingResult(
+                status="skipped",
+                violations_found=len(violations),
+                violations_fixed=0,
+                errors=0,
+                skipped=len(violations),
+                details=(
+                    "Verification Gate failed: Target nodes not found in AST "
+                    "(hallucination prevented)"
+                ),
+            )
 
         # Apply transformers
         heal_result = self._apply_transformers(context)

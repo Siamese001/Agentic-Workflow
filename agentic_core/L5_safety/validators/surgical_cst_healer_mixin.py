@@ -188,6 +188,33 @@ class SurgicalCSTHealerMixin:
             Dict with healing results
         """
         try:
+            # Verification Gate pre-check to prevent Epistemic Cascade
+            if hasattr(self, "gate"):
+                for violation in context.violations:
+                    # Map violation types to verification actions
+                    action_type = self._map_violation_to_action_type(violation.constraint_type)
+                    target_node = self._extract_target_node(violation)
+
+                    if target_node and not self.gate.verify_action(
+                        context.file_path, action_type, target_node
+                    ):
+                        return {
+                            "status": "skipped",
+                            "violations_found": len(context.violations),
+                            "violations_fixed": 0,
+                            "errors": 0,
+                            "skipped": len(context.violations),
+                            "details": f"Hallucination detected: Target '{target_node}' not found in AST for action '{action_type}'",
+                            "artifacts": [
+                                {
+                                    "type": "verification_gate_block",
+                                    "action_type": action_type,
+                                    "target_node": target_node,
+                                    "reason": "Target not found in AST",
+                                }
+                            ],
+                        }
+
             # Parse source with CST (preserves all formatting)
             source_code = context.file_path.read_text(encoding="utf-8")
             cst_tree = cst.parse_module(source_code)
@@ -349,3 +376,52 @@ class SurgicalCSTHealerMixin:
         finder = CoordinateFinder(coordinate.line)
         tree.visit(finder)
         return finder.found_node
+
+    def _map_violation_to_action_type(self, constraint_type: str) -> str:
+        """Map violation constraint type to verification gate action type."""
+        mapping = {
+            "unused_import": "delete_import",
+            "missing_import": "modify_function",  # For adding imports
+            "bare_except": "modify_function",  # For modifying exception handlers
+            "missing_future_import": "modify_function",  # For adding imports
+            "trailing_whitespace": "modify_variable",  # Structural change
+            "excessive_blank_lines": "modify_variable",  # Structural change
+            "missing_docstring": "modify_function",  # For adding docstrings
+            "missing_type_hint": "modify_method",  # For adding type hints
+        }
+        return mapping.get(constraint_type, "modify_function")  # Default fallback
+
+    def _extract_target_node(self, violation: ViolationConstraint) -> Optional[str]:
+        """Extract target node name from violation for verification."""
+        if hasattr(violation, "target_node") and violation.target_node:
+            return violation.target_node
+
+        # Try to extract from expected_pattern or actual_pattern
+        if violation.expected_pattern:
+            # Extract import name from pattern like "import requests" or "from os import path"
+            if "import " in violation.expected_pattern:
+                parts = violation.expected_pattern.split()
+                if "from" in parts:
+                    # Handle "from module import name"
+                    import_idx = parts.index("import")
+                    if import_idx < len(parts) - 1:
+                        return parts[import_idx + 1].strip(",'\"")
+                elif "import" in parts:
+                    # Handle "import module"
+                    import_idx = parts.index("import")
+                    if import_idx < len(parts) - 1:
+                        return parts[import_idx + 1].strip(",'\"")
+
+        # Try to extract from violation message
+        if violation.message:
+            if "unused import:" in violation.message:
+                return violation.message.split("unused import:")[-1].strip()
+            elif "Missing" in violation.message and "import" in violation.message:
+                # Extract import name from missing import messages
+                words = violation.message.split()
+                for i, word in enumerate(words):
+                    if word == "import" and i + 1 < len(words):
+                        return words[i + 1].strip(",'\"")
+
+        # Fallback: use constraint_type as identifier
+        return violation.constraint_type if violation.constraint_type else None

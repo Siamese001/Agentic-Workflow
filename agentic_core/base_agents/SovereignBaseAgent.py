@@ -33,16 +33,24 @@ from typing import Any
 from agentic_core.base_agents.audit_trail_mixin import AuditTrailMixin
 from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 from agentic_core.base_agents.meta_learning_client_mixin import MetaLearningClientMixin
+from agentic_core.base_agents.runtime_safety_mixin import RuntimeSafetyMixin
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.config.config_mixin_config import ConfigMixin
-from agentic_core.domain.core_integrity_verifier_validator import CoreIntegrityVerifier, emergency_shutdown
+from agentic_core.domain.core_integrity_verifier_validator import (
+    CoreIntegrityVerifier,
+    emergency_shutdown,
+)
 from agentic_core.domain.HealerError import ConfigurationError, SovereignError
 from agentic_core.L2_execution.mcp.embedding_mixin import EmbeddingMixin
 from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
 from agentic_core.L5_safety.validators.healing_strategy_mixin import HealingStrategyMixin
 from agentic_core.L5_safety.validators.validator_mixin import ValidatorMixin
+
+# [COGNITIVE HARDENING] Anti-Context Drift and Token Overload
+from agentic_core.L1_cognition.memory.golden_context_mixin import GoldenContextMixin
+from agentic_core.L4_state.utils.telemetry_sanitizer import sanitize_tool_output
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +66,8 @@ class SovereignBaseAgent(
     ValidatorMixin,
     AuditTrailMixin,  # ADDED: Black Box telemetry
     MetaLearningClientMixin,  # [PHASE 2] Meta-Learning integration
+    GoldenContextMixin,  # [COGNITIVE HARDENING] Anti-Context Drift
+    RuntimeSafetyMixin,  # [OPERATIONAL SAFETY] Process lifecycle management
 ):
     """
     Sovereign Single Source of Truth (SSOT) Root.
@@ -235,5 +245,51 @@ class SovereignBaseAgent(
             "violation_id": violation.get("id", "unknown"),
         }
 
+    # =========================================================================
+    # COGNITIVE ENDURANCE INFRASTRUCTURE (Feb 2026)
+    # Landmine #3 & #4 Prevention: Context Drift and Token Overload
+    # =========================================================================
 
-__all__ = ["SovereignBaseAgent"]
+    def sanitize_output(self, output: str, max_chars: int = 2000) -> str:
+        """
+        Sanitize tool output to prevent token overload.
+
+        Wraps the telemetry_sanitizer.sanitize_tool_output function for
+        convenient access from agent instances.
+
+        Args:
+            output: The raw tool output string.
+            max_chars: Maximum allowed characters before pruning.
+
+        Returns:
+            Sanitized output string, pruned if necessary.
+        """
+        return sanitize_tool_output(output, max_chars=max_chars)
+
+    def prepare_messages_for_llm(
+        self,
+        messages: list[dict[str, Any]],
+        inject_context: bool = True,
+        context_threshold: int = 10,
+    ) -> list[dict[str, Any]]:
+        """
+        Prepare messages for LLM call with cognitive hardening.
+
+        This method should be called before any LLM invocation to:
+        1. Optionally inject golden context (anti-drift)
+        2. Future: Apply other cognitive safeguards
+
+        Args:
+            messages: The current message list.
+            inject_context: Whether to inject golden context.
+            context_threshold: Message count threshold for injection.
+
+        Returns:
+            Prepared message list ready for LLM call.
+        """
+        if inject_context and self.should_inject_golden_context(messages, context_threshold):
+            return self.inject_golden_context(messages)
+        return messages
+
+
+__all__ = ["SovereignBaseAgent", "sanitize_tool_output", "RuntimeSafetyMixin"]

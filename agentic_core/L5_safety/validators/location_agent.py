@@ -5,6 +5,21 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 """
 LocationAgent: Sovereign territorial gatekeeper (Canon Key 6 territory)
 
+⚠️  FACADE PATTERN: This agent now delegates to specialized sub-agents:
+    - LocationValidatorAgent: Pure validation (no side effects)
+    - LocationHealerAgent: File moves, deletions, import fixing
+
+MIGRATION GUIDE:
+    # For validation only:
+    from agentic_core.L5_safety.validators.location_validator_agent import LocationValidatorAgent
+    validator = LocationValidatorAgent(project_root=path)
+    result = validator.validate_file_location(file_path)
+
+    # For healing operations:
+    from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+    healer = LocationHealerAgent(project_root=path)
+    result = healer.heal(violation)
+
 Enforces:
 - Root folder whitelist (from SOVEREIGN_TERRITORIES)
 - Exact depth per sovereign root (SOVEREIGN_TERRITORIES[root]['depth'])
@@ -201,7 +216,9 @@ from agentic_core.L5_safety.validators.structure_blueprint_config import (
 
 # Optional prompt registry for meta-learning
 try:
-    from agentic_core.prompt_governance.version_registry.prompt_registry_config import registers_prompt
+    from agentic_core.prompt_governance.version_registry.prompt_registry_config import (
+        registers_prompt,
+    )
 except ImportError:
     # Fallback decorator for testing
     def registers_prompt(**kwargs):
@@ -1933,7 +1950,7 @@ class LocationAgent(SovereignBaseAgent):
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Set[str] | None = None,
+        _call_path: set[str] | None = None,
     ) -> dict[str, int]:
         """
         Autonomous full-repository location law healing.

@@ -39,6 +39,8 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L4_state.context_manager import get_context_manager
+from agentic_core.L4_state.utils.layer_gravity import LAYER_ORDER
 
 Logger = logging.getLogger(__name__)
 
@@ -69,12 +71,14 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
     4. REMOVE: Remove unnecessary imports
     """
 
-    # Layer hierarchy - lower index = higher authority
-    LAYER_ORDER = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
+    # [CONSOLIDATED] Layer hierarchy moved to agentic_core.L4_state.utils.layer_gravity
+    LAYER_ORDER = LAYER_ORDER
 
     def __init__(self, project_root: Path = None) -> None:
         self.project_root = Path(project_root) if project_root else Path.cwd()
         self.logger = Logger
+        # [L4 CONTEXT MANAGER] Centralized state management
+        self.context = get_context_manager(self.project_root)
 
     def analyze_violation(
         self, file_path: Path, import_statement: str, file_layer: str, import_layer: str
@@ -105,22 +109,27 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             "import_layer": import_layer,
         }
 
-        # Try to recall a successful pattern first
-        cached_pattern = self.ml_recall_healing_pattern(violation)
+        # [L4 CONTEXT] Try to recall a successful pattern first (cross-agent learning)
+        cached_pattern = self.context.recall_healing_pattern(
+            violation, agent="GravityLeakRepairAgent"
+        )
         if cached_pattern:
-            self.logger.info(f"[GravityLeakRepairAgent] Using cached fix pattern for {file_path}")
+            self.logger.info(
+                f"[GravityLeakRepairAgent] Using cached fix pattern from {cached_pattern.get('discovered_by')}"
+            )
+            metadata = cached_pattern.get("metadata", {})
             return GravityFix(
                 file_path=file_path,
-                line_number=cached_pattern.get("line_number", 0),
+                line_number=metadata.get("line_number", 0),
                 old_import=import_statement,
-                new_import=cached_pattern.get("new_import", "# TODO: Create abstraction layer"),
-                fix_type=cached_pattern.get("fix_type", "ABSTRACT"),
-                rationale=cached_pattern.get("rationale", "Meta-learning recalled pattern"),
+                new_import=metadata.get("new_import", "# TODO: Create abstraction layer"),
+                fix_type=cached_pattern.get("healing_strategy", "ABSTRACT"),
+                rationale=f"Pattern from {cached_pattern.get('discovered_by')} (used {cached_pattern.get('success_count')} times)",
             )
 
-        # Check cache for file analysis
+        # [L4 CONTEXT] Check cache for file analysis
         cache_key = f"gravity_analysis:{file_path}:{hash(import_statement)}"
-        cached_analysis = self.ml_cache_get(cache_key)
+        cached_analysis = self.context.cache_get(cache_key, agent="GravityLeakRepairAgent")
         if cached_analysis:
             self.logger.debug(f"[GravityLeakRepairAgent] Using cached analysis for {file_path}")
             return GravityFix(**cached_analysis)
@@ -149,7 +158,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 rationale=f"Create abstraction layer to decouple {file_layer} from {import_layer}",
             )
 
-        # Cache the analysis result (TTL: 1 hour)
+        # [L4 CONTEXT] Cache the analysis result (TTL: 1 hour)
         fix_dict = {
             "file_path": fix.file_path,
             "line_number": fix.line_number,
@@ -158,7 +167,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             "fix_type": fix.fix_type,
             "rationale": fix.rationale,
         }
-        self.ml_cache_set(cache_key, fix_dict, ttl=3600)
+        self.context.cache_set(cache_key, fix_dict, agent="GravityLeakRepairAgent", ttl=3600)
 
         return fix
 
@@ -413,14 +422,17 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                     )
                     result = self.apply_fix(fix, dry_run=False)
                     if result.get("status") == "fixed":
-                        # Store successful pattern for meta-learning
+                        # [L4 CONTEXT] Store successful pattern for cross-agent learning
                         healing_result = {
                             "status": "fixed",
                             "fix_type": fix.fix_type,
                             "new_import": fix.new_import,
                             "rationale": fix.rationale,
+                            "line_number": fix.line_number,
                         }
-                        self.ml_store_healing_pattern(violation, healing_result)
+                        self.context.store_healing_pattern(
+                            violation, healing_result, agent="GravityLeakRepairAgent"
+                        )
                         return {
                             "violations_fixed": 1,
                             "violations_found": 1,
