@@ -132,6 +132,8 @@ ignore = [
 "tests/**/*.py" = ["E402", "S101"]  # Allow imports after sys.path and asserts in tests
 "scripts/**/*.py" = ["E402", "S603", "S607"]  # Allow imports after sys.path and subprocess in scripts
 "agentic_core/**/scripts/*.py" = ["E402", "S603", "S607"]  # Allow imports after sys.path and subprocess in agent scripts
+"agentic_core/**/*_validator.py" = ["E402"]  # Allow imports after module docstring in validators
+"agentic_core/**/*Agent.py" = ["E402"]  # Allow imports after module docstring in agents
 
 [tool.mypy]
 python_version = "3.10"

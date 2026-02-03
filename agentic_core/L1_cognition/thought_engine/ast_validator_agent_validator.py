@@ -27,21 +27,23 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 
 class ASTValidatorBase(ast.NodeVisitor):
     """Base class for AST validation with TYPE_CHECKING block support."""
-    
+
     def __init__(self):
         self.violations: list[dict[str, Any]] = []
         self.in_type_checking: bool = False
         self._current_file: str = ""
-    
+
     def report(self, message: str, node: ast.AST) -> None:
         """Report a violation found during AST traversal."""
-        self.violations.append({
-            "message": message,
-            "line": getattr(node, "lineno", 0),
-            "col": getattr(node, "col_offset", 0),
-            "file": self._current_file,
-        })
-    
+        self.violations.append(
+            {
+                "message": message,
+                "line": getattr(node, "lineno", 0),
+                "col": getattr(node, "col_offset", 0),
+                "file": self._current_file,
+            }
+        )
+
     def visit_If(self, node: ast.If) -> Any:
         """Track TYPE_CHECKING blocks to skip validation inside them."""
         # Check if this is a TYPE_CHECKING block
@@ -361,7 +363,10 @@ if TYPE_CHECKING:
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        Heal violations detected by ASTValidatorAgent.
+        Heal violations detected by ASTValidatorAgent using CST-based transformations.
+
+        Uses UnifiedCSTHealer for zero-loss healing that preserves comments,
+        formatting, and code structure.
 
         Args:
             violation: Dictionary containing violation details with keys:
@@ -376,21 +381,85 @@ if TYPE_CHECKING:
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        violation.get("file") or violation.get("file_path")
-        violation_type = violation.get("type", "unknown")
+        from agentic_core.L5_safety.validators.unified_cst_healer import (
+            UnifiedCSTHealer,
+            HealingConfig,
+        )
 
-        # Default implementation - AST violations need manual review
-        try:
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
+        message = violation.get("message", "").lower()
+
+        # Determine if this is a healable violation
+        is_bare_except = "bare except" in message
+
+        # Only bare except violations are auto-healable via CST
+        if not is_bare_except:
             return {
                 "status": "skipped",
-                "details": f"ASTValidatorAgent heal() not yet implemented for {violation_type} - AST violations require manual review",
+                "details": (
+                    f"ASTValidatorAgent: {violation_type} violations require "
+                    "manual review (only bare_except is auto-healable)"
+                ),
                 "artifacts": [],
                 "errors": [],
             }
+
+        if not file_path:
+            return {
+                "status": "skipped",
+                "details": "No file path specified in violation",
+                "artifacts": [],
+                "errors": [],
+            }
+
+        try:
+            file_path = Path(file_path)
+            if not file_path.exists():
+                return {
+                    "status": "failed",
+                    "details": f"File not found: {file_path}",
+                    "artifacts": [],
+                    "errors": [f"File not found: {file_path}"],
+                }
+
+            # Configure healer for bare except fixing only
+            config = HealingConfig(
+                enable_import_healing=False,
+                enable_docstring_healing=False,
+                enable_bare_except_healing=True,
+                enable_future_import_healing=False,
+                enable_whitespace_healing=False,
+                enable_blank_line_healing=False,
+                enable_type_hint_healing=False,
+                dry_run=False,
+            )
+
+            healer = UnifiedCSTHealer(config)
+            result = healer.heal_file(file_path)
+
+            if result.violations_fixed > 0:
+                return {
+                    "status": "success",
+                    "details": (
+                        f"Fixed {result.violations_fixed} bare except violation(s) "
+                        f"in {file_path.name} using zero-loss CST transformation"
+                    ),
+                    "artifacts": [str(file_path)],
+                    "errors": [],
+                }
+            else:
+                return {
+                    "status": "skipped",
+                    "details": "No bare except violations found to fix",
+                    "artifacts": [],
+                    "errors": [],
+                }
+
         except Exception as e:
             return {
                 "status": "failed",
-                "details": f"ASTValidatorAgent heal() failed: {str(e)}",
+                "details": f"ASTValidatorAgent heal() failed: {e!s}",
                 "artifacts": [],
                 "errors": [str(e)],
             }
