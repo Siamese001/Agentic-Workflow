@@ -1,9 +1,14 @@
 # Main Execution Loop
 # Strategy: Orchestrates the Observe-Think-Act cycle with safety limits
 
+import logging
+
 from agentic_core.patterns.base import BaseReasoningPattern
+from agentic_core.runtime.exceptions import ToolExecutionError, ToolNotFoundError
 from agentic_core.runtime.state import AgentState
 from agentic_core.runtime.tools import ToolRegistry
+
+logger = logging.getLogger(__name__)
 
 
 class AgentEngine:
@@ -40,12 +45,20 @@ class AgentEngine:
             # 4. Execute (Act)
             tool = self.tools.get(tool_name)
             if not tool:
-                observation = f"Error: Tool '{tool_name}' not found."
-            else:
-                try:
-                    observation = await tool.run(**tool_args)
-                except Exception as e:
-                    observation = f"Error executing {tool_name}: {str(e)}"
+                available = list(self.tools.keys()) if hasattr(self.tools, "keys") else []
+                logger.error(f"Tool '{tool_name}' not found. Available: {available}")
+                raise ToolNotFoundError(tool_name, available)
+
+            try:
+                observation = await tool.run(**tool_args)
+            except Exception as e:
+                logger.error(f"Tool execution failed: {tool_name} - {e}", exc_info=True)
+                raise ToolExecutionError(
+                    tool_name=tool_name,
+                    message=f"Critical failure executing tool '{tool_name}': {e}",
+                    original_error=e,
+                    tool_args=tool_args,
+                ) from e
 
             # 5. Observe
             state.add_message("system", f"Observation: {observation}")

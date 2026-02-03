@@ -15,10 +15,10 @@ Uses pattern recognition and predictive analytics to make agents more autonomous
 import asyncio
 import json
 import logging
-import os
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
@@ -77,14 +77,16 @@ class AdaptiveLearningEngine:
     - Continuous learning from new healing attempts
     """
 
-    def __init__(self, pattern_storage_path: str | None = None, autonomous_mode: bool = True):
+    def __init__(
+        self, pattern_storage_path: str | Path | None = None, autonomous_mode: bool = True
+    ):
         """Initialize the adaptive learning engine."""
-        from pathlib import Path
-
-        self.pattern_storage_path = pattern_storage_path or os.path.join(
-            os.getcwd(), ".canon_memory", "healing_patterns.json"
-        )
-        self.storage_path = Path(self.pattern_storage_path)
+        # Phase 2 Landmine Remediation: Use pathlib.Path for cross-platform compatibility
+        if pattern_storage_path:
+            self.storage_path = Path(pattern_storage_path)
+        else:
+            self.storage_path = Path.cwd() / ".canon_memory" / "healing_patterns.json"
+        self.pattern_storage_path = str(self.storage_path)
         self.backup_dir = Path(".canon_memory/backups")
         self.backup_dir.mkdir(parents=True, exist_ok=True)
         self.autonomous_mode = autonomous_mode
@@ -120,7 +122,7 @@ class AdaptiveLearningEngine:
 
     def _load_patterns(self):
         """Load learned patterns from storage."""
-        if not os.path.exists(self.pattern_storage_path):
+        if not self.storage_path.exists():
             Logger.info("No existing patterns found, starting fresh")
             return
         try:

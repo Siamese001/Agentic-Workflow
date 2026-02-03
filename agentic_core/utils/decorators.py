@@ -24,12 +24,19 @@ USAGE:
 
 import functools
 import logging
+import os
 import time
 import traceback
 from collections.abc import Callable
 from typing import Any, TypeVar, cast
 
+from agentic_core.runtime.exceptions import HealExecutionError
+
 Logger = logging.getLogger(__name__)
+
+# Environment variable to control whether heal errors should raise exceptions
+# Set to "1" or "true" to enable strict mode (raises on error)
+HEAL_STRICT_MODE = os.environ.get("HEAL_STRICT_MODE", "false").lower() in ("1", "true")
 
 # Type variable for decorated functions
 F = TypeVar("F", bound=Callable[..., Any])
@@ -245,7 +252,7 @@ def standard_heal(func: F) -> F:
             return normalized
 
         except Exception as e:
-            # Error containment - never let the method crash
+            # Error handling with optional strict mode
             execution_time_ms = (time.time() - start_time) * 1000
 
             Logger.error(
@@ -253,6 +260,16 @@ def standard_heal(func: F) -> F:
                 f"{traceback.format_exc()}"
             )
 
+            # In strict mode, raise HealExecutionError for proper error propagation
+            if HEAL_STRICT_MODE:
+                raise HealExecutionError(
+                    agent_name=agent_name,
+                    method_name=func.__name__,
+                    message=f"Heal operation failed: {e}",
+                    original_error=e,
+                ) from e
+
+            # Legacy behavior: return error dict for backward compatibility
             return {
                 **HEAL_RESULT_SCHEMA,
                 "status": "ERROR",
@@ -311,12 +328,24 @@ def standard_heal_async(func: F) -> F:
                 f"{traceback.format_exc()}"
             )
 
+            # In strict mode, raise HealExecutionError for proper error propagation
+            if HEAL_STRICT_MODE:
+                raise HealExecutionError(
+                    agent_name=agent_name,
+                    method_name=func.__name__,
+                    message=f"Async heal operation failed: {e}",
+                    original_error=e,
+                ) from e
+
+            # Legacy behavior: return error dict for backward compatibility
             return {
                 **HEAL_RESULT_SCHEMA,
                 "status": "ERROR",
                 "errors": 1,
                 "execution_time_ms": execution_time_ms,
                 "error_message": str(e),
+                "_exception_type": type(e).__name__,
+                "_traceback": traceback.format_exc(),
             }
 
     return cast(F, wrapper)

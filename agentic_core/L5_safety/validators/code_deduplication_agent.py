@@ -3,39 +3,14 @@
 # Suggested keywords to add in docstring/code: validator
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
-# This boosts alignment detection — review and integrate appropriately
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: memory, orchestrator, prompt, workflow
-# This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
-# === ENABLE DIRECT EXECUTION: Dynamically add project root to sys.path ===
-# This runs at module load time (before imports) when running the file directly.
-# It searches upward for the directory containing 'agentic_core' (your project root).
-# Harmless when imported as a module (idempotent).
-_AGENTIC_CORE_MARKER = "agentic_core"
-
-
-def _add_project_root_to_sys_path() -> None:
-    current = Path(__file__).resolve()
-    while current.parent != current:  # Stop at filesystem root
-        if (current / _AGENTIC_CORE_MARKER).exists():
-            root_str = str(current)
-            if root_str not in sys.path:
-                sys.path.insert(0, root_str)
-            return
-        current = current.parent
-    # Silently skip if not found - will fail on import if truly needed
-
-
-_add_project_root_to_sys_path()
-# === END PATH FIX ===
+# Phase 2 Landmine Remediation: Removed runtime sys.path manipulation
+# Use proper PYTHONPATH configuration or run from project root instead
+# See: Phase2_Discovery_Report.md - Global Mutation category
 
 import ast
+from pathlib import Path
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
 import difflib

@@ -53,3 +53,13 @@ repos:
         pass_filenames: false
         always_run: true
         # Enforces SSOT compliance by ensuring all reports are in docs/reports/
+
+      # Phase 2 Landmine Detection: Anti-pattern scanning
+      - id: check-anti-patterns
+        name: Check Anti-Patterns (Phase 2 Landmines)
+        entry: python ops_scripts/ci/check_anti_patterns.py
+        language: system
+        types: [python]
+        exclude: ^(archives/.*|tests/.*|\.sovereign_healing_backup/.*)
+        # Detects Phase 2 anti-patterns: silent swallowers, type erasure, path fragility, magic config, global mutation
+        # Warning mode by default - add '# guardian: allow-<pattern>' to whitelist
