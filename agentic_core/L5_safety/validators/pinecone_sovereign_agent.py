@@ -28,6 +28,7 @@ import numpy as np
 from pinecone import Pinecone
 
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.config.agent_defaults import AgentDefaults
 from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
@@ -400,7 +401,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
         query: str,
         file_path: Path | None = None,
         top_k: int = 5,
-        relevance_threshold: float = 0.75,
+        relevance_threshold: float | None = None,
     ) -> list[str]:
         """
         [HARDENING 7] Layer-scoped semantic search with relevance filtering.
@@ -419,6 +420,10 @@ class PineconeSovereignAgent(SovereignBaseAgent):
         Returns:
             List of code chunk strings (capped at ~10k chars total)
         """
+        # Phase 2 Landmine Remediation: Use configurable threshold
+        if relevance_threshold is None:
+            relevance_threshold = AgentDefaults.get_float("PINECONE_RELEVANCE_THRESHOLD", 0.75)
+
         # [HARDENING] Derive layer namespace from file_path
         namespace = "default"
         if file_path:

@@ -44,6 +44,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.schemas.models.heal_result import HealResult, HealStatus
+
 # Shared infrastructure imports (SRP fission)
 from agentic_core.L5_safety.validators.location_utils import (
     compute_module_path,
@@ -2032,7 +2034,7 @@ class LocationAgent(SovereignBaseAgent):
         finally:
             _call_path.discard(agent_name)
 
-    def heal(self, violation: dict) -> dict:
+    def heal(self, violation: dict) -> HealResult:
         """
         Heal a single location violation.
 
@@ -2049,15 +2051,8 @@ class LocationAgent(SovereignBaseAgent):
                 - suggested_action: Suggested fix (optional)
 
         Returns:
-            Dict with healing result following HEAL_RESULT_SCHEMA:
-                - success: bool indicating if healing succeeded
-                - violations_fixed: number of violations fixed (0 or 1)
-                - violations_found: number of violations found (always 1)
-                - message: descriptive message
-                - target: the file path that was processed
-                - agent: name of this agent
-                - error: error message if healing failed
-                - execution_time_ms: time taken in milliseconds
+            HealResult: Structured result with violations_found, violations_fixed,
+                status, errors, and metadata fields.
         """
         import time
 
@@ -2066,15 +2061,14 @@ class LocationAgent(SovereignBaseAgent):
         # Extract violation details
         file_path = violation.get("file")
         if not file_path:
-            return {
-                "success": False,
-                "violations_fixed": 0,
-                "violations_found": 0,
-                "message": "No file path in violation",
-                "error": "Missing file path in violation",
-                "execution_time_ms": 0,
-                "agent": self.__class__.__name__,
-            }
+            return HealResult(
+                violations_found=0,
+                violations_fixed=0,
+                status=HealStatus.ERROR,
+                errors=1,
+                error_message="Missing file path in violation",
+                metadata={"agent": self.__class__.__name__},
+            )
 
         # Convert to Path if needed
         if isinstance(file_path, str):
@@ -2090,43 +2084,63 @@ class LocationAgent(SovereignBaseAgent):
                 result = cleanup_results[0]
                 applied = result.get("applied", False)
                 error = result.get("error")
+                execution_time = (time.time() - start_time) * 1000
 
-                return {
-                    "success": applied and not error,
-                    "violations_fixed": 1 if applied and not error else 0,
-                    "violations_found": 1,
-                    "message": result.get("action_taken", "Location violation processed"),
-                    "target": str(file_path),
-                    "agent": self.__class__.__name__,
-                    "error": error,
-                    "execution_time_ms": int((time.time() - start_time) * 1000),
-                    "action_taken": result.get("action_taken"),
-                    "new_path": result.get("new_path"),
-                }
+                if applied and not error:
+                    return HealResult(
+                        violations_found=1,
+                        violations_fixed=1,
+                        status=HealStatus.SUCCESS,
+                        execution_time_ms=execution_time,
+                        details=[result.get("action_taken", "Location violation processed")],
+                        metadata={
+                            "agent": self.__class__.__name__,
+                            "target": str(file_path),
+                            "action_taken": result.get("action_taken"),
+                            "new_path": result.get("new_path"),
+                        },
+                    )
+                else:
+                    return HealResult(
+                        violations_found=1,
+                        violations_fixed=0,
+                        status=HealStatus.ERROR,
+                        errors=1,
+                        error_message=error,
+                        execution_time_ms=execution_time,
+                        metadata={
+                            "agent": self.__class__.__name__,
+                            "target": str(file_path),
+                        },
+                    )
             else:
-                return {
-                    "success": False,
-                    "violations_fixed": 0,
-                    "violations_found": 1,
-                    "message": "No cleanup result returned",
-                    "target": str(file_path),
-                    "agent": self.__class__.__name__,
-                    "error": "No cleanup result returned",
-                    "execution_time_ms": int((time.time() - start_time) * 1000),
-                }
+                return HealResult(
+                    violations_found=1,
+                    violations_fixed=0,
+                    status=HealStatus.ERROR,
+                    errors=1,
+                    error_message="No cleanup result returned",
+                    execution_time_ms=(time.time() - start_time) * 1000,
+                    metadata={
+                        "agent": self.__class__.__name__,
+                        "target": str(file_path),
+                    },
+                )
 
         except Exception as e:
             Logger.error(f"Error healing location violation for {file_path}: {e}")
-            return {
-                "success": False,
-                "violations_fixed": 0,
-                "violations_found": 1,
-                "message": f"Failed to heal location violation: {str(e)}",
-                "target": str(file_path),
-                "agent": self.__class__.__name__,
-                "error": str(e),
-                "execution_time_ms": int((time.time() - start_time) * 1000),
-            }
+            return HealResult(
+                violations_found=1,
+                violations_fixed=0,
+                status=HealStatus.ERROR,
+                errors=1,
+                error_message=str(e),
+                execution_time_ms=(time.time() - start_time) * 1000,
+                metadata={
+                    "agent": self.__class__.__name__,
+                    "target": str(file_path),
+                },
+            )
 
     def heal_violations(self, violations: list, auto_approve: bool = True) -> dict:
         """
