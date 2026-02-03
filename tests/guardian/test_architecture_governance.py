@@ -1,14 +1,25 @@
 #!/usr/bin/env python3
 """
-Deterministic Guardian Test for Architecture Governance
-Tests layer boundaries, naming conventions, and structural compliance.
+Guardian Test for Architecture Governance
+Comprehensive tests for layer boundaries, naming conventions, and structural compliance.
+
+Merged from:
+- test_architecture_governance.py (core validation logic)
+- test_architecture_governance_comprehensive.py (test cases)
 """
 
 import ast
+import shutil
 import sys
 from pathlib import Path
+from typing import Any
 
-# Layer hierarchy (lower layers cannot import from higher layers)
+import pytest
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 LAYER_HIERARCHY = {
     "L0_maintenance": 0,
     "L1_cognition": 1,
@@ -20,145 +31,264 @@ LAYER_HIERARCHY = {
 }
 
 
-def get_layer_from_path(file_path: Path) -> tuple[str, int]:
-    """
-    Extract layer from file path.
+class ArchitectureGovernanceValidator:
+    """Validates architecture governance including layer boundaries and naming."""
 
-    Returns:
-        Tuple of (layer_name, layer_number) or ("unknown", -1)
-    """
-    parts = file_path.parts
-    for part in parts:
-        if part in LAYER_HIERARCHY:
-            return (part, LAYER_HIERARCHY[part])
-    return ("unknown", -1)
+    @staticmethod
+    def get_layer_from_path(file_path: Path) -> tuple[str, int]:
+        """Extract layer from file path."""
+        parts = file_path.parts
+        for part in parts:
+            if part in LAYER_HIERARCHY:
+                return (part, LAYER_HIERARCHY[part])
+        return ("unknown", -1)
 
+    @staticmethod
+    def check_gravity_violations(file_path: Path) -> list[str]:
+        """Check for gravity violations (lower layers importing from higher layers)."""
+        violations = []
 
-def check_gravity_violations(file_path: Path) -> list[str]:
-    """
-    Check for gravity violations (lower layers importing from higher layers).
+        try:
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
+            tree = ast.parse(content)
 
-    Returns:
-        List of violation messages
-    """
-    violations = []
-
-    try:
-        content = file_path.read_text(encoding="utf-8", errors="ignore")
-        tree = ast.parse(content)
-
-        current_layer, current_level = get_layer_from_path(file_path)
-
-        if current_level == -1:
-            return []  # Not in a layer directory
-
-        # Check all imports
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
-                if isinstance(node, ast.ImportFrom) and node.module:
-                    module_parts = node.module.split(".")
-
-                    # Check if importing from agentic_core layer
-                    if len(module_parts) >= 2 and module_parts[0] == "agentic_core":
-                        imported_layer = module_parts[1]
-                        if imported_layer in LAYER_HIERARCHY:
-                            imported_level = LAYER_HIERARCHY[imported_layer]
-
-                            # Gravity violation: lower layer importing higher layer
-                            if current_level < imported_level:
-                                violations.append(
-                                    f"Gravity violation: {current_layer} (L{current_level}) "
-                                    f"importing from {imported_layer} (L{imported_level})"
-                                )
-    except Exception as e:
-        violations.append(f"Error parsing file: {e}")
-
-    return violations
-
-
-def check_naming_convention(file_path: Path) -> list[str]:
-    """
-    Check that agent files follow naming conventions.
-
-    Returns:
-        List of violation messages
-    """
-    violations = []
-
-    # Check if file is in agentic_core and contains agent classes
-    if "agentic_core" not in str(file_path):
-        return []
-
-    if not file_path.suffix == ".py":
-        return []
-
-    try:
-        content = file_path.read_text(encoding="utf-8", errors="ignore")
-        tree = ast.parse(content)
-
-        # Find agent classes
-        agent_classes = [
-            node.name
-            for node in ast.walk(tree)
-            if isinstance(node, ast.ClassDef) and node.name.endswith("Agent")
-        ]
-
-        # If file contains agent classes, it should end with Agent.py
-        if agent_classes and not file_path.stem.endswith("Agent"):
-            violations.append(
-                f"Naming violation: File contains agent classes {agent_classes} "
-                f"but doesn't end with 'Agent.py'"
+            current_layer, current_level = ArchitectureGovernanceValidator.get_layer_from_path(
+                file_path
             )
-    except Exception:
-        # Syntax errors are not naming violations
+
+            if current_level == -1:
+                return []
+
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.Import, ast.ImportFrom)):
+                    if isinstance(node, ast.ImportFrom) and node.module:
+                        module_parts = node.module.split(".")
+
+                        if len(module_parts) >= 2 and module_parts[0] == "agentic_core":
+                            imported_layer = module_parts[1]
+                            if imported_layer in LAYER_HIERARCHY:
+                                imported_level = LAYER_HIERARCHY[imported_layer]
+
+                                if current_level < imported_level:
+                                    violations.append(
+                                        f"Gravity violation: {current_layer} (L{current_level}) "
+                                        f"importing from {imported_layer} (L{imported_level})"
+                                    )
+        except Exception as e:
+            violations.append(f"Error parsing file: {e}")
+
+        return violations
+
+    @staticmethod
+    def check_naming_convention(file_path: Path) -> list[str]:
+        """Check that agent files follow naming conventions."""
+        violations = []
+
+        if "agentic_core" not in str(file_path):
+            return []
+
+        if file_path.suffix != ".py":
+            return []
+
+        try:
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
+            tree = ast.parse(content)
+
+            agent_classes = [
+                node.name
+                for node in ast.walk(tree)
+                if isinstance(node, ast.ClassDef) and node.name.endswith("Agent")
+            ]
+
+            if agent_classes and not file_path.stem.endswith("Agent"):
+                violations.append(
+                    f"Naming violation: File contains agent classes {agent_classes} "
+                    f"but doesn't end with 'Agent.py'"
+                )
+        except Exception:
+            pass
+
+        return violations
+
+    @staticmethod
+    def validate_file(file_path: Path) -> dict[str, Any]:
+        """Validate a file for architecture governance."""
+        result = {
+            "compliant": True,
+            "gravity_violations": [],
+            "naming_violations": [],
+            "error": None,
+        }
+
+        if not file_path.exists():
+            result["error"] = f"File does not exist: {file_path}"
+            result["compliant"] = False
+            return result
+
+        if not file_path.is_file():
+            result["error"] = f"Not a file: {file_path}"
+            result["compliant"] = False
+            return result
+
+        result["gravity_violations"] = ArchitectureGovernanceValidator.check_gravity_violations(
+            file_path
+        )
+        result["naming_violations"] = ArchitectureGovernanceValidator.check_naming_convention(
+            file_path
+        )
+
+        if result["gravity_violations"] or result["naming_violations"]:
+            result["compliant"] = False
+
+        return result
+
+
+class TestArchitectureGovernance:
+    """Comprehensive architecture governance tests."""
+
+    @pytest.fixture
+    def validator(self):
+        """Provide validator instance."""
+        return ArchitectureGovernanceValidator()
+
+    @pytest.fixture
+    def temp_agentic_core(self, tmp_path):
+        """Create temporary agentic_core structure."""
+        base = tmp_path / "temp_test_agentic_core"
+        base.mkdir()
+        yield base
+        shutil.rmtree(base, ignore_errors=True)
+
+    def _create_layer_file(self, temp_base: Path, layer: str, filename: str, code: str) -> Path:
+        """Create a file in a specific layer."""
+        layer_dir = temp_base / layer
+        layer_dir.mkdir(parents=True, exist_ok=True)
+        file_path = layer_dir / filename
+        file_path.write_text(code)
+        return file_path
+
+    def test_compliant_file_passes(self, validator, temp_agentic_core):
+        """TC-AG-01: Compliant file with no violations passes."""
+        agent_code = """
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
+class TestAgent(SovereignBaseAgent):
+    def run(self):
         pass
+"""
+        temp_file = self._create_layer_file(
+            temp_agentic_core, "L5_safety", "TestAgent.py", agent_code
+        )
 
-    return violations
+        result = validator.validate_file(temp_file)
+        assert result["compliant"], f"Expected compliant, got: {result}"
 
+    def test_gravity_violation_detected(self, validator, temp_agentic_core):
+        """TC-AG-02: Gravity violation (lower layer importing higher) detected."""
+        agent_code = """
+from agentic_core.L5_safety.validators.SomeValidator import SomeValidator
 
-def test_architecture_governance(file_path: str) -> None:
-    """
-    Test architecture governance for a single file.
+class CognitionAgent:
+    def run(self):
+        pass
+"""
+        temp_file = self._create_layer_file(
+            temp_agentic_core, "L1_cognition", "CognitionAgent.py", agent_code
+        )
 
-    Args:
-        file_path: Path to the file to test
+        result = validator.validate_file(temp_file)
+        assert not result["compliant"]
+        assert any("Gravity violation" in v for v in result["gravity_violations"])
 
-    Raises:
-        SystemExit: 1 if violations found, 0 if compliant
-    """
-    path = Path(file_path)
+    def test_naming_convention_violation(self, validator, temp_agentic_core):
+        """TC-AG-03: Agent class in file not ending with Agent.py."""
+        agent_code = """
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
-    if not path.exists():
-        print(f"VIOLATION: File does not exist: {file_path}")
-        sys.exit(1)
+class TestAgent(SovereignBaseAgent):
+    def run(self):
+        pass
+"""
+        temp_file = self._create_layer_file(
+            temp_agentic_core, "L5_safety", "test_file.py", agent_code
+        )
 
-    if not path.is_file():
-        print(f"VIOLATION: Not a file: {file_path}")
-        sys.exit(1)
+        result = validator.validate_file(temp_file)
+        assert not result["compliant"]
+        assert any("Naming violation" in v for v in result["naming_violations"])
 
-    violations = []
+    def test_nonexistent_file(self, validator):
+        """TC-AG-04: Nonexistent file fails."""
+        result = validator.validate_file(Path("nonexistent_file.py"))
+        assert result["error"] is not None
+        assert "does not exist" in result["error"]
 
-    # Check gravity violations
-    gravity_violations = check_gravity_violations(path)
-    violations.extend(gravity_violations)
+    def test_valid_upward_import(self, validator, temp_agentic_core):
+        """TC-AG-05: Valid upward import (higher layer importing lower) passes."""
+        agent_code = """
+from agentic_core.L1_cognition.thought_engine.ThoughtEngine import ThoughtEngine
 
-    # Check naming conventions
-    naming_violations = check_naming_convention(path)
-    violations.extend(naming_violations)
+class SafetyAgent:
+    def run(self):
+        pass
+"""
+        temp_file = self._create_layer_file(
+            temp_agentic_core, "L5_safety", "SafetyAgent.py", agent_code
+        )
 
-    if violations:
-        print(f"VIOLATION: Architecture governance violations in {file_path}:")
-        for violation in violations:
-            print(f"  - {violation}")
-        sys.exit(1)
-    else:
-        print(f"COMPLIANT: Architecture governance validated for {file_path}")
-        sys.exit(0)
+        result = validator.validate_file(temp_file)
+        assert result["compliant"]
+
+    def test_non_agent_file_passes(self, validator, temp_agentic_core):
+        """TC-AG-06: Non-agent utility file passes."""
+        util_code = """
+def helper_function():
+    return True
+
+class UtilityClass:
+    pass
+"""
+        temp_file = self._create_layer_file(temp_agentic_core, "L5_safety", "utils.py", util_code)
+
+        result = validator.validate_file(temp_file)
+        assert result["compliant"]
+
+    def test_syntax_error_handling(self, validator, temp_agentic_core):
+        """TC-AG-07: Syntax errors handled gracefully."""
+        agent_code = """
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
+class TestAgent(SovereignBaseAgent):
+    def run(self):
+        bad_string = "unclosed
+        pass
+"""
+        temp_file = self._create_layer_file(
+            temp_agentic_core, "L5_safety", "TestAgent.py", agent_code
+        )
+
+        validator.validate_file(temp_file)
+        # Should handle gracefully without crashing
+
+    def test_multiple_violations(self, validator, temp_agentic_core):
+        """TC-AG-08: Multiple violations detected in single file."""
+        agent_code = """
+from agentic_core.L6_observability.dashboard import Dashboard
+
+class TestAgent:
+    def run(self):
+        pass
+"""
+        temp_file = self._create_layer_file(
+            temp_agentic_core, "L1_cognition", "test_file.py", agent_code
+        )
+
+        result = validator.validate_file(temp_file)
+        assert not result["compliant"]
+        # Should detect at least one type of violation
+        has_violation = bool(result["gravity_violations"]) or bool(result["naming_violations"])
+        assert has_violation
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python test_architecture_governance.py <file_path>")
-        sys.exit(1)
-
-    test_architecture_governance(sys.argv[1])
+    pytest.main([__file__, "-v"])
