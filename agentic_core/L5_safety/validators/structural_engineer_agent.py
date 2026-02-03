@@ -24,8 +24,10 @@ Responsible for:
 """
 import ast
 import os
+from pathlib import Path
 from typing import Any
 
+from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -170,15 +172,10 @@ class StructuralEngineerAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerM
         """
         Calculate cyclomatic complexity of a function.
 
-        Complexity = 1 + number of decision points (if, for, while, and, or, except)
+        CONSOLIDATED: Delegates to shared L4 utility.
+        See agentic_core.L4_state.utils.complexity_analyzer
         """
-        complexity = 1
-        for child in ast.walk(node):
-            if isinstance(child, ast.If | ast.For | ast.While | ast.ExceptHandler):
-                complexity += 1
-            elif isinstance(child, ast.BoolOp):
-                complexity += len(child.values) - 1
-        return complexity
+        return calculate_mccabe_complexity(node)
 
     async def _heal_violations(self, key: int, violations: list[str]):
         """

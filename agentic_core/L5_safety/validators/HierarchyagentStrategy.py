@@ -156,17 +156,27 @@ class HierarchyAgent(SovereignBaseAgent):
                         "errors": [],
                     }
             elif violation_type == "MISPLACED" or violation_type == "ORPHAN":
-                # File relocation violations
+                # [CONSOLIDATED] File relocation delegated to LocationHealerAgent
+                # LocationHealerAgent is the SSOT for all file mutation operations
                 if self.healing_enabled:
-                    results = self.relocate_misplaced_files()
-                    return {
-                        "status": "success"
-                        if results["violations_found"] == 0
-                        else "partial_success",
-                        "details": f"Relocated {results['files_relocated']} files",
-                        "artifacts": [file_path],
-                        "errors": results["errors"],
-                    }
+                    try:
+                        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+                            LocationHealerAgent,
+                        )
+
+                        healer = LocationHealerAgent(project_root=self.project_root)
+                        return healer.heal(violation)
+                    except ImportError:
+                        # Fallback to local implementation if LocationHealerAgent unavailable
+                        results = self.relocate_misplaced_files()
+                        return {
+                            "status": "success"
+                            if results["violations_found"] == 0
+                            else "partial_success",
+                            "details": f"Relocated {results['files_relocated']} files",
+                            "artifacts": [file_path],
+                            "errors": results["errors"],
+                        }
                 else:
                     return {
                         "status": "skipped",

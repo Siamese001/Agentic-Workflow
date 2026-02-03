@@ -6,7 +6,10 @@ LLMProviderMixin - Unified LLM Access for Agents
 
 from typing import Any, Literal
 
-from agentic_core.L2_execution.mcp.SovereignLLMGateway import SovereignLLMGateway, get_llm_gateway
+from agentic_core.L2_execution.mcp.SovereignllmgatewayStrategy import (
+    SovereignLLMGateway,
+    get_llm_gateway,
+)
 
 Provider = Literal["openai", "anthropic", "google"]
 

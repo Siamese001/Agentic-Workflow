@@ -4,11 +4,11 @@ HARDENED: Consolidated exception hierarchy with SSOT compliance
 """
 
 # Export core entities
-from .BaseEntity import AgentConfig, BaseEntity
+from .base_entity_config import AgentConfig, BaseEntity
 
 # Export core contracts
-from .CoreIntegrityVerifier import CoreIntegrityVerifier
-from .LegacyArtifacts import LegacyArtifacts
+from .core_integrity_verifier_validator import CoreIntegrityVerifier
+from .LegacyartifactsStrategy import LegacyArtifacts
 
 # Export consolidated exception hierarchy (SSOT)
 from .SovereignError import (

@@ -49,6 +49,7 @@ from agentic_core.L5_safety.validators.surgical_context import (
     SurgicalContext,
     ViolationConstraint,
 )
+from agentic_core.L5_safety.security.verification_gate import VerificationGate
 
 from enum import Enum
 
@@ -205,6 +206,9 @@ class CodeHealerAgent(SovereignBaseAgent, SurgicalCSTHealerMixin):
                 "dry_run": self._agent_config.dry_run,
             }
         )
+
+        # Initialize Verification Gate for Epistemic Cascade prevention
+        self.gate = VerificationGate()
 
         Logger.info("CodeHealerAgent initialized")
 
