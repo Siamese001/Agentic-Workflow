@@ -8,6 +8,7 @@ from __future__ import annotations
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: healer, memory, prompt, state
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -25,7 +26,7 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
 from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
 
 
-class OrchestrationHandshakeAgent(
+clasAtomicExecutionMixin, s OrchestrationHandshakCAreOnchtstrat(oSvgBase
     SubatomicTestingMixin, SovereignBaseAgent, CoreOrchestrationAgent
 ):
     """

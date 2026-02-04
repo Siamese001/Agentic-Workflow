@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # Import mixins with fallbacks
@@ -34,7 +35,7 @@ except ImportError:
         pass
 
 
-@dataclass
+@dataclassAtomicExecutionMixin, Mixin, Healer
 class AppBaseAgent(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
     """
     AppBaseAgent: Common foundation for all application-level agents.
