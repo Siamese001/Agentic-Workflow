@@ -29,6 +29,7 @@ ALLOWED_FILES = [
     "FilesystemSSOTReconcilerAgent.py",
     # Legitimate validator introspection for phase validation
     "Phase5Validator.py",
+    "phase5_validator.py",
     # Legitimate external documentation lookup (not AI validation)
     "SovereignCanonAuditorAgent.py",
     # Legitimate test generation introspection
