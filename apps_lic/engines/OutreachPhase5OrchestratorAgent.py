@@ -8,11 +8,11 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class OutreachPhase5OrchestratorAgent(SubatomicTestingMixin, LICAgentBase):
+class OutreachPhase5OrchestratorAgent(LICAgentBase, SubatomicTestingMixin):
     """
     Sovereign Phase 5 Orchestrator.
     Manages the final assembly and dispatch validation of outreach campaigns.

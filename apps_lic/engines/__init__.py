@@ -1,7 +1,7 @@
 """SSOT Agents Package generated during migration."""
 
 from .DispatchOutreachToolsAgent import DispatchOutreachToolsAgent
-from .ValidatorAgentValidator import ValidatorAgent
+from .ValidatorAgent import ValidatorAgent
 from .CulturalDecoderAgent import CulturalDecoderAgent
 from .DeliverabilityAgent import DeliverabilityAgent
 from .GovernanceShieldAgent import GovernanceShieldAgent
@@ -12,10 +12,10 @@ from .HOP8QAReportAgent import HOP8QAReportAgent
 from .HOP9IntegrationAgent import HOP9IntegrationAgent
 from .Hop1ProfileAnalysisAgent import Hop1ProfileAnalysisAgent
 from .Hop2ResearchAgent import Hop2ResearchAgent
-from .Hop4RoutingAgentValidator import HOP4RoutingAgent
-from .Hop6ValidationAgentValidator import HOP6ValidationAgent
+from .Hop4RoutingAgent import HOP4RoutingAgent
+from .Hop6ValidationAgent import HOP6ValidationAgent
 from .IntelligenceLibrarianAgent import IntelligenceLibrarianAgent
-from .K3messagearchitectagentStrategy import K3messagearchitectagentStrategy
+from .MessageArchitectAgent import MessageArchitectAgent
 from .LeadQualityAgent import LeadQualityAgent
 from .LicCodeInterpreter import LicCodeInterpreter
 from .LicHealingOrchestratorAgent import LicHealingOrchestratorAgent
@@ -24,14 +24,14 @@ from .LicS2SupervisorAgent import LicS2SupervisorAgent
 from .LicTemplateOptimizerAgent import LicTemplateOptimizerAgent
 from .LogReaderAgent import LogReaderAgent
 from .MessageComplianceAgent import MessageComplianceAgent
-from .MessageDiversityValidatorAgentValidator import MessageDiversityValidatorAgent
+from .MessageDiversityValidatorAgent import MessageDiversityValidatorAgent
 from .OutreachCapabilityMonitorAgent import OutreachCapabilityMonitorAgent
 from .OutreachLearningAgent import OutreachLearningAgent
 from .OutreachPhase5OrchestratorAgent import OutreachPhase5OrchestratorAgent
 from .OutreachProactiveAgent import OutreachProactiveAgent
 from .OutreachSignalRouterAgent import OutreachSignalRouterAgent
 from .OutreachTestPilotAgent import OutreachTestPilotAgent
-from .OutreachValidationExecutorAgentValidator import OutreachValidationExecutorAgent
+from .OutreachValidationExecutorAgent import OutreachValidationExecutorAgent
 from .PIISanitizerSpecialistAgent import PII_SanitizerSpecialistAgent
 from .PersonaPlannerValidator import PersonaPlanner
 from .QAConductorAgent import QAConductorAgent
@@ -53,7 +53,7 @@ __all__ = [
     "HOP4RoutingAgent",
     "HOP6ValidationAgent",
     "IntelligenceLibrarianAgent",
-    "K3messagearchitectagentStrategy",
+    "MessageArchitectAgent",
     "LeadQualityAgent",
     "LicCodeInterpreter",
     "LicHealingOrchestratorAgent",

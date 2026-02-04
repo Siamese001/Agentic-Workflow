@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.LICAgentBase import LICAgentBase
 from apps_lic.shared.tools.validation_tools import ValidationResult, validate_schema_policy
 
 

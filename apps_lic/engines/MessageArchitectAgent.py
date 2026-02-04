@@ -7,13 +7,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class K3MessageArchitect(LICAgentBase):
+class MessageArchitectAgent(LICAgentBase):
     """
-    Sovereign K3 Message Architect.
+    Sovereign Message Architect Agent.
     Constructs message frameworks based on strategic inputs.
     """
 

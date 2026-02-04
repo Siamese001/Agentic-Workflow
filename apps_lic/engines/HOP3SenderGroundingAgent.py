@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_lic.shared.core.agent_base import LICAgentBase
+from apps_lic.shared.core.LICAgentBase import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
 
