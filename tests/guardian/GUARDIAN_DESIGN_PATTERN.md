@@ -2,17 +2,17 @@
 
 ## Architecture Position
 
-Guardian tests are part of the **Event & Anomaly Detection Layer** in the agentic architecture. They act as **sensors** that detect anomalies and trigger alerts, positioned between policy enforcement and fix execution.
+Guardian tests represent the **Guardian (Validation Gate)** in the center of the architecture (The Red Shield). They act as the final **Compliance Gate** that a "Proposed Fix" must pass before entering the **Symmetric Validator-Healer Pipe**.
 
 ## Design Principles
 
 ### 1. Separation of Concerns
 
-**Guardian Tests (Sensors):**
-- Detect anomalies and patterns
-- Orchestrate existing validation agents
-- Aggregate results and flag issues
-- Generate alerts and reports
+**Guardian Tests (Compliance Gates):**
+- Enforce structural and architectural "Hard Rules"
+- Emit **Signed Artifacts** (Pass/Fail results with metadata)
+- Verify MRO, SSOT compliance, and Schema integrity
+- Block non-compliant code from execution
 
 **Validation Agents (Validators):**
 - Implement validation logic
@@ -42,43 +42,36 @@ def check_naming_violations(self, file_path, project_root):
 ### 3. Guardian-Specific Checks
 
 Guardian tests should only implement checks that are:
-- **Cross-cutting concerns** (not specific to one agent)
-- **Meta-level detection** (detecting patterns across multiple files)
-- **Temporal patterns** (obsolete/phase files, old dates)
-- **Import/reference validation** (checking if referenced code exists)
+- **Hard architectural rules** that cannot be overridden
+- **Compliance verification** (MRO, SSOT, schema integrity)
+- **Boundary validation** (layer hierarchy, naming conventions)
+- **Final gate checks** before code execution
 
 ## Implementation Pattern
 
 ```python
-class TestGuardianDetection:
-    """Guardian test following the sensor pattern."""
+class TestGuardianCompliance:
+    """Guardian test following the validation gate pattern."""
     
-    def test_detect_anomalies(self, project_root):
-        """Main detection orchestration."""
-        files = self.collect_files()
-        issues = {}
+    def test_architectural_compliance(self, project_root):
+        """Main compliance verification."""
+        violations = {}
         
-        for file in files:
-            file_issues = []
-            
-            # 1. Call existing agents for validation
-            file_issues.extend(self.check_with_file_classification_agent(file))
-            file_issues.extend(self.check_with_location_agent(file))
-            file_issues.extend(self.check_with_hierarchy_agent(file))
-            
-            # 2. Guardian-specific checks
-            file_issues.extend(self.check_imports_exist(file))
-            file_issues.extend(self.check_obsolete_patterns(file))
-            
-            if file_issues:
-                issues[file] = file_issues
+        # 1. Call existing agents for validation
+        violations.update(self.check_mro_integrity())
+        violations.update(self.check_ssot_compliance())
+        violations.update(self.check_naming_conventions())
         
-        # 3. Aggregate and report
-        self.generate_report(issues)
+        # 2. Guardian-specific hard rules
+        violations.update(self.check_layer_hierarchy())
+        violations.update(self.check_boundary_violations())
         
-        # 4. Fail if critical issues found
-        if self.has_critical_issues(issues):
-            pytest.fail("Critical anomalies detected")
+        # 3. Emit signed artifact (pass/fail with metadata)
+        if violations:
+            self.emit_failure_artifact(violations)
+            pytest.fail(f"Architectural compliance failed: {len(violations)} violations")
+        else:
+            self.emit_success_artifact()
 ```
 
 ## Agent Integration Examples
@@ -123,78 +116,84 @@ def check_hierarchy_violations(self, file_path, project_root):
 2. **Single Source of Truth**: Agents are the authoritative validators
 3. **Maintainability**: Changes to validation logic only need to be made in agents
 4. **Composability**: Guardian tests can orchestrate multiple agents
-5. **Separation of Concerns**: Clear boundary between detection and validation
+5. **Separation of Concerns**: Clear boundary between validation gate and validators
 6. **Graceful Degradation**: Fallback to basic checks if agents unavailable
 
 ## Guardian-Specific Responsibilities
 
 Guardian tests should focus on:
 
-### 1. Temporal Detection
-- Obsolete phase/migration files
-- Old date patterns in comments
-- Deprecated functionality markers
+### 1. Hard Rule Enforcement
+- MRO integrity (Method Resolution Order)
+- SSOT compliance (Single Source of Truth)
+- Layer hierarchy violations
+- Naming convention enforcement
 
-### 2. Cross-File Patterns
-- Duplicate files with different naming
-- Missing imports across multiple files
-- Broken references to non-existent code
+### 2. Boundary Validation
+- Sovereign territory boundaries
+- Forbidden root folder enforcement
+- Gravity violations (lower layers importing higher)
+- Path depth limits
 
-### 3. Meta-Level Checks
-- Import validation (does imported module exist?)
-- File reference validation (does referenced file exist?)
-- Test coverage gaps
+### 3. Compliance Verification
+- Schema integrity checks
+- Blueprint reality validation
+- Constitutional rule compliance
+- Base agent location enforcement
 
-### 4. Aggregation & Reporting
-- Collect results from multiple agents
-- Generate comprehensive reports
-- Create deletion scripts for obsolete files
-- Flag critical vs. warning-level issues
+### 4. Signed Artifact Emission
+- Pass/fail results with metadata
+- Violation reports with line numbers
+- Technical debt tracking
+- Compliance certificates
 
-## Example: Obsolete Functionality Detection
+## Example: Architectural Compliance Gate
 
 ```python
-def test_detect_obsolete_tests(self, project_root):
-    """Detect obsolete test files using agent orchestration."""
-    test_files = self.collect_test_files()
-    issues = {}
+def test_architectural_compliance_gate(self, project_root):
+    """Guardian gate that enforces architectural compliance."""
+    violations = {}
     
-    for test_file in test_files:
-        file_issues = []
-        
-        # Agent-based validation
-        file_issues.extend(
-            self.check_naming_violations(test_file, project_root)
-        )
-        file_issues.extend(
-            self.check_location_violations(test_file, project_root)
-        )
-        
-        # Guardian-specific checks
-        file_issues.extend(self.check_imports_exist(test_file))
-        file_issues.extend(self.check_file_references(test_file))
-        file_issues.extend(self.detect_obsolete_patterns(test_file))
-        
-        if file_issues:
-            issues[test_file] = file_issues
+    # 1. Hard Rules - MRO Integrity
+    mro_violations = self.check_mro_integrity()
+    if mro_violations:
+        violations['mro'] = mro_violations
     
-    # Generate report and fail if critical issues found
-    self.report_and_fail_if_critical(issues)
+    # 2. Hard Rules - SSOT Compliance
+    ssot_violations = self.check_ssot_compliance()
+    if ssot_violations:
+        violations['ssot'] = ssot_violations
+    
+    # 3. Hard Rules - Layer Hierarchy
+    hierarchy_violations = self.check_layer_hierarchy()
+    if hierarchy_violations:
+        violations['hierarchy'] = hierarchy_violations
+    
+    # 4. Emit Signed Artifact
+    if violations:
+        self.emit_compliance_failure(violations)
+        pytest.fail(f"GUARDIAN GATE FAILED: {len(violations)} architectural violations")
+    else:
+        self.emit_compliance_certificate()
 ```
 
 ## Constitutional Rules
 
-From the user's memory:
+From the user's memory and architecture diagram:
 
-> **Guardian tests are SENSORS that call VALIDATORS (agents).**
+> **Guardian tests are VALIDATION GATES that call VALIDATORS (agents).**
 > 
 > - Maintain separation from validation code in agents
 > - Be able to call agents for validation
 > - Don't replicate logic already in FileClassificationAgent, LocationAgent, etc.
+> - Enforce hard architectural rules that cannot be overridden
+> - Emit signed artifacts (pass/fail with metadata)
+> - Act as the final gate before code execution
 
 ## References
 
-- Architecture Diagram: Event & Anomaly Detection Layer
+- Architecture Diagram: Guardian (Validation Gate) - Center Red Shield
 - FileClassificationAgent: `agentic_core/L5_safety/validators/file_classification_agent.py`
 - LocationAgent: `agentic_core/L5_safety/validators/location_agent.py`
 - HierarchyAgent: `agentic_core/L5_safety/validators/hierarchy_agent.py`
+- Guardian Tests: `tests/guardian/` - MRO verification, SSOT compliance, Schema checks
