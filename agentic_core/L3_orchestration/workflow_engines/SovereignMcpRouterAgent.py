@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """L3 Orchestration: Sovereign MCP router — Eternal Integration
@@ -21,7 +22,7 @@ from agentic_core.L3_orchestration.workflow_engines.mcp_manager import (
 Logger: Any = logging.getLogger(__name__)
 
 
-class SovereignMcpRouter(SovereignBaseAgent):
+class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
     """Ultra-hardened L3 MCP switchboard — zero tolerance for failure"""
 
     def __init__(self, role: str = "validator", config_path: str = "config/mcp_mappings.yaml"):

@@ -9,6 +9,7 @@ import logging
 import os
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
@@ -22,7 +23,7 @@ class AgentPlan:
         self.tool_calls = tool_calls
 
 
-class StructuredEngine(SovereignBaseAgent):
+class StructuredEngine(AtomicExecutionMixin, SovereignBaseAgent):
     """
     L2 Execution: Structured LLM output engine.
     """

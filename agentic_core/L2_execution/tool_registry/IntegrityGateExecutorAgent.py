@@ -6,6 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
@@ -294,7 +295,7 @@ from agentic_core.base_agents.decorators import standard_heal
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
-class IntegrityGateExecutorAgent(SovereignBaseAgent):
+class IntegrityGateExecutorAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """Executor for integrity gate validation.
 
     Validates research outputs against quality criteria including
