@@ -34,7 +34,7 @@ class TestOutreachValidationExecutorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.outreach_validation_executor_agent_validator import (
+            from apps_lic.engines.OutreachValidationExecutorAgentValidator import (
                 OutreachValidationExecutorAgent,
             )
 
@@ -81,7 +81,7 @@ class TestOutreachValidationExecutorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.outreach_validation_executor_agent_validator import (
+                from apps_lic.engines.OutreachValidationExecutorAgentValidator import (
                     OutreachValidationExecutorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

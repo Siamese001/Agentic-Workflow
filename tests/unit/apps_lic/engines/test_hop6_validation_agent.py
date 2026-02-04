@@ -37,7 +37,7 @@ class TestHOP6ValidationAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.hop6_validation_agent_validator import HOP6ValidationAgent
+            from apps_lic.engines.Hop6ValidationAgentValidator import HOP6ValidationAgent
 
             return HOP6ValidationAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -80,7 +80,7 @@ class TestHOP6ValidationAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.hop6_validation_agent_validator import HOP6ValidationAgent  # noqa: F401
+                from apps_lic.engines.Hop6ValidationAgentValidator import HOP6ValidationAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

@@ -1,12 +1,18 @@
 from __future__ import annotations
 
-"""Brief description of functionality and purpose."""
-
-"Brief description of functionality and purpose."
-"Persona Planner - L1 planning for persona parameters and messaging approaches.\n\nIncorporated from L1 lic_persona_planner.py to provide deterministic persona\nplanning that maps Archetype and profile analysis to specific messaging parameters\nincluding tone style, detail level, risk tolerance, and drift thresholds.\n\nThis is a foundational L1 planning component that feeds into the hop-based\nK1-K7 execution pipeline for persona-driven message generation.\n"
 import logging
 from dataclasses import dataclass, field
 from typing import Any
+
+"""Persona Planner - L1 planning for persona parameters and messaging approaches.
+
+Incorporated from L1 lic_persona_planner.py to provide deterministic persona
+planning that maps Archetype and profile analysis to specific messaging parameters
+including tone style, detail level, risk tolerance, and drift thresholds.
+
+This is a foundational L1 planning component that feeds into the hop-based
+K1-K7 execution pipeline for persona-driven message generation.
+"""
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -168,7 +174,7 @@ class PersonaPlanner:
             "RECRUITER": self.recruiter_persona,
         }
         base = archetype_map.get(Archetype.upper(), self.default_persona.copy())
-        LOGGER.debug(f"Base persona for {Archetype}: {base['tone_style']}")
+        Logger.debug(f"Base persona for {Archetype}: {base['tone_style']}")
         return base
 
     def _apply_seniority_adjustments(
@@ -181,7 +187,7 @@ class PersonaPlanner:
         for key, value in adjustments.items():
             if key in adjusted:
                 adjusted[key] = value
-        LOGGER.debug(f"Applied seniority adjustments for {seniority}: {len(adjustments)} changes")
+        Logger.debug(f"Applied seniority adjustments for {seniority}: {len(adjustments)} changes")
         return adjusted
 
     def _apply_industry_adjustments(
@@ -202,7 +208,7 @@ class PersonaPlanner:
         for key, value in adjustments.items():
             if key in adjusted:
                 adjusted[key] = value
-        LOGGER.debug(f"Applied industry adjustments for {industry}: {len(adjustments)} changes")
+        Logger.debug(f"Applied industry adjustments for {industry}: {len(adjustments)} changes")
         return adjusted
 
     def _apply_grounding_refinements(
@@ -230,7 +236,7 @@ class PersonaPlanner:
             elif claim_count < 2:
                 if refined["detail_level"] == "high":
                     refined["detail_level"] = "medium"
-        LOGGER.debug("Applied grounding-based refinements")
+        Logger.debug("Applied grounding-based refinements")
         return refined
 
     def _calculate_confidence_score(
@@ -270,7 +276,7 @@ class PersonaPlanner:
                     },
                 )
         except Exception as e:
-            LOGGER.debug(f"Failed to record telemetry: {e}")
+            Logger.debug(f"Failed to record telemetry: {e}")
 
     def get_persona_summary(self, plan: PersonaPlan) -> dict[str, object]:
         """Get a summary of the persona plan for debugging/telemetry."""

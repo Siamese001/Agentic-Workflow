@@ -9,6 +9,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.shared.core.agent_base import LICAgentBase
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.trace_registry import TraceRegistry
@@ -193,10 +194,26 @@ class PromptInjectionDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):
 
         if validated_output.injection_detected:
             self.log_warning(
-                f"PROMPT INJECTION DETECTED (Confidence: {validated_output.confidence}): {validated_output.reason}"
+                f"PROMPT INJECTION DETECTED (Confidence: "
+                f"{validated_output.confidence}): {validated_output.reason}"
             )
 
         return validated_output.model_dump()
+
+
+# Missing classes and functions for compatibility
+@dataclass
+class ConstitutionalReviewResult:
+    """Result of constitutional review."""
+
+    review_passed: bool
+    violations_found: list[str]
+    feedback: str = ""
+
+
+async def _format_prompt_with_defaults(template, context, *args):
+    """Stub function for prompt formatting."""
+    return template.format(**context)
 
 
 @dataclass

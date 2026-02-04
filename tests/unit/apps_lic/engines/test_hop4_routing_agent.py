@@ -37,7 +37,7 @@ class TestHOP4RoutingAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.hop4_routing_agent_validator import HOP4RoutingAgent
+            from apps_lic.engines.Hop4RoutingAgentValidator import HOP4RoutingAgent
 
             return HOP4RoutingAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -80,7 +80,7 @@ class TestHOP4RoutingAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.hop4_routing_agent_validator import HOP4RoutingAgent  # noqa: F401
+                from apps_lic.engines.Hop4RoutingAgentValidator import HOP4RoutingAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 
