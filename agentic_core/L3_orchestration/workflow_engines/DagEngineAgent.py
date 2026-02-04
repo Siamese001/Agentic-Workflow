@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """DAG Engine for Task Dependencies and Workflow Management.
@@ -114,7 +115,7 @@ from agentic_core.base_agents.decorators import standard_heal
 
 
 # NAMING CANON COMPLIANCE — renamed to DagEngineAgent for discovery and sovereignty — 2025-12-30
-class DagEngineAgent(SovereignBaseAgent):
+class DagEngineAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """Lightweight DAG engine for workflow execution.
 
     Features:

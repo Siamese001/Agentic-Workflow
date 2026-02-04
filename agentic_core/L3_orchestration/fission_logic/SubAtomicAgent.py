@@ -10,13 +10,14 @@ from __future__ import annotations
 import ast
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
 # NAMING FIXED: SubAtomicAgent → SubAtomicAgent
-class SubAtomicAgent(SovereignBaseAgent):
+class SubAtomicAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """Base class stub for structural agents."""
 
     def heal(self, violation: dict) -> dict:

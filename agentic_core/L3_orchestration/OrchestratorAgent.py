@@ -35,6 +35,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.base_agents.UnifiedAgent import (
@@ -146,7 +147,7 @@ class OrchestratorMode(str, Enum):
     UNIFIED = "unified"
 
 
-class OrchestratorAgent(SovereignBaseAgent):
+class OrchestratorAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     The Central Nervous System for Agentic Workflow.
 
