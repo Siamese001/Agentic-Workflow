@@ -15,6 +15,7 @@ Enforces function size and cyclomatic complexity limits.
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -22,7 +23,7 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 
 # Sovereign Agent for token budget tracking and complexity management
 @dataclass
-class BudgetAgent(SovereignBaseAgent):
+class BudgetAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Budget enforcement agent for code complexity management.
 

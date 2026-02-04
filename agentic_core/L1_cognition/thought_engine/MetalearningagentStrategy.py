@@ -15,6 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # from agentic_core.utils.sovereign_index import SovereignIndex  # Archived - not needed
@@ -34,7 +35,7 @@ class Experience:
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
 
-class MetaLearningAgent(SovereignBaseAgent):
+class MetaLearningAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Learns success/failure patterns across execution cycles to optimize
     thinking strategy selection.
