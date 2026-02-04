@@ -26,6 +26,11 @@ import logging
 import sys
 import json
 import re
+import hashlib
+import os
+import platform
+import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Set, Union
@@ -58,6 +63,9 @@ from agentic_core.utils.ssot_discovery_validator import (
 # Standard error logging wrapper configuration
 Logger = logging.getLogger(__name__)
 
+# Output schema version for downstream auditors
+OUTPUT_SCHEMA_VERSION = "2.0.0"
+
 # ==============================================================================
 # Advanced Data Structures
 # ==============================================================================
@@ -75,6 +83,11 @@ class AgentIntegrityReport:
     critical_methods: List[str] = field(default_factory=list)
     rejection_reason: Optional[str] = None
     architectural_role: str = "Unknown"
+    file_sha256: str = ""
+    file_size_bytes: int = 0
+    parse_error: str = ""
+    selection_reason: str = ""
+    mro_signature: List[str] = field(default_factory=list)
 
 class DiscoveryError(Exception):
     """Custom exception for agent discovery operations."""
@@ -95,6 +108,26 @@ def setup_logging(verbose: bool = False) -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+def safe_unparse(node: ast.AST) -> str:
+    try:
+        return ast.unparse(node)  # py>=3.9
+    except Exception:
+        return node.__class__.__name__
+
+def get_git_commit(root: Path) -> str:
+    try:
+        out = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], stderr=subprocess.DEVNULL)
+        return out.decode("utf-8").strip()
+    except Exception:
+        return ""
+
 def main() -> bool:
     """
     Main entry point for agent discovery operations.
@@ -105,12 +138,15 @@ def main() -> bool:
         project_root = get_validated_project_root()
         Logger.info(f"[DISCOVERY] Starting Deep Agent Discovery from: {project_root}")
 
-        # Validate project root integrity
-        if not validate_path_within_project(project_root, project_root):
-            raise DiscoveryError("Project root validation failed")
+        # Validate project root integrity (treat validator as raising, not bool-return)
+        try:
+            validate_path_within_project(project_root, project_root)
+        except Exception as e:
+            raise DiscoveryError(f"Project root validation failed: {e}")
 
         # Load agent discovery data from SSOT (The List)
         raw_agents = load_agent_discovery(project_root, force_reload=True)
+        raw_agents = sorted(raw_agents, key=lambda a: (a.get("layer",""), a.get("name",""), a.get("path","")))
         Logger.info(f"[DISCOVERY] Loaded {len(raw_agents)} candidates from SSOT registry")
 
         # Perform Deep AST Integrity Scan (The Verification)
@@ -159,11 +195,14 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
         return report
 
     try:
-        content = file_path.read_text(encoding="utf-8")
+        report.file_size_bytes = file_path.stat().st_size
+        report.file_sha256 = sha256_file(file_path)
+        content = file_path.read_text(encoding="utf-8", errors="replace")
         
         # [CRITICAL] Priority 1: Explicit Stub Detection
         # Mirrors FileClassificationAgent logic exactly
-        if any(line.strip().startswith("NOT_AN_AGENT") for line in content.splitlines()):
+        head = "\n".join(content.splitlines()[:60])
+        if any(line.strip() == "NOT_AN_AGENT" for line in head.splitlines()):
             report.is_stub = True
             report.is_valid = False
             report.rejection_reason = "Explicit NOT_AN_AGENT marker found"
@@ -173,39 +212,67 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
         try:
             tree = ast.parse(content)
         except SyntaxError as e:
-            report.rejection_reason = f"Syntax Error: {e}"
+            report.parse_error = f"SyntaxError: {e}"
+            report.rejection_reason = report.parse_error
             return report
 
         # Markers for synthesis
         has_agent_inheritance = False
         has_agent_decorator = False
         has_execute_method = False
-        
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ClassDef):
-                report.class_name = node.name
-                
-                # Check Inheritance
-                for base in node.bases:
-                    base_id = ""
-                    if isinstance(base, ast.Name):
-                        base_id = base.id
-                    elif isinstance(base, ast.Attribute):
-                        base_id = base.attr
-                    
-                    if base_id:
-                        report.inheritance.append(base_id)
-                        
-                        # Detect Base Agents vs Implementations
-                        if "BaseAgent" in base_id:
-                            report.is_base_agent = True
-                            report.architectural_role = "BASE_AGENT"
-                            has_agent_inheritance = True
-                        elif "Agent" in base_id:
-                            has_agent_inheritance = True
+        class_nodes: List[ast.ClassDef] = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+        if not class_nodes:
+            report.rejection_reason = "No ClassDef nodes"
+            return report
 
-                # Check Decorators
-                for dec in node.decorator_list:
+        # Deterministic selection: score by explicit agent bases, then name signals, then critical methods
+        def extract_mro_signature(cls: ast.ClassDef) -> List[str]:
+            return [safe_unparse(b) for b in cls.bases]
+
+        def class_score(cls: ast.ClassDef) -> int:
+            bases = " ".join(extract_mro_signature(cls))
+            methods = [
+                i.name for i in cls.body
+                if isinstance(i, (ast.FunctionDef, ast.AsyncFunctionDef))
+            ]
+            s = 0
+            if "SovereignBaseAgent" in bases or "BaseAgent" in bases:
+                s += 100
+            if "Agent" in cls.name:
+                s += 10
+            if "Healer" in cls.name:
+                s += 5
+            if "heal" in methods:
+                s += 20
+            if any(m in methods for m in ("execute", "run", "act")):
+                s += 8
+            return s
+
+        chosen = sorted(class_nodes, key=lambda c: (class_score(c), c.name), reverse=True)[0]
+        if class_score(chosen) <= 0:
+            report.rejection_reason = "No viable agent-like class (score<=0)"
+            return report
+
+        report.class_name = chosen.name
+        report.mro_signature = extract_mro_signature(chosen)
+        report.selection_reason = "Selected highest-scoring ClassDef deterministically"
+                
+        # Check Inheritance
+        for base_expr in chosen.bases:
+            base_id = safe_unparse(base_expr)
+            if base_id:
+                report.inheritance.append(base_id)
+                        
+                # Detect Base Agents vs Implementations
+                if "BaseAgent" in base_id:
+                    report.is_base_agent = True
+                    report.architectural_role = "BASE_AGENT"
+                    has_agent_inheritance = True
+                elif "Agent" in base_id:
+                    has_agent_inheritance = True
+
+        # Check Decorators
+        for dec in chosen.decorator_list:
                     dec_id = ""
                     if isinstance(dec, ast.Name):
                         dec_id = dec.id
@@ -217,12 +284,12 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
                         if dec_id in ["agent", "sovereign_agent", "register_agent"]:
                             has_agent_decorator = True
 
-                # Check Methods
-                for item in node.body:
-                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        if item.name in ["execute", "act", "run", "heal"]:
-                            report.critical_methods.append(item.name)
-                            has_execute_method = True
+        # Check Methods
+        for item in chosen.body:
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if item.name in ["execute", "act", "run", "heal"]:
+                    report.critical_methods.append(item.name)
+                    has_execute_method = True
 
         # [SYNTHESIS] Determine Validity
         # A valid agent must have Inheritance OR Decorator OR (Execute method + 'Agent' in name)
@@ -269,7 +336,18 @@ def perform_deep_integrity_scan(agents: List[Dict[str, Any]], project_root: Path
             continue
             
         full_path = project_root / rel_path
-        
+        try:
+            validate_path_within_project(project_root, full_path)
+        except Exception:
+            stats["invalid"] += 1
+            agent_entry["verification_status"] = {
+                "valid": False,
+                "role": "INVALID",
+                "class": None,
+                "methods": [],
+                "reason": "Path fails validate_path_within_project",
+            }
+            continue
         # Run Analysis
         report = analyze_agent_integrity(full_path)
         
@@ -278,7 +356,12 @@ def perform_deep_integrity_scan(agents: List[Dict[str, Any]], project_root: Path
             "valid": report.is_valid,
             "role": report.architectural_role,
             "class": report.class_name,
-            "methods": report.critical_methods
+            "methods": report.critical_methods,
+            "mro_signature": report.mro_signature,
+            "file_sha256": report.file_sha256,
+            "file_size_bytes": report.file_size_bytes,
+            "selection_reason": report.selection_reason,
+            "parse_error": report.parse_error,
         }
         
         if report.is_valid:
@@ -377,6 +460,7 @@ def discover_all_agents(strict_mode: bool = True) -> List[Dict[str, Any]]:
     try:
         project_root = get_validated_project_root()
         raw_agents = load_agent_discovery(project_root)
+        raw_agents = sorted(raw_agents, key=lambda a: (a.get("layer",""), a.get("name",""), a.get("path","")))
         
         if not strict_mode:
             return raw_agents
@@ -409,6 +493,11 @@ def get_agent_discovery_summary() -> Dict[str, Any]:
         healers = get_healers(project_root)
 
         summary = {
+            "output_schema_version": OUTPUT_SCHEMA_VERSION,
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "python_version": sys.version.split()[0],
+            "platform": platform.platform(),
+            "git_commit": get_git_commit(project_root),
             "total_candidates": len(raw_agents),
             "verified_active_agents": len(verified_agents),
             "integrity_stats": stats,
@@ -434,7 +523,8 @@ def refresh_discovery_cache() -> bool:
         Logger.info("[CACHE] Discovery cache invalidated successfully")
 
         # Test reload
-        agents = load_agent_discovery(force_reload=True)
+        project_root = get_validated_project_root()
+        agents = load_agent_discovery(project_root, force_reload=True)
         Logger.info(f"[CACHE] Reloaded {len(agents)} agents from disk")
 
         return True
