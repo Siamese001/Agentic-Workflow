@@ -6,6 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -47,7 +48,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class TelemetryAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class TelemetryAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """
     Autonomous telemetry emission agent.
     Collects and emits structured events for sovereign observability.

@@ -6,6 +6,7 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -44,7 +45,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class MetricsAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class MetricsAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """
     MetricsAgent: Sovereign quantitative state and alert governor.
     Thread-safe, in-memory Metric store with alerting rule generation.
