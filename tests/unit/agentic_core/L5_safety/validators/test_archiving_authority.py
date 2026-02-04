@@ -157,7 +157,7 @@ class TestHierarchyAgentAuthority:
             "agentic_core.L5_safety.core.ArchivalGatekeeper.ArchivalGatekeeper.get_instance",
             return_value=mock_gatekeeper,
         ):
-            from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+            from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
             agent = HierarchyAgent(project_root=temp_project, healing_enabled=False)
 
@@ -167,7 +167,7 @@ class TestHierarchyAgentAuthority:
 
     def test_no_raw_shutil_move_in_relocation_methods(self):
         """Verify relocation methods use gatekeeper instead of shutil.move."""
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         # Check _relocate_file_to_l2 method
         source = inspect.getsource(HierarchyAgent)
@@ -186,7 +186,7 @@ class TestHierarchyAgentAuthority:
 
     def test_gatekeeper_used_in_depth_healing(self):
         """Verify depth healing uses gatekeeper.safe_move."""
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         source = inspect.getsource(HierarchyAgent._heal_depth_violation)
 

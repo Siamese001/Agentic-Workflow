@@ -139,7 +139,7 @@ def test_2_terminal_independence():
         os.environ["SOVEREIGN_AUTO_APPROVE"] = "1"
         result["details"].append("✅ Set SOVEREIGN_AUTO_APPROVE=1")
 
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         # Instantiate HierarchyAgent with auto_approve=True
         agent = HierarchyAgent(

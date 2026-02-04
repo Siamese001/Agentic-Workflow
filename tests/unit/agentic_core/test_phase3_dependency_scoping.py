@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
+from agentic_core.L5_safety.validators.system_architect_agent import SystemArchitectAgent
 
 
 # Mock Logger to avoid clutter

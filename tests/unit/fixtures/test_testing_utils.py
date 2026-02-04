@@ -10,7 +10,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from tests.fixtures.testing_utils import (
+from tests.fixtures.test_testing_utils import (
     MockFactory,
     TestContext,
     TestDataGenerator,

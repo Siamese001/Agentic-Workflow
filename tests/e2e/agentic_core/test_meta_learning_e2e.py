@@ -92,8 +92,8 @@ class TestEndToEndHealingCycle:
     @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_multi_agent_healing_coordination(self, mock_integrity):
         """Test multiple agents coordinating healing through shared cache."""
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
-        from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
             HygieneGuardianAgent,
         )
         from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
@@ -333,8 +333,8 @@ class TestFullSystemIntegration:
     def test_all_agents_have_meta_learning(self, mock_integrity):
         """Verify all major agents have meta-learning capabilities."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
-        from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
             HygieneGuardianAgent,
         )
         from agentic_core.L5_safety.gravity.GravityLeakRepairAgent import (

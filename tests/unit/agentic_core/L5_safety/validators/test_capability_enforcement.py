@@ -6,7 +6,7 @@ Validates that HierarchyAgent correctly detects capability violations.
 
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
 
 def main():

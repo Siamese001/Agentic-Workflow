@@ -9,7 +9,7 @@ Tests verify:
 
 import pytest
 
-from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
 
 class test_hierarchy_agent_phase3:

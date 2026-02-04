@@ -34,7 +34,7 @@ def test_tc38_hierarchy_agent_integrity():
     print("=" * 60)
 
     try:
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         # Create hierarchy agent
         agent = HierarchyAgent(PROJECT_ROOT, healing_enabled=False)

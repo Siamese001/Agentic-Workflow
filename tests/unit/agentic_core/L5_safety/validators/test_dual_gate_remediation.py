@@ -93,7 +93,7 @@ class TestEndToEndNoPrompts:
     def test_hierarchy_agent_execute_no_input_called(self, mock_input, setup_env, tmp_path):
         """HierarchyAgent should never call input() when env vars are set."""
         from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         ArchivalGatekeeper.reset_instance()
 

@@ -133,6 +133,7 @@ class Phase5Validator:
     def run_self_tests(self, instance: Any, agent: dict) -> tuple[bool, str | None]:
         """Run self-tests on an agent instance."""
         try:
+            # guardian: allow-ai-checking-ai (method existence check, not structural validation)
             if hasattr(instance, "_run_self_tests"):
                 result = instance._run_self_tests()
                 return bool(result), None

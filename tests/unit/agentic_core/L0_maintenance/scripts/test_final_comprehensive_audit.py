@@ -134,7 +134,7 @@ def test_case_2_terminal_independence():
         print("✓ Step 1: Set SOVEREIGN_AUTO_APPROVE=1")
 
         # Step 2: Test HierarchyAgent (has gatekeeper integration)
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         hierarchy_agent = HierarchyAgent(
             project_root=project_root,

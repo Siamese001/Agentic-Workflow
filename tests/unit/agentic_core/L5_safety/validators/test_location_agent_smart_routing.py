@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
 
 class TestLocationAgentSmartRouting:

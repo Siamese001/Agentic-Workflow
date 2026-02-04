@@ -10,7 +10,7 @@ from unittest.mock import Mock, mock_open, patch
 
 import pytest
 
-from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+from agentic_core.L5_safety.validators.location_agent import LocationAgent
 from agentic_core.L5_safety.validators.structure_blueprint_config import (
     HEALING_CONFIG,
 )

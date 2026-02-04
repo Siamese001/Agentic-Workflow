@@ -123,7 +123,7 @@ class TestE2EMigrationWorkflow:
             source = project_root / "test_report.md"
             source.write_text("Original content")
 
-            from ops_scripts.maintenance.migrate_reports_to_ssot import ReportMigrator
+            # from ops_scripts.maintenance.migrate_reports_to_ssot  # Module removed import ReportMigrator
 
             # Migrate
             migrator = ReportMigrator(project_root, dry_run=False)
@@ -151,7 +151,7 @@ class TestE2EMigrationWorkflow:
             source = project_root / "test_report.md"
             source.write_text(content, encoding="utf-8")
 
-            from ops_scripts.maintenance.migrate_reports_to_ssot import ReportMigrator
+            # from ops_scripts.maintenance.migrate_reports_to_ssot  # Module removed import ReportMigrator
 
             migrator = ReportMigrator(project_root, dry_run=False)
             migrator.run_migration()

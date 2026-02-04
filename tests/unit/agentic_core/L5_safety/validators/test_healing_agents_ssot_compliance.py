@@ -28,7 +28,7 @@ def test_location_agent_backup_path():
     print("=" * 70)
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         # Create agent with project root
         agent = LocationAgent(project_root=PROJECT_ROOT)
@@ -155,7 +155,7 @@ def test_backup_file_creation():
     print("=" * 70)
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         # Create a temp file to backup
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:

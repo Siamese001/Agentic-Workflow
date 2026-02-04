@@ -16,7 +16,7 @@ import pytest
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
+from agentic_core.L5_safety.validators.hygiene_guardian_agent import HygieneGuardianAgent
 
 
 class TestHygieneGuardianAgent:

@@ -16,7 +16,7 @@ import pytest
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
 
 class TestLocationAgent:

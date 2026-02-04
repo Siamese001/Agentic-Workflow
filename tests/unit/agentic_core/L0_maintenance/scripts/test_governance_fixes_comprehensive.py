@@ -101,7 +101,7 @@ def test_case_2_sovereign_bypass():
         os.environ["SOVEREIGN_AUTO_APPROVE"] = "1"
         print("✓ Step 1: Set SOVEREIGN_AUTO_APPROVE=1")
 
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         # Step 2: Create HierarchyAgent and test approval
         agent = HierarchyAgent(

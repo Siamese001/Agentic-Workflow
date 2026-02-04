@@ -92,7 +92,7 @@ def test_case_1_shallow_nesting_fix():
     create_test_file(shallow_file, "# Orphaned runner test\nclass OrphanedRunner:\n    pass\n")
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
         from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
@@ -205,7 +205,7 @@ def test_case_2_deep_flattening_fix():
     create_test_file(deep_file, "# Buried agent test\nclass BuriedAgent:\n    pass\n")
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
         from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
@@ -299,7 +299,7 @@ def test_case_3_variable_depth_exemption():
     create_test_file(deep_utils_file, "# Helper test\ndef helper(): pass\n")
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         agent = LocationAgent(project_root=test_root)
 
@@ -367,7 +367,7 @@ def test_case_4_idempotency():
     create_test_file(correct_file, "# Idempotent test\nclass Idempotent:\n    pass\n")
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
         from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
@@ -472,7 +472,7 @@ def test_case_5_collision_handling():
     create_test_file(deep_file, "# Deep runner (collision test)\nclass Runner:\n    pass\n")
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         agent = LocationAgent(project_root=test_root)
 
@@ -562,7 +562,7 @@ def test_case_6_broken_backup_archiving():
     create_test_file(backup_file, "# Broken backup\n")
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         agent = LocationAgent(project_root=test_root)
 
@@ -627,7 +627,7 @@ def test_case_7_app_leaking_two_step():
     create_test_file(app_file, "# App-specific tool leaked to core\nclass AppsRgTool:\n    pass\n")
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
         from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
@@ -697,7 +697,7 @@ def test_case_8_import_fix_integration():
     test_root = PROJECT_ROOT
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         agent = LocationAgent(project_root=test_root)
 
@@ -747,7 +747,7 @@ def test_case_9_protected_root_files():
     sovereign_index = test_root / "agentic_core" / "utils" / "sovereign_index.py"
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         agent = LocationAgent(project_root=test_root)
 
@@ -827,7 +827,7 @@ def test_case_10_batch_big_bang():
     create_test_file(valid_file, "# Valid\n")
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
         from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)

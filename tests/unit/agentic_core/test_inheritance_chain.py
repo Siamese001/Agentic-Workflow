@@ -21,7 +21,7 @@ sys.path.insert(0, str(project_root))
 
 def test_all_agents_inherit_from_sovereign():
     """Verify all agents inherit from SovereignBaseAgent."""
-    from NuclearAuditAgent import NuclearAuditAgent
+    # from NuclearAuditAgent  # Module removed # import NuclearAuditAgent  # Module removed
 
     audit = NuclearAuditAgent(project_root=project_root)
     audit.run_audit()
@@ -111,7 +111,7 @@ def test_subatomic_agent_duplicate_removed():
 
 def test_no_broken_imports_in_codebase():
     """Verify no files import from removed duplicate locations."""
-    from NuclearAuditAgent import NuclearAuditAgent
+    # from NuclearAuditAgent  # Module removed # import NuclearAuditAgent  # Module removed
 
     audit = NuclearAuditAgent(project_root=project_root)
     audit.run_audit()
@@ -147,7 +147,7 @@ def test_canonical_subatomic_agent_has_heal():
 
 def test_phase2_completion_criteria():
     """Verify Phase 2 completion criteria are met."""
-    from NuclearAuditAgent import NuclearAuditAgent
+    # from NuclearAuditAgent  # Module removed # import NuclearAuditAgent  # Module removed
 
     audit = NuclearAuditAgent(project_root=project_root)
     audit.run_audit()

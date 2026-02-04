@@ -124,7 +124,7 @@ def test_subatomic_agent_heal_invalid_input():
 
 def test_phase3_completion_criteria():
     """Verify Phase 3 completion criteria are met."""
-    from NuclearAuditAgent import NuclearAuditAgent
+    # from NuclearAuditAgent  # Module removed # import NuclearAuditAgent  # Module removed
 
     audit = NuclearAuditAgent(project_root=project_root)
     audit.run_audit()
