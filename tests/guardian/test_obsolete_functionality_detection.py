@@ -160,7 +160,7 @@ class TestObsoleteFunctionalityDetection:
 
     def test_detect_obsolete_tests(self, project_root):
         """Main test to detect obsolete functionality in test files."""
-        test_dir = project_root / "tests" / "unit" / "agentic_core" / "L5_safety" / "validators"
+        test_dir = project_root / "tests" / "unit" / "agentic_core"
         
         if not test_dir.exists():
             pytest.skip(f"Test directory not found: {test_dir}")
