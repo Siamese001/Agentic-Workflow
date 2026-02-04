@@ -6,6 +6,7 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -34,7 +35,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class LLMPromptGovernorAgent(SovereignBaseAgent):
+class LLMPromptGovernorAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Centralized prompt governance for all LLM interactions.
 
