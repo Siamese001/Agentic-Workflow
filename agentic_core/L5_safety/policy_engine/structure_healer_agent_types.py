@@ -35,6 +35,7 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.UnifiedAgent import (
     StructureHealingStrategy,
@@ -80,7 +81,7 @@ class StructureHealerConfig:
     agent_suffix: str = "Agent"
 
 
-class StructureHealerAgent(SovereignBaseAgent):
+class StructureHealerAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Unified structure healer for gravity, hierarchy, naming, and territory.
 
