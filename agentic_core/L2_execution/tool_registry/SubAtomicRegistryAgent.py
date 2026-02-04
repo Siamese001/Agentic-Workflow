@@ -6,6 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
@@ -298,7 +299,7 @@ def is_legacy_agent(agent_id: str) -> bool:
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 @dataclass
-class SubAtomicRegistryAgent(SovereignBaseAgent):
+class SubAtomicRegistryAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Sovereign method registry — live, hybrid-indexed, eternal.
     Now with Redis sovereign caching for instant method discovery.

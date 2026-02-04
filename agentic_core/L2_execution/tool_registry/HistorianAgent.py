@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -50,7 +51,7 @@ except ImportError:
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class HistorianAgent(SovereignBaseAgent):
+class HistorianAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     ROLE: Records all validation events to a Markdown log file.
     """
