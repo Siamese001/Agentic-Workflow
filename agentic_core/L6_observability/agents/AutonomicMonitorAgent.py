@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Implementation for AutonomicMonitorAgent."""
@@ -30,7 +31,7 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
 
 
 @dataclass
-class AutonomicMonitorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class AutonomicMonitorAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """Autonomic immune system for agent health monitoring.
 
     Features:
