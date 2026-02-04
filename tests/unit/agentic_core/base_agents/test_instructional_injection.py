@@ -189,14 +189,14 @@ class TestAgentInstructionalInjection:
 
     def test_location_agent_has_injection(self):
         """Verify LocationAgent has instructional injection."""
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         assert hasattr(LocationAgent, "inject_safety_layer")
         assert hasattr(LocationAgent, "get_injection_summary")
 
     def test_hierarchy_agent_has_injection(self):
         """Verify HierarchyAgent has instructional injection."""
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         assert hasattr(HierarchyAgent, "inject_safety_layer")
 

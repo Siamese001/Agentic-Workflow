@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
 
 class TestHierarchyAgentUpdates:

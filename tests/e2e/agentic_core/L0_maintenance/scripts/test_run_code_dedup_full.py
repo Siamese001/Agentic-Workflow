@@ -9,7 +9,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.validators.CodeDeduplicationAgent import CodeDeduplicationAgent
+from agentic_core.L5_safety.validators.code_deduplication_agent import CodeDeduplicationAgent
 
 # Constants
 ARCHIVES_DIR = "archives"

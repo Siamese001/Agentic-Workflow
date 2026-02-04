@@ -59,7 +59,7 @@ class TestSpecialistMethodParity:
 
     def test_monolith_still_has_all_methods(self):
         """Verify original LocationAgent still has all methods for backwards compat."""
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         # Key methods that should still exist on monolith
         key_methods = [
@@ -124,7 +124,7 @@ class TestL5ImportCycles:
         """Verify all specialist agents can be imported in same module."""
         try:
             from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
-            from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+            from agentic_core.L5_safety.validators.location_agent import LocationAgent
             from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
             from agentic_core.L5_safety.validators.LocationValidatorAgent import (
                 LocationValidatorAgent,

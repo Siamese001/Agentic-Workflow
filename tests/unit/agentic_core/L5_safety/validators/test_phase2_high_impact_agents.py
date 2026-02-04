@@ -118,7 +118,7 @@ class TestHierarchyAgentIntegration:
     @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_heal_method_exists(self, mock_integrity):
         """Verify heal() method exists and has correct signature."""
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         agent = HierarchyAgent(project_root=Path.cwd())
 
@@ -128,7 +128,7 @@ class TestHierarchyAgentIntegration:
     @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_heal_returns_correct_structure(self, mock_integrity):
         """Verify heal() returns correct structure."""
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         agent = HierarchyAgent(project_root=Path.cwd())
 
@@ -145,7 +145,7 @@ class TestHierarchyAgentIntegration:
     @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_meta_learning_mixin_available(self, mock_integrity):
         """Verify meta-learning mixin methods are available."""
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         agent = HierarchyAgent(project_root=Path.cwd())
 
@@ -158,7 +158,7 @@ class TestHierarchyAgentIntegration:
     @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_create_missing_structure_still_works(self, mock_integrity):
         """Verify create_missing_structure() still works."""
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         agent = HierarchyAgent(project_root=Path.cwd(), healing_enabled=False)
 
@@ -226,26 +226,26 @@ class TestLocationAgentIntegration:
 
     def test_is_path_compliant_function_exists(self):
         """Verify is_path_compliant() function exists."""
-        from agentic_core.L5_safety.validators.LocationAgent import is_path_compliant
+        from agentic_core.L5_safety.validators.location_agent import is_path_compliant
 
         assert callable(is_path_compliant)
 
     def test_is_path_compliant_returns_boolean(self):
         """Verify is_path_compliant() returns boolean."""
-        from agentic_core.L5_safety.validators.LocationAgent import is_path_compliant
+        from agentic_core.L5_safety.validators.location_agent import is_path_compliant
 
         result = is_path_compliant("agentic_core/L5_safety/validators/test.py")
         assert isinstance(result, bool)
 
     def test_heal_function_exists(self):
         """Verify heal() function exists at module level."""
-        from agentic_core.L5_safety.validators.LocationAgent import heal
+        from agentic_core.L5_safety.validators.location_agent import heal
 
         assert callable(heal)
 
     def test_heal_returns_correct_structure(self):
         """Verify heal() returns correct structure."""
-        from agentic_core.L5_safety.validators.LocationAgent import heal
+        from agentic_core.L5_safety.validators.location_agent import heal
 
         violation = {"type": "LOCATION", "file": "test.py", "message": "Test"}
         result = heal(violation)
@@ -268,7 +268,7 @@ class TestPhase2Integration:
         from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
         from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
             CodeHealerAgent,
         )
@@ -333,7 +333,7 @@ class TestPhase2PerformanceBaseline:
 
     def test_path_compliance_performance(self):
         """Test path compliance check performance."""
-        from agentic_core.L5_safety.validators.LocationAgent import is_path_compliant
+        from agentic_core.L5_safety.validators.location_agent import is_path_compliant
 
         start_time = time.time()
 

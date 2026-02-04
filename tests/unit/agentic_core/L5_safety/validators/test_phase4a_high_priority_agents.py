@@ -23,7 +23,7 @@ sys.path.insert(0, str(project_root))
 
 def test_location_agent_has_heal_method():
     """Verify LocationAgent has heal() method."""
-    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+    from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
     agent = LocationAgent(project_root=project_root)
     assert hasattr(agent, "heal"), "LocationAgent missing heal() method"
@@ -32,7 +32,7 @@ def test_location_agent_has_heal_method():
 
 def test_location_agent_heal_signature():
     """Verify LocationAgent heal() returns correct schema."""
-    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+    from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
     agent = LocationAgent(project_root=project_root)
     violation = {"type": "test_violation", "file": "test.py"}
@@ -128,7 +128,7 @@ def test_filesystem_ssot_reconciler_agent_heal_signature():
 
 def test_code_deduplication_agent_has_heal_method():
     """Verify CodeDeduplicationAgent has heal() method."""
-    from agentic_core.L5_safety.validators.CodeDeduplicationAgent import (
+    from agentic_core.L5_safety.validators.code_deduplication_agent import (
         CodeDeduplicationAgent,
     )
 
@@ -139,7 +139,7 @@ def test_code_deduplication_agent_has_heal_method():
 
 def test_code_deduplication_agent_heal_signature():
     """Verify CodeDeduplicationAgent heal() returns correct schema."""
-    from agentic_core.L5_safety.validators.CodeDeduplicationAgent import (
+    from agentic_core.L5_safety.validators.code_deduplication_agent import (
         CodeDeduplicationAgent,
     )
 

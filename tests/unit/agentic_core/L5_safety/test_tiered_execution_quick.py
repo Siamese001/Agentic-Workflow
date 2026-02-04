@@ -32,11 +32,11 @@ def test_implementation_structure():
         ("Tier 4: Final Safety Gate", "TIER 4: Final Safety Gate"),
         (
             "LocationAgent import",
-            "from agentic_core.L5_safety.validators.LocationAgent import get_location_agent",
+            "from agentic_core.L5_safety.validators.location_agent import get_location_agent",
         ),
         (
             "HierarchyAgent import",
-            "from agentic_core.L5_safety.validators.HierarchyAgent import get_hierarchy_agent",
+            "from agentic_core.L5_safety.validators.hierarchy_agent import get_hierarchy_agent",
         ),
         (
             "NamingAgent import",

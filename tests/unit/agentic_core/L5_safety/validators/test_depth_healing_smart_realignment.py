@@ -70,7 +70,7 @@ def test_heal_depth_violation_exists():
     print("=" * 70)
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         if hasattr(LocationAgent, "_heal_depth_violation"):
             test_pass("METHOD_EXISTS", "_heal_depth_violation method exists")
@@ -127,7 +127,7 @@ def test_deep_violation_flattening():
     create_test_file(deep_file, "# Deep test agent\nclass DeepTestAgent:\n    pass\n")
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
         from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
@@ -236,7 +236,7 @@ def test_shallow_violation_nesting():
     create_test_file(shallow_file, "# Shallow test agent\nclass ShallowTestAgent:\n    pass\n")
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
         from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)
@@ -352,7 +352,7 @@ def test_idempotency():
     create_test_file(correct_file, "# Correct depth agent\nclass CorrectTestAgent:\n    pass\n")
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
         from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         agent = LocationAgent(project_root=test_root)

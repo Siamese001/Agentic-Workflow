@@ -191,7 +191,7 @@ class TestLocationAgentBackwardsCompatibility:
 
     def test_location_agent_still_importable(self):
         """Verify original LocationAgent can still be imported."""
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         assert LocationAgent is not None
 
@@ -200,7 +200,7 @@ class TestLocationAgentBackwardsCompatibility:
     )
     def test_location_agent_instantiates(self):
         """Verify original LocationAgent can be instantiated."""
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         agent = LocationAgent(project_root=PROJECT_ROOT)
         assert agent is not None

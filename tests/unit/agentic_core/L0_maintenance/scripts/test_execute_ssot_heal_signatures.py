@@ -87,7 +87,7 @@ class TestHealSignatureCompatibility:
 
     def test_hierarchy_agent_heal_hierarchy_accepts_target_territory(self):
         """HierarchyAgent.heal_hierarchy must accept target_territory parameter."""
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         sig = inspect.signature(HierarchyAgent.heal_hierarchy)
         param_names = list(sig.parameters.keys())
@@ -105,7 +105,7 @@ class TestHealSignatureCompatibility:
 
     def test_location_agent_has_heal_violations_method(self):
         """LocationAgent must have heal_violations method for execute_ssot.py."""
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         assert hasattr(LocationAgent, "heal_violations") or hasattr(
             LocationAgent, "heal_repository"
@@ -189,7 +189,7 @@ class TestHealResultSchema:
         """HierarchyAgent.heal_hierarchy must return a valid results dict."""
         import inspect
 
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
 
         # Verify signature instead of running (to avoid stdin issues in pytest)
         sig = inspect.signature(HierarchyAgent.heal_hierarchy)

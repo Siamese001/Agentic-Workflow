@@ -99,7 +99,7 @@ class TestNoCircularLocationImports:
             from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
 
             # Original monolith (backwards compat)
-            from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+            from agentic_core.L5_safety.validators.location_agent import LocationAgent
             from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
 
             # Specialist agents
@@ -129,7 +129,7 @@ class TestNoCircularLocationImports:
                 structure_blueprint,
             )
             from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
-            from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+            from agentic_core.L5_safety.validators.location_agent import LocationAgent
             from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
             from agentic_core.L5_safety.validators.LocationValidatorAgent import (
                 LocationValidatorAgent,

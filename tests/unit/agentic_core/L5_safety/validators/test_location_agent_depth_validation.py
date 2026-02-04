@@ -111,7 +111,7 @@ def test_variable_depth_paths_not_flagged():
     print("=" * 70)
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         agent = LocationAgent(project_root=PROJECT_ROOT)
 
@@ -142,7 +142,7 @@ def test_standard_depth_paths_valid():
     print("=" * 70)
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         agent = LocationAgent(project_root=PROJECT_ROOT)
 
@@ -220,7 +220,7 @@ def test_critical_files_not_archived():
     ]
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         agent = LocationAgent(project_root=PROJECT_ROOT)
 

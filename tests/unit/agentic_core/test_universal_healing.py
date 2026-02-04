@@ -375,10 +375,10 @@ class TestUniversalHealing(unittest.TestCase):
 
         import_statements = {
             "FilesystemSSOTReconcilerAgent": "from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent",
-            "LocationAgent": "from agentic_core.L5_safety.validators.LocationAgent import LocationAgent",
-            "HierarchyAgent": "from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent",
+            "LocationAgent": "from agentic_core.L5_safety.validators.location_agent import LocationAgent",
+            "HierarchyAgent": "from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent",
             "ArchitectureGovernorAgent": "from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import ArchitectureGovernorAgent",
-            "SystemArchitectAgent": "from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent",
+            "SystemArchitectAgent": "from agentic_core.L5_safety.validators.system_architect_agent import SystemArchitectAgent",
             "PascalSovereigntyAgent": "from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent",
             "RootHygieneAgent": "from agentic_core.L5_safety.validators.RootHygieneAgent import RootHygieneAgent",
         }

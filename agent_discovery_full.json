@@ -2797,7 +2797,7 @@
     "description": "Core orchestrator that coordinates cognitive and action planes.\n\n    Implements the 5-step agentic c",
     "pascal_compliant": true,
     "external_touch": true,
-    "mcp_hardened": true,
+    "mcp_hardened": false,
     "has_tests": true,
     "typed_pct": 92.9,
     "documented_pct": 100.0,

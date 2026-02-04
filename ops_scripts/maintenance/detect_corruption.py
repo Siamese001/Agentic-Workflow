@@ -3,6 +3,7 @@
 Git Corruption Detection Script
 Scans Python files for syntax errors and potential corruption patterns.
 """
+
 import ast
 import re
 from pathlib import Path
@@ -12,20 +13,20 @@ from typing import List, Tuple
 def detect_corrupted_files(project_root: Path) -> List[Tuple[Path, int, str]]:
     """
     Scan all Python files for syntax errors.
-    
+
     Returns:
         List of (file_path, line_number, error_message) tuples
     """
     corrupted = []
-    exclude_patterns = ['archives', '.git', '__pycache__', 'venv', '.venv', 'node_modules']
-    
-    for py_file in project_root.rglob('*.py'):
+    exclude_patterns = ["archives", ".git", "__pycache__", "venv", ".venv", "node_modules"]
+
+    for py_file in project_root.rglob("*.py"):
         # Skip excluded directories
         if any(pattern in str(py_file) for pattern in exclude_patterns):
             continue
-            
+
         try:
-            content = py_file.read_text(encoding='utf-8')
+            content = py_file.read_text(encoding="utf-8")
             ast.parse(content)
         except SyntaxError as e:
             corrupted.append((py_file, e.lineno or 0, str(e)))
@@ -34,14 +35,14 @@ def detect_corrupted_files(project_root: Path) -> List[Tuple[Path, int, str]]:
         except Exception as e:
             # Catch other parsing issues
             corrupted.append((py_file, 0, f"Parse error: {e}"))
-    
+
     return corrupted
 
 
 def detect_corruption_patterns(project_root: Path) -> List[Tuple[Path, int, str]]:
     """
     Scan for common corruption patterns in Python files.
-    
+
     Patterns:
     - Garbled class definitions (e.g., 'clasAtomicExecutionMixin')
     - Mangled function definitions
@@ -49,50 +50,52 @@ def detect_corruption_patterns(project_root: Path) -> List[Tuple[Path, int, str]
     - Invalid characters in identifiers
     """
     suspicious = []
-    exclude_patterns = ['archives', '.git', '__pycache__', 'venv', '.venv']
-    
+    exclude_patterns = ["archives", ".git", "__pycache__", "venv", ".venv"]
+
     # Corruption patterns
     patterns = {
-        'garbled_class': re.compile(r'clas[A-Z][a-zA-Z]*\s+[A-Z]'),  # clasAtomicExecutionMixin
-        'garbled_def': re.compile(r'de[fF]\s+[^a-z_]'),  # def with non-standard start
-        'mangled_identifier': re.compile(r'\b[a-zA-Z]{3,}[A-Z]{2,}[a-z]+[A-Z]{2,}'),  # CAreOnchtstrat
-        'corrupted_import': re.compile(r'from\s+[a-zA-Z0-9_.]+\s+impor[^t]'),  # impor instead of import
+        "garbled_class": re.compile(r"clas[A-Z][a-zA-Z]*\s+[A-Z]"),  # clasAtomicExecutionMixin
+        "garbled_def": re.compile(r"de[fF]\s+[^a-z_]"),  # def with non-standard start
+        "mangled_identifier": re.compile(
+            r"\b[a-zA-Z]{3,}[A-Z]{2,}[a-z]+[A-Z]{2,}"
+        ),  # CAreOnchtstrat
+        "corrupted_import": re.compile(
+            r"from\s+[a-zA-Z0-9_.]+\s+impor[^t]"
+        ),  # impor instead of import
     }
-    
-    for py_file in project_root.rglob('*.py'):
+
+    for py_file in project_root.rglob("*.py"):
         if any(pattern in str(py_file) for pattern in exclude_patterns):
             continue
-            
+
         try:
-            content = py_file.read_text(encoding='utf-8')
-            lines = content.split('\n')
-            
+            content = py_file.read_text(encoding="utf-8")
+            lines = content.split("\n")
+
             for line_num, line in enumerate(lines, 1):
                 for pattern_name, pattern in patterns.items():
                     if pattern.search(line):
-                        suspicious.append((
-                            py_file, 
-                            line_num, 
-                            f"{pattern_name}: {line.strip()[:80]}"
-                        ))
+                        suspicious.append(
+                            (py_file, line_num, f"{pattern_name}: {line.strip()[:80]}")
+                        )
         except Exception:
             pass
-    
+
     return suspicious
 
 
 def main():
     """Main entry point."""
     project_root = Path(__file__).parent.parent.parent
-    
+
     print("=" * 80)
     print("GIT CORRUPTION DETECTION REPORT")
     print("=" * 80)
-    
+
     # Check for syntax errors
     print("\n[PHASE 1] Scanning for syntax errors...")
     corrupted = detect_corrupted_files(project_root)
-    
+
     if corrupted:
         print(f"\n❌ Found {len(corrupted)} files with syntax errors:\n")
         for path, line, error in corrupted:
@@ -101,11 +104,11 @@ def main():
             print(f"    Error: {error[:100]}")
     else:
         print("✅ No syntax errors found")
-    
+
     # Check for corruption patterns
     print("\n[PHASE 2] Scanning for corruption patterns...")
     suspicious = detect_corruption_patterns(project_root)
-    
+
     if suspicious:
         print(f"\n⚠️  Found {len(suspicious)} suspicious patterns:\n")
         for path, line, pattern in suspicious[:50]:  # Show first 50
@@ -114,14 +117,14 @@ def main():
             print(f"    {pattern}")
     else:
         print("✅ No corruption patterns detected")
-    
+
     # Summary
     print("\n" + "=" * 80)
     print("SUMMARY")
     print("=" * 80)
     print(f"Syntax errors: {len(corrupted)}")
     print(f"Suspicious patterns: {len(suspicious)}")
-    
+
     if corrupted or suspicious:
         print("\n⚠️  CORRUPTION DETECTED - Manual review required")
         return 1
@@ -132,4 +135,5 @@ def main():
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

@@ -116,7 +116,7 @@ class TestAgentMigrationIntegration:
             from agentic_core.L5_safety.validators.ReportLocationAgent import (
                 ReportLocationAgent,
             )
-            from ops_scripts.maintenance.migrate_reports_to_ssot import ReportMigrator
+            # from ops_scripts.maintenance.migrate_reports_to_ssot  # Module removed import ReportMigrator
 
             agent = ReportLocationAgent(project_root=project_root)
             migrator = ReportMigrator(project_root, dry_run=True)
@@ -184,7 +184,7 @@ class TestBackupIntegration:
             source = project_root / "test_report.md"
             source.write_text("Original content")
 
-            from ops_scripts.maintenance.migrate_reports_to_ssot import ReportMigrator
+            # from ops_scripts.maintenance.migrate_reports_to_ssot  # Module removed import ReportMigrator
 
             migrator = ReportMigrator(project_root, dry_run=False)
             migrator.run_migration()
@@ -277,7 +277,7 @@ class TestDryRunIntegration:
             from agentic_core.L5_safety.validators.ReportLocationAgent import (
                 ReportLocationAgent,
             )
-            from ops_scripts.maintenance.migrate_reports_to_ssot import ReportMigrator
+            # from ops_scripts.maintenance.migrate_reports_to_ssot  # Module removed import ReportMigrator
 
             # Both should not move files in dry-run
             agent = ReportLocationAgent(project_root=project_root, dry_run=True)
