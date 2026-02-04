@@ -12,9 +12,10 @@ Tests verify:
 """
 
 import ast
-import pytest
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -83,7 +84,7 @@ class TestPhase1RedundantMixinRemovalAST:
 
     def test_pii_sanitizer_agent_no_redundant_mixin(self):
         """PII_SanitizerSpecialistAgent should not directly inherit SubatomicTestingMixin."""
-        file_path = PROJECT_ROOT / "apps_lic" / "engines" / "pii__sanitizer_specialist_agent.py"
+        file_path = PROJECT_ROOT / "apps_lic" / "engines" / "PIISanitizerSpecialistAgent.py"
         assert file_path.exists(), f"File not found: {file_path}"
 
         bases = get_class_bases_from_ast(file_path, "PII_SanitizerSpecialistAgent")
@@ -175,7 +176,8 @@ class TestPhase1DispatchResumeToolsAgentAST:
         )
 
     def test_not_inherits_from_raw_mixins(self):
-        """DispatchResumeToolsAgent should not directly inherit from HealerMixin or MCPHardenedMixin."""
+        """DispatchResumeToolsAgent should not directly inherit from
+        HealerMixin or MCPHardenedMixin."""
         file_path = PROJECT_ROOT / "apps_rg" / "shared" / "tools" / "dispatch_resume_tools_agent.py"
         assert file_path.exists(), f"File not found: {file_path}"
 
@@ -248,7 +250,7 @@ class TestPhase1CodeQuality:
         """All refactored files should be valid Python syntax."""
         files_to_check = [
             PROJECT_ROOT / "apps_lic" / "engines" / "Hop2researchagentStrategy.py",
-            PROJECT_ROOT / "apps_lic" / "engines" / "pii__sanitizer_specialist_agent.py",
+            PROJECT_ROOT / "apps_lic" / "engines" / "PIISanitizerSpecialistAgent.py",
             PROJECT_ROOT
             / "agentic_core"
             / "L5_safety"
@@ -278,7 +280,7 @@ class TestPhase1CodeQuality:
                 "HOP2ResearchAgent",
             ),
             (
-                PROJECT_ROOT / "apps_lic" / "engines" / "pii__sanitizer_specialist_agent.py",
+                PROJECT_ROOT / "apps_lic" / "engines" / "PIISanitizerSpecialistAgent.py",
                 "PII_SanitizerSpecialistAgent",
             ),
             (

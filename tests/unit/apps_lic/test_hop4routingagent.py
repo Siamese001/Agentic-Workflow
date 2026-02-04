@@ -22,7 +22,7 @@ class TestHOP4RoutingAgent:
     def test_class_exists(self):
         """Verify the class can be imported."""
         try:
-            from apps_lic.engines.hop4_routing_agent_validator import HOP4RoutingAgent
+            from apps_lic.engines.Hop4RoutingAgentValidator import HOP4RoutingAgent
 
             assert HOP4RoutingAgent is not None
         except ImportError as e:
@@ -32,7 +32,7 @@ class TestHOP4RoutingAgent:
     def test_class_is_agent(self):
         """Verify the class follows agent patterns."""
         try:
-            from apps_lic.engines.hop4_routing_agent_validator import HOP4RoutingAgent
+            from apps_lic.engines.Hop4RoutingAgentValidator import HOP4RoutingAgent
 
             # Check it's a class
             assert isinstance(HOP4RoutingAgent, type)
@@ -42,7 +42,7 @@ class TestHOP4RoutingAgent:
     def test_instantiation_with_mocks(self):
         """Test that the agent can be instantiated with mocked dependencies."""
         try:
-            from apps_lic.engines.hop4_routing_agent_validator import HOP4RoutingAgent
+            from apps_lic.engines.Hop4RoutingAgentValidator import HOP4RoutingAgent
 
             # Try to instantiate with common agent patterns
             with patch.multiple(HOP4RoutingAgent, __init__=lambda self: None, create=True):
@@ -57,7 +57,7 @@ class TestHOP4RoutingAgent:
     def test_has_healing_capability(self):
         """Verify healing methods exist if agent has healing."""
         try:
-            from apps_lic.engines.hop4_routing_agent_validator import HOP4RoutingAgent
+            from apps_lic.engines.Hop4RoutingAgentValidator import HOP4RoutingAgent
 
             # Check for heal_repository method
             hasattr(HOP4RoutingAgent, "heal_repository") or any(
@@ -71,7 +71,7 @@ class TestHOP4RoutingAgent:
     def test_key_methods_exist(self):
         """Verify key methods are defined."""
         try:
-            from apps_lic.engines.hop4_routing_agent_validator import HOP4RoutingAgent
+            from apps_lic.engines.Hop4RoutingAgentValidator import HOP4RoutingAgent
 
             # Get all public methods
             methods = [m for m in dir(HOP4RoutingAgent) if not m.startswith("_")]

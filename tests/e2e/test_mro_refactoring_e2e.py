@@ -11,7 +11,6 @@ Tests verify:
 """
 
 import ast
-import inspect
 import pytest
 from pathlib import Path
 import sys
@@ -30,23 +29,41 @@ class TestPhase1E2E:
     def test_all_refactored_agents_have_single_base(self):
         """All Phase 1 refactored agents should have single base class."""
         agents_to_check = [
-            (PROJECT_ROOT / "apps_lic" / "engines" / "Hop2researchagentStrategy.py", 
-             "HOP2ResearchAgent"),
-            (PROJECT_ROOT / "apps_lic" / "engines" / "pii__sanitizer_specialist_agent.py",
-             "PII_SanitizerSpecialistAgent"),
-            (PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "location_validator_agent.py",
-             "LocationValidatorAgent"),
-            (PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "HierarchyagentStrategy.py",
-             "HierarchyAgent"),
-            (PROJECT_ROOT / "apps_rg" / "shared" / "tools" / "dispatch_resume_tools_agent.py",
-             "DispatchResumeToolsAgent"),
+            (
+                PROJECT_ROOT / "apps_lic" / "engines" / "Hop2researchagentStrategy.py",
+                "HOP2ResearchAgent",
+            ),
+            (
+                PROJECT_ROOT / "apps_lic" / "engines" / "PIISanitizerSpecialistAgent.py",
+                "PII_SanitizerSpecialistAgent",
+            ),
+            (
+                PROJECT_ROOT
+                / "agentic_core"
+                / "L5_safety"
+                / "validators"
+                / "location_validator_agent.py",
+                "LocationValidatorAgent",
+            ),
+            (
+                PROJECT_ROOT
+                / "agentic_core"
+                / "L5_safety"
+                / "validators"
+                / "HierarchyagentStrategy.py",
+                "HierarchyAgent",
+            ),
+            (
+                PROJECT_ROOT / "apps_rg" / "shared" / "tools" / "dispatch_resume_tools_agent.py",
+                "DispatchResumeToolsAgent",
+            ),
         ]
-        
+
         for file_path, class_name in agents_to_check:
             assert file_path.exists(), f"File not found: {file_path}"
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef) and node.name == class_name:
                     bases = []
@@ -55,7 +72,7 @@ class TestPhase1E2E:
                             bases.append(base.id)
                         elif isinstance(base, ast.Attribute):
                             bases.append(base.attr)
-                    
+
                     assert len(bases) == 1, (
                         f"{class_name} should have exactly 1 base. Found: {bases}"
                     )
@@ -68,10 +85,10 @@ class TestPhase2E2E:
     def test_gateway_factory_provides_all_gateways(self):
         """GatewayFactory should provide all gateway types."""
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
-        
+
         GatewayFactory.reset_all()
         bundle = GatewayFactory.create_all()
-        
+
         assert bundle.llm is not None
         assert bundle.embedding is not None
         assert bundle.validator is not None
@@ -80,12 +97,12 @@ class TestPhase2E2E:
     def test_gateways_are_singletons(self):
         """GatewayFactory should return singletons."""
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
-        
+
         GatewayFactory.reset_all()
-        
+
         llm1 = GatewayFactory.get_llm_gateway()
         llm2 = GatewayFactory.get_llm_gateway()
-        
+
         assert llm1 is llm2
 
 
@@ -97,25 +114,25 @@ class TestPhase3E2E:
         from agentic_core.base_agents.caching_mixin import CachingMixin
         from agentic_core.base_agents.metrics_mixin import MetricsMixin
         from agentic_core.base_agents.batching_mixin import BatchingMixin
-        
+
         class CacheOnlyAgent(CachingMixin):
             pass
-        
+
         class MetricsOnlyAgent(MetricsMixin):
             pass
-        
+
         class BatchOnlyAgent(BatchingMixin):
             pass
-        
+
         # Each should work independently
         cache_agent = CacheOnlyAgent()
         cache_agent.cache_set("key", "value")
         assert cache_agent.cache_get("key")[0] is True
-        
+
         metrics_agent = MetricsOnlyAgent()
         metrics_agent.record_timing("op", 100.0)
         assert metrics_agent.get_metrics("op")["call_count"] == 1
-        
+
         batch_agent = BatchOnlyAgent()
         batch_agent.batch_add("queue", "item")
         assert batch_agent.batch_flush("queue") == ["item"]
@@ -127,27 +144,27 @@ class TestPhase4E2E:
     def test_lightweight_base_has_reduced_mro(self):
         """LightweightAgentBase should have MRO depth < 15."""
         from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
-        
+
         class TestAgent(LightweightAgentBase):
             pass
-        
+
         mro_depth = len(TestAgent.__mro__)
         assert mro_depth < 15, f"MRO depth {mro_depth} should be < 15"
 
     def test_lightweight_base_is_functional(self):
         """LightweightAgentBase should provide working capabilities."""
         from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
-        
+
         class TestAgent(LightweightAgentBase):
             def __post_init__(self):
                 super().__post_init__()
-        
+
         agent = TestAgent()
-        
+
         # Test caching
         agent.cache_set("key", "value")
         assert agent.cache_get("key")[0] is True
-        
+
         # Test metrics
         agent.record_timing("op", 100.0)
         assert agent.get_metrics("op")["call_count"] == 1
@@ -160,15 +177,18 @@ class TestPhase5E2E:
         """Trait-based agents should have simple MRO."""
         from dataclasses import dataclass
         from agentic_core.base_agents.trait_system import (
-            with_traits, CachingTrait, MetricsTrait, BatchingTrait
+            with_traits,
+            CachingTrait,
+            MetricsTrait,
+            BatchingTrait,
         )
-        
+
         @with_traits(CachingTrait, MetricsTrait, BatchingTrait)
         @dataclass
         class TraitAgent:
             def __post_init__(self):
                 pass
-        
+
         # MRO should only include TraitAgent and object
         mro_depth = len(TraitAgent.__mro__)
         assert mro_depth == 2, f"Trait agent MRO should be 2, got {mro_depth}"
@@ -177,25 +197,28 @@ class TestPhase5E2E:
         """Trait-based agents should have all capabilities."""
         from dataclasses import dataclass
         from agentic_core.base_agents.trait_system import (
-            with_traits, CachingTrait, MetricsTrait, BatchingTrait
+            with_traits,
+            CachingTrait,
+            MetricsTrait,
+            BatchingTrait,
         )
-        
+
         @with_traits(CachingTrait, MetricsTrait, BatchingTrait)
         @dataclass
         class TraitAgent:
             def __post_init__(self):
                 pass
-        
+
         agent = TraitAgent()
-        
+
         # Test caching
         agent.cache_set("key", "value")
         assert agent.cache_get("key")[0] is True
-        
+
         # Test metrics
         agent.record_timing("op", 100.0)
         assert agent.get_metrics("op")["call_count"] == 1
-        
+
         # Test batching
         agent.batch_add("queue", "item")
         assert agent.batch_flush("queue") == ["item"]
@@ -208,10 +231,10 @@ class TestBackwardCompatibility:
         """Original PerformanceMixin should still be usable."""
         try:
             from agentic_core.base_agents.performance_mixin import PerformanceMixin
-            
+
             class TestAgent(PerformanceMixin):
                 pass
-            
+
             agent = TestAgent()
             assert hasattr(agent, "cache_get")
             assert hasattr(agent, "get_performance_metrics")
@@ -224,7 +247,7 @@ class TestBackwardCompatibility:
         # Just verify the file exists and is valid Python
         path = PROJECT_ROOT / "agentic_core" / "base_agents" / "infrastructure_mixin.py"
         assert path.exists()
-        
+
         content = path.read_text(encoding="utf-8")
         try:
             ast.parse(content)
@@ -249,7 +272,7 @@ class TestAllPhasesIntegrated:
             # Phase 5
             PROJECT_ROOT / "agentic_core" / "base_agents" / "trait_system.py",
         ]
-        
+
         for file_path in new_files:
             assert file_path.exists(), f"Missing file: {file_path}"
 
@@ -263,7 +286,7 @@ class TestAllPhasesIntegrated:
             PROJECT_ROOT / "agentic_core" / "base_agents" / "lightweight_agent_base.py",
             PROJECT_ROOT / "agentic_core" / "base_agents" / "trait_system.py",
         ]
-        
+
         for file_path in new_files:
             content = file_path.read_text(encoding="utf-8")
             try:
@@ -276,24 +299,24 @@ class TestAllPhasesIntegrated:
         from dataclasses import dataclass
         from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
-        
+
         @dataclass
         class ModernAgent(LightweightAgentBase):
             """Agent using recommended Phase 4 pattern with Phase 2 composition."""
-            
+
             def __post_init__(self):
                 super().__post_init__()
                 # Use GatewayFactory for external services
                 self.gateways = GatewayFactory.create_minimal()
-        
+
         agent = ModernAgent()
-        
+
         # Has lightweight infrastructure
         assert agent.verify_lightweight_state() is True
-        
+
         # Has gateway access
         assert agent.gateways.llm is not None
-        
+
         # Can use caching
         agent.cache_set("key", "value")
         assert agent.cache_get("key")[0] is True
@@ -305,44 +328,42 @@ class TestPerformanceImprovements:
     def test_lightweight_instantiation_time(self):
         """LightweightAgentBase should instantiate quickly."""
         from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
-        
+
         class TestAgent(LightweightAgentBase):
             def __post_init__(self):
                 super().__post_init__()
-        
+
         # Warm up
         TestAgent()
-        
+
         # Measure
         start = time.time()
         for _ in range(100):
             TestAgent()
         duration = time.time() - start
-        
+
         # Should be < 1s for 100 instantiations
         assert duration < 1.0, f"100 instantiations took {duration:.2f}s, should be < 1s"
 
     def test_trait_based_agent_instantiation(self):
         """Trait-based agents should instantiate quickly."""
         from dataclasses import dataclass
-        from agentic_core.base_agents.trait_system import (
-            with_traits, CachingTrait, MetricsTrait
-        )
-        
+        from agentic_core.base_agents.trait_system import with_traits, CachingTrait, MetricsTrait
+
         @with_traits(CachingTrait, MetricsTrait)
         @dataclass
         class TraitAgent:
             def __post_init__(self):
                 pass
-        
+
         # Warm up
         TraitAgent()
-        
+
         # Measure
         start = time.time()
         for _ in range(100):
             TraitAgent()
         duration = time.time() - start
-        
+
         # Should be < 1s for 100 instantiations
         assert duration < 1.0, f"100 instantiations took {duration:.2f}s, should be < 1s"

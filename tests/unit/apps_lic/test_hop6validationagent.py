@@ -22,7 +22,7 @@ class TestHOP6ValidationAgent:
     def test_class_exists(self):
         """Verify the class can be imported."""
         try:
-            from apps_lic.engines.hop6_validation_agent_validator import HOP6ValidationAgent
+            from apps_lic.engines.Hop6ValidationAgentValidator import HOP6ValidationAgent
 
             assert HOP6ValidationAgent is not None
         except ImportError as e:
@@ -32,7 +32,7 @@ class TestHOP6ValidationAgent:
     def test_class_is_agent(self):
         """Verify the class follows agent patterns."""
         try:
-            from apps_lic.engines.hop6_validation_agent_validator import HOP6ValidationAgent
+            from apps_lic.engines.Hop6ValidationAgentValidator import HOP6ValidationAgent
 
             # Check it's a class
             assert isinstance(HOP6ValidationAgent, type)
@@ -42,7 +42,7 @@ class TestHOP6ValidationAgent:
     def test_instantiation_with_mocks(self):
         """Test that the agent can be instantiated with mocked dependencies."""
         try:
-            from apps_lic.engines.hop6_validation_agent_validator import HOP6ValidationAgent
+            from apps_lic.engines.Hop6ValidationAgentValidator import HOP6ValidationAgent
 
             # Try to instantiate with common agent patterns
             with patch.multiple(HOP6ValidationAgent, __init__=lambda self: None, create=True):
@@ -57,7 +57,7 @@ class TestHOP6ValidationAgent:
     def test_has_healing_capability(self):
         """Verify healing methods exist if agent has healing."""
         try:
-            from apps_lic.engines.hop6_validation_agent_validator import HOP6ValidationAgent
+            from apps_lic.engines.Hop6ValidationAgentValidator import HOP6ValidationAgent
 
             # Check for heal_repository method
             hasattr(HOP6ValidationAgent, "heal_repository") or any(
@@ -71,7 +71,7 @@ class TestHOP6ValidationAgent:
     def test_key_methods_exist(self):
         """Verify key methods are defined."""
         try:
-            from apps_lic.engines.hop6_validation_agent_validator import HOP6ValidationAgent
+            from apps_lic.engines.Hop6ValidationAgentValidator import HOP6ValidationAgent
 
             # Get all public methods
             methods = [m for m in dir(HOP6ValidationAgent) if not m.startswith("_")]
