@@ -22,7 +22,7 @@ from agentic_core.base_agents.UnifiedAgent import (
     ValidationResult,
     ValidatorStrategy,
 )
-from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
+from apps_rg.shared.core.RGAgentBase import RGAgentBase
 from apps_shared.config.config_loader_config import load_agent_config
 
 

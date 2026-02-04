@@ -17,7 +17,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
+from apps_rg.shared.core.RGAgentBase import RGAgentBase
 
 Logger = logging.getLogger(__name__)
 
