@@ -2,7 +2,7 @@
 """
 Anti-Pattern Pre-Commit Check
 
-Scans staged Python files for Phase 2 landmine anti-patterns.
+Scans staged Python files for landmine anti-patterns.
 Used as a pre-commit hook to prevent introduction of new anti-patterns.
 
 Usage:
@@ -13,13 +13,12 @@ Usage:
       name: Check Anti-Patterns
       entry: python ops_scripts/ci/check_anti_patterns.py
       language: python
-      types: [python]
 """
 
 import sys
 from pathlib import Path
 
-# Ensure project root is in path
+# Ensure project root is in path - guardian: allow-global-mutation
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -89,12 +88,12 @@ def check_files(file_paths: list[str]) -> int:
             print(f"   [FIX] {fix_preview}")
         print()
 
-    # For pre-commit, we warn but don't fail (soft enforcement)
-    # Change return value to 1 for hard enforcement
-    print("[INFO] Anti-pattern warnings detected. Consider fixing before commit.")
+    # For pre-commit, we block commits with violations (hard enforcement)
+    # Change return value to 0 for warning mode
+    print("[ERROR] Anti-pattern violations detected. Fix before committing.")
     print("   Add '# guardian: allow-<pattern>' comment to whitelist legitimate uses.")
 
-    return 0  # Return 0 for warning mode, 1 for blocking mode
+    return 1  # Return 0 for warning mode, 1 for blocking mode
 
 
 def main() -> int:
