@@ -28,6 +28,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -35,7 +36,7 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class StrategicRecommendationAgent(SovereignBaseAgent):
+class StrategicRecommendationAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     L3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.
 

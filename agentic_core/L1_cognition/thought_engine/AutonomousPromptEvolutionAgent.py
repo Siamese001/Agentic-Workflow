@@ -10,6 +10,7 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -33,7 +34,7 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class AutonomousPromptEvolutionAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class AutonomousPromptEvolutionAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """
     Autonomous agent that evolves prompt templates based on performance metrics.
 
