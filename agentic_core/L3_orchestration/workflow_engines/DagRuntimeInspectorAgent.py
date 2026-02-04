@@ -2,6 +2,7 @@
 
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing import SubatomicTestingMixin
@@ -17,7 +18,7 @@ class DiagnosticReport:
         self.metrics = metrics
 
 
-class DagRuntimeInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class DagRuntimeInspectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """Diagnostics engine for inspection domain."""
 
     def __init__(self, config: dict[str, Any] | None = None):

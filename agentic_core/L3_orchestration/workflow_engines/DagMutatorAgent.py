@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING, Any
 import networkx as nx
 from pydantic import BaseModel, Field, validator
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
@@ -209,7 +210,7 @@ class DAGConfig(BaseModel):
     mutation_history_size: int = Field(default=1000, ge=100)
 
 
-class DAGMutatorAgent(SovereignBaseAgent):
+class DAGMutatorAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """Handles the actual graph mutations."""
 
     def __init__(self, config: DAGConfig) -> None:

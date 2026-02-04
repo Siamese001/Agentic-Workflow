@@ -26,6 +26,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
@@ -80,7 +81,7 @@ class RetryContext:
 
 
 @dataclass
-class RecursiveOrchestrator(SovereignBaseAgent):
+class RecursiveOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Forward-Rolling Recursion Orchestrator.
 

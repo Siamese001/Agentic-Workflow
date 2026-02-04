@@ -6,6 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -41,7 +42,7 @@ def get_sovereign_rag_orchestrator() -> SovereignRagOrchestratorAgent:
 
 
 @dataclass
-class SovereignRagOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent, IRagProvider):
+class SovereignRagOrchestratorAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent, IRagProvider):
     """
     Sovereign RAG Orchestrator - L3 Self-Optimizing RAG System.
 
