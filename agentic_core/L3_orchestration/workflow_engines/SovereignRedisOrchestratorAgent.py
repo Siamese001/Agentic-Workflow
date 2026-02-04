@@ -6,6 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
@@ -31,7 +32,7 @@ from agentic_core.base_agents.timeout_decorator import timeout
 
 
 @dataclass
-class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class SovereignRedisOrchestratorAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """Brief description of functionality and purpose."""
 
     def __init__(self) -> None:
