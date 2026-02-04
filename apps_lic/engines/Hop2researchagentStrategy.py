@@ -16,7 +16,7 @@ from apps_lic.domain.config import load_agent_specs
 from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
 
 # LIC Sovereign Architecture Imports
-from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
+from apps_lic.shared.core.LICAgentBase import LICAgentBase
 from apps_lic.shared.core.trace_registry_types import TraceRegistry
 
 # Domain Imports
