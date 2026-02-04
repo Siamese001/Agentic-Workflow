@@ -13,6 +13,7 @@ from typing import Any
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # [FIX] Use Functional Naming alias for imports
@@ -37,7 +38,7 @@ except ImportError:
 Logger: Any = logging.getLogger(__name__)
 
 
-class AgentGym(SovereignBaseAgent):
+class AgentGym(AtomicExecutionMixin, SovereignBaseAgent):
     """Agent Gym for self-evolution and benchmarking.
 
     Features:

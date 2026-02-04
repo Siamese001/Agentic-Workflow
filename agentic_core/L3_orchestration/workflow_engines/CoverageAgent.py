@@ -11,6 +11,7 @@ from typing import Any
 
 import numpy as np
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -42,7 +43,7 @@ except ImportError:
 # Use the canonical base for metric-related agents (observed pattern in MetricsAgent/BenchmarkingAgent)
 # If no specific base exists, fall back to a lightweight object; adjust if your MetricsAgent inherits something specific
 @dataclass
-class CoverageAgent(SovereignBaseAgent):
+class CoverageAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """CoverageAgent agent for autonomous operations."""
 
     def __init__(
