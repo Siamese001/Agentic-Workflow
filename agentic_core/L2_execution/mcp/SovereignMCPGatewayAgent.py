@@ -16,13 +16,14 @@ import logging
 import time
 from dataclasses import dataclass
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class SovereignMCPGateway(SovereignBaseAgent):
+class SovereignMCPGateway(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Unified MCP Gateway - Single point of truth for all MCP operations.
 

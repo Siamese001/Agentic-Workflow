@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -27,7 +28,7 @@ from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class RgStrategicPlannerAgent(SovereignBaseAgent):
+class RgStrategicPlannerAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     ROLE: High-level strategist.
     Analyzes aggregated signals/violations and generates multi-step refactor plans.
