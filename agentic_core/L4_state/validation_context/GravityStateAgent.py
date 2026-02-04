@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
@@ -56,7 +57,7 @@ class HealingRecord:
     line_number: int | None = None
 
 
-class GravityStateAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class GravityStateAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """
     [L4 STATE] Tracks gravity healing operations and prevents re-flagging.
 
