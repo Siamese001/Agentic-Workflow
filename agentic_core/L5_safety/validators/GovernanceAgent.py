@@ -327,7 +327,7 @@ class DependencyGraph:
 
 
 # NAMING CANON COMPLIANCE — renamed to GovernanceAgent for discovery and sovereignty — 2025-12-30
-class GovernanceAgent(AtomicExecutionMixin, SovereignBaseAgent, SubatomicTestingMixin):
+class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """
     Enforces architectural governance laws and constraints.
 
