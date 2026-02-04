@@ -64,6 +64,7 @@ class TestPhase1LoggerFix:
             "renamed": 0,
             "imports_fixed": 0,
             "collisions_resolved": 0,
+            "deep_refactors": 0,
             "violations": {
                 "AGENT": 0,
                 "CLASS": 0,
@@ -76,6 +77,12 @@ class TestPhase1LoggerFix:
                 "SCRIPT": 0,
                 "TYPES": 0,
                 "GATEWAY": 0,
+                # WINDSURF IMPLEMENTATION: New categories
+                "ORCHESTRATOR": 0,
+                "VALIDATOR": 0,
+                "FACTORY": 0,
+                "CONFIG": 0,
+                "ADAPTER": 0,
             },
         }
         agent.file_registry = []
@@ -180,6 +187,7 @@ class TestPhase1Integration:
             "renamed": 0,
             "imports_fixed": 0,
             "collisions_resolved": 0,
+            "deep_refactors": 0,
             "violations": {
                 "AGENT": 0,
                 "CLASS": 0,
@@ -192,6 +200,12 @@ class TestPhase1Integration:
                 "SCRIPT": 0,
                 "TYPES": 0,
                 "GATEWAY": 0,
+                # WINDSURF IMPLEMENTATION: New categories
+                "ORCHESTRATOR": 0,
+                "VALIDATOR": 0,
+                "FACTORY": 0,
+                "CONFIG": 0,
+                "ADAPTER": 0,
             },
         }
         agent.file_registry = []
