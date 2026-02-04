@@ -1,9 +1,7 @@
 """Tests for VerificationGateAdapter."""
 
-import pytest
 import tempfile
 import os
-from pathlib import Path
 from agentic_core.L5_safety.adapters.verification_gate_adapter import (
     VerificationGateAdapter,
 )

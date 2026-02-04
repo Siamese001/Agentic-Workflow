@@ -62,7 +62,9 @@ class TestMetaLearningPatternRecall:
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_pattern_recall_above_threshold(self, mock_redis=None, mock_pinecone=None):
         """Test successful pattern recall when similarity exceeds threshold."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         # Setup mocks
         mock_pinecone_agent = MagicMock()
@@ -104,7 +106,9 @@ class TestMetaLearningPatternRecall:
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_pattern_recall_below_threshold(self, mock_pinecone=None):
         """Test pattern rejection when similarity below threshold."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         # Setup mock with low similarity
         mock_pinecone_agent = MagicMock()
@@ -133,7 +137,9 @@ class TestMetaLearningPatternRecall:
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_domain_specific_thresholds(self, mock_pinecone=None):
         """Test domain-specific similarity thresholds."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         # Setup mock
         mock_pinecone_agent = MagicMock()
@@ -166,7 +172,9 @@ class TestRedisCachingWithGuardrails:
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_cache_set_with_ttl(self, mock_redis=None):
         """Test cache setting with TTL and domain isolation."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         # Setup mock Redis
         mock_redis_agent = MagicMock()
@@ -196,7 +204,9 @@ class TestRedisCachingWithGuardrails:
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_cache_get_hit_miss(self, mock_redis=None):
         """Test cache hit and miss scenarios."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         # Setup mock Redis
         mock_redis_agent = MagicMock()
@@ -222,7 +232,9 @@ class TestRedisCachingWithGuardrails:
 
     def test_input_validation_guardrails(self):
         """Test cache poisoning protection via input validation."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
 
@@ -251,7 +263,9 @@ class TestHealingDepthTracking:
 
     def test_healing_depth_increment_and_reset(self):
         """Test depth counter increment and reset functionality."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
         agent_name = "TestAgent"
@@ -284,7 +298,9 @@ class TestHealingDepthTracking:
 
     def test_max_depth_enforcement(self):
         """Test enforcement of maximum healing depth (5)."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
         agent_name = "TestAgent"
@@ -391,7 +407,9 @@ class TestIntegrationScenarios:
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by E2E tests")
     def test_full_healing_cycle_with_memory(self, mock_redis=None, mock_pinecone=None):
         """Test complete healing cycle: violation -> pattern recall -> healing -> storage."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         # Setup mocks
         mock_pinecone_agent = MagicMock()
@@ -453,7 +471,9 @@ class TestPerformanceAndLoad:
 
     def test_cache_performance_under_load(self):
         """Test cache performance with high-volume operations."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
 
@@ -481,7 +501,9 @@ class TestPerformanceAndLoad:
 
     def test_memory_usage_bounds(self):
         """Test memory usage stays within reasonable bounds."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
 

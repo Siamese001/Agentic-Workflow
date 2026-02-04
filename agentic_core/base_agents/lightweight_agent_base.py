@@ -78,28 +78,28 @@ class LightweightAgentBase(
         # Initialize all parent mixins
         # Note: dataclass doesn't call __init__ automatically for mixins
         # so we need to initialize them here
-        
+
         # Initialize CachingMixin
         from agentic_core.base_agents.caching_mixin import CacheConfig
         from collections import OrderedDict
         import threading
+
         self._cache_config = CacheConfig()
         self._cache_store = OrderedDict()
         self._cache_lock = threading.RLock()
         self._caching_initialized = True
-        
+
         # Initialize MetricsMixin
         from agentic_core.base_agents.metrics_mixin import MetricsConfig
+
         self._metrics_config = MetricsConfig()
         self._metrics_store = {}
         self._metrics_lock = threading.RLock()
         self._metrics_initialized = True
-        
+
         self._lightweight_initialized = True
 
-        Logger.debug(
-            f"[LIGHTWEIGHT] {self.__class__.__name__} lightweight agent initialized"
-        )
+        Logger.debug(f"[LIGHTWEIGHT] {self.__class__.__name__} lightweight agent initialized")
 
     def verify_lightweight_state(self) -> bool:
         """
@@ -131,9 +131,7 @@ class LightweightAgentBase(
     def get_lightweight_status(self) -> dict[str, Any]:
         """Get current status of lightweight infrastructure."""
         return {
-            "lightweight_initialized": getattr(
-                self, "_lightweight_initialized", False
-            ),
+            "lightweight_initialized": getattr(self, "_lightweight_initialized", False),
             "class_name": self.__class__.__name__,
             "mro_depth": len(type(self).__mro__),
             "capabilities": [

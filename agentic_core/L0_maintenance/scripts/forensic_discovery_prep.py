@@ -37,7 +37,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 # ==============================================================================
 # IMPORT STRATEGY: Inherit strict SSOT paths from production environment
@@ -53,7 +53,9 @@ try:
     )
 except ImportError:
     # Fallback for standalone auditing (if outside strict env)
-    print("CRITICAL: SSOT imports failed. Ensure PYTHONPATH includes project root.", file=sys.stderr)
+    print(
+        "CRITICAL: SSOT imports failed. Ensure PYTHONPATH includes project root.", file=sys.stderr
+    )
     sys.exit(1)
 
 # Configure simplified logging for the tool
@@ -64,9 +66,11 @@ Logger = logging.getLogger("ForensicAudit")
 # Forensic Data Structures
 # ==============================================================================
 
+
 @dataclass
 class ForensicAgentRecord:
     """The absolute truth for a single agent under audit."""
+
     agent_name: str
     layer: str
     file_path: str
@@ -85,7 +89,9 @@ class ForensicAgentRecord:
     # Convenience booleans for audit matrix
     has_heal: bool = False
 
+
 OUTPUT_SCHEMA_VERSION = "1.2.0"
+
 
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
@@ -94,11 +100,13 @@ def sha256_file(path: Path) -> str:
             h.update(chunk)
     return h.hexdigest()
 
+
 def safe_unparse(node: ast.AST) -> str:
     try:
         return ast.unparse(node)  # py>=3.9
     except Exception:
         return node.__class__.__name__
+
 
 def extract_precise_mro(node: ast.ClassDef) -> List[str]:
     """
@@ -110,19 +118,24 @@ def extract_precise_mro(node: ast.ClassDef) -> List[str]:
         if isinstance(base, ast.Name):
             bases.append(base.id)
         elif isinstance(base, ast.Attribute):
-            bases.append(f"{base.value.id}.{base.attr}" if isinstance(base.value, ast.Name) else base.attr)
+            bases.append(
+                f"{base.value.id}.{base.attr}" if isinstance(base.value, ast.Name) else base.attr
+            )
         else:
             bases.append(safe_unparse(base))
     return bases
+
 
 def stub_sentinel_detected(content: str) -> bool:
     # STRICT: sentinel only in header to avoid accidental substring matches
     head = "\n".join(content.splitlines()[:60])
     return (
-        ("STATUS: STUB" in head) or
-        ("__AGENT_STATUS__" in head and "STUB" in head) or
-        any(line.strip() == "NOT_AN_AGENT" for line in head.splitlines())
+        ("STATUS: STUB" in head)
+        or ("__AGENT_STATUS__" in head and "STUB" in head)
+        or any(line.strip() == "NOT_AN_AGENT" for line in head.splitlines())
     )
+
+
 def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRecord:
     """
     Analyzes a file to build the Forensic Record.
@@ -134,7 +147,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
         class_name="Unknown",
         mro_signature=[],
         status="INVALID",
-        methods_detected=[]
+        methods_detected=[],
     )
 
     if not file_path.exists():
@@ -145,7 +158,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
         record.file_size_bytes = file_path.stat().st_size
         record.file_sha256 = sha256_file(file_path)
         content = file_path.read_text(encoding="utf-8", errors="replace")
-        
+
         # Fast fail for Stubs
         if stub_sentinel_detected(content):
             record.status = "STUB"
@@ -176,8 +189,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
                 s += 5
             # prefer presence of heal/execute/run methods
             method_names = [
-                i.name for i in cls.body
-                if isinstance(i, (ast.FunctionDef, ast.AsyncFunctionDef))
+                i.name for i in cls.body if isinstance(i, (ast.FunctionDef, ast.AsyncFunctionDef))
             ]
             if "heal" in method_names:
                 s += 20
@@ -208,16 +220,21 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
 
     return record
 
+
 # ==============================================================================
 # Execution
 # ==============================================================================
 
+
 def get_git_commit(root: Path) -> str:
     try:
-        out = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], stderr=subprocess.DEVNULL)
+        out = subprocess.check_output(
+            ["git", "-C", str(root), "rev-parse", "HEAD"], stderr=subprocess.DEVNULL
+        )
         return out.decode("utf-8").strip()
     except Exception:
         return ""
+
 
 def atomic_write(path: Path, data: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -225,13 +242,16 @@ def atomic_write(path: Path, data: str) -> None:
     tmp.write_text(data, encoding="utf-8")
     os.replace(tmp, path)
 
+
 def run_forensic_discovery(out_path: Optional[Path] = None) -> int:
     project_root = get_validated_project_root()
-    
+
     # 1. Load the Candidate List from SSOT
     raw_candidates = load_agent_discovery(project_root, force_reload=True)
-    raw_candidates = sorted(raw_candidates, key=lambda c: (c.get("layer",""), c.get("name",""), c.get("path","")))
-    
+    raw_candidates = sorted(
+        raw_candidates, key=lambda c: (c.get("layer", ""), c.get("name", ""), c.get("path", ""))
+    )
+
     manifest = {
         "audit_meta": {
             "root": str(project_root),
@@ -255,9 +275,14 @@ def run_forensic_discovery(out_path: Optional[Path] = None) -> int:
 
         if not rel_path:
             record = ForensicAgentRecord(
-                agent_name=name, layer=layer, file_path="", class_name="Unknown",
-                mro_signature=[], status="INVALID", methods_detected=[],
-                selection_reason="Missing path in SSOT candidate"
+                agent_name=name,
+                layer=layer,
+                file_path="",
+                class_name="Unknown",
+                mro_signature=[],
+                status="INVALID",
+                methods_detected=[],
+                selection_reason="Missing path in SSOT candidate",
             )
             manifest["ignored_artifacts"].append(asdict(record))
             continue
@@ -267,23 +292,32 @@ def run_forensic_discovery(out_path: Optional[Path] = None) -> int:
             validate_path_within_project(project_root, full_path)
         except Exception:
             record = ForensicAgentRecord(
-                agent_name=name, layer=layer, file_path=str(full_path), class_name="Unknown",
-                mro_signature=[], status="INVALID", methods_detected=[],
-                selection_reason="Path fails validate_path_within_project"
+                agent_name=name,
+                layer=layer,
+                file_path=str(full_path),
+                class_name="Unknown",
+                mro_signature=[],
+                status="INVALID",
+                methods_detected=[],
+                selection_reason="Path fails validate_path_within_project",
             )
             manifest["ignored_artifacts"].append(asdict(record))
             continue
-        
+
         record = forensic_inspect(name, layer, full_path)
-        
+
         if record.status == "ACTIVE":
             manifest["environment_under_test"].append(asdict(record))
         else:
             manifest["ignored_artifacts"].append(asdict(record))
 
     # 3. Deterministic ordering and counts
-    manifest["environment_under_test"] = sorted(manifest["environment_under_test"], key=lambda r: (r["agent_name"], r["file_path"]))
-    manifest["ignored_artifacts"] = sorted(manifest["ignored_artifacts"], key=lambda r: (r["agent_name"], r["file_path"]))
+    manifest["environment_under_test"] = sorted(
+        manifest["environment_under_test"], key=lambda r: (r["agent_name"], r["file_path"])
+    )
+    manifest["ignored_artifacts"] = sorted(
+        manifest["ignored_artifacts"], key=lambda r: (r["agent_name"], r["file_path"])
+    )
 
     counts: Dict[str, int] = {}
     for r in manifest["environment_under_test"] + manifest["ignored_artifacts"]:
@@ -297,9 +331,12 @@ def run_forensic_discovery(out_path: Optional[Path] = None) -> int:
         print(payload)
     return 0
 
+
 if __name__ == "__main__":
     try:
-        parser = argparse.ArgumentParser(description="Forensic Discovery Prep (Audit Scope Generator)")
+        parser = argparse.ArgumentParser(
+            description="Forensic Discovery Prep (Audit Scope Generator)"
+        )
         parser.add_argument("--out", help="Write JSON output to file atomically (recommended)")
         args = parser.parse_args()
 

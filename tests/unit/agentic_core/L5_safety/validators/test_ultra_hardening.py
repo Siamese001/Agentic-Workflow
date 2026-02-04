@@ -44,7 +44,9 @@ class TestUltraHardening:
 
     def test_forbidden_extension_leak_protection(self):
         """Test that forbidden extensions are blocked in scripts."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import ARTIFACT_ROUTING_MAP
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            ARTIFACT_ROUTING_MAP,
+        )
 
         script_rules = ARTIFACT_ROUTING_MAP["agentic_core/L0_maintenance/scripts"]
         assert "class Test" in script_rules["forbidden_keywords"]

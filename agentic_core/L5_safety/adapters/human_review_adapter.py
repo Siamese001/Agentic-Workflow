@@ -6,7 +6,6 @@ enabling integration with the new feature-flagged agent system.
 """
 
 import logging
-import uuid
 from typing import Any, Dict, List, Optional
 
 from agentic_core.interfaces.review_protocol import (
@@ -100,8 +99,7 @@ class HumanReviewAdapter(HumanReviewProtocol):
 
         self._review_results[request.request_id] = result
         logger.info(
-            f"HumanReviewAdapter: Submitted review {request.request_id} "
-            f"for {request.agent_name}"
+            f"HumanReviewAdapter: Submitted review {request.request_id} for {request.agent_name}"
         )
 
         return result
@@ -166,9 +164,7 @@ class HumanReviewAdapter(HumanReviewProtocol):
 
     def get_queue_depth(self) -> int:
         """Get number of pending reviews in queue."""
-        return len(
-            [r for r in self._review_results.values() if r.status == ReviewStatus.PENDING]
-        )
+        return len([r for r in self._review_results.values() if r.status == ReviewStatus.PENDING])
 
     def approve(self, request_id: str, reviewer: str, reason: Optional[str] = None) -> ReviewResult:
         """Approve a pending review.

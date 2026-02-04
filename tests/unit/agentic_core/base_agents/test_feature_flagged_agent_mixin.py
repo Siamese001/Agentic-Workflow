@@ -1,12 +1,8 @@
 """Tests for FeatureFlaggedAgentMixin."""
 
-import pytest
-from unittest.mock import MagicMock, patch
 from agentic_core.base_agents.feature_flagged_agent_mixin import FeatureFlaggedAgentMixin
 from agentic_core.primitives.feature_flags import FeatureFlagManager
-from agentic_core.interfaces.verification_protocol import VerificationResult
-from agentic_core.interfaces.review_protocol import ReviewResult, ReviewStatus
-from agentic_core.interfaces.meta_learning_protocol import LearningResult
+from agentic_core.interfaces.review_protocol import ReviewStatus
 
 
 class MockAgent(FeatureFlaggedAgentMixin):
@@ -93,9 +89,7 @@ class TestFeatureFlaggedAgentMixin:
             disabled_called.append(True)
             return "disabled"
 
-        result = agent._execute_with_flag(
-            "ENABLE_META_LEARNING", enabled_fn, disabled_fn
-        )
+        result = agent._execute_with_flag("ENABLE_META_LEARNING", enabled_fn, disabled_fn)
 
         assert result == "enabled"
         assert len(enabled_called) == 1
@@ -116,9 +110,7 @@ class TestFeatureFlaggedAgentMixin:
             disabled_called.append(True)
             return "disabled"
 
-        result = agent._execute_with_flag(
-            "ENABLE_META_LEARNING", enabled_fn, disabled_fn
-        )
+        result = agent._execute_with_flag("ENABLE_META_LEARNING", enabled_fn, disabled_fn)
 
         assert result == "disabled"
         assert len(enabled_called) == 0
@@ -173,7 +165,11 @@ class TestVerificationGate:
         # Should return success - graceful degradation
         assert result.success is True
         # Reason can be various: verification_unavailable, verification_error, legacy_implementation
-        assert result.reason in ("verification_unavailable", "verification_error", "legacy_implementation")
+        assert result.reason in (
+            "verification_unavailable",
+            "verification_error",
+            "legacy_implementation",
+        )
 
 
 class TestDetectionSignal:

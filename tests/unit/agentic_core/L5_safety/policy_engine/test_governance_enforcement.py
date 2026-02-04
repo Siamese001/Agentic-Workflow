@@ -6,7 +6,9 @@ Rationale: Verifies the hardened Governance agents (StructuralValidator, Gravity
 import pytest
 
 from agentic_core.L5_safety.gravity.GravityLeakRepairAgent import GravityFix, GravityLeakRepairAgent
-from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import StructuralValidatorAgent
+from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
+    StructuralValidatorAgent,
+)
 
 
 @pytest.fixture
@@ -28,7 +30,9 @@ def governance_env(tmp_path):
 
 def test_structural_validator_detects_gravity(governance_env):
     """Ensure Validator detects the L2->L5 import."""
-    from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import StructureConfig
+    from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
+        StructureConfig,
+    )
 
     cfg = StructureConfig(project_root=governance_env)
     validator = StructuralValidatorAgent(config=cfg)

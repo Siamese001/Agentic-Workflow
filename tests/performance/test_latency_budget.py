@@ -14,7 +14,6 @@ import pytest
 import time
 import tempfile
 from pathlib import Path
-from typing import Any
 
 
 # Latency budgets in seconds
@@ -32,9 +31,7 @@ class TestLatencyBudget:
     @pytest.fixture
     def temp_file(self):
         """Create a temporary file for testing."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("# Test file\nprint('hello')\n")
             temp_path = Path(f.name)
         yield temp_path
@@ -47,6 +44,7 @@ class TestLatencyBudget:
         from agentic_core.base_agents.atomic_execution_mixin import (
             AtomicExecutionMixin,
         )
+
         elapsed = time.perf_counter() - start
 
         assert elapsed < 1.0, f"Import took {elapsed:.3f}s, budget is 1.0s"
@@ -59,6 +57,7 @@ class TestLatencyBudget:
             from agentic_core.L5_safety.policy_engine.code_healer_agent import (
                 CodeHealerAgent,
             )
+
             agent = CodeHealerAgent()
             elapsed = time.perf_counter() - start
 
@@ -83,8 +82,7 @@ class TestLatencyBudget:
         elapsed = time.perf_counter() - start
 
         assert elapsed < LATENCY_BUDGETS["file_hash"], (
-            f"Hash computation took {elapsed:.3f}s, "
-            f"budget is {LATENCY_BUDGETS['file_hash']}s"
+            f"Hash computation took {elapsed:.3f}s, budget is {LATENCY_BUDGETS['file_hash']}s"
         )
         assert file_hash is not None
 
@@ -105,8 +103,7 @@ class TestLatencyBudget:
         elapsed = time.perf_counter() - start
 
         assert elapsed < LATENCY_BUDGETS["atomic_write"], (
-            f"Atomic write took {elapsed:.3f}s, "
-            f"budget is {LATENCY_BUDGETS['atomic_write']}s"
+            f"Atomic write took {elapsed:.3f}s, budget is {LATENCY_BUDGETS['atomic_write']}s"
         )
         assert temp_file.read_text() == new_content
 
@@ -142,6 +139,7 @@ class TestLatencyBudget:
         module_path, class_name = agent_imports[agent_name]
         try:
             import importlib
+
             module = importlib.import_module(module_path)
             agent_class = getattr(module, class_name)
 

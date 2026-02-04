@@ -17,7 +17,9 @@ This script:
 import logging
 from typing import Any
 
-from agentic_core.prompt_governance.version_registry.prompt_registry_config import get_prompt_registry
+from agentic_core.prompt_governance.version_registry.prompt_registry_config import (
+    get_prompt_registry,
+)
 
 Logger = logging.getLogger(__name__)
 logging.basicConfig(

@@ -1,6 +1,5 @@
 """Tests for HumanReviewAdapter."""
 
-import pytest
 from agentic_core.L5_safety.adapters.human_review_adapter import HumanReviewAdapter
 from agentic_core.interfaces.review_protocol import (
     ReviewRequest,

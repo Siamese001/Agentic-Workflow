@@ -3,6 +3,7 @@
 # Suggested keywords: engine, guardrail, memory, orchestrator, prompt, validator
 # This boosts alignment detection — review and integrate appropriately
 """DispatchResumeToolsAgent - Resume domain executor with Titanium RAG integration."""
+
 from __future__ import annotations
 
 import logging

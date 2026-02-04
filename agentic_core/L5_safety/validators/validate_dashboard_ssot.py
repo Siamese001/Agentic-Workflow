@@ -119,7 +119,9 @@ def validate_dashboard_ssot() -> tuple[bool, list[str]]:
         print("REMEDIATION REQUIRED:")
         print("=" * 80)
         print("Replace hardcoded paths with:")
-        print("  from agentic_core.L5_safety.validators.structure_blueprint_config import DASHBOARD_DIR")
+        print(
+            "  from agentic_core.L5_safety.validators.structure_blueprint_config import DASHBOARD_DIR"
+        )
         print("  dashboard_path = project_root / DASHBOARD_DIR")
         print("=" * 80)
         return False, violations_report

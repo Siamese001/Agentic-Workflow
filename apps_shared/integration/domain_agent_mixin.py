@@ -10,8 +10,6 @@ from typing import Any, Callable, Dict, Optional
 
 from agentic_core.base_agents.feature_flagged_agent_mixin import FeatureFlaggedAgentMixin
 from agentic_core.primitives.feature_flags import FeatureFlagManager
-from agentic_core.interfaces.verification_protocol import VerificationResult
-from agentic_core.interfaces.review_protocol import ReviewResult, ReviewStatus
 
 logger = logging.getLogger(__name__)
 

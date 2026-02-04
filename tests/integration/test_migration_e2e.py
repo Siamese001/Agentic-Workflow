@@ -12,13 +12,11 @@ Tests the complete integration of all migration components:
 import pytest
 import tempfile
 import os
-from pathlib import Path
 
 from agentic_core.primitives.feature_flags import FeatureFlagManager
 from agentic_core.primitives.dependency_resolver import DynamicLoader
 from agentic_core.interfaces.verification_protocol import (
     VerificationRequest,
-    VerificationResult,
 )
 from agentic_core.interfaces.review_protocol import (
     ReviewRequest,

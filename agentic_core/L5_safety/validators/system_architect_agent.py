@@ -109,7 +109,9 @@ class SystemArchitectAgent(SovereignBaseAgent):
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations: Any = []
-        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_TERRITORIES
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            SOVEREIGN_TERRITORIES,
+        )
 
         # [PHASE 20] DEPRECATION: void_compliance.py removed - using HierarchyAgent
         def validate_canonical_hierarchy(proj_root):
@@ -261,7 +263,9 @@ class SystemArchitectAgent(SovereignBaseAgent):
         """
         from pathlib import Path
 
-        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_TERRITORIES
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            SOVEREIGN_TERRITORIES,
+        )
 
         violations: Any = []
         project_root: Any = Path(self.ctx.project_root or os.getcwd()).resolve()

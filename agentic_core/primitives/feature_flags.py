@@ -182,9 +182,7 @@ class FeatureFlagManager:
                 disabled.append(name)
 
         if disabled:
-            logger.warning(
-                f"[FLAG] Agent {agent_name} missing healing flags: {disabled}"
-            )
+            logger.warning(f"[FLAG] Agent {agent_name} missing healing flags: {disabled}")
 
         return len(disabled) == 0, disabled
 

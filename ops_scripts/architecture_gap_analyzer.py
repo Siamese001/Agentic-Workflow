@@ -22,18 +22,17 @@ Architecture Components from Diagram:
 
 import ast
 import json
-import os
 from collections import defaultdict
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 
 @dataclass
 class ArchitectureComponent:
     """Represents a component from the architecture diagram."""
-    
+
     name: str
     category: str
     required_capabilities: List[str]
@@ -45,7 +44,7 @@ class ArchitectureComponent:
 @dataclass
 class ComponentMatch:
     """A match between architecture component and codebase implementation."""
-    
+
     component_name: str
     file_path: str
     class_name: str
@@ -58,7 +57,7 @@ class ComponentMatch:
 @dataclass
 class GapAnalysisResult:
     """Result of gap analysis."""
-    
+
     component: ArchitectureComponent
     coverage_score: float  # 0-100
     implementations: List[ComponentMatch]
@@ -73,7 +72,7 @@ ARCHITECTURE_COMPONENTS = [
         category="Knowledge System",
         required_capabilities=[
             "ontology_management",
-            "embedding_services", 
+            "embedding_services",
             "fact_retrieval",
             "vector_storage",
             "knowledge_graph",
@@ -335,7 +334,7 @@ class ASTAnalyzer:
                     "decorators": [self._get_name(d) for d in node.decorator_list],
                     "docstring": ast.get_docstring(node) or "",
                 }
-                
+
                 for item in node.body:
                     if isinstance(item, ast.FunctionDef):
                         class_info["methods"].append(item.name)
@@ -343,7 +342,7 @@ class ASTAnalyzer:
                         for target in item.targets:
                             if isinstance(target, ast.Name):
                                 class_info["attributes"].append(target.id)
-                
+
                 classes.append(class_info)
         return classes
 
@@ -362,7 +361,7 @@ class ASTAnalyzer:
         text_lower = text.lower()
         matched = []
         total_score = 0.0
-        
+
         for pattern in patterns:
             pattern_lower = pattern.lower()
             # Direct substring match
@@ -375,7 +374,7 @@ class ASTAnalyzer:
                 if ratio > 0.6:
                     total_score += ratio
                     matched.append(f"{pattern}(fuzzy:{ratio:.2f})")
-        
+
         return total_score / len(patterns) if patterns else 0, matched
 
     def analyze_class_capabilities(
@@ -384,19 +383,21 @@ class ASTAnalyzer:
         """Analyze a class for architecture component capabilities."""
         matched_capabilities = []
         missing_capabilities = []
-        
+
         # Build searchable text from class info
-        searchable = " ".join([
-            class_info["name"],
-            class_info.get("docstring", ""),
-            " ".join(class_info.get("methods", [])),
-            " ".join(class_info.get("attributes", [])),
-        ]).lower()
-        
+        searchable = " ".join(
+            [
+                class_info["name"],
+                class_info.get("docstring", ""),
+                " ".join(class_info.get("methods", [])),
+                " ".join(class_info.get("attributes", [])),
+            ]
+        ).lower()
+
         for capability in component.required_capabilities:
             cap_words = capability.replace("_", " ").split()
             found = False
-            
+
             for word in cap_words:
                 if word in searchable:
                     found = True
@@ -406,26 +407,32 @@ class ASTAnalyzer:
                     if SequenceMatcher(None, word, method.lower()).ratio() > 0.7:
                         found = True
                         break
-            
+
             if found:
                 matched_capabilities.append(capability)
             else:
                 missing_capabilities.append(capability)
-        
-        score = len(matched_capabilities) / len(component.required_capabilities) if component.required_capabilities else 0
+
+        score = (
+            len(matched_capabilities) / len(component.required_capabilities)
+            if component.required_capabilities
+            else 0
+        )
         return score, matched_capabilities, missing_capabilities
 
     def scan_repository(self) -> None:
         """Scan entire repository for Python files."""
         for py_file in self.repo_root.rglob("*.py"):
-            if any(skip in str(py_file) for skip in [".venv", "node_modules", "__pycache__", ".git"]):
+            if any(
+                skip in str(py_file) for skip in [".venv", "node_modules", "__pycache__", ".git"]
+            ):
                 continue
-            
+
             tree = self.parse_file(py_file)
             if tree:
                 rel_path = str(py_file.relative_to(self.repo_root))
                 self.parsed_files[rel_path] = tree
-                
+
                 classes = self.extract_class_info(tree, rel_path)
                 for cls in classes:
                     self.class_info[f"{rel_path}:{cls['name']}"] = cls
@@ -443,10 +450,12 @@ class ArchitectureGapAnalyzer:
         """Run full architecture gap analysis."""
         print("Scanning repository with AST parser...")
         self.ast_analyzer.scan_repository()
-        print(f"Parsed {len(self.ast_analyzer.parsed_files)} files, found {len(self.ast_analyzer.class_info)} classes")
-        
+        print(
+            f"Parsed {len(self.ast_analyzer.parsed_files)} files, found {len(self.ast_analyzer.class_info)} classes"
+        )
+
         results = []
-        
+
         for component in ARCHITECTURE_COMPONENTS:
             print(f"\nAnalyzing: {component.name} ({component.category})")
             result = self._analyze_component(component)
@@ -455,54 +464,56 @@ class ArchitectureGapAnalyzer:
             print(f"  Implementations found: {len(result.implementations)}")
             if result.gaps:
                 print(f"  Gaps: {len(result.gaps)}")
-        
+
         self.results = results
         return results
 
     def _analyze_component(self, component: ArchitectureComponent) -> GapAnalysisResult:
         """Analyze a single architecture component."""
         implementations = []
-        
+
         for key, class_info in self.ast_analyzer.class_info.items():
             # Check pattern match in class name and content
             name_score, name_matches = self.ast_analyzer.fuzzy_match_score(
                 class_info["name"], component.key_patterns
             )
-            
+
             doc_score, doc_matches = self.ast_analyzer.fuzzy_match_score(
                 class_info.get("docstring", ""), component.key_patterns
             )
-            
+
             combined_score = max(name_score, doc_score)
-            
+
             if combined_score > 0.2:  # Threshold for considering as potential match
-                cap_score, matched_caps, missing_caps = self.ast_analyzer.analyze_class_capabilities(
-                    class_info, component
+                cap_score, matched_caps, missing_caps = (
+                    self.ast_analyzer.analyze_class_capabilities(class_info, component)
                 )
-                
+
                 if cap_score > 0 or combined_score > 0.5:
-                    implementations.append(ComponentMatch(
-                        component_name=component.name,
-                        file_path=class_info["file_path"],
-                        class_name=class_info["name"],
-                        match_score=max(combined_score, cap_score),
-                        matched_capabilities=matched_caps,
-                        missing_capabilities=missing_caps,
-                        evidence={
-                            "name_matches": name_matches,
-                            "doc_matches": doc_matches,
-                            "methods": class_info.get("methods", [])[:10],
-                        },
-                    ))
-        
+                    implementations.append(
+                        ComponentMatch(
+                            component_name=component.name,
+                            file_path=class_info["file_path"],
+                            class_name=class_info["name"],
+                            match_score=max(combined_score, cap_score),
+                            matched_capabilities=matched_caps,
+                            missing_capabilities=missing_caps,
+                            evidence={
+                                "name_matches": name_matches,
+                                "doc_matches": doc_matches,
+                                "methods": class_info.get("methods", [])[:10],
+                            },
+                        )
+                    )
+
         # Sort by match score
         implementations.sort(key=lambda x: x.match_score, reverse=True)
-        
+
         # Calculate coverage
         if implementations:
             best_impl = implementations[0]
             coverage = best_impl.match_score * 100
-            
+
             # Identify gaps
             gaps = []
             for cap in component.required_capabilities:
@@ -512,17 +523,17 @@ class ArchitectureGapAnalyzer:
             coverage = 0
             gaps = [f"No implementation found for: {component.name}"]
             gaps.extend([f"Missing capability: {cap}" for cap in component.required_capabilities])
-        
+
         # Generate recommendations
         recommendations = []
         if coverage < 50:
             recommendations.append(f"[P0] Implement {component.name} - Critical gap")
         elif coverage < 80:
             recommendations.append(f"[P1] Enhance {component.name} - Missing capabilities")
-        
+
         for gap in gaps[:3]:
             recommendations.append(f"  - {gap}")
-        
+
         return GapAnalysisResult(
             component=component,
             coverage_score=coverage,
@@ -546,9 +557,9 @@ class ArchitectureGapAnalyzer:
             "critical_gaps": [],
             "components": [],
         }
-        
+
         total_coverage = 0
-        
+
         for result in self.results:
             comp_data = {
                 "name": result.component.name,
@@ -568,11 +579,11 @@ class ArchitectureGapAnalyzer:
                 "gaps": result.gaps,
                 "recommendations": result.recommendations,
             }
-            
+
             report["components"].append(comp_data)
             report["by_category"][result.component.category].append(comp_data)
             report["by_criticality"][result.component.criticality].append(comp_data)
-            
+
             if result.coverage_score >= 80:
                 report["summary"]["fully_implemented"] += 1
             elif result.coverage_score >= 30:
@@ -580,35 +591,39 @@ class ArchitectureGapAnalyzer:
             else:
                 report["summary"]["not_implemented"] += 1
                 if result.component.criticality == "P0":
-                    report["critical_gaps"].append({
-                        "component": result.component.name,
-                        "coverage": result.coverage_score,
-                        "gaps": result.gaps[:3],
-                    })
-            
+                    report["critical_gaps"].append(
+                        {
+                            "component": result.component.name,
+                            "coverage": result.coverage_score,
+                            "gaps": result.gaps[:3],
+                        }
+                    )
+
             total_coverage += result.coverage_score
-        
-        report["summary"]["overall_coverage"] = total_coverage / len(self.results) if self.results else 0
-        
+
+        report["summary"]["overall_coverage"] = (
+            total_coverage / len(self.results) if self.results else 0
+        )
+
         return report
 
 
 def main():
     """Run architecture gap analysis."""
     repo_root = Path(__file__).parent.parent
-    
+
     analyzer = ArchitectureGapAnalyzer(repo_root)
     results = analyzer.analyze()
-    
+
     report = analyzer.generate_report()
-    
+
     # Save report to SSOT location
     output_path = repo_root / "docs" / "reports" / "plans" / "ARCHITECTURE_GAP_ANALYSIS_AST.json"
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, default=str)
-    
+
     # Print summary
     print("\n" + "=" * 80)
     print("ARCHITECTURE GAP ANALYSIS SUMMARY")
@@ -618,7 +633,7 @@ def main():
     print(f"Partially Implemented (30-80%): {report['summary']['partially_implemented']}")
     print(f"Not Implemented (<30%): {report['summary']['not_implemented']}")
     print(f"Overall Coverage: {report['summary']['overall_coverage']:.1f}%")
-    
+
     if report["critical_gaps"]:
         print("\n" + "-" * 40)
         print("CRITICAL GAPS (P0 with <30% coverage):")
@@ -626,25 +641,25 @@ def main():
             print(f"  - {gap['component']}: {gap['coverage']:.1f}%")
             for g in gap["gaps"][:2]:
                 print(f"      {g}")
-    
+
     print(f"\nDetailed report saved to: {output_path}")
-    
+
     # Also save markdown report to SSOT location
     md_path = repo_root / "docs" / "reports" / "plans" / "ARCHITECTURE_GAP_ANALYSIS_AST.md"
     with open(md_path, "w", encoding="utf-8") as f:
         f.write("# Architecture Gap Analysis (AST-Based)\n\n")
-        f.write(f"**Generated:** 2026-02-03\n")
-        f.write(f"**Method:** AST parsing with fuzzy matching\n\n")
-        
+        f.write("**Generated:** 2026-02-03\n")
+        f.write("**Method:** AST parsing with fuzzy matching\n\n")
+
         f.write("## Summary\n\n")
-        f.write(f"| Metric | Value |\n")
-        f.write(f"|--------|-------|\n")
+        f.write("| Metric | Value |\n")
+        f.write("|--------|-------|\n")
         f.write(f"| Total Components | {report['summary']['total_components']} |\n")
         f.write(f"| Fully Implemented (≥80%) | {report['summary']['fully_implemented']} |\n")
         f.write(f"| Partially Implemented | {report['summary']['partially_implemented']} |\n")
         f.write(f"| Not Implemented | {report['summary']['not_implemented']} |\n")
         f.write(f"| Overall Coverage | {report['summary']['overall_coverage']:.1f}% |\n\n")
-        
+
         f.write("## Components by Category\n\n")
         for category, components in report["by_category"].items():
             f.write(f"### {category}\n\n")
@@ -654,7 +669,7 @@ def main():
                 status = "✅" if comp["coverage"] >= 80 else "⚠️" if comp["coverage"] >= 30 else "❌"
                 f.write(f"| {comp['name']} | {comp['coverage']:.1f}% | {status} |\n")
             f.write("\n")
-        
+
         if report["critical_gaps"]:
             f.write("## Critical Gaps (P0)\n\n")
             for gap in report["critical_gaps"]:
@@ -663,9 +678,9 @@ def main():
                 for g in gap["gaps"]:
                     f.write(f"- {g}\n")
                 f.write("\n")
-    
+
     print(f"Markdown report saved to: {md_path}")
-    
+
     return report
 
 

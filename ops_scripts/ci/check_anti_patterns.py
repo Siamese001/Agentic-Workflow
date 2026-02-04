@@ -41,18 +41,14 @@ def check_files(file_paths: list[str]) -> int:
     Returns:
         Exit code: 0 if passed, 1 if violations found
     """
-    if not file_paths:
-        print("No files to check.")
-        return 0
-
     # Filter to only Python files
     python_files = [Path(f) for f in file_paths if f.endswith(".py") and Path(f).exists()]
 
     if not python_files:
-        print("No Python files to check.")
         return 0
 
-    # Create scanner with warning level (for pre-commit, we warn but don't block)
+    # Create scanner with WARNING level to catch all potential issues
+    # We enforce BLOCKING on these warnings to prevent debt accumulation
     scanner = AntiPatternScanner(
         project_root=PROJECT_ROOT,
         enforcement_level=EnforcementLevel.WARNING,
@@ -61,39 +57,29 @@ def check_files(file_paths: list[str]) -> int:
     # Scan only the specified files
     report = scanner.scan_changed_files(python_files)
 
-    # Print results
-    print(f"\n[SCAN] Anti-Pattern Check: {len(python_files)} file(s) scanned")
-
     if report.passed:
-        print("[PASS] No anti-patterns detected!")
         return 0
 
-    print(f"[WARN] Found {report.total_violations} anti-pattern violation(s):\n")
+    # Only print on failure (Signal vs Noise)
+    print(f"\n[BLOCK] Found {report.total_violations} anti-pattern landmine(s):")
 
     # Group by category
     for category, count in report.violations_by_category.items():
         if count > 0:
-            print(f"  [INFO] {category}: {count} violation(s)")
-
-    print()
+            print(f"  • {category}: {count}")
 
     # Show details for each violation
     for violation in report.all_violations:
-        severity_tag = "[ERROR]" if violation.severity == "error" else "[WARN]"
-        print(f"{severity_tag} {violation.file_path.name}:{violation.line_number}")
+        print(f"\n[FAIL] {violation.file_path.name}:{violation.line_number}")
         print(f"   [{violation.category.value}] {violation.message}")
         print(f"   Evidence: {violation.evidence[:80]}...")
         if violation.suggested_fix:
             fix_preview = violation.suggested_fix.split("\n")[0]
             print(f"   [FIX] {fix_preview}")
-        print()
 
-    # For pre-commit, we block commits with violations (hard enforcement)
-    # Change return value to 0 for warning mode
-    print("[ERROR] Anti-pattern violations detected. Fix before committing.")
-    print("   Add '# guardian: allow-<pattern>' comment to whitelist legitimate uses.")
+    print("\n[ACTION] Fix violations or add '# guardian: allow-<pattern>' to whitelist.")
 
-    return 1  # Return 0 for warning mode, 1 for blocking mode
+    return 1
 
 
 def main() -> int:

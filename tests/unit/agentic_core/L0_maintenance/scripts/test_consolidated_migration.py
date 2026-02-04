@@ -66,7 +66,9 @@ class TestConsolidatedMigration:
     def test_sovereign_territories_exists(self):
         """SOVEREIGN_TERRITORIES must exist in structure_blueprint."""
         try:
-            from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_TERRITORIES
+            from agentic_core.L5_safety.validators.structure_blueprint_config import (
+                SOVEREIGN_TERRITORIES,
+            )
 
             assert SOVEREIGN_TERRITORIES is not None, "SOVEREIGN_TERRITORIES should exist"
             assert len(SOVEREIGN_TERRITORIES) > 0, "SOVEREIGN_TERRITORIES should not be empty"

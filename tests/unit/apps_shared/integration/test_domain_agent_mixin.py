@@ -1,6 +1,5 @@
 """Tests for DomainAgentMixin."""
 
-import pytest
 from apps_shared.integration.domain_agent_mixin import (
     DomainAgentMixin,
     RGDomainMixin,

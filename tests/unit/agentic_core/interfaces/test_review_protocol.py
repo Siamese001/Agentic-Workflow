@@ -1,6 +1,5 @@
 """Tests for HumanReviewProtocol."""
 
-import pytest
 from agentic_core.interfaces.review_protocol import (
     HumanReviewProtocol,
     ReviewRequest,
@@ -197,9 +196,7 @@ class MockHumanReviewQueue(HumanReviewProtocol):
         return self._available
 
     def get_queue_depth(self) -> int:
-        return len(
-            [r for r in self._results.values() if r.status == ReviewStatus.PENDING]
-        )
+        return len([r for r in self._results.values() if r.status == ReviewStatus.PENDING])
 
     def approve(self, request_id: str, reviewer: str) -> None:
         """Helper method to approve a request."""

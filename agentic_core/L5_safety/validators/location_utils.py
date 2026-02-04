@@ -55,7 +55,9 @@ def compute_module_path(file_path: Path, project_root: Path | None = None) -> st
         Module path string (e.g., 'agentic_core.L5_safety.validators.LocationAgent')
     """
     if project_root is None:
-        from agentic_core.L5_safety.validators.structure_blueprint_config import get_validated_project_root
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            get_validated_project_root,
+        )
 
         project_root = get_validated_project_root()
 

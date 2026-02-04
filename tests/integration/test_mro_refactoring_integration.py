@@ -30,6 +30,7 @@ class TestCrossPhaseImports:
             GatewayFactory,
             GatewayBundle,
         )
+
         assert GatewayFactory is not None
         assert GatewayBundle is not None
 
@@ -38,7 +39,7 @@ class TestCrossPhaseImports:
         from agentic_core.base_agents.caching_mixin import CachingMixin
         from agentic_core.base_agents.metrics_mixin import MetricsMixin
         from agentic_core.base_agents.batching_mixin import BatchingMixin
-        
+
         assert CachingMixin is not None
         assert MetricsMixin is not None
         assert BatchingMixin is not None
@@ -48,19 +49,16 @@ class TestCrossPhaseImports:
         from agentic_core.base_agents.lightweight_agent_base import (
             LightweightAgentBase,
         )
+
         assert LightweightAgentBase is not None
 
     def test_phase5_trait_system_imports(self):
         """Phase 5 trait system should import cleanly."""
         from agentic_core.base_agents.trait_system import (
             Trait,
-            CachingTrait,
-            MetricsTrait,
-            BatchingTrait,
             with_traits,
-            get_applied_traits,
-            has_trait,
         )
+
         assert Trait is not None
         assert with_traits is not None
 
@@ -68,11 +66,9 @@ class TestCrossPhaseImports:
         """All phase components should import without conflicts."""
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
         from agentic_core.base_agents.caching_mixin import CachingMixin
-        from agentic_core.base_agents.metrics_mixin import MetricsMixin
-        from agentic_core.base_agents.batching_mixin import BatchingMixin
         from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
-        from agentic_core.base_agents.trait_system import with_traits, CachingTrait
-        
+        from agentic_core.base_agents.trait_system import with_traits
+
         # All imports successful
         assert GatewayFactory is not None
         assert CachingMixin is not None
@@ -87,15 +83,15 @@ class TestGatewayFactoryWithMixins:
         """GatewayFactory should work with CachingMixin agents."""
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
         from agentic_core.base_agents.caching_mixin import CachingMixin
-        
+
         class TestAgent(CachingMixin):
             def __init__(self):
                 super().__init__()
                 self.gateways = GatewayFactory.create_minimal()
-        
+
         GatewayFactory.reset_all()
         agent = TestAgent()
-        
+
         # Both work together
         assert agent.gateways.llm is not None
         agent.cache_set("key", "value")
@@ -106,16 +102,16 @@ class TestGatewayFactoryWithMixins:
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
         from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
         from dataclasses import dataclass
-        
+
         @dataclass
         class TestAgent(LightweightAgentBase):
             def __post_init__(self):
                 super().__post_init__()
                 self.gateways = GatewayFactory.create_all()
-        
+
         GatewayFactory.reset_all()
         agent = TestAgent()
-        
+
         # Both work together
         assert agent.gateways.llm is not None
         assert agent.gateways.validator is not None
@@ -130,21 +126,19 @@ class TestTraitSystemWithGatewayFactory:
         """Trait-based agents should work with GatewayFactory."""
         from dataclasses import dataclass
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
-        from agentic_core.base_agents.trait_system import (
-            with_traits, CachingTrait, MetricsTrait
-        )
-        
+        from agentic_core.base_agents.trait_system import with_traits, CachingTrait, MetricsTrait
+
         @with_traits(CachingTrait, MetricsTrait)
         @dataclass
         class TestAgent:
             gateways: object = None
-            
+
             def __post_init__(self):
                 self.gateways = GatewayFactory.create_minimal()
-        
+
         GatewayFactory.reset_all()
         agent = TestAgent()
-        
+
         # All work together
         assert agent.gateways.llm is not None
         agent.cache_set("key", "value")
@@ -161,19 +155,19 @@ class TestSplitMixinsCombined:
         from agentic_core.base_agents.caching_mixin import CachingMixin
         from agentic_core.base_agents.metrics_mixin import MetricsMixin
         from agentic_core.base_agents.batching_mixin import BatchingMixin
-        
+
         class TestAgent(CachingMixin, MetricsMixin, BatchingMixin):
             pass
-        
+
         agent = TestAgent()
-        
+
         # All work
         agent.cache_set("key", "value")
         assert agent.cache_get("key")[0] is True
-        
+
         agent.record_timing("op", 100.0)
         assert agent.get_metrics("op")["call_count"] == 1
-        
+
         agent.batch_add("queue", "item")
         assert agent.batch_flush("queue") == ["item"]
 
@@ -182,12 +176,12 @@ class TestSplitMixinsCombined:
         from agentic_core.base_agents.caching_mixin import CachingMixin
         from agentic_core.base_agents.metrics_mixin import MetricsMixin
         from agentic_core.base_agents.batching_mixin import BatchingMixin
-        
+
         class TestAgent(CachingMixin, MetricsMixin, BatchingMixin):
             pass
-        
+
         agent = TestAgent()
-        
+
         # Each mixin has its own state
         assert hasattr(agent, "_cache_config")
         assert hasattr(agent, "_metrics_config")
@@ -202,20 +196,20 @@ class TestLightweightBaseWithTraits:
         from dataclasses import dataclass
         from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
         from agentic_core.base_agents.trait_system import with_traits, BatchingTrait
-        
+
         # Note: traits are applied to the class before dataclass
         @with_traits(BatchingTrait)
         @dataclass
         class ExtendedAgent(LightweightAgentBase):
             def __post_init__(self):
                 super().__post_init__()
-        
+
         agent = ExtendedAgent()
-        
+
         # Has LightweightAgentBase capabilities
         agent.cache_set("key", "value")
         assert agent.cache_get("key")[0] is True
-        
+
         # Has BatchingTrait capabilities
         agent.batch_add("queue", "item")
         assert agent.batch_flush("queue") == ["item"]
@@ -229,18 +223,22 @@ class TestNoCircularDependencies:
         # Reset imports
         import importlib
         import agentic_core.L2_execution.gateway_factory
+
         importlib.reload(agentic_core.L2_execution.gateway_factory)
-        
+
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
+
         assert GatewayFactory is not None
 
     def test_trait_system_imports_independently(self):
         """Trait system should import without base agent dependencies."""
         import importlib
         import agentic_core.base_agents.trait_system
+
         importlib.reload(agentic_core.base_agents.trait_system)
-        
+
         from agentic_core.base_agents.trait_system import Trait, with_traits
+
         assert Trait is not None
         assert with_traits is not None
 
@@ -252,22 +250,22 @@ class TestThreadSafety:
         """GatewayFactory should provide working gateways from multiple threads."""
         import threading
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
-        
+
         GatewayFactory.reset_all()
         # Pre-initialize to ensure singleton is set
         GatewayFactory.get_llm_gateway()
-        
+
         gateways = []
-        
+
         def get_gateway():
             gateways.append(GatewayFactory.get_llm_gateway())
-        
+
         threads = [threading.Thread(target=get_gateway) for _ in range(10)]
         for t in threads:
             t.start()
         for t in threads:
             t.join()
-        
+
         # All should return working gateways (after pre-init, should be same singleton)
         assert len(gateways) == 10
         assert all(g is not None for g in gateways)
@@ -276,24 +274,24 @@ class TestThreadSafety:
         """CachingMixin should be thread-safe."""
         import threading
         from agentic_core.base_agents.caching_mixin import CachingMixin
-        
+
         class TestAgent(CachingMixin):
             pass
-        
+
         agent = TestAgent()
         results = []
-        
+
         def cache_operation(i):
             agent.cache_set(f"key{i}", f"value{i}")
             hit, value = agent.cache_get(f"key{i}")
             results.append((hit, value))
-        
+
         threads = [threading.Thread(target=cache_operation, args=(i,)) for i in range(10)]
         for t in threads:
             t.start()
         for t in threads:
             t.join()
-        
+
         # All operations should succeed
         assert len(results) == 10
         assert all(hit for hit, _ in results)

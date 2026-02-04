@@ -1,6 +1,5 @@
 """Tests for MetaLearningProtocol."""
 
-import pytest
 from agentic_core.interfaces.meta_learning_protocol import (
     MetaLearningProtocol,
     LearningContext,

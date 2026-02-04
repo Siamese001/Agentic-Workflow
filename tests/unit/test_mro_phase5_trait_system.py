@@ -21,7 +21,6 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.base_agents.trait_system import (
-    Trait,
     CachingTrait,
     MetricsTrait,
     BatchingTrait,

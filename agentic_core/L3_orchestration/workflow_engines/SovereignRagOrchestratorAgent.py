@@ -42,7 +42,9 @@ def get_sovereign_rag_orchestrator() -> SovereignRagOrchestratorAgent:
 
 
 @dataclass
-class SovereignRagOrchestratorAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent, IRagProvider):
+class SovereignRagOrchestratorAgent(
+    AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent, IRagProvider
+):
     """
     Sovereign RAG Orchestrator - L3 Self-Optimizing RAG System.
 
