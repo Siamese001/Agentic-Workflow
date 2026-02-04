@@ -7,6 +7,7 @@ import logging
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
@@ -98,7 +99,7 @@ class ValidationResult:
 
 
 @dataclass
-class PeerIntelligenceAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """
     K.2.5 - Multi-Hop RAG Analysis Agent
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -19,7 +20,7 @@ from agentic_core.base_agents.decorators import standard_heal
 Logger: Any = logging.getLogger(__name__)
 
 
-class SovereignPineconeMcpClient(SovereignBaseAgent):
+class SovereignPineconeMcpClient(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Official Pinecone MCP client — L3 routed, L5 shielded.
 
