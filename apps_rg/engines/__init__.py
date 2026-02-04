@@ -11,7 +11,7 @@ from __future__ import annotations
 from apps_shared.common_utils.Provider import Provider
 
 # [Diff Start: Export AgentExecutor]
-from .AgentExecutor import (
+from .agent_executor import (
     AgentConfig,
     AgentExecutor,
     AgentMessage,
@@ -20,14 +20,14 @@ from .AgentExecutor import (
 )
 
 # V2.5 Compliant Agents - All inherit from RGAgentBase
-from .ATSCompatibilityAgent import ATSCompatibilityAgent
-from .BrandComplianceAgent import BrandComplianceAgent
+from .ats_compatibility_agent import ATSCompatibilityAgent
+from .brand_compliance_agent import BrandComplianceAgent
 from .CampaignPlannerAgent import CampaignPlannerAgent
 from .ContentQualityAgent import ContentQualityAgent, TestPilot
 from .ContentStrategyAgent import ContentStrategyAgent
 from .FactCheckAgent import FactCheckAgent
-from .HardenedAnthropicExecutor import HardenedAnthropicExecutor
-from .HardenedOpenAIExecutor import HardenedOpenAIExecutor
+from .HardenedanthropicexecutorStrategy import HardenedAnthropicExecutor
+from .HardenedopenaiexecutorStrategy import HardenedOpenAIExecutor
 from .ProactiveAgent import ProactiveAgent
 from .RgHealingOrchestratorAgent import RgHealingOrchestratorAgent
 from .RgReflectionAgent import RgReflectionAgent

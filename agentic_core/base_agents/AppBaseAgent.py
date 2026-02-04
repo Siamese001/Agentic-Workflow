@@ -35,8 +35,8 @@ except ImportError:
         pass
 
 
-@dataclassAtomicExecutionMixin, Mixin, Healer
-class AppBaseAgent(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
+@dataclass
+class AppBaseAgent(AtomicExecutionMixin, MetaLearningMixin, SovereignBaseAgent, HealerMixin):
     """
     AppBaseAgent: Common foundation for all application-level agents.
 
