@@ -24,7 +24,9 @@ class TestCompleteHealingWorkflow:
 
     def test_gravity_violation_heal_cycle(self):
         """Test complete gravity violation healing cycle."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
         from agentic_core.L1_cognition.meta_learning.guardrails import MetaLearningGuardrails
 
         client = MetaLearningClient()
@@ -76,7 +78,9 @@ class TestCompleteHealingWorkflow:
 
     def test_validation_caching_workflow(self):
         """Test complete validation result caching workflow."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
 
@@ -111,7 +115,9 @@ class TestCompleteHealingWorkflow:
 
     def test_multi_domain_healing_workflow(self):
         """Test healing workflow across multiple domains."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
         from agentic_core.L1_cognition.meta_learning.guardrails import MetaLearningGuardrails
 
         client = MetaLearningClient()
@@ -162,7 +168,9 @@ class TestPatternLearningCycle:
 
     def test_learn_and_recall_pattern(self):
         """Test learning a pattern and recalling it for similar violations."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
 
@@ -195,7 +203,9 @@ class TestPatternLearningCycle:
 
     def test_pattern_quality_evolution(self):
         """Test pattern quality improves with successful uses."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
 
@@ -232,7 +242,9 @@ class TestSystemIntegration:
 
     def test_client_guardrails_integration(self):
         """Test MetaLearningClient and Guardrails work together."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
         from agentic_core.L1_cognition.meta_learning.guardrails import MetaLearningGuardrails
 
         client = MetaLearningClient()
@@ -273,7 +285,9 @@ class TestSystemIntegration:
             CacheStrategyManager,
             DomainConfig,
         )
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         csm = CacheStrategyManager()
         client = MetaLearningClient()
@@ -366,7 +380,9 @@ class TestErrorRecovery:
 
     def test_ttl_expiration_recovery(self):
         """Test system handles expired entries correctly."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
 
@@ -392,7 +408,9 @@ class TestPerformanceBenchmarks:
 
     def test_cache_write_performance(self):
         """Test cache write operations meet performance targets."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
 
@@ -408,7 +426,9 @@ class TestPerformanceBenchmarks:
 
     def test_cache_read_performance(self):
         """Test cache read operations meet performance targets."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
 
@@ -446,7 +466,9 @@ class TestPerformanceBenchmarks:
 
     def test_concurrent_operations_performance(self):
         """Test concurrent operations meet performance targets."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
 
@@ -494,7 +516,9 @@ class TestProductionScenarios:
 
     def test_cache_under_memory_pressure(self):
         """Test cache behavior under simulated memory pressure."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
 
@@ -508,7 +532,9 @@ class TestProductionScenarios:
 
     def test_domain_specific_workflows(self):
         """Test domain-specific workflows work correctly."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import MetaLearningClient
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
 
         client = MetaLearningClient()
 

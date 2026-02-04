@@ -36,7 +36,9 @@ class TestResourceManagerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.unified.resource_manager_agent_types import ResourceManagerAgent
+            from agentic_core.L5_safety.unified.resource_manager_agent_types import (
+                ResourceManagerAgent,
+            )
 
             return ResourceManagerAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:

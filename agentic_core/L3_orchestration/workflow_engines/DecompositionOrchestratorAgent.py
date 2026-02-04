@@ -53,7 +53,9 @@ class MissionPlan:
 
 
 @dataclass
-class DecompositionOrchestratorAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
+class DecompositionOrchestratorAgent(
+    AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent
+):
     """
     Multi-Agent Task Decomposition Engine.
 

@@ -1,6 +1,5 @@
 """Tests for DetectionSignalProtocol."""
 
-import pytest
 from agentic_core.interfaces.detection_protocol import (
     DetectionSignalProtocol,
     DetectionRequest,

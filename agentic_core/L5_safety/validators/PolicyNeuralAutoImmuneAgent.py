@@ -30,7 +30,9 @@ from agentic_core.L5_safety.validators.NeuralAutoImmuneAgent import NeuralAutoIm
 
 
 @dataclass
-class PolicyNeuralAutoImmuneAgent(AtomicExecutionMixin, SubatomicTestingMixin, NeuralAutoImmuneAgent, SovereignBaseAgent):
+class PolicyNeuralAutoImmuneAgent(
+    AtomicExecutionMixin, SubatomicTestingMixin, NeuralAutoImmuneAgent, SovereignBaseAgent
+):
     """PolicyNeuralAutoImmuneAgent agent for autonomous operations."""
 
     def __init__(self, project_root: Path) -> None:

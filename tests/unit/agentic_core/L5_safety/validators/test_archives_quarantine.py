@@ -41,7 +41,9 @@ def test_ssot_global_excluded_dirs():
     print("=" * 60)
 
     try:
-        from agentic_core.L5_safety.validators.structure_blueprint_config import GLOBAL_EXCLUDED_DIRS
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            GLOBAL_EXCLUDED_DIRS,
+        )
 
         if "archives" in GLOBAL_EXCLUDED_DIRS:
             test_pass("ARCHIVES", "'archives' in GLOBAL_EXCLUDED_DIRS")
@@ -64,7 +66,9 @@ def test_ssot_sovereign_excluded_folders():
     print("=" * 60)
 
     try:
-        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_EXCLUDED_FOLDERS
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            SOVEREIGN_EXCLUDED_FOLDERS,
+        )
 
         if "archives" in SOVEREIGN_EXCLUDED_FOLDERS:
             test_pass("ARCHIVES", "'archives' in SOVEREIGN_EXCLUDED_FOLDERS")

@@ -7,7 +7,7 @@ COMPLETE SSOT REFACTOR: All directory constants and paths MUST be imported
 from structure_blueprint.py. NO hardcoded strings allowed.
 
 This script serves as the canonical entry point for agent discovery operations.
-It delegates core enumeration to the SSOT discovery utility but strictly 
+It delegates core enumeration to the SSOT discovery utility but strictly
 ENFORCES architectural integrity using deep AST analysis.
 
 ADVANCED CAPABILITIES:
@@ -25,15 +25,13 @@ import ast
 import logging
 import sys
 import json
-import re
 import hashlib
-import os
 import platform
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Dict, List, Optional
 
 # CRITICAL SSOT Imports - ALL directory constants MUST come from structure_blueprint.py
 from agentic_core.L5_safety.validators.structure_blueprint_config import (
@@ -53,8 +51,6 @@ from agentic_core.L5_safety.validators.structure_blueprint_config import (
     validate_path_within_project,
 )
 from agentic_core.utils.ssot_discovery_validator import (
-    get_agent_by_name,
-    get_agents_by_layer,
     get_healers,
     invalidate_cache,
     load_agent_discovery,
@@ -70,9 +66,11 @@ OUTPUT_SCHEMA_VERSION = "2.0.0"
 # Advanced Data Structures
 # ==============================================================================
 
+
 @dataclass
 class AgentIntegrityReport:
     """Detailed AST analysis result for a single agent file."""
+
     path: Path
     is_valid: bool = False
     is_stub: bool = False
@@ -89,13 +87,17 @@ class AgentIntegrityReport:
     selection_reason: str = ""
     mro_signature: List[str] = field(default_factory=list)
 
+
 class DiscoveryError(Exception):
     """Custom exception for agent discovery operations."""
+
     pass
+
 
 # ==============================================================================
 # Core Setup
 # ==============================================================================
+
 
 def setup_logging(verbose: bool = False) -> None:
     """
@@ -108,6 +110,7 @@ def setup_logging(verbose: bool = False) -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
+
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as f:
@@ -115,18 +118,23 @@ def sha256_file(path: Path) -> str:
             h.update(chunk)
     return h.hexdigest()
 
+
 def safe_unparse(node: ast.AST) -> str:
     try:
         return ast.unparse(node)  # py>=3.9
     except Exception:
         return node.__class__.__name__
 
+
 def get_git_commit(root: Path) -> str:
     try:
-        out = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], stderr=subprocess.DEVNULL)
+        out = subprocess.check_output(
+            ["git", "-C", str(root), "rev-parse", "HEAD"], stderr=subprocess.DEVNULL
+        )
         return out.decode("utf-8").strip()
     except Exception:
         return ""
+
 
 def main() -> bool:
     """
@@ -146,21 +154,25 @@ def main() -> bool:
 
         # Load agent discovery data from SSOT (The List)
         raw_agents = load_agent_discovery(project_root, force_reload=True)
-        raw_agents = sorted(raw_agents, key=lambda a: (a.get("layer",""), a.get("name",""), a.get("path","")))
+        raw_agents = sorted(
+            raw_agents, key=lambda a: (a.get("layer", ""), a.get("name", ""), a.get("path", ""))
+        )
         Logger.info(f"[DISCOVERY] Loaded {len(raw_agents)} candidates from SSOT registry")
 
         # Perform Deep AST Integrity Scan (The Verification)
         valid_agents, validation_stats = perform_deep_integrity_scan(raw_agents, project_root)
-        
+
         # Log Validation Results
-        Logger.info(f"[DISCOVERY] Deep Scan Complete:")
+        Logger.info("[DISCOVERY] Deep Scan Complete:")
         Logger.info(f"   - Verified Active Agents: {validation_stats['verified']}")
         Logger.info(f"   - Stubs/Exempt: {validation_stats['stubs']}")
         Logger.info(f"   - Invalid/Ghosts: {validation_stats['invalid']}")
-        
+
         # Validate compliance gate based on scan results
         if not check_compliance_gate(validation_stats):
-            Logger.error("[DISCOVERY] Compliance gate validation failed (Integrity violations detected)")
+            Logger.error(
+                "[DISCOVERY] Compliance gate validation failed (Integrity violations detected)"
+            )
             return False
 
         Logger.info("[DISCOVERY] Agent discovery and verification completed successfully")
@@ -173,14 +185,16 @@ def main() -> bool:
         Logger.error(f"[DISCOVERY] Unexpected error during discovery: {e}")
         return False
 
+
 # ==============================================================================
 # Advanced AST Analysis Engine
 # ==============================================================================
 
+
 def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
     """
     Performs deep AST analysis on a file to verify it is a legitimate Agent.
-    
+
     Criteria matches FileClassificationAgent logic:
     1. Checks for STUB markers (Priority 1)
     2. Parses AST for ClassDef
@@ -189,7 +203,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
     5. Verifies Method Signatures (execute, act, run)
     """
     report = AgentIntegrityReport(path=file_path)
-    
+
     if not file_path.exists():
         report.rejection_reason = "File not found (Ghost)"
         return report
@@ -198,7 +212,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
         report.file_size_bytes = file_path.stat().st_size
         report.file_sha256 = sha256_file(file_path)
         content = file_path.read_text(encoding="utf-8", errors="replace")
-        
+
         # [CRITICAL] Priority 1: Explicit Stub Detection
         # Mirrors FileClassificationAgent logic exactly
         head = "\n".join(content.splitlines()[:60])
@@ -232,8 +246,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
         def class_score(cls: ast.ClassDef) -> int:
             bases = " ".join(extract_mro_signature(cls))
             methods = [
-                i.name for i in cls.body
-                if isinstance(i, (ast.FunctionDef, ast.AsyncFunctionDef))
+                i.name for i in cls.body if isinstance(i, (ast.FunctionDef, ast.AsyncFunctionDef))
             ]
             s = 0
             if "SovereignBaseAgent" in bases or "BaseAgent" in bases:
@@ -256,13 +269,13 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
         report.class_name = chosen.name
         report.mro_signature = extract_mro_signature(chosen)
         report.selection_reason = "Selected highest-scoring ClassDef deterministically"
-                
+
         # Check Inheritance
         for base_expr in chosen.bases:
             base_id = safe_unparse(base_expr)
             if base_id:
                 report.inheritance.append(base_id)
-                        
+
                 # Detect Base Agents vs Implementations
                 if "BaseAgent" in base_id:
                     report.is_base_agent = True
@@ -273,16 +286,16 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
 
         # Check Decorators
         for dec in chosen.decorator_list:
-                    dec_id = ""
-                    if isinstance(dec, ast.Name):
-                        dec_id = dec.id
-                    elif isinstance(dec, ast.Attribute):
-                        dec_id = dec.attr
-                        
-                    if dec_id:
-                        report.decorators.append(dec_id)
-                        if dec_id in ["agent", "sovereign_agent", "register_agent"]:
-                            has_agent_decorator = True
+            dec_id = ""
+            if isinstance(dec, ast.Name):
+                dec_id = dec.id
+            elif isinstance(dec, ast.Attribute):
+                dec_id = dec.attr
+
+            if dec_id:
+                report.decorators.append(dec_id)
+                if dec_id in ["agent", "sovereign_agent", "register_agent"]:
+                    has_agent_decorator = True
 
         # Check Methods
         for item in chosen.body:
@@ -294,9 +307,9 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
         # [SYNTHESIS] Determine Validity
         # A valid agent must have Inheritance OR Decorator OR (Execute method + 'Agent' in name)
         is_named_agent = report.class_name and "Agent" in report.class_name
-        
+
         if report.is_base_agent:
-            report.is_valid = True # Base agents are valid architectural components
+            report.is_valid = True  # Base agents are valid architectural components
         elif has_agent_inheritance or has_agent_decorator:
             report.is_valid = True
             report.architectural_role = "AGENT"
@@ -313,28 +326,25 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
         report.rejection_reason = f"Analysis failed: {e}"
         return report
 
-def perform_deep_integrity_scan(agents: List[Dict[str, Any]], project_root: Path) -> tuple[List[Dict[str, Any]], Dict[str, int]]:
+
+def perform_deep_integrity_scan(
+    agents: List[Dict[str, Any]], project_root: Path
+) -> tuple[List[Dict[str, Any]], Dict[str, int]]:
     """
     Iterates over discovered agents and validates them using AST analysis.
     Returns:
         tuple: (List of verified agents, Statistics Dictionary)
     """
     verified_agents = []
-    stats = {
-        "verified": 0,
-        "stubs": 0,
-        "invalid": 0,
-        "base_agents": 0,
-        "ghosts": 0
-    }
-    
+    stats = {"verified": 0, "stubs": 0, "invalid": 0, "base_agents": 0, "ghosts": 0}
+
     for agent_entry in agents:
         # Normalize path
         rel_path = agent_entry.get("path", "")
         if not rel_path:
             stats["invalid"] += 1
             continue
-            
+
         full_path = project_root / rel_path
         try:
             validate_path_within_project(project_root, full_path)
@@ -350,7 +360,7 @@ def perform_deep_integrity_scan(agents: List[Dict[str, Any]], project_root: Path
             continue
         # Run Analysis
         report = analyze_agent_integrity(full_path)
-        
+
         # Augment agent entry with analysis data
         agent_entry["verification_status"] = {
             "valid": report.is_valid,
@@ -363,7 +373,7 @@ def perform_deep_integrity_scan(agents: List[Dict[str, Any]], project_root: Path
             "selection_reason": report.selection_reason,
             "parse_error": report.parse_error,
         }
-        
+
         if report.is_valid:
             stats["verified"] += 1
             if report.is_base_agent:
@@ -379,19 +389,21 @@ def perform_deep_integrity_scan(agents: List[Dict[str, Any]], project_root: Path
         else:
             stats["invalid"] += 1
             Logger.debug(f"[SCAN] Rejected {rel_path}: {report.rejection_reason}")
-            
+
     return verified_agents, stats
+
 
 # ==============================================================================
 # Compliance & Interfaces
 # ==============================================================================
+
 
 def check_compliance_gate(scan_stats: Optional[Dict[str, int]] = None) -> bool:
     """
     Check compliance gate using SSOT validation AND Integrity Stats.
 
     Args:
-        scan_stats: Optional dict from perform_deep_integrity_scan. 
+        scan_stats: Optional dict from perform_deep_integrity_scan.
                     If provided, enforces thresholds on invalid agents.
 
     Returns:
@@ -432,13 +444,17 @@ def check_compliance_gate(scan_stats: Optional[Dict[str, int]] = None) -> bool:
         if scan_stats:
             ghosts = scan_stats.get("ghosts", 0)
             if ghosts > 0:
-                Logger.error(f"[COMPLIANCE] FAILED: {ghosts} ghost agents detected in registry. Run refresh_cache.")
+                Logger.error(
+                    f"[COMPLIANCE] FAILED: {ghosts} ghost agents detected in registry. Run refresh_cache."
+                )
                 return False
-            
+
             # Warn but don't necessarily fail on simple invalids (might be works in progress)
             invalids = scan_stats.get("invalid", 0)
             if invalids > 0:
-                Logger.warning(f"[COMPLIANCE] Warning: {invalids} files in registry failed validation.")
+                Logger.warning(
+                    f"[COMPLIANCE] Warning: {invalids} files in registry failed validation."
+                )
 
         Logger.info("[COMPLIANCE] All compliance checks passed")
         return True
@@ -446,6 +462,7 @@ def check_compliance_gate(scan_stats: Optional[Dict[str, int]] = None) -> bool:
     except Exception as e:
         Logger.error(f"[COMPLIANCE] Compliance check failed: {e}")
         return False
+
 
 def discover_all_agents(strict_mode: bool = True) -> List[Dict[str, Any]]:
     """
@@ -460,18 +477,21 @@ def discover_all_agents(strict_mode: bool = True) -> List[Dict[str, Any]]:
     try:
         project_root = get_validated_project_root()
         raw_agents = load_agent_discovery(project_root)
-        raw_agents = sorted(raw_agents, key=lambda a: (a.get("layer",""), a.get("name",""), a.get("path","")))
-        
+        raw_agents = sorted(
+            raw_agents, key=lambda a: (a.get("layer", ""), a.get("name", ""), a.get("path", ""))
+        )
+
         if not strict_mode:
             return raw_agents
-            
+
         verified_agents, _ = perform_deep_integrity_scan(raw_agents, project_root)
         Logger.debug(f"[DISCOVERY] Returning {len(verified_agents)} verified agents")
         return verified_agents
-        
+
     except Exception as e:
         Logger.error(f"[DISCOVERY] Failed to discover agents: {e}")
         return []
+
 
 def get_agent_discovery_summary() -> Dict[str, Any]:
     """
@@ -513,6 +533,7 @@ def get_agent_discovery_summary() -> Dict[str, Any]:
         Logger.error(f"[DISCOVERY] Failed to generate summary: {e}")
         return {"error": str(e)}
 
+
 def refresh_discovery_cache() -> bool:
     """
     Refresh the agent discovery cache.
@@ -532,6 +553,7 @@ def refresh_discovery_cache() -> bool:
     except Exception as e:
         Logger.error(f"[CACHE] Cache refresh failed: {e}")
         return False
+
 
 def get_structured_agent_paths() -> List[str]:
     """
@@ -553,27 +575,35 @@ def get_structured_agent_paths() -> List[str]:
         Logger.error(f"[PATHS] Failed to generate structured paths: {e}")
         return []
 
+
 # ==============================================================================
 # CLI Interface
 # ==============================================================================
+
 
 def cli_interface() -> None:
     """Command-line interface for discovery operations."""
     import argparse
 
     parser = argparse.ArgumentParser(description="Deep Agent Discovery Utility")
-    parser.add_argument("--summary", action="store_true", help="Show discovery summary with integrity stats")
-    parser.add_argument("--check-compliance", action="store_true", help="Run strict compliance checks")
+    parser.add_argument(
+        "--summary", action="store_true", help="Show discovery summary with integrity stats"
+    )
+    parser.add_argument(
+        "--check-compliance", action="store_true", help="Run strict compliance checks"
+    )
     parser.add_argument("--refresh-cache", action="store_true", help="Refresh discovery cache")
     parser.add_argument("--layer", help="Filter by layer (L0-L6)")
     parser.add_argument("--name", help="Find specific agent by name")
     parser.add_argument("--json", action="store_true", help="Output full inventory as JSON")
     parser.add_argument("--paths", action="store_true", help="Output structured agent paths")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose logging")
-    
+
     # New flags for deep analysis
     parser.add_argument("--inspect", help="Deep inspect specific agent file path")
-    parser.add_argument("--show-invalid", action="store_true", help="List agents that failed integrity check")
+    parser.add_argument(
+        "--show-invalid", action="store_true", help="List agents that failed integrity check"
+    )
 
     args = parser.parse_args()
 
@@ -585,11 +615,13 @@ def cli_interface() -> None:
             project_root = get_validated_project_root()
             raw = load_agent_discovery(project_root)
             _, stats = perform_deep_integrity_scan(raw, project_root)
-            
+
             compliant = check_compliance_gate(stats)
             print(f"Compliance Status: {'PASS' if compliant else 'FAIL'}")
             if not compliant:
-                print(f"Integrity Issues: {stats['invalid']} invalid, {stats['ghosts']} missing files.")
+                print(
+                    f"Integrity Issues: {stats['invalid']} invalid, {stats['ghosts']} missing files."
+                )
             sys.exit(0 if compliant else 1)
 
         elif args.refresh_cache:
@@ -602,17 +634,22 @@ def cli_interface() -> None:
             path = Path(args.inspect)
             if not path.is_absolute():
                 path = project_root / path
-            
+
             print(f"Inspecting: {path}")
             report = analyze_agent_integrity(path)
-            print(json.dumps({
-                "valid": report.is_valid,
-                "role": report.architectural_role,
-                "class": report.class_name,
-                "inheritance": report.inheritance,
-                "methods": report.critical_methods,
-                "rejection_reason": report.rejection_reason
-            }, indent=2))
+            print(
+                json.dumps(
+                    {
+                        "valid": report.is_valid,
+                        "role": report.architectural_role,
+                        "class": report.class_name,
+                        "inheritance": report.inheritance,
+                        "methods": report.critical_methods,
+                        "rejection_reason": report.rejection_reason,
+                    },
+                    indent=2,
+                )
+            )
 
         elif args.json:
             agents = discover_all_agents(strict_mode=True)
@@ -652,6 +689,7 @@ def cli_interface() -> None:
     except Exception as e:
         Logger.error(f"[DISCOVERY] CLI operation failed: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     cli_interface()

@@ -14,7 +14,11 @@ except (ImportError, NameError, AttributeError):
     QualityThresholds = None
 
 try:
-    from agentic_core.schemas.models.reasoning_config_types import GovernorConfig, ModelConfig, RAGConfig
+    from agentic_core.schemas.models.reasoning_config_types import (
+        GovernorConfig,
+        ModelConfig,
+        RAGConfig,
+    )
 except (ImportError, NameError, AttributeError):
     ModelConfig = RAGConfig = GovernorConfig = None
 

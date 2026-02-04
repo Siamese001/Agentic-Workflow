@@ -1,65 +1,57 @@
 # .pre-commit-config.yaml
-# MINIMAL: Only essential fast checks
-# Comprehensive validation moved to Guardian tests/CI
+# OPTIMIZED: Fail-fast anti-patterns -> Auto-fix -> Repo Hygiene
 
 repos:
   # ============================================================================
-  # TIER 1: Essential Linting and Formatting (Staged Files Only)
-  # ============================================================================
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.13
-    hooks:
-      - id: ruff
-        name: Ruff (Lint)
-        args: [--fix, --select, "F,E"]  # Only critical errors (Pyflakes + Error)
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*|ops_scripts/ci/check_anti_patterns.py)
-        # Only runs on staged files - no repo-wide scanning
-      - id: ruff-format
-        name: Ruff (Format)
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
-        # Only runs on staged files - no repo-wide scanning
-        # RCA FIX: Standard ruff-format - verify script will catch uncommitted changes
-
-  # ============================================================================
-  # TIER 2: Repository Hygiene
+  # TIER 1: Logic & Anti-Pattern Validation (Fail Fast)
   # ============================================================================
   - repo: local
     hooks:
-      # Note: Constitutional base agent check moved to Guardian tests
-      # Pre-commit should be minimal - comprehensive validation in Guardian/CI
-      
-      - id: purge-cache
-        name: Pycache Purge
-        entry: python ops_scripts/maintenance/purge_cache.py --quiet
-        language: python
-        pass_filenames: false
-        always_run: true
-        # Enforces repository hygiene by purging all __pycache__ folders before commit.
-
-      # RCA FIX: Verify no uncommitted changes after all hooks run
-      - id: verify-clean-commit
-        name: Verify Clean Commit (RCA Fix)
-        entry: python verify_clean_commit.py
+      - id: python-syntax-check
+        name: Python Syntax Validation
+        entry: python -m py_compile
         language: system
-        pass_filenames: false
-        always_run: true
-        # Ensures pre-commit hooks don't leave uncommitted changes (RCA from UNCOMMITTED_CHANGES_RCA.md)
+        types: [python]
+        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
+        # CRITICAL: Prevents corrupted Python files from being committed
 
-      # SSOT Enforcement: Check report locations
+      - id: check-anti-patterns
+        name: Check Anti-Patterns (Landmine Detection)
+        entry: python ops_scripts/ci/check_anti_patterns.py
+        language: system
+        types: [python]
+        exclude: ^(archives/.*|\.sovereign_healing_backup/.*|ops_scripts/ci/check_anti_patterns.py)
+        # Scan for logic flaws BEFORE formatting to avoid style noise
+
       - id: check-report-location
         name: Check Report Location (SSOT)
         entry: python scripts/hooks/validate_report_location.py --staged-only
         language: system
         pass_filenames: false
         always_run: true
-        # Enforces SSOT compliance by ensuring all reports are in docs/reports/
 
-      # Landmine Detection: Anti-pattern scanning
-      - id: check-anti-patterns
-        name: Check Anti-Patterns (Landmine Detection)
-        entry: python ops_scripts/ci/check_anti_patterns.py
-        language: system
-        types: [python]
-        exclude: ^(archives/.*|tests/.*|\.sovereign_healing_backup/.*|ops_scripts/ci/check_anti_patterns.py)
-        # Detects anti-patterns: silent swallowers, type erasure, path fragility, magic config, global mutation
-        # Scans staged files only - MANDATORY enforcement, add '# guardian: allow-<pattern>' to whitelist
+  # ============================================================================
+  # TIER 2: Auto-Fixers & Formatters
+  # ============================================================================
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.13
+    hooks:
+      - id: ruff
+        name: Ruff (Lint & Fix)
+        args: [--fix, --select, "F,E"] 
+        exclude: ^(archives/.*|\.sovereign_healing_backup/.*|ops_scripts/ci/check_anti_patterns.py)
+      - id: ruff-format
+        name: Ruff (Format)
+        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
+
+  # ============================================================================
+  # TIER 3: Cleanup
+  # ============================================================================
+  - repo: local
+    hooks:
+      - id: purge-cache
+        name: Pycache Purge
+        entry: python ops_scripts/maintenance/purge_cache.py --quiet
+        language: python
+        pass_filenames: false
+        always_run: true

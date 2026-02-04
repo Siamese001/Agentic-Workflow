@@ -1,6 +1,5 @@
 """Tests for DynamicLoader."""
 
-import pytest
 from agentic_core.primitives.dependency_resolver import DynamicLoader
 
 

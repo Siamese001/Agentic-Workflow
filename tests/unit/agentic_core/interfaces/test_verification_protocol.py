@@ -1,6 +1,5 @@
 """Tests for VerificationGateProtocol."""
 
-import pytest
 from agentic_core.interfaces.verification_protocol import (
     VerificationGateProtocol,
     VerificationRequest,

@@ -7,7 +7,7 @@ and tracking migration progress across all layers.
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Type
 
 from agentic_core.primitives.feature_flags import FeatureFlagManager
 
@@ -101,41 +101,31 @@ class MigrationHelper:
         has_mixin = cls._has_feature_flag_mixin(agent_class)
         if not has_mixin:
             missing.append("FeatureFlaggedAgentMixin")
-            recommendations.append(
-                f"Add FeatureFlaggedAgentMixin to {agent_name}'s inheritance"
-            )
+            recommendations.append(f"Add FeatureFlaggedAgentMixin to {agent_name}'s inheritance")
 
         # Check for verification gate integration
         has_verification = cls._has_method(agent_class, "verify_action")
         if not has_verification:
             missing.append("verification_gate")
-            recommendations.append(
-                f"Implement verify_action method in {agent_name}"
-            )
+            recommendations.append(f"Implement verify_action method in {agent_name}")
 
         # Check for human review integration
         has_review = cls._has_method(agent_class, "submit_for_review")
         if not has_review:
             missing.append("human_review")
-            recommendations.append(
-                f"Implement submit_for_review method in {agent_name}"
-            )
+            recommendations.append(f"Implement submit_for_review method in {agent_name}")
 
         # Check for meta-learning integration
         has_ml = cls._has_method(agent_class, "flagged_recall_or_execute")
         if not has_ml:
             missing.append("meta_learning")
-            recommendations.append(
-                f"Implement flagged_recall_or_execute method in {agent_name}"
-            )
+            recommendations.append(f"Implement flagged_recall_or_execute method in {agent_name}")
 
         # Check for audit trail integration
         has_audit = cls._has_method(agent_class, "log_audit_event")
         if not has_audit:
             missing.append("audit_trail")
-            recommendations.append(
-                f"Implement log_audit_event method in {agent_name}"
-            )
+            recommendations.append(f"Implement log_audit_event method in {agent_name}")
 
         # Determine compliance
         if strict:

@@ -25,7 +25,10 @@ class FissionResult:
     success: bool
     error_message: str | None = None
 
-AtomicExecutionMixin, 
+
+(AtomicExecutionMixin,)
+
+
 class FissionManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """L3 Orchestration Layer: Atomic Fission via Gateway."""
 

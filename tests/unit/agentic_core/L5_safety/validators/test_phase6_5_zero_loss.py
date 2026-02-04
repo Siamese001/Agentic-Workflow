@@ -106,7 +106,9 @@ def test_tc39_checkpoint_manager_recovery():
         content = checkpoint_manager.read_text(encoding="utf-8")
 
         # Check for ssot_discovery import
-        has_ssot_import = "from agentic_core.utils.ssot_discovery_validator import get_data_files" in content
+        has_ssot_import = (
+            "from agentic_core.utils.ssot_discovery_validator import get_data_files" in content
+        )
 
         # Check for glob usage (should be none)
         glob_count = content.count(".glob(")

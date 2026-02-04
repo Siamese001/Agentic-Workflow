@@ -1,6 +1,5 @@
 """Tests for ComponentFactory."""
 
-import pytest
 from agentic_core.integration.component_factory import (
     ComponentFactory,
     get_verification_gate,

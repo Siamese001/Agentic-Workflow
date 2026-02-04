@@ -82,7 +82,9 @@ class TestGlobalCandidateVacuum:
 
     def test_global_weight_superiority(self):
         """100% PASS: Verifies Shared Gravity (95) beats App Gravity (90) in SSOT."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_TERRITORIES
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            SOVEREIGN_TERRITORIES,
+        )
 
         shared_w = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"]["apps_shared/utils"][
             "weight"

@@ -110,10 +110,7 @@ class BatchingMixin:
             if queue_name not in self._batch_queues:
                 self._batch_queues[queue_name] = []
 
-            if (
-                len(self._batch_queues[queue_name])
-                >= self._batching_config.max_batch_queue_size
-            ):
+            if len(self._batch_queues[queue_name]) >= self._batching_config.max_batch_queue_size:
                 raise ValueError(
                     f"Batch queue '{queue_name}' size limit "
                     f"({self._batching_config.max_batch_queue_size}) exceeded"
@@ -181,9 +178,7 @@ class BatchingMixin:
     async def get_async_semaphore(self) -> asyncio.Semaphore:
         """Get or create async semaphore for pooling."""
         if self._async_semaphore is None:
-            self._async_semaphore = asyncio.Semaphore(
-                self._batching_config.async_pool_size
-            )
+            self._async_semaphore = asyncio.Semaphore(self._batching_config.async_pool_size)
         return self._async_semaphore
 
     async def run_pooled(self, coro) -> Any:
@@ -200,9 +195,7 @@ class BatchingMixin:
         """Get batching status."""
         with self._batching_lock:
             return {
-                "batch_queues": {
-                    name: len(items) for name, items in self._batch_queues.items()
-                },
+                "batch_queues": {name: len(items) for name, items in self._batch_queues.items()},
                 "lazy_registered": len(self._lazy_registry),
                 "lazy_initialized": len(self._lazy_initialized),
                 "config": {

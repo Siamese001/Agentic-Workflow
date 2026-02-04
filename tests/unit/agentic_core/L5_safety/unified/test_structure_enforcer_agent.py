@@ -36,7 +36,9 @@ class TestStructureEnforcerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.unified.structure_enforcer_agent_types import StructureEnforcerAgent
+            from agentic_core.L5_safety.unified.structure_enforcer_agent_types import (
+                StructureEnforcerAgent,
+            )
 
             return StructureEnforcerAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:

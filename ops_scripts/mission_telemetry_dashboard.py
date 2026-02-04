@@ -14,7 +14,10 @@ from pathlib import Path
 # Setup
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
-from agentic_core.L5_safety.validators.structure_blueprint_config import HEALING_CONFIG, RUNTIME_STATE_JSON
+from agentic_core.L5_safety.validators.structure_blueprint_config import (
+    HEALING_CONFIG,
+    RUNTIME_STATE_JSON,
+)
 
 
 def generate_report():

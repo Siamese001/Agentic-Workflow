@@ -180,7 +180,8 @@ except Exception as e:
                 source = dedup_path.read_text(encoding="utf-8")
                 # Verify it imports from the correct location
                 assert (
-                    "from agentic_core.L5_safety.validators.structure_blueprint_config import" in source
+                    "from agentic_core.L5_safety.validators.structure_blueprint_config import"
+                    in source
                 ), (
                     "CodeDeduplicationAgent should import from agentic_core.L5_safety.validators.structure_blueprint"
                 )

@@ -34,7 +34,9 @@ class TestBoundaryTestingAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.red_teaming.boundary_testing_agent_validator import BoundaryTestingAgent
+            from agentic_core.L5_safety.red_teaming.boundary_testing_agent_validator import (
+                BoundaryTestingAgent,
+            )
 
             return BoundaryTestingAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:

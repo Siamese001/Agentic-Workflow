@@ -54,7 +54,9 @@ class OrchestrationResult:
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class CoordinateObservabilityOperationsAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
+class CoordinateObservabilityOperationsAgent(
+    AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent
+):
     """Orchestrator for operations domain."""
 
     def __init__(self, config: dict[str, object] | None = None) -> None:

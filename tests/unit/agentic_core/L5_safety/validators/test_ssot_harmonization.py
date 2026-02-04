@@ -48,7 +48,9 @@ def test_global_excluded_dirs():
     print("=" * 60)
 
     try:
-        from agentic_core.L5_safety.validators.structure_blueprint_config import GLOBAL_EXCLUDED_DIRS
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            GLOBAL_EXCLUDED_DIRS,
+        )
 
         required_entries = [
             "__pycache__",

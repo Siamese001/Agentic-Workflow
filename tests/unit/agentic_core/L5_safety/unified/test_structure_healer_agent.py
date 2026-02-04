@@ -36,7 +36,9 @@ class TestStructureHealerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.unified.structure_healer_agent_types import StructureHealerAgent
+            from agentic_core.L5_safety.unified.structure_healer_agent_types import (
+                StructureHealerAgent,
+            )
 
             return StructureHealerAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:

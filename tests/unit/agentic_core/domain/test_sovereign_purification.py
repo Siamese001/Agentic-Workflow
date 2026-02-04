@@ -41,7 +41,9 @@ class TestSovereignPurification(unittest.TestCase):
         # [CRITICAL ANALYSIS] Renaming is high-risk for MRO stability. Verify the 91-file
         # refactor didn't break core runtime imports.
         try:
-            from agentic_core.L5_safety.policy_engine.code_detector_agent_types import CodeDetectorAgent
+            from agentic_core.L5_safety.policy_engine.code_detector_agent_types import (
+                CodeDetectorAgent,
+            )
 
             # SUCCESS: 100% PASS - Namespace reclamation verified
             self.assertIsNotNone(CodeDetectorAgent)

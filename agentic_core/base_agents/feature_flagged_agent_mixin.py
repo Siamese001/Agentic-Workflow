@@ -149,9 +149,7 @@ class FeatureFlaggedAgentMixin:
             VerificationResult indicating success/failure
         """
         if not self._is_flag_enabled("ENABLE_VERIFICATION_GATE"):
-            logger.debug(
-                f"[{self.__class__.__name__}] Verification gate disabled, allowing action"
-            )
+            logger.debug(f"[{self.__class__.__name__}] Verification gate disabled, allowing action")
             return VerificationResult(
                 success=True,
                 reason="verification_disabled",
@@ -160,9 +158,7 @@ class FeatureFlaggedAgentMixin:
 
         gate = self.verification_gate
         if gate is None or not self._check_is_available(gate):
-            logger.warning(
-                f"[{self.__class__.__name__}] Verification gate unavailable"
-            )
+            logger.warning(f"[{self.__class__.__name__}] Verification gate unavailable")
             return VerificationResult(
                 success=True,
                 reason="verification_unavailable",
@@ -225,9 +221,7 @@ class FeatureFlaggedAgentMixin:
             Signal ID if emitted, None otherwise
         """
         if not self._is_flag_enabled("ENABLE_DETECTION_SIGNAL"):
-            logger.debug(
-                f"[{self.__class__.__name__}] Detection signal disabled"
-            )
+            logger.debug(f"[{self.__class__.__name__}] Detection signal disabled")
             return None
 
         emitter = self._detection_emitter
@@ -236,9 +230,7 @@ class FeatureFlaggedAgentMixin:
             self._detection_emitter = emitter
 
         if emitter is None or not self._check_is_available(emitter):
-            logger.warning(
-                f"[{self.__class__.__name__}] Detection emitter unavailable"
-            )
+            logger.warning(f"[{self.__class__.__name__}] Detection emitter unavailable")
             return None
 
         result = DetectionResult(
@@ -282,9 +274,7 @@ class FeatureFlaggedAgentMixin:
             ReviewResult with approval status
         """
         if not self._is_flag_enabled("ENABLE_HITL_WORKFLOW"):
-            logger.debug(
-                f"[{self.__class__.__name__}] HITL workflow disabled, auto-approving"
-            )
+            logger.debug(f"[{self.__class__.__name__}] HITL workflow disabled, auto-approving")
             return ReviewResult(
                 request_id="auto-approved",
                 status=ReviewStatus.APPROVED,
@@ -298,9 +288,7 @@ class FeatureFlaggedAgentMixin:
             self._review_queue = queue
 
         if queue is None or not self._check_is_available(queue):
-            logger.warning(
-                f"[{self.__class__.__name__}] Review queue unavailable, auto-approving"
-            )
+            logger.warning(f"[{self.__class__.__name__}] Review queue unavailable, auto-approving")
             return ReviewResult(
                 request_id="auto-approved",
                 status=ReviewStatus.APPROVED,
@@ -382,9 +370,7 @@ class FeatureFlaggedAgentMixin:
             LearningResult with result and cache status
         """
         if not self._is_flag_enabled("ENABLE_META_LEARNING"):
-            logger.debug(
-                f"[{self.__class__.__name__}] Meta-learning disabled, executing directly"
-            )
+            logger.debug(f"[{self.__class__.__name__}] Meta-learning disabled, executing directly")
             try:
                 result = execution_fn()
                 return LearningResult(
@@ -455,9 +441,7 @@ class FeatureFlaggedAgentMixin:
             Event ID if logged, None otherwise
         """
         if not self._is_flag_enabled("ENABLE_AUDIT_TRAIL"):
-            logger.debug(
-                f"[{self.__class__.__name__}] Audit trail disabled"
-            )
+            logger.debug(f"[{self.__class__.__name__}] Audit trail disabled")
             return None
 
         # For now, log to standard logger
@@ -549,9 +533,7 @@ class FeatureFlaggedAgentMixin:
         if self._is_flag_enabled("ENABLE_META_LEARNING"):
             import hashlib
 
-            input_hash = hashlib.sha256(
-                str(violation).encode()
-            ).hexdigest()[:16]
+            input_hash = hashlib.sha256(str(violation).encode()).hexdigest()[:16]
 
             learning_result = self.flagged_recall_or_execute(
                 context_key=f"heal:{violation.get('type', 'unknown')}",

@@ -21,10 +21,8 @@ Benefits:
 
 from __future__ import annotations
 
-import functools
 import logging
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 from typing import Any, Callable, TypeVar
 
 Logger = logging.getLogger(__name__)
@@ -230,9 +228,7 @@ class BatchingTrait(Trait):
                     queue_name not in self._batch_queues
                     and len(self._batch_queues) >= self._max_batch_queues
                 ):
-                    raise ValueError(
-                        f"Maximum batch queues ({self._max_batch_queues}) exceeded"
-                    )
+                    raise ValueError(f"Maximum batch queues ({self._max_batch_queues}) exceeded")
                 if queue_name not in self._batch_queues:
                     self._batch_queues[queue_name] = []
                 self._batch_queues[queue_name].append(item)

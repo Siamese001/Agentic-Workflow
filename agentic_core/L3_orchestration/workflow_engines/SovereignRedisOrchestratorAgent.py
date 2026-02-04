@@ -32,7 +32,9 @@ from agentic_core.base_agents.timeout_decorator import timeout
 
 
 @dataclass
-class SovereignRedisOrchestratorAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
+class SovereignRedisOrchestratorAgent(
+    AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent
+):
     """Brief description of functionality and purpose."""
 
     def __init__(self) -> None:

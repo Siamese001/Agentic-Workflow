@@ -106,14 +106,10 @@ class MetricsMixin:
     def _ensure_metrics(self, operation_name: str) -> PerformanceMetrics:
         """Ensure metrics exist for an operation."""
         if operation_name not in self._metrics_store:
-            self._metrics_store[operation_name] = PerformanceMetrics(
-                operation_name=operation_name
-            )
+            self._metrics_store[operation_name] = PerformanceMetrics(operation_name=operation_name)
         return self._metrics_store[operation_name]
 
-    def record_timing(
-        self, operation_name: str, duration_ms: float, error: bool = False
-    ) -> None:
+    def record_timing(self, operation_name: str, duration_ms: float, error: bool = False) -> None:
         """Record timing for an operation."""
         if not self._metrics_config.enabled:
             return
