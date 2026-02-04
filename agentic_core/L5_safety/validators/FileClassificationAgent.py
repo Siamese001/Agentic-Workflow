@@ -31,13 +31,17 @@ from typing import Any, Literal
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
+    from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from agentic_core.L5_safety.validators.decorators import standard_heal
 
     HAS_SOVEREIGN_BASE = True
+    HAS_ATOMIC_MIXIN = True
 except ImportError:
     HAS_SOVEREIGN_BASE = False
+    HAS_ATOMIC_MIXIN = False
     SovereignBaseAgent = object
+    AtomicExecutionMixin = object
 
     def standard_heal(func):
         """Fallback decorator when full infrastructure unavailable."""
@@ -94,7 +98,7 @@ FileType = Literal[
 
 
 @dataclass
-class FileClassificationAgent(SovereignBaseAgent):
+class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Enforces file classification and naming conventions with architectural integrity.
 

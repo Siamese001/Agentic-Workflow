@@ -26,6 +26,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.UnifiedAgent import (
     StructuralValidatorStrategy,
@@ -80,7 +81,7 @@ class StructureConfig:
     check_hierarchy: bool = True
 
 
-class StructuralValidatorAgent(SovereignBaseAgent):
+class StructuralValidatorAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Unified structure enforcement with gravity and naming validation.
     Hardened with Atomic Writes for auto-remediation.
