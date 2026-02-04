@@ -9,6 +9,7 @@ import logging
 import os
 from dataclasses import dataclass
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
@@ -24,7 +25,7 @@ class FissionResult:
     success: bool
     error_message: str | None = None
 
-
+AtomicExecutionMixin, 
 class FissionManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """L3 Orchestration Layer: Atomic Fission via Gateway."""
 

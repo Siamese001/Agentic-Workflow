@@ -6,6 +6,7 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -20,14 +21,7 @@ from typing import Any
 
 
 @dataclass
-class NervousSystemAgent(
-    SovereignBaseAgent,
-    MCPHardenedMixin,
-    HealerMixin,
-    L3SubatomicTestingMixin,
-    RedisCacheMixin,
-    PineconeVectorMixin,
-):
+class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """Core orchestrator that coordinates cognitive and action planes.
 
     Implements the 5-step agentic cycle:
