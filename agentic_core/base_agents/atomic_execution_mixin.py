@@ -111,6 +111,8 @@ class AtomicExecutionMixin:
             content = file_path.read_bytes()
             return hashlib.sha256(content).hexdigest()[:16]
         except Exception:
+            # HARDENING: Log specific error for observability
+            logger.warning(f"Failed to compute hash for {file_path}", exc_info=True)
             return None
 
     def _backup_file(self, txn: AtomicTransaction, file_path: Path) -> Optional[FileBackup]:

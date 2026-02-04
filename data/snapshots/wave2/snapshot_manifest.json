@@ -1,0 +1,11 @@
+{
+  "wave": 2,
+  "agent": "DomainPlannerAgent",
+  "timestamp": "2026-02-04T01:31:31.122517Z",
+  "backups": {
+    "databases": [],
+    "vector_store": false,
+    "memory": false
+  },
+  "restore_command": "python scripts/state_snapshot.py --restore --wave 2"
+}
