@@ -1,10 +1,16 @@
 """
 Guardian test to detect obsolete test files and functionality.
 
-This test scans for:
-1. Tests that reference non-existent files/classes/methods
-2. Tests that import modules that no longer exist
-3. Tests that appear to be migration/phase tests for completed work
+This test acts as a SENSOR in the Event & Anomaly Detection Layer.
+It orchestrates existing validation agents rather than replicating their logic.
+
+Detection Strategy:
+1. Call FileClassificationAgent for naming/structure violations
+2. Call LocationAgent for depth/placement violations
+3. Detect obsolete patterns (phase files, missing imports)
+4. Aggregate results and flag anomalies
+
+Design Pattern: Guardian tests are DETECTORS that call VALIDATORS (agents).
 """
 
 import ast
@@ -14,6 +20,14 @@ from pathlib import Path
 from typing import List, Dict, Any
 
 import pytest
+
+# Import existing agents for validation
+try:
+    from agentic_core.L5_safety.validators.file_classification_agent import FileClassificationAgent
+    from agentic_core.L5_safety.validators.location_agent import LocationAgent
+    AGENTS_AVAILABLE = True
+except ImportError:
+    AGENTS_AVAILABLE = False
 
 
 class TestObsoleteFunctionalityDetection:
@@ -27,6 +41,51 @@ class TestObsoleteFunctionalityDetection:
     def collect_test_files(self, test_dir: Path) -> List[Path]:
         """Collect all Python test files in directory."""
         return list(test_dir.rglob("test_*.py"))
+    
+    def check_naming_violations(self, file_path: Path, project_root: Path) -> List[str]:
+        """Use FileClassificationAgent to detect naming violations."""
+        issues = []
+        
+        if not AGENTS_AVAILABLE:
+            # Fallback: Basic PascalCase detection
+            if file_path.stem != file_path.stem.lower():
+                issues.append(f"PascalCase naming detected: {file_path.name}")
+            return issues
+        
+        try:
+            # Call existing agent for validation
+            agent = FileClassificationAgent(project_root)
+            violations = agent.detect_naming_violations([file_path])
+            
+            for violation in violations:
+                issues.append(f"Naming violation: {violation}")
+        except Exception as e:
+            # Fallback to basic check
+            if file_path.stem != file_path.stem.lower():
+                issues.append(f"PascalCase naming detected: {file_path.name}")
+        
+        return issues
+    
+    def check_location_violations(self, file_path: Path, project_root: Path) -> List[str]:
+        """Use LocationAgent to detect depth/placement violations."""
+        issues = []
+        
+        if not AGENTS_AVAILABLE:
+            return issues
+        
+        try:
+            # Call existing agent for validation
+            agent = LocationAgent(project_root, healing_enabled=False)
+            violations = agent.validate_file_location(file_path)
+            
+            if violations:
+                for violation in violations:
+                    issues.append(f"Location violation: {violation}")
+        except Exception:
+            # Skip if agent not available
+            pass
+        
+        return issues
 
     def check_imports_exist(self, file_path: Path) -> List[str]:
         """Check if all imports in a test file actually exist."""
@@ -173,13 +232,13 @@ class TestObsoleteFunctionalityDetection:
         for test_file in test_files:
             issues = []
             
-            # Check imports
+            # Use agents for validation (preferred)
+            issues.extend(self.check_naming_violations(test_file, project_root))
+            issues.extend(self.check_location_violations(test_file, project_root))
+            
+            # Guardian-specific checks (not in agents)
             issues.extend(self.check_imports_exist(test_file))
-            
-            # Check file references
             issues.extend(self.check_file_references(test_file, project_root))
-            
-            # Check obsolete patterns
             issues.extend(self.detect_obsolete_patterns(test_file))
             
             if issues:
