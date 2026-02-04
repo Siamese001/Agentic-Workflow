@@ -4,6 +4,8 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING, Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -74,8 +76,14 @@ def _truncate(text: str, limit: int = 160) -> str:
     return text[: limit - 3] + "..."
 
 
-class DomainPlannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
-    """Evaluates strategic alignment with the job domain."""
+class DomainPlannerAgent(AtomicExecutionMixin, L3OrchestrationBaseAgent):
+    """Evaluates strategic alignment with the job domain.
+
+    V10 Refactored: Now inherits from AtomicExecutionMixin for rollback capability
+    and L3OrchestrationBaseAgent for proper layer positioning.
+
+    MRO: DomainPlannerAgent -> AtomicExecutionMixin -> L3OrchestrationBaseAgent -> ...
+    """
 
     async def run_async(
         self,
@@ -99,7 +107,8 @@ class DomainPlannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         recommended_actions: list[str] = []
         if not focus_matches:
             recommended_actions.append(
-                "Introduce a focus area that explicitly references the job title or company priorities."
+                "Introduce a focus area that explicitly references "
+                "the job title or company priorities."
             )
 
         rationale = (
@@ -445,7 +454,7 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
         try:
             return {
                 "status": "skipped",
-                "details": f"FeasibilityAnalystAgent heal() not yet implemented for {violation_type}",
+                "details": f"FeasibilityAnalystAgent heal() not implemented for {violation_type}",
                 "artifacts": [],
                 "errors": [],
             }
@@ -608,7 +617,8 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
         try:
             return {
                 "status": "skipped",
-                "details": f"StrategyScenarioSimulatorAgent heal() not yet implemented for {violation_type}",
+                "details": f"StrategyScenarioSimulatorAgent heal() not "
+                f"implemented for {violation_type}",
                 "artifacts": [],
                 "errors": [],
             }
@@ -660,7 +670,8 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
             weighted_votes += vote_value * assessment.confidence
             total_confidence += assessment.confidence
             rationale_parts.append(
-                f"{assessment.planner_name}: {assessment.vote} ({_truncate(assessment.rationale, 80)})"
+                f"{assessment.planner_name}: {assessment.vote} "
+                f"({_truncate(assessment.rationale, 80)})"
             )
 
         aggregated_decision = "undecided"
@@ -799,7 +810,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
         try:
             return {
                 "status": "skipped",
-                "details": f"StrategyCoordinatorAgent heal() not yet implemented for {violation_type}",
+                "details": f"StrategyCoordinatorAgent heal() not implemented for {violation_type}",
                 "artifacts": [],
                 "errors": [],
             }

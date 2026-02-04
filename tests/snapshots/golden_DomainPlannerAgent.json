@@ -1,0 +1,37 @@
+{
+  "agent": "DomainPlannerAgent",
+  "input": {
+    "task": "Plan repository healing",
+    "context": {
+      "violations": 5,
+      "layer": "L5",
+      "mode": "test"
+    }
+  },
+  "output": {
+    "status": "mock",
+    "plan": [
+      "step1",
+      "step2",
+      "step3"
+    ],
+    "confidence": 0.85,
+    "agent_class": "DomainPlannerAgent",
+    "mro_depth": 24,
+    "note": "Mock output - agent methods not callable in test context"
+  },
+  "metadata": {
+    "captured_at": "2026-01-01T00:00:00Z",
+    "version": "pre-v10",
+    "harness_version": "3.1",
+    "mro_depth": 24,
+    "volatile_fields_stripped": [
+      "created_at",
+      "trace_id",
+      "elapsed_time",
+      "timestamp",
+      "request_id",
+      "session_id"
+    ]
+  }
+}
