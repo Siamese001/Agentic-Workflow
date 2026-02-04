@@ -6,6 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
@@ -29,7 +30,7 @@ from agentic_core.L5_safety.validators.NeuralAutoImmuneAgent import NeuralAutoIm
 
 
 @dataclass
-class PolicyNeuralAutoImmuneAgent(SubatomicTestingMixin, SovereignBaseAgent, NeuralAutoImmuneAgent):
+class PolicyNeuralAutoImmuneAgent(AtomicExecutionMixin, SubatomicTestingMixin, NeuralAutoImmuneAgent, SovereignBaseAgent):
     """PolicyNeuralAutoImmuneAgent agent for autonomous operations."""
 
     def __init__(self, project_root: Path) -> None:
