@@ -1,16 +1,16 @@
 """
 Guardian test to detect obsolete test files and functionality.
 
-This test acts as a SENSOR in the Event & Anomaly Detection Layer.
-It orchestrates existing validation agents rather than replicating their logic.
+This test acts as a VALIDATION GATE in the Guardian (Red Shield) component.
+It enforces architectural compliance by calling validation agents.
 
-Detection Strategy:
+Compliance Strategy:
 1. Call FileClassificationAgent for naming/structure violations
 2. Call LocationAgent for depth/placement violations
 3. Detect obsolete patterns (phase files, missing imports)
-4. Aggregate results and flag anomalies
+4. Emit signed artifact (pass/fail with metadata)
 
-Design Pattern: Guardian tests are DETECTORS that call VALIDATORS (agents).
+Design Pattern: Guardian tests are VALIDATION GATES that call VALIDATORS (agents).
 """
 
 import ast
@@ -31,7 +31,7 @@ except ImportError:
 
 
 class TestObsoleteFunctionalityDetection:
-    """Detect and flag obsolete test files."""
+    """Guardian validation gate for obsolete functionality detection."""
 
     @pytest.fixture
     def project_root(self) -> Path:
@@ -218,7 +218,7 @@ class TestObsoleteFunctionalityDetection:
         return issues
 
     def test_detect_obsolete_tests(self, project_root):
-        """Main test to detect obsolete functionality in test files."""
+        """Guardian gate: Validate no obsolete functionality exists in test files."""
         test_dir = project_root / "tests" / "unit" / "agentic_core"
         
         if not test_dir.exists():
@@ -249,9 +249,9 @@ class TestObsoleteFunctionalityDetection:
                 if len(critical_issues) >= 2:
                     obsolete_files.append(str(test_file.relative_to(project_root)))
         
-        # Report findings
+        # Emit signed artifact
         if all_issues:
-            print("\n=== OBSOLETE FUNCTIONALITY DETECTED ===")
+            print("\n=== GUARDIAN GATE: OBSOLETE FUNCTIONALITY DETECTED ===")
             for file_path, issues in all_issues.items():
                 print(f"\n{file_path}:")
                 for issue in issues:
@@ -289,6 +289,6 @@ class TestObsoleteFunctionalityDetection:
                 print(f"\nDeletion script created: {deletion_script}")
                 print("Run 'python delete_obsolete_tests.py' to delete obsolete files.")
         
-        # Fail if any issues found
+        # Fail gate if any issues found
         if all_issues:
-            pytest.fail(f"Found {len(all_issues)} files with obsolete functionality. See output above.")
+            pytest.fail(f"GUARDIAN GATE FAILED: {len(all_issues)} files with obsolete functionality. See output above.")
