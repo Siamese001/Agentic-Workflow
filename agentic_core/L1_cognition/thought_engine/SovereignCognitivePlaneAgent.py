@@ -7,6 +7,7 @@ import asyncio
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
@@ -29,7 +30,7 @@ except ImportError:
 LOGGER: Any = logging.getLogger(__name__)
 
 
-class AgentInfo(SovereignBaseAgent):
+class AgentInfo(AtomicExecutionMixin, SovereignBaseAgent):
     """Simple agent information container."""
 
     def heal_repository(
@@ -93,7 +94,7 @@ def _run_self_tests() -> dict:
 
 
 @dataclass
-class SovereignCognitivePlaneAgent(SovereignBaseAgent):
+class SovereignCognitivePlaneAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """Sovereign cognitive plane with in-memory agent registry and L5 streaming."""
 
     def __init__(
