@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-02-04T17:28:08.574620",
+  "total_agents": 171,
+  "orphan_count": 2,
+  "orphan_percentage": 1.1695906432748537,
+  "disposition_summary": {
+    "DEPRECATE": 1,
+    "ARCHIVE": 1
+  },
+  "orphans_by_layer": {
+    "L5": [
+      "PromptInjectionAgent",
+      "SemanticDebuggerAgent"
+    ]
+  },
+  "orphans": [
+    {
+      "class_name": "PromptInjectionAgent",
+      "file_path": "agentic_core/L5_safety/red_teaming/PromptInjectionAgent.py",
+      "layer": "L5",
+      "territory": "L5 Safety/Red Teaming",
+      "loc": 147,
+      "disposition": "ARCHIVE",
+      "disposition_reason": "Complex agent with healing - archive for potential future use",
+      "merge_target": null,
+      "reference_count": 3,
+      "test_count": 3,
+      "has_healing": true,
+      "cyclomatic_complexity": 22
+    },
+    {
+      "class_name": "SemanticDebuggerAgent",
+      "file_path": "agentic_core/L5_safety/validators/SemanticDebuggerAgent.py",
+      "layer": "L5",
+      "territory": "L5 Safety/Validators/Content",
+      "loc": 61,
+      "disposition": "DEPRECATE",
+      "disposition_reason": "No clear usage pattern - mark for deprecation review",
+      "merge_target": null,
+      "reference_count": 8,
+      "test_count": 8,
+      "has_healing": true,
+      "cyclomatic_complexity": 9
+    }
+  ]
+}
