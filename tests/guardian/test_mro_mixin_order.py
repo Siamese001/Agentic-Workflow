@@ -23,7 +23,6 @@ SAFETY_MIXINS = [
     "AtomicExecutionMixin",
     "CircuitBreakerMixin",
     "HallucinationDetectionMixin",
-    "MCPHardenedMixin",
 ]
 
 # Define base agent classes

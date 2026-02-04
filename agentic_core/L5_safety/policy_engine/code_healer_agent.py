@@ -35,6 +35,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.circuit_breaker_mixin import CircuitBreakerMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.UnifiedAgent import (
     HealingResult,
@@ -130,9 +132,20 @@ class HealerConfig:
     backup_dir: Path | None = None
 
 
-class CodeHealerAgent(SovereignBaseAgent, SurgicalCSTHealerMixin):
+class CodeHealerAgent(
+    AtomicExecutionMixin,
+    CircuitBreakerMixin,
+    SurgicalCSTHealerMixin,
+    SovereignBaseAgent,
+):
     """
     Unified code healer for canon, imports, and structure.
+
+    V10 Refactored: Now inherits from AtomicExecutionMixin for rollback capability
+    and CircuitBreakerMixin for failure isolation.
+
+    MRO: CodeHealerAgent -> AtomicExecutionMixin -> CircuitBreakerMixin ->
+         SovereignBaseAgent -> SurgicalCSTHealerMixin -> ...
 
     FACADE SHELL: Delegates to UnifiedAgent with CodeHealingStrategy.
     SIGNATURE COMPATIBILITY: 100% preserved - no breaking changes.
