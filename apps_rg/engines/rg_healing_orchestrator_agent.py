@@ -20,7 +20,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
+from apps_rg.shared.core.RGAgentBase import RGAgentBase
 
 Logger = logging.getLogger(__name__)
 

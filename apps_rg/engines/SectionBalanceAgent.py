@@ -11,7 +11,7 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
+from apps_rg.shared.core.RGAgentBase import RGAgentBase
 
 
 @dataclass

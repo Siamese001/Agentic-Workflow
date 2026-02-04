@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
-from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
+from apps_rg.shared.core.RGAgentBase import RGAgentBase
 
 _logger = logging.getLogger(__name__)
 
