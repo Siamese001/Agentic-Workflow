@@ -12,12 +12,13 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 
 
-class DebateSynthesisAgent(SovereignBaseAgent):
+class DebateSynthesisAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Manages multi-agent debate synthesis using Sovereign Architecture.
     Now strictly compliant with HealerProtocol for SSOT orchestration.

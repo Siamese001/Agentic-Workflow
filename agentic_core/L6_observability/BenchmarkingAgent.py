@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -145,7 +146,7 @@ from agentic_core.base_agents.decorators import standard_heal
 
 
 # NAMING FIXED: BenchmarkingAgent → BenchmarkingAgent
-class BenchmarkingAgent(SovereignBaseAgent):
+class BenchmarkingAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Measures and tracks performance metrics.
 

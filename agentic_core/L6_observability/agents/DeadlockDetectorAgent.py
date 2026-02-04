@@ -12,6 +12,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # NAMING FIXED: Consistent Logger usage
@@ -62,7 +63,7 @@ class TaskMonitor:
         return "Task completed"
 
 
-class DeadlockDetectorAgent(SovereignBaseAgent):
+class DeadlockDetectorAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     L6 Agent responsible for monitoring system-wide asyncio health.
     """

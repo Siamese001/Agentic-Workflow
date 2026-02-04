@@ -6,6 +6,7 @@ from __future__ import annotations
 import ast
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
@@ -20,7 +21,7 @@ from agentic_core.base_agents.timeout_decorator import timeout
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class DocstringComplianceAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class DocstringComplianceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """
     Ensures public functions, classes, and modules have docstrings.
 
