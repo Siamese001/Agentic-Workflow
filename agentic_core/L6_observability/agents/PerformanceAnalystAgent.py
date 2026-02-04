@@ -22,11 +22,12 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
-# ARCHIVED: SovereignBaseAgent import removed
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 L6ObservabilityBaseAgent = object  # Stub for archived import
 AgentPerformanceMetrics = None
 CritiqueReport = None
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
 
@@ -37,7 +38,7 @@ def get_performance_analyst(project_root: Path) -> "PerformanceAnalystAgent":
 
 
 @dataclass
-class PerformanceAnalystAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class PerformanceAnalystAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """
     The Performance Critic - Skeptical analyst for agent performance.
 

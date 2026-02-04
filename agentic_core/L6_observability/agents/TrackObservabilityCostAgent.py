@@ -6,6 +6,7 @@ from __future__ import annotations
 import logging
 
 # This boosts alignment detection — review and integrate appropriately
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
@@ -34,7 +35,7 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class TrackObservabilityCostAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class TrackObservabilityCostAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """function class for standard domain."""
 
     def __init__(self, config: dict[str, object] | None = None) -> None:
