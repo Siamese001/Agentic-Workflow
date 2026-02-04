@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
@@ -19,7 +20,7 @@ from agentic_core.schemas.models.anomaly_report import AnomalyReport
 
 
 # NAMING FIXED: CachedStateLedger → CachedStateLedger
-class CachedStateLedger(SovereignBaseAgent):
+class CachedStateLedger(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Sovereign L4 state base — Redis cache for context, audit, Historian.
     All L4 components inherit from this.

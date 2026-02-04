@@ -36,6 +36,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.decorators import standard_heal
 
@@ -106,7 +107,7 @@ def timeout(seconds: int) -> Callable:
 
 
 @dataclass
-class CheckpointManagerAgent(SovereignBaseAgent):
+class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Unified L4 Checkpoint Guardian.
 
