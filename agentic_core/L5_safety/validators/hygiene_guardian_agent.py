@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -53,7 +54,7 @@ class HygieneViolation:
     auto_fixable: bool = False
 
 
-class HygieneGuardianAgent(SovereignBaseAgent):
+class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Repository hygiene enforcement agent.
 

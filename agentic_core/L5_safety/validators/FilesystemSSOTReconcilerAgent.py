@@ -79,6 +79,7 @@ except ImportError:
         pass
 
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 try:
@@ -137,6 +138,7 @@ class ReconciliationViolation:
 
 
 class FilesystemSSOTReconcilerAgent(
+    AtomicExecutionMixin,
     AutonomyMixin,
     SelfDiagnosisMixin,
     L0MaintenanceBaseAgent,
