@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -235,9 +236,13 @@ from agentic_core.base_agents.timeout_decorator import timeout
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
 
 
-class LocationAgent(SovereignBaseAgent):
+class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
     r"""
     Autonomous agent responsible for territorial integrity.
+
+    V10 Refactored: Now inherits from AtomicExecutionMixin for rollback capability.
+
+    MRO: LocationAgent -> AtomicExecutionMixin -> SovereignBaseAgent -> ...
     Run independently or as first stage in compliance orchestrator.
 
     RCA FIX 2026-01-02: Added project root validation to prevent folder creation

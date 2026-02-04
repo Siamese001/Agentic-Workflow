@@ -12,15 +12,26 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.hallucination_detection_mixin import (
+    HallucinationDetectionMixin,
+)
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
 Logger = logging.getLogger(__name__)
 
 
-class VerificationGate:
+class VerificationGate(AtomicExecutionMixin, HallucinationDetectionMixin, SovereignBaseAgent):
     """
     Structural validation layer that verifies actions against actual AST structure.
 
     Prevents Epistemic Cascade by ensuring agents only act on verified targets
     that actually exist in the codebase structure.
+
+    V10 Refactored: Now inherits from AtomicExecutionMixin for rollback capability
+    and HallucinationDetectionMixin for structural validation.
+
+    MRO: VerificationGate -> AtomicExecutionMixin -> HallucinationDetectionMixin -> ...
 
     Integrates with L4ContextManager for performance optimization.
     """
