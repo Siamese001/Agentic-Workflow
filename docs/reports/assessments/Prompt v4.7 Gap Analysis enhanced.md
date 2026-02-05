@@ -1,7 +1,6 @@
-````markdown
-# 🔒 WINDSURF FORENSIC GAP ANALYSIS PROMPT (v4.7)
+# WINDSURF FORENSIC GAP ANALYSIS PROMPT (v5.0 – DIAMOND GRADE)
 
-## **V10 TARGET STATE (v4.7 – DISCOVERY-FIRST / ZERO-LOSS / MATRIX-AUDIT / SCRIPT-ALIGNED / ARCHITECTURE-INFUSED / HIGH-SIGNAL / NO-FLOW-REFERENCES)** :contentReference[oaicite:0]{index=0} :contentReference[oaicite:1]{index=1}
+## **V10 TARGET STATE (v5.0 – SSOT-BOUND / SCHEMA-LOCKED / ZERO-LOSS / MATRIX-AUDIT / HIGH-SIGNAL)**
 
 ---
 
@@ -9,12 +8,13 @@
 
 This prompt is an **executable forensic audit contract**.
 
-### 0.1 Two authoritative inputs only
+### 0.1 Three authoritative inputs only
 
-1) **Discovery JSON** produced by the mandatory discovery script (scope authority).  
-2) **Architecture Design Principles** (L0–L6) as binding invariants (architecture authority). :contentReference[oaicite:2]{index=2}
+1) **Discovery JSON** produced by the mandatory discovery script (scope authority).
+2) **`structure_blueprint.py`** (The Single Source of Truth / SSOT) (structural authority).
+3) **Architecture Design Principles** (L0–L6) as binding invariants (behavioral authority).
 
-No other assumptions, files, agents, or behaviors may be inferred.
+No other assumptions, files, agents, or behaviors may be inferred. **If it is not in the SSOT, it does not exist.**
 
 ### 0.2 “High-signal” rule (anti-bloat)
 
@@ -38,41 +38,74 @@ A capability is **COMPLIANT** only if it is explicitly verifiable in:
 
 Anything else is **MISSING**.
 
+### 0.3.1 Evidence locator minimum fields
+
+Evidence Location MUST include:
+- file path (relative)
+- symbol (class/function/method)
+- and one of: line range OR commit hash OR test assertion reference
+
 ### 0.4 Status vocabulary
 
 - **COMPLIANT**: direct, deterministic evidence exists.
 - **MISSING**: no evidence.
 - **FAIL**: evidence contradicts invariant OR illegal state is present OR fail-closed invariant is violated.
 
+### 0.5 Output conduct invariants
+
+You MUST:
+- remain evidence-first (tables + pointers)
+- avoid narrating filesystem contents or listing directories unless the discovery JSON explicitly enumerates them
+- quote code only in minimal snippets required for proof
+
 ---
 
 # PHASE 0 — MANDATORY DISCOVERY & SCOPE FREEZE
 
-## NON-NEGOTIABLE PRECONDITION
+## NON-NEGOTIABLE PRECONDITION (TRUST-BUT-VERIFY)
 
-Before performing **any** evaluation, inference, or audit step, you **MUST** execute the discovery script exactly once and treat its output as immutable:
+Before performing **any** evaluation, inference, or audit step, you **MUST**:
 
-```bash
-python C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\forensic_discovery_prep.py
-````
+1. **Verify Discovery Integrity:**
+   Calculate SHA-256 of `forensic_discovery_prep.py`.
+   If it does not match the **Known Good Hash** (defined in `structure_blueprint.py`), **ABORT AUDIT → IMMEDIATE FAIL**.
 
-This script is the **sole authority** for defining the *Environment Under Test*.
+2. **Execute Discovery:**
+   ```bash
+   python C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\general_scripts\forensic_discovery_prep.py
+   ```
+
+This script (verified) is the **sole authority** for defining the *Environment Under Test*.
 
 ---
 
-## DISCOVERY ARTIFACT INGESTION RULES
+## DISCOVERY ARTIFACT INGESTION RULES & SCHEMA
 
 You must ingest the **entire JSON output** and treat it as **read-only ground truth**.
 
-The artifact defines **all** of the following, and **nothing outside it may be assumed**:
+### STRICT DISCOVERY SCHEMA (JSON)
+The audit is **INVALID** unless the input conforms to this schema:
+```json
+{
+  "meta": { "timestamp": "ISO8601", "root_path": "string", "git_hash": "string" },
+  "ssot_validation": { "blueprint_hash": "SHA256", "status": "MATCH/MISMATCH" },
+  "agents": [
+    {
+      "identity": "string",
+      "layer": "L0|L1|L2|L3|L4|L5|L6",
+      "status": "ACTIVE|STUB|GHOST|INVALID",
+      "file_path": "string",
+      "class_name": "string",
+      "mro_chain": ["string"],
+      "mixins": ["string"],
+      "detected_methods": ["string"],
+      "integrity_hash": "SHA256"
+    }
+  ]
+}
+```
 
-* Agent identity
-* Agent file path
-* Agent layer (L0–L6)
-* Agent class name
-* Exact declared MRO signature (base class order)
-* Agent status (`ACTIVE | STUB | GHOST | INVALID | SYNTAX_ERROR`)
-* Methods detected on the primary agent class
+**Nothing outside this schema may be assumed.**
 
 ---
 
@@ -115,7 +148,7 @@ A capability is compliant only with explicit evidence. Anything else is missing.
 
 # ARCHITECTURE DESIGN PRINCIPLES — AUDITABLE INVARIANTS (L0–L6)
 
-> These are binding system invariants distilled into audit checks; you must evaluate them where relevant to the v4.7 capability set. 
+> These are binding system invariants distilled into audit checks; you must evaluate them where relevant to the v5.0 capability set. 
 
 ## P1. Fail-Closed Defaults (GLOBAL)
 
@@ -154,7 +187,7 @@ A capability is compliant only with explicit evidence. Anything else is missing.
 
 # OBJECTIVE
 
-Perform a **forensic, evidence-based Gap Analysis** against the **V10 Target State (v4.7)** using a **Discovery–Matrix Strategy**:
+Perform a **forensic, evidence-based Gap Analysis** against the **V10 Target State (v5.0)** using a **Discovery–Matrix Strategy**:
 
 1. **Global Framework Capabilities** audited once across the system.
 2. **Per-Agent Capabilities** audited independently for every ACTIVE agent.
@@ -163,7 +196,7 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 
 ---
 
-# V10 TARGET STATE — CONSOLIDATED CAPABILITY LIST (v4.7) (ZERO-LOSS)
+# V10 TARGET STATE — CONSOLIDATED CAPABILITY LIST (v5.0) (ZERO-LOSS)
 
 > Every numbered item is an independent, auditable capability. Absence of direct evidence = MISSING. 
 
@@ -171,27 +204,29 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 
 ## 1. Zero-Loss Inter-Agent Data Contract (SurgicalManifest)
 
-1.1 All code modification operations are expressed **exclusively** via a strict, versioned `SurgicalManifest`.
+1.1 All code modification operations are expressed **exclusively** via a strict, versioned `SurgicalManifest` validated against `structure_blueprint.py`.
 
 1.2 The following are **FORBIDDEN as execution inputs** (debug metadata only):
-
 * raw file paths as locators
 * line numbers
 * regex operations
 * unified diffs / patches
 * free-form text instructions
+* **Any logic not present in the SSOT**
 
-1.3 `SurgicalManifest` schema **must include all fields**:
-
+1.3 `SurgicalManifest` schema **must include all fields** (Strict Type Check):
 * `schema_version` (semver)
+* `correlation_id` (UUID4)
 * `node_id` (canonical AST identity; no line numbers)
-* `ast_snippet` (deterministic serialization)
-* `serialization_canon`
-* `fix_constraint`
+* `target_layer` (L0-L6)
+* `ast_snippet` (deterministic serialization via `LibCST`)
+* `serialization_canon` (SHA-256)
+* `fix_constraint` (Enum: `STRICT`, `RELAXED`)
 * `manifest_hash` (SHA-256 hex)
-* `change_history` (append-only)
+* `change_history` (append-only list)
 
 1.4 AST serialization is deterministic (`LibCST` or sorted `ast.dump`); formatter-dependent output is invalid.
+1.5 **SSOT Binding:** The `node_id` must resolve to a valid definition in `structure_blueprint.py`.
 
 1.5 `manifest_hash` is computed from the canonical byte representation of `ast_snippet`.
 
@@ -303,7 +338,9 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 * pass/fail result
 * cryptographic signature
 
-7.3 Absence of artifact = **automatic failure**.
+**7.2.1 Authority Root:** Signatures must be verifiable against the **pinned Public Keys** located in `agentic_core/L0_maintenance/keys/guardian_pub.pem`.
+
+7.3 Absence of artifact OR signature verification failure = **automatic failure**.
 
 7.4 A **Meta-Guardian** enforces ≥95% invariant coverage in CI.
 
@@ -421,15 +458,13 @@ For **each ACTIVE agent** in discovery:
 ```markdown
 ### Agent: <agent_name>  (from discovery JSON)
 
-Declared Layer:
-<L0 | L1 | L2 | L3 | L4 | L5 | L6>  (from discovery JSON)
+**SSOT Status:** <MATCH / DEVIATION from structure_blueprint.py>
+**Layer:** <L0–L6>
+**MRO:** <exact mro_chain>
 
-Declared MRO Signature:
-<exact mro_signature array from discovery>
-
-| ID  | Capability | Status (COMPLIANT / MISSING / FAIL) | Evidence (File + Symbol) | MRO Check |
-|-----|-----------|--------------------------------------|--------------------------|-----------|
-| 2.1 | Validator emits SurgicalManifest | | | N/A |
+| ID  | Capability | Status | Risk Score (0-100) | Evidence (File + Symbol) | SSOT Validated? |
+|-----|-----------|--------|--------------------|--------------------------|-----------------|
+| 2.1 | Validator emits SurgicalManifest | | | | |
 | 2.2 | Boundary schema validation before transmission | | | N/A |
 | 2.3 | Pipe order enforced (1..9) | | | N/A |
 | 2.4 | ≥2 hash mismatches => human escalation | | | N/A |

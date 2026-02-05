@@ -20,6 +20,8 @@ dependencies = [
     "google-genai>=1.0.0",
     "pinecone-client>=3.0.0",
     "redis>=5.0.0",
+    "libcst>=1.1.0",         # MANDATORY: Deterministic AST serialization (Cap 1.4)
+    "cryptography>=41.0.0",  # MANDATORY: Signed Guardian artifacts (Cap 7.2)
 ]
 
 [project.optional-dependencies]
@@ -120,7 +122,13 @@ select = [
     "C4",  # flake8-comprehensions
     "UP",  # pyupgrade
     "S",   # flake8-bandit (security)
+    "A",   # flake8-builtins
+    "COM", # flake8-commas
+    "T20", # flake8-print (prevent observability leaks)
+    "ERA", # eradicate (no commented-out code in production)
 ]
+# Hardening for Invariant P3: No Silent State Mutation
+# Enforces that all mutation occurs through explicit execution paths.
 ignore = [
     "B008",  # do not perform function calls in argument defaults
     "C901",  # too complex
