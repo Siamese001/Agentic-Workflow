@@ -144,6 +144,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 "CONFIG": 0,
                 "ADAPTER": 0,
             },
+            "territory_moves": 0,
         }
         # CACHE: Track file paths in memory to avoid repetitive disk scanning (O(1) lookups)
         self.file_registry: list[Path] = []
@@ -174,9 +175,27 @@ class FileClassificationAgent(*BASE_CLASSES):
         for idx, path in enumerate(list(self.file_registry)):
             if not path.exists():
                 continue
+
             ftype = self.classify_file(path)
             if ftype == "IGNORE":
                 continue
+
+            # [NEW] Territory Enforcement (Move before Rename)
+            target_territory_path = self.check_territory_violation(path, ftype)
+            if target_territory_path:
+                print(f"\n[TERRITORY] {path.name} ({ftype}) is in {path.parent.name}")
+                print(f"  [ACTION] MOVE to {target_territory_path.parent.name}")
+                
+                # Execute Move
+                if self.resolve_collision_and_rename(path, target_territory_path.name, target_dir=target_territory_path.parent):
+                    if not self.dry_run:
+                        self.stats["territory_moves"] += 1
+                        # Update path registry to reflect new location for subsequent operations
+                        path = target_territory_path
+                        self.file_registry[idx] = path
+                else:
+                    # If move failed (collision), log and continue to rename check in place
+                    print(f"  [WARNING] Move failed. Proceeding with in-place audit.")
 
             new_name = self.get_compliant_name(path, ftype)
             if new_name and new_name != path.name:
@@ -257,6 +276,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             print(f"Deep Refactors:       {self.stats['deep_refactors']}")
             print(f"Imports Fixed:        {self.stats['imports_fixed']}")
             print(f"Collisions Resolved:  {self.stats['collisions_resolved']}")
+            print(f"Territory Moves:      {self.stats['territory_moves']}")
 
         # Critical Analysis: Returning exit 1 on violations ensures git hooks
         # block non-compliant commits.
@@ -477,6 +497,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             "Receiver": "receiver",
             "Planner": "planner",
             "Scheduler": "scheduler",
+            "RG": "rg",  # Resume Generation acronym protection
         }
 
         # Check if the entire name is an atomic word
@@ -1313,22 +1334,29 @@ class FileClassificationAgent(*BASE_CLASSES):
                 pass
         return True
 
-    def resolve_collision_and_rename(self, src: Path, dest_name: str) -> bool:
+    def resolve_collision_and_rename(self, src: Path, dest_name: str, target_dir: Path | None = None) -> bool:
         """
         Handles renaming with intelligent collision resolution.
+        Supports optional target_dir for moving files across directories.
         Returns True if the VIOLATION was resolved (either by rename, delete, or move).
-
-        [HARDENED] Fixed race conditions, added verification, rollback, and proper Windows handling.
         """
-        dest = src.parent / dest_name
+        dest_parent = target_dir if target_dir else src.parent
+        dest = dest_parent / dest_name
 
         # Case 0: Trivial match
-        if src.name == dest_name:
+        if src.name == dest_name and src.parent == dest_parent:
             return False
 
         if self.dry_run:
-            print(f"  [PLAN] Rename {src.name} -> {dest_name}")
+            if target_dir:
+                print(f"  [PLAN] MOVE {src} -> {dest}")
+            else:
+                print(f"  [PLAN] RENAME {src.name} -> {dest_name}")
             return True
+
+        # Ensure target directory exists if we are moving
+        if target_dir and not target_dir.exists():
+            target_dir.mkdir(parents=True, exist_ok=True)
 
         # [HARDENED] Verify source exists before proceeding
         if not src.exists():
@@ -1462,6 +1490,60 @@ class FileClassificationAgent(*BASE_CLASSES):
 
             return False
 
+    def check_territory_violation(self, path: Path, file_type: str) -> Path | None:
+        """
+        Enforces physical-to-logical alignment with Hardened Path Logic.
+        Returns the correct destination Path if the file is in the wrong folder.
+        """
+        # Map logical types to mandatory parent folder names
+        territory_map = {
+            "AGENT": ["engines", "core"],
+            "ORCHESTRATOR": ["engines", "orchestrators", "core"],
+            "VALIDATOR": ["validators", "safety", "guards"],
+            "CONFIG": ["config", "manifests"],
+            "MIXIN": ["mixins", "base_agents"],
+            "ADAPTER": ["adapters", "strategies"],
+            "FACTORY": ["factories"],
+            "GATEWAY": ["gateways"],
+        }
+
+        current_parent = path.parent.name.lower()
+        
+        # Special handling for Tests: Mirror the architectural source
+        if file_type == "TEST":
+            # Heuristic: infer territory from filename
+            if "_validator" in path.name:
+                target_territories = ["validators", "safety"]
+            elif "_agent" in path.name or "_orchestrator" in path.name:
+                target_territories = ["engines", "core"]
+            elif "_config" in path.name:
+                target_territories = ["config"]
+            else:
+                return None
+        elif file_type in territory_map:
+            target_territories = territory_map[file_type]
+        else:
+            return None
+
+        # If current location is valid, return None
+        if any(allowed == current_parent for allowed in target_territories):
+            return None
+
+        # [HARDENED] Path Swap Logic
+        # Only swap directories if we are confident we are at the right architectural level.
+        # We check if the current parent is a "Known Territory" (even if wrong one) or generic "utils".
+        # This prevents flattening deep domain structures (e.g. prompt_governance).
+        
+        all_known_territories = {t for list in territory_map.values() for t in list}
+        all_known_territories.update({"utils", "common_utils", "helpers"})
+        
+        if current_parent in all_known_territories:
+            # Safe to swap: e.g. .../engines/Val.py -> .../validators/Val.py
+            target_folder = target_territories[0]
+            return path.parent.parent / target_folder / path.name
+            
+        return None
+
     def get_compliant_name(self, path: Path, file_type: FileType) -> str | None:
         """Calculates the target filename. Returns None if no change needed."""
         if file_type in {"IGNORE", "TYPES", "UTILITY"}:
@@ -1530,14 +1612,14 @@ class FileClassificationAgent(*BASE_CLASSES):
 
             # WINDSURF IMPLEMENTATION: New naming conventions
             elif file_type == "ORCHESTRATOR":
-                # [FIX] Strip conflicting suffixes first to prevent "AgentOrchestrator"
+                # [FIXED] Strip conflicting suffixes first to prevent "AgentOrchestrator"
                 target_name = target_name.replace("Agent", "").replace("Service", "")
                 # Force PascalCase and ensure Orchestrator suffix
                 if not target_name.endswith("Orchestrator"):
                     target_name += "Orchestrator"
 
             elif file_type == "ADAPTER":
-                # [FIX] Handle Strategy/Adapter duality
+                # [FIXED] Handle Strategy/Adapter duality & strip Agent
                 target_name = target_name.replace("Agent", "")
                 # Force PascalCase and ensure Strategy suffix (for Strategy patterns)
                 if "Strategy" not in target_name:
