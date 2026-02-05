@@ -87,12 +87,8 @@ class AdversarialProbeAgent(SovereignBaseAgent):
                 )
 
             # Calculate threat assessment
-            high_threat = sum(
-                1 for r in results["attack_results"] if r.get("threat_level") == "high"
-            )
-            critical_threat = sum(
-                1 for r in results["attack_results"] if r.get("threat_level") == "critical"
-            )
+            high_threat = sum(1 for r in results["attack_results"] if r.get("threat_level") == "high")
+            critical_threat = sum(1 for r in results["attack_results"] if r.get("threat_level") == "critical")
 
             results["threat_assessment"] = {
                 "overall_threat_level": "critical"
@@ -113,9 +109,7 @@ class AdversarialProbeAgent(SovereignBaseAgent):
                 {
                     "probes": results["probes_executed"],
                     "vulnerabilities": results["vulnerabilities_exposed"],
-                    "threat_level": results["threat_assessment"].get(
-                        "overall_threat_level", "unknown"
-                    ),
+                    "threat_level": results["threat_assessment"].get("overall_threat_level", "unknown"),
                 },
             )
 

@@ -56,9 +56,7 @@ class TestSharedUpgradeCircuitBreaker:
         generic_file.parent.mkdir(parents=True, exist_ok=True)
 
         # Create content with sufficient lines (> dust_threshold)
-        content_lines = ["class GenericUtil:\n"] + [
-            f"    def method_{i}(self): pass\n" for i in range(50)
-        ]
+        content_lines = ["class GenericUtil:\n"] + [f"    def method_{i}(self): pass\n" for i in range(50)]
         generic_file.write_text("".join(content_lines), encoding="utf-8")
 
         # Mock the import agent to prevent initialization errors
@@ -78,9 +76,7 @@ class TestSharedUpgradeCircuitBreaker:
             ) as mock_guard_class:
                 # Configure mock instance
                 mock_guard_instance = Mock()
-                mock_guard_instance.get_metric.return_value = HEALING_CONFIG[
-                    "max_shared_upgrades_per_run"
-                ]
+                mock_guard_instance.get_metric.return_value = HEALING_CONFIG["max_shared_upgrades_per_run"]
                 mock_guard_class.return_value = mock_guard_instance
 
                 # Mock the _recompute_ast_scores to return low domain scores
@@ -181,9 +177,7 @@ class TestSharedUpgradeCircuitBreaker:
         valid_file.parent.mkdir(parents=True, exist_ok=True)
 
         # Create content with sufficient lines (> dust_threshold)
-        content_lines = ["class ValidUtil:\n"] + [
-            f"    def method_{i}(self): pass\n" for i in range(50)
-        ]
+        content_lines = ["class ValidUtil:\n"] + [f"    def method_{i}(self): pass\n" for i in range(50)]
         valid_file.write_text("".join(content_lines), encoding="utf-8")
 
         # Mock the import agent to prevent initialization errors
@@ -227,9 +221,7 @@ class TestSharedUpgradeCircuitBreaker:
                         mock_move.assert_called_once()
 
                         # Verify increment_metric was called
-                        mock_guard_instance.increment_metric.assert_called_once_with(
-                            "upgrade_count"
-                        )
+                        mock_guard_instance.increment_metric.assert_called_once_with("upgrade_count")
 
         print("✅ test_circuit_breaker_allows_under_limit: 100% PASS")
 
@@ -244,9 +236,7 @@ class TestSharedUpgradeCircuitBreaker:
         trigger_file.parent.mkdir(parents=True, exist_ok=True)
 
         # Create content with sufficient lines
-        content_lines = ["class TriggerUtil:\n"] + [
-            f"    def method_{i}(self): pass\n" for i in range(50)
-        ]
+        content_lines = ["class TriggerUtil:\n"] + [f"    def method_{i}(self): pass\n" for i in range(50)]
         trigger_file.write_text("".join(content_lines), encoding="utf-8")
 
         # Mock the import agent to prevent initialization errors
@@ -266,9 +256,7 @@ class TestSharedUpgradeCircuitBreaker:
             ) as mock_guard_class:
                 # Configure mock instance
                 mock_guard_instance = Mock()
-                mock_guard_instance.get_metric.return_value = HEALING_CONFIG[
-                    "max_shared_upgrades_per_run"
-                ]
+                mock_guard_instance.get_metric.return_value = HEALING_CONFIG["max_shared_upgrades_per_run"]
                 mock_guard_class.return_value = mock_guard_instance
 
                 # Mock the _recompute_ast_scores to return low domain scores
@@ -278,13 +266,9 @@ class TestSharedUpgradeCircuitBreaker:
                     # Mock safe_move
                     with patch.object(agent, "safe_move"):
                         # Mock Logger to capture error logs
-                        with patch(
-                            "agentic_core.L5_safety.validators.LocationAgent.Logger"
-                        ) as mock_logger:
+                        with patch("agentic_core.L5_safety.validators.LocationAgent.Logger") as mock_logger:
                             # Mock the file reading for dust threshold
-                            with patch(
-                                "builtins.open", mock_open(read_data="".join(content_lines))
-                            ):
+                            with patch("builtins.open", mock_open(read_data="".join(content_lines))):
                                 # Trigger the deep import validation logic
                                 agent.deep_import_validation_and_heal(
                                     affected_paths=[trigger_file],

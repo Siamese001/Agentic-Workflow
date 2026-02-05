@@ -105,13 +105,9 @@ def test_meta_learning_agent_1_2():
     recommended = agent.get_strategy_recommendation(context={})
     print(f"After changing weights, recommended strategy: {recommended}")
 
-    assert recommended == "reflection", (
-        f"Expected recommendation 'reflection', but got '{recommended}'"
-    )
+    assert recommended == "reflection", f"Expected recommendation 'reflection', but got '{recommended}'"
 
-    print(
-        "✅ Test Case 1.2 PASSED: get_strategy_recommendation() returns highest-weighted strategy"
-    )
+    print("✅ Test Case 1.2 PASSED: get_strategy_recommendation() returns highest-weighted strategy")
     return True
 
 
@@ -142,9 +138,7 @@ def test_orchestrator_interface_2_2():
 
     # Create a concrete implementation for testing
     class MockOrchestrator(IOrchestratorAgent):
-        def heal_repository(
-            self, dry_run: bool = True, execute: bool = False, **kwargs
-        ) -> dict[str, Any]:
+        def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
             """
             Autonomous healing method (Canon Key 51 compliance).
 
@@ -163,14 +157,10 @@ def test_orchestrator_interface_2_2():
         def think(self, context: ExecutionContext) -> dict[str, Any]:
             return {"thoughts": ["plan_step_1"]}
 
-        def act(
-            self, actions: list[dict[str, Any]], context: ExecutionContext
-        ) -> list[dict[str, Any]]:
+        def act(self, actions: list[dict[str, Any]], context: ExecutionContext) -> list[dict[str, Any]]:
             return [{"action": "completed"}]
 
-        def observe(
-            self, action_results: list[dict[str, Any]], context: ExecutionContext
-        ) -> dict[str, Any]:
+        def observe(self, action_results: list[dict[str, Any]], context: ExecutionContext) -> dict[str, Any]:
             return {"observations": ["result_1"]}
 
         def should_continue(self, context: ExecutionContext) -> bool:

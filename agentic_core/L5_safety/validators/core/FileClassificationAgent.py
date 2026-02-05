@@ -369,7 +369,10 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # HARDENED TYPES PRIORITY
         if "types" in path.name.lower() and path.name.endswith(".py"):
-            if any(keyword in content for keyword in ["TypedDict", "Protocol", "TypeAlias", "Enum", "Literal", "Final"]):
+            if any(
+                keyword in content
+                for keyword in ["TypedDict", "Protocol", "TypeAlias", "Enum", "Literal", "Final"]
+            ):
                 return "TYPES"
 
         # === REFACTORED PRIMARY-CLASS-CENTRIC DETECTION ===
@@ -421,12 +424,29 @@ class FileClassificationAgent(*BASE_CLASSES):
         # CONSOLIDATED L5 GUARDRAILS SUPER-BOOST
         if "guardrails" in path.parts:
             # Primary: canonical Agent signals
-            if (primary_name.endswith("Agent") or is_agent or
-                "SovereignBaseAgent" in content or "SubatomicTestingMixin" in content):
+            if (
+                primary_name.endswith("Agent")
+                or is_agent
+                or "SovereignBaseAgent" in content
+                or "SubatomicTestingMixin" in content
+            ):
                 return "AGENT"
             # Extended: non-inherited safety components
-            elif (any(k in content.lower() for k in ["guardrail", "membrane", "sanitizer", "redact", "scrub", "block", "l5 safety", "hygiene"]) and
-                  any(m in content for m in ["sanitize(", "scrub(", "redact(", "block(", "clean(", "verify("])):
+            elif any(
+                k in content.lower()
+                for k in [
+                    "guardrail",
+                    "membrane",
+                    "sanitizer",
+                    "redact",
+                    "scrub",
+                    "block",
+                    "l5 safety",
+                    "hygiene",
+                ]
+            ) and any(
+                m in content for m in ["sanitize(", "scrub(", "redact(", "block(", "clean(", "verify("]
+            ):
                 return "AGENT"
 
         # Architectural fuzzy - STRICT: primary class name only
@@ -896,9 +916,15 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # CONSOLIDATED VALIDATOR HARDENING IN GUARDRAILS
         if "guardrails" in str(path).lower():
-            validation_methods = sum(1 for node in ast.walk(tree)
+            validation_methods = sum(
+                1
+                for node in ast.walk(tree)
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-                and any(w in node.name.lower() for w in ("validate", "check", "verify", "ensure", "scrub", "sanitize")))
+                and any(
+                    w in node.name.lower()
+                    for w in ("validate", "check", "verify", "ensure", "scrub", "sanitize")
+                )
+            )
             if validation_methods < 4:
                 return False
 
@@ -1525,46 +1551,46 @@ class FileClassificationAgent(*BASE_CLASSES):
         """
         Enforces physical-to-logical alignment with Context-Aware Sovereignty.
         Distinguishes between App-Layer (Strict Pattern) and Core-Layer (Domain Semantic).
-        
+
         [HARDENED] Robust against deep nesting and handles all file types.
         """
         # 1. IDENTIFY CONTEXT & ANCHOR
         parts = path.parts
         current_parent = path.parent.name.lower()
-        
+
         # Determine the Sovereign Root (App vs Core)
         # We search path parts to find the anchor directory
         sovereign_roots = {"agentic_core", "apps_rg", "apps_lic", "apps_shared"}
         root_anchor = None
         root_index = -1
-        
+
         for i, part in enumerate(parts):
             if part in sovereign_roots:
                 root_anchor = part
                 root_index = i
                 break
-        
+
         if not root_anchor:
-            return None # Outside of sovereign territory control
+            return None  # Outside of sovereign territory control
 
         is_core = root_anchor == "agentic_core"
         is_app = root_anchor.startswith("apps_")
 
         # 2. DEFINE RULES (THE CONSTITUTION)
-        
+
         # [APP RULES] Strict MVC/Layered Pattern
-        # In apps, an Agent MUST be in engines/ or core/. 
+        # In apps, an Agent MUST be in engines/ or core/.
         app_rules = {
             "AGENT": ["engines", "core"],
             "ORCHESTRATOR": ["engines", "orchestrators"],
-            "VALIDATOR": ["validators", "validation", "logic_nodes"], # Added logic_nodes for apps_lic/rg
+            "VALIDATOR": ["validators", "validation", "logic_nodes"],  # Added logic_nodes for apps_lic/rg
             "CONFIG": ["config"],
             "MIXIN": ["mixins", "shared", "core"],
             "ADAPTER": ["adapters", "strategies", "tools"],
             "FACTORY": ["factories"],
             "GATEWAY": ["gateways"],
             "PROTOCOL": ["interfaces", "core"],
-            "TYPES": ["domain", "models", "types", "config"], # Allow config for Pydantic models
+            "TYPES": ["domain", "models", "types", "config"],  # Allow config for Pydantic models
         }
 
         # [CORE RULES] Domain-Driven Design
@@ -1572,32 +1598,40 @@ class FileClassificationAgent(*BASE_CLASSES):
         # We explicitly whitelist valid functional domains for each type.
         core_rules = {
             "AGENT": {
-                "engines", "core", "agents", # Standard
-                "guardrails",   # L5 Safety
-                "tool_registry", # L2 Execution
-                "thought_engine", # L1 Cognition
-                "workflow_engines", # L3 Orchestration
-                "validation_context", # L4 State
-                "red_teaming", # L5 Safety
-                "observability", # L6 Observability
-                "mcp", # L2/L3 MCP Agents
-                "fission_logic", # L3
-                "scripts", # L0 Maintenance (Allow agents in scripts if they are autonomous)
+                "engines",
+                "core",
+                "agents",  # Standard
+                "guardrails",  # L5 Safety
+                "tool_registry",  # L2 Execution
+                "thought_engine",  # L1 Cognition
+                "workflow_engines",  # L3 Orchestration
+                "validation_context",  # L4 State
+                "red_teaming",  # L5 Safety
+                "observability",  # L6 Observability
+                "mcp",  # L2/L3 MCP Agents
+                "fission_logic",  # L3
+                "scripts",  # L0 Maintenance (Allow agents in scripts if they are autonomous)
             },
             "VALIDATOR": {
-                "validators", "safety", "guards", "validation", 
-                "guardrails", "validation_context", "gravity", "red_teaming"
+                "validators",
+                "safety",
+                "guards",
+                "validation",
+                "guardrails",
+                "validation_context",
+                "gravity",
+                "red_teaming",
             },
             "CONFIG": {"config", "manifests", "blueprint_sovereign"},
-            "PROTOCOL": {"interfaces", "protocols", "mcp"}, # MCP has protocols
+            "PROTOCOL": {"interfaces", "protocols", "mcp"},  # MCP has protocols
             "TYPES": {"schemas", "models", "domain", "types", "config"},
-            "MIXIN": {"mixins", "base_agents", "utils"}, # Allow mixins in utils
+            "MIXIN": {"mixins", "base_agents", "utils"},  # Allow mixins in utils
         }
 
         # 3. EXECUTE VALIDATION
-        
+
         target_folder = None
-        
+
         if is_app:
             # Strict Check
             allowed = app_rules.get(file_type)
@@ -1614,26 +1648,26 @@ class FileClassificationAgent(*BASE_CLASSES):
                     # Generic Catch-All: If it's in a generic junk folder, move it.
                     # If it's in a specialized domain (e.g. 'planning'), assume it's OK (Innocent until proven guilty)
                     junk_drawers = {"utils", "common", "helpers", "misc", "temp"}
-                    
+
                     if current_parent in junk_drawers:
                         # Move to the primary home for that type
                         # Map Type -> Primary Core Home
                         core_defaults = {
-                            "AGENT": "base_agents", # Or specific layer if inferable, but base_agents is safe
+                            "AGENT": "base_agents",  # Or specific layer if inferable, but base_agents is safe
                             "VALIDATOR": "validators",
                             "CONFIG": "config",
                             "PROTOCOL": "interfaces",
                             "TYPES": "schemas",
-                            "MIXIN": "base_agents"
+                            "MIXIN": "base_agents",
                         }
                         target_folder = core_defaults.get(file_type)
 
         # 4. SPECIAL HANDLING: TESTS
         if file_type == "TEST":
             if "tests" not in parts and not path.name.startswith("test_"):
-                 # It's a test file outside of tests/ -> Violates Mirroring
-                 # (This logic is complex, usually handled by mirror check, skipping for now to avoid over-engineering)
-                 pass
+                # It's a test file outside of tests/ -> Violates Mirroring
+                # (This logic is complex, usually handled by mirror check, skipping for now to avoid over-engineering)
+                pass
 
         # 5. CALCULATE RESULT
         if target_folder:
@@ -1645,17 +1679,17 @@ class FileClassificationAgent(*BASE_CLASSES):
         """
         Robustly calculates the move target relative to the Sovereign Root.
         Fixes the 'parent.parent' fragility by pivoting from the anchor.
-        
+
         Strategy: Root / Target_Folder / Filename
         (Flattens nesting to enforce standard structure)
         """
         # parts[0...root_index] is the path up to and including 'apps_rg'
         # e.g. (..., 'apps_rg')
-        root_parts = path.parts[:root_index+1]
-        
+        root_parts = path.parts[: root_index + 1]
+
         # Construct new path: .../apps_rg/target_folder/filename
         new_path = Path(*root_parts) / target_folder / path.name
-        
+
         return new_path
 
     def get_compliant_name(self, path: Path, file_type: FileType) -> str | None:
@@ -1670,12 +1704,13 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # CONSOLIDATED GUARDRAILS NAMING CONVENTION
         if file_type == "AGENT" and "guardrails" in path.parts:
-            base_name = (path.stem
-                .removesuffix("Agent")
+            base_name = (
+                path.stem.removesuffix("Agent")
                 .removesuffix("Membrane")
                 .removesuffix("Strategy")
                 .removesuffix("Handler")
-                .removesuffix("Types"))
+                .removesuffix("Types")
+            )
             snake_name = self._to_smart_snake_case(base_name)
             return f"{snake_name}_agent.py"
 
@@ -1923,6 +1958,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 def main():
     """Standalone execution for testing."""
     import argparse
+
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     parser = argparse.ArgumentParser(description="File Classification Agent")

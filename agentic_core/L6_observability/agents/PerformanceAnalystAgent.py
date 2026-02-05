@@ -253,9 +253,7 @@ class PerformanceAnalystAgent(AtomicExecutionMixin, SubatomicTestingMixin, Sover
         }
 
     @standard_heal
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}

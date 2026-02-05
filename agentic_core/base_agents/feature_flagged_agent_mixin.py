@@ -394,9 +394,7 @@ class FeatureFlaggedAgentMixin:
             self._meta_learning = ml_service
 
         if ml_service is None or not self._check_is_available(ml_service):
-            logger.warning(
-                f"[{self.__class__.__name__}] Meta-learning unavailable, executing directly"
-            )
+            logger.warning(f"[{self.__class__.__name__}] Meta-learning unavailable, executing directly")
             try:
                 result = execution_fn()
                 return LearningResult(
@@ -452,8 +450,7 @@ class FeatureFlaggedAgentMixin:
 
         event_id = f"AUDIT-{int(time.time() * 1000)}"
         logger.info(
-            f"[AUDIT] {event_id} | {self.__class__.__name__} | {event_type} | "
-            f"{json.dumps(data, default=str)}"
+            f"[AUDIT] {event_id} | {self.__class__.__name__} | {event_type} | {json.dumps(data, default=str)}"
         )
         return event_id
 

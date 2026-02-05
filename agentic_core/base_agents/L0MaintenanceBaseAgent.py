@@ -107,9 +107,7 @@ class L0MaintenanceBaseAgent(L0DelegationTestingMixin, SovereignBaseAgent):
             results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results[TESTS_DIR].append(
-                {"name": "test_instantiation", "status": "failed", "error": str(e)}
-            )
+            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:

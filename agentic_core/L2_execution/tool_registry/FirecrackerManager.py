@@ -125,9 +125,7 @@ class FirecrackerManager:
             return True
         except Exception as e:
             if self.enable_logging:
-                Logger.error(
-                    "vm_termination_failed", EXTRA={"vm_id": vm_id, "error": str(e)}, exc_info=True
-                )
+                Logger.error("vm_termination_failed", EXTRA={"vm_id": vm_id, "error": str(e)}, exc_info=True)
             return False
 
     def get_vm(self, vm_id: str) -> VMInstance | None:

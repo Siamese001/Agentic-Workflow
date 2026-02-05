@@ -10,7 +10,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from agentic_core.L0_maintenance.scripts.general_scripts.pascal_sovereignty_fixer import PascalSovereigntyFixer
+from agentic_core.L0_maintenance.scripts.general_scripts.pascal_sovereignty_fixer import (
+    PascalSovereigntyFixer,
+)
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parents[5]
@@ -171,9 +173,7 @@ class TestSovereigntyAcronyms(unittest.TestCase):
         mock_path.stat.return_value = Mock(st_size=1000)
 
         ftype = self.fixer.classify_file(mock_path)
-        self.assertEqual(
-            ftype, "IGNORE", "execute_ssot.py must remain ignored per SSOT exclusion list"
-        )
+        self.assertEqual(ftype, "IGNORE", "execute_ssot.py must remain ignored per SSOT exclusion list")
 
     def test_structure_blueprint_exclusion(self):
         """Verify structure_blueprint.py remains protected."""
@@ -214,9 +214,7 @@ class TestAcronymRegexPatterns(unittest.TestCase):
         pattern = re.compile("([a-z0-9])([A-Z])")
         result = pattern.sub(r"\1_\2", s1).lower()
 
-        self.assertEqual(
-            result, "llm_provider_mixin", "Two-pass conversion should produce clean snake_case"
-        )
+        self.assertEqual(result, "llm_provider_mixin", "Two-pass conversion should produce clean snake_case")
 
     def test_full_conversion_pipeline(self):
         """Test the complete conversion pipeline."""

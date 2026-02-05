@@ -98,9 +98,7 @@ class HumanReviewAdapter(HumanReviewProtocol):
         )
 
         self._review_results[request.request_id] = result
-        logger.info(
-            f"HumanReviewAdapter: Submitted review {request.request_id} for {request.agent_name}"
-        )
+        logger.info(f"HumanReviewAdapter: Submitted review {request.request_id} for {request.agent_name}")
 
         return result
 

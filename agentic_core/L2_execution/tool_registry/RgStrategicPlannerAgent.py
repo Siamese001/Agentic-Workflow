@@ -51,9 +51,7 @@ class RgStrategicPlannerAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         # 1. Aggregate State
         violations = [
-            f"Key {k}: {v.get('details', '')}..."
-            for k, v in self.ctx.results.items()
-            if not v.get("passed")
+            f"Key {k}: {v.get('details', '')}..." for k, v in self.ctx.results.items() if not v.get("passed")
         ]
         signals = list(self.ctx.signals)
 

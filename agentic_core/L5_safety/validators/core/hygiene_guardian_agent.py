@@ -83,9 +83,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     # Patterns for detection
     DEBUG_PRINT_PATTERN = re.compile(r"^\s*print\s*\(", re.MULTILINE)
-    COMMENTED_CODE_PATTERN = re.compile(
-        r"^\s*#\s*(def|class|import|from|if|for|while|try)\s+", re.MULTILINE
-    )
+    COMMENTED_CODE_PATTERN = re.compile(r"^\s*#\s*(def|class|import|from|if|for|while|try)\s+", re.MULTILINE)
 
     # Patterns for copy/duplicate filename detection (merged from FileCleanupAgent)
     COPY_PATTERNS = [
@@ -175,9 +173,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         parent_dir = file_path.parent
         python_files = [
-            f
-            for f in parent_dir.glob("*.py")
-            if f.name != "__init__.py" and not f.name.startswith(".")
+            f for f in parent_dir.glob("*.py") if f.name != "__init__.py" and not f.name.startswith(".")
         ]
 
         return len(python_files) == 0
@@ -192,11 +188,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
             for i, line in enumerate(lines, 1):
                 # Skip docstrings and comments
                 stripped = line.strip()
-                if (
-                    stripped.startswith("#")
-                    or stripped.startswith('"""')
-                    or stripped.startswith("'''")
-                ):
+                if stripped.startswith("#") or stripped.startswith('"""') or stripped.startswith("'''"):
                     continue
 
                 # Detect print statements (simple heuristic)
@@ -442,9 +434,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     )
 
                     if result.success:
-                        print(
-                            f"   [FIXED] Archived {violation.violation_type}: {violation.file_path}"
-                        )
+                        print(f"   [FIXED] Archived {violation.violation_type}: {violation.file_path}")
                         fixed_count += 1
                     else:
                         print(f"   [ERROR] Failed to archive {violation.file_path}: {result.error}")
@@ -454,9 +444,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
         return fixed_count
 
     @standard_heal
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """
         Autonomous healing method for repository hygiene.
 
@@ -560,9 +548,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         # Context-aware limit
         is_test = base_name.startswith("test_") or base_name.endswith("_test")
-        limit = (
-            self.rules["MAX_TEST_FILENAME_WORDS"] if is_test else self.rules["MAX_FILENAME_WORDS"]
-        )
+        limit = self.rules["MAX_TEST_FILENAME_WORDS"] if is_test else self.rules["MAX_FILENAME_WORDS"]
 
         if word_count > limit:
             violation = {

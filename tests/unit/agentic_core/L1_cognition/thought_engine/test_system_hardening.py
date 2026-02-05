@@ -131,9 +131,7 @@ except Exception as e:
         assert registry_field.default_factory is not dataclasses.MISSING, (
             "VERIFICATION_REGISTRY should use default_factory"
         )
-        assert registry_field.default_factory == dict, (
-            "VERIFICATION_REGISTRY default_factory should be dict"
-        )
+        assert registry_field.default_factory == dict, "VERIFICATION_REGISTRY default_factory should be dict"
 
     # =========================================================================
     # Test 3: Path Security Validation
@@ -179,16 +177,11 @@ except Exception as e:
             if dedup_path.exists():
                 source = dedup_path.read_text(encoding="utf-8")
                 # Verify it imports from the correct location
-                assert (
-                    "from agentic_core.L5_safety.validators.structure_blueprint_config import"
-                    in source
-                ), (
+                assert "from agentic_core.L5_safety.validators.structure_blueprint_config import" in source, (
                     "CodeDeduplicationAgent should import from agentic_core.L5_safety.validators.structure_blueprint"
                 )
                 # Verify it does NOT import from deprecated location
-                assert (
-                    "from agentic_core.config.blueprint_sovereign.structure_blueprint" not in source
-                ), (
+                assert "from agentic_core.config.blueprint_sovereign.structure_blueprint" not in source, (
                     "CodeDeduplicationAgent should NOT import from deprecated config/blueprint_sovereign path"
                 )
             else:
@@ -201,9 +194,7 @@ except Exception as e:
         """
         TC-004: Verify that importing MCPHardenedMixin directly raises a DeprecationWarning.
         """
-        with pytest.warns(
-            DeprecationWarning, match="Direct import of MCPHardenedMixin is deprecated"
-        ):
+        with pytest.warns(DeprecationWarning, match="Direct import of MCPHardenedMixin is deprecated"):
             # Force reimport to trigger the warning
             import importlib
 

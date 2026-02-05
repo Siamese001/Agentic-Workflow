@@ -305,16 +305,12 @@ class TestReconciliationDocumentation:
 
     def test_reconciliation_doc_exists(self):
         """Test that reconciliation documentation exists."""
-        doc_path = (
-            Path(__file__).parent.parent.parent / "docs" / "PRE_COMMIT_AGENT_RECONCILIATION.md"
-        )
+        doc_path = Path(__file__).parent.parent.parent / "docs" / "PRE_COMMIT_AGENT_RECONCILIATION.md"
         assert doc_path.exists(), "Reconciliation documentation not found"
 
     def test_reconciliation_doc_has_required_sections(self):
         """Test that documentation has all required sections."""
-        doc_path = (
-            Path(__file__).parent.parent.parent / "docs" / "PRE_COMMIT_AGENT_RECONCILIATION.md"
-        )
+        doc_path = Path(__file__).parent.parent.parent / "docs" / "PRE_COMMIT_AGENT_RECONCILIATION.md"
 
         if not doc_path.exists():
             pytest.skip("Documentation not found")

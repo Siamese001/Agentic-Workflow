@@ -154,9 +154,7 @@ class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAge
 
             # Key 42: Dangerous builtin calls
             if func_id in self.DANGEROUS_BUILTINS:
-                self.report(
-                    f"Dangerous builtin {func_id}() detected (potential security risk)", node
-                )
+                self.report(f"Dangerous builtin {func_id}() detected (potential security risk)", node)
 
             # Key 3: Debugger breakpoint() call
             if func_id == "breakpoint":
@@ -206,9 +204,7 @@ class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAge
             _call_path=_call_path,
         )
 
-    def validate_all(
-        self, source: str, file_path: Path | None = None
-    ) -> dict[str, list[dict[str, Any]]]:
+    def validate_all(self, source: str, file_path: Path | None = None) -> dict[str, list[dict[str, Any]]]:
         """
         Validate source code and return violations grouped by key.
 
@@ -266,9 +262,7 @@ class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAge
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append(
-                {"name": "test_instantiation", "status": "failed", "error": str(e)}
-            )
+            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
 
         # Test 2: Bare except detection
         try:
@@ -307,9 +301,7 @@ class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAge
             results["tests"].append({"name": "test_eval_detection", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append(
-                {"name": "test_eval_detection", "status": "failed", "error": str(e)}
-            )
+            results["tests"].append({"name": "test_eval_detection", "status": "failed", "error": str(e)})
 
         # Test 5: Dangerous builtins detection
         try:
@@ -318,9 +310,7 @@ class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAge
             violations = self.validate(test_code)
             assert any("dangerous builtin" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
-            results["tests"].append(
-                {"name": "test_dangerous_builtins_detection", "status": "passed"}
-            )
+            results["tests"].append({"name": "test_dangerous_builtins_detection", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
             results["tests"].append(
@@ -337,9 +327,7 @@ class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAge
             results["tests"].append({"name": "test_debugger_detection", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append(
-                {"name": "test_debugger_detection", "status": "failed", "error": str(e)}
-            )
+            results["tests"].append({"name": "test_debugger_detection", "status": "failed", "error": str(e)})
 
         # Test 7: TYPE_CHECKING block skipping
         try:
@@ -356,9 +344,7 @@ if TYPE_CHECKING:
             results["tests"].append({"name": "test_type_checking_skip", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append(
-                {"name": "test_type_checking_skip", "status": "failed", "error": str(e)}
-            )
+            results["tests"].append({"name": "test_type_checking_skip", "status": "failed", "error": str(e)})
 
         return results
 

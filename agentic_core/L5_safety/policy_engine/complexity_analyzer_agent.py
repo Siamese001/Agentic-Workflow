@@ -220,9 +220,7 @@ class ComplexityAnalyzerAgent(SovereignBaseAgent):
         return complexity
 
     @standard_heal
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Sovereign Interface.
         Note: Complexity cannot be auto-healed safely, only reported.

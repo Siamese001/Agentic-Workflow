@@ -241,9 +241,7 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, SovereignBaseAgent):
         except Exception as e:
             Logger.error(f"Failed to save rules: {e}")
 
-    async def detect_threats(
-        self, text: str, context: dict[str, Any] | None = None
-    ) -> ThreatDetection:
+    async def detect_threats(self, text: str, context: dict[str, Any] | None = None) -> ThreatDetection:
         """
         Detect threats in text.
 
@@ -265,9 +263,9 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     max_threat_level: Any = rule.ThreatLevel
         confidence: Any = 0.0
         if matched_rules:
-            confidence: Any = sum(
-                1.0 if not rule.auto_generated else 0.8 for rule in matched_rules
-            ) / len(matched_rules)
+            confidence: Any = sum(1.0 if not rule.auto_generated else 0.8 for rule in matched_rules) / len(
+                matched_rules
+            )
         recommendations: Any = self._generate_recommendations(matched_rules)
         detection: Any = ThreatDetection(
             detected=len(matched_rules) > 0,
@@ -413,9 +411,7 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, SovereignBaseAgent):
         enabled_rules: Any = sum(1 for rule in self.rules.values() if rule.enabled)
         auto_generated: Any = sum(1 for rule in self.rules.values() if rule.auto_generated)
         total_triggers: Any = sum(rule.trigger_count for rule in self.rules.values())
-        most_triggered: Any = sorted(
-            self.rules.values(), key=lambda r: r.trigger_count, reverse=True
-        )[:5]
+        most_triggered: Any = sorted(self.rules.values(), key=lambda r: r.trigger_count, reverse=True)[:5]
         return {
             "total_rules": total_rules,
             "enabled_rules": enabled_rules,

@@ -31,9 +31,7 @@ class AgentCategory:
     def _scan_violations(self):
         return [{"type": "test", "line": 1}]
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -62,9 +60,7 @@ class AgentCategory:
         """Test batch category violations."""
         source = "class AgentCategory: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -101,9 +97,7 @@ class ArchitectureGovernorAgent:
     def _orchestrate_guardian_scan(self):
         return {"status": "ok"}
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -132,9 +126,7 @@ class ArchitectureGovernorAgent:
         """Test detecting baseline drift."""
         source = "class ArchitectureGovernorAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -172,9 +164,7 @@ class AutonomyGuardianAgent:
         fixed = content.replace("bad", "good")
         return fixed
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -221,9 +211,7 @@ class FileClassificationAgent:
     def _detect_test_patterns(self, path):
         return {"is_test": True}
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -252,9 +240,7 @@ class FileClassificationAgent:
         """Test batch pattern violations."""
         source = "class FileClassificationAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -289,9 +275,7 @@ class GovernanceAgent:
     def validate_governance(self):
         return {"compliant": True}
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -326,9 +310,7 @@ class HierarchyAgent:
     def detect_hierarchy_issues(self):
         return [{"level": 1, "issue": "test"}]
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -365,9 +347,7 @@ INPUT_VALIDATION_CONFIG = {
     "validators": {}
 }
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -400,9 +380,7 @@ class TestMediumTierSurgicalHealing:
         """Test that surgical healing applies correctly."""
         source = "def my_func():\n    pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -441,9 +419,7 @@ class TestAgent:
     def method2(self):
         pass
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 

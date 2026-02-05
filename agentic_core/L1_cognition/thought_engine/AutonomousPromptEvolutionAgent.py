@@ -34,9 +34,7 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class AutonomousPromptEvolutionAgent(
-    AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent
-):
+class AutonomousPromptEvolutionAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
     """
     Autonomous agent that evolves prompt templates based on performance metrics.
 

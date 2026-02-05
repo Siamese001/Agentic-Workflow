@@ -77,9 +77,7 @@ class TestLocationAgentSmartRouting:
         """
         # Keywords defined in structure_blueprint.py:
         # scripts: "setup", "install", "ci", "build", "deploy", "migration", "test", "run"
-        assert (
-            mock_agent._determine_target_root_from_metadata("install_dependencies.py") == "scripts"
-        )
+        assert mock_agent._determine_target_root_from_metadata("install_dependencies.py") == "scripts"
         assert mock_agent._determine_target_root_from_metadata("migration_tool.py") == "scripts"
 
         # logs: "transcript", "log", "trace", "execution"

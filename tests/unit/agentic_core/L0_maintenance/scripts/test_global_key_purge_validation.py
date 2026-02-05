@@ -40,9 +40,7 @@ class TestGlobalKeyPurge:
             agent = LocationAgent()
             # Test a known app-specific leak prefix
             suggested_path = agent.get_correct_app_path("rg_new_tool.py")
-            assert suggested_path == "apps_rg/engines", (
-                "LocationAgent failed to resolve path without keys."
-            )
+            assert suggested_path == "apps_rg/engines", "LocationAgent failed to resolve path without keys."
         except (ImportError, NameError, AttributeError, TypeError) as e:
             # If LocationAgent has dependency issues, that's expected during refactoring
             pytest.skip(f"LocationAgent import failed (expected during refactoring): {e}")
@@ -75,8 +73,7 @@ class TestGlobalKeyPurge:
             if any(part.startswith(".") for part in py_file.parts):
                 continue
             if any(
-                part in ["__pycache__", ".git", "node_modules", ".venv", "venv"]
-                for part in py_file.parts
+                part in ["__pycache__", ".git", "node_modules", ".venv", "venv"] for part in py_file.parts
             ):
                 continue
             # Skip archive folders (legacy/backups)
@@ -116,8 +113,7 @@ class TestGlobalKeyPurge:
                 continue
 
         assert len(violations) == 0, (
-            f"CRITICAL: Found {len(violations)} files with deprecated imports:\n"
-            + "\n".join(violations)
+            f"CRITICAL: Found {len(violations)} files with deprecated imports:\n" + "\n".join(violations)
         )
 
     def test_territory_based_healing_still_works(self):

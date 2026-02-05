@@ -292,9 +292,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAt
             modified_tree = ast.parse(modified_code)
             original_stmts = sum(1 for _ in ast.walk(original_tree) if isinstance(_, ast.stmt))
             modified_stmts = sum(1 for _ in ast.walk(modified_tree) if isinstance(_, ast.stmt))
-            functional_preservation = (
-                modified_stmts / original_stmts * 100 if original_stmts > 0 else 0
-            )
+            functional_preservation = modified_stmts / original_stmts * 100 if original_stmts > 0 else 0
             vulnerability_found = functional_preservation >= 90.0
             return RedTeamResult(
                 test_id=test_id,
@@ -337,9 +335,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAt
             vulnerability_found=not blocked,
             details="Simulated attempt to access sensitive paths",
             Severity="critical" if not blocked else None,
-            Recommendation="Sandbox blocking file access"
-            if blocked
-            else "CRITICAL: Sandbox can be escaped!",
+            Recommendation="Sandbox blocking file access" if blocked else "CRITICAL: Sandbox can be escaped!",
         )
 
     async def _attempt_network_escape(self) -> RedTeamResult:
@@ -352,9 +348,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAt
             vulnerability_found=not blocked,
             details="Simulated attempt network connection",
             Severity="critical" if not blocked else None,
-            Recommendation="Sandbox blocking network"
-            if blocked
-            else "CRITICAL: Network access possible!",
+            Recommendation="Sandbox blocking network" if blocked else "CRITICAL: Network access possible!",
         )
 
     async def _attempt_subprocess_escape(self) -> RedTeamResult:
@@ -392,9 +386,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAt
             vulnerability_found=not detected,
             details="Simulated change output schema in Stage 2",
             Severity="high" if not detected else None,
-            Recommendation="schema drift detected"
-            if detected
-            else "WARNING: schema drift undetected!",
+            Recommendation="schema drift detected" if detected else "WARNING: schema drift undetected!",
         )
 
     async def _attempt_missing_field(self) -> RedTeamResult:
@@ -483,9 +475,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAt
         total_tests = len(self.results)
         passed_tests = sum(1 for r in self.results if r.passed)
         vulnerabilities = sum(1 for r in self.results if r.vulnerability_found)
-        critical_vulns = [
-            r for r in self.results if r.Severity == "critical" and r.vulnerability_found
-        ]
+        critical_vulns = [r for r in self.results if r.Severity == "critical" and r.vulnerability_found]
         high_vulns = [r for r in self.results if r.Severity == "high" and r.vulnerability_found]
         Logger.info(f"\n{'=' * 80}")
         Logger.info("🔴 ADVERSARIAL RED TEAM REPORT")

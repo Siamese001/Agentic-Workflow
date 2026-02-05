@@ -891,9 +891,7 @@ class StateManagementAgent(AtomicExecutionMixin, SovereignBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append(
-                {"name": "test_instantiation", "status": "failed", "error": str(e)}
-            )
+            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
 
         # Test 2: Set/Get state
         try:
@@ -913,9 +911,7 @@ class StateManagementAgent(AtomicExecutionMixin, SovereignBaseAgent):
             results["tests"].append({"name": "test_set_get_state", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append(
-                {"name": "test_set_get_state", "status": "failed", "error": str(e)}
-            )
+            results["tests"].append({"name": "test_set_get_state", "status": "failed", "error": str(e)})
 
         # Test 3: Integrity check
         try:
@@ -927,9 +923,7 @@ class StateManagementAgent(AtomicExecutionMixin, SovereignBaseAgent):
             results["tests"].append({"name": "test_integrity_check", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append(
-                {"name": "test_integrity_check", "status": "failed", "error": str(e)}
-            )
+            results["tests"].append({"name": "test_integrity_check", "status": "failed", "error": str(e)})
 
         # Test 4: Manifest persistence
         try:

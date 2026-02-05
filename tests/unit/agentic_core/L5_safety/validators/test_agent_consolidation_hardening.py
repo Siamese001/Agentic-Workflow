@@ -154,9 +154,7 @@ class TestConsolidationStaticAnalysis:
                 for err in errors:
                     report.append(f"  - {err}")
 
-            report.append(
-                "\nACTION REQUIRED: Update imports in these files to use canonical paths."
-            )
+            report.append("\nACTION REQUIRED: Update imports in these files to use canonical paths.")
 
             # Fail the test if violations exist
             pytest.fail("\n".join(report))
@@ -238,9 +236,7 @@ class TestNamingConventionCompliance:
             if not f.name.endswith("Agent.py"):
                 violations.append(f.name)
 
-        assert len(violations) == 0, (
-            f"Files in validators/ should end with 'Agent.py': {violations}"
-        )
+        assert len(violations) == 0, f"Files in validators/ should end with 'Agent.py': {violations}"
 
 
 class TestPotentialOverlapsVerification:

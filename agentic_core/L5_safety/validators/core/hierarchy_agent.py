@@ -144,9 +144,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 if self.healing_enabled:
                     results = self.create_missing_structure()
                     return {
-                        "status": "success"
-                        if results["violations_found"] == 0
-                        else "partial_success",
+                        "status": "success" if results["violations_found"] == 0 else "partial_success",
                         "details": f"Created {len(results['created'])} directories",
                         "artifacts": results["created"],
                         "errors": results["errors"],
@@ -173,9 +171,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         # Fallback to local implementation if LocationHealerAgent unavailable
                         results = self.relocate_misplaced_files()
                         return {
-                            "status": "success"
-                            if results["violations_found"] == 0
-                            else "partial_success",
+                            "status": "success" if results["violations_found"] == 0 else "partial_success",
                             "details": f"Relocated {results['files_relocated']} files",
                             "artifacts": [file_path],
                             "errors": results["errors"],
@@ -192,14 +188,10 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 if self.healing_enabled:
                     results = self.enforce_depth_rules()
                     total_archived = (
-                        results["apps_archived"]
-                        + results["tests_archived"]
-                        + results["universal_archived"]
+                        results["apps_archived"] + results["tests_archived"] + results["universal_archived"]
                     )
                     return {
-                        "status": "success"
-                        if results["violations_found"] == 0
-                        else "partial_success",
+                        "status": "success" if results["violations_found"] == 0 else "partial_success",
                         "details": f"Archived {total_archived} depth violations",
                         "artifacts": [file_path],
                         "errors": results["errors"],
@@ -268,9 +260,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     results["violations_found"] += 1
                     Logger.warning(f"   [!] MISSING L2 LAYER: agentic_core/{layer_l2_name}")
                     if self.healing_enabled:
-                        self._create_dir_with_init(
-                            layer_l2_path, results, f"agentic_core/{layer_l2_name}"
-                        )
+                        self._create_dir_with_init(layer_l2_path, results, f"agentic_core/{layer_l2_name}")
                 # If parent L2 doesn't exist and we are scoped to something else, we might skip
                 if not layer_l2_path.exists():
                     continue
@@ -284,9 +274,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
             if target_territory and target_territory in expected_territories_l3:
                 expected_territories_l3 = {target_territory}
 
-            actual_l3 = {
-                p.name for p in layer_l2_path.iterdir() if p.is_dir() and not p.name.startswith(".")
-            }
+            actual_l3 = {p.name for p in layer_l2_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
             missing_l3 = expected_territories_l3 - actual_l3
 
             for territory_l3_name in missing_l3:
@@ -305,9 +293,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 f"HierarchyAgent: [STRUCTURE] Found {results['violations_found']} missing directories"
             )
             if self.healing_enabled and results["created"]:
-                Logger.info(
-                    f"HierarchyAgent: [STRUCTURE] Created {len(results['created'])} directories"
-                )
+                Logger.info(f"HierarchyAgent: [STRUCTURE] Created {len(results['created'])} directories")
 
         return results
 
@@ -353,19 +339,13 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 target_roots = [target_territory]
             else:
                 target_roots = ["agentic_core"]
-            Logger.info(
-                f"HierarchyAgent: 🎯 TARGETED SCAN: {target_territory} -> Roots: {target_roots}"
-            )
+            Logger.info(f"HierarchyAgent: 🎯 TARGETED SCAN: {target_territory} -> Roots: {target_roots}")
         else:
             # Universal Scope: Iterate through all roots defined in SOVEREIGN_TERRITORIES
-            target_roots = [
-                r for r in SOVEREIGN_TERRITORIES.keys() if (self.project_root / r).exists()
-            ]
+            target_roots = [r for r in SOVEREIGN_TERRITORIES.keys() if (self.project_root / r).exists()]
             Logger.info(f"HierarchyAgent: 🌍 Universal Scope active: {len(target_roots)} roots")
 
-        Logger.info(
-            f"HierarchyAgent: Auditing {len(target_roots)} sovereign territories: {target_roots}"
-        )
+        Logger.info(f"HierarchyAgent: Auditing {len(target_roots)} sovereign territories: {target_roots}")
 
         for root_name in target_roots:
             root_path = self.project_root / root_name
@@ -380,9 +360,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 self._enforce_tests_structure(root_path, results)
 
         if results["violations_found"] > 0:
-            Logger.info(
-                f"HierarchyAgent: [RELOCATION] Found {results['violations_found']} misplaced files"
-            )
+            Logger.info(f"HierarchyAgent: [RELOCATION] Found {results['violations_found']} misplaced files")
             if self.healing_enabled:
                 Logger.info(
                     f"HierarchyAgent: [RELOCATION] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed"
@@ -394,13 +372,9 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         return results
 
-    def _enforce_agentic_core_structure(
-        self, agentic_core_path: Path, results: dict[str, Any]
-    ) -> None:
+    def _enforce_agentic_core_structure(self, agentic_core_path: Path, results: dict[str, Any]) -> None:
         """Enforce strictly defined L2 structure for agentic_core."""
-        approved_layers_l2 = set(
-            SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", [])
-        )
+        approved_layers_l2 = set(SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", []))
 
         # Phase 1: Find all non-approved Layer (L2) folders
         actual_layers_l2 = {
@@ -411,9 +385,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         non_approved_l2 = actual_layers_l2 - approved_layers_l2
 
         for bad_layer_l2 in non_approved_l2:
-            self._relocate_l2_layer_files(
-                agentic_core_path, bad_layer_l2, approved_layers_l2, results
-            )
+            self._relocate_l2_layer_files(agentic_core_path, bad_layer_l2, approved_layers_l2, results)
 
         # Phase 2: Check L3 sub-territories within approved L2 Layers
         for layer_l2_name in approved_layers_l2:
@@ -434,9 +406,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             if current_depth > target_depth:
                 results["violations_found"] += 1
-                Logger.warning(
-                    f"   [!] DEPTH DRIFT: {rel} is depth {current_depth}, expected {target_depth}"
-                )
+                Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {current_depth}, expected {target_depth}")
                 if self.healing_enabled:
                     archived = self._heal_depth_violation(py_file, rel, current_depth, target_depth)
                     if archived:
@@ -514,9 +484,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
             if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
                 continue
             results["violations_found"] += 1
-            Logger.warning(
-                f"   [!] MISPLACED FILE: {py_file.name} in illegal layer '{bad_layer_l2}'"
-            )
+            Logger.warning(f"   [!] MISPLACED FILE: {py_file.name} in illegal layer '{bad_layer_l2}'")
 
             if self.healing_enabled:
                 self._relocate_file_to_l2(
@@ -549,9 +517,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                 rejection_reason = check_forbidden_signals(py_file.name, content)
                 if rejection_reason:
-                    Logger.warning(
-                        f"      [!] SKIP (forbidden): {py_file.name} - {rejection_reason}"
-                    )
+                    Logger.warning(f"      [!] SKIP (forbidden): {py_file.name} - {rejection_reason}")
                     results["errors"].append(f"{py_file.name}: {rejection_reason}")
                     return
             except Exception:
@@ -645,9 +611,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                 rejection_reason = check_forbidden_signals(py_file.name, content)
                 if rejection_reason:
-                    Logger.warning(
-                        f"      [!] SKIP (forbidden): {py_file.name} - {rejection_reason}"
-                    )
+                    Logger.warning(f"      [!] SKIP (forbidden): {py_file.name} - {rejection_reason}")
                     results["errors"].append(f"{py_file.name}: {rejection_reason}")
                     return
             except Exception:
@@ -678,9 +642,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         except Exception as e:
             results["errors"].append(f"{py_file.name}: {e}")
 
-    def _cleanup_empty_folder(
-        self, folder_path: Path, folder_label: str, results: dict[str, Any]
-    ) -> None:
+    def _cleanup_empty_folder(self, folder_path: Path, folder_label: str, results: dict[str, Any]) -> None:
         """Remove empty folder tree after relocation."""
         try:
             self._remove_empty_dirs(folder_path)
@@ -713,9 +675,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
             "errors": [],
         }
 
-        Logger.info(
-            "HierarchyAgent: Performing Depth-Precision audit (agentic_core=3, apps=2, tests=2)..."
-        )
+        Logger.info("HierarchyAgent: Performing Depth-Precision audit (agentic_core=3, apps=2, tests=2)...")
 
         # If target_territory is specified (e.g., prompt_governance), depth rules for apps/tests are irrelevant
         # Only enforce universal depth if inside agentic_core
@@ -736,23 +696,17 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 results["tests_archived"] = tests_count
 
         # Universal depth (agentic_core)
-        if not target_territory or not (
-            target_territory.startswith("apps_") or target_territory == "tests"
-        ):
+        if not target_territory or not (target_territory.startswith("apps_") or target_territory == "tests"):
             universal_count = self._enforce_universal_depth()
             results["violations_found"] += universal_count
             if self.healing_enabled:
                 results["universal_archived"] = universal_count
 
         if results["violations_found"] > 0:
-            Logger.info(
-                f"HierarchyAgent: [DEPTH] Found {results['violations_found']} depth violations"
-            )
+            Logger.info(f"HierarchyAgent: [DEPTH] Found {results['violations_found']} depth violations")
             if self.healing_enabled:
                 total_archived = (
-                    results["apps_archived"]
-                    + results["tests_archived"]
-                    + results["universal_archived"]
+                    results["apps_archived"] + results["tests_archived"] + results["universal_archived"]
                 )
                 Logger.info(
                     f"HierarchyAgent: [DEPTH] Archived {total_archived} files (apps: {results['apps_archived']}, tests: {results['tests_archived']}, universal: {results['universal_archived']})"
@@ -792,9 +746,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             if depth != expected_depth:
                 violations += 1
-                Logger.warning(
-                    f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {expected_depth}"
-                )
+                Logger.warning(f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {expected_depth}")
                 if self.healing_enabled:
                     archived += self._heal_depth_violation(file_path, rel, depth, expected_depth)
         return violations if not self.healing_enabled else archived
@@ -841,9 +793,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 return 0
 
             # Log the healing action
-            Logger.info(
-                f"  [HEALED] {action}: {rel} -> {target_path.relative_to(self.project_root)}"
-            )
+            Logger.info(f"  [HEALED] {action}: {rel} -> {target_path.relative_to(self.project_root)}")
             return 1
 
         except Exception as e:
@@ -962,29 +912,22 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         remaining = [
             p
             for p in path.iterdir()
-            if p.name not in {"__pycache__", "__init__.py", ".gitkeep"}
-            and not p.name.startswith(".")
+            if p.name not in {"__pycache__", "__init__.py", ".gitkeep"} and not p.name.startswith(".")
         ]
 
         if not remaining:
             # Aggressively purge empty shell using ArchivalGatekeeper
             init_file = path / "__init__.py"
             if init_file.exists():
-                self.gatekeeper.safe_delete(
-                    init_file, self.agent_name, "Empty folder cleanup - __init__.py"
-                )
+                self.gatekeeper.safe_delete(init_file, self.agent_name, "Empty folder cleanup - __init__.py")
 
             pycache = path / "__pycache__"
             if pycache.exists():
-                shutil.rmtree(
-                    pycache, ignore_errors=True
-                )  # Keep shutil for __pycache__ (not tracked)
+                shutil.rmtree(pycache, ignore_errors=True)  # Keep shutil for __pycache__ (not tracked)
 
             gitkeep = path / ".gitkeep"
             if gitkeep.exists():
-                self.gatekeeper.safe_delete(
-                    gitkeep, self.agent_name, "Empty folder cleanup - .gitkeep"
-                )
+                self.gatekeeper.safe_delete(gitkeep, self.agent_name, "Empty folder cleanup - .gitkeep")
 
             try:
                 path.rmdir()
@@ -1080,18 +1023,14 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         )
                         purged_count += 1
                     else:
-                        Logger.error(
-                            f"      [!] ARCHIVE FAILED: {file_path.name} - {gk_result.error}"
-                        )
+                        Logger.error(f"      [!] ARCHIVE FAILED: {file_path.name} - {gk_result.error}")
             except Exception as e:
                 errors.append(f"Failed to purge {file_path}: {e}")
 
         if violations_found > 0:
             Logger.info(f"HierarchyAgent: [PURGE] Found {violations_found} orphaned files")
             if self.healing_enabled and purged_count > 0:
-                Logger.info(
-                    f"HierarchyAgent: [PURGE] {purged_count} orphaned files archived/purged"
-                )
+                Logger.info(f"HierarchyAgent: [PURGE] {purged_count} orphaned files archived/purged")
 
         return {"purged": purged_count, "violations_found": violations_found, "errors": errors}
 
@@ -1172,9 +1111,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         """
         # Set auto-approve mode if requested and not in dry-run
         if auto_approve and not dry_run:
-            Logger.warning(
-                "[HierarchyAgent] SOVEREIGN MODE ACTIVE: Auto-approving all structural changes."
-            )
+            Logger.warning("[HierarchyAgent] SOVEREIGN MODE ACTIVE: Auto-approving all structural changes.")
             self._auto_approve = True
         else:
             self._auto_approve = False
@@ -1256,9 +1193,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
             print(f"Orphans purged: {results['summary']['orphans_purged']}")
             print(f"\nTotal actions taken: {results['summary']['total_actions']}")
         else:
-            print(
-                "[DRY-RUN] No changes were made - run with healing_enabled=True to fix violations"
-            )
+            print("[DRY-RUN] No changes were made - run with healing_enabled=True to fix violations")
         print("=" * 80)
 
         return results
@@ -1421,9 +1356,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # Phase 2: Territory root violation scanning (Ultra-hardened)
         if target_territory:
             search_path = self.project_root / "agentic_core" / target_territory
-            Logger.info(
-                f"HierarchyAgent: 🎯 ULTRA SCAN: Territory root violations in {target_territory}"
-            )
+            Logger.info(f"HierarchyAgent: 🎯 ULTRA SCAN: Territory root violations in {target_territory}")
 
             if not search_path.exists():
                 results["errors"].append(f"Territory path not found: {search_path}")
@@ -1445,9 +1378,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     }
                     results["territory_root_files"].append(violation)
                     results["violations_found"] += 1
-                    Logger.warning(
-                        f"   [!] TERRITORY ROOT FILE: {item.name} in {target_territory}/"
-                    )
+                    Logger.warning(f"   [!] TERRITORY ROOT FILE: {item.name} in {target_territory}/")
 
         # Phase 3: Check for duplicate folders (original logic preserved)
         # [SSOT UPDATE] scripts/ and logs/ allowed at root. Only flag if they contain conflicting content?
@@ -1455,9 +1386,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         pass
 
         if results["violations_found"] > 0:
-            Logger.info(
-                f"HierarchyAgent: [ROOT SCAN] Found {results['violations_found']} root violations"
-            )
+            Logger.info(f"HierarchyAgent: [ROOT SCAN] Found {results['violations_found']} root violations")
         else:
             Logger.info("HierarchyAgent: [ROOT SCAN] No root violations found")
 
@@ -1592,9 +1521,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         # Iterate through all files in root folder
         all_files = list(get_python_files(root_folder)) + list(
-            get_data_files(
-                root_folder, extensions=[".json", ".md", ".yaml", ".yml", ".txt", ".log"]
-            )
+            get_data_files(root_folder, extensions=[".json", ".md", ".yaml", ".yml", ".txt", ".log"])
         )
         for src_file in all_files:
             if src_file.is_dir():

@@ -38,9 +38,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
         self.validation_count = 0
         self.violations_found = 0
 
-    async def validate(
-        self, input_text: str, context: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def validate(self, input_text: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
         """Validate input against enabled rules."""
         logger.info(f"[{self.name}] Validating input")
 
@@ -73,9 +71,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
                 "error": str(e),
             }
 
-    async def _apply_rule(
-        self, rule: str, input_text: str, context: dict | None = None
-    ) -> dict[str, Any]:
+    async def _apply_rule(self, rule: str, input_text: str, context: dict | None = None) -> dict[str, Any]:
         """Apply a specific validation rule."""
         if rule == "pii_detection":
             return self._detect_pii(input_text)

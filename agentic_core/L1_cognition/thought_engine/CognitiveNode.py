@@ -105,9 +105,7 @@ class ReasoningNode:
 
         return strategies[-1] if strategies else "cot"
 
-    def _generate_reasoning(
-        self, query: str, thought_type: str, patterns: list[Any]
-    ) -> dict[str, Any]:
+    def _generate_reasoning(self, query: str, thought_type: str, patterns: list[Any]) -> dict[str, Any]:
         """Generate reasoning based on query and thought type."""
         reasoning = {
             "goal": query,
@@ -352,9 +350,7 @@ class CognitiveNode:
 
     def get_statistics(self) -> dict[str, Any]:
         """Get pipeline statistics."""
-        avg_latency = (
-            (self.total_latency_ms / self.missions_processed) if self.missions_processed > 0 else 0
-        )
+        avg_latency = (self.total_latency_ms / self.missions_processed) if self.missions_processed > 0 else 0
 
         return {
             "missions_processed": self.missions_processed,

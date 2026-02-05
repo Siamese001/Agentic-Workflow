@@ -175,9 +175,7 @@ class TestGlobalSystemIntegrity:
             result = heal_method(dry_run=True, execute=False, depth=0, _call_path=None)
             # Verify canonical schema in result
             assert isinstance(result, dict), "heal_repository must return dict"
-            assert "violations_found" in result or "_raw_result" in result, (
-                "Must have canonical schema"
-            )
+            assert "violations_found" in result or "_raw_result" in result, "Must have canonical schema"
         except Exception:
             # Method may not be implemented, but signature should be accepted
             pass

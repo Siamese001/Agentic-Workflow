@@ -27,9 +27,7 @@ from agentic_core.prompt_governance.version_registry.prompt_registry_config impo
 # Template content loading for registry
 TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"
 red_team_gov_path = TEMPLATE_ROOT / "red_team_governance.jinja"
-red_team_gov_content = (
-    red_team_gov_path.read_text(encoding="utf-8") if red_team_gov_path.exists() else None
-)
+red_team_gov_content = red_team_gov_path.read_text(encoding="utf-8") if red_team_gov_path.exists() else None
 
 jailbreak_path = TEMPLATE_ROOT / "jailbreak_classic.jinja"
 jailbreak_content = jailbreak_path.read_text(encoding="utf-8") if jailbreak_path.exists() else None
@@ -103,12 +101,8 @@ class RedTeamAgent(SubatomicTestingMixin, SovereignBaseAgent):
             )
             auth: Any = json.loads(gov_response)
             if not auth.get("authorized", False):
-                print(
-                    f"   [!] Red-team blocked by governance: {auth.get('block_reason', 'unknown')}"
-                )
-                ctx.report(
-                    self.__class__.__name__, 16, False, "Red-team execution blocked by governance"
-                )
+                print(f"   [!] Red-team blocked by governance: {auth.get('block_reason', 'unknown')}")
+                ctx.report(self.__class__.__name__, 16, False, "Red-team execution blocked by governance")
                 return
         except Exception as e:
             print(f"   [!] Governance authorization failed: {e}")

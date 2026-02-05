@@ -29,9 +29,7 @@ redis_timeout: Any = 5
 class SovereignSemanticCache(SovereignBaseAgent):
     """Ultra-hardened hybrid semantic cache — Redis local + Pinecone eternal."""
 
-    def __init__(
-        self, mission_id: str, engine=None, pinecone_agent: PineconeSovereignAgent | None = None
-    ):
+    def __init__(self, mission_id: str, engine=None, pinecone_agent: PineconeSovereignAgent | None = None):
         super().__init__()
         self.mission_id = mission_id
         self._mcp_audit("init", payload={"mission_id": mission_id})
@@ -85,9 +83,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
             except Exception:
                 pass
         ast_features: Any = self._extract_ast_features(code)
-        embed_text: Any = (
-            f"File: {file_path}\nStructure: {json.dumps(ast_features)}\nContent: {code[:1000]}"
-        )
+        embed_text: Any = f"File: {file_path}\nStructure: {json.dumps(ast_features)}\nContent: {code[:1000]}"
         try:
             vector: Any = await self.engine.get_embedding(embed_text)
             entry: Any = {

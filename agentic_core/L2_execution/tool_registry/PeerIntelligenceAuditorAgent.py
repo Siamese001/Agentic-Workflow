@@ -74,9 +74,7 @@ class KeywordClassification:
 class KeywordAnalysis:
     """Brief description of functionality and purpose."""
 
-    def __init__(
-        self, keyword, CLASSIFICATION, frequency_score, competitive_density, REASONING
-    ) -> None:
+    def __init__(self, keyword, CLASSIFICATION, frequency_score, competitive_density, REASONING) -> None:
         """Initialize the instance."""
         self.keyword = keyword
         self.classification = CLASSIFICATION
@@ -178,9 +176,7 @@ class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, 
             total_searches_executed=sum(len(hop.search_queries) for hop in hops),
         )
 
-    def _execute_multi_hop_search(
-        self, jd_keywords: list[str], context: dict[str, Any]
-    ) -> list[RAGHop]:
+    def _execute_multi_hop_search(self, jd_keywords: list[str], context: dict[str, Any]) -> list[RAGHop]:
         """
         Execute 3-hop RAG search with 8 searches per hop.
         Placeholder for actual RAG implementation.
@@ -242,9 +238,7 @@ class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, 
             keywords.update(query.lower().split())
         return keywords
 
-    def _classify_keywords(
-        self, jd_keywords: list[str], hops: list[RAGHop]
-    ) -> list[KeywordAnalysis]:
+    def _classify_keywords(self, jd_keywords: list[str], hops: list[RAGHop]) -> list[KeywordAnalysis]:
         """
         Classify keywords into table-stakes vs differentiators.
 
@@ -258,12 +252,10 @@ class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, 
             all_keywords_found.update(hop.keywords_found)
         for keyword in jd_keywords:
             keyword_lower = keyword.lower()
-            frequency_score = sum(1 for hop in hops if keyword_lower in hop.keywords_found) / len(
-                hops
+            frequency_score = sum(1 for hop in hops if keyword_lower in hop.keywords_found) / len(hops)
+            competitive_density = len([kw for kw in all_keywords_found if keyword_lower in kw]) / max(
+                len(all_keywords_found), 1
             )
-            competitive_density = len(
-                [kw for kw in all_keywords_found if keyword_lower in kw]
-            ) / max(len(all_keywords_found), 1)
             if frequency_score > 0.6:
                 classification = KeywordClassification.TABLE_STAKES
                 reasoning = f"High frequency ({frequency_score:.1%}) indicates common requirement"
@@ -352,9 +344,7 @@ class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, 
 
             # Diagnostic: Create a dummy hop structure that fails the check (simple test)
             dummy_hops = [
-                RagHop(
-                    hop_number=1, search_queries=["test_query"], RESULTS=[], keywords_found=set()
-                )
+                RagHop(hop_number=1, search_queries=["test_query"], RESULTS=[], keywords_found=set())
             ]
 
             # Run validation logic

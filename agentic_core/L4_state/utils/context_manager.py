@@ -147,9 +147,7 @@ class L4ContextManager:
         else:
             self._cache = {k: v for k, v in self._cache.items() if v.agent != agent}
 
-    def recall_healing_pattern(
-        self, violation: dict[str, Any], agent: str
-    ) -> dict[str, Any] | None:
+    def recall_healing_pattern(self, violation: dict[str, Any], agent: str) -> dict[str, Any] | None:
         """
         Recall a successful healing pattern.
 

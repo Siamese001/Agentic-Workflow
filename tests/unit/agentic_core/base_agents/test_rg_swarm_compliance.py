@@ -113,9 +113,7 @@ class TestRGSwarmCompliance:
 
             # CHECK: SovereignBaseAgent must be in MRO
             if "SovereignBaseAgent" not in mro_names:
-                failures.append(
-                    f"❌ {cls_name} MRO does not include SovereignBaseAgent! MRO: {mro_names}"
-                )
+                failures.append(f"❌ {cls_name} MRO does not include SovereignBaseAgent! MRO: {mro_names}")
 
         if failures:
             pytest.fail("\n".join(failures))
@@ -156,8 +154,7 @@ class TestRGSwarmCompliance:
 
                     if "field(default_factory" not in line:
                         violations.append(
-                            f"❌ {f.name}: Mutable default detected: {description}\n"
-                            f"   Line: {line.strip()}"
+                            f"❌ {f.name}: Mutable default detected: {description}\n   Line: {line.strip()}"
                         )
 
         if violations:

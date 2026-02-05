@@ -152,9 +152,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         # Fallback to default app healing target
         return self.project_root / DEFAULT_APP_HEALING_TARGET
 
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Main healing orchestration method.
 
@@ -232,9 +230,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         if dry_run:
             result["applied"] = True
-            result["action_taken"] = (
-                f"PREVIEW: Would move to {dst_path.relative_to(self.project_root)}"
-            )
+            result["action_taken"] = f"PREVIEW: Would move to {dst_path.relative_to(self.project_root)}"
             return result
 
         try:
@@ -253,9 +249,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
             if gk_result.success:
                 result["applied"] = True
-                result["action_taken"] = (
-                    f"MOVED: {gk_result.destination_path.relative_to(self.project_root)}"
-                )
+                result["action_taken"] = f"MOVED: {gk_result.destination_path.relative_to(self.project_root)}"
                 result["destination_path"] = str(gk_result.destination_path)
                 final_dst = gk_result.destination_path
                 Logger.info(f"[LocationHealerAgent] Moved: {src_path} → {final_dst}")
@@ -298,17 +292,13 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         try:
             # Use ArchivalGatekeeper for safe deletion (archives instead of hard delete)
-            gk_result = self.gatekeeper.safe_delete(
-                file_path, self.agent_name, "Location violation removal"
-            )
+            gk_result = self.gatekeeper.safe_delete(file_path, self.agent_name, "Location violation removal")
 
             if gk_result.success:
                 result["applied"] = True
                 result["action_taken"] = f"ARCHIVED (soft delete): {gk_result.destination_path}"
                 result["archive_path"] = str(gk_result.destination_path)
-                Logger.info(
-                    f"[LocationHealerAgent] Archived: {file_path} -> {gk_result.destination_path}"
-                )
+                Logger.info(f"[LocationHealerAgent] Archived: {file_path} -> {gk_result.destination_path}")
             else:
                 result["error"] = gk_result.error
                 Logger.error(f"[LocationHealerAgent] Archive failed: {gk_result.error}")
@@ -326,9 +316,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         """Backup file and write new content atomically."""
         self._backup_file(file_path)
         file_path.write_text(new_content, encoding="utf-8")
-        Logger.info(
-            f"[LocationHealerAgent] Updated file: {file_path.relative_to(self.project_root)}"
-        )
+        Logger.info(f"[LocationHealerAgent] Updated file: {file_path.relative_to(self.project_root)}")
 
     # ========================================================================
     # POST-HEAL VALIDATION & IMPORT FIXING (Phase 3 Batch 5)
@@ -381,9 +369,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
             # Bonus: Confirm original path cleared (move/archive success)
             if original_path.exists():
-                report["post_heal_message"] += (
-                    " | WARNING: Original file still exists (partial move?)"
-                )
+                report["post_heal_message"] += " | WARNING: Original file still exists (partial move?)"
 
         except Exception as e:
             report["post_heal_status"] = "ERROR"
@@ -392,9 +378,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         return report
 
-    def fix_imports_after_move(
-        self, old_path: Path, new_path: Path, dry_run: bool = True
-    ) -> dict[str, Any]:
+    def fix_imports_after_move(self, old_path: Path, new_path: Path, dry_run: bool = True) -> dict[str, Any]:
         """Ultra import healing post-move - scans entire repo for references to old module."""
         import_result = {
             "import_fix_applied": False,
@@ -473,12 +457,8 @@ class LocationHealerAgent(SovereignBaseAgent):
             import_result["import_fix_applied"] = True
             import_result["import_files_touched"] = touched_files
             import_result["import_fix_count"] = fix_count
-            import_result["import_message"] = (
-                f"Fixed {fix_count} imports across {len(touched_files)} files"
-            )
-            Logger.info(
-                f"[LocationHealerAgent] Import fix: {old_module} → {new_module} ({fix_count} fixes)"
-            )
+            import_result["import_message"] = f"Fixed {fix_count} imports across {len(touched_files)} files"
+            Logger.info(f"[LocationHealerAgent] Import fix: {old_module} → {new_module} ({fix_count} fixes)")
 
             # POST-IMPORT-FIX VALIDATION
             remaining_references = []
@@ -625,8 +605,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         else:
             return {
                 "action_taken": (
-                    f"SKIPPED: Could not parse target path. "
-                    f"Using fallback: {DEFAULT_APP_HEALING_TARGET}"
+                    f"SKIPPED: Could not parse target path. Using fallback: {DEFAULT_APP_HEALING_TARGET}"
                 )
             }
 
@@ -695,9 +674,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 if len(parts) >= 2:
                     root_folder = parts[0]
                     unknown_subfolder = parts[1]
-                    existing_subfolders = SOVEREIGN_REGISTRY.get(root_folder, {}).get(
-                        "subfolders", []
-                    )
+                    existing_subfolders = SOVEREIGN_REGISTRY.get(root_folder, {}).get("subfolders", [])
 
                     return self._autonomous_void_violation_resolution(
                         file_path,
@@ -730,13 +707,10 @@ class LocationHealerAgent(SovereignBaseAgent):
             if dry_run:
                 result["applied"] = True
                 result["action_taken"] = (
-                    f"PREVIEW: Would handle void violation for "
-                    f"'{unknown_subfolder}' in '{root_folder}'"
+                    f"PREVIEW: Would handle void violation for '{unknown_subfolder}' in '{root_folder}'"
                 )
                 result["options"] = {
-                    "1_relocate": (
-                        f"Move to existing subfolder (choose from: {existing_subfolders[:5]}...)"
-                    ),
+                    "1_relocate": (f"Move to existing subfolder (choose from: {existing_subfolders[:5]}...)"),
                     "2_create": f"Create new subfolder '{unknown_subfolder}' and update SSOT",
                     "3_archive": "Archive as last resort",
                 }
@@ -745,8 +719,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             # Interactive mode check
             if not sys.stdin.isatty():
                 Logger.warning(
-                    f"[LocationHealerAgent] Non-interactive mode - "
-                    f"skipping void violation: {file_path.name}"
+                    f"[LocationHealerAgent] Non-interactive mode - skipping void violation: {file_path.name}"
                 )
                 result["action_taken"] = "SKIPPED: Non-interactive mode"
                 return result
@@ -778,10 +751,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             print(f"{'=' * 70}")
             print("\nOPTIONS:")
             print("  [1] RELOCATE - Move to an existing approved subfolder")
-            print(
-                f"  [2] CREATE   - Add '{unknown_subfolder}' as a new "
-                "approved subfolder (updates SSOT)"
-            )
+            print(f"  [2] CREATE   - Add '{unknown_subfolder}' as a new approved subfolder (updates SSOT)")
             print("  [3] ARCHIVE  - Archive to void_violations/ (last resort)")
             print("  [4] SKIP     - Skip this file (no action)")
             print(f"{'=' * 70}")
@@ -813,9 +783,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             elif choice == "3":
                 # OPTION 3: Archive (last resort)
                 archives_root = self.project_root / "archives"
-                return self._heal_via_archiving(
-                    file_path, msg, archives_root, dry_run, affected_paths
-                )
+                return self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
 
             else:
                 # OPTION 4: Skip
@@ -898,11 +866,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         try:
             # Step 1: Update SOVEREIGN_REGISTRY in structure_blueprint.py
             blueprint_path = (
-                self.project_root
-                / "agentic_core"
-                / "L5_safety"
-                / "validators"
-                / "structure_blueprint.py"
+                self.project_root / "agentic_core" / "L5_safety" / "validators" / "structure_blueprint.py"
             )
 
             if not blueprint_path.exists():
@@ -950,8 +914,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 blueprint_path.write_text(new_content, encoding="utf-8")
 
                 Logger.info(
-                    f"[LocationHealerAgent] Updated SSOT: Added "
-                    f"'{new_subfolder}' to {root_folder}/subfolders"
+                    f"[LocationHealerAgent] Updated SSOT: Added '{new_subfolder}' to {root_folder}/subfolders"
                 )
 
                 result["applied"] = True
@@ -1000,14 +963,11 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         try:
             Logger.info(
-                f"[LocationHealerAgent] Autonomous resolution for "
-                f"{unknown_subfolder} in {root_folder}"
+                f"[LocationHealerAgent] Autonomous resolution for {unknown_subfolder} in {root_folder}"
             )
 
             # Analyze subfolder semantics for confidence scoring
-            confidence_score = self._calculate_subfolder_confidence(
-                unknown_subfolder, existing_subfolders
-            )
+            confidence_score = self._calculate_subfolder_confidence(unknown_subfolder, existing_subfolders)
 
             if confidence_score > 0.75:
                 # HIGH CONFIDENCE: Create new subfolder
@@ -1020,13 +980,10 @@ class LocationHealerAgent(SovereignBaseAgent):
                 )
             elif confidence_score >= 0.5:
                 # MEDIUM CONFIDENCE: Relocate to best matching existing subfolder
-                best_match = self._find_best_matching_subfolder(
-                    unknown_subfolder, existing_subfolders
-                )
+                best_match = self._find_best_matching_subfolder(unknown_subfolder, existing_subfolders)
                 if best_match:
                     Logger.info(
-                        f"  🎯 Medium confidence ({confidence_score:.2f}) - "
-                        f"Relocating to '{best_match}'"
+                        f"  🎯 Medium confidence ({confidence_score:.2f}) - Relocating to '{best_match}'"
                     )
                     return self._autonomous_relocate_to_subfolder(
                         file_path,
@@ -1045,12 +1002,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                 f"  ⚠️  Low confidence ({confidence_score:.2f}) - Archiving to prevent misplacement"
             )
             archives_root = self.project_root / "archives"
-            archive_result = self._heal_via_archiving(
-                file_path, msg, archives_root, dry_run, affected_paths
-            )
-            archive_result["autonomous_decision"] = (
-                f"Low confidence ({confidence_score:.2f}) - archived"
-            )
+            archive_result = self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
+            archive_result["autonomous_decision"] = f"Low confidence ({confidence_score:.2f}) - archived"
             return archive_result
 
         except Exception as e:
@@ -1096,9 +1049,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 return 0.9
 
         # Check for semantic similarity with existing subfolders
-        similarity_score = self._calculate_semantic_similarity(
-            unknown_subfolder, existing_subfolders
-        )
+        similarity_score = self._calculate_semantic_similarity(unknown_subfolder, existing_subfolders)
 
         # If very similar to existing, lower confidence (should relocate instead)
         if similarity_score > 0.8:
@@ -1161,11 +1112,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         try:
             # Update SOVEREIGN_REGISTRY in structure_blueprint.py
             blueprint_path = (
-                self.project_root
-                / "agentic_core"
-                / "L5_safety"
-                / "validators"
-                / "structure_blueprint.py"
+                self.project_root / "agentic_core" / "L5_safety" / "validators" / "structure_blueprint.py"
             )
 
             if not blueprint_path.exists():
@@ -1208,8 +1155,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     self._backup_file(blueprint_path)
                     blueprint_path.write_text(new_content, encoding="utf-8")
                     Logger.info(
-                        f"[LocationHealerAgent] SSOT Updated: Added "
-                        f"'{new_subfolder}' to {root_folder}"
+                        f"[LocationHealerAgent] SSOT Updated: Added '{new_subfolder}' to {root_folder}"
                     )
 
                 result["applied"] = True
@@ -1329,9 +1275,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     issues.append("NOT_SNAKE_CASE")
 
                 if issues:
-                    heal_actions.append(
-                        {"path": path, "rel": rel, "filename": filename, "issues": issues}
-                    )
+                    heal_actions.append({"path": path, "rel": rel, "filename": filename, "issues": issues})
 
                 # Check high-signal keywords
                 signal_keywords = [
@@ -1366,9 +1310,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                                 "missing": list(missing_signals),
                             }
                         )
-                        heal_actions.append(
-                            {"path": path, "rel": rel, "missing_signals": missing_signals}
-                        )
+                        heal_actions.append({"path": path, "rel": rel, "missing_signals": missing_signals})
 
                 # Check sovereign markers
                 try:
@@ -1377,12 +1319,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                         "validator" in filename_lower or "compliance" in filename_lower
                     ):
                         if "sovereign" not in content_lower:
-                            semantic_issues.append(
-                                {"file": rel, "issue": "MISSING_SOVEREIGN_MARKER"}
-                            )
-                            heal_actions.append(
-                                {"path": path, "rel": rel, "type": "SOVEREIGN_MARKER"}
-                            )
+                            semantic_issues.append({"file": rel, "issue": "MISSING_SOVEREIGN_MARKER"})
+                            heal_actions.append({"path": path, "rel": rel, "type": "SOVEREIGN_MARKER"})
                 except ValueError:
                     pass
 
@@ -1436,9 +1374,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 action["new"] = str(new_path.relative_to(self.project_root))
                 affected_paths.append(new_path)
 
-    def _set_naming_final_status(
-        self, report: dict, heal_actions: list, semantic_issues: list
-    ) -> None:
+    def _set_naming_final_status(self, report: dict, heal_actions: list, semantic_issues: list) -> None:
         """Phase 3: Set final status."""
         if not heal_actions and not semantic_issues:
             report["naming_deep_status"] = "FULL_SUCCESS"

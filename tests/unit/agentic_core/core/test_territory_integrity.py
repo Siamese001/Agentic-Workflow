@@ -57,9 +57,7 @@ class TestTerritoryIntegrity(unittest.TestCase):
         report = agent.scan_root_violations(target_territory="prompt_governance")
 
         # Should detect 3 squatter files (.py, .md, .json) but not __init__.py or .gitkeep
-        self.assertEqual(
-            len(report["territory_root_files"]), 3, "Should detect exactly 3 squatter files"
-        )
+        self.assertEqual(len(report["territory_root_files"]), 3, "Should detect exactly 3 squatter files")
         self.assertEqual(report["violations_found"], 3, "Should report 3 violations found")
 
         # Verify violation structure
@@ -117,9 +115,7 @@ class TestTerritoryIntegrity(unittest.TestCase):
 
         self.assertIn("errors", report, "Should include errors key for non-existent territory")
         self.assertEqual(len(report["errors"]), 1, "Should have exactly one error")
-        self.assertIn(
-            "not found", report["errors"][0], "Error message should mention path not found"
-        )
+        self.assertIn("not found", report["errors"][0], "Error message should mention path not found")
 
         print("✅ PASS: Failure Resilience")
 

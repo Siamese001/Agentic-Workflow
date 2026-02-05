@@ -131,8 +131,7 @@ class RecursiveOrchestrator:
             self._metrics.depth_limit_hits += 1
             self._metrics.max_depth_reached = max(self._metrics.max_depth_reached, current_depth)
             Logger.critical(
-                f"[CIRCUIT_BREAKER] Max depth ({self.max_depth}) reached for "
-                f"{successor_spec.agent_name}"
+                f"[CIRCUIT_BREAKER] Max depth ({self.max_depth}) reached for {successor_spec.agent_name}"
             )
             return AgentResult(
                 agent_name=successor_spec.agent_name,
@@ -182,9 +181,7 @@ class RecursiveOrchestrator:
             else:
                 self._metrics.failed_spawns += 1
 
-            self._metrics.max_depth_reached = max(
-                self._metrics.max_depth_reached, current_depth + 1
-            )
+            self._metrics.max_depth_reached = max(self._metrics.max_depth_reached, current_depth + 1)
 
             return result
 
@@ -236,9 +233,7 @@ class RecursiveOrchestrator:
         self._cache_validation_result(cache_key, is_acyclic)
 
         if not is_acyclic:
-            Logger.warning(
-                f"[ACYCLICITY_VIOLATION] Edge {predecessor}->{successor} would create cycle"
-            )
+            Logger.warning(f"[ACYCLICITY_VIOLATION] Edge {predecessor}->{successor} would create cycle")
 
         return is_acyclic
 
@@ -310,9 +305,7 @@ class RecursiveOrchestrator:
         merged_context = self._deep_merge_context(current_accumulated, {})
 
         # Add predecessor metadata for DNA tracking
-        merged_context["_predecessor_chain"] = merged_context.get("_predecessor_chain", []) + [
-            predecessor
-        ]
+        merged_context["_predecessor_chain"] = merged_context.get("_predecessor_chain", []) + [predecessor]
         merged_context["_spawn_timestamp"] = datetime.now().isoformat()
         merged_context["_merge_strategy"] = successor_spec.context_merge_strategy
 
@@ -376,8 +369,7 @@ class RecursiveOrchestrator:
             "cache_hits": self._metrics.cache_hits,
             "cache_misses": self._metrics.cache_misses,
             "cache_hit_rate": (
-                self._metrics.cache_hits
-                / max(1, self._metrics.cache_hits + self._metrics.cache_misses)
+                self._metrics.cache_hits / max(1, self._metrics.cache_hits + self._metrics.cache_misses)
             ),
             "max_depth_reached": self._metrics.max_depth_reached,
             "total_context_merges": self._metrics.total_context_merges,

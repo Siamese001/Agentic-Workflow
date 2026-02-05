@@ -21,14 +21,10 @@ class HygieneMixin:
     """
 
     project_root: Path = field(default_factory=Path.cwd)
-    allowed_duplicates: set[str] = field(
-        default_factory=lambda: {"__init__.py", "README.md", ".gitignore"}
-    )
+    allowed_duplicates: set[str] = field(default_factory=lambda: {"__init__.py", "README.md", ".gitignore"})
 
     @standard_heal
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         HARDENED: Unified hygiene healing with comprehensive validation.
         """

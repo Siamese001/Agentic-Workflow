@@ -142,9 +142,7 @@ class PineconeVectorMixin(RedisCacheMixin):
         metrics = get_cache_metrics()
 
         if len(embedding) != self.EXPECTED_DIMENSION:
-            raise ValueError(
-                f"Invalid embedding dimension: {len(embedding)} != {self.EXPECTED_DIMENSION}"
-            )
+            raise ValueError(f"Invalid embedding dimension: {len(embedding)} != {self.EXPECTED_DIMENSION}")
 
         # Precedence Logic: Explicit top_k > Broadness Enum
         if top_k is not None:
@@ -163,9 +161,7 @@ class PineconeVectorMixin(RedisCacheMixin):
             import json
 
             # Create deterministic signature of embedding
-            emb_sig = hashlib.sha256(
-                json.dumps(embedding[:5] + embedding[-5:]).encode()
-            ).hexdigest()[:16]
+            emb_sig = hashlib.sha256(json.dumps(embedding[:5] + embedding[-5:]).encode()).hexdigest()[:16]
 
             cache_params = {
                 "emb": emb_sig,
@@ -189,10 +185,7 @@ class PineconeVectorMixin(RedisCacheMixin):
 
         if hasattr(self, "circuit_breaker") and self.circuit_breaker:
             try:
-                if (
-                    hasattr(self.circuit_breaker, "can_execute")
-                    and not self.circuit_breaker.can_execute()
-                ):
+                if hasattr(self.circuit_breaker, "can_execute") and not self.circuit_breaker.can_execute():
                     log.warning("Pinecone circuit open -> fallback to local immediately")
                     local_only = True
             except Exception:
@@ -263,9 +256,7 @@ class PineconeVectorMixin(RedisCacheMixin):
 
         return results[:effective_top_k]
 
-    async def vector_upsert(
-        self, id: str, embedding: list[float], metadata: dict[str, Any]
-    ) -> bool:
+    async def vector_upsert(self, id: str, embedding: list[float], metadata: dict[str, Any]) -> bool:
         """
         Upsert a vector with metadata.
 

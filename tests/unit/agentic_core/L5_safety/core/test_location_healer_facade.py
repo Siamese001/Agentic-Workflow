@@ -75,18 +75,14 @@ class TestLocationHealingStrategy:
         mock_agent.log_info = Mock()
         mock_agent.heal = Mock(return_value={"status": "success", "artifacts": []})
 
-        result = await strategy.execute(
-            mock_agent, violation={"type": "DEPTH", "file": "/test/file.py"}
-        )
+        result = await strategy.execute(mock_agent, violation={"type": "DEPTH", "file": "/test/file.py"})
 
         assert isinstance(result, HealingResult)
 
     def test_heal_repository_returns_dict(self, strategy):
         """Test heal_repository returns proper dict structure."""
         mock_agent = Mock()
-        mock_agent.heal_repository = Mock(
-            return_value={"violations_found": 0, "violations_fixed": 0}
-        )
+        mock_agent.heal_repository = Mock(return_value={"violations_found": 0, "violations_fixed": 0})
 
         result = strategy.heal_repository(mock_agent, dry_run=True, execute=False)
 

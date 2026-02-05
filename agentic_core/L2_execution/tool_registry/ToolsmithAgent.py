@@ -178,9 +178,7 @@ class ToolsmithAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 params.append(f"{param_name}: {param_type} = {default}")
             else:
                 params.append(f"{param_name}: {param_type}")
-            param_docs.append(
-                f"        {param_name}: {param_info.get('description', 'No description')}"
-            )
+            param_docs.append(f"        {param_name}: {param_info.get('description', 'No description')}")
         param_str = ", ".join(params)
         param_doc_str = "\n".join(param_docs)
         implementation = self._get_implementation(spec)
@@ -279,9 +277,7 @@ class ToolsmithAgent(AtomicExecutionMixin, SovereignBaseAgent):
         spec: Any = ToolSpec(
             name=f"{operation}_{name}",
             description=f"{operation.capitalize()} {name} file",
-            parameters={
-                "file_path": {"type": "str", "description": "Path to the file", "required": True}
-            },
+            parameters={"file_path": {"type": "str", "description": "Path to the file", "required": True}},
             function=lambda x: x,
             category="file",
         )
@@ -479,9 +475,7 @@ class ToolsmithAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 continue
 
             # Check if directory already has content (excluding __init__.py and .gitkeep)
-            contents = [
-                p.name for p in target_dir.iterdir() if p.name not in {"__init__.py", ".gitkeep"}
-            ]
+            contents = [p.name for p in target_dir.iterdir() if p.name not in {"__init__.py", ".gitkeep"}]
             if contents:
                 results["skipped"].append(f"{rel_path} (already populated)")
                 continue

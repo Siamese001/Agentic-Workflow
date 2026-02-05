@@ -317,9 +317,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         is_valid: bool
         message: str
         file_path: Path | None = None
-        suggested_path: str | None = (
-            None  # Full relative path for healing (e.g., 'apps_rg/engines')
-        )
+        suggested_path: str | None = None  # Full relative path for healing (e.g., 'apps_rg/engines')
         severity: int = 5
 
     def __init__(self, project_root: Path) -> None:
@@ -422,27 +420,21 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator.validate_file_location(file_path)
 
-    def _validate_ast_violations(
-        self, root_folder: str, file_path: Path, rel_path: Path
-    ) -> tuple[bool, str]:
+    def _validate_ast_violations(self, root_folder: str, file_path: Path, rel_path: Path) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
 
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._validate_ast_violations(root_folder, file_path, rel_path)
 
-    def _check_forbidden_imports(
-        self, tree: ast.AST, current_l1: str, rel_path: Path
-    ) -> tuple[bool, str]:
+    def _check_forbidden_imports(self, tree: ast.AST, current_l1: str, rel_path: Path) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
 
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._check_forbidden_imports(tree, current_l1, rel_path)
 
-    def _scan_imports_for_violations(
-        self, tree: ast.AST, current_l1: str
-    ) -> tuple[bool, str | None]:
+    def _scan_imports_for_violations(self, tree: ast.AST, current_l1: str) -> tuple[bool, str | None]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
 
@@ -504,9 +496,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._check_territory_alignment(current_territory, territory_scores, rel_path)
 
-    def _validate_final_checks(
-        self, root_folder: str, file_path: Path, parts: tuple
-    ) -> tuple[bool, str]:
+    def _validate_final_checks(self, root_folder: str, file_path: Path, parts: tuple) -> tuple[bool, str]:
         """FACADE: Delegates to LocationValidatorAgent."""
         from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
 
@@ -570,9 +560,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
     ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         healer = self._get_healer()
-        return healer._heal_territory_mismatch(
-            file_path, msg, dry_run, affected_paths, import_touched_paths
-        )
+        return healer._heal_territory_mismatch(file_path, msg, dry_run, affected_paths, import_touched_paths)
 
     def _heal_depth_violation(
         self,
@@ -584,9 +572,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
     ) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         healer = self._get_healer()
-        return healer._heal_depth_violation(
-            file_path, msg, dry_run, affected_paths, import_touched_paths
-        )
+        return healer._heal_depth_violation(file_path, msg, dry_run, affected_paths, import_touched_paths)
 
     # Archive subfolder mapping moved to location_constants.py
 
@@ -642,9 +628,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator._validate_filename_patterns(file_path)
 
-    def enforce_void_compliance(
-        self, files: list[Path]
-    ) -> tuple[list[Path], list[tuple[Path, str]]]:
+    def enforce_void_compliance(self, files: list[Path]) -> tuple[list[Path], list[tuple[Path, str]]]:
         """Filter files and collect all location-based violations."""
         valid_files: list[Path] = []
         violations: list[tuple[Path, str]] = []
@@ -696,9 +680,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     # Store file statistics
                     file_stats = {
                         "total_files": len(files),
-                        "file_types": {
-                            ext: len(file_list) for ext, file_list in all_files_dict.items()
-                        },
+                        "file_types": {ext: len(file_list) for ext, file_list in all_files_dict.items()},
                         "territory": target_territory,
                     }
 
@@ -779,9 +761,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         except ValueError:
             return ""
 
-    def fix_imports_after_move(
-        self, old_path: Path, new_path: Path, dry_run: bool = True
-    ) -> dict[str, Any]:
+    def fix_imports_after_move(self, old_path: Path, new_path: Path, dry_run: bool = True) -> dict[str, Any]:
         """FACADE: Delegates to LocationHealerAgent."""
         healer = self._get_healer()
         return healer.fix_imports_after_move(old_path, new_path, dry_run)
@@ -796,9 +776,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         healer = self._get_healer()
         return healer.safe_delete(file_path, dry_run)
 
-    def post_naming_validation(
-        self, affected_paths: list[Path], dry_run: bool = True
-    ) -> dict[str, Any]:
+    def post_naming_validation(self, affected_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
         """
         Post-healing NamingAgent validation on affected paths.
         Focuses on:
@@ -867,9 +845,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         return naming_report
 
-    def auto_heal_naming_issues(
-        self, naming_report: dict[str, Any], dry_run: bool = True
-    ) -> dict[str, Any]:
+    def auto_heal_naming_issues(self, naming_report: dict[str, Any], dry_run: bool = True) -> dict[str, Any]:
         """
         Autonomous naming healing triggered when post-naming validation finds issues.
         Prioritizes duplicates (common post-move), then prefix mismatches.
@@ -895,9 +871,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 for path_str in paths[1:]:  # Skip first occurrence
                     path = self.project_root / path_str
                     if path.exists():
-                        resolve_result = self.naming_agent.resolve_duplicate_filename(
-                            path, dry_run=False
-                        )
+                        resolve_result = self.naming_agent.resolve_duplicate_filename(path, dry_run=False)
                         actions.append(
                             {
                                 "type": "DUPLICATE_RESOLVE",
@@ -1102,9 +1076,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         return full_report
 
-    def _heal_gravity_violations(
-        self, gravity_issues: list[dict[str, Any]]
-    ) -> list[dict[str, Any]]:
+    def _heal_gravity_violations(self, gravity_issues: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """FACADE: Delegates to GravityLeakDetector."""
         from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
 
@@ -1118,9 +1090,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         detector = GravityLeakDetector(project_root=self.project_root)
         return detector._extract_downstream_roots(msg)
 
-    def _insert_gravity_heal_todo(
-        self, lines: list[str], msg: str, removed_modules: list[str]
-    ) -> str:
+    def _insert_gravity_heal_todo(self, lines: list[str], msg: str, removed_modules: list[str]) -> str:
         """FACADE: Delegates to GravityLeakDetector."""
         from agentic_core.L5_safety.validators.GravityLeakDetector import GravityLeakDetector
 
@@ -1159,9 +1129,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         }
 
         if dry_run:
-            conventions_report["naming_message"] = (
-                "PREVIEW: Naming conventions validation/heal skipped"
-            )
+            conventions_report["naming_message"] = "PREVIEW: Naming conventions validation/heal skipped"
             return conventions_report
 
         # Check convention violations
@@ -1295,9 +1263,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     new_content = content
 
                     # Remove star/relative imports
-                    new_content = re.sub(
-                        r"^from \.+ import \*\n", "", new_content, flags=re.MULTILINE
-                    )
+                    new_content = re.sub(r"^from \.+ import \*\n", "", new_content, flags=re.MULTILINE)
                     new_content = re.sub(r"^from \.+\s+", "from ", new_content, flags=re.MULTILINE)
 
                     if new_content != content:
@@ -1354,10 +1320,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                             # 2. Check Circuit Breaker before shared upgrade
                             if (app_rg + app_lic) < AST_DOMAIN_HIT_THRESHOLD * 0.5:
-                                if (
-                                    shared_upgrade_count
-                                    >= HEALING_CONFIG["max_shared_upgrades_per_run"]
-                                ):
+                                if shared_upgrade_count >= HEALING_CONFIG["max_shared_upgrades_per_run"]:
                                     Logger.error(
                                         f"CIRCUIT BREAKER TRIPPED: Shared upgrade limit reached at {path}"
                                     )
@@ -1373,10 +1336,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             elif (app_rg + app_lic) >= AST_DOMAIN_HIT_THRESHOLD * 0.8:
                                 dominant = "apps_rg" if app_rg >= app_lic else "apps_lic"
                                 target = (
-                                    self.project_root
-                                    / dominant
-                                    / APP_SPECIFIC_TARGET_SUBFOLDER
-                                    / path.name
+                                    self.project_root / dominant / APP_SPECIFIC_TARGET_SUBFOLDER / path.name
                                 )
                                 move_result = self.safe_move(path, target, dry_run=False)
                                 additional_moves.append(move_result)
@@ -1506,9 +1466,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         """Check for sovereign root markers (CC ~8)."""
         try:
             rel_parts = path.relative_to(self.project_root).parts
-            if len(rel_parts) == 1 and (
-                "validator" in filename_lower or "compliance" in filename_lower
-            ):
+            if len(rel_parts) == 1 and ("validator" in filename_lower or "compliance" in filename_lower):
                 if "sovereign" not in content_lower:
                     semantic_issues.append({"file": rel, "issue": "MISSING_SOVEREIGN_MARKER"})
                     heal_actions.append({"path": path, "rel": rel, "type": "SOVEREIGN_MARKER"})
@@ -1540,9 +1498,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         healer = self._get_healer()
         return healer._apply_convention_fixes(path, action, affected_paths)
 
-    def _set_naming_final_status(
-        self, report: dict, heal_actions: list, semantic_issues: list
-    ) -> None:
+    def _set_naming_final_status(self, report: dict, heal_actions: list, semantic_issues: list) -> None:
         """FACADE: Delegates to LocationHealerAgent."""
         healer = self._get_healer()
         return healer._set_naming_final_status(report, heal_actions, semantic_issues)
@@ -1699,9 +1655,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         {"file": str(p), "message": msg} for p, msg in batch_violations
                     ]
 
-                    resolved_count = len(unique_affected) - len(
-                        batch_report["batch_remaining_violations"]
-                    )
+                    resolved_count = len(unique_affected) - len(batch_report["batch_remaining_violations"])
                     batch_report["batch_success_rate"] = (
                         resolved_count / len(unique_affected) * 100 if unique_affected else 100
                     )
@@ -1755,17 +1709,13 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
             )
             # Re-run naming validation after auto-heal for final status
             if naming_heal_report["naming_auto_heal_applied"]:
-                final_naming_report = self.post_naming_validation(
-                    all_naming_affected, dry_run=dry_run
-                )
+                final_naming_report = self.post_naming_validation(all_naming_affected, dry_run=dry_run)
                 batch_report["naming_post_heal_final"] = final_naming_report
                 if final_naming_report["naming_post_heal_status"] == "FULL_SUCCESS":
                     batch_report["batch_message"] += " | Naming auto-healed to FULL_SUCCESS"
 
         # === ULTRA NAMINGAGENT CONVENTIONS VALIDATION + AUTO-HEAL ===
-        conventions_report = self.post_naming_conventions_validation_and_heal(
-            affected_paths, dry_run=dry_run
-        )
+        conventions_report = self.post_naming_conventions_validation_and_heal(affected_paths, dry_run=dry_run)
         batch_report.update(
             {
                 "naming_conventions": conventions_report,
@@ -1817,9 +1767,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                     for secondary in sorted_paths[1:]:
                         secondary_path = (
-                            self.project_root / secondary
-                            if isinstance(secondary, str)
-                            else secondary
+                            self.project_root / secondary if isinstance(secondary, str) else secondary
                         )
                         if secondary_path.exists():
                             resolve_result = self.naming_agent.resolve_duplicate_filename(
@@ -1851,9 +1799,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         name: [str(p) for p in paths] for name, paths in final_duplicates.items()
                     }
                     if not final_duplicates:
-                        duplicate_report["duplicate_message"] += (
-                            " → FULL_SUCCESS: No duplicates remain"
-                        )
+                        duplicate_report["duplicate_message"] += " → FULL_SUCCESS: No duplicates remain"
                     else:
                         duplicate_report["duplicate_message"] += (
                             f" → PARTIAL: {len(final_duplicates)} groups remain"
@@ -1869,9 +1815,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 duplicate_report["duplicate_message"] = f"ERROR during duplicate resolution: {e}"
                 Logger.error(f"[LocationAgent] Duplicate resolution failed: {e}")
         else:
-            duplicate_report["duplicate_message"] = (
-                "PREVIEW: Duplicate resolution skipped in dry-run"
-            )
+            duplicate_report["duplicate_message"] = "PREVIEW: Duplicate resolution skipped in dry-run"
 
         # Attach duplicate report to batch
         batch_report.update(
@@ -1879,9 +1823,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 "duplicate_resolution": duplicate_report,
             }
         )
-        batch_report["batch_message"] += (
-            f" | Duplicates: {duplicate_report['duplicate_message'][:50]}"
-        )
+        batch_report["batch_message"] += f" | Duplicates: {duplicate_report['duplicate_message'][:50]}"
 
         # === DEEP NAMINGAGENT INTEGRATION ===
         naming_deep_report = self.deep_naming_validation_and_heal(
@@ -1892,9 +1834,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 "naming_deep_cycle": naming_deep_report,
             }
         )
-        batch_report["batch_message"] += (
-            f" | Naming deep: {naming_deep_report['naming_deep_status']}"
-        )
+        batch_report["batch_message"] += f" | Naming deep: {naming_deep_report['naming_deep_status']}"
 
         # === DEEP IMPORTAGENT INTEGRATION ===
         import_deep_report = self.deep_import_validation_and_heal(
@@ -1905,9 +1845,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 "import_deep_cycle": import_deep_report,
             }
         )
-        batch_report["batch_message"] += (
-            f" | Imports deep: {import_deep_report['import_final_status']}"
-        )
+        batch_report["batch_message"] += f" | Imports deep: {import_deep_report['import_final_status']}"
 
         # Append batch report to all actions for visibility
         for action in actions:
@@ -2174,9 +2112,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         healed_count = 0
         details = []
 
-        Logger.info(
-            f"LocationAgent healing {total_violations} violations (auto_approve={auto_approve})"
-        )
+        Logger.info(f"LocationAgent healing {total_violations} violations (auto_approve={auto_approve})")
 
         # Convert all violations to consistent format
         violation_list = []

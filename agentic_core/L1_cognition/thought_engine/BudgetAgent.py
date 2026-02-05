@@ -48,9 +48,7 @@ class BudgetAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, int]:
         """
         Execute autonomous healing for Canon Key 51 compliance.
 

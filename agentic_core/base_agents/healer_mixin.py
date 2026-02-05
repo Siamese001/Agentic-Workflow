@@ -63,9 +63,7 @@ class HealerMixin:
 
         # Circular dependency protection
         if self.name in _call_path:
-            raise CircularDependencyError(
-                f"Circular healing chain detected: {_call_path} -> {self.name}"
-            )
+            raise CircularDependencyError(f"Circular healing chain detected: {_call_path} -> {self.name}")
 
         # Depth limiting protection
         if depth > max_depth:

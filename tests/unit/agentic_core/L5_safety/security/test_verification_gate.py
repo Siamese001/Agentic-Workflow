@@ -113,9 +113,7 @@ class TestVerificationGateWithContext:
             message="Remove import 'numpy'",
             fix_type="delete",
         )
-        violation.target_coordinate = ASTCoordinate(
-            line=1, column=0, node_id="numpy", node_type="Import"
-        )
+        violation.target_coordinate = ASTCoordinate(line=1, column=0, node_id="numpy", node_type="Import")
 
         context = SurgicalContext(
             file_path=test_file,
@@ -149,9 +147,7 @@ class TestVerificationGateWithContext:
             message="Remove import 'numpy'",
             fix_type="delete",
         )
-        violation.target_coordinate = ASTCoordinate(
-            line=1, column=0, node_id="numpy", node_type="Import"
-        )
+        violation.target_coordinate = ASTCoordinate(line=1, column=0, node_id="numpy", node_type="Import")
 
         context = SurgicalContext(
             file_path=test_file,
@@ -217,10 +213,7 @@ def main():
         assert result.status == "skipped", f"Expected 'skipped', got '{result.status}'"
         assert result.violations_fixed == 0, "No violations should be fixed"
         assert result.skipped > 0, "Violations should be skipped"
-        assert (
-            "Verification Gate failed" in result.details
-            or "hallucination" in result.details.lower()
-        )
+        assert "Verification Gate failed" in result.details or "hallucination" in result.details.lower()
 
         # Step 5: Verify file is UNTOUCHED
         final_content = test_file.read_text()
@@ -259,9 +252,7 @@ def main():
         result = healer.heal_file(test_file, violations=[valid_violation])
 
         # Assert healing was ALLOWED (though may not actually fix due to transformer implementation)
-        assert result.status in ("success", "partial"), (
-            f"Expected success/partial, got '{result.status}'"
-        )
+        assert result.status in ("success", "partial"), f"Expected success/partial, got '{result.status}'"
         assert "Verification Gate failed" not in result.details
 
     def test_multiple_violations_one_hallucinated(self, tmp_path):
@@ -286,9 +277,7 @@ def main():
             message="Remove import 'os'",
             fix_type="delete",
         )
-        valid_violation.target_coordinate = ASTCoordinate(
-            line=1, column=0, node_id="os", node_type="Import"
-        )
+        valid_violation.target_coordinate = ASTCoordinate(line=1, column=0, node_id="os", node_type="Import")
 
         hallucinated_violation = ViolationConstraint(
             constraint_type="unused_import",
@@ -305,9 +294,7 @@ def main():
         result = healer.heal_file(test_file, violations=[valid_violation, hallucinated_violation])
 
         # Assert entire operation was BLOCKED
-        assert result.status == "skipped", (
-            "Should block entire operation if any violation is hallucinated"
-        )
+        assert result.status == "skipped", "Should block entire operation if any violation is hallucinated"
         assert result.violations_fixed == 0, "No violations should be fixed"
 
         # Verify file is UNTOUCHED
@@ -343,9 +330,7 @@ class TestL4Integration:
             message="Remove import 'numpy'",
             fix_type="delete",
         )
-        violation.target_coordinate = ASTCoordinate(
-            line=1, column=0, node_id="numpy", node_type="Import"
-        )
+        violation.target_coordinate = ASTCoordinate(line=1, column=0, node_id="numpy", node_type="Import")
 
         context = SurgicalContext(
             file_path=test_file,

@@ -9,7 +9,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from agentic_core.L0_maintenance.scripts.general_scripts.pascal_sovereignty_fixer import PascalSovereigntyFixer
+from agentic_core.L0_maintenance.scripts.general_scripts.pascal_sovereignty_fixer import (
+    PascalSovereigntyFixer,
+)
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parents[5]
@@ -120,9 +122,7 @@ class TestMixinEnforcement(unittest.TestCase):
         mock_path.name = "ConfigMixin.py"
 
         new_name = self.fixer.get_compliant_name(mock_path, "MIXIN")
-        self.assertEqual(
-            new_name, "config_mixin.py", "ConfigMixin.py should be renamed to config_mixin.py"
-        )
+        self.assertEqual(new_name, "config_mixin.py", "ConfigMixin.py should be renamed to config_mixin.py")
 
     def test_mixin_without_suffix(self):
         """Edge Case: Mixin class without 'Mixin' in filename should get suffix added."""

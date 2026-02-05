@@ -143,9 +143,7 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append(
-                {"name": "test_instantiation", "status": "failed", "error": str(e)}
-            )
+            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 
     def heal(self, violation: dict) -> dict:

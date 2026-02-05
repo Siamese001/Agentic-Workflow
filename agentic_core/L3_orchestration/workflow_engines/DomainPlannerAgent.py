@@ -107,8 +107,7 @@ class DomainPlannerAgent(AtomicExecutionMixin, L3OrchestrationBaseAgent):
         recommended_actions: list[str] = []
         if not focus_matches:
             recommended_actions.append(
-                "Introduce a focus area that explicitly references "
-                "the job title or company priorities."
+                "Introduce a focus area that explicitly references the job title or company priorities."
             )
 
         rationale = (
@@ -243,9 +242,7 @@ class RiskAssessorAgent(SovereignBaseAgent):
         if duplicate_focus:
             risk_signals.append("duplicate focus areas")
         rationale = (
-            "Low strategic risk detected."
-            if not risk_signals
-            else "Detected " + ", ".join(risk_signals)
+            "Low strategic risk detected." if not risk_signals else "Detected " + ", ".join(risk_signals)
         )
 
         confidence = 0.7 if vote == "approve" else 0.6
@@ -480,8 +477,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
         technical_focus = any("tech" in focus for focus in focus_lower)
         leadership_focus = any("lead" in focus for focus in focus_lower)
         quantified = any(
-            any(ch.isdigit() for ch in achievement)
-            for achievement in plan.key_achievements_to_highlight
+            any(ch.isdigit() for ch in achievement) for achievement in plan.key_achievements_to_highlight
         )
 
         scenarios: list[ScenarioSimulationResult] = []
@@ -508,9 +504,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
         technical_risk = "low" if technical_focus else "medium"
         technical_impact = 0.4 if technical_focus else 0.7
         technical_mitigations = (
-            []
-            if technical_focus
-            else ["Add a focus area covering technical depth or tooling expertise."]
+            [] if technical_focus else ["Add a focus area covering technical depth or tooling expertise."]
         )
         scenarios.append(
             ScenarioSimulationResult(
@@ -529,9 +523,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
         cross_functional_risk = "low" if leadership_focus else "medium"
         cross_functional_impact = 0.3 if leadership_focus else 0.6
         cross_functional_mitigations = (
-            []
-            if leadership_focus
-            else ["Introduce leadership/collaboration narratives into focus areas."]
+            [] if leadership_focus else ["Introduce leadership/collaboration narratives into focus areas."]
         )
         scenarios.append(
             ScenarioSimulationResult(
@@ -617,8 +609,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
         try:
             return {
                 "status": "skipped",
-                "details": f"StrategyScenarioSimulatorAgent heal() not "
-                f"implemented for {violation_type}",
+                "details": f"StrategyScenarioSimulatorAgent heal() not implemented for {violation_type}",
                 "artifacts": [],
                 "errors": [],
             }
@@ -670,8 +661,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
             weighted_votes += vote_value * assessment.confidence
             total_confidence += assessment.confidence
             rationale_parts.append(
-                f"{assessment.planner_name}: {assessment.vote} "
-                f"({_truncate(assessment.rationale, 80)})"
+                f"{assessment.planner_name}: {assessment.vote} ({_truncate(assessment.rationale, 80)})"
             )
 
         aggregated_decision = "undecided"
@@ -691,9 +681,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
         scenario_summary = ", ".join(
             f"{result.scenario_name}:{result.risk_level}" for result in scenario_results
         )
-        feedback_summary = (
-            f" Feedback signals: {', '.join(feedback_signals)}." if feedback_signals else ""
-        )
+        feedback_summary = f" Feedback signals: {', '.join(feedback_signals)}." if feedback_signals else ""
         plan.coordinator_summary = (
             f"Planner consensus: {aggregated_decision} (confidence {aggregated_confidence:.2f}). "
             f"Scenarios -> {scenario_summary}.{feedback_summary}"
@@ -722,9 +710,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
 
         signals: list[str] = []
 
-        qa_feedback = (
-            downstream_feedback.get("qa") if isinstance(downstream_feedback, dict) else None
-        )
+        qa_feedback = downstream_feedback.get("qa") if isinstance(downstream_feedback, dict) else None
         if isinstance(qa_feedback, dict):
             jd_skills = qa_feedback.get("jd_skills")
             if isinstance(jd_skills, dict):
@@ -734,13 +720,10 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
                         if keyword not in plan.focus_areas:
                             plan.focus_areas.append(keyword)
                     signals.append(
-                        "Augmented focus areas with QA missing keywords: "
-                        + ", ".join(missing_keywords[:5])
+                        "Augmented focus areas with QA missing keywords: " + ", ".join(missing_keywords[:5])
                     )
 
-        hil_feedback = (
-            downstream_feedback.get("hil") if isinstance(downstream_feedback, dict) else None
-        )
+        hil_feedback = downstream_feedback.get("hil") if isinstance(downstream_feedback, dict) else None
         if isinstance(hil_feedback, dict):
             payload = hil_feedback.get("payload")
             if isinstance(payload, str) and payload:

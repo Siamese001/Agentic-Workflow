@@ -217,9 +217,7 @@ class UtilityHelper:
                 if (app_rg + app_lic) < AST_DOMAIN_HIT_THRESHOLD * 0.5:
                     target = project_root / "apps_shared" / "utils" / generic_file.name
 
-                    assert target == expected_target, (
-                        f"Target path mismatch: {target} != {expected_target}"
-                    )
+                    assert target == expected_target, f"Target path mismatch: {target} != {expected_target}"
 
         print("✅ Path Construction: apps_shared target path correctly constructed.")
 
@@ -291,9 +289,7 @@ class DataFormatter:
             )
 
             # Verify balanced scores (neither domain dominant)
-            assert abs(app_rg - app_lic) < 0.5, (
-                "Cross-app utility should have balanced domain scores"
-            )
+            assert abs(app_rg - app_lic) < 0.5, "Cross-app utility should have balanced domain scores"
 
         print("✅ Cross-App Detection: Utility signals correctly identified for shared upgrade.")
 
