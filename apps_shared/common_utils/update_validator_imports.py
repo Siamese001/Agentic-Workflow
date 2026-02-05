@@ -13,7 +13,7 @@ Mapping:
   AgentRegistryValidatorAgent, CognitiveContractValidatorAgent
   -> StructureValidatorAgent
 
-- ContactValidatorAgent, ContentCleanlinessValidatorAgent, MessageDiversityValidatorAgent
+- ContactValidatorAgent, ContentCleanlinessValidatorAgent, MessageDiversityValidator
   -> AppContentValidatorAgent
 
 Usage:
@@ -74,7 +74,7 @@ IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
         "apps_lic.shared.validation.AppContentValidatorAgent",
         "AppContentValidatorAgent",
     ),
-    "MessageDiversityValidatorAgent": (
+    "MessageDiversityValidator": (
         "apps_lic.shared.validation.AppContentValidatorAgent",
         "AppContentValidatorAgent",
     ),

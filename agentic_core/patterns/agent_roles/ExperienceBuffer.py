@@ -6,7 +6,7 @@ ExperienceBuffer – Sovereign Agent Role Component (Phase 30 – Dec 30, 2025)
 Purpose:
   Persistent, file-backed learning from execution outcomes.
   Enables agents to predict success probability of actions based on historical data.
-  Critical for RgHealingOrchestratorAgent and all validators to avoid repeating failed strategies.
+  Critical for RgHealingOrchestrator and all validators to avoid repeating failed strategies.
 
 Constitutional Alignment:
   - Turns reactive healing into predictive intelligence
@@ -91,9 +91,7 @@ class ExperienceBuffer:
             kept = lines[-self.max_entries :]
             try:
                 self.path.write_text("".join(kept), encoding="utf-8")
-                self.Logger.info(
-                    f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries"
-                )
+                self.Logger.info(f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries")
             except Exception as e:
                 self.Logger.error(f"Failed to trim buffer: {e}")
 

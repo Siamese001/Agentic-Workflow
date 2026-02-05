@@ -17,7 +17,7 @@ DATACLASS_FILES = [
     "LicS2SupervisorAgent.py",
     "LicTemplateOptimizerAgent.py",
     "MessageComplianceAgent.py",
-    "MessageDiversityValidatorAgent.py",
+    "MessageDiversityValidator.py",
     "OutreachProactiveAgent.py",
     "k3_message_body_agent.py",
     "k5_cta_agent.py",

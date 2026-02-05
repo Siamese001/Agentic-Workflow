@@ -8,7 +8,7 @@ from pathlib import Path
 files_to_fix = [
     "apps_lic/engines/LicTemplateOptimizerAgent.py",
     "apps_lic/engines/MessageComplianceAgent.py",
-    "apps_lic/engines/MessageDiversityValidatorAgent.py",
+    "apps_lic/engines/MessageDiversityValidator.py",
     "apps_lic/engines/OutreachLearningAgent.py",
     "apps_lic/engines/OutreachProactiveAgent.py",
     "apps_lic/engines/OutreachSignalRouterAgent.py",
@@ -39,9 +39,7 @@ for file_path in files_to_fix:
                         import_lines.append(line)
 
             # Add the import
-            import_lines.append(
-                "from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent"
-            )
+            import_lines.append("from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent")
 
             # Reconstruct
             new_content = "\n".join(import_lines + other_lines)
@@ -52,9 +50,7 @@ print("Regenerating certificate...")
 import subprocess
 import sys
 
-result = subprocess.run(
-    [sys.executable, "scripts/generate_certificate.py"], capture_output=True, text=True
-)
+result = subprocess.run([sys.executable, "scripts/generate_certificate.py"], capture_output=True, text=True)
 print(result.stdout)
 if result.stderr:
     print("Errors:", result.stderr)

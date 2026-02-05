@@ -77,10 +77,10 @@ RENAMES = {
     # Apps
     "CapabilityMonitorAgent": "CapabilityMonitorAgent",
     "ConversationalRepairOrchestrator": "ConversationalRepairOrchestratorAgent",
-    "MessageDiversityValidatorAgent": "MessageDiversityValidatorAgent",
+    "MessageDiversityValidator": "MessageDiversityValidator",
     "OutreachCapabilityMonitorAgent": "OutreachCapabilityMonitorAgent",
     "OutreachHealingOrchestratorAgent": "OutreachHealingOrchestratorAgent",
-    "OutreachPhase5OrchestratorAgent": "OutreachPhase5OrchestratorAgent",
+    "OutreachPhase5Orchestrator": "OutreachPhase5Orchestrator",
     "OutreachSignalRouterAgent": "OutreachSignalRouterAgent",
     "OutreachValidationExecutorAgent": "OutreachValidationExecutorAgent",
     "Phase4OrchestratorAgent": "Phase4OrchestratorAgent",
@@ -101,9 +101,7 @@ RENAMES = {
 }
 
 
-def rename_in_file(
-    file_path: Path, renames: dict[str, str], dry_run: bool = True
-) -> list[tuple[str, str]]:
+def rename_in_file(file_path: Path, renames: dict[str, str], dry_run: bool = True) -> list[tuple[str, str]]:
     """
     Rename class definitions and references in a file.
 

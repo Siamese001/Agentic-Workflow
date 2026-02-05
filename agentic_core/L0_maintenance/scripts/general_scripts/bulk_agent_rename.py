@@ -21,10 +21,10 @@ RENAMES = {
     "CampaignPlannerAgent": "CampaignPlannerAgent",
     "ContentCleanlinessValidatorAgent": "ContentCleanlinessValidatorAgent",
     "FailureClassifierAgent": "FailureClassifierAgent",
-    "MessageDiversityValidatorAgent": "MessageDiversityValidatorAgent",
+    "MessageDiversityValidator": "MessageDiversityValidator",
     "OutreachCapabilityMonitorAgent": "OutreachCapabilityMonitorAgent",
     "OutreachHealingOrchestratorAgent": "OutreachHealingOrchestratorAgent",
-    "OutreachPhase5OrchestratorAgent": "OutreachPhase5OrchestratorAgent",
+    "OutreachPhase5Orchestrator": "OutreachPhase5Orchestrator",
     "OutreachSignalRouterAgent": "OutreachSignalRouterAgent",
     "OutreachValidationExecutorAgent": "OutreachValidationExecutorAgent",
     "PlaceholderDetectorAgent": "PlaceholderDetectorAgent",
@@ -155,9 +155,7 @@ def should_process_file(file_path: Path) -> bool:
     return True
 
 
-def rename_in_file(
-    file_path: Path, renames: dict[str, str], dry_run: bool = True
-) -> list[tuple[str, str]]:
+def rename_in_file(file_path: Path, renames: dict[str, str], dry_run: bool = True) -> list[tuple[str, str]]:
     """Rename classes in a file."""
     try:
         content = file_path.read_text(encoding="utf-8", errors="ignore")

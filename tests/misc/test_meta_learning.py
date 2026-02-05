@@ -319,17 +319,13 @@ class TestHealingDepthTracking:
 class TestEnhancedSovereignBaseAgent:
     """Test enhanced SovereignBaseAgent with meta-learning integration."""
 
-    @patch(
-        "agentic_core.base_agents.meta_learning_client_mixin.MetaLearningClientMixin._ensure_ml_client"
-    )
+    @patch("agentic_core.base_agents.meta_learning_client_mixin.MetaLearningClientMixin._ensure_ml_client")
     def test_enhanced_heal_integration(self, mock_ensure_client):
         """Test that enhanced heal uses meta-learning when available."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Mock the integrity check to prevent shutdown
-        with patch(
-            "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-        ):
+        with patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"):
             # Create test agent
             agent = SovereignBaseAgent(project_root=Path.cwd())
 
@@ -541,9 +537,7 @@ class TestTop12AgentsIntegration:
 
     def test_gravity_leak_repair_agent_caching(self, mock_ml_infrastructure):
         """Test GravityLeakRepairAgent AST analysis caching."""
-        with patch(
-            "agentic_core.L5_safety.gravity.GravityLeakRepairAgent.SovereignBaseAgent.__post_init__"
-        ):
+        with patch("agentic_core.L5_safety.gravity.GravityLeakRepairAgent.SovereignBaseAgent.__post_init__"):
             agent = agentic_core.L5_safety.gravity.GravityLeakRepairAgent()
 
             # Inject mock ML client
@@ -703,8 +697,8 @@ class TestTop12AgentsIntegration:
             "GravityLeakRepairAgent",
             "ATSCompatibilityAgent",
             "SelfUpdatingSafetyEngineAgent",
-            "LicHealingOrchestratorAgent",
-            "RgHealingOrchestratorAgent",
+            "LicHealingOrchestrator",
+            "RgHealingOrchestrator",
         ]
 
         # Simulate concurrent access

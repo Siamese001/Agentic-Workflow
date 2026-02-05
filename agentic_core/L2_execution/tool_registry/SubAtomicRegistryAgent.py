@@ -230,7 +230,7 @@ def _get_phase2_validator_mapping() -> dict[str, type]:
         # App Content Validator (Apps) - Contact/Content/Diversity
         "ContactValidatorAgent": AppContentValidatorAgent,
         "ContentCleanlinessValidatorAgent": AppContentValidatorAgent,
-        "MessageDiversityValidatorAgent": AppContentValidatorAgent,
+        "MessageDiversityValidator": AppContentValidatorAgent,
     }
 
 
@@ -258,9 +258,7 @@ def get_unified_agent_class(agent_id: str) -> type:
     try:
         validator_mapping = _get_phase2_validator_mapping()
         if agent_id in validator_mapping:
-            Logger.info(
-                f"Registry: Mapping legacy validator '{agent_id}' to Unified Class (Phase 2)."
-            )
+            Logger.info(f"Registry: Mapping legacy validator '{agent_id}' to Unified Class (Phase 2).")
             return validator_mapping[agent_id]
     except ImportError as e:
         Logger.warning(f"Phase 2 validator mapping not available: {e}")
@@ -269,9 +267,7 @@ def get_unified_agent_class(agent_id: str) -> type:
     try:
         phase3_mapping = _get_phase3_manager_enforcer_mapping()
         if agent_id in phase3_mapping:
-            Logger.info(
-                f"Registry: Mapping legacy manager/enforcer '{agent_id}' to Unified Class (Phase 3)."
-            )
+            Logger.info(f"Registry: Mapping legacy manager/enforcer '{agent_id}' to Unified Class (Phase 3).")
             return phase3_mapping[agent_id]
     except ImportError as e:
         Logger.warning(f"Phase 3 manager/enforcer mapping not available: {e}")
