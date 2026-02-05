@@ -279,16 +279,83 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
         "purpose": "Universal test suites organized by Type then Domain.",
         "subfolders": {
             # TYPE 1: Unit Tests (Mocked, Fast, Isolated)
+            # Mirror-Image Principle: Tests MUST mirror source structure exactly
             "unit": {
                 "purpose": "Isolated logic tests mirroring source structure",
-                "subfolders": ["agentic_core", "apps_rg", "apps_lic", "apps_shared", "utils"],
-                "mirror_source": True,  # Flag indicating this should mirror source structure
+                "mirror_source": True,
+                "subfolders": {
+                    "agentic_core": {
+                        "purpose": "Unit tests for agentic_core modules",
+                        "subfolders": {
+                            "L0_maintenance": ["scripts", "deterministic", "logs", "boot", "core", "agents", "validators", "config"],
+                            "L1_cognition": ["thought_engine", "intent_analysis", "memory", "meta_learning", "core", "agents", "validators"],
+                            "L2_execution": ["tool_registry", "mcp", "execution_bridge", "core", "agents"],
+                            "L3_orchestration": ["workflow_engines", "fission_logic", "interfaces", "utils", "core", "agents", "orchestration"],
+                            "L4_state": ["validation_context", "ledger", "memory", "core", "agents", "validators"],
+                            "L5_safety": ["validators", "guardrails", "policy_engine", "gravity", "red_teaming", "cognition", "core", "utils", "security", "agents", "strategies"],
+                            "L6_observability": ["dashboards", "agents", "reports", "telemetry", "core"],
+                            "base_agents": [],
+                            "domain": [],
+                            "patterns": ["agent_roles"],
+                            "utils": [],
+                        },
+                    },
+                    "apps_lic": {
+                        "purpose": "Unit tests for apps_lic modules",
+                        "subfolders": {
+                            "engines": [],
+                            "domain": ["config", "utils"],
+                            "shared": ["tools", "utils"],
+                            "logic_nodes": [],
+                            "validators": [],
+                            "config": [],
+                        },
+                    },
+                    "apps_rg": {
+                        "purpose": "Unit tests for apps_rg modules",
+                        "subfolders": {
+                            "engines": ["base", "generation", "hops", "orchestration", "quality", "retrieval", "safety", "utils"],
+                            "domain": ["config", "utils"],
+                            "shared": ["tools", "utils"],
+                            "logic_nodes": [],
+                            "validation": [],
+                            "utils": [],
+                        },
+                    },
+                    "apps_shared": {
+                        "purpose": "Unit tests for apps_shared modules",
+                        "subfolders": {
+                            "common_utils": [],
+                            "config": [],
+                            "core_components": [],
+                            "llm": [],
+                            "mixins": [],
+                            "scripts": [],
+                            "utils": [],
+                            "agents": [],
+                            "validators": [],
+                        },
+                    },
+                    "utils": {"purpose": "Utility tests", "subfolders": []},
+                },
+                "forbidden_zones": ["misc", "temp", "old", "deprecated", "archive", "scratch"],
             },
             # TYPE 2: Integration Tests (DB, API, Component Interaction)
+            # Mirror-Image Principle: Tests MUST mirror source structure exactly
             "integration": {
                 "purpose": "Component interaction tests mirroring source structure",
-                "subfolders": ["agentic_core", "apps_rg", "apps_lic", "apps_shared"],
-                "mirror_source": True,  # Flag indicating this should mirror source structure
+                "mirror_source": True,
+                "subfolders": {
+                    "agentic_core": {
+                        "purpose": "Integration tests for agentic_core",
+                        "subfolders": ["L0_maintenance", "L1_cognition", "L3_orchestration", "L5_safety", "L6_observability", "core", "agents"],
+                    },
+                    "apps_lic": {"purpose": "Integration tests for apps_lic", "subfolders": ["engines", "shared"]},
+                    "apps_rg": {"purpose": "Integration tests for apps_rg", "subfolders": ["engines", "shared"]},
+                    "apps_shared": {"purpose": "Integration tests for apps_shared", "subfolders": ["common_utils", "core"]},
+                    "core": {"purpose": "Cross-cutting integration tests", "subfolders": []},
+                },
+                "forbidden_zones": ["misc", "temp", "old", "deprecated", "archive", "scratch"],
             },
             # TYPE 3: E2E (Full System)
             "e2e": {
