@@ -365,18 +365,67 @@ class TestObsoleteFunctionalityDetection:
         matches.sort(key=lambda x: x[1], reverse=True)
         return matches[:5]  # Return top 5 matches
     
-    def detect_obsolete_patterns(self, file_path: Path) -> List[str]:
+    def detect_phase_files(self, file_path: Path) -> Dict[str, Any]:
         """
-        DEPRECATED: This method used string regex which is NOT acceptable.
-        Use analyze_with_ast() instead for proper AST-based analysis.
+        Detect if a file is a phase file that should be consolidated.
         
-        This method now returns empty list - obsolescence detection
-        should ONLY be done via AST analysis.
+        Phase files are migration artifacts that should be consolidated into
+        comprehensive test files, not kept as separate phase1, phase2, phase3 files.
+        
+        Returns:
+            Dict with 'is_phase_file', 'phase_number', 'base_name', 'should_consolidate'
         """
-        # DO NOT use string regex for obsolescence detection
-        # Filename patterns like "phase1", "phase2" are NOT sufficient
-        # to determine if a file should be deleted
-        return []
+        import re
+        
+        result = {
+            'is_phase_file': False,
+            'phase_number': None,
+            'base_name': None,
+            'should_consolidate': False,
+            'reason': None
+        }
+        
+        filename = file_path.stem
+        
+        # Check for phase pattern in filename
+        phase_match = re.search(r'_phase(\d+)([a-z]?)', filename)
+        if phase_match:
+            result['is_phase_file'] = True
+            result['phase_number'] = int(phase_match.group(1))
+            
+            # Extract base name (remove phase suffix)
+            result['base_name'] = re.sub(r'_phase\d+[a-z]?(_[a-z_]+)?$', '', filename)
+            
+            # Phase files should be consolidated
+            result['should_consolidate'] = True
+            result['reason'] = f"Phase {result['phase_number']} file - should be consolidated with other phases"
+        
+        return result
+    
+    def group_phase_files(self, test_files: List[Path]) -> Dict[str, List[Path]]:
+        """
+        Group phase files by their base name for consolidation detection.
+        
+        Returns:
+            Dict mapping base_name to list of phase files
+        """
+        import re
+        from collections import defaultdict
+        
+        phase_groups = defaultdict(list)
+        
+        for test_file in test_files:
+            phase_info = self.detect_phase_files(test_file)
+            if phase_info['is_phase_file']:
+                base_name = phase_info['base_name']
+                phase_groups[base_name].append((test_file, phase_info['phase_number']))
+        
+        # Sort each group by phase number
+        for base_name in phase_groups:
+            phase_groups[base_name].sort(key=lambda x: x[1])
+        
+        # Only return groups with multiple files
+        return {k: v for k, v in phase_groups.items() if len(v) > 1}
 
     def test_detect_obsolete_tests(self, project_root):
         """
@@ -408,22 +457,33 @@ class TestObsoleteFunctionalityDetection:
         high_confidence_obsolete = []
         needs_review = []
         healthy_files = []
+        phase_files_detected = []
+        all_test_files_flat = []
         
         for level, test_files in all_test_files_by_level.items():
+            all_test_files_flat.extend(test_files)
             for test_file in test_files:
                 rel_path = str(test_file.relative_to(project_root))
                 
                 # Use AST-based analysis (NOT string regex)
                 ast_result = self.analyze_with_ast(test_file, project_root)
                 
+                # Check for phase files that should be consolidated
+                phase_info = self.detect_phase_files(test_file)
+                
                 # Also check naming violations via agents
                 naming_issues = self.check_naming_violations(test_file, project_root)
                 
                 analysis_results[rel_path] = {
                     'ast_analysis': ast_result,
+                    'phase_info': phase_info,
                     'naming_issues': naming_issues,
                     'level': level
                 }
+                
+                # Track phase files separately
+                if phase_info['is_phase_file']:
+                    phase_files_detected.append(rel_path)
                 
                 # Categorize based on AST analysis confidence
                 if ast_result['is_obsolete'] and ast_result['confidence'] >= 0.8:
@@ -433,12 +493,17 @@ class TestObsoleteFunctionalityDetection:
                 else:
                     healthy_files.append(rel_path)
         
+        # Group phase files for consolidation detection
+        phase_groups = self.group_phase_files(all_test_files_flat)
+        
         # Report findings
         print(f"\n=== ANALYSIS SUMMARY ===")
         print(f"Total files analyzed: {len(analysis_results)}")
         print(f"Healthy files: {len(healthy_files)}")
         print(f"Needs review (medium confidence): {len(needs_review)}")
         print(f"High confidence obsolete: {len(high_confidence_obsolete)}")
+        print(f"Phase files detected: {len(phase_files_detected)}")
+        print(f"Phase file groups needing consolidation: {len(phase_groups)}")
         
         # Report files that need review (NOT auto-delete)
         if needs_review:
@@ -469,6 +534,23 @@ class TestObsoleteFunctionalityDetection:
                 for reason in result['ast_analysis']['reasons']:
                     print(f"    - {reason}")
         
+        # Report phase file consolidation opportunities
+        if phase_groups:
+            print(f"\n=== PHASE FILES REQUIRING CONSOLIDATION ({len(phase_groups)} groups) ===")
+            print("These phase files should be consolidated into comprehensive test files:")
+            print("PRINCIPLE: If tests have value, consolidate them - don't keep phase1, phase2, phase3 separate.")
+            
+            for base_name, files_and_phases in sorted(phase_groups.items()):
+                print(f"\n  {base_name} ({len(files_and_phases)} phase files):")
+                phases = [p for _, p in files_and_phases]
+                print(f"    Phases: {phases}")
+                for file_path, phase_num in files_and_phases[:5]:
+                    rel_path = str(file_path.relative_to(project_root))
+                    print(f"    - {rel_path}")
+                if len(files_and_phases) > 5:
+                    print(f"    ... and {len(files_and_phases) - 5} more")
+                print(f"    ACTION: Consolidate into tests/unit/{base_name}_comprehensive.py")
+        
         # Report naming issues separately (these are NOT obsolescence)
         naming_violations = [
             (path, result['naming_issues'])
@@ -491,7 +573,18 @@ class TestObsoleteFunctionalityDetection:
             print("Please manually verify before deletion.")
             print("DO NOT delete based on filename patterns alone.")
         
-        # This test is INFORMATIONAL - it reports findings but does not fail
+        # FAIL the test if phase files are detected
+        if phase_groups:
+            print(f"\n=== GUARDIAN GATE: VALIDATION FAILED ===")
+            print(f"Phase files detected that require consolidation.")
+            print(f"Guardian tests enforce architectural compliance.")
+            pytest.fail(
+                f"Phase file consolidation required: {len(phase_groups)} groups with "
+                f"{len(phase_files_detected)} total phase files detected. "
+                f"Consolidate phase files into comprehensive test files."
+            )
+        
+        # This test is INFORMATIONAL for other findings but FAILS on phase files
         # Guardian tests validate architectural compliance, not delete files
         print(f"\n=== GUARDIAN GATE: ANALYSIS COMPLETE ===")
         print(f"This is an INFORMATIONAL report. Guardian tests are COMPLEMENTARY to unit/e2e tests.")
