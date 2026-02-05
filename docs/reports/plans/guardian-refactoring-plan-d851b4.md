@@ -1,6 +1,6 @@
-# Guardian Test Refactoring Plan for SSOT Updates
+# GUARDIAN FORENSIC HARDENING PROTOCOL (V4.7 COMPLIANCE)
 
-The guardian tests need refactoring to align with the new constitutional principles and structural definitions added to `structure_blueprint_config.py`.
+This plan elevates the Guardian suite from "linting" to a **Cryptographically Signed Forensic Audit** as required by Prompt v4.7 Target State V10.
 
 ## Key SSOT Updates to Address
 
@@ -31,6 +31,9 @@ New `constitutional_rules` array in tests/guardian territory definition:
 - Guardian tests do NOT fulfill 100% coverage requirements
 - Guardian tests use AST-based analysis, NEVER string regex
 - Guardian tests NEVER delete files based on filename patterns
+- **AUTHORITY IS TOKENIZED:** All outputs must include SHA-256 signatures [Cap 7.2]
+- **DISCOVERY IS ABSOLUTE:** `forensic_discovery_prep.py` JSON is the sole source of truth [Cap 0.1]
+- **MUTATION IS SURGICAL:** All fixes must emit `SurgicalManifest` JSON, never raw IO [Cap 1.1]
 
 ### 3. New SSOT Constants
 - `PROJECT_ROOT_WHITELIST` (Line 1539): Replaces old `ROOT_WHITELIST`
@@ -46,22 +49,24 @@ New `constitutional_rules` array in tests/guardian territory definition:
 **1. test_ssot_compliance.py** (20 SSOT references)
 - Currently imports: `FORBIDDEN_ROOT_FOLDERS`, `ROOT_WHITELIST`, `SOVEREIGN_TERRITORIES`
 - **Action**: Update to use `PROJECT_ROOT_WHITELIST` instead of `ROOT_WHITELIST`
-- **Action**: Add validation for `ROOT_ALLOWED_PATTERNS`
+- **Action**: Enforce **Fail-Closed Default** (P1) on `ROOT_ALLOWED_PATTERNS`
 - **Action**: Add validation for `TESTS_ROOT_FILE_WHITELIST`
 - **Action**: Verify constitutional principles are enforced
+- **Action**: [CRITICAL] Validate **Policy Immutability** (Cap 4.2) by hashing `structure_blueprint_config.py` at init vs exit
 
 **2. test_ssot_alignment.py** (16 SSOT references)
 - Dynamically loads structure_blueprint.py
 - **Action**: Add loading of new constitutional principles
 - **Action**: Add validation for `STRUCTURAL_INVARIANT` (leaf node enforcement)
 - **Action**: Update to check `PROJECT_ROOT_WHITELIST`
-- **Action**: Add test for `ROOT_ALLOWED_PATTERNS` compliance
+- **Action**: **Bind to Discovery JSON**: Verify Blueprint config matches the *actual* disk state found by Discovery (Cap 0.1)
 
 **3. test_obsolete_functionality_detection.py** (2 SSOT references)
 - Already references STRICT OBSOLESCENCE PROTOCOL and TEST LAYERING PRINCIPLE
 - **Action**: Verify implementation matches constitutional principles
 - **Action**: Add explicit test for STRUCTURAL INVARIANT violations
 - **Action**: Ensure phase file detection doesn't violate "no filename pattern deletion" rule
+- **Action**: **Ban "Cleaners":** Convert all deletion logic to emit `SurgicalManifest` (Cap 1.1) for external review
 
 ### Medium Priority - Indirect SSOT Dependencies
 
@@ -81,6 +86,9 @@ New `constitutional_rules` array in tests/guardian territory definition:
 - MRO and inheritance validation
 - **Action**: Verify base agents respect STRUCTURAL INVARIANT
 - **Action**: Ensure validation is architectural, not functional
+- **Action**: [CRITICAL] **Enforce Mixin Safety (Cap 8.3):** `Safety*` mixins MUST be index `<` `BaseAgent` in `__bases__`
+- **Action**: [CRITICAL] **Ban Adapters (Cap 8.1):** Fail on any class name matching `*Adapter`
+- **Action**: [CRITICAL] **Discovery Match (Cap 8.4):** Compare AST MRO signature against Discovery JSON. Mismatch = FAIL.
 
 ### Low Priority - Alignment Checks
 
@@ -104,28 +112,31 @@ New `constitutional_rules` array in tests/guardian territory definition:
 - **Action**: Add violation codes for constitutional principle violations
 - **Action**: Add STRUCTURAL_INVARIANT violation type
 - **Action**: Add PROJECT_ROOT_WHITELIST violation type
+- **Action**: [MANDATORY] **Cryptographic Signing (Cap 7.2):**
+  - Input: `timestamp + commit_hash + sorted(violation_vector)`
+  - Output: `SHA-256` signature appended to report footer.
+  - Rule: No signature = Invalid Report.
 
 ## Implementation Strategy
 
-### Phase 1: Update Core SSOT Validators (High Priority)
-1. Update `test_ssot_compliance.py` to use new constants
-2. Update `test_ssot_alignment.py` to load and validate new principles
-3. Verify `test_obsolete_functionality_detection.py` compliance
+### Phase 0: Forensic Authority Link (Pre-Requisite)
+1. Hard-link Guardian to `forensic_discovery_prep.py` output.
+2. Fail immediately if Discovery JSON is missing or stale (>10m old).
+3. Establish "Golden Hash" of `structure_blueprint_config.py`.
 
-### Phase 2: Add STRUCTURAL INVARIANT Enforcement (Medium Priority)
-1. Create new validator for branch vs leaf node enforcement
-2. Add to `test_comprehensive_structure.py`
-3. Add to `test_architecture_governance.py`
+### Phase 1: Structural & Constitutional Hygiene
+1. Update `test_ssot_compliance.py` with `PROJECT_ROOT_WHITELIST`.
+2. Implement `STRUCTURAL_INVARIANT` (Leaf vs Branch) enforcement.
+3. **Deploy MRO Iron Dome:** Update `test_mro_integrity.py` to enforce Cap 8.1 (No Adapters) and 8.3 (Safety Left).
 
-### Phase 3: Align Remaining Tests (Low Priority)
-1. Update import safety and manual verification tests
-2. Update orphan detection to follow STRICT OBSOLESCENCE PROTOCOL
-3. Update guardian report infrastructure
+### Phase 2: The "Zero-Loss" Remediation Engine
+1. **Deprecate all file deletion/editing functions.**
+2. Implement `RemediationManifestFactory` to output standard V10 `SurgicalManifest` JSONs [Cap 1].
+3. Ensure `test_obsolete_functionality` produces Manifests, not side-effects.
 
-### Phase 4: Add Constitutional Compliance Tests
-1. Create new test: `test_constitutional_compliance.py`
-2. Validate all three constitutional principles
-3. Ensure guardian tests don't violate their own rules
+### Phase 3: Signed Authority & Reporting
+1. Upgrade `guardian_report.py` to sign artifacts (SHA-256).
+2. Enforce "Artifact Presence" check (Cap 7.3) - Absence of signed artifact = CI Failure.
 
 ## Expected Outcomes
 
