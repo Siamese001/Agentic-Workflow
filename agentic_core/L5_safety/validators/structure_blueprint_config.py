@@ -227,9 +227,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "system_flow",
             "validation",
         ],
-        "ast_signals": {
-            "apps_rg/engines": {"keyword_signals": ["resume", "cv", "formatting"], "weight": 90}
-        },
+        "ast_signals": {"apps_rg/engines": {"keyword_signals": ["resume", "cv", "formatting"], "weight": 90}},
     },
     "apps_lic": {
         "depth": 2,
@@ -380,15 +378,9 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         "purpose": "Gap analyses, architectural assessments, and strategic reports"
                     },
                     "coverage": {"purpose": "Test coverage reports and code quality metrics"},
-                    "telemetry": {
-                        "purpose": "System telemetry, performance metrics, and observability data"
-                    },
-                    "security": {
-                        "purpose": "Security assessments, vulnerability scans, and safety reports"
-                    },
-                    "audit": {
-                        "purpose": "Structural audits, drift analysis, and compliance reports"
-                    },
+                    "telemetry": {"purpose": "System telemetry, performance metrics, and observability data"},
+                    "security": {"purpose": "Security assessments, vulnerability scans, and safety reports"},
+                    "audit": {"purpose": "Structural audits, drift analysis, and compliance reports"},
                     "missions": {"purpose": "High-level mission execution traces and runtime logs"},
                 },
             },
@@ -526,6 +518,13 @@ REPORTS_DIR: str = "reports"
 ARCHIVES_DIR: str = "archives"
 COVERAGE_HTML_DIR: str = "reports/coverage_html"
 DOCS_REPORTS_PLANS: str = "docs/reports/plans"
+
+# === Trust-But-Verify: Known Good Hashes (Watcher of the Watchers) ===
+# SHA-256 hashes of critical audit infrastructure scripts
+# If these scripts are modified, the audit is compromised
+KNOWN_GOOD_HASHES: Final[Mapping[str, str]] = {
+    "forensic_discovery_prep.py": "3fadb7164353e0d7072d985da0ba06187a4f3a003588dd3341a43dd94eaa86d0",
+}
 
 # ============================================================================
 # === L4 SUBFOLDER MAP (Depth-4 Structure for Complex L3 Folders) ===
@@ -705,9 +704,7 @@ CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     ],  # Monitoring and reporting
     # === SPECIALIZED DOMAINS ===
     "schemas": ["models"],  # Data schemas - currently only models subfolder exists
-    "config": [
-        "blueprint_sovereign"
-    ],  # Configuration management - currently only blueprint_sovereign exists
+    "config": ["blueprint_sovereign"],  # Configuration management - currently only blueprint_sovereign exists
     "prompt_governance": [
         "meta_prompts",
         "templates",
@@ -717,12 +714,8 @@ CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "runtime": ["shared_runtime"],  # Runtime environment - currently only shared_runtime exists
     "utils": [],  # Utility functions - no subfolders currently (flat structure)
     "patterns": ["agent_roles"],  # Architectural and behavioral patterns
-    "semantic_memory": [
-        "store"
-    ],  # Vector memory and retrieval systems - currently only store exists
-    "knowledge": [
-        "document_loaders"
-    ],  # Knowledge management - currently only document_loaders exists
+    "semantic_memory": ["store"],  # Vector memory and retrieval systems - currently only store exists
+    "knowledge": ["document_loaders"],  # Knowledge management - currently only document_loaders exists
 }
 
 # === SUBFOLDER METADATA AND CONTENT GUIDELINES ===
@@ -1140,49 +1133,29 @@ CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
     "L1_cognition/thought_engine": {
         "primary": frozenset({"think", "reason", "plan", "decompose", "critique", "reflect"})
     },
-    "L1_cognition/intent_analysis": {
-        "primary": frozenset({"intent", "goal", "understand", "parse", "user"})
-    },
-    "L2_execution/tool_registry": {
-        "primary": frozenset({"tool", "execute", "call", "registry", "runner"})
-    },
+    "L1_cognition/intent_analysis": {"primary": frozenset({"intent", "goal", "understand", "parse", "user"})},
+    "L2_execution/tool_registry": {"primary": frozenset({"tool", "execute", "call", "registry", "runner"})},
     "L2_execution/mcp": {"primary": frozenset({"mcp", "client", "fetch", "protocol"})},
     "L3_orchestration/workflow_engines": {
         "primary": frozenset({"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"})
     },
-    "L3_orchestration/fission_logic": {
-        "primary": frozenset({"fission", "split", "decompose", "atomic"})
-    },
-    "L4_state/validation_context": {
-        "primary": frozenset({"state", "context", "checkpoint", "persist"})
-    },
+    "L3_orchestration/fission_logic": {"primary": frozenset({"fission", "split", "decompose", "atomic"})},
+    "L4_state/validation_context": {"primary": frozenset({"state", "context", "checkpoint", "persist"})},
     "L4_state/ledger": {"primary": frozenset({"ledger", "history", "record", "transaction"})},
     "L5_safety/validators": {
         "primary": frozenset({"validate", "enforce", "check", "guard", "policy", "heal"})
     },
-    "L5_safety/guardrails": {
-        "primary": frozenset({"guardrail", "safety", "membrane", "airlock", "pii"})
-    },
+    "L5_safety/guardrails": {"primary": frozenset({"guardrail", "safety", "membrane", "airlock", "pii"})},
     "L5_safety/gravity": {"primary": frozenset({"gravity", "import", "dependency", "layer"})},
-    "config/blueprint_sovereign": {
-        "primary": frozenset({"blueprint", "registry", "sovereign", "canon"})
-    },
+    "config/blueprint_sovereign": {"primary": frozenset({"blueprint", "registry", "sovereign", "canon"})},
     "schemas/models": {"primary": frozenset({"schema", "model", "type", "message"})},
-    "prompt_governance/L3_core": {
-        "primary": frozenset({"render", "registry", "assemble", "govern"})
-    },
+    "prompt_governance/L3_core": {"primary": frozenset({"render", "registry", "assemble", "govern"})},
     "prompt_governance/L3_templates": {
         "primary": frozenset({"template", "prompt", "persona", "instructional"})
     },
-    "prompt_governance/L3_security": {
-        "primary": frozenset({"security", "injection", "pii", "compliance"})
-    },
-    "prompt_governance/L3_integrity": {
-        "primary": frozenset({"validate", "optimize", "test", "quality"})
-    },
-    "prompt_governance/L3_utilities": {
-        "primary": frozenset({"script", "middleware", "monitor", "audit"})
-    },
+    "prompt_governance/L3_security": {"primary": frozenset({"security", "injection", "pii", "compliance"})},
+    "prompt_governance/L3_integrity": {"primary": frozenset({"validate", "optimize", "test", "quality"})},
+    "prompt_governance/L3_utilities": {"primary": frozenset({"script", "middleware", "monitor", "audit"})},
     "observability": {"primary": frozenset({"metric", "trace", "telemetry", "log", "compliance"})},
     "utils": {"primary": frozenset({"util", "helper", "extension", "wrapper"})},
 }
@@ -1299,9 +1272,7 @@ def safe_path_join(project_root, *parts):
     result = project_root.joinpath(*parts).resolve()
 
     if not validate_path_within_project(result, project_root):
-        raise ValueError(
-            f"SAFETY VIOLATION: Path '{result}' is outside project root '{project_root}'"
-        )
+        raise ValueError(f"SAFETY VIOLATION: Path '{result}' is outside project root '{project_root}'")
 
     return result
 
@@ -1668,9 +1639,7 @@ MCP_CAPABILITIES: Final[Mapping[str, Mapping[str, bool | str]]] = {
     "fetch": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
     "semantic_cache": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
 }
-SCOPE_SUMMARY_EXCLUSIONS: frozenset[str] = frozenset(
-    {"stubs", ".sovereign_healing_backup", "__pycache__"}
-)
+SCOPE_SUMMARY_EXCLUSIONS: frozenset[str] = frozenset({"stubs", ".sovereign_healing_backup", "__pycache__"})
 
 # === ALLOWED DUPLICATE FILENAMES ===
 # These files are permitted to exist with the same name across multiple directories.
