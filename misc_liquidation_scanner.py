@@ -398,7 +398,7 @@ def main():
         json.dump(
             {
                 "stats": scanner.stats,
-                "classifications": {k: v for k, v in scanner.classifications.items()},
+                "classifications": dict(scanner.classifications.items()),
             },
             f,
             indent=2,

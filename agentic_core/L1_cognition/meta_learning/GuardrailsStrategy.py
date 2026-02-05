@@ -155,7 +155,7 @@ class MetaLearningGuardrails:
                 for v in obj.values():
                     if self._has_circular_refs(v, visited.copy()):
                         return True
-            elif isinstance(obj, (list, tuple, set)):
+            elif isinstance(obj, list | tuple | set):
                 for item in obj:
                     if self._has_circular_refs(item, visited.copy()):
                         return True
@@ -265,7 +265,7 @@ class MetaLearningGuardrails:
         if threshold is None:
             return self.guardrails.default_similarity_threshold
 
-        if not isinstance(threshold, (int, float)):
+        if not isinstance(threshold, int | float):
             self.logger.warning(f"Invalid similarity threshold: {threshold}")
             return self.guardrails.default_similarity_threshold
 

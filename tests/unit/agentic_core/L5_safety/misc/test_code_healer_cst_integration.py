@@ -233,7 +233,7 @@ import json  # JSON operations
 
 class TestClass:
     """Important class docstring."""
-    
+
     def method(self):
         # Important method comment
         return os.path.join("path", "file.json")
@@ -343,11 +343,11 @@ class ComplexClass:
     Complex class docstring
     with detailed information.
     """
-    
+
     def __init__(self):
         # Constructor comment
         self.value = os.getcwd()
-    
+
     def method(self):
         """Method docstring."""
         # Method implementation comment

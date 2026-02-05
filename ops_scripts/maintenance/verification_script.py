@@ -98,7 +98,7 @@ def test_circuit_breaker():
 
     try:
         flaky()
-        assert False, "Should raise OpenError"
+        raise AssertionError("Should raise OpenError")
     except CircuitBreakerOpenError:
         print("   ✓ Decorator OpenError OK")
 
@@ -113,7 +113,7 @@ def test_circuit_breaker():
 
     try:
         hung_task()
-        assert False, "Should have timed out"
+        raise AssertionError("Should have timed out")
     except CircuitBreakerTimeoutError:
         print("   ✓ Hung query terminated via Timeout OK")
 

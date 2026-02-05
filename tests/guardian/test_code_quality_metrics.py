@@ -161,15 +161,13 @@ class TestCodeQualityMetrics:
             for child in ast.walk(node):
                 if isinstance(
                     child,
-                    (
-                        ast.If,
-                        ast.While,
-                        ast.For,
-                        ast.AsyncFor,
-                        ast.ExceptHandler,
-                        ast.With,
-                        ast.AsyncWith,
-                    ),
+                    ast.If
+                    | ast.While
+                    | ast.For
+                    | ast.AsyncFor
+                    | ast.ExceptHandler
+                    | ast.With
+                    | ast.AsyncWith,
                 ):
                     complexity += 1
                 elif isinstance(child, ast.BoolOp):
@@ -206,7 +204,7 @@ class TestCodeQualityMetrics:
 
                 # Check each function and method
                 for node in ast.walk(tree):
-                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         complexity = calculate_complexity(node)
                         if complexity > COMPLEXITY_THRESHOLD:
                             complex_functions.append(
@@ -310,7 +308,7 @@ class TestCodeQualityMetrics:
                                 {"file": rel_path, "name": node.name, "line": node.lineno}
                             )
 
-                    elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         # Skip private methods and test functions
                         if (
                             node.name.startswith("_")
@@ -407,7 +405,6 @@ class TestCodeQualityMetrics:
                 # Check import organization
                 import_section = []
                 in_imports = True
-                has_blank_after_imports = False
 
                 for i, line in enumerate(lines):
                     stripped = line.strip()

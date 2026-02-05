@@ -69,17 +69,6 @@ def main():
     ]
 
     # Config files to keep in root (whitelist)
-    keep_in_root = {
-        ".env",
-        ".gitattributes",
-        ".manifest.lock",
-        ".schema_violations_tracking.yaml",
-        ".secrets.baseline",
-        ".windsurfrules",
-        "agent_discovery_full.json",
-        "agent_discovery_full.manifest.json",
-        "pytest_quick.ini",
-    }
 
     print("=" * 70)
     print("ROOT CLEANUP: MOVING FILES TO APPROPRIATE TERRITORIES")

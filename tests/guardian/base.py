@@ -81,7 +81,7 @@ class GuardianTestBase:
         return [
             node.name
             for node in class_node.body
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
         ]
 
     @staticmethod

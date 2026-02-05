@@ -472,7 +472,7 @@ class ArchitectureGapAnalyzer:
         """Analyze a single architecture component."""
         implementations = []
 
-        for key, class_info in self.ast_analyzer.class_info.items():
+        for _key, class_info in self.ast_analyzer.class_info.items():
             # Check pattern match in class name and content
             name_score, name_matches = self.ast_analyzer.fuzzy_match_score(
                 class_info["name"], component.key_patterns
@@ -613,7 +613,7 @@ def main():
     repo_root = Path(__file__).parent.parent
 
     analyzer = ArchitectureGapAnalyzer(repo_root)
-    results = analyzer.analyze()
+    analyzer.analyze()
 
     report = analyzer.generate_report()
 

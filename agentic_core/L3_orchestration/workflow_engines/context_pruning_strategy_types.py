@@ -160,7 +160,7 @@ class ContextPruningStrategy:
         pruned_keys = []
         current_size = initial_size
 
-        for key, score in scored_keys:
+        for key, _score in scored_keys:
             if current_size <= target_size:
                 break
             if len(context) - len(pruned_keys) <= self.min_entries_to_keep:

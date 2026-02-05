@@ -48,7 +48,7 @@ class TokenBudgetInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal violations detected by TokenBudgetInspectorAgent."""
-        violation_type = violation.get("type", "unknown")
+        violation.get("type", "unknown")
         try:
             result = self.heal_repository(dry_run=False, execute=True)
             return {

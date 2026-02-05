@@ -95,7 +95,6 @@ def classify_file(path: Path) -> str:
         return "TYPES"
 
     # Parse classes for detailed analysis
-    has_class = False
     is_pure_mixin = False  # Only true if primary class is a Mixin AND file is PascalCase
     is_error = False
     is_exception = False
@@ -111,7 +110,6 @@ def classify_file(path: Path) -> str:
 
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
-            has_class = True
             name = node.name
             if primary_class_name is None:
                 primary_class_name = name

@@ -76,7 +76,7 @@ def analyze_file_with_ast(content: str, file_path: str) -> dict[str, Any]:
                     result["imports"].append(("from", node.module, node.lineno))
 
         # Check each import
-        for import_type, module_name, lineno in result["imports"]:
+        for _import_type, module_name, lineno in result["imports"]:
             try:
                 # Check if module exists
                 spec = importlib.util.find_spec(module_name.split(".")[0])
@@ -218,7 +218,7 @@ def main():
         analysis = analyze_file_with_ast(content, file_path)
 
         # Find fuzzy matches for broken imports
-        for module, lineno in analysis["broken_imports"][:3]:
+        for module, _lineno in analysis["broken_imports"][:3]:
             matches = fuzzy_match_module(module)
             if matches:
                 analysis["fuzzy_matches"].append(

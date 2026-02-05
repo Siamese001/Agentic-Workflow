@@ -71,7 +71,7 @@ class TestAgentDistributionMetrics:
         # Calculate specialization diversity
         total_specializations = sum(len(specs) for specs in l5_specializations.values())
         unique_specializations = len(
-            set(spec for specs in l5_specializations.values() for spec in specs)
+            {spec for specs in l5_specializations.values() for spec in specs}
         )
 
         # High specialization diversity indicates good separation of concerns

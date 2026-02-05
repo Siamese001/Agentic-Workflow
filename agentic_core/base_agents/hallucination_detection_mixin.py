@@ -85,7 +85,7 @@ class HallucinationDetectionMixin:
         """Find target in AST based on type."""
         for node in ast.walk(tree):
             if target_type == "function":
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                     if node.name == target_name:
                         return True
 

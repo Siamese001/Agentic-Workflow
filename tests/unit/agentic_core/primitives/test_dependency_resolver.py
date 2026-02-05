@@ -168,7 +168,7 @@ class TestDynamicLoader:
             module_path="collections",
             class_name="OrderedDict",
         )
-        instance1 = DynamicLoader.create_instance("test_reregister", singleton=True)
+        DynamicLoader.create_instance("test_reregister", singleton=True)
 
         # Re-register with different class
         DynamicLoader.register_implementation(

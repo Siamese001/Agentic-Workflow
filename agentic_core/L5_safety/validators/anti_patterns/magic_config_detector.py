@@ -107,7 +107,7 @@ class MagicConfigDetector(AntiPatternDetector):
 
         # Check function/method definitions for hardcoded defaults
         for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 violations.extend(self._check_function_defaults(node, file_path, source_lines))
             elif isinstance(node, ast.Assign):
                 violations.extend(self._check_assignment(node, file_path, source_lines))
@@ -147,7 +147,7 @@ class MagicConfigDetector(AntiPatternDetector):
                 value = default.value
 
                 # Check for hardcoded numeric values
-                if isinstance(value, (int, float)) and value not in (0, 1, -1, True, False):
+                if isinstance(value, int | float) and value not in (0, 1, -1, True, False):
                     violations.append(
                         self._create_violation(
                             node,
@@ -235,7 +235,7 @@ class MagicConfigDetector(AntiPatternDetector):
         # Check for hardcoded numeric config values
         if is_config_var and isinstance(node.value, ast.Constant):
             value = node.value.value
-            if isinstance(value, (int, float)) and value not in (0, 1, -1, True, False):
+            if isinstance(value, int | float) and value not in (0, 1, -1, True, False):
                 violations.append(
                     self._create_violation(
                         node,
@@ -279,7 +279,7 @@ class MagicConfigDetector(AntiPatternDetector):
                 value = keyword.value.value
 
                 # Check for hardcoded numeric values
-                if isinstance(value, (int, float)) and value not in (0, 1, -1, True, False):
+                if isinstance(value, int | float) and value not in (0, 1, -1, True, False):
                     violations.append(
                         self._create_violation(
                             node,
@@ -322,27 +322,27 @@ class MagicConfigDetector(AntiPatternDetector):
         if "model" in pattern.lower():
             return f"""Externalize model name to configuration:
     from agentic_core.config.agent_defaults import AgentDefaults
-    
+
     model = AgentDefaults.get("DEFAULT_MODEL", "{value}")"""
 
         if "timeout" in pattern.lower():
             return f"""Externalize timeout to configuration:
     from agentic_core.config.agent_defaults import AgentDefaults
-    
+
     timeout = AgentDefaults.get_int("DEFAULT_TIMEOUT", {value})"""
 
         if "threshold" in pattern.lower():
             return f"""Externalize threshold to configuration:
     from agentic_core.config.agent_defaults import AgentDefaults
-    
+
     threshold = AgentDefaults.get_float("THRESHOLD_NAME", {value})"""
 
         return f"""Externalize configuration value:
     import os
-    
+
     # Use environment variable with fallback
     value = os.getenv("CONFIG_NAME", "{value}")
-    
+
     # Or use AgentDefaults
     from agentic_core.config.agent_defaults import AgentDefaults
     value = AgentDefaults.get("CONFIG_NAME", "{value}")"""

@@ -53,7 +53,7 @@ class TestCompleteHealingWorkflow:
 
         # Step 4: Check for cached pattern
         cache_key = f"gravity_heal:{sanitized['type']}:{sanitized['path'].replace('/', '_')}"
-        cached_pattern = client.cache_get(cache_key, "agentic_core")
+        client.cache_get(cache_key, "agentic_core")
 
         # Step 5: Execute healing (simulated)
         healing_result = {
@@ -134,7 +134,7 @@ class TestCompleteHealingWorkflow:
             }
 
             # Step 2: Sanitize
-            sanitized = guardrails.sanitize_violation_data(violation)
+            guardrails.sanitize_violation_data(violation)
 
             # Step 3: Check depth
             vid = f"v_{domain}"
@@ -175,11 +175,6 @@ class TestPatternLearningCycle:
         client = MetaLearningClient()
 
         # Step 1: First violation - no pattern exists
-        violation1 = {
-            "type": "import_violation",
-            "pattern": "circular_dependency",
-            "files": ["a.py", "b.py"],
-        }
 
         # Step 2: Heal and store pattern
         healing1 = {"status": "fixed", "strategy": "extract_interface", "success": True}
@@ -188,11 +183,6 @@ class TestPatternLearningCycle:
         client.cache_set(pattern_key, healing1, "agentic_core")
 
         # Step 3: Similar violation occurs
-        violation2 = {
-            "type": "import_violation",
-            "pattern": "circular_dependency",
-            "files": ["c.py", "d.py"],
-        }
 
         # Step 4: Recall pattern
         recalled = client.cache_get(pattern_key, "agentic_core")
@@ -220,7 +210,7 @@ class TestPatternLearningCycle:
         client.cache_set("evolving_pattern", pattern, "agentic_core")
 
         # Simulate successful uses
-        for i in range(5):
+        for _i in range(5):
             current = client.cache_get("evolving_pattern", "agentic_core")
             current["success_count"] += 1
             current["quality_score"] = current["success_count"] / (
@@ -368,7 +358,7 @@ class TestErrorRecovery:
         guardrails = MetaLearningGuardrails()
 
         # Hit depth limit
-        for i in range(5):
+        for _i in range(5):
             guardrails.increment_healing_depth("RecoveryAgent", "deep_v")
 
         # Should be blocked
@@ -504,7 +494,7 @@ class TestProductionScenarios:
         heals_attempted = 0
         max_attempts = 10
 
-        for i in range(max_attempts):
+        for _i in range(max_attempts):
             if guardrails.check_healing_depth("LoopAgent", "recurring_violation"):
                 guardrails.increment_healing_depth("LoopAgent", "recurring_violation")
                 heals_attempted += 1

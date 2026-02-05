@@ -147,12 +147,12 @@ def risky_function():
         source_code = '''def complex_function():
     """
     This is a multiline docstring.
-    
+
     It has multiple paragraphs.
-    
+
     Args:
         None
-        
+
     Returns:
         int: A value
     """

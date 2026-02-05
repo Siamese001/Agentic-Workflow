@@ -184,7 +184,7 @@ class DomainPlannerAdapter(HealingAdapter):
 
         # Validate confidence range
         confidence = getattr(result, "confidence", None)
-        if not isinstance(confidence, (int, float)) or not (0.0 <= confidence <= 1.0):
+        if not isinstance(confidence, int | float) or not (0.0 <= confidence <= 1.0):
             logger.warning(f"DomainPlannerAdapter: confidence must be 0.0-1.0, got {confidence}")
             return False
 

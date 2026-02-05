@@ -184,7 +184,7 @@ class SurgicalDocstringInserter(cst.CSTTransformer):
                 first_expr = first_stmt.body[0]
                 if isinstance(first_expr, cst.Expr):
                     value = first_expr.value
-                    if isinstance(value, (cst.SimpleString, cst.ConcatenatedString)):
+                    if isinstance(value, cst.SimpleString | cst.ConcatenatedString):
                         # Check if it's a docstring (triple-quoted)
                         if isinstance(value, cst.SimpleString):
                             return value.value.startswith(('"""', "'''"))

@@ -176,7 +176,7 @@ class InputValidator:
         if isinstance(value, str) and not value.strip():
             return ValidationResult.failure(["Value cannot be empty"])
 
-        if isinstance(value, (list, dict)) and len(value) == 0:
+        if isinstance(value, list | dict) and len(value) == 0:
             return ValidationResult.failure(["Value cannot be empty"])
 
         return ValidationResult.success(value)

@@ -191,7 +191,7 @@ class PathFragilityDetector(AntiPatternDetector):
             return """Replace os.path.join with pathlib.Path:
     # Before
     path = os.path.join(base, "subdir", "file.txt")
-    
+
     # After
     from pathlib import Path
     path = Path(base) / "subdir" / "file.txt" """
@@ -200,7 +200,7 @@ class PathFragilityDetector(AntiPatternDetector):
             return """Replace os.getcwd with Path.cwd():
     # Before
     cwd = os.getcwd()
-    
+
     # After
     from pathlib import Path
     cwd = Path.cwd()"""
@@ -209,17 +209,17 @@ class PathFragilityDetector(AntiPatternDetector):
             return """Replace os.path.exists with Path.exists():
     # Before
     if os.path.exists(path):
-    
+
     # After
     from pathlib import Path
     if Path(path).exists():"""
 
         return """Use pathlib.Path for all path operations:
     from pathlib import Path
-    
+
     # Path construction
     path = Path(base) / "subdir" / "file.txt"
-    
+
     # Path operations
     path.exists()
     path.is_file()

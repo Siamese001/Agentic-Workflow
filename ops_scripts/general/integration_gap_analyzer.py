@@ -299,8 +299,8 @@ def generate_migration_json(results):
             "p3_count": len(results["by_priority"]["P3"]),
             "component_gaps": results["component_usage"],
         },
-        "by_layer": {layer: [a for a in agents] for layer, agents in results["by_layer"].items()},
-        "by_priority": {p: [a for a in agents] for p, agents in results["by_priority"].items()},
+        "by_layer": {layer: list(agents) for layer, agents in results["by_layer"].items()},
+        "by_priority": {p: list(agents) for p, agents in results["by_priority"].items()},
     }
 
     # Save to file

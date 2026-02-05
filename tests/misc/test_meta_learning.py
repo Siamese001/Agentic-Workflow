@@ -284,7 +284,7 @@ class TestHealingDepthTracking:
         assert can_heal is True
 
         # Increment to limit
-        for i in range(3, 6):  # Go to depth 5 (max)
+        for _i in range(3, 6):  # Go to depth 5 (max)
             client.increment_healing_depth(agent_name, violation_id)
 
         # Test check at limit
@@ -308,7 +308,7 @@ class TestHealingDepthTracking:
         violation_id = "test_violation_456"
 
         # Increment beyond max depth
-        for i in range(10):  # Try to go way beyond
+        for _i in range(10):  # Try to go way beyond
             client.increment_healing_depth(agent_name, violation_id)
 
         # Should still be prevented

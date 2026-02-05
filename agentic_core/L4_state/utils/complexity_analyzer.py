@@ -41,7 +41,7 @@ def calculate_mccabe_complexity(node: ast.AST) -> int:
     """
     complexity = 1
     for child in ast.walk(node):
-        if isinstance(child, (ast.If, ast.For, ast.While, ast.ExceptHandler)):
+        if isinstance(child, ast.If | ast.For | ast.While | ast.ExceptHandler):
             complexity += 1
         elif isinstance(child, ast.BoolOp):
             # Each 'and' or 'or' adds n-1 paths
@@ -89,7 +89,7 @@ def analyze_file_complexity(file_path: str, max_complexity: int = 10) -> list[di
         tree = ast.parse(content)
 
         for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 complexity = calculate_mccabe_complexity(node)
                 if complexity > max_complexity:
                     violations.append(

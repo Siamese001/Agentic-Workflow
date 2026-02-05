@@ -162,7 +162,7 @@ class RegistryVerifier:
                 methods = [
                     n.name
                     for n in node.body
-                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)
                 ]
 
                 return AgentInfo(

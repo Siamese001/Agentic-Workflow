@@ -145,7 +145,7 @@ import os  # OS operations
 
 class MyClass:
     """Class docstring."""
-    
+
     def method(self):
         # Method comment
         try:

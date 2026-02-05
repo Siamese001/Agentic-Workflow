@@ -96,7 +96,7 @@ def calculate(x, y):
 
 class MyClass:
     """Class docstring."""
-    
+
     def method(self):
         pass
 '''
@@ -220,15 +220,15 @@ class TestCombinedStructuralFixes:
 
     def test_multiple_structural_fixes(self):
         """Test multiple structural fixes at once."""
-        source_code = """# Header   
-def func1():   
+        source_code = """# Header
+def func1():
     pass
 
 
 
 
 def func2():
-    return 42   
+    return 42
 """
 
         with tempfile.NamedTemporaryFile(
