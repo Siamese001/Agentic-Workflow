@@ -37,11 +37,13 @@ try:
 
     HAS_SOVEREIGN_BASE = True
     HAS_ATOMIC_MIXIN = True
+    # Define base classes tuple for inheritance
+    BASE_CLASSES = (AtomicExecutionMixin, SovereignBaseAgent)
 except ImportError:
     HAS_SOVEREIGN_BASE = False
     HAS_ATOMIC_MIXIN = False
-    SovereignBaseAgent = object
-    AtomicExecutionMixin = object
+    # Use single base class to avoid duplication
+    BASE_CLASSES = (object,)
 
     def standard_heal(func):
         """Fallback decorator when full infrastructure unavailable."""
@@ -98,7 +100,7 @@ FileType = Literal[
 
 
 @dataclass
-class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
+class FileClassificationAgent(*BASE_CLASSES):
     """
     Enforces file classification and naming conventions with architectural integrity.
 

@@ -22,7 +22,7 @@ class TestE2EAllPhasesIntegration:
 
     def test_e2e_file_type_has_all_categories(self):
         """Verify FileType has all categories from implementation."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import FileType
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import FileType
 
         expected = {
             # Original categories
@@ -50,7 +50,7 @@ class TestE2EAllPhasesIntegration:
 
     def test_e2e_all_detection_methods_exist(self):
         """Verify all detection methods exist."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -71,7 +71,7 @@ class TestE2EAllPhasesIntegration:
 
     def test_e2e_classify_file_method_exists(self):
         """Verify core classify_file method still works."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -80,7 +80,7 @@ class TestE2EAllPhasesIntegration:
 
     def test_e2e_helper_functions_work(self):
         """Verify helper functions are accessible."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
             Logger,
             get_python_files_fast,
         )
@@ -94,7 +94,7 @@ class TestE2EBackwardCompatibility:
 
     def test_e2e_original_categories_unchanged(self):
         """Verify original 12 categories still exist."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import FileType
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import FileType
 
         original = {
             "AGENT",
@@ -114,7 +114,7 @@ class TestE2EBackwardCompatibility:
 
     def test_e2e_core_methods_unchanged(self):
         """Verify core methods still exist."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -134,7 +134,7 @@ class TestE2EPhaseValidation:
 
     def test_e2e_core_detection_methods(self):
         """Verify core detection methods exist."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -149,7 +149,7 @@ class TestE2EPhaseValidation:
 
     def test_e2e_ast_detection_methods(self):
         """Verify AST-based detection methods exist."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -165,7 +165,7 @@ class TestE2EPhaseValidation:
 
     def test_e2e_windsurf_categories(self):
         """Verify Windsurf implementation categories exist."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import FileType
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import FileType
 
         windsurf_categories = {
             "ORCHESTRATOR",
@@ -182,13 +182,13 @@ class TestE2EModuleImports:
 
     def test_e2e_import_file_type(self):
         """Verify FileType can be imported."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import FileType
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import FileType
 
         assert FileType is not None
 
     def test_e2e_import_agent_class(self):
         """Verify FileClassificationAgent can be imported."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -196,7 +196,7 @@ class TestE2EModuleImports:
 
     def test_e2e_import_helper_function(self):
         """Verify get_python_files_fast can be imported."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
             get_python_files_fast,
         )
 
@@ -204,7 +204,7 @@ class TestE2EModuleImports:
 
     def test_e2e_import_logger(self):
         """Verify Logger can be imported."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import Logger
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import Logger
 
         assert Logger is not None
 
@@ -214,7 +214,7 @@ class TestE2EEnhancementsSummary:
 
     def test_e2e_total_enhancements(self):
         """Verify total enhancements: detection methods + categories."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
             FileClassificationAgent,
             FileType,
         )
@@ -249,7 +249,7 @@ class TestE2EEnhancementsSummary:
         """Verify FileClassificationAgent is a dataclass."""
         from dataclasses import is_dataclass
 
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
