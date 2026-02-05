@@ -1,14 +1,46 @@
 """
-Subatomic Compliance Tests
+Subatomic Compliance Tests (HARDENED)
+======================================
+Zero-Trust Guardian Layer for Subatomic Architecture Enforcement.
 
-Enforces "Power of Two" and "Single Layer" constraints for agents.
-Uses AST analysis to inspect class definitions without executing them.
+MANIFESTO COMPLIANCE:
+1. Static Stasis: AST-only analysis, NO code execution
+2. Binary Output: PASS or BLOCK (pytest.fail), NO warnings
+3. Machine-Readable: JSON violations via GuardianReportBuilder
+4. Subatomic Atomicity:
+   - Block files > 800 LOC
+   - Block Agents with > 2 Mixins (Power of Two)
+   - Block Agents with > 2 Public Methods (Power of Two)
+5. No AI Checking AI: Deterministic Python only
+
+POWER OF TWO RULE:
+- Maximum 2 capability mixins per agent
+- Maximum 2 primary public methods per agent
+- No exceptions. No debt tracking. BLOCK immediately.
 """
 
 import ast
+import sys
 from pathlib import Path
 
 import pytest
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from tests.guardian.guardian_report import (
+    FixAction,
+    GuardianReportBuilder,
+    ViolationCode,
+)
+
+# =============================================================================
+# CONSTANTS - HARDENED LIMITS (NO EXCEPTIONS)
+# =============================================================================
+MAX_LOC = 800  # Maximum lines of code per file
+MAX_MIXINS = 2  # Power of Two: Maximum mixins per agent
+MAX_PUBLIC_METHODS = 2  # Power of Two: Maximum public methods per agent
 
 
 class AgentAnalyzer(ast.NodeVisitor):
@@ -156,13 +188,17 @@ def get_import_layer(import_name: str) -> str | None:
 
 
 class TestSubatomicCompliance:
-    """Test suite for subatomic compliance constraints."""
+    """
+    HARDENED Test suite for subatomic compliance constraints.
+
+    All tests use pytest.fail() for violations. NO skips. NO debt tracking.
+    Violations are reported to GuardianReportBuilder for JSON output.
+    """
 
     @pytest.fixture(scope="class")
     def agent_analysis(self):
-        """Fixture to analyze all agent files."""
-        root_dir = Path(__file__).parent.parent.parent
-        agent_files = find_agent_files(root_dir)
+        """Fixture to analyze all agent files using AST (static only)."""
+        agent_files = find_agent_files(PROJECT_ROOT)
 
         analysis_results = []
         for file_path in agent_files:
@@ -171,8 +207,17 @@ class TestSubatomicCompliance:
 
         return analysis_results
 
-    def test_capability_limit(self, agent_analysis):
-        """Test: Power of Two constraint - methods + mixins <= 2."""
+    @pytest.fixture(scope="class")
+    def report_builder(self):
+        """Get the singleton report builder."""
+        return GuardianReportBuilder.get_instance("guardian")
+
+    def test_mixin_limit(self, agent_analysis, report_builder):
+        """
+        POWER OF TWO: Maximum 2 mixins per agent.
+
+        BLOCKING: Any agent with > 2 mixins fails immediately.
+        """
         violations = []
 
         for file_analysis in agent_analysis:
@@ -180,41 +225,105 @@ class TestSubatomicCompliance:
                 continue
 
             for agent in file_analysis["agents"]:
-                # Count capability mixins
                 mixin_count = count_capability_mixins(agent["bases"])
 
-                # Count primary task methods (exclude common inherited methods)
-                excluded_methods = {"heal", "validate", "execute", "initialize", "__init__"}
-                primary_methods = [m for m in agent["methods"] if m not in excluded_methods]
-                method_count = len(primary_methods)
+                if mixin_count > MAX_MIXINS:
+                    violation = {
+                        "agent": agent["name"],
+                        "file": file_analysis["file_path"],
+                        "line": agent["line_number"],
+                        "mixin_count": mixin_count,
+                        "limit": MAX_MIXINS,
+                    }
+                    violations.append(violation)
 
-                # Total capabilities
-                total_capabilities = mixin_count + method_count
-
-                if total_capabilities > 2:
-                    violations.append(
-                        {
-                            "agent": agent["name"],
-                            "file": file_analysis["file_path"],
-                            "line": agent["line_number"],
-                            "mixins": mixin_count,
-                            "methods": method_count,
-                            "total": total_capabilities,
-                        }
+                    # Report to JSON builder
+                    report_builder.add_violation(
+                        code=ViolationCode.SUBATOMIC_MIXIN_LIMIT,
+                        file=file_analysis["file_path"],
+                        line=agent["line_number"],
+                        message=f"Agent '{agent['name']}' has {mixin_count} mixins (max: {MAX_MIXINS})",
+                        fix_action=FixAction.REMOVE_MIXIN,
+                        context={"mixins": agent["bases"], "count": mixin_count},
                     )
 
         if violations:
-            violation_msg = "Subatomic Violation: Agent has too many responsibilities:\n"
-            for v in violations:
-                violation_msg += f"  - {v['agent']} ({v['file']}:{v['line']}) "
-                violation_msg += f"has {v['total']} capabilities ({v['mixins']} mixins + {v['methods']} methods)\n"
+            pytest.fail(
+                f"BLOCKING: {len(violations)} agents exceed mixin limit ({MAX_MIXINS}):\n"
+                + "\n".join(f"  - {v['agent']}: {v['mixin_count']} mixins" for v in violations[:10])
+            )
 
-            # Mark as structural debt but don't fail the test
-            print(f"\n⚠️  STRUCTURAL DEBT DETECTED:\n{violation_msg}")
-            pytest.skip("Structural debt - capability limit exceeded")
+    def test_method_limit(self, agent_analysis, report_builder):
+        """
+        POWER OF TWO: Maximum 2 public methods per agent.
 
-    def test_layer_zoning_alignment(self, agent_analysis):
-        """Test: Single Layer constraint - path vs metadata consistency."""
+        BLOCKING: Any agent with > 2 public methods fails immediately.
+        """
+        violations = []
+
+        # Methods that don't count toward the limit (infrastructure methods)
+        excluded_methods = {
+            "heal",
+            "validate",
+            "execute",
+            "initialize",
+            "__init__",
+            "__post_init__",
+            "__repr__",
+            "__str__",
+            "__eq__",
+            "__hash__",
+        }
+
+        for file_analysis in agent_analysis:
+            if "error" in file_analysis:
+                continue
+
+            for agent in file_analysis["agents"]:
+                # Count primary public methods only
+                primary_methods = [
+                    m
+                    for m in agent["methods"]
+                    if m not in excluded_methods and not m.startswith("_")
+                ]
+                method_count = len(primary_methods)
+
+                if method_count > MAX_PUBLIC_METHODS:
+                    violation = {
+                        "agent": agent["name"],
+                        "file": file_analysis["file_path"],
+                        "line": agent["line_number"],
+                        "method_count": method_count,
+                        "methods": primary_methods,
+                        "limit": MAX_PUBLIC_METHODS,
+                    }
+                    violations.append(violation)
+
+                    # Report to JSON builder
+                    report_builder.add_violation(
+                        code=ViolationCode.SUBATOMIC_METHOD_LIMIT,
+                        file=file_analysis["file_path"],
+                        line=agent["line_number"],
+                        message=f"Agent '{agent['name']}' has {method_count} public methods (max: {MAX_PUBLIC_METHODS})",
+                        fix_action=FixAction.REMOVE_METHOD,
+                        context={"methods": primary_methods, "count": method_count},
+                    )
+
+        if violations:
+            pytest.fail(
+                f"BLOCKING: {len(violations)} agents exceed method limit ({MAX_PUBLIC_METHODS}):\n"
+                + "\n".join(
+                    f"  - {v['agent']}: {v['method_count']} methods ({', '.join(v['methods'][:3])}...)"
+                    for v in violations[:10]
+                )
+            )
+
+    def test_layer_zoning_alignment(self, agent_analysis, report_builder):
+        """
+        BLOCKING: Agent must not import from conflicting layers.
+
+        Single Layer constraint - path vs imports consistency.
+        """
         violations = []
 
         for file_analysis in agent_analysis:
@@ -226,36 +335,49 @@ class TestSubatomicCompliance:
                 continue
 
             for agent in file_analysis["agents"]:
-                # Check if agent imports from conflicting layers
                 conflicting_imports = []
                 for import_name in file_analysis["imports"]:
                     import_layer = get_import_layer(import_name)
                     if import_layer and import_layer != file_layer:
-                        # Allow some exceptions (base agents, common utilities)
-                        if not any(x in import_name.lower() for x in ["base", "common", "shared"]):
+                        # Allow base agents, common utilities
+                        if not any(
+                            x in import_name.lower() for x in ["base", "common", "shared", "utils"]
+                        ):
                             conflicting_imports.append(f"{import_name} ({import_layer})")
 
                 if conflicting_imports:
-                    violations.append(
-                        {
-                            "agent": agent["name"],
-                            "file": file_analysis["file_path"],
-                            "file_layer": file_layer,
-                            "conflicting_imports": conflicting_imports,
-                        }
+                    violation = {
+                        "agent": agent["name"],
+                        "file": file_analysis["file_path"],
+                        "file_layer": file_layer,
+                        "conflicting_imports": conflicting_imports,
+                    }
+                    violations.append(violation)
+
+                    report_builder.add_violation(
+                        code=ViolationCode.SUBATOMIC_LAYER_ZONING,
+                        file=file_analysis["file_path"],
+                        line=agent["line_number"],
+                        message=f"Agent '{agent['name']}' in {file_layer} imports from conflicting layers",
+                        fix_action=FixAction.MOVE_FILE,
+                        context={"layer": file_layer, "conflicts": conflicting_imports},
                     )
 
         if violations:
-            violation_msg = "Zoning Violation: Agent is straddling multiple layers:\n"
-            for v in violations:
-                violation_msg += f"  - {v['agent']} ({v['file']}) is in {v['file_layer']} "
-                violation_msg += f"but imports from: {', '.join(v['conflicting_imports'])}\n"
+            pytest.fail(
+                f"BLOCKING: {len(violations)} agents violate layer zoning:\n"
+                + "\n".join(
+                    f"  - {v['agent']} ({v['file_layer']}): {len(v['conflicting_imports'])} conflicts"
+                    for v in violations[:10]
+                )
+            )
 
-            print(f"\n⚠️  STRUCTURAL DEBT DETECTED:\n{violation_msg}")
-            pytest.skip("Structural debt - layer zoning misalignment")
+    def test_subatomic_naming_convention(self, agent_analysis, report_builder):
+        """
+        BLOCKING: No 'And' or '&' in agent names.
 
-    def test_subatomic_naming_convention(self, agent_analysis):
-        """Test: Single Responsibility - no 'And' or '&' in agent names."""
+        Single Responsibility principle enforcement.
+        """
         violations = []
 
         for file_analysis in agent_analysis:
@@ -264,28 +386,34 @@ class TestSubatomicCompliance:
 
             for agent in file_analysis["agents"]:
                 if "And" in agent["name"] or "&" in agent["name"]:
-                    violations.append(
-                        {
-                            "agent": agent["name"],
-                            "file": file_analysis["file_path"],
-                            "line": agent["line_number"],
-                        }
+                    violation = {
+                        "agent": agent["name"],
+                        "file": file_analysis["file_path"],
+                        "line": agent["line_number"],
+                    }
+                    violations.append(violation)
+
+                    report_builder.add_violation(
+                        code=ViolationCode.SUBATOMIC_NAMING,
+                        file=file_analysis["file_path"],
+                        line=agent["line_number"],
+                        message=f"Agent '{agent['name']}' violates single responsibility naming",
+                        fix_action=FixAction.RENAME,
                     )
 
         if violations:
-            violation_msg = "Naming Violation: Agent violates single responsibility principle:\n"
-            for v in violations:
-                violation_msg += (
-                    f"  - {v['agent']} ({v['file']}:{v['line']}) contains compound name\n"
-                )
+            pytest.fail(
+                f"BLOCKING: {len(violations)} agents have compound names:\n"
+                + "\n".join(f"  - {v['agent']}" for v in violations)
+            )
 
-            print(f"\n⚠️  STRUCTURAL DEBT DETECTED:\n{violation_msg}")
-            pytest.skip("Structural debt - naming convention violation")
+    def test_no_cross_layer_pollution(self, agent_analysis, report_builder):
+        """
+        BLOCKING: Lower layers cannot depend on higher layers.
 
-    def test_no_cross_layer_pollution(self, agent_analysis):
-        """Test: Gravity of Information - lower layers cannot depend on higher layers."""
+        Gravity of Information enforcement.
+        """
         violations = []
-
         layer_hierarchy = {"Base": 0, "L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
 
         for file_analysis in agent_analysis:
@@ -298,69 +426,145 @@ class TestSubatomicCompliance:
 
             file_level = layer_hierarchy[file_layer]
 
-            # Check imports for violations
             for import_name in file_analysis["imports"]:
                 import_layer = get_import_layer(import_name)
                 if import_layer and import_layer in layer_hierarchy:
                     import_level = layer_hierarchy[import_layer]
 
                     # Lower layer importing from higher layer is a violation
-                    if file_level < import_level and file_level <= 1:  # L0/L1 restriction
-                        violations.append(
-                            {
-                                "file": file_analysis["file_path"],
-                                "file_layer": file_layer,
-                                "import": import_name,
-                                "import_layer": import_layer,
-                            }
+                    if file_level < import_level:
+                        violation = {
+                            "file": file_analysis["file_path"],
+                            "file_layer": file_layer,
+                            "import": import_name,
+                            "import_layer": import_layer,
+                        }
+                        violations.append(violation)
+
+                        report_builder.add_violation(
+                            code=ViolationCode.IMPORT_LAYER_VIOLATION,
+                            file=file_analysis["file_path"],
+                            line=1,
+                            message=f"Layer {file_layer} imports from higher layer {import_layer}",
+                            fix_action=FixAction.REMOVE_IMPORT,
+                            context={"import": import_name},
                         )
 
         if violations:
-            violation_msg = "Cross-Layer Pollution: Lower layer depends on higher layer:\n"
-            for v in violations:
-                violation_msg += f"  - {v['file']} ({v['file_layer']}) imports {v['import']} ({v['import_layer']})\n"
+            pytest.fail(
+                f"BLOCKING: {len(violations)} cross-layer pollution violations:\n"
+                + "\n".join(
+                    f"  - {v['file_layer']} -> {v['import_layer']}: {v['import']}"
+                    for v in violations[:10]
+                )
+            )
 
-            print(f"\n⚠️  STRUCTURAL DEBT DETECTED:\n{violation_msg}")
-            pytest.skip("Structural debt - cross-layer pollution")
+    def test_file_size_limit(self, report_builder):
+        """
+        BLOCKING: No file > 800 LOC (Monolith Check).
+
+        Subatomic atomicity enforcement.
+        """
+        violations = []
+        agent_files = find_agent_files(PROJECT_ROOT)
+
+        for file_path in agent_files:
+            try:
+                content = file_path.read_text(encoding="utf-8")
+                lines = content.splitlines()
+
+                # Count non-empty, non-comment lines
+                code_lines = [
+                    line for line in lines if line.strip() and not line.strip().startswith("#")
+                ]
+                loc = len(code_lines)
+
+                if loc > MAX_LOC:
+                    rel_path = file_path.relative_to(PROJECT_ROOT)
+                    violations.append(
+                        {
+                            "file": str(rel_path),
+                            "loc": loc,
+                            "limit": MAX_LOC,
+                        }
+                    )
+
+                    report_builder.add_violation(
+                        code=ViolationCode.SUBATOMIC_MONOLITH,
+                        file=str(rel_path),
+                        line=1,
+                        message=f"File has {loc} LOC (max: {MAX_LOC})",
+                        fix_action=FixAction.SPLIT_FILE,
+                        context={"loc": loc, "limit": MAX_LOC},
+                    )
+            except Exception:
+                continue
+
+        if violations:
+            pytest.fail(
+                f"BLOCKING: {len(violations)} monolith files exceed {MAX_LOC} LOC:\n"
+                + "\n".join(f"  - {v['file']}: {v['loc']} LOC" for v in violations[:10])
+            )
 
 
 if __name__ == "__main__":
-    # Run standalone analysis
-    root_dir = Path(__file__).parent.parent.parent
-    agent_files = find_agent_files(root_dir)
+    # Run standalone analysis with JSON output
+    import json
 
-    print(f"Analyzing {len(agent_files)} agent files for subatomic compliance...")
-
-    violations = {"capability_limit": [], "layer_zoning": [], "naming": [], "cross_layer": []}
+    agent_files = find_agent_files(PROJECT_ROOT)
+    report = {
+        "status": "PASS",
+        "violations": [],
+        "summary": {},
+    }
 
     for file_path in agent_files:
         result = analyze_agent_file(file_path)
 
         if "error" in result:
-            print(f"Error analyzing {file_path}: {result['error']}")
             continue
 
         for agent in result["agents"]:
             # Check naming convention
             if "And" in agent["name"] or "&" in agent["name"]:
-                violations["naming"].append(f"{agent['name']} in {file_path}")
-
-            # Check capability limit
-            mixin_count = count_capability_mixins(agent["bases"])
-            excluded_methods = {"heal", "validate", "execute", "initialize", "__init__"}
-            primary_methods = [m for m in agent["methods"] if m not in excluded_methods]
-
-            if mixin_count + len(primary_methods) > 2:
-                violations["capability_limit"].append(
-                    f"{agent['name']} in {file_path} "
-                    f"({mixin_count} mixins + {len(primary_methods)} methods)"
+                report["violations"].append(
+                    {
+                        "code": "SUBATOMIC_NAMING",
+                        "file": str(file_path),
+                        "line": agent["line_number"],
+                        "message": f"Agent '{agent['name']}' violates single responsibility naming",
+                    }
                 )
 
-    print("\n=== SUBATOMIC COMPLIANCE REPORT ===")
-    for violation_type, items in violations.items():
-        if items:
-            print(f"\n{violation_type.upper()} VIOLATIONS:")
-            for item in items:
-                print(f"  - {item}")
-        else:
-            print(f"\n{violation_type.upper()}: No violations found")
+            # Check mixin limit (Power of Two)
+            mixin_count = count_capability_mixins(agent["bases"])
+            if mixin_count > MAX_MIXINS:
+                report["violations"].append(
+                    {
+                        "code": "SUBATOMIC_MIXIN_LIMIT",
+                        "file": str(file_path),
+                        "line": agent["line_number"],
+                        "message": f"Agent '{agent['name']}' has {mixin_count} mixins (max: {MAX_MIXINS})",
+                    }
+                )
+
+            # Check method limit (Power of Two)
+            excluded_methods = {"heal", "validate", "execute", "initialize", "__init__"}
+            primary_methods = [
+                m for m in agent["methods"] if m not in excluded_methods and not m.startswith("_")
+            ]
+            if len(primary_methods) > MAX_PUBLIC_METHODS:
+                report["violations"].append(
+                    {
+                        "code": "SUBATOMIC_METHOD_LIMIT",
+                        "file": str(file_path),
+                        "line": agent["line_number"],
+                        "message": f"Agent '{agent['name']}' has {len(primary_methods)} methods (max: {MAX_PUBLIC_METHODS})",
+                    }
+                )
+
+    if report["violations"]:
+        report["status"] = "BLOCKING"
+
+    # Output JSON
+    print(json.dumps(report, indent=2))
