@@ -185,9 +185,11 @@ class FileClassificationAgent(*BASE_CLASSES):
             if target_territory_path:
                 print(f"\n[TERRITORY] {path.name} ({ftype}) is in {path.parent.name}")
                 print(f"  [ACTION] MOVE to {target_territory_path.parent.name}")
-                
+
                 # Execute Move
-                if self.resolve_collision_and_rename(path, target_territory_path.name, target_dir=target_territory_path.parent):
+                if self.resolve_collision_and_rename(
+                    path, target_territory_path.name, target_dir=target_territory_path.parent
+                ):
                     if not self.dry_run:
                         self.stats["territory_moves"] += 1
                         # Update path registry to reflect new location for subsequent operations
@@ -195,7 +197,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                         self.file_registry[idx] = path
                 else:
                     # If move failed (collision), log and continue to rename check in place
-                    print(f"  [WARNING] Move failed. Proceeding with in-place audit.")
+                    print("  [WARNING] Move failed. Proceeding with in-place audit.")
 
             new_name = self.get_compliant_name(path, ftype)
             if new_name and new_name != path.name:
@@ -1494,12 +1496,15 @@ class FileClassificationAgent(*BASE_CLASSES):
         """
         Enforces physical-to-logical alignment with Hardened Path Logic.
         Returns the correct destination Path if the file is in the wrong folder.
+
+        Current implementation assumes shallow category depth (app_root/category/file.py)
+        which matches apps_rg, apps_lic, apps_shared, and their test mirrors.
         """
         # Map logical types to mandatory parent folder names
         territory_map = {
             "AGENT": ["engines", "core"],
             "ORCHESTRATOR": ["engines", "orchestrators", "core"],
-            "VALIDATOR": ["validators", "safety", "guards"],
+            "VALIDATOR": ["validators", "safety", "guards", "validation"],  # validation added for apps_rg
             "CONFIG": ["config", "manifests"],
             "MIXIN": ["mixins", "base_agents"],
             "ADAPTER": ["adapters", "strategies"],
@@ -1508,16 +1513,18 @@ class FileClassificationAgent(*BASE_CLASSES):
         }
 
         current_parent = path.parent.name.lower()
-        
+
         # Special handling for Tests: Mirror the architectural source
         if file_type == "TEST":
-            # Heuristic: infer territory from filename
-            if "_validator" in path.name:
-                target_territories = ["validators", "safety"]
-            elif "_agent" in path.name or "_orchestrator" in path.name:
+            name_lower = path.name.lower()
+            if "_validator" in name_lower or "validator_" in name_lower:
+                target_territories = ["validators", "safety", "validation"]
+            elif "_agent" in name_lower or "_orchestrator" in name_lower:
                 target_territories = ["engines", "core"]
-            elif "_config" in path.name:
+            elif "_config" in name_lower:
                 target_territories = ["config"]
+            elif "_node" in name_lower:
+                target_territories = ["logic_nodes"]
             else:
                 return None
         elif file_type in territory_map:
@@ -1531,17 +1538,33 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # [HARDENED] Path Swap Logic
         # Only swap directories if we are confident we are at the right architectural level.
-        # We check if the current parent is a "Known Territory" (even if wrong one) or generic "utils".
-        # This prevents flattening deep domain structures (e.g. prompt_governance).
-        
-        all_known_territories = {t for list in territory_map.values() for t in list}
-        all_known_territories.update({"utils", "common_utils", "helpers"})
-        
+
+        all_known_territories = {t for lst in territory_map.values() for t in lst}
+        all_known_territories.update(
+            {
+                "utils",
+                "common_utils",
+                "helpers",
+                "logic_nodes",
+                "domain",
+                "shared",
+                "system_flow",
+                "asset_library",
+                "unit",
+                "integration",
+                "tests",
+            }
+        )
+
+        # If we are in a known wrong territory, move sideways
         if current_parent in all_known_territories:
             # Safe to swap: e.g. .../engines/Val.py -> .../validators/Val.py
             target_folder = target_territories[0]
+
+            # CRITICAL: Preserve depth for tests/unit/app_name/category/
+            # Assumes structure: .../app_root/wrong_category/file.py
             return path.parent.parent / target_folder / path.name
-            
+
         return None
 
     def get_compliant_name(self, path: Path, file_type: FileType) -> str | None:

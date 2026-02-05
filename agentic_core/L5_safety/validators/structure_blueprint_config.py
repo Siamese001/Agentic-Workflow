@@ -287,12 +287,56 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "agentic_core": {
                         "purpose": "Unit tests for agentic_core modules",
                         "subfolders": {
-                            "L0_maintenance": ["scripts", "deterministic", "logs", "boot", "core", "agents", "validators", "config"],
-                            "L1_cognition": ["thought_engine", "intent_analysis", "memory", "meta_learning", "core", "agents", "validators"],
+                            "L0_maintenance": [
+                                "scripts",
+                                "deterministic",
+                                "logs",
+                                "boot",
+                                "core",
+                                "agents",
+                                "validators",
+                                "config",
+                            ],
+                            "L1_cognition": [
+                                "thought_engine",
+                                "intent_analysis",
+                                "memory",
+                                "meta_learning",
+                                "core",
+                                "agents",
+                                "validators",
+                            ],
                             "L2_execution": ["tool_registry", "mcp", "execution_bridge", "core", "agents"],
-                            "L3_orchestration": ["workflow_engines", "fission_logic", "interfaces", "utils", "core", "agents", "orchestration"],
-                            "L4_state": ["validation_context", "ledger", "memory", "core", "agents", "validators"],
-                            "L5_safety": ["validators", "guardrails", "policy_engine", "gravity", "red_teaming", "cognition", "core", "utils", "security", "agents", "strategies"],
+                            "L3_orchestration": [
+                                "workflow_engines",
+                                "fission_logic",
+                                "interfaces",
+                                "utils",
+                                "core",
+                                "agents",
+                                "orchestration",
+                            ],
+                            "L4_state": [
+                                "validation_context",
+                                "ledger",
+                                "memory",
+                                "core",
+                                "agents",
+                                "validators",
+                            ],
+                            "L5_safety": [
+                                "validators",
+                                "guardrails",
+                                "policy_engine",
+                                "gravity",
+                                "red_teaming",
+                                "cognition",
+                                "core",
+                                "utils",
+                                "security",
+                                "agents",
+                                "strategies",
+                            ],
                             "L6_observability": ["dashboards", "agents", "reports", "telemetry", "core"],
                             "base_agents": [],
                             "domain": [],
@@ -303,23 +347,37 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "apps_lic": {
                         "purpose": "Unit tests for apps_lic modules",
                         "subfolders": {
-                            "engines": [],
-                            "domain": ["config", "utils"],
-                            "shared": ["tools", "utils"],
-                            "logic_nodes": [],
-                            "validators": [],
-                            "config": [],
+                            "asset_library": ["scripts", "templates", "hooks"],
+                            "domain": ["config", "utils", "models"],
+                            "engines": ["navigation", "interaction", "scraping", "drivers"],
+                            "logic_nodes": ["analysis", "connection", "messaging"],
+                            "reports": ["daily", "campaign", "performance"],
+                            "scripts": ["maintenance", "setup"],
+                            "shared": ["tools", "utils", "components"],
+                            "system_flow": ["campaigns", "cadence", "sequences"],
+                            "tools": ["browser", "network"],
                         },
                     },
                     "apps_rg": {
                         "purpose": "Unit tests for apps_rg modules",
                         "subfolders": {
-                            "engines": ["base", "generation", "hops", "orchestration", "quality", "retrieval", "safety", "utils"],
-                            "domain": ["config", "utils"],
-                            "shared": ["tools", "utils"],
-                            "logic_nodes": [],
-                            "validation": [],
-                            "utils": [],
+                            "asset_library": ["templates", "wording", "taxonomy"],
+                            "core": ["config", "exceptions"],
+                            "domain": ["entities", "models", "value_objects"],
+                            "engines": [
+                                "base",
+                                "generation",
+                                "hops",
+                                "orchestration",
+                                "quality",
+                                "retrieval",
+                                "safety",
+                                "utils",
+                            ],
+                            "logic_nodes": ["extraction", "formatting", "parsing"],
+                            "shared": ["tools", "utils", "components"],
+                            "system_flow": ["pipelines", "lifecycle"],
+                            "validation": ["checkers", "rules"],
                         },
                     },
                     "apps_shared": {
@@ -348,11 +406,47 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "subfolders": {
                     "agentic_core": {
                         "purpose": "Integration tests for agentic_core",
-                        "subfolders": ["L0_maintenance", "L1_cognition", "L3_orchestration", "L5_safety", "L6_observability", "core", "agents"],
+                        "subfolders": [
+                            "L0_maintenance",
+                            "L1_cognition",
+                            "L3_orchestration",
+                            "L5_safety",
+                            "L6_observability",
+                            "core",
+                            "agents",
+                        ],
                     },
-                    "apps_lic": {"purpose": "Integration tests for apps_lic", "subfolders": ["engines", "shared"]},
-                    "apps_rg": {"purpose": "Integration tests for apps_rg", "subfolders": ["engines", "shared"]},
-                    "apps_shared": {"purpose": "Integration tests for apps_shared", "subfolders": ["common_utils", "core"]},
+                    "apps_lic": {
+                        "purpose": "Integration tests for apps_lic",
+                        "subfolders": [
+                            "asset_library",
+                            "domain",
+                            "engines",
+                            "logic_nodes",
+                            "reports",
+                            "scripts",
+                            "shared",
+                            "system_flow",
+                            "tools",
+                        ],
+                    },
+                    "apps_rg": {
+                        "purpose": "Integration tests for apps_rg",
+                        "subfolders": [
+                            "asset_library",
+                            "core",
+                            "domain",
+                            "engines",
+                            "logic_nodes",
+                            "shared",
+                            "system_flow",
+                            "validation",
+                        ],
+                    },
+                    "apps_shared": {
+                        "purpose": "Integration tests for apps_shared",
+                        "subfolders": ["common_utils", "core"],
+                    },
                     "core": {"purpose": "Cross-cutting integration tests", "subfolders": []},
                 },
                 "forbidden_zones": ["misc", "temp", "old", "deprecated", "archive", "scratch"],
@@ -933,27 +1027,41 @@ SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
 }
 
 # === ACTUAL REPOSITORY STRUCTURE (2026-01-26 AUDIT) ===
+# [ULTRA-DIFF] RECONCILIATION: Formalizing App-Level Subfolder Structure as SSOT
+# These mappings represent the AUTHORITATIVE intended structure for apps_rg and apps_lic.
+# The tests/unit mirror MUST be kept in sync with these definitions.
+# Derived from current repository audit (2026-01-26) and existing test mirroring patterns.
+
 APPS_RG_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
-    "asset_library": [],  # Empty in actual repo
-    "core": [],  # Has 1 item (flat structure)
-    "domain": [],  # Has 6 items (flat structure)
-    "engines": [],  # Has 73 items (flat structure) - consider L3 depth
-    "logic_nodes": [],  # Has 6 items (flat structure)
-    "shared": [],  # Has 53 items (flat structure) - consider L3 depth
-    "system_flow": [],  # Empty in actual repo
-    "validation": [],  # Has 4 items (flat structure)
+    "asset_library": ["templates", "wording", "taxonomy"],
+    "core": ["config", "exceptions"],
+    "domain": ["entities", "models", "value_objects"],
+    "engines": [
+        "base",
+        "generation",
+        "hops",
+        "orchestration",
+        "quality",
+        "retrieval",
+        "safety",
+        "utils",
+    ],
+    "logic_nodes": ["extraction", "formatting", "parsing"],
+    "shared": ["tools", "utils", "components"],
+    "system_flow": ["pipelines", "lifecycle"],
+    "validation": ["checkers", "rules"],
 }
 
 APPS_LIC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
-    "asset_library": [],  # Empty in actual repo
-    "domain": [],  # Has 18 items (flat structure)
-    "engines": [],  # Has 53 items (flat structure) - consider L3 depth
-    "logic_nodes": [],  # Has 1 item (flat structure)
-    "reports": [],  # Has 2 items (flat structure)
-    "scripts": [],  # Has 2 items (flat structure)
-    "shared": [],  # Has 66 items (flat structure) - consider L3 depth
-    "system_flow": [],  # Empty in actual repo
-    "tools": [],  # Has 2 items (flat structure)
+    "asset_library": ["scripts", "templates", "hooks"],
+    "domain": ["config", "utils", "models"],
+    "engines": ["navigation", "interaction", "scraping", "drivers"],
+    "logic_nodes": ["analysis", "connection", "messaging"],
+    "reports": ["daily", "campaign", "performance"],
+    "scripts": ["maintenance", "setup"],
+    "shared": ["tools", "utils", "components"],
+    "system_flow": ["campaigns", "cadence", "sequences"],
+    "tools": ["browser", "network"],
 }
 
 APPS_SHARED_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
@@ -4262,6 +4370,38 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
             "imports": [],
             "bases": ["BaseTemplate"],
             "examples": ["CommonLayout", "StandardEmailFormat", "ReportTemplate"],
+        },
+        "config": {
+            "purpose": "Shared configuration files, settings, and environment management",
+            "entity_types": ["Class", "Dict", "Function"],
+            "keywords": ["config", "settings", "environment", "configuration", "setup", "params"],
+            "imports": ["os", "pathlib", "pydantic"],
+            "bases": ["BaseSettings", "BaseConfig"],
+            "examples": ["AppConfig", "EnvironmentSettings", "SharedParams"],
+        },
+        "core_components": {
+            "purpose": "Core architectural components and foundational building blocks",
+            "entity_types": ["Class"],
+            "keywords": ["core", "component", "foundation", "building_block", "infrastructure"],
+            "imports": [],
+            "bases": ["BaseComponent"],
+            "examples": ["EmbedJobDescription", "EmbedMessageTemplate", "EmbedRecipientProfile"],
+        },
+        "data": {
+            "purpose": "Shared data structures, data access objects, and data management utilities",
+            "entity_types": ["Class", "Function"],
+            "keywords": ["data", "dao", "repository", "storage", "persistence", "cache"],
+            "imports": ["typing", "pathlib"],
+            "bases": ["BaseRepository", "BaseDAO"],
+            "examples": ["DataCache", "SharedRepository", "DataAccessLayer"],
+        },
+        "tools": {
+            "purpose": "Shared tooling, utilities, and helper functions for common operations",
+            "entity_types": ["Class", "Function"],
+            "keywords": ["tool", "utility", "helper", "function", "operation", "service"],
+            "imports": [],
+            "bases": [],
+            "examples": ["FileTools", "StringTools", "DateTools", "ValidationTools"],
         },
     },
 }
