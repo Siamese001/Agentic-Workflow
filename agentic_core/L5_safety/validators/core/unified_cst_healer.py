@@ -12,24 +12,25 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import libcst as cst
 
 from agentic_core.L5_safety.security.verification_gate import VerificationGate
+
+from .cst_transformers import (
+    create_bare_except_fixer,
+    create_blank_line_normalizer,
+    create_docstring_inserter,
+    create_future_import_inserter,
+    create_import_remover,
+    create_trailing_whitespace_fixer,
+    create_type_hint_inserter,
+)
 from .surgical_context import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
-)
-from .cst_transformers import (
-    create_import_remover,
-    create_docstring_inserter,
-    create_bare_except_fixer,
-    create_future_import_inserter,
-    create_trailing_whitespace_fixer,
-    create_blank_line_normalizer,
-    create_type_hint_inserter,
 )
 
 Logger = logging.getLogger(__name__)
@@ -60,8 +61,8 @@ class HealingResult:
     errors: int = 0
     skipped: int = 0
     details: str = ""
-    artifacts: List[Dict[str, Any]] = field(default_factory=list)
-    modified_files: Set[Path] = field(default_factory=set)
+    artifacts: list[dict[str, Any]] = field(default_factory=list)
+    modified_files: set[Path] = field(default_factory=set)
 
 
 class UnifiedCSTHealer:
@@ -72,7 +73,7 @@ class UnifiedCSTHealer:
     ordering and conflict resolution.
     """
 
-    def __init__(self, config: Optional[HealingConfig] = None, context_manager=None):
+    def __init__(self, config: HealingConfig | None = None, context_manager=None):
         """
         Initialize the unified healer.
 
@@ -95,7 +96,7 @@ class UnifiedCSTHealer:
     def heal_file(
         self,
         file_path: Path,
-        violations: Optional[List[ViolationConstraint]] = None,
+        violations: list[ViolationConstraint] | None = None,
     ) -> HealingResult:
         """
         Heal a single file using all enabled transformers.
@@ -185,8 +186,8 @@ class UnifiedCSTHealer:
 
     def heal_files(
         self,
-        file_paths: List[Path],
-        violations_map: Optional[Dict[Path, List[ViolationConstraint]]] = None,
+        file_paths: list[Path],
+        violations_map: dict[Path, list[ViolationConstraint]] | None = None,
     ) -> HealingResult:
         """
         Heal multiple files.
@@ -222,7 +223,7 @@ class UnifiedCSTHealer:
 
         return total_result
 
-    def _detect_violations(self, content: str, file_path: Path) -> List[ViolationConstraint]:
+    def _detect_violations(self, content: str, file_path: Path) -> list[ViolationConstraint]:
         """
         Auto-detect violations in the content.
 
@@ -311,7 +312,7 @@ class UnifiedCSTHealer:
 
         return violations
 
-    def _apply_transformers(self, context: SurgicalContext) -> Dict[str, Any]:
+    def _apply_transformers(self, context: SurgicalContext) -> dict[str, Any]:
         """
         Apply all enabled transformers in the correct order.
 

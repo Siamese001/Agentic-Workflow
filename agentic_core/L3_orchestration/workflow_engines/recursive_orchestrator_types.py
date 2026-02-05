@@ -17,7 +17,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L3_orchestration.interfaces import (
@@ -43,7 +43,7 @@ class SuccessorSpec:
     depth_increment: int = 1
     validation_required: bool = True
     priority: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -91,8 +91,8 @@ class RecursiveOrchestrator:
         self.max_depth = max_depth
         self.enable_validation_cache = enable_validation_cache
         self.cache_size = cache_size
-        self._validation_cache: Dict[str, bool] = {}
-        self._successor_edges: Set[tuple] = set()
+        self._validation_cache: dict[str, bool] = {}
+        self._successor_edges: set[tuple] = set()
         self._metrics = RecursionMetrics()
         self.logger = Logger
 
@@ -242,7 +242,7 @@ class RecursiveOrchestrator:
 
         return is_acyclic
 
-    def _would_create_cycle(self, start: str, target: str, visited: Set[str]) -> bool:
+    def _would_create_cycle(self, start: str, target: str, visited: set[str]) -> bool:
         """
         Check if there's a path from start to target in current graph.
 
@@ -342,7 +342,7 @@ class RecursiveOrchestrator:
             metadata=new_metadata,
         )
 
-    def _deep_merge_context(self, base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
+    def _deep_merge_context(self, base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
         """
         Deep merge two context dictionaries.
 
@@ -365,7 +365,7 @@ class RecursiveOrchestrator:
 
         return result
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get current recursion metrics."""
         return {
             "total_spawns": self._metrics.total_spawns,
@@ -408,7 +408,7 @@ class RecursiveOrchestrator:
             True if graph has no cycles
         """
         # Build adjacency list
-        adjacency: Dict[str, List[str]] = {}
+        adjacency: dict[str, list[str]] = {}
         for pred, succ in self._successor_edges:
             if pred not in adjacency:
                 adjacency[pred] = []
@@ -445,7 +445,7 @@ class RecursiveOrchestrator:
 
         return True
 
-    def get_successor_chain(self, start_agent: str) -> List[str]:
+    def get_successor_chain(self, start_agent: str) -> list[str]:
         """
         Get the successor chain starting from an agent.
 
@@ -484,8 +484,8 @@ class RecursiveOrchestrator:
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None,
-    ) -> Dict[str, int]:
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """
         Heal recursive orchestration infrastructure.
 
@@ -544,7 +544,7 @@ class RecursiveOrchestrator:
 
         return metrics
 
-    def heal(self, violation: Dict[str, Any]) -> Dict[str, Any]:
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by RecursiveOrchestrator.
 

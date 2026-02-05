@@ -7,7 +7,7 @@ between base agents and L5 components.
 
 import importlib
 import logging
-from typing import Any, Dict, Optional, Type, TypeVar
+from typing import Any, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -21,11 +21,11 @@ class DynamicLoader:
     at runtime rather than import time.
     """
 
-    _cache: Dict[str, Any] = {}
-    _instance_cache: Dict[str, Any] = {}
+    _cache: dict[str, Any] = {}
+    _instance_cache: dict[str, Any] = {}
 
     # Registry of protocol to implementation mappings
-    IMPLEMENTATION_REGISTRY: Dict[str, Dict[str, str]] = {
+    IMPLEMENTATION_REGISTRY: dict[str, dict[str, str]] = {
         "verification": {
             "module": "agentic_core.L5_safety.security.verification_gate",
             "class": "VerificationGate",
@@ -49,7 +49,7 @@ class DynamicLoader:
         cls,
         module_path: str,
         class_name: str,
-    ) -> Optional[Type[T]]:
+    ) -> type[T] | None:
         """Load a class dynamically.
 
         Args:
@@ -82,7 +82,7 @@ class DynamicLoader:
     def load_implementation(
         cls,
         protocol_name: str,
-    ) -> Optional[Type[T]]:
+    ) -> type[T] | None:
         """Load implementation for a protocol.
 
         Args:
@@ -108,7 +108,7 @@ class DynamicLoader:
         *args: Any,
         singleton: bool = True,
         **kwargs: Any,
-    ) -> Optional[T]:
+    ) -> T | None:
         """Create instance of implementation.
 
         Args:
@@ -146,7 +146,7 @@ class DynamicLoader:
         logger.info("[LOADER] Cache cleared")
 
     @classmethod
-    def clear_instance_cache(cls, protocol_name: Optional[str] = None) -> None:
+    def clear_instance_cache(cls, protocol_name: str | None = None) -> None:
         """Clear instance cache.
 
         Args:

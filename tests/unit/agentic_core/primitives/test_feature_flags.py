@@ -1,6 +1,7 @@
 """Tests for FeatureFlagManager."""
 
 import os
+
 from agentic_core.primitives.feature_flags import FeatureFlag, FeatureFlagManager
 
 

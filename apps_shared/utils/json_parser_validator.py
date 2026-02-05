@@ -6,8 +6,8 @@ Native Python implementations for JSON parsing and manipulation.
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, List, Union
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -16,8 +16,8 @@ class ParseResult:
 
     success: bool
     data: Any
-    errors: List[str]
-    metadata: Dict[str, Any]
+    errors: list[str]
+    metadata: dict[str, Any]
 
 
 class JsonParser:
@@ -51,7 +51,7 @@ class JsonParser:
             )
 
     @staticmethod
-    def safe_get(data: Dict[str, Any], path: str, default: Any = None) -> Any:
+    def safe_get(data: dict[str, Any], path: str, default: Any = None) -> Any:
         """
         Safely get nested value from dictionary using dot notation.
 
@@ -75,7 +75,7 @@ class JsonParser:
         return current
 
     @staticmethod
-    def safe_set(data: Dict[str, Any], path: str, value: Any) -> None:
+    def safe_set(data: dict[str, Any], path: str, value: Any) -> None:
         """
         Safely set nested value in dictionary using dot notation.
 
@@ -96,8 +96,8 @@ class JsonParser:
 
     @staticmethod
     def merge_dicts(
-        dict1: Dict[str, Any], dict2: Dict[str, Any], deep: bool = True
-    ) -> Dict[str, Any]:
+        dict1: dict[str, Any], dict2: dict[str, Any], deep: bool = True
+    ) -> dict[str, Any]:
         """
         Merge two dictionaries.
 
@@ -120,7 +120,7 @@ class JsonParser:
         return result
 
     @staticmethod
-    def flatten_dict(data: Dict[str, Any], separator: str = ".") -> Dict[str, Any]:
+    def flatten_dict(data: dict[str, Any], separator: str = ".") -> dict[str, Any]:
         """
         Flatten nested dictionary.
 
@@ -149,7 +149,7 @@ class JsonParser:
         return result
 
     @staticmethod
-    def unflatten_dict(data: Dict[str, Any], separator: str = ".") -> Dict[str, Any]:
+    def unflatten_dict(data: dict[str, Any], separator: str = ".") -> dict[str, Any]:
         """
         Unflatten dictionary with dot-separated keys.
 
@@ -168,7 +168,7 @@ class JsonParser:
         return result
 
     @staticmethod
-    def filter_keys(data: Dict[str, Any], keys: List[str], include: bool = True) -> Dict[str, Any]:
+    def filter_keys(data: dict[str, Any], keys: list[str], include: bool = True) -> dict[str, Any]:
         """
         Filter dictionary by keys.
 
@@ -186,7 +186,7 @@ class JsonParser:
             return {k: v for k, v in data.items() if k not in keys}
 
     @staticmethod
-    def validate_schema(data: Dict[str, Any], schema: Dict[str, type]) -> ParseResult:
+    def validate_schema(data: dict[str, Any], schema: dict[str, type]) -> ParseResult:
         """
         Validate data against simple schema.
 
@@ -215,7 +215,7 @@ class JsonParser:
             return ParseResult(success=True, data=data, errors=[], metadata={})
 
     @staticmethod
-    def extract_values(data: Union[Dict, List], key: str) -> List[Any]:
+    def extract_values(data: dict | list, key: str) -> list[Any]:
         """
         Extract all values for a key from nested structure.
 
@@ -242,7 +242,7 @@ class JsonParser:
         return results
 
     @staticmethod
-    def transform_keys(data: Dict[str, Any], transformer: callable) -> Dict[str, Any]:
+    def transform_keys(data: dict[str, Any], transformer: callable) -> dict[str, Any]:
         """
         Transform all keys in dictionary.
 

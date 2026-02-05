@@ -10,9 +10,10 @@ Tests verify:
 4. Feature combinations function together
 """
 
-import pytest
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -27,8 +28,8 @@ class TestCrossPhaseImports:
     def test_phase2_gateway_factory_imports(self):
         """Phase 2 GatewayFactory should import cleanly."""
         from agentic_core.L2_execution.gateway_factory import (
-            GatewayFactory,
             GatewayBundle,
+            GatewayFactory,
         )
 
         assert GatewayFactory is not None
@@ -36,9 +37,9 @@ class TestCrossPhaseImports:
 
     def test_phase3_split_mixins_import(self):
         """Phase 3 split mixins should import cleanly."""
+        from agentic_core.base_agents.batching_mixin import BatchingMixin
         from agentic_core.base_agents.caching_mixin import CachingMixin
         from agentic_core.base_agents.metrics_mixin import MetricsMixin
-        from agentic_core.base_agents.batching_mixin import BatchingMixin
 
         assert CachingMixin is not None
         assert MetricsMixin is not None
@@ -64,10 +65,10 @@ class TestCrossPhaseImports:
 
     def test_all_phases_import_together(self):
         """All phase components should import without conflicts."""
-        from agentic_core.L2_execution.gateway_factory import GatewayFactory
         from agentic_core.base_agents.caching_mixin import CachingMixin
         from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
         from agentic_core.base_agents.trait_system import with_traits
+        from agentic_core.L2_execution.gateway_factory import GatewayFactory
 
         # All imports successful
         assert GatewayFactory is not None
@@ -81,8 +82,8 @@ class TestGatewayFactoryWithMixins:
 
     def test_gateway_factory_with_caching_mixin(self):
         """GatewayFactory should work with CachingMixin agents."""
-        from agentic_core.L2_execution.gateway_factory import GatewayFactory
         from agentic_core.base_agents.caching_mixin import CachingMixin
+        from agentic_core.L2_execution.gateway_factory import GatewayFactory
 
         class TestAgent(CachingMixin):
             def __init__(self):
@@ -99,9 +100,10 @@ class TestGatewayFactoryWithMixins:
 
     def test_gateway_factory_with_lightweight_base(self):
         """GatewayFactory should work with LightweightAgentBase."""
-        from agentic_core.L2_execution.gateway_factory import GatewayFactory
-        from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
         from dataclasses import dataclass
+
+        from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
+        from agentic_core.L2_execution.gateway_factory import GatewayFactory
 
         @dataclass
         class TestAgent(LightweightAgentBase):
@@ -125,8 +127,9 @@ class TestTraitSystemWithGatewayFactory:
     def test_traits_with_gateway_factory(self):
         """Trait-based agents should work with GatewayFactory."""
         from dataclasses import dataclass
+
+        from agentic_core.base_agents.trait_system import CachingTrait, MetricsTrait, with_traits
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
-        from agentic_core.base_agents.trait_system import with_traits, CachingTrait, MetricsTrait
 
         @with_traits(CachingTrait, MetricsTrait)
         @dataclass
@@ -152,9 +155,9 @@ class TestSplitMixinsCombined:
 
     def test_all_split_mixins_combined(self):
         """CachingMixin, MetricsMixin, BatchingMixin should combine."""
+        from agentic_core.base_agents.batching_mixin import BatchingMixin
         from agentic_core.base_agents.caching_mixin import CachingMixin
         from agentic_core.base_agents.metrics_mixin import MetricsMixin
-        from agentic_core.base_agents.batching_mixin import BatchingMixin
 
         class TestAgent(CachingMixin, MetricsMixin, BatchingMixin):
             pass
@@ -173,9 +176,9 @@ class TestSplitMixinsCombined:
 
     def test_split_mixins_no_conflicts(self):
         """Split mixins should have no attribute conflicts."""
+        from agentic_core.base_agents.batching_mixin import BatchingMixin
         from agentic_core.base_agents.caching_mixin import CachingMixin
         from agentic_core.base_agents.metrics_mixin import MetricsMixin
-        from agentic_core.base_agents.batching_mixin import BatchingMixin
 
         class TestAgent(CachingMixin, MetricsMixin, BatchingMixin):
             pass
@@ -194,8 +197,9 @@ class TestLightweightBaseWithTraits:
     def test_lightweight_with_batching_trait(self):
         """LightweightAgentBase can be extended with BatchingTrait."""
         from dataclasses import dataclass
+
         from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
-        from agentic_core.base_agents.trait_system import with_traits, BatchingTrait
+        from agentic_core.base_agents.trait_system import BatchingTrait, with_traits
 
         # Note: traits are applied to the class before dataclass
         @with_traits(BatchingTrait)
@@ -222,6 +226,7 @@ class TestNoCircularDependencies:
         """GatewayFactory should import without mixin dependencies."""
         # Reset imports
         import importlib
+
         import agentic_core.L2_execution.gateway_factory
 
         importlib.reload(agentic_core.L2_execution.gateway_factory)
@@ -233,6 +238,7 @@ class TestNoCircularDependencies:
     def test_trait_system_imports_independently(self):
         """Trait system should import without base agent dependencies."""
         import importlib
+
         import agentic_core.base_agents.trait_system
 
         importlib.reload(agentic_core.base_agents.trait_system)
@@ -249,6 +255,7 @@ class TestThreadSafety:
     def test_gateway_factory_thread_safe(self):
         """GatewayFactory should provide working gateways from multiple threads."""
         import threading
+
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
 
         GatewayFactory.reset_all()
@@ -273,6 +280,7 @@ class TestThreadSafety:
     def test_caching_mixin_thread_safe(self):
         """CachingMixin should be thread-safe."""
         import threading
+
         from agentic_core.base_agents.caching_mixin import CachingMixin
 
         class TestAgent(CachingMixin):

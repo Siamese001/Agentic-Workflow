@@ -39,7 +39,7 @@ class ATSValidatorStrategy(ValidatorStrategy):
         self.min_score_threshold = self.keyword_config.get("min_score_threshold", 0.3)
         self.stop_words = set(self.keyword_config.get("stop_words", []))
 
-    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> ValidationResult:
+    async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> ValidationResult:
         """Execute ATS-specific validation logic."""
         agent.log_info("Checking ATS compatibility...")
 
@@ -93,14 +93,14 @@ class ATSValidatorStrategy(ValidatorStrategy):
             metadata={"agent": "ATSCompatibilityAgent"},
         )
 
-    def _get_resume_from_context(self, agent: "UnifiedAgent") -> dict[str, Any] | None:
+    def _get_resume_from_context(self, agent: UnifiedAgent) -> dict[str, Any] | None:
         """Get resume from agent context."""
         ctx = getattr(agent, "ctx", None)
         if ctx:
             return getattr(ctx, "current_resume", None)
         return None
 
-    def _get_job_desc_from_context(self, agent: "UnifiedAgent") -> str | None:
+    def _get_job_desc_from_context(self, agent: UnifiedAgent) -> str | None:
         """Get job description from agent context."""
         ctx = getattr(agent, "ctx", None)
         if ctx:

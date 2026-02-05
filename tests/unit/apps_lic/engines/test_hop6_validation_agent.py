@@ -80,7 +80,9 @@ class TestHOP6ValidationAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.Hop6ValidationAgentValidator import HOP6ValidationAgent  # noqa: F401
+                from apps_lic.engines.Hop6ValidationAgentValidator import (
+                    HOP6ValidationAgent,  # noqa: F401
+                )
             except (ImportError, NameError, AttributeError):
                 pass
 

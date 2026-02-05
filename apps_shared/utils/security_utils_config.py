@@ -36,12 +36,12 @@ class ValidationResult:
     sanitized_value: Any = None
 
     @classmethod
-    def success(cls, sanitized_value: Any = None) -> "ValidationResult":
+    def success(cls, sanitized_value: Any = None) -> ValidationResult:
         """Create a successful validation result."""
         return cls(valid=True, errors=[], sanitized_value=sanitized_value)
 
     @classmethod
-    def failure(cls, errors: list[str]) -> "ValidationResult":
+    def failure(cls, errors: list[str]) -> ValidationResult:
         """Create a failed validation result."""
         return cls(valid=False, errors=errors)
 

@@ -7,7 +7,7 @@ and tracking migration progress across all layers.
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Type
+from typing import Any
 
 from agentic_core.primitives.feature_flags import FeatureFlagManager
 
@@ -25,10 +25,10 @@ class ComplianceResult:
     has_human_review: bool
     has_meta_learning: bool
     has_audit_trail: bool
-    missing_components: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    missing_components: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "agent_name": self.agent_name,
@@ -51,10 +51,10 @@ class MigrationStatus:
     compliant_agents: int
     non_compliant_agents: int
     compliance_percentage: float
-    agents_by_status: Dict[str, List[str]] = field(default_factory=dict)
-    feature_flag_status: Dict[str, bool] = field(default_factory=dict)
+    agents_by_status: dict[str, list[str]] = field(default_factory=dict)
+    feature_flag_status: dict[str, bool] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "total_agents": self.total_agents,
@@ -81,7 +81,7 @@ class MigrationHelper:
     @classmethod
     def check_agent_compliance(
         cls,
-        agent_class: Type,
+        agent_class: type,
         strict: bool = False,
     ) -> ComplianceResult:
         """Check if an agent class is compliant with migration requirements.
@@ -147,7 +147,7 @@ class MigrationHelper:
         )
 
     @classmethod
-    def _has_feature_flag_mixin(cls, agent_class: Type) -> bool:
+    def _has_feature_flag_mixin(cls, agent_class: type) -> bool:
         """Check if agent has FeatureFlaggedAgentMixin in MRO."""
         for base in agent_class.__mro__:
             if base.__name__ == "FeatureFlaggedAgentMixin":
@@ -155,7 +155,7 @@ class MigrationHelper:
         return False
 
     @classmethod
-    def _has_method(cls, agent_class: Type, method_name: str) -> bool:
+    def _has_method(cls, agent_class: type, method_name: str) -> bool:
         """Check if agent has a specific method."""
         return hasattr(agent_class, method_name) and callable(
             getattr(agent_class, method_name, None)
@@ -164,7 +164,7 @@ class MigrationHelper:
     @classmethod
     def get_migration_status(
         cls,
-        agent_classes: List[Type],
+        agent_classes: list[type],
         strict: bool = False,
     ) -> MigrationStatus:
         """Get overall migration status for a list of agents.
@@ -204,7 +204,7 @@ class MigrationHelper:
     @classmethod
     def generate_migration_report(
         cls,
-        agent_classes: List[Type],
+        agent_classes: list[type],
         strict: bool = False,
     ) -> str:
         """Generate a human-readable migration report.
@@ -248,7 +248,7 @@ class MigrationHelper:
 
 # Convenience functions
 def check_agent_compliance(
-    agent_class: Type,
+    agent_class: type,
     strict: bool = False,
 ) -> ComplianceResult:
     """Check if an agent class is compliant with migration requirements."""
@@ -256,7 +256,7 @@ def check_agent_compliance(
 
 
 def get_migration_status(
-    agent_classes: List[Type],
+    agent_classes: list[type],
     strict: bool = False,
 ) -> MigrationStatus:
     """Get overall migration status for a list of agents."""

@@ -10,20 +10,21 @@ Tests the core UnifiedAgent implementation including:
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import Mock, patch
 
+import pytest
+
 from agentic_core.base_agents.UnifiedAgent import (
-    UnifiedAgent,
-    AgentCategory,
-    ValidationResult,
-    OrchestrationResult,
-    HealingResult,
-    ValidatorStrategy,
-    OrchestrationStrategy,
-    HealingStrategy,
-    GenericStrategy,
     STRATEGY_MAP,
+    AgentCategory,
+    GenericStrategy,
+    HealingResult,
+    HealingStrategy,
+    OrchestrationResult,
+    OrchestrationStrategy,
+    UnifiedAgent,
+    ValidationResult,
+    ValidatorStrategy,
 )
 
 

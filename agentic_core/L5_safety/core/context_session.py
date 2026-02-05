@@ -23,7 +23,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +40,9 @@ class RiskLevel(Enum):
 class AttentionState:
     """Attention mechanism state for context window management."""
 
-    focus_files: Set[str] = field(default_factory=set)
-    focus_agents: Set[str] = field(default_factory=set)
-    priority_violations: List[str] = field(default_factory=list)
+    focus_files: set[str] = field(default_factory=set)
+    focus_agents: set[str] = field(default_factory=set)
+    priority_violations: list[str] = field(default_factory=list)
     max_context_items: int = 10
 
 
@@ -62,12 +62,12 @@ class ContextSession:
     created_at: datetime = field(default_factory=datetime.utcnow)
     risk_level: RiskLevel = RiskLevel.MEDIUM
     attention: AttentionState = field(default_factory=AttentionState)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    parent_session_id: Optional[str] = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+    parent_session_id: str | None = None
 
     # Working memory state
-    _state: Dict[str, Any] = field(default_factory=dict)
-    _history: List[Dict[str, Any]] = field(default_factory=list)
+    _state: dict[str, Any] = field(default_factory=dict)
+    _history: list[dict[str, Any]] = field(default_factory=list)
 
     def get(self, key: str, default: Any = None) -> Any:
         """Get value from session state."""
@@ -130,11 +130,11 @@ class ContextSession:
                 f"Session {self.session_id} risk escalated: {old_level.value} -> {new_level.value}"
             )
 
-    def get_history(self) -> List[Dict[str, Any]]:
+    def get_history(self) -> list[dict[str, Any]]:
         """Get state change history."""
         return list(self._history)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize session for propagation."""
         return {
             "session_id": self.session_id,
@@ -151,7 +151,7 @@ class ContextSession:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ContextSession":
+    def from_dict(cls, data: dict[str, Any]) -> "ContextSession":
         """Deserialize session from dictionary."""
         session = cls(
             session_id=data.get("session_id", str(uuid.uuid4())),
@@ -193,25 +193,25 @@ class ContextSessionManager:
 
     def _init(self):
         """Initialize the session manager."""
-        self._sessions: Dict[str, ContextSession] = {}
+        self._sessions: dict[str, ContextSession] = {}
         self._thread_local = threading.local()
         self._session_lock = threading.RLock()
 
     @property
-    def current_session(self) -> Optional[ContextSession]:
+    def current_session(self) -> ContextSession | None:
         """Get the current thread's active session."""
         return getattr(self._thread_local, "session", None)
 
     @current_session.setter
-    def current_session(self, session: Optional[ContextSession]) -> None:
+    def current_session(self, session: ContextSession | None) -> None:
         """Set the current thread's active session."""
         self._thread_local.session = session
 
     def create_session(
         self,
         risk_level: RiskLevel = RiskLevel.MEDIUM,
-        parent_session: Optional[ContextSession] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        parent_session: ContextSession | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> ContextSession:
         """
         Create a new context session.
@@ -244,7 +244,7 @@ class ContextSessionManager:
         logger.debug(f"Created session {session.session_id} (risk={risk_level.value})")
         return session
 
-    def get_session(self, session_id: str) -> Optional[ContextSession]:
+    def get_session(self, session_id: str) -> ContextSession | None:
         """Get a session by ID."""
         with self._session_lock:
             return self._sessions.get(session_id)
@@ -261,7 +261,7 @@ class ContextSessionManager:
         self,
         risk_level: RiskLevel = RiskLevel.MEDIUM,
         inherit_parent: bool = True,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ):
         """
         Context manager for session lifecycle.
@@ -293,7 +293,7 @@ class ContextSessionManager:
 
     def get_or_create_session(
         self,
-        session_id: Optional[str] = None,
+        session_id: str | None = None,
         risk_level: RiskLevel = RiskLevel.MEDIUM,
     ) -> ContextSession:
         """Get existing session or create new one."""
@@ -309,7 +309,7 @@ class ContextSessionManager:
         # Create new
         return self.create_session(risk_level)
 
-    def get_all_sessions(self) -> Dict[str, ContextSession]:
+    def get_all_sessions(self) -> dict[str, ContextSession]:
         """Get all active sessions for monitoring."""
         with self._session_lock:
             return dict(self._sessions)
@@ -339,7 +339,7 @@ def get_session_manager() -> ContextSessionManager:
     return ContextSessionManager()
 
 
-def get_current_session() -> Optional[ContextSession]:
+def get_current_session() -> ContextSession | None:
     """Get the current thread's active session."""
     return get_session_manager().current_session
 

@@ -5,28 +5,28 @@ Tests that the CodeHealerAgent correctly performs canon healing operations
 using CST-based transformers while preserving comments and formatting.
 """
 
+import ast
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
+import libcst as cst
 import pytest
 
-from agentic_core.L5_safety.validators.surgical_cst_healer_mixin import (
-    SurgicalCSTHealerMixin,
+from agentic_core.L5_safety.validators.cst_transformers import (
+    DocstringTarget,
+    SurgicalBareExceptFixer,
+    SurgicalDocstringInserter,
+    SurgicalFutureImportInserter,
 )
 from agentic_core.L5_safety.validators.surgical_context import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
 )
-from agentic_core.L5_safety.validators.cst_transformers import (
-    SurgicalDocstringInserter,
-    SurgicalFutureImportInserter,
-    SurgicalBareExceptFixer,
-    DocstringTarget,
+from agentic_core.L5_safety.validators.surgical_cst_healer_mixin import (
+    SurgicalCSTHealerMixin,
 )
-from datetime import datetime
-import ast
-import libcst as cst
 
 
 class TestCanonHealingCST:

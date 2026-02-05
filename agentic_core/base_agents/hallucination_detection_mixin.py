@@ -13,7 +13,7 @@ References:
 import ast
 import logging
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class HallucinationDetectionMixin:
             pass
     """
 
-    _hallucination_cache: Dict[str, bool] = {}
+    _hallucination_cache: dict[str, bool] = {}
 
     def verify_target_exists(
         self,
@@ -120,7 +120,7 @@ class HallucinationDetectionMixin:
         """Clear the hallucination detection cache."""
         self._hallucination_cache.clear()
 
-    def get_hallucination_stats(self) -> Dict[str, Any]:
+    def get_hallucination_stats(self) -> dict[str, Any]:
         """Get statistics about hallucination detection."""
         return {
             "cache_size": len(self._hallucination_cache),

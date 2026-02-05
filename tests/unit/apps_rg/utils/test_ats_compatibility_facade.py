@@ -10,8 +10,9 @@ Tests the facade conversion of ATSCompatibilityAgent including:
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
 
 from agentic_core.base_agents.UnifiedAgent import ValidationResult
 
@@ -268,8 +269,9 @@ class TestLegacyCompatibility:
 
     def test_class_is_dataclass(self):
         """Test class is still a dataclass."""
-        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
         from dataclasses import is_dataclass
+
+        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
 
         assert is_dataclass(ATSCompatibilityAgent)
 
@@ -282,15 +284,17 @@ class TestLegacyCompatibility:
 
     def test_execute_is_async(self):
         """Test execute method is still async."""
-        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
         import asyncio
+
+        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
 
         assert asyncio.iscoroutinefunction(ATSCompatibilityAgent.execute)
 
     def test_heal_repository_signature(self):
         """Test heal_repository has correct signature."""
-        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
         import inspect
+
+        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
 
         sig = inspect.signature(ATSCompatibilityAgent.heal_repository)
         params = list(sig.parameters.keys())
@@ -301,8 +305,9 @@ class TestLegacyCompatibility:
 
     def test_heal_signature(self):
         """Test heal has correct signature."""
-        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
         import inspect
+
+        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
 
         sig = inspect.signature(ATSCompatibilityAgent.heal)
         params = list(sig.parameters.keys())

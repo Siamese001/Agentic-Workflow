@@ -10,11 +10,11 @@ Usage:
     python -m pytest tests/performance/test_latency_budget.py -k "CodeHealerAgent" -v
 """
 
-import pytest
-import time
 import tempfile
+import time
 from pathlib import Path
 
+import pytest
 
 # Latency budgets in seconds
 LATENCY_BUDGETS = {

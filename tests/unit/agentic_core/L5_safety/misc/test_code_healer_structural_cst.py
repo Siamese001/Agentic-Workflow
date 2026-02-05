@@ -5,26 +5,26 @@ Tests that the CodeHealerAgent correctly performs structural healing operations
 using CST-based transformers while preserving comments and code structure.
 """
 
+import ast
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
+import libcst as cst
 import pytest
 
-from agentic_core.L5_safety.validators.surgical_cst_healer_mixin import (
-    SurgicalCSTHealerMixin,
+from agentic_core.L5_safety.validators.cst_transformers import (
+    SurgicalBlankLineNormalizer,
+    SurgicalTrailingWhitespaceFixer,
 )
 from agentic_core.L5_safety.validators.surgical_context import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
 )
-from agentic_core.L5_safety.validators.cst_transformers import (
-    SurgicalTrailingWhitespaceFixer,
-    SurgicalBlankLineNormalizer,
+from agentic_core.L5_safety.validators.surgical_cst_healer_mixin import (
+    SurgicalCSTHealerMixin,
 )
-from datetime import datetime
-import ast
-import libcst as cst
 
 
 class TestStructuralHealingCST:

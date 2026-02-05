@@ -5,16 +5,16 @@ Provides Protocol definitions to decouple base agents from concrete L5 implement
 preventing circular dependencies while maintaining type safety.
 """
 
-from .verification_protocol import (
-    VerificationGateProtocol,
-    VerificationRequest,
-    VerificationResult,
-)
 from .detection_protocol import (
-    DetectionSignalProtocol,
     DetectionRequest,
     DetectionResult,
+    DetectionSignalProtocol,
     Severity,
+)
+from .meta_learning_protocol import (
+    LearningContext,
+    LearningResult,
+    MetaLearningProtocol,
 )
 from .review_protocol import (
     HumanReviewProtocol,
@@ -22,10 +22,10 @@ from .review_protocol import (
     ReviewResult,
     ReviewStatus,
 )
-from .meta_learning_protocol import (
-    MetaLearningProtocol,
-    LearningContext,
-    LearningResult,
+from .verification_protocol import (
+    VerificationGateProtocol,
+    VerificationRequest,
+    VerificationResult,
 )
 
 __all__ = [

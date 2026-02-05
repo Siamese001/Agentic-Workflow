@@ -5,13 +5,14 @@ Tests the critical security and safety features that are missing from the curren
 apps_rg and apps_lic implementations compared to agentic_core.
 """
 
-import pytest
 import time
+
+import pytest
 
 # Test imports - these will need to be implemented
 try:
-    from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
     from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
+    from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 except ImportError as e:
     pytest.skip(f"Apps not yet enhanced with guardrails: {e}", allow_module_level=True)
 

@@ -61,9 +61,9 @@ class UnifiedAgentMonitor:
     - Strategy usage patterns
     """
 
-    _instance: "UnifiedAgentMonitor | None" = None
+    _instance: UnifiedAgentMonitor | None = None
 
-    def __new__(cls) -> "UnifiedAgentMonitor":
+    def __new__(cls) -> UnifiedAgentMonitor:
         """Singleton pattern for global monitoring."""
         if cls._instance is None:
             cls._instance = super().__new__(cls)
@@ -244,7 +244,7 @@ class ExecutionTimer:
         self.success = True
         self.metadata: dict[str, Any] = {}
 
-    def __enter__(self) -> "ExecutionTimer":
+    def __enter__(self) -> ExecutionTimer:
         """Start timing."""
         self.start_time = time.perf_counter()
         return self

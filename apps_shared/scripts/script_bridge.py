@@ -5,13 +5,13 @@ Bridge between agents and deterministic scripts.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
+from typing import Any
 
 from apps_shared.scripts.io_operations_validator import (
-    FileOperations,
     DataCollectionOperations,
+    FileOperations,
     MonitoringOperations,
 )
 
@@ -24,8 +24,8 @@ class ScriptResult:
 
     success: bool
     data: Any
-    errors: List[str]
-    metadata: Dict[str, Any]
+    errors: list[str]
+    metadata: dict[str, Any]
 
 
 class ScriptBridge:
@@ -137,7 +137,7 @@ class ScriptBridge:
         return self.execute_script("file", "read_json", file_path=file_path)
 
     def collect_agent_metrics(
-        self, data_points: List[Dict[str, Any]], metric_keys: List[str]
+        self, data_points: list[dict[str, Any]], metric_keys: list[str]
     ) -> ScriptResult:
         """
         Convenience method to collect metrics.

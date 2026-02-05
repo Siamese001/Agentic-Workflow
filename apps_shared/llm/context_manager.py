@@ -5,19 +5,19 @@ LLM context management utilities for high-reasoning agents.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
-from dataclasses import dataclass
 from collections import deque
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
 class ContextWindow:
     """Represents a context window for LLM."""
 
-    messages: List[Dict[str, str]]
+    messages: list[dict[str, str]]
     max_tokens: int
     current_tokens: int
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class ContextManager:
@@ -32,7 +32,7 @@ class ContextManager:
         """
         self.max_tokens = max_tokens
         self.messages: deque = deque()
-        self.system_message: Optional[str] = None
+        self.system_message: str | None = None
 
     def set_system_message(self, message: str) -> None:
         """
@@ -154,7 +154,7 @@ class ContextManager:
 
     @staticmethod
     def create_conversation_context(
-        messages: List[Dict[str, str]], max_tokens: int = 4000
+        messages: list[dict[str, str]], max_tokens: int = 4000
     ) -> ContextWindow:
         """
         Create context window from messages.
@@ -177,7 +177,7 @@ class ContextManager:
         )
 
     @staticmethod
-    def merge_contexts(contexts: List[ContextWindow]) -> ContextWindow:
+    def merge_contexts(contexts: list[ContextWindow]) -> ContextWindow:
         """
         Merge multiple context windows.
 
@@ -205,8 +205,8 @@ class ContextManager:
 
     @staticmethod
     def prioritize_messages(
-        messages: List[Dict[str, str]], max_tokens: int
-    ) -> List[Dict[str, str]]:
+        messages: list[dict[str, str]], max_tokens: int
+    ) -> list[dict[str, str]]:
         """
         Prioritize messages to fit within token limit.
 

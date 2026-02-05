@@ -40,7 +40,6 @@ from tests.guardian.guardian_report import (
     write_guardian_report,
 )
 
-
 # =============================================================================
 # GUARDIAN MARKER - Auto-apply to all tests in this directory
 # =============================================================================

@@ -8,7 +8,7 @@ enabling consistent handling across the system.
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class Severity(Enum):
@@ -27,7 +27,7 @@ class DetectionRequest:
 
     file_path: str
     detection_type: str
-    context: Optional[Dict[str, Any]] = field(default_factory=dict)
+    context: dict[str, Any] | None = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.context is None:
@@ -43,16 +43,16 @@ class DetectionResult:
     severity: Severity
     file_path: str
     message: str
-    target_node: Optional[str] = None
-    suggested_fix: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = field(default_factory=dict)
+    target_node: str | None = None
+    suggested_fix: str | None = None
+    metadata: dict[str, Any] | None = field(default_factory=dict)
     auto_fixable: bool = False
 
     def __post_init__(self) -> None:
         if self.metadata is None:
             self.metadata = {}
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "source_sensor": self.source_sensor,
@@ -98,10 +98,10 @@ class DetectionSignalProtocol(ABC):
     @abstractmethod
     def get_signals(
         self,
-        file_path: Optional[str] = None,
-        severity: Optional[Severity] = None,
+        file_path: str | None = None,
+        severity: Severity | None = None,
         limit: int = 100,
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """Get detection signals with optional filtering."""
         pass
 

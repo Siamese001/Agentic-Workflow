@@ -28,7 +28,7 @@ class ValidationResult:
         """Add a warning (does not affect validity)."""
         self.warnings.append(warning)
 
-    def merge(self, other: "ValidationResult") -> "ValidationResult":
+    def merge(self, other: ValidationResult) -> ValidationResult:
         """Merge another result into this one."""
         self.is_valid = self.is_valid and other.is_valid
         self.errors.extend(other.errors)

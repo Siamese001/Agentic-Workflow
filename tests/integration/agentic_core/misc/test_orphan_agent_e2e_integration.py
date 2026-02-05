@@ -15,10 +15,11 @@ Test Coverage:
 
 from __future__ import annotations
 
-import pytest
 import sys
 import time
 from pathlib import Path
+
+import pytest
 
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -61,11 +62,11 @@ class TestE2EInitializationWorkflow:
     def test_e2e_initialization_with_suites(self):
         """E2E: Initialize and verify suites are ready."""
         from agentic_core.L5_safety.validators import register_all_validators
-        from agentic_core.L5_safety.validators.security_validation_suite_types import (
-            get_security_suite,
-        )
         from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             get_healing_suite,
+        )
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
+            get_security_suite,
         )
 
         # Initialize
@@ -90,8 +91,8 @@ class TestE2ESecurityValidation:
     def test_e2e_security_scan_workflow(self):
         """E2E: Complete security scan workflow."""
         from agentic_core.L5_safety.validators.security_validation_suite_types import (
-            run_security_validation,
             get_security_suite,
+            run_security_validation,
         )
 
         # Step 1: Get suite and verify ready
@@ -154,8 +155,8 @@ class TestE2EHealingOperations:
     def test_e2e_healing_workflow(self):
         """E2E: Complete healing workflow."""
         from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
-            run_healing_operation,
             get_healing_suite,
+            run_healing_operation,
         )
 
         # Step 1: Get suite and verify ready
@@ -243,11 +244,11 @@ class TestE2ECombinedWorkflow:
 
     def test_e2e_security_then_healing_workflow(self):
         """E2E: Security validation followed by healing."""
-        from agentic_core.L5_safety.validators.security_validation_suite_types import (
-            run_security_validation,
-        )
         from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             run_healing_operation,
+        )
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
+            run_security_validation,
         )
 
         # Step 1: Run security validation
@@ -279,11 +280,11 @@ class TestE2ECombinedWorkflow:
     def test_e2e_full_pipeline(self):
         """E2E: Complete pipeline from init to validation to healing."""
         from agentic_core.L5_safety.validators import register_all_validators
-        from agentic_core.L5_safety.validators.security_validation_suite_types import (
-            run_security_validation,
-        )
         from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             run_healing_operation,
+        )
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
+            run_security_validation,
         )
 
         # Reset and initialize
@@ -354,11 +355,11 @@ class TestE2EErrorRecovery:
 
     def test_e2e_recovery_from_malformed_input(self):
         """E2E: System handles malformed input gracefully."""
-        from agentic_core.L5_safety.validators.security_validation_suite_types import (
-            run_security_validation,
-        )
         from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             run_healing_operation,
+        )
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
+            run_security_validation,
         )
 
         # Test with various malformed inputs
@@ -434,11 +435,11 @@ class TestE2EPerformanceUnderLoad:
 
     def test_e2e_alternating_validation_healing(self):
         """E2E: Alternating between validation and healing."""
-        from agentic_core.L5_safety.validators.security_validation_suite_types import (
-            run_security_validation,
-        )
         from agentic_core.L5_safety.validators.healing_orchestration_suite_types import (
             run_healing_operation,
+        )
+        from agentic_core.L5_safety.validators.security_validation_suite_types import (
+            run_security_validation,
         )
 
         num_iterations = 3

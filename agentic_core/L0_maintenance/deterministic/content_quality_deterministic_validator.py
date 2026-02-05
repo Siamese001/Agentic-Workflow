@@ -16,7 +16,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Set
+from typing import Any
 
 
 @dataclass
@@ -24,10 +24,10 @@ class QualityValidationResult:
     """Result of content quality validation."""
 
     passed: bool
-    issues: List[str]
+    issues: list[str]
     score: float | None = None
-    suggestions: List[str] = None
-    metadata: Dict[str, Any] = None
+    suggestions: list[str] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self) -> None:
         if self.suggestions is None:
@@ -44,7 +44,7 @@ class ContentQualityDeterministic:
     external dependencies or LLM calls.
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """
         Initialize with content quality validation configuration.
 
@@ -67,7 +67,7 @@ class ContentQualityDeterministic:
         self.min_skill_matches = config.get("min_skill_matches", 3)
 
     def validate_content_quality(
-        self, resume: Dict[str, Any], job_desc: str | None = None
+        self, resume: dict[str, Any], job_desc: str | None = None
     ) -> QualityValidationResult:
         """
         Validate content quality using purely deterministic logic.
@@ -79,8 +79,8 @@ class ContentQualityDeterministic:
         Returns:
             QualityValidationResult with deterministic findings
         """
-        issues: List[str] = []
-        suggestions: List[str] = []
+        issues: list[str] = []
+        suggestions: list[str] = []
 
         # Check for placeholders (deterministic regex matching)
         placeholder_issues = self._check_placeholders(resume)
@@ -106,13 +106,13 @@ class ContentQualityDeterministic:
             metadata={"validation_type": "deterministic"},
         )
 
-    def _check_placeholders(self, resume: Dict[str, Any]) -> List[str]:
+    def _check_placeholders(self, resume: dict[str, Any]) -> list[str]:
         """
         Check for placeholder text using deterministic regex patterns.
 
         Moved to Deterministic: Pure pattern matching logic
         """
-        issues: List[str] = []
+        issues: list[str] = []
         resume_text = json.dumps(resume, ensure_ascii=False)
 
         for pattern in self.placeholder_patterns:
@@ -122,13 +122,13 @@ class ContentQualityDeterministic:
 
         return issues
 
-    def _check_quantified_achievements(self, resume: Dict[str, Any]) -> List[str]:
+    def _check_quantified_achievements(self, resume: dict[str, Any]) -> list[str]:
         """
         Check for quantified achievements using deterministic patterns.
 
         Moved to Deterministic: Pure pattern matching logic
         """
-        issues: List[str] = []
+        issues: list[str] = []
         resume_text = json.dumps(resume, ensure_ascii=False)
 
         quantified_count = 0
@@ -142,21 +142,21 @@ class ContentQualityDeterministic:
         return issues
 
     def _validate_skills(
-        self, resume: Dict[str, Any], job_desc: str | None = None
-    ) -> tuple[List[str], List[str]]:
+        self, resume: dict[str, Any], job_desc: str | None = None
+    ) -> tuple[list[str], list[str]]:
         """
         Validate skills using deterministic rule-based logic.
 
         Moved to Deterministic: Pure string matching and validation
         """
-        issues: List[str] = []
-        suggestions: List[str] = []
+        issues: list[str] = []
+        suggestions: list[str] = []
 
         resume_text = json.dumps(resume).lower()
 
         # Count skill matches (deterministic string matching)
         skill_matches = 0
-        matched_skills: Set[str] = set()
+        matched_skills: set[str] = set()
 
         for skill in self.skill_keywords:
             if skill.lower() in resume_text:
@@ -174,7 +174,7 @@ class ContentQualityDeterministic:
 
         return issues, suggestions
 
-    def _calculate_skill_alignment(self, skills: Set[str], job_desc: str) -> float:
+    def _calculate_skill_alignment(self, skills: set[str], job_desc: str) -> float:
         """
         Calculate skill alignment using deterministic text analysis.
 
@@ -192,7 +192,7 @@ class ContentQualityDeterministic:
 
         return aligned_skills / len(skills)
 
-    def _calculate_quality_score(self, issues: List[str], resume: Dict[str, Any]) -> float:
+    def _calculate_quality_score(self, issues: list[str], resume: dict[str, Any]) -> float:
         """
         Calculate overall quality score using deterministic algorithm.
 
@@ -219,7 +219,7 @@ class ContentQualityDeterministic:
 
         return max(0.0, min(1.0, base_score))
 
-    def extract_resume_text(self, resume: Dict[str, Any]) -> str:
+    def extract_resume_text(self, resume: dict[str, Any]) -> str:
         """
         Extract and normalize resume text for processing.
 
@@ -236,13 +236,13 @@ class ContentQualityDeterministic:
 
         return text
 
-    def detect_formatting_issues(self, text: str) -> List[str]:
+    def detect_formatting_issues(self, text: str) -> list[str]:
         """
         Detect formatting issues using deterministic rules.
 
         Moved to Deterministic: Pure formatting validation
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         # Check for excessive capitalization
         if re.search(r"[A-Z]{4,}", text):

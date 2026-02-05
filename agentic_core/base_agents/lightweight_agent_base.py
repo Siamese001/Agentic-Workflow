@@ -80,9 +80,10 @@ class LightweightAgentBase(
         # so we need to initialize them here
 
         # Initialize CachingMixin
-        from agentic_core.base_agents.caching_mixin import CacheConfig
-        from collections import OrderedDict
         import threading
+        from collections import OrderedDict
+
+        from agentic_core.base_agents.caching_mixin import CacheConfig
 
         self._cache_config = CacheConfig()
         self._cache_store = OrderedDict()

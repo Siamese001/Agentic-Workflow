@@ -5,9 +5,9 @@ Native Python implementations for common mathematical operations.
 
 from __future__ import annotations
 
-from typing import List, Dict, Any, Optional
 import statistics
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -16,8 +16,8 @@ class ScoreResult:
 
     score: float
     normalized_score: float
-    breakdown: Dict[str, float]
-    metadata: Dict[str, Any]
+    breakdown: dict[str, float]
+    metadata: dict[str, Any]
 
 
 class MathProcessor:
@@ -85,7 +85,7 @@ class MathProcessor:
         return target_min + (normalized * (target_max - target_min))
 
     @staticmethod
-    def weighted_average(values: List[float], weights: Optional[List[float]] = None) -> float:
+    def weighted_average(values: list[float], weights: list[float] | None = None) -> float:
         """
         Calculate weighted average.
 
@@ -109,11 +109,11 @@ class MathProcessor:
         if total_weight == 0:
             return 0.0
 
-        weighted_sum = sum(v * w for v, w in zip(values, weights))
+        weighted_sum = sum(v * w for v, w in zip(values, weights, strict=False))
         return weighted_sum / total_weight
 
     @staticmethod
-    def calculate_statistics(values: List[float]) -> Dict[str, float]:
+    def calculate_statistics(values: list[float]) -> dict[str, float]:
         """
         Calculate statistical measures.
 
@@ -161,7 +161,7 @@ class MathProcessor:
 
     @staticmethod
     def calculate_similarity(
-        values1: List[float], values2: List[float], method: str = "cosine"
+        values1: list[float], values2: list[float], method: str = "cosine"
     ) -> float:
         """
         Calculate similarity between two value lists.
@@ -181,7 +181,7 @@ class MathProcessor:
             return 0.0
 
         if method == "cosine":
-            dot_product = sum(a * b for a, b in zip(values1, values2))
+            dot_product = sum(a * b for a, b in zip(values1, values2, strict=False))
             magnitude1 = sum(a * a for a in values1) ** 0.5
             magnitude2 = sum(b * b for b in values2) ** 0.5
 
@@ -191,7 +191,7 @@ class MathProcessor:
             return dot_product / (magnitude1 * magnitude2)
 
         elif method == "euclidean":
-            distance = sum((a - b) ** 2 for a, b in zip(values1, values2)) ** 0.5
+            distance = sum((a - b) ** 2 for a, b in zip(values1, values2, strict=False)) ** 0.5
             # Convert distance to similarity (0 = different, 1 = identical)
             max_distance = (len(values1) ** 0.5) * max(max(values1), max(values2))
             if max_distance == 0:
@@ -221,7 +221,7 @@ class MathProcessor:
         return round(growth, decimals)
 
     @staticmethod
-    def moving_average(values: List[float], window_size: int) -> List[float]:
+    def moving_average(values: list[float], window_size: int) -> list[float]:
         """
         Calculate moving average.
 
@@ -244,7 +244,7 @@ class MathProcessor:
 
     @staticmethod
     def calculate_score_with_breakdown(
-        components: Dict[str, float], weights: Optional[Dict[str, float]] = None
+        components: dict[str, float], weights: dict[str, float] | None = None
     ) -> ScoreResult:
         """
         Calculate weighted score with breakdown.

@@ -9,7 +9,7 @@ import subprocess
 from pathlib import Path
 
 # Load compliance report
-with open("ssot_compliance_report.json", "r") as f:
+with open("ssot_compliance_report.json") as f:
     report = json.load(f)
 
 # Filter for L5_safety/validators VALIDATOR violations

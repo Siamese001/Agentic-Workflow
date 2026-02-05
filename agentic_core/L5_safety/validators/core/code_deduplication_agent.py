@@ -6,7 +6,6 @@ from __future__ import annotations
 # Phase 2 Landmine Remediation: Removed runtime sys.path manipulation
 # Use proper PYTHONPATH configuration or run from project root instead
 # See: Phase2_Discovery_Report.md - Global Mutation category
-
 import ast
 from pathlib import Path
 

@@ -23,7 +23,8 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 Logger = logging.getLogger(__name__)
 
@@ -68,8 +69,9 @@ class CachingTrait(Trait):
     @classmethod
     def apply(cls, target_cls: type) -> type:
         """Apply caching capabilities to target class."""
-        from collections import OrderedDict
         import threading
+        from collections import OrderedDict
+
         from agentic_core.base_agents.caching_mixin import CacheConfig, CacheEntry
 
         original_post_init = getattr(target_cls, "__post_init__", None)
@@ -138,6 +140,7 @@ class MetricsTrait(Trait):
     def apply(cls, target_cls: type) -> type:
         """Apply metrics capabilities to target class."""
         import threading
+
         from agentic_core.base_agents.metrics_mixin import (
             MetricsConfig,
             PerformanceMetrics,

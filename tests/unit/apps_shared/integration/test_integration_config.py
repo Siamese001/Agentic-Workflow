@@ -1,10 +1,11 @@
 """Tests for IntegrationConfig."""
 
 import pytest
+
 from apps_shared.integration.integration_config import (
-    IntegrationConfig,
-    RG_CONFIG,
     LIC_CONFIG,
+    RG_CONFIG,
+    IntegrationConfig,
     get_domain_config,
 )
 

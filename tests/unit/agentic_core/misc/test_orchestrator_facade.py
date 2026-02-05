@@ -10,9 +10,10 @@ Tests the facade conversion of OrchestratorAgent including:
 
 from __future__ import annotations
 
-import pytest
-from unittest.mock import Mock, patch
 from pathlib import Path
+from unittest.mock import Mock, patch
+
+import pytest
 
 from agentic_core.base_agents.UnifiedAgent import OrchestrationResult
 
@@ -196,15 +197,16 @@ class TestLegacyCompatibility:
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
-        from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
         from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+        from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
 
         assert issubclass(OrchestratorAgent, SovereignBaseAgent)
 
     def test_run_mission_signature(self):
         """Test run_mission has correct signature."""
-        from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
         import inspect
+
+        from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
 
         sig = inspect.signature(OrchestratorAgent.run_mission)
         params = list(sig.parameters.keys())
@@ -217,8 +219,9 @@ class TestLegacyCompatibility:
 
     def test_run_agent_signature(self):
         """Test run_agent has correct signature."""
-        from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
         import inspect
+
+        from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
 
         sig = inspect.signature(OrchestratorAgent.run_agent)
         params = list(sig.parameters.keys())
@@ -230,8 +233,9 @@ class TestLegacyCompatibility:
 
     def test_heal_repository_signature(self):
         """Test heal_repository has correct signature."""
-        from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
         import inspect
+
+        from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
 
         sig = inspect.signature(OrchestratorAgent.heal_repository)
         params = list(sig.parameters.keys())
@@ -242,8 +246,9 @@ class TestLegacyCompatibility:
 
     def test_dispatch_signature(self):
         """Test dispatch has correct signature."""
-        from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
         import inspect
+
+        from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
 
         sig = inspect.signature(OrchestratorAgent.dispatch)
         params = list(sig.parameters.keys())

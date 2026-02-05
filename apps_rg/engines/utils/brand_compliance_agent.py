@@ -42,7 +42,7 @@ class BrandValidatorStrategy(ValidatorStrategy):
         )
         self.case_sensitive = self.compliance_rules.get("case_sensitive_checking", False)
 
-    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> ValidationResult:
+    async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> ValidationResult:
         """Execute brand compliance validation logic."""
         agent.log_info("Checking brand compliance...")
 
@@ -86,7 +86,7 @@ class BrandValidatorStrategy(ValidatorStrategy):
             metadata={"agent": "BrandComplianceAgent"},
         )
 
-    def _get_resume_from_context(self, agent: "UnifiedAgent") -> dict[str, Any] | None:
+    def _get_resume_from_context(self, agent: UnifiedAgent) -> dict[str, Any] | None:
         """Get resume from agent context."""
         ctx = getattr(agent, "ctx", None)
         if ctx:

@@ -43,7 +43,6 @@ from tests.guardian.guardian_report import (
     ViolationCode,
 )
 
-
 # =============================================================================
 # GUARDIAN MARKER - All tests in this file are tagged for guardian runs
 # =============================================================================

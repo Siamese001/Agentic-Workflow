@@ -316,8 +316,8 @@ class TestIntegrationExecuteSSOTImports:
             from agentic_core.L5_safety.validators.FileClassificationAgent import (
                 FileClassificationAgent,
             )
-            from agentic_core.L5_safety.validators.location_agent import LocationAgent
             from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+            from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
             assert FileClassificationAgent is not None
             assert LocationAgent is not None

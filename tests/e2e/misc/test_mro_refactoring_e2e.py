@@ -11,10 +11,11 @@ Tests verify:
 """
 
 import ast
-import pytest
-from pathlib import Path
 import sys
 import time
+from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -111,9 +112,9 @@ class TestPhase3E2E:
 
     def test_split_mixins_work_independently(self):
         """Split mixins should work without full PerformanceMixin."""
+        from agentic_core.base_agents.batching_mixin import BatchingMixin
         from agentic_core.base_agents.caching_mixin import CachingMixin
         from agentic_core.base_agents.metrics_mixin import MetricsMixin
-        from agentic_core.base_agents.batching_mixin import BatchingMixin
 
         class CacheOnlyAgent(CachingMixin):
             pass
@@ -176,11 +177,12 @@ class TestPhase5E2E:
     def test_traits_avoid_mro_complexity(self):
         """Trait-based agents should have simple MRO."""
         from dataclasses import dataclass
+
         from agentic_core.base_agents.trait_system import (
-            with_traits,
+            BatchingTrait,
             CachingTrait,
             MetricsTrait,
-            BatchingTrait,
+            with_traits,
         )
 
         @with_traits(CachingTrait, MetricsTrait, BatchingTrait)
@@ -196,11 +198,12 @@ class TestPhase5E2E:
     def test_traits_are_fully_functional(self):
         """Trait-based agents should have all capabilities."""
         from dataclasses import dataclass
+
         from agentic_core.base_agents.trait_system import (
-            with_traits,
+            BatchingTrait,
             CachingTrait,
             MetricsTrait,
-            BatchingTrait,
+            with_traits,
         )
 
         @with_traits(CachingTrait, MetricsTrait, BatchingTrait)
@@ -297,6 +300,7 @@ class TestAllPhasesIntegrated:
     def test_combined_architecture_pattern(self):
         """Test recommended combined usage pattern."""
         from dataclasses import dataclass
+
         from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
 
@@ -348,7 +352,8 @@ class TestPerformanceImprovements:
     def test_trait_based_agent_instantiation(self):
         """Trait-based agents should instantiate quickly."""
         from dataclasses import dataclass
-        from agentic_core.base_agents.trait_system import with_traits, CachingTrait, MetricsTrait
+
+        from agentic_core.base_agents.trait_system import CachingTrait, MetricsTrait, with_traits
 
         @with_traits(CachingTrait, MetricsTrait)
         @dataclass

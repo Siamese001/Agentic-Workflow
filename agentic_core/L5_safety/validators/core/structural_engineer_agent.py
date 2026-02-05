@@ -27,11 +27,11 @@ import os
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 

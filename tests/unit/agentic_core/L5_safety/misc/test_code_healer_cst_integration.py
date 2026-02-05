@@ -6,19 +6,19 @@ and preserves the surgical healing pattern.
 """
 
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.validators.surgical_cst_healer_mixin import (
-    SurgicalCSTHealerMixin,
-)
 from agentic_core.L5_safety.validators.surgical_context import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
 )
-from datetime import datetime
+from agentic_core.L5_safety.validators.surgical_cst_healer_mixin import (
+    SurgicalCSTHealerMixin,
+)
 
 
 class TestCodeHealerCSTIntegration:

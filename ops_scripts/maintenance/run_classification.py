@@ -10,15 +10,15 @@ FOCUS: Only flag actual naming violations, avoid false positives.
 - Avoid flagging: Errors, Strategies, Validators, Guardrails, etc. as needing Agent suffix
 """
 
-import os
-import re
 import ast
 import json
+import os
+import re
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any
 
 
-def get_python_files_fast(root: Path) -> List[Path]:
+def get_python_files_fast(root: Path) -> list[Path]:
     """Optimized repository scanner that prunes heavy directories"""
     python_files = []
     exclude_dirs = {
@@ -177,7 +177,7 @@ def classify_file(path: Path) -> str:
         return "IGNORE"  # Don't flag other classes
 
 
-def get_compliant_name(path: Path, file_type: str) -> Optional[str]:
+def get_compliant_name(path: Path, file_type: str) -> str | None:
     """Get compliant name for file based on type"""
     if file_type in {"IGNORE", "TYPES", "UTILITY", "PROTOCOL", "GATEWAY"}:
         return None
@@ -215,7 +215,7 @@ def get_compliant_name(path: Path, file_type: str) -> Optional[str]:
 
 def find_imports_to_update(
     project_root: Path, old_name: str, new_name: str
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Find all files that import the old module name"""
     old_mod = old_name.replace(".py", "")
     new_mod = new_name.replace(".py", "")

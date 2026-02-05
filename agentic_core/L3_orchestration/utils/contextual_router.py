@@ -18,11 +18,12 @@ References:
 """
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Protocol, Set
+from typing import Any, Optional, Protocol
 
 from agentic_core.L5_safety.core.circuit_breaker import get_breaker
 from agentic_core.L5_safety.core.context_session import (
@@ -51,10 +52,10 @@ class RoutingRequest:
 
     request_id: str
     action_type: str  # heal, validate, execute, etc.
-    target_files: List[Path] = field(default_factory=list)
+    target_files: list[Path] = field(default_factory=list)
     agent_name: str = ""
-    payload: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    payload: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
     # Risk factors from discovery
@@ -71,21 +72,21 @@ class RoutingResult:
     risk_level: RiskLevel
     reason: str
     request: RoutingRequest
-    session: Optional[ContextSession] = None
+    session: ContextSession | None = None
     bypass_validation: bool = False
     requires_human_approval: bool = False
-    circuit_breaker_status: Optional[str] = None
-    guardian_signals: List[str] = field(default_factory=list)
+    circuit_breaker_status: str | None = None
+    guardian_signals: list[str] = field(default_factory=list)
 
 
 class GuardianSignalProtocol(Protocol):
     """Protocol for guardian signal emission."""
 
-    def emit_signal(self, signal_type: str, data: Dict[str, Any]) -> None:
+    def emit_signal(self, signal_type: str, data: dict[str, Any]) -> None:
         """Emit a guardian signal."""
         ...
 
-    def get_active_signals(self) -> List[Dict[str, Any]]:
+    def get_active_signals(self) -> list[dict[str, Any]]:
         """Get all active guardian signals."""
         ...
 
@@ -104,14 +105,14 @@ class GuardianSignalBus:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance._signals: List[Dict[str, Any]] = []
-            cls._instance._subscribers: List[Callable] = []
+            cls._instance._signals: list[dict[str, Any]] = []
+            cls._instance._subscribers: list[Callable] = []
         return cls._instance
 
     def emit_signal(
         self,
         signal_type: str,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         severity: str = "warning",
     ) -> None:
         """
@@ -139,15 +140,15 @@ class GuardianSignalBus:
 
         logger.info(f"Guardian signal emitted: {signal_type} ({severity})")
 
-    def subscribe(self, callback: Callable[[Dict[str, Any]], None]) -> None:
+    def subscribe(self, callback: Callable[[dict[str, Any]], None]) -> None:
         """Subscribe to guardian signals."""
         self._subscribers.append(callback)
 
     def get_active_signals(
         self,
-        signal_types: Optional[Set[str]] = None,
+        signal_types: set[str] | None = None,
         min_severity: str = "warning",
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get active signals, optionally filtered."""
         severity_order = {"info": 0, "warning": 1, "error": 2, "critical": 3}
         min_level = severity_order.get(min_severity, 1)
@@ -161,7 +162,7 @@ class GuardianSignalBus:
 
         return signals
 
-    def clear_signals(self, signal_type: Optional[str] = None) -> int:
+    def clear_signals(self, signal_type: str | None = None) -> int:
         """Clear signals, optionally by type."""
         if signal_type:
             before = len(self._signals)
@@ -199,12 +200,12 @@ class ContextualRouter:
 
     def __init__(
         self,
-        session_manager: Optional[ContextSessionManager] = None,
-        guardian_bus: Optional[GuardianSignalBus] = None,
+        session_manager: ContextSessionManager | None = None,
+        guardian_bus: GuardianSignalBus | None = None,
     ):
         self._session_manager = session_manager or get_session_manager()
         self._guardian_bus = guardian_bus or get_guardian_signal_bus()
-        self._policy_rules: List[Callable[[RoutingRequest], Optional[RouteDecision]]] = []
+        self._policy_rules: list[Callable[[RoutingRequest], RouteDecision | None]] = []
         self._metrics = {
             "total_requests": 0,
             "bypassed": 0,
@@ -223,19 +224,19 @@ class ContextualRouter:
         """Register default V10 policy rules."""
 
         # Rule 1: Base agent modifications always require human review
-        def base_agent_rule(req: RoutingRequest) -> Optional[RouteDecision]:
+        def base_agent_rule(req: RoutingRequest) -> RouteDecision | None:
             if req.is_base_agent:
                 return RouteDecision.HUMAN_REVIEW
             return None
 
         # Rule 2: External touch requires validation
-        def external_touch_rule(req: RoutingRequest) -> Optional[RouteDecision]:
+        def external_touch_rule(req: RoutingRequest) -> RouteDecision | None:
             if req.has_external_touch:
                 return RouteDecision.VALIDATE
             return None
 
         # Rule 3: High complexity requires validation
-        def complexity_rule(req: RoutingRequest) -> Optional[RouteDecision]:
+        def complexity_rule(req: RoutingRequest) -> RouteDecision | None:
             if req.cyclomatic_complexity > 50:
                 return RouteDecision.HUMAN_REVIEW
             if req.cyclomatic_complexity > 20:
@@ -250,7 +251,7 @@ class ContextualRouter:
             ]
         )
 
-    def _on_guardian_signal(self, signal: Dict[str, Any]) -> None:
+    def _on_guardian_signal(self, signal: dict[str, Any]) -> None:
         """Handle incoming guardian signal."""
         logger.debug(f"Router received guardian signal: {signal['type']}")
 
@@ -263,7 +264,7 @@ class ContextualRouter:
 
     def add_policy_rule(
         self,
-        rule: Callable[[RoutingRequest], Optional[RouteDecision]],
+        rule: Callable[[RoutingRequest], RouteDecision | None],
     ) -> None:
         """
         Add a custom policy rule.
@@ -275,7 +276,7 @@ class ContextualRouter:
         """
         self._policy_rules.append(rule)
 
-    def _check_circuit_breaker(self, agent_name: str) -> Optional[RouteDecision]:
+    def _check_circuit_breaker(self, agent_name: str) -> RouteDecision | None:
         """Check if circuit breaker allows request."""
         if not agent_name:
             return None
@@ -286,7 +287,7 @@ class ContextualRouter:
 
         return None
 
-    def _evaluate_policies(self, request: RoutingRequest) -> Optional[RouteDecision]:
+    def _evaluate_policies(self, request: RoutingRequest) -> RouteDecision | None:
         """Evaluate policy rules against request."""
         for rule in self._policy_rules:
             try:
@@ -298,7 +299,7 @@ class ContextualRouter:
 
         return None
 
-    def _check_guardian_signals(self, request: RoutingRequest) -> List[str]:
+    def _check_guardian_signals(self, request: RoutingRequest) -> list[str]:
         """Check for relevant guardian signals."""
         signals = []
 
@@ -427,7 +428,7 @@ class ContextualRouter:
             guardian_signals=guardian_signals,
         )
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get router metrics for observability dashboard."""
         return {
             **self._metrics,
@@ -437,7 +438,7 @@ class ContextualRouter:
 
 
 # Global router instance
-_router_instance: Optional[ContextualRouter] = None
+_router_instance: ContextualRouter | None = None
 
 
 def get_router() -> ContextualRouter:

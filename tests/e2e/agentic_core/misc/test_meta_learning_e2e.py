@@ -92,12 +92,12 @@ class TestEndToEndHealingCycle:
     @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
     def test_multi_agent_healing_coordination(self, mock_integrity):
         """Test multiple agents coordinating healing through shared cache."""
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+        )
         from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
         from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
             HygieneGuardianAgent,
-        )
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
-            MetaLearningClient,
         )
 
         # Setup shared client
@@ -333,15 +333,15 @@ class TestFullSystemIntegration:
     def test_all_agents_have_meta_learning(self, mock_integrity):
         """Verify all major agents have meta-learning capabilities."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
-        from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
-            HygieneGuardianAgent,
-        )
         from agentic_core.L5_safety.gravity.GravityLeakRepairAgent import (
             GravityLeakRepairAgent,
         )
         from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
             CodeHealerAgent,
+        )
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+        from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
+            HygieneGuardianAgent,
         )
 
         agents = [
@@ -428,12 +428,12 @@ class TestRollbackProcedures:
 
     def test_singleton_reset_works(self):
         """Test singleton reset for rollback."""
+        from agentic_core.base_agents.meta_learning_client_mixin import (
+            MetaLearningClientMixin,
+        )
         from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
             get_meta_learning_client,
-        )
-        from agentic_core.base_agents.meta_learning_client_mixin import (
-            MetaLearningClientMixin,
         )
 
         # Get initial instance

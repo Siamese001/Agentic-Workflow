@@ -14,9 +14,9 @@ References:
 import logging
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -52,8 +52,8 @@ class CircuitBreakerMetrics:
     rejected_calls: int = 0
     timed_out_calls: int = 0
     state_transitions: int = 0
-    last_failure_time: Optional[float] = None
-    last_success_time: Optional[float] = None
+    last_failure_time: float | None = None
+    last_success_time: float | None = None
     current_backoff: float = 0.0
 
 
@@ -79,7 +79,7 @@ class CircuitBreakerTimeoutError(Exception):
 
 # Global registry with simple lock pattern to prevent deadlock
 _breaker_lock = threading.Lock()
-_breakers: Dict[str, "CircuitBreaker"] = {}
+_breakers: dict[str, "CircuitBreaker"] = {}
 
 
 class CircuitBreaker:
@@ -88,14 +88,14 @@ class CircuitBreaker:
     def __init__(
         self,
         name: str,
-        config: Optional[CircuitBreakerConfig] = None,
+        config: CircuitBreakerConfig | None = None,
     ):
         self.name = name
         self.config = config or CircuitBreakerConfig()
         self._state = CircuitState.CLOSED
         self._failure_count = 0
         self._success_count = 0
-        self._last_failure_time: Optional[float] = None
+        self._last_failure_time: float | None = None
         self._current_reset_timeout = self.config.reset_timeout_seconds
         self._half_open_calls = 0
         self._state_lock = threading.RLock()
@@ -170,7 +170,7 @@ class CircuitBreaker:
                 # Reset failure count on success
                 self._failure_count = 0
 
-    def record_failure(self, error: Optional[Exception] = None) -> None:
+    def record_failure(self, error: Exception | None = None) -> None:
         """Record a failed call."""
         with self._state_lock:
             self.metrics.failed_calls += 1
@@ -303,7 +303,7 @@ def get_breaker(name: str, **kwargs) -> "CircuitBreaker":
     return _breakers[name]
 
 
-def get_all_breakers() -> Dict[str, "CircuitBreaker"]:
+def get_all_breakers() -> dict[str, "CircuitBreaker"]:
     """Get all registered circuit breakers for dashboard."""
     with _breaker_lock:
         return dict(_breakers)

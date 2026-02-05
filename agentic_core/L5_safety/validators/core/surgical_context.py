@@ -6,10 +6,11 @@ Eliminates Resolution Asymmetry by preserving all detection information.
 """
 
 from __future__ import annotations
+
 import ast
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
@@ -20,10 +21,10 @@ class ASTCoordinate:
     node_type: str  # ast.ClassDef, ast.FunctionDef, etc.
     line: int  # Line number (1-based)
     column: int  # Column offset
-    end_line: Optional[int] = None  # End line for multi-line nodes
-    end_column: Optional[int] = None  # End column
-    parent_id: Optional[str] = None  # Parent node ID
-    children_ids: List[str] = field(default_factory=list)  # Child node IDs
+    end_line: int | None = None  # End line for multi-line nodes
+    end_column: int | None = None  # End column
+    parent_id: str | None = None  # Parent node ID
+    children_ids: list[str] = field(default_factory=list)  # Child node IDs
 
 
 @dataclass
@@ -33,10 +34,10 @@ class ViolationConstraint:
     constraint_type: str  # e.g., "missing_docstring", "invalid_import"
     severity: str  # "error", "warning", "info"
     message: str  # Human-readable description
-    rule_id: Optional[str] = None  # Rule identifier
-    expected_pattern: Optional[str] = None  # What was expected
-    actual_pattern: Optional[str] = None  # What was found
-    fix_type: Optional[str] = None  # "insert", "replace", "delete", "move"
+    rule_id: str | None = None  # Rule identifier
+    expected_pattern: str | None = None  # What was expected
+    actual_pattern: str | None = None  # What was found
+    fix_type: str | None = None  # "insert", "replace", "delete", "move"
 
 
 @dataclass
@@ -55,10 +56,10 @@ class SurgicalContext:
 
     # Violation details
     violation_id: str
-    violations: List[ViolationConstraint]
+    violations: list[ViolationConstraint]
 
     # AST coordinates for precise targeting
-    target_coordinates: List[ASTCoordinate]
+    target_coordinates: list[ASTCoordinate]
 
     # Detection metadata
     detector_agent: str
@@ -66,14 +67,14 @@ class SurgicalContext:
     detection_timestamp: str
 
     # Additional context
-    surrounding_context: Dict[str, Any] = field(default_factory=dict)
-    related_violations: List[str] = field(default_factory=list)
+    surrounding_context: dict[str, Any] = field(default_factory=dict)
+    related_violations: list[str] = field(default_factory=list)
 
     # Healing hints
-    suggested_fixes: List[Dict[str, Any]] = field(default_factory=list)
-    preservation_rules: List[str] = field(default_factory=list)  # What must be preserved
+    suggested_fixes: list[dict[str, Any]] = field(default_factory=list)
+    preservation_rules: list[str] = field(default_factory=list)  # What must be preserved
 
-    def get_target_node(self, coordinate: ASTCoordinate) -> Optional[ast.AST]:
+    def get_target_node(self, coordinate: ASTCoordinate) -> ast.AST | None:
         """Get AST node by coordinate."""
         for node in ast.walk(self.ast_tree):
             if hasattr(node, "lineno") and hasattr(node, "col_offset"):
@@ -81,7 +82,7 @@ class SurgicalContext:
                     return node
         return None
 
-    def get_nodes_by_type(self, node_type: str) -> List[ast.AST]:
+    def get_nodes_by_type(self, node_type: str) -> list[ast.AST]:
         """Get all nodes of a specific type."""
         nodes = []
         for node in ast.walk(self.ast_tree):
@@ -105,7 +106,7 @@ class SurgicalContext:
         else:
             return "".join(lines[start - 1 : end])
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "file_path": str(self.file_path),
@@ -122,7 +123,7 @@ class SurgicalContext:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> SurgicalContext:
+    def from_dict(cls, data: dict[str, Any]) -> SurgicalContext:
         """Create from dictionary."""
         # Reconstruct AST tree from file content
         tree = ast.parse(data["file_content"])
@@ -161,8 +162,8 @@ class SurgicalContextBuilder:
     def build_context(
         self,
         violation_id: str,
-        violations: List[Dict[str, Any]],
-        target_nodes: List[ast.AST],
+        violations: list[dict[str, Any]],
+        target_nodes: list[ast.AST],
         **kwargs,
     ) -> SurgicalContext:
         """Build SurgicalContext from detection results."""

@@ -1,14 +1,15 @@
 """Tests for MigrationHelper."""
 
 import pytest
+
+from agentic_core.base_agents.feature_flagged_agent_mixin import FeatureFlaggedAgentMixin
 from agentic_core.integration.migration_helper import (
-    MigrationHelper,
     ComplianceResult,
+    MigrationHelper,
     MigrationStatus,
     check_agent_compliance,
     get_migration_status,
 )
-from agentic_core.base_agents.feature_flagged_agent_mixin import FeatureFlaggedAgentMixin
 from agentic_core.primitives.feature_flags import FeatureFlagManager
 
 

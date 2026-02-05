@@ -10,10 +10,11 @@ References:
 """
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, Optional, TypeVar
+from typing import Any, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +37,8 @@ class CircuitStats:
     successful_calls: int = 0
     failed_calls: int = 0
     rejected_calls: int = 0
-    last_failure_time: Optional[datetime] = None
-    last_success_time: Optional[datetime] = None
+    last_failure_time: datetime | None = None
+    last_success_time: datetime | None = None
     consecutive_failures: int = 0
     consecutive_successes: int = 0
 
@@ -63,7 +64,7 @@ class CircuitBreakerMixin:
 
     _circuit_state: CircuitState = CircuitState.CLOSED
     _circuit_stats: CircuitStats = field(default_factory=CircuitStats)
-    _circuit_opened_at: Optional[datetime] = None
+    _circuit_opened_at: datetime | None = None
 
     # Configuration
     _failure_threshold: int = 5
@@ -97,7 +98,7 @@ class CircuitBreakerMixin:
         self,
         operation: Callable[..., T],
         *args: Any,
-        fallback: Optional[Callable[..., T]] = None,
+        fallback: Callable[..., T] | None = None,
         **kwargs: Any,
     ) -> T:
         """
@@ -189,7 +190,7 @@ class CircuitBreakerMixin:
         elapsed = (datetime.utcnow() - self._circuit_opened_at).total_seconds()
         return max(0, int(self._recovery_timeout - elapsed))
 
-    def get_circuit_state(self) -> Dict[str, Any]:
+    def get_circuit_state(self) -> dict[str, Any]:
         """Get current circuit breaker state and statistics."""
         if not hasattr(self, "_circuit_stats") or self._circuit_stats is None:
             self._circuit_stats = CircuitStats()

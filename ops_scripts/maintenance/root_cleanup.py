@@ -12,7 +12,7 @@ from pathlib import Path
 def main():
     """Clean up root files."""
     root = Path("C:/Git/Agentic-Workflow")
-    
+
     # Files to move to docs/reports/audit
     audit_files = [
         "audit_gap_analysis.json",
@@ -30,7 +30,7 @@ def main():
         "ssot_recommendations_report.md",
         "TARGET_STATE_GAP_ASSESSMENT_REPORT.md",
     ]
-    
+
     # Files to move to docs/reports/assessments
     assessment_files = [
         "COMPREHENSIVE_TEST_CASES.md",
@@ -38,7 +38,7 @@ def main():
         "Prompt v4.7 Gap Analysis.md",
         "pre_commit_scope_analysis.md",
     ]
-    
+
     # Scripts to move to ops_scripts/maintenance
     script_files = [
         "agent_technical_status.py",
@@ -51,7 +51,7 @@ def main():
         "root_drift_remediation.py",
         "run_classification.py",
     ]
-    
+
     # Test files to move to tests/
     test_files = [
         "test_always_heal_llm.py",
@@ -67,7 +67,7 @@ def main():
         "test_schema_validator.py",
         "test_sovereign_index_e2e.py",
     ]
-    
+
     # Config files to keep in root (whitelist)
     keep_in_root = {
         ".env",
@@ -80,12 +80,12 @@ def main():
         "agent_discovery_full.manifest.json",
         "pytest_quick.ini",
     }
-    
+
     print("=" * 70)
     print("ROOT CLEANUP: MOVING FILES TO APPROPRIATE TERRITORIES")
     print("=" * 70)
     print()
-    
+
     # Move audit files
     print("[1/4] Moving audit files to docs/reports/audit...")
     audit_dir = root / "docs" / "reports" / "audit"
@@ -95,7 +95,7 @@ def main():
             target = audit_dir / filename
             shutil.move(str(source), str(target))
             print(f"  ✓ {filename}")
-    
+
     # Move assessment files
     print()
     print("[2/4] Moving assessment files to docs/reports/assessments...")
@@ -106,7 +106,7 @@ def main():
             target = assessment_dir / filename
             shutil.move(str(source), str(target))
             print(f"  ✓ {filename}")
-    
+
     # Move script files
     print()
     print("[3/4] Moving scripts to ops_scripts/maintenance...")
@@ -117,7 +117,7 @@ def main():
             target = scripts_dir / filename
             shutil.move(str(source), str(target))
             print(f"  ✓ {filename}")
-    
+
     # Move test files
     print()
     print("[4/4] Moving test files to tests/...")
@@ -128,7 +128,7 @@ def main():
             target = tests_dir / filename
             shutil.move(str(source), str(target))
             print(f"  ✓ {filename}")
-    
+
     print()
     print("=" * 70)
     print("ROOT CLEANUP COMPLETE")

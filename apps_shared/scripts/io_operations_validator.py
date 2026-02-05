@@ -6,9 +6,9 @@ Deterministic I/O operations extracted from agents.
 from __future__ import annotations
 
 import json
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 import logging
+from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ class FileOperations:
     """Deterministic file I/O operations."""
 
     @staticmethod
-    def read_json(file_path: str | Path) -> Dict[str, Any]:
+    def read_json(file_path: str | Path) -> dict[str, Any]:
         """
         Read JSON file.
 
@@ -35,11 +35,11 @@ class FileOperations:
         if not path.exists():
             raise FileNotFoundError(f"File not found: {file_path}")
 
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             return json.load(f)
 
     @staticmethod
-    def write_json(file_path: str | Path, data: Dict[str, Any], indent: int = 2) -> None:
+    def write_json(file_path: str | Path, data: dict[str, Any], indent: int = 2) -> None:
         """
         Write JSON file.
 
@@ -69,7 +69,7 @@ class FileOperations:
         if not path.exists():
             raise FileNotFoundError(f"File not found: {file_path}")
 
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             return f.read()
 
     @staticmethod
@@ -90,7 +90,7 @@ class FileOperations:
     @staticmethod
     def list_files(
         directory: str | Path, pattern: str = "*", recursive: bool = False
-    ) -> List[Path]:
+    ) -> list[Path]:
         """
         List files in directory.
 
@@ -147,8 +147,8 @@ class DataCollectionOperations:
 
     @staticmethod
     def collect_metrics(
-        data_points: List[Dict[str, Any]], metric_keys: List[str]
-    ) -> Dict[str, List[Any]]:
+        data_points: list[dict[str, Any]], metric_keys: list[str]
+    ) -> dict[str, list[Any]]:
         """
         Collect metrics from data points.
 
@@ -170,8 +170,8 @@ class DataCollectionOperations:
 
     @staticmethod
     def aggregate_results(
-        results: List[Dict[str, Any]], group_by: str
-    ) -> Dict[str, List[Dict[str, Any]]]:
+        results: list[dict[str, Any]], group_by: str
+    ) -> dict[str, list[dict[str, Any]]]:
         """
         Aggregate results by key.
 
@@ -194,7 +194,7 @@ class DataCollectionOperations:
         return aggregated
 
     @staticmethod
-    def filter_data(data: List[Dict[str, Any]], filters: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def filter_data(data: list[dict[str, Any]], filters: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Filter data based on criteria.
 
@@ -223,7 +223,7 @@ class MonitoringOperations:
     """Deterministic monitoring operations."""
 
     @staticmethod
-    def check_system_state(state_file: str | Path) -> Dict[str, Any]:
+    def check_system_state(state_file: str | Path) -> dict[str, Any]:
         """
         Check system state from file.
 
@@ -240,7 +240,7 @@ class MonitoringOperations:
             return {"status": "unknown", "error": str(e)}
 
     @staticmethod
-    def record_event(event_log: str | Path, event_type: str, event_data: Dict[str, Any]) -> None:
+    def record_event(event_log: str | Path, event_type: str, event_data: dict[str, Any]) -> None:
         """
         Record event to log file.
 
@@ -273,8 +273,8 @@ class MonitoringOperations:
 
     @staticmethod
     def get_recent_events(
-        event_log: str | Path, count: int = 10, event_type: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
+        event_log: str | Path, count: int = 10, event_type: str | None = None
+    ) -> list[dict[str, Any]]:
         """
         Get recent events from log.
 

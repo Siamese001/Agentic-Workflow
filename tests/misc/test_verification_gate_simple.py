@@ -5,11 +5,10 @@ Simplified test script for Verification Gate functionality.
 This script tests the core verification gate without complex dependencies.
 """
 
-import tempfile
-from pathlib import Path
-
 # Import only the verification gate directly
 import sys
+import tempfile
+from pathlib import Path
 
 sys.path.append(".")
 

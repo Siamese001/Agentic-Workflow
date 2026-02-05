@@ -22,16 +22,16 @@ SSOT PRINCIPLE: structure_blueprint.py is the absolute authority.
 from __future__ import annotations
 
 import ast
-import logging
-import sys
-import json
 import hashlib
+import json
+import logging
 import platform
 import subprocess
+import sys
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # CRITICAL SSOT Imports - ALL directory constants MUST come from structure_blueprint.py
 from agentic_core.L5_safety.validators.structure_blueprint_config import (
@@ -75,17 +75,17 @@ class AgentIntegrityReport:
     is_valid: bool = False
     is_stub: bool = False
     is_base_agent: bool = False
-    class_name: Optional[str] = None
-    inheritance: List[str] = field(default_factory=list)
-    decorators: List[str] = field(default_factory=list)
-    critical_methods: List[str] = field(default_factory=list)
-    rejection_reason: Optional[str] = None
+    class_name: str | None = None
+    inheritance: list[str] = field(default_factory=list)
+    decorators: list[str] = field(default_factory=list)
+    critical_methods: list[str] = field(default_factory=list)
+    rejection_reason: str | None = None
     architectural_role: str = "Unknown"
     file_sha256: str = ""
     file_size_bytes: int = 0
     parse_error: str = ""
     selection_reason: str = ""
-    mro_signature: List[str] = field(default_factory=list)
+    mro_signature: list[str] = field(default_factory=list)
 
 
 class DiscoveryError(Exception):
@@ -234,13 +234,13 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
         has_agent_inheritance = False
         has_agent_decorator = False
         has_execute_method = False
-        class_nodes: List[ast.ClassDef] = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+        class_nodes: list[ast.ClassDef] = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
         if not class_nodes:
             report.rejection_reason = "No ClassDef nodes"
             return report
 
         # Deterministic selection: score by explicit agent bases, then name signals, then critical methods
-        def extract_mro_signature(cls: ast.ClassDef) -> List[str]:
+        def extract_mro_signature(cls: ast.ClassDef) -> list[str]:
             return [safe_unparse(b) for b in cls.bases]
 
         def class_score(cls: ast.ClassDef) -> int:
@@ -328,8 +328,8 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
 
 
 def perform_deep_integrity_scan(
-    agents: List[Dict[str, Any]], project_root: Path
-) -> tuple[List[Dict[str, Any]], Dict[str, int]]:
+    agents: list[dict[str, Any]], project_root: Path
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
     """
     Iterates over discovered agents and validates them using AST analysis.
     Returns:
@@ -398,7 +398,7 @@ def perform_deep_integrity_scan(
 # ==============================================================================
 
 
-def check_compliance_gate(scan_stats: Optional[Dict[str, int]] = None) -> bool:
+def check_compliance_gate(scan_stats: dict[str, int] | None = None) -> bool:
     """
     Check compliance gate using SSOT validation AND Integrity Stats.
 
@@ -464,7 +464,7 @@ def check_compliance_gate(scan_stats: Optional[Dict[str, int]] = None) -> bool:
         return False
 
 
-def discover_all_agents(strict_mode: bool = True) -> List[Dict[str, Any]]:
+def discover_all_agents(strict_mode: bool = True) -> list[dict[str, Any]]:
     """
     Discover all agents in the repository using SSOT and AST Validation.
 
@@ -493,7 +493,7 @@ def discover_all_agents(strict_mode: bool = True) -> List[Dict[str, Any]]:
         return []
 
 
-def get_agent_discovery_summary() -> Dict[str, Any]:
+def get_agent_discovery_summary() -> dict[str, Any]:
     """
     Generate comprehensive agent discovery summary with Integrity Stats.
     """
@@ -555,7 +555,7 @@ def refresh_discovery_cache() -> bool:
         return False
 
 
-def get_structured_agent_paths() -> List[str]:
+def get_structured_agent_paths() -> list[str]:
     """
     Return structured list of verified agent file paths.
     """

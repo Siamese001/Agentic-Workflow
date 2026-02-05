@@ -6,8 +6,8 @@ Native Python implementations for common text operations.
 from __future__ import annotations
 
 import re
-from typing import List, Optional, Pattern
 from dataclasses import dataclass
+from re import Pattern
 
 
 @dataclass
@@ -15,9 +15,9 @@ class TextMatch:
     """Result of a text matching operation."""
 
     matched: bool
-    matches: List[str]
-    groups: List[tuple]
-    positions: List[tuple]
+    matches: list[str]
+    groups: list[tuple]
+    positions: list[tuple]
 
 
 class TextProcessor:
@@ -124,7 +124,7 @@ class TextProcessor:
             return re.sub(r"\s+", " ", text).strip()
 
     @staticmethod
-    def extract_emails(text: str) -> List[str]:
+    def extract_emails(text: str) -> list[str]:
         """
         Extract email addresses from text.
 
@@ -138,7 +138,7 @@ class TextProcessor:
         return re.findall(pattern, text)
 
     @staticmethod
-    def extract_urls(text: str) -> List[str]:
+    def extract_urls(text: str) -> list[str]:
         """
         Extract URLs from text.
 
@@ -152,7 +152,7 @@ class TextProcessor:
         return re.findall(pattern, text)
 
     @staticmethod
-    def extract_numbers(text: str, include_decimals: bool = True) -> List[float]:
+    def extract_numbers(text: str, include_decimals: bool = True) -> list[float]:
         """
         Extract numbers from text.
 
@@ -172,7 +172,7 @@ class TextProcessor:
         return [float(m) for m in matches if m and m != "-"]
 
     @staticmethod
-    def tokenize(text: str, delimiter: Optional[str] = None) -> List[str]:
+    def tokenize(text: str, delimiter: str | None = None) -> list[str]:
         """
         Tokenize text into words or custom delimited parts.
 

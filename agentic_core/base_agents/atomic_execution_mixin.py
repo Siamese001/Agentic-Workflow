@@ -22,7 +22,6 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +33,7 @@ class FileBackup:
     original_path: Path
     backup_path: Path
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    content_hash: Optional[str] = None
+    content_hash: str | None = None
 
 
 @dataclass
@@ -43,12 +42,12 @@ class AtomicTransaction:
 
     transaction_id: str
     started_at: datetime = field(default_factory=datetime.utcnow)
-    backups: List[FileBackup] = field(default_factory=list)
-    modified_files: Set[Path] = field(default_factory=set)
-    created_files: Set[Path] = field(default_factory=set)
+    backups: list[FileBackup] = field(default_factory=list)
+    modified_files: set[Path] = field(default_factory=set)
+    created_files: set[Path] = field(default_factory=set)
     committed: bool = False
     rolled_back: bool = False
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class AtomicExecutionError(Exception):
@@ -83,8 +82,8 @@ class AtomicExecutionMixin:
             pass
     """
 
-    _active_transactions: Dict[str, AtomicTransaction] = {}
-    _backup_dir: Optional[Path] = None
+    _active_transactions: dict[str, AtomicTransaction] = {}
+    _backup_dir: Path | None = None
 
     def _get_backup_dir(self) -> Path:
         """Get or create the backup directory."""
@@ -101,7 +100,7 @@ class AtomicExecutionMixin:
         timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
         return f"txn_{timestamp}_{uuid.uuid4().hex[:8]}"
 
-    def _compute_file_hash(self, file_path: Path) -> Optional[str]:
+    def _compute_file_hash(self, file_path: Path) -> str | None:
         """Compute content hash for a file."""
         import hashlib
 
@@ -115,7 +114,7 @@ class AtomicExecutionMixin:
             logger.warning(f"Failed to compute hash for {file_path}", exc_info=True)
             return None
 
-    def _backup_file(self, txn: AtomicTransaction, file_path: Path) -> Optional[FileBackup]:
+    def _backup_file(self, txn: AtomicTransaction, file_path: Path) -> FileBackup | None:
         """Create a backup of a file before modification."""
         if not file_path.exists():
             return None
@@ -370,7 +369,7 @@ class AtomicExecutionMixin:
                 txn.transaction_id,
             ) from e
 
-    def get_active_transactions(self) -> Dict[str, AtomicTransaction]:
+    def get_active_transactions(self) -> dict[str, AtomicTransaction]:
         """Get all active transactions for monitoring."""
         return dict(self._active_transactions)
 

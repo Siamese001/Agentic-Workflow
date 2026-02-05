@@ -14,7 +14,7 @@ Deterministic Operations:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -22,9 +22,9 @@ class LeadQualityResult:
     """Result of lead quality validation."""
 
     passed: bool
-    issues: List[str]
+    issues: list[str]
     score: float | None = None
-    metadata: Dict[str, Any] | None = None
+    metadata: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         if self.metadata is None:
@@ -39,7 +39,7 @@ class LeadQualityDeterministic:
     external dependencies or LLM calls.
     """
 
-    def __init__(self, config: Dict[str, Any] | None = None) -> None:
+    def __init__(self, config: dict[str, Any] | None = None) -> None:
         """
         Initialize with lead quality validation configuration.
 
@@ -58,7 +58,7 @@ class LeadQualityDeterministic:
             ["test@", "noreply@", "donotreply@", "spam@"],
         )
 
-    def validate_lead_quality(self, leads: List[Dict[str, Any]]) -> LeadQualityResult:
+    def validate_lead_quality(self, leads: list[dict[str, Any]]) -> LeadQualityResult:
         """
         Validate lead quality using purely deterministic logic.
 
@@ -76,7 +76,7 @@ class LeadQualityDeterministic:
                 metadata={"validation_type": "deterministic", "lead_count": 0},
             )
 
-        issues: List[str] = []
+        issues: list[str] = []
 
         for i, lead in enumerate(leads):
             # Check required fields (deterministic existence checks)
@@ -105,13 +105,13 @@ class LeadQualityDeterministic:
             metadata={"validation_type": "deterministic", "lead_count": len(leads)},
         )
 
-    def _check_required_fields(self, lead: Dict[str, Any], lead_index: int) -> List[str]:
+    def _check_required_fields(self, lead: dict[str, Any], lead_index: int) -> list[str]:
         """
         Check required fields using deterministic existence checks.
 
         Moved to Deterministic: Pure field existence validation
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         for field in self.required_fields:
             if not lead.get(field):
@@ -119,13 +119,13 @@ class LeadQualityDeterministic:
 
         return issues
 
-    def _check_contact_info(self, lead: Dict[str, Any], lead_index: int) -> List[str]:
+    def _check_contact_info(self, lead: dict[str, Any], lead_index: int) -> list[str]:
         """
         Check contact information using deterministic field presence.
 
         Moved to Deterministic: Pure field presence validation
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         # At least one contact field must be present
         has_contact = any(lead.get(field) for field in self.contact_fields)
@@ -134,13 +134,13 @@ class LeadQualityDeterministic:
 
         return issues
 
-    def _check_email_domain(self, lead: Dict[str, Any], lead_index: int) -> List[str]:
+    def _check_email_domain(self, lead: dict[str, Any], lead_index: int) -> list[str]:
         """
         Check email domain using deterministic pattern matching.
 
         Moved to Deterministic: Pure domain validation
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         email = lead.get("email", "")
         if email:
@@ -151,13 +151,13 @@ class LeadQualityDeterministic:
 
         return issues
 
-    def _check_spam_indicators(self, lead: Dict[str, Any], lead_index: int) -> List[str]:
+    def _check_spam_indicators(self, lead: dict[str, Any], lead_index: int) -> list[str]:
         """
         Check spam indicators using deterministic keyword matching.
 
         Moved to Deterministic: Pure keyword matching
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         email = lead.get("email", "").lower()
         if email:
@@ -168,7 +168,7 @@ class LeadQualityDeterministic:
 
         return issues
 
-    def _calculate_quality_score(self, issues: List[str], lead_count: int) -> float:
+    def _calculate_quality_score(self, issues: list[str], lead_count: int) -> float:
         """
         Calculate quality score using deterministic algorithm.
 
@@ -186,7 +186,7 @@ class LeadQualityDeterministic:
 
         return max(0.0, min(1.0, base_score))
 
-    def validate_single_lead(self, lead: Dict[str, Any]) -> LeadQualityResult:
+    def validate_single_lead(self, lead: dict[str, Any]) -> LeadQualityResult:
         """
         Validate a single lead for quality issues.
 
@@ -194,7 +194,7 @@ class LeadQualityDeterministic:
         """
         return self.validate_lead_quality([lead])
 
-    def get_lead_completeness(self, lead: Dict[str, Any]) -> float:
+    def get_lead_completeness(self, lead: dict[str, Any]) -> float:
         """
         Calculate lead completeness score.
 
@@ -204,7 +204,7 @@ class LeadQualityDeterministic:
         present_fields = sum(1 for field in all_fields if lead.get(field))
         return present_fields / len(all_fields) if all_fields else 1.0
 
-    def analyze_lead_risk(self, lead: Dict[str, Any]) -> Dict[str, Any]:
+    def analyze_lead_risk(self, lead: dict[str, Any]) -> dict[str, Any]:
         """
         Analyze lead risk using deterministic rules.
 

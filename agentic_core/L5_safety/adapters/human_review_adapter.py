@@ -6,7 +6,7 @@ enabling integration with the new feature-flagged agent system.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.interfaces.review_protocol import (
     HumanReviewProtocol,
@@ -27,7 +27,7 @@ class HumanReviewAdapter(HumanReviewProtocol):
     integration with the FeatureFlaggedAgentMixin.
     """
 
-    def __init__(self, legacy_queue: Optional[Any] = None):
+    def __init__(self, legacy_queue: Any | None = None):
         """Initialize adapter with optional legacy queue.
 
         Args:
@@ -35,8 +35,8 @@ class HumanReviewAdapter(HumanReviewProtocol):
         """
         self._legacy_queue = legacy_queue
         self._available = True
-        self._pending_reviews: Dict[str, ReviewRequest] = {}
-        self._review_results: Dict[str, ReviewResult] = {}
+        self._pending_reviews: dict[str, ReviewRequest] = {}
+        self._review_results: dict[str, ReviewResult] = {}
 
         if legacy_queue is None:
             self._initialize_legacy_queue()
@@ -104,7 +104,7 @@ class HumanReviewAdapter(HumanReviewProtocol):
 
         return result
 
-    def _submit_to_legacy(self, request: ReviewRequest) -> Optional[ReviewResult]:
+    def _submit_to_legacy(self, request: ReviewRequest) -> ReviewResult | None:
         """Submit to legacy queue if compatible."""
         # Legacy queue may have different interface
         # For now, return None to use adapter's internal tracking
@@ -137,9 +137,9 @@ class HumanReviewAdapter(HumanReviewProtocol):
 
     def get_pending_reviews(
         self,
-        agent_name: Optional[str] = None,
+        agent_name: str | None = None,
         limit: int = 50,
-    ) -> List[ReviewRequest]:
+    ) -> list[ReviewRequest]:
         """Get pending review requests.
 
         Args:
@@ -166,7 +166,7 @@ class HumanReviewAdapter(HumanReviewProtocol):
         """Get number of pending reviews in queue."""
         return len([r for r in self._review_results.values() if r.status == ReviewStatus.PENDING])
 
-    def approve(self, request_id: str, reviewer: str, reason: Optional[str] = None) -> ReviewResult:
+    def approve(self, request_id: str, reviewer: str, reason: str | None = None) -> ReviewResult:
         """Approve a pending review.
 
         Args:

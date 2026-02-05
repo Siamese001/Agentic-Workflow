@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -69,12 +69,12 @@ class ImpactAssessment:
 class FailureContext:
     """Structured failure context for detection signals."""
 
-    file_path: Optional[Path] = None
-    line_number: Optional[int] = None
-    function_name: Optional[str] = None
-    class_name: Optional[str] = None
+    file_path: Path | None = None
+    line_number: int | None = None
+    function_name: str | None = None
+    class_name: str | None = None
     error_message: str = ""
-    stack_trace: Optional[str] = None
+    stack_trace: str | None = None
     related_files: list[Path] = field(default_factory=list)
     system_state: dict[str, Any] = field(default_factory=dict)
 
@@ -132,7 +132,7 @@ class DetectionSignal:
 
     # Actionability
     is_auto_fixable: bool = False
-    suggested_fix: Optional[str] = None
+    suggested_fix: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization and logging."""

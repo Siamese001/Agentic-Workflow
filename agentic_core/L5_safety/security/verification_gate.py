@@ -10,7 +10,7 @@ Integrates with L4ContextManager for shared file analysis caching.
 import ast
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.hallucination_detection_mixin import (
@@ -43,7 +43,7 @@ class VerificationGate(AtomicExecutionMixin, HallucinationDetectionMixin, Sovere
         Args:
             context_manager: Optional L4ContextManager for shared caching
         """
-        self.verification_cache: Dict[str, bool] = {}
+        self.verification_cache: dict[str, bool] = {}
         self.context_manager = context_manager
 
     def verify_action(self, file_path: Path, action_type: str, target_node: str) -> bool:
@@ -67,7 +67,7 @@ class VerificationGate(AtomicExecutionMixin, HallucinationDetectionMixin, Sovere
             return self.verification_cache[cache_key]
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -196,7 +196,7 @@ class VerificationGate(AtomicExecutionMixin, HallucinationDetectionMixin, Sovere
 
         # Parse file once for all verifications
         try:
-            with open(context.file_path, "r", encoding="utf-8") as f:
+            with open(context.file_path, encoding="utf-8") as f:
                 content = f.read()
             tree = ast.parse(content)
         except (SyntaxError, UnicodeDecodeError, OSError) as e:
@@ -250,7 +250,7 @@ class VerificationGate(AtomicExecutionMixin, HallucinationDetectionMixin, Sovere
         else:
             return "modify_node"
 
-    def _extract_target_from_violation(self, violation) -> Optional[str]:
+    def _extract_target_from_violation(self, violation) -> str | None:
         """Extract target node name from violation."""
         # Try target_coordinate first
         if hasattr(violation, "target_coordinate") and violation.target_coordinate:
@@ -283,7 +283,7 @@ class VerificationGate(AtomicExecutionMixin, HallucinationDetectionMixin, Sovere
         """Clear the verification cache."""
         self.verification_cache.clear()
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get cache statistics for monitoring."""
         return {
             "cache_size": len(self.verification_cache),

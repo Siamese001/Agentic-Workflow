@@ -14,7 +14,7 @@ Deterministic Operations:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -22,9 +22,9 @@ class BalanceResult:
     """Result of campaign balance validation."""
 
     passed: bool
-    issues: List[str]
+    issues: list[str]
     ratio: float | None = None
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self) -> None:
         if self.metadata is None:
@@ -38,7 +38,7 @@ class CampaignBalanceDeterministic:
     All logic is 100% deterministic - no external dependencies or LLM calls.
     """
 
-    def __init__(self, thresholds: Dict[str, Any] | None = None) -> None:
+    def __init__(self, thresholds: dict[str, Any] | None = None) -> None:
         """
         Initialize with balance validation thresholds.
 
@@ -51,7 +51,7 @@ class CampaignBalanceDeterministic:
         }
 
     def validate_campaign_balance(
-        self, campaign: Dict[str, Any], leads: List[Any], messages: List[Any]
+        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any]
     ) -> BalanceResult:
         """
         Validate campaign balance using purely deterministic logic.
@@ -64,7 +64,7 @@ class CampaignBalanceDeterministic:
         Returns:
             BalanceResult with deterministic findings
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         # Calculate lead-to-message ratio (deterministic arithmetic)
         ratio = self._calculate_lead_message_ratio(leads, messages)
@@ -84,7 +84,7 @@ class CampaignBalanceDeterministic:
             metadata={"validation_type": "deterministic"},
         )
 
-    def _calculate_lead_message_ratio(self, leads: List[Any], messages: List[Any]) -> float | None:
+    def _calculate_lead_message_ratio(self, leads: list[Any], messages: list[Any]) -> float | None:
         """
         Calculate lead-to-message ratio using deterministic arithmetic.
 
@@ -99,13 +99,13 @@ class CampaignBalanceDeterministic:
         # Deterministic ratio calculation
         return lead_count / message_count
 
-    def _validate_ratio(self, ratio: float) -> List[str]:
+    def _validate_ratio(self, ratio: float) -> list[str]:
         """
         Validate ratio against deterministic thresholds.
 
         Moved to Deterministic: Pure comparison logic
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         max_ratio = self.thresholds["max_leads_per_message"]
         min_ratio = self.thresholds["min_leads_per_message"]
@@ -118,13 +118,13 @@ class CampaignBalanceDeterministic:
 
         return issues
 
-    def _validate_required_fields(self, campaign: Dict[str, Any]) -> List[str]:
+    def _validate_required_fields(self, campaign: dict[str, Any]) -> list[str]:
         """
         Validate required campaign fields using deterministic checks.
 
         Moved to Deterministic: Pure existence validation
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         # Deterministic field existence checks
         if not campaign.get("name"):
@@ -136,7 +136,7 @@ class CampaignBalanceDeterministic:
         return issues
 
     def calculate_balance_score(
-        self, campaign: Dict[str, Any], leads: List[Any], messages: List[Any]
+        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any]
     ) -> float:
         """
         Calculate overall balance score using deterministic algorithm.
@@ -171,15 +171,15 @@ class CampaignBalanceDeterministic:
         return max(0.0, score)
 
     def suggest_improvements(
-        self, campaign: Dict[str, Any], leads: List[Any], messages: List[Any]
-    ) -> List[str]:
+        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any]
+    ) -> list[str]:
         """
         Generate deterministic improvement suggestions.
 
         Returns:
             List of actionable improvement suggestions
         """
-        suggestions: List[str] = []
+        suggestions: list[str] = []
 
         # Check for missing fields
         if not campaign.get("name"):

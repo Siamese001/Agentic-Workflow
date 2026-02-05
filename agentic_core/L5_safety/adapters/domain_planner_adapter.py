@@ -16,7 +16,7 @@ References:
 import asyncio
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from agentic_core.L5_safety.adapters.adapter_base import (
     AdapterContext,
@@ -57,7 +57,7 @@ class DomainPlannerAdapter(HealingAdapter):
     def __init__(
         self,
         legacy_agent: Any,
-        project_root: Optional[Path] = None,
+        project_root: Path | None = None,
     ):
         """
         Initialize the DomainPlannerAdapter.
@@ -241,9 +241,9 @@ class DomainPlannerAdapter(HealingAdapter):
     def plan(
         self,
         plan: Any,
-        job_context: Dict[str, Any],
+        job_context: dict[str, Any],
         workflow_id: str,
-        context: Optional[AdapterContext] = None,
+        context: AdapterContext | None = None,
     ) -> AdapterResult:
         """
         Convenience method matching the expected domain planner interface.
@@ -266,8 +266,8 @@ class DomainPlannerAdapter(HealingAdapter):
 
     def heal(
         self,
-        violation: Dict[str, Any],
-        context: Optional[AdapterContext] = None,
+        violation: dict[str, Any],
+        context: AdapterContext | None = None,
     ) -> AdapterResult:
         """
         Execute healing through the adapter with V10 compliance.

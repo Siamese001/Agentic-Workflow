@@ -16,10 +16,11 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -61,9 +62,9 @@ class FeatureFlag:
     name: str
     enabled: bool
     rollout_percentage: int = 100
-    allowed_agents: Set[str] = field(default_factory=set)
-    blocked_agents: Set[str] = field(default_factory=set)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    allowed_agents: set[str] = field(default_factory=set)
+    blocked_agents: set[str] = field(default_factory=set)
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
@@ -98,7 +99,7 @@ class ForwardRollingConfig:
     def __init__(
         self,
         initial_stage: RolloutStage = RolloutStage.DISABLED,
-        config_update_callback: Optional[Callable[[RolloutConfig], None]] = None,
+        config_update_callback: Callable[[RolloutConfig], None] | None = None,
     ):
         """
         Initialize configuration manager.
@@ -108,10 +109,10 @@ class ForwardRollingConfig:
             config_update_callback: Callback when config changes
         """
         self._config = RolloutConfig(stage=initial_stage)
-        self._feature_flags: Dict[str, FeatureFlag] = {}
-        self._routing_cache: Dict[str, ExecutionMode] = {}
+        self._feature_flags: dict[str, FeatureFlag] = {}
+        self._routing_cache: dict[str, ExecutionMode] = {}
         self._config_update_callback = config_update_callback
-        self._rollback_history: List[RolloutConfig] = []
+        self._rollback_history: list[RolloutConfig] = []
 
         # Initialize default feature flags
         self._init_default_flags()
@@ -315,8 +316,8 @@ class ForwardRollingConfig:
         name: str,
         enabled: bool,
         rollout_percentage: int = 100,
-        allowed_agents: Optional[Set[str]] = None,
-        blocked_agents: Optional[Set[str]] = None,
+        allowed_agents: set[str] | None = None,
+        blocked_agents: set[str] | None = None,
     ) -> FeatureFlag:
         """
         Set or update a feature flag.
@@ -385,11 +386,11 @@ class ForwardRollingConfig:
 
         return True
 
-    def get_feature_flag(self, name: str) -> Optional[FeatureFlag]:
+    def get_feature_flag(self, name: str) -> FeatureFlag | None:
         """Get a feature flag by name."""
         return self._feature_flags.get(name)
 
-    def get_all_feature_flags(self) -> Dict[str, FeatureFlag]:
+    def get_all_feature_flags(self) -> dict[str, FeatureFlag]:
         """Get all feature flags."""
         return self._feature_flags.copy()
 
@@ -416,7 +417,7 @@ class ForwardRollingConfig:
         """Get current rollout percentage."""
         return ROLLOUT_PERCENTAGES.get(self._config.stage, 0)
 
-    def get_routing_stats(self) -> Dict[str, Any]:
+    def get_routing_stats(self) -> dict[str, Any]:
         """Get routing statistics."""
         total_cached = len(self._routing_cache)
         mode_counts = {}
@@ -474,7 +475,7 @@ class ForwardRollingConfig:
             return True
         return False
 
-    def export_config(self) -> Dict[str, Any]:
+    def export_config(self) -> dict[str, Any]:
         """Export current configuration as dictionary."""
         return {
             "config": {

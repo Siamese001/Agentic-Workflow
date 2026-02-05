@@ -37,7 +37,9 @@ def test_case_1_signal_propagation():
     print("=" * 70)
 
     try:
-        from agentic_core.L6_observability.l6_observability_base_agent import L6ObservabilityBaseAgent
+        from agentic_core.L6_observability.l6_observability_base_agent import (
+            L6ObservabilityBaseAgent,
+        )
 
         # Step 1: Instantiate L6ObservabilityBaseAgent
         agent = L6ObservabilityBaseAgent()
@@ -162,7 +164,9 @@ def test_case_3_recursion_cycle_detection():
     print("=" * 70)
 
     try:
-        from agentic_core.L6_observability.l6_observability_base_agent import L6ObservabilityBaseAgent
+        from agentic_core.L6_observability.l6_observability_base_agent import (
+            L6ObservabilityBaseAgent,
+        )
 
         # Step 1: Create agent instance
         agent = L6ObservabilityBaseAgent()

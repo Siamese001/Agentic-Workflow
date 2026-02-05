@@ -63,7 +63,7 @@ def analyze_file_with_ast(file_path: Path) -> dict:
     }
 
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         # Check for component patterns

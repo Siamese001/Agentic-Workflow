@@ -10,8 +10,9 @@ Tests the facade conversion of BrandComplianceAgent including:
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
 
 from agentic_core.base_agents.UnifiedAgent import ValidationResult
 
@@ -264,8 +265,9 @@ class TestLegacyCompatibility:
 
     def test_class_is_dataclass(self):
         """Test class is still a dataclass."""
-        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
         from dataclasses import is_dataclass
+
+        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
 
         assert is_dataclass(BrandComplianceAgent)
 
@@ -278,15 +280,17 @@ class TestLegacyCompatibility:
 
     def test_execute_is_async(self):
         """Test execute method is still async."""
-        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
         import asyncio
+
+        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
 
         assert asyncio.iscoroutinefunction(BrandComplianceAgent.execute)
 
     def test_heal_repository_signature(self):
         """Test heal_repository has correct signature."""
-        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
         import inspect
+
+        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
 
         sig = inspect.signature(BrandComplianceAgent.heal_repository)
         params = list(sig.parameters.keys())
@@ -297,8 +301,9 @@ class TestLegacyCompatibility:
 
     def test_heal_signature(self):
         """Test heal has correct signature."""
-        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
         import inspect
+
+        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
 
         sig = inspect.signature(BrandComplianceAgent.heal)
         params = list(sig.parameters.keys())

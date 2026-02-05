@@ -135,7 +135,7 @@ class MagicConfigDetector(AntiPatternDetector):
         defaults = node.args.defaults
         args = node.args.args[-len(defaults) :] if defaults else []
 
-        for arg, default in zip(args, defaults):
+        for arg, default in zip(args, defaults, strict=False):
             param_name = arg.arg.lower()
 
             # Check if parameter name suggests configuration

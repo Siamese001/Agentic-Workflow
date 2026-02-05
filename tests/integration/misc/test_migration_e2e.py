@@ -9,35 +9,36 @@ Tests the complete integration of all migration components:
 - Domain Integration
 """
 
-import pytest
-import tempfile
 import os
+import tempfile
 
-from agentic_core.primitives.feature_flags import FeatureFlagManager
-from agentic_core.primitives.dependency_resolver import DynamicLoader
-from agentic_core.interfaces.verification_protocol import (
-    VerificationRequest,
-)
-from agentic_core.interfaces.review_protocol import (
-    ReviewRequest,
-    ReviewStatus,
+import pytest
+
+from agentic_core.base_agents.feature_flagged_agent_mixin import (
+    FeatureFlaggedAgentMixin,
 )
 from agentic_core.integration.component_factory import ComponentFactory
 from agentic_core.integration.migration_helper import (
     MigrationHelper,
     check_agent_compliance,
 )
+from agentic_core.interfaces.review_protocol import (
+    ReviewRequest,
+    ReviewStatus,
+)
+from agentic_core.interfaces.verification_protocol import (
+    VerificationRequest,
+)
+from agentic_core.L5_safety.adapters.human_review_adapter import HumanReviewAdapter
 from agentic_core.L5_safety.adapters.verification_gate_adapter import (
     VerificationGateAdapter,
 )
-from agentic_core.L5_safety.adapters.human_review_adapter import HumanReviewAdapter
-from agentic_core.base_agents.feature_flagged_agent_mixin import (
-    FeatureFlaggedAgentMixin,
-)
+from agentic_core.primitives.dependency_resolver import DynamicLoader
+from agentic_core.primitives.feature_flags import FeatureFlagManager
 from apps_shared.integration.domain_agent_mixin import (
     DomainAgentMixin,
-    RGDomainMixin,
     LICDomainMixin,
+    RGDomainMixin,
 )
 from apps_shared.integration.integration_config import get_domain_config
 

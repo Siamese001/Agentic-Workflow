@@ -14,7 +14,6 @@ from apps_shared.utils.vector_memory_types import (
     VectorSearchResult,
 )
 
-
 # Create a mock pinecone module for testing
 mock_pinecone = MagicMock()
 mock_pinecone.Pinecone = MagicMock()

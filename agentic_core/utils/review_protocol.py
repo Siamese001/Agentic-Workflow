@@ -8,7 +8,7 @@ human review before execution.
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class ReviewStatus(Enum):
@@ -31,7 +31,7 @@ class ReviewRequest:
     target_file: str
     description: str
     risk_level: str
-    context_bundle: Optional[Dict[str, Any]] = field(default_factory=dict)
+    context_bundle: dict[str, Any] | None = field(default_factory=dict)
     timeout_seconds: int = 3600  # 1 hour default
 
     def __post_init__(self) -> None:
@@ -45,10 +45,10 @@ class ReviewResult:
 
     request_id: str
     status: ReviewStatus
-    reviewer: Optional[str] = None
-    reason: Optional[str] = None
-    approved_at: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = field(default_factory=dict)
+    reviewer: str | None = None
+    reason: str | None = None
+    approved_at: str | None = None
+    metadata: dict[str, Any] | None = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.metadata is None:
@@ -102,9 +102,9 @@ class HumanReviewProtocol(ABC):
     @abstractmethod
     def get_pending_reviews(
         self,
-        agent_name: Optional[str] = None,
+        agent_name: str | None = None,
         limit: int = 50,
-    ) -> List[ReviewRequest]:
+    ) -> list[ReviewRequest]:
         """Get pending review requests."""
         pass
 

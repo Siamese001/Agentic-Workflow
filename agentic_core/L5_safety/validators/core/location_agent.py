@@ -45,12 +45,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.schemas.models.heal_result import HealResult, HealStatus
-
 # Shared infrastructure imports (SRP fission)
 from agentic_core.L5_safety.validators.location_utils import (
     compute_module_path,
 )
+from agentic_core.schemas.models.heal_result import HealResult, HealStatus
 
 Logger = logging.getLogger(__name__)
 

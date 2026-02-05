@@ -1,13 +1,14 @@
 """Tests for VerificationGateAdapter."""
 
-import tempfile
 import os
-from agentic_core.L5_safety.adapters.verification_gate_adapter import (
-    VerificationGateAdapter,
-)
+import tempfile
+
 from agentic_core.interfaces.verification_protocol import (
     VerificationRequest,
     VerificationResult,
+)
+from agentic_core.L5_safety.adapters.verification_gate_adapter import (
+    VerificationGateAdapter,
 )
 from agentic_core.primitives.feature_flags import FeatureFlagManager
 

@@ -1,9 +1,9 @@
 """Tests for MetaLearningProtocol."""
 
 from agentic_core.interfaces.meta_learning_protocol import (
-    MetaLearningProtocol,
     LearningContext,
     LearningResult,
+    MetaLearningProtocol,
 )
 
 

@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import time
 
-
 from agentic_core.L0_maintenance.deterministic.ats_validation_deterministic_validator import (
     ATSValidationDeterministic,
 )

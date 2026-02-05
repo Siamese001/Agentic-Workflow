@@ -80,7 +80,9 @@ class TestHOP4RoutingAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.Hop4RoutingAgentValidator import HOP4RoutingAgent  # noqa: F401
+                from apps_lic.engines.Hop4RoutingAgentValidator import (
+                    HOP4RoutingAgent,  # noqa: F401
+                )
             except (ImportError, NameError, AttributeError):
                 pass
 

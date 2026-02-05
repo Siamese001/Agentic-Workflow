@@ -6,8 +6,9 @@ patterns, improving performance and consistency over time.
 """
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, Optional
+from typing import Any
 
 
 @dataclass
@@ -18,7 +19,7 @@ class LearningContext:
     agent_name: str
     operation_type: str
     input_hash: str
-    metadata: Optional[Dict[str, Any]] = field(default_factory=dict)
+    metadata: dict[str, Any] | None = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.metadata is None:
@@ -37,9 +38,9 @@ class LearningResult:
     from_cache: bool
     result: Any
     confidence: float = 1.0
-    cache_key: Optional[str] = None
-    execution_time_ms: Optional[float] = None
-    metadata: Optional[Dict[str, Any]] = field(default_factory=dict)
+    cache_key: str | None = None
+    execution_time_ms: float | None = None
+    metadata: dict[str, Any] | None = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.metadata is None:
@@ -94,8 +95,8 @@ class MetaLearningProtocol(ABC):
     @abstractmethod
     def invalidate_cache(
         self,
-        context_key: Optional[str] = None,
-        agent_name: Optional[str] = None,
+        context_key: str | None = None,
+        agent_name: str | None = None,
     ) -> int:
         """Invalidate cached learnings.
 
@@ -109,7 +110,7 @@ class MetaLearningProtocol(ABC):
         pass
 
     @abstractmethod
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         pass
 

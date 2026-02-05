@@ -20,10 +20,10 @@ import pytest
 
 def reset_all_singletons():
     """Reset all meta-learning singletons for test isolation."""
-    import agentic_core.L1_cognition.meta_learning.meta_learning_client_types as mlc
-    import agentic_core.L1_cognition.meta_learning.healing_memory_embedder_types as hme
     import agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types as csm
     import agentic_core.L1_cognition.meta_learning.domain_context_manager_types as dcm
+    import agentic_core.L1_cognition.meta_learning.healing_memory_embedder_types as hme
+    import agentic_core.L1_cognition.meta_learning.meta_learning_client_types as mlc
     import agentic_core.L1_cognition.meta_learning.meta_learning_observability_types as mlo
     from agentic_core.base_agents.meta_learning_client_mixin import (
         MetaLearningClientMixin,
@@ -54,12 +54,12 @@ class TestFullStackIntegration:
 
     def test_full_healing_workflow(self):
         """Test complete healing workflow with meta-learning."""
+        from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
+            get_cache_strategy_manager,
+        )
         from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
             get_meta_learning_client,
-        )
-        from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
-            get_cache_strategy_manager,
         )
         from agentic_core.L1_cognition.meta_learning.meta_learning_observability_types import (
             get_meta_learning_observability,
@@ -100,12 +100,12 @@ class TestFullStackIntegration:
 
     def test_cross_domain_pattern_sharing(self):
         """Test cross-domain pattern sharing workflow."""
+        from agentic_core.L1_cognition.meta_learning.domain_context_manager_types import (
+            get_domain_context_manager,
+        )
         from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
             get_meta_learning_client,
-        )
-        from agentic_core.L1_cognition.meta_learning.domain_context_manager_types import (
-            get_domain_context_manager,
         )
 
         with (
@@ -190,8 +190,8 @@ class TestFullStackIntegration:
             get_meta_learning_client,
         )
         from agentic_core.L1_cognition.meta_learning.meta_learning_observability_types import (
-            get_meta_learning_observability,
             OperationTimer,
+            get_meta_learning_observability,
         )
 
         with (
@@ -232,12 +232,12 @@ class TestHealingPatternLearning:
 
     def test_pattern_store_and_recall(self):
         """Test storing and recalling healing patterns."""
+        from agentic_core.L1_cognition.meta_learning.healing_memory_embedder_types import (
+            HealingMemoryEmbedder,
+        )
         from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
             MetaLearningClient,
             get_meta_learning_client,
-        )
-        from agentic_core.L1_cognition.meta_learning.healing_memory_embedder_types import (
-            HealingMemoryEmbedder,
         )
 
         with (
@@ -337,15 +337,15 @@ class TestEndToEndWorkflow:
 
     def test_complete_meta_learning_cycle(self):
         """Test a complete meta-learning cycle from violation to learned pattern."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
-            MetaLearningClient,
-            get_meta_learning_client,
-        )
         from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
             get_cache_strategy_manager,
         )
         from agentic_core.L1_cognition.meta_learning.domain_context_manager_types import (
             get_domain_context_manager,
+        )
+        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+            MetaLearningClient,
+            get_meta_learning_client,
         )
         from agentic_core.L1_cognition.meta_learning.meta_learning_observability_types import (
             get_meta_learning_observability,

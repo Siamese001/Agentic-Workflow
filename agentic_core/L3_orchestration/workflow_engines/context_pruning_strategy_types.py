@@ -18,12 +18,12 @@ import logging
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, FrozenSet, List, Optional, Set
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
 # Critical DNA keys that must NEVER be pruned
-CRITICAL_DNA_KEYS: FrozenSet[str] = frozenset(
+CRITICAL_DNA_KEYS: frozenset[str] = frozenset(
     {
         "original_goal",
         "dataset",
@@ -49,7 +49,7 @@ class PruningMetrics:
     entries_pruned: int = 0
     dna_preservations: int = 0
     prune_triggers: int = 0
-    last_prune_timestamp: Optional[str] = None
+    last_prune_timestamp: str | None = None
 
 
 @dataclass
@@ -59,9 +59,9 @@ class PruningResult:
     success: bool
     entries_removed: int
     bytes_freed: int
-    preserved_keys: List[str]
-    pruned_keys: List[str]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    preserved_keys: list[str]
+    pruned_keys: list[str]
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ContextPruningStrategy:
@@ -82,7 +82,7 @@ class ContextPruningStrategy:
         max_context_size: int = DEFAULT_MAX_CONTEXT_SIZE,
         prune_ratio: float = DEFAULT_PRUNE_RATIO,
         min_entries_to_keep: int = DEFAULT_MIN_ENTRIES_TO_KEEP,
-        critical_keys: Optional[FrozenSet[str]] = None,
+        critical_keys: frozenset[str] | None = None,
         strategy: str = "hybrid",
     ):
         """
@@ -101,15 +101,15 @@ class ContextPruningStrategy:
         self.critical_keys = critical_keys or CRITICAL_DNA_KEYS
         self.strategy = strategy
         self._metrics = PruningMetrics()
-        self._access_timestamps: Dict[str, str] = {}
-        self._priority_scores: Dict[str, int] = {}
+        self._access_timestamps: dict[str, str] = {}
+        self._priority_scores: dict[str, int] = {}
 
         Logger.info(
             f"[ContextPruning] Initialized with strategy={strategy}, "
             f"max_size={max_context_size}, prune_ratio={prune_ratio}"
         )
 
-    def should_prune(self, context: Dict[str, Any]) -> bool:
+    def should_prune(self, context: dict[str, Any]) -> bool:
         """
         Check if context should be pruned based on size.
 
@@ -122,7 +122,7 @@ class ContextPruningStrategy:
         current_size = self._estimate_context_size(context)
         return current_size > self.max_context_size
 
-    def prune_context(self, context: Dict[str, Any]) -> PruningResult:
+    def prune_context(self, context: dict[str, Any]) -> PruningResult:
         """
         Prune context using configured strategy.
 
@@ -198,7 +198,7 @@ class ContextPruningStrategy:
             },
         )
 
-    def _identify_preserved_keys(self, context: Dict[str, Any]) -> Set[str]:
+    def _identify_preserved_keys(self, context: dict[str, Any]) -> set[str]:
         """Identify keys that must be preserved (critical DNA)."""
         preserved = set()
 
@@ -216,8 +216,8 @@ class ContextPruningStrategy:
         return preserved
 
     def _score_keys_for_pruning(
-        self, context: Dict[str, Any], prunable_keys: List[str]
-    ) -> List[tuple]:
+        self, context: dict[str, Any], prunable_keys: list[str]
+    ) -> list[tuple]:
         """
         Score keys for pruning priority.
 
@@ -299,7 +299,7 @@ class ContextPruningStrategy:
 
         return score
 
-    def _estimate_context_size(self, context: Dict[str, Any]) -> int:
+    def _estimate_context_size(self, context: dict[str, Any]) -> int:
         """Estimate context size in bytes."""
         return sys.getsizeof(str(context))
 
@@ -315,7 +315,7 @@ class ContextPruningStrategy:
         """Set priority score for a key (0-100, higher = more important)."""
         self._priority_scores[key] = min(max(priority, 0), 100)
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get pruning metrics."""
         return {
             "total_prunes": self._metrics.total_prunes,
@@ -361,8 +361,8 @@ class AdaptiveDepthManager:
         self.max_limit = max_limit
         self.min_limit = min_limit
         self.enable_adaptive = enable_adaptive
-        self._complexity_history: List[float] = []
-        self._depth_history: List[int] = []
+        self._complexity_history: list[float] = []
+        self._depth_history: list[int] = []
 
         Logger.info(
             f"[AdaptiveDepth] Initialized with base={base_limit}, "
@@ -370,7 +370,7 @@ class AdaptiveDepthManager:
         )
 
     def calculate_adaptive_limit(
-        self, context: Dict[str, Any], current_metrics: Optional[Dict[str, Any]] = None
+        self, context: dict[str, Any], current_metrics: dict[str, Any] | None = None
     ) -> int:
         """
         Calculate adaptive depth limit based on mission complexity.
@@ -414,7 +414,7 @@ class AdaptiveDepthManager:
         return limit
 
     def _assess_complexity(
-        self, context: Dict[str, Any], metrics: Optional[Dict[str, Any]] = None
+        self, context: dict[str, Any], metrics: dict[str, Any] | None = None
     ) -> float:
         """
         Assess mission complexity from 0.0 to 1.0.
@@ -514,7 +514,7 @@ class AdaptiveDepthManager:
 
         return max(extension, 0)
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get depth management statistics."""
         return {
             "base_limit": self.base_limit,

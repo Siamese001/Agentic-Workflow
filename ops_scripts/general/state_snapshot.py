@@ -15,12 +15,11 @@ v3.1: Created as part of Wave 2 Pre-Flight Checks.
 """
 
 import argparse
-import shutil
 import json
+import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
-
 
 # Project root
 PROJECT_ROOT = Path(__file__).parent.parent
