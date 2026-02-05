@@ -38,7 +38,7 @@ from agentic_core.L5_safety.gravity.mission_utils import (
     get_best_target_l1,
     get_best_target_l2,
 )
-from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 # [SSOT IMPORT] Master Constitution is the absolute source of truth
 from agentic_core.L5_safety.validators.structure_blueprint_config import (

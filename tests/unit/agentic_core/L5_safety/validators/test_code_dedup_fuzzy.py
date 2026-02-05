@@ -8,7 +8,7 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # ARCHIVED: CodeDeduplicationAgent import removed
-from agentic_core.L5_safety.validators.code_deduplication_agent import CodeDeduplicationAgent
+from agentic_core.L5_safety.validators.core.code_deduplication_agent import CodeDeduplicationAgent
 from agentic_core.L5_safety.validators.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )

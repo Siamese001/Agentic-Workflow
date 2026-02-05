@@ -10,7 +10,7 @@ from collections.abc import Callable
 from typing import Any
 
 from agentic_core.base_agents.feature_flagged_agent_mixin import FeatureFlaggedAgentMixin
-from agentic_core.primitives.feature_flags import FeatureFlagManager
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 logger = logging.getLogger(__name__)
 

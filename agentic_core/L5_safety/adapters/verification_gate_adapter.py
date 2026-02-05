@@ -9,12 +9,12 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.interfaces.verification_protocol import (
+from agentic_core.utils.verification_protocol import (
     VerificationGateProtocol,
     VerificationRequest,
     VerificationResult,
 )
-from agentic_core.primitives.feature_flags import FeatureFlagManager
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 logger = logging.getLogger(__name__)
 

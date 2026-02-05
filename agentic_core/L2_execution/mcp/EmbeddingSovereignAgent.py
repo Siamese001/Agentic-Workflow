@@ -22,8 +22,8 @@ if TYPE_CHECKING:
     pass
 
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.config.sovereign_config_manager_config import get_sovereign_config
-from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.config.core.sovereign_config_manager_config import get_sovereign_config
+from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 

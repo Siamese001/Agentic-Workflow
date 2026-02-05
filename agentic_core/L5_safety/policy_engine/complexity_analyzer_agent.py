@@ -27,7 +27,7 @@ from agentic_core.base_agents.UnifiedAgent import (
     ValidationResult,
     ValidatorStrategy,
 )
-from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 

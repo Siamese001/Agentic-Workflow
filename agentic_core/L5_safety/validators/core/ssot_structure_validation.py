@@ -11,7 +11,7 @@ This module provides:
 5. Forbidden pattern detection
 
 USAGE:
-    from agentic_core.L5_safety.validators.ssot_structure_validation import (
+    from agentic_core.L5_safety.validators.core.ssot_structure_validation import (
         SSOTStructureValidator
     )
     validator = SSOTStructureValidator()
@@ -24,7 +24,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final
 
-from agentic_core.L5_safety.validators.registry_verification import (
+from agentic_core.L5_safety.validators.core.registry_verification import (
     AgentInfo,
     RegistryVerifier,
 )

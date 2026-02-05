@@ -19,8 +19,8 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Final
 
-from agentic_core.domain.HealerError import CircularDependencyError, HealerError
-from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.utils.HealerError import CircularDependencyError, HealerError
+from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 

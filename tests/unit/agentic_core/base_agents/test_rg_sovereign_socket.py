@@ -14,15 +14,15 @@ class TestRGSovereignSocket:
 
     def test_rg_base_inheritance(self):
         """Verify RGAgentBase inherits from SovereignBaseAgent."""
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent as RGAgentBase
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
 
         # MRO Verification: RGAgentBase -> SovereignBaseAgent -> object
         assert issubclass(RGAgentBase, SovereignBaseAgent), "RGAgentBase disconnected from Core!"
 
     def test_security_propagation(self):
         """Verify that Core security validation runs for RG agents."""
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent as RGAgentBase
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
 
         # Test 1: Valid Boot (Should pass security check)
         agent = RGAgentBase()
@@ -50,7 +50,7 @@ class TestRGSovereignSocket:
 
     def test_content_strategy_inheritance(self):
         """Verify ContentStrategyAgent connects to the bridge."""
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent as RGAgentBase
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
         from apps_rg.engines.ContentStrategyAgent import ContentStrategyAgent
 
         assert issubclass(ContentStrategyAgent, RGAgentBase)

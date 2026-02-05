@@ -62,7 +62,7 @@ class TestConsolidationRuntimeIntegrity:
     def test_hygiene_guardian_importable_from_canonical(self):
         """Verify HygieneGuardianAgent loads from validators"""
         # Direct import to avoid circular import issues with __init__.py
-        from agentic_core.L5_safety.validators.hygiene_guardian_agent import HygieneGuardianAgent
+        from agentic_core.L5_safety.validators.core.hygiene_guardian_agent import HygieneGuardianAgent
 
         assert HygieneGuardianAgent is not None
         assert inspect.isclass(HygieneGuardianAgent)

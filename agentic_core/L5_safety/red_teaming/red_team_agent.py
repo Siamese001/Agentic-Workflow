@@ -18,7 +18,7 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L5_safety.validators.core.decorators import standard_heal
 from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer_validator import (
     get_sovereign_prompt_renderer,
 )

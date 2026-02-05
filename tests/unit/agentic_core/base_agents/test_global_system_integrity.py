@@ -77,7 +77,7 @@ class TestGlobalSystemIntegrity:
         """
         Verify the @standard_heal decorator works with the new signature.
         """
-        from agentic_core.L5_safety.validators.decorators import standard_heal
+        from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
         class MockHealer:
             name = "Mock"
@@ -101,7 +101,7 @@ class TestGlobalSystemIntegrity:
         Verify Phase 20 hardening standards are enforced.
         """
         # Test LIC Agent Base compliance
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from apps_lic.shared.core.agent_base import LICAgentBase
 
         # Verify inheritance chain
@@ -117,7 +117,7 @@ class TestGlobalSystemIntegrity:
         """
         Verify MRO Root Injection Pattern is working correctly.
         """
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 
         # Create agent instance
@@ -186,7 +186,7 @@ class TestGlobalSystemIntegrity:
         """
         Verify LIC and RG domains maintain isolation while sharing core.
         """
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent as RGAgentBase
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
         from apps_lic.shared.core.agent_base import LICAgentBase
 
         # Both should inherit from SovereignBaseAgent but maintain domain specifics

@@ -1,6 +1,6 @@
 """Tests for HumanReviewProtocol."""
 
-from agentic_core.interfaces.review_protocol import (
+from agentic_core.utils.review_protocol import (
     HumanReviewProtocol,
     ReviewRequest,
     ReviewResult,

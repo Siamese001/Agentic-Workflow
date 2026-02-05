@@ -33,7 +33,7 @@ from agentic_core.L5_safety.adapters.human_review_adapter import HumanReviewAdap
 from agentic_core.L5_safety.adapters.verification_gate_adapter import (
     VerificationGateAdapter,
 )
-from agentic_core.primitives.dependency_resolver import DynamicLoader
+from agentic_core.utils.dependency_resolver import DynamicLoader
 from agentic_core.primitives.feature_flags import FeatureFlagManager
 from apps_shared.integration.domain_agent_mixin import (
     DomainAgentMixin,

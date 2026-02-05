@@ -9,7 +9,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.primitives.feature_flags import FeatureFlagManager
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 logger = logging.getLogger(__name__)
 

@@ -27,7 +27,7 @@ def test_mro_integrity_and_initialization_order():
     """
     print("\n[TEST 1] MRO Integrity and Initialization Order...")
 
-    from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
         # Create a test agent class
@@ -76,7 +76,7 @@ def test_heal_repository_return_type_consistency():
 
     from dataclasses import dataclass
 
-    from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
 
@@ -122,7 +122,7 @@ def test_diamond_inheritance_stability():
 
     from dataclasses import dataclass
 
-    from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
 
@@ -161,7 +161,7 @@ def test_double_init_prevention():
 
     from dataclasses import dataclass
 
-    from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
         init_count = 0
@@ -200,7 +200,7 @@ def test_cycle_detection():
 
     from dataclasses import dataclass
 
-    from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
 
@@ -235,7 +235,7 @@ def test_max_depth_termination():
 
     from dataclasses import dataclass
 
-    from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
 
@@ -268,7 +268,7 @@ def test_mixin_state_access_during_init():
 
     from dataclasses import dataclass, fields
 
-    from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     try:
         # Verify _state and _call_path are dataclass fields

@@ -39,7 +39,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L4_state.context_manager import get_context_manager
+from agentic_core.L4_state.utils.context_manager import get_context_manager
 from agentic_core.L4_state.utils.layer_gravity import LAYER_ORDER
 
 Logger = logging.getLogger(__name__)

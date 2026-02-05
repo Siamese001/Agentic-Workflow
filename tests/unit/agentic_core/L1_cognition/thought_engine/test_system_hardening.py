@@ -158,7 +158,7 @@ except Exception as e:
 
         # Verify CodeDeduplicationAgent imports from the correct location
         try:
-            from agentic_core.L5_safety.validators.code_deduplication_agent import (
+            from agentic_core.L5_safety.validators.core.code_deduplication_agent import (
                 AGENTIC_CORE_DIR as dedup_agentic_core_dir,
             )
 

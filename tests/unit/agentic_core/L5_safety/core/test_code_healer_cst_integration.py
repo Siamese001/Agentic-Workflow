@@ -11,12 +11,12 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.validators.surgical_context import (
+from agentic_core.L5_safety.validators.core.surgical_context import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
 )
-from agentic_core.L5_safety.validators.surgical_cst_healer_mixin import (
+from agentic_core.L5_safety.validators.core.surgical_cst_healer_mixin import (
     SurgicalCSTHealerMixin,
 )
 

@@ -4,52 +4,51 @@
 
 ---
 
-## 0. AUTHORITATIVE BASIS (NON-NEGOTIABLE)
+## 0. AUTHORITATIVE BASIS & INVARIANTS (NON-NEGOTIABLE)
 
-This prompt is an **executable forensic audit contract**.
+This prompt is an **executable forensic audit contract**. Evaluation is strictly bounded to three authoritative sources.
 
-### 0.1 Three authoritative inputs only
+| Source | Role | Evidence Requirement |
+|--------|------|----------------------|
+| Discovery JSON | Scope authority | Exact schema conformance + integrity_hash per agent |
+| structure_blueprint.py | Structural SSOT | SHA-256 match required before audit proceeds |
+| L0–L6 Architecture Principles | Behavioral invariants | P1–P6 gating checks only |
 
-1) **Discovery JSON** produced by the mandatory discovery script (scope authority).
-2) **`structure_blueprint.py`** (The Single Source of Truth / SSOT) (structural authority).
-3) **Architecture Design Principles** (L0–L6) as binding invariants (behavioral authority).
+**Zero external inference rule**: If not explicitly present in one of the three sources → does not exist.
 
-No other assumptions, files, agents, or behaviors may be inferred. **If it is not in the SSOT, it does not exist.**
+### 0.2 High-Signal Rule (Anti-Bloat / Evidence-First)
 
-### 0.2 “High-signal” rule (anti-bloat)
+Evaluate **only** capabilities provable via direct evidence. Focus exclusively on gating invariants:
 
-You must evaluate **only** what can be proven by explicit evidence and the **minimum set of invariants that gate correctness**:
-- gateway/policy enforcement
-- planning purity + deterministic prompt assembly
-- atomic execution + rollback
-- explicit human approval mechanics
-- typed memory discipline + embedding hygiene
-- deterministic guardian + signed artifacts
-- budget preflight + caps
-- observability constraints as they impact enforcement and rollback signals (without narrating any “flow diagram” components)
+| Gating Invariant | Principle | Impact on Status |
+|--------------------|---------|------------------|
+| P1 Fail-Closed | Reject on missing schema/signature/health | FAIL if violated |
+| P2 Determinism | No wall-clock/race ambiguity | FAIL if non-deterministic |
+| P3 No Silent Mutation | No writes outside boundary | FAIL if implicit state change |
+| P4 Traceability | TraceID propagation | MISSING if absent |
+| P5 Tokenized Authority | Explicit approval tokens | FAIL if bypassed |
+| P6 Typed Boundaries | Schema-validated inter-agent messages | FAIL if untyped |
 
-### 0.3 Evidence standard
+All other narrative/flow components are out-of-scope.
 
-A capability is **COMPLIANT** only if it is explicitly verifiable in:
-- source code (file + symbol/class/function)
-- configuration (path + key)
-- deterministic test artifacts (test file + assertion)
-- CI evidence (workflow + job + check name) where required
+### 0.3 Evidence Standard (Strict)
 
-Anything else is **MISSING**.
+| Status | Definition | Required Proof |
+|--------|------------|----------------|
+| COMPLIANT | Direct, deterministic evidence exists | File + symbol + (line range OR commit OR test assertion) |
+| MISSING | No evidence in authoritative sources | N/A |
+| FAIL | Evidence contradicts invariant OR illegal state present | Explicit contradiction reference |
 
-### 0.3.1 Evidence locator minimum fields
+Evidence Location format (mandatory in all tables):
+`path/to/file.py::ClassName.method_name (lines 123-456)` OR `path/to/file.py (commit abc1234)`
 
-Evidence Location MUST include:
-- file path (relative)
-- symbol (class/function/method)
-- and one of: line range OR commit hash OR test assertion reference
+### 0.4 Status Vocabulary (Fixed)
 
-### 0.4 Status vocabulary
-
-- **COMPLIANT**: direct, deterministic evidence exists.
-- **MISSING**: no evidence.
-- **FAIL**: evidence contradicts invariant OR illegal state is present OR fail-closed invariant is violated.
+| Status | Trigger |
+|--------|---------|
+| COMPLIANT | Direct evidence matches invariant |
+| MISSING | No evidence in scope |
+| FAIL | Evidence contradicts OR fail-closed violation |
 
 ### 0.5 Output conduct invariants
 
@@ -441,11 +440,10 @@ Capabilities: 1, 3, 4, 6, 7, 10, 11, 13, 14
 | ID | Status (COMPLIANT / MISSING / FAIL) | Evidence Location (File + Symbol) | Notes |
 | -- | ----------------------------------- | --------------------------------- | ----- |
 
-Rules:
-
-* Notes must be strictly factual; no remediation language.
-* Evidence Location must include file path + symbol or config/test artifact reference.
-* Apply architecture invariants P1–P6 as gating checks inside Notes where they materially affect status (e.g., fail-closed, traceability, tokenized authority, typed boundaries).
+Notes column rules:
+* Strictly factual.
+* Reference gating invariant (P1–P6) only if it materially changes status.
+* No remediation language.
 
 ---
 
@@ -453,35 +451,30 @@ Rules:
 
 Capabilities: 2, 5, 8, 9, 12
 
-For **each ACTIVE agent** in discovery:
+### Agent: <agent_name> (Layer <L#>)
 
-```markdown
-### Agent: <agent_name>  (from discovery JSON)
+**Discovery Identity:** `<identity>` | **File:** `<file_path>` | **Integrity Hash:** `<integrity_hash>` 
+**SSOT Status:** MATCH / DEVIATION | **MRO Chain:** `<exact mro_chain>` 
 
-**SSOT Status:** <MATCH / DEVIATION from structure_blueprint.py>
-**Layer:** <L0–L6>
-**MRO:** <exact mro_chain>
-
-| ID  | Capability | Status | Risk Score (0-100) | Evidence (File + Symbol) | SSOT Validated? |
-|-----|-----------|--------|--------------------|--------------------------|-----------------|
-| 2.1 | Validator emits SurgicalManifest | | | | |
-| 2.2 | Boundary schema validation before transmission | | | N/A |
-| 2.3 | Pipe order enforced (1..9) | | | N/A |
-| 2.4 | ≥2 hash mismatches => human escalation | | | N/A |
-| 5.1 | Dedupe uses SHA-256 | | | N/A |
-| 5.2 | Error signature uses (type + node_id + time bucket) | | | N/A |
-| 5.3 | Correlated collapse to single incident | | | N/A |
-| 8.1 | Adapters prohibited | | | N/A |
-| 8.2 | Mixins used for composition | | | N/A |
-| 8.3 | Safety mixins LEFT of base classes | | | PASS/FAIL |
-| 8.4 | MRO verification uses discovery JSON mro_signature | | | PASS/FAIL |
-| 8.5 | Any MRO violation fails | | | PASS/FAIL |
-| 9.1 | Shared mixins generic tools only | | | N/A |
-| 9.2 | heal() domain reasoning only | | | N/A |
-| 9.3 | No delegation to adapters/factories/orchestrators | | | N/A |
-| 12.1| Inter-agent schema validation at boundaries | | | N/A |
-| 12.2| Side-effect registry tracks all touched resources | | | N/A |
-```
+| ID   | Capability                              | Status          | Evidence Location                          | Gating Invariant Impact | SSOT Validated? |
+|------|-----------------------------------------|-----------------|--------------------------------------------|--------------------------|-----------------|
+| 2.1  | Validator emits SurgicalManifest        |                 |                                            |                          |                 |
+| 2.2  | Boundary schema validation              |                 |                                            | P6                       |                 |
+| 2.3  | Pipe order enforced (1..9)              |                 |                                            | P1                       |                 |
+| 2.4  | ≥2 hash mismatches → human escalation   |                 |                                            | P5                       |                 |
+| 5.1  | Dedupe uses SHA-256                     |                 |                                            | P2                       |                 |
+| 5.2  | Error signature (type+node_id+time)     |                 |                                            | P4                       |                 |
+| 5.3  | Correlated collapse                     |                 |                                            | P3                       |                 |
+| 8.1  | Adapters prohibited                     |                 |                                            |                          |                 |
+| 8.2  | Mixins for composition                  |                 |                                            |                          |                 |
+| 8.3  | Safety mixins LEFT in MRO               |                 |                                            | P1                       | PASS/FAIL       |
+| 8.4  | MRO verification via discovery signature|                 |                                            | P2                       | PASS/FAIL       |
+| 8.5  | MRO violation → fail                    |                 |                                            | P1                       | PASS/FAIL       |
+| 9.1  | Shared mixins generic only              |                 |                                            |                          |                 |
+| 9.2  | heal() domain reasoning only            |                 |                                            | P3                       |                 |
+| 9.3  | No delegation to adapters/orchestrators |                 |                                            |                          |                 |
+| 12.1 | Inter-agent schema validation           |                 |                                            | P6                       |                 |
+| 12.2 | Side-effect registry                    |                 |                                            | P3                       |                 |
 
 Additional required per-agent gating checks (only as evidence-linked rows in Notes; do not invent new IDs):
 
@@ -495,14 +488,26 @@ Additional required per-agent gating checks (only as evidence-linked rows in Not
 
 ## SECTION 3 — FORENSIC SUMMARY
 
-Must include:
+| Forensic Summary |
+|-----------------|
+| Total capabilities evaluated: X |
+| Global compliance: Y% (COMPLIANT / total) |
+| ACTIVE agents audited: N |
+| Per-agent compliance table: |
 
-* Total capabilities evaluated
-* Global compliance %
-* Per-agent compliance % (ACTIVE agents)
-* List of **GHOST / INVALID / SYNTAX_ERROR** agents (explicit)
-* Explicit confirmation that **no remediation content was generated**
-* Explicit confirmation that **no out-of-scope agents/files were referenced**
+| Agent | Compliance % | FAIL Count | Critical Gates Violated |
+|-------|--------------|------------|--------------------------|
+| ...   |              |            |                          |
+
+| Non-ACTIVE Agents |
+|-------------------|
+| GHOST / INVALID / SYNTAX_ERROR agents: |
+| • agent_name (file_path) — reason |
+
+| Audit Integrity Confirmations |
+| • No remediation language generated |
+| • No out-of-scope references |
+| • Evaluation bounded to discovery JSON + SSOT + P1–P6 only |
 
 ---
 

@@ -1,6 +1,6 @@
 """Tests for VerificationGateProtocol."""
 
-from agentic_core.interfaces.verification_protocol import (
+from agentic_core.utils.verification_protocol import (
     VerificationGateProtocol,
     VerificationRequest,
     VerificationResult,

@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from agentic_core.L0_maintenance.scripts.pascal_sovereignty_fixer import PascalSovereigntyFixer
+from agentic_core.L0_maintenance.scripts.general_scripts.pascal_sovereignty_fixer import PascalSovereigntyFixer
 
 # Add root to path
 sys.path.append(str(Path(__file__).parent.parent))

@@ -7,7 +7,7 @@ import pytest
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L0_maintenance.scripts.execute_ssot import AutonomousDecisionEngine
+from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import AutonomousDecisionEngine
 
 
 def test_trusted_territory_mass_edit_confidence():
