@@ -134,8 +134,8 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     else:
         report.status = GuardianStatus.BLOCK.value
 
-    # Write JSON report to logs/guardian_report.json
-    json_report_path = PROJECT_ROOT / "logs" / "guardian_report.json"
+    # Write JSON report to agentic_core/L0_maintenance/logs/guardian_report.json
+    json_report_path = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "logs" / "guardian_report.json"
     json_report_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:

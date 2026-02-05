@@ -15,9 +15,7 @@ class FileClassification:
     """Classification result for a Python file."""
 
     path: Path
-    category: (
-        str  # "SOVEREIGN_AGENT", "SPECIALIST_NODE", "SUPPORT_STRUCTURE", "DEPRECATED", "UNKNOWN"
-    )
+    category: str  # "SOVEREIGN_AGENT", "SPECIALIST_NODE", "SUPPORT_STRUCTURE", "DEPRECATED", "UNKNOWN"
     class_name: str = ""
     base_classes: list[str] = field(default_factory=list)
     has_v2_base: bool = False
@@ -54,18 +52,14 @@ class AppsLicASTAuditor:
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content, filename=str(file_path))
         except Exception as e:
-            return FileClassification(
-                path=file_path, category="UNKNOWN", issues=[f"Parse error: {str(e)}"]
-            )
+            return FileClassification(path=file_path, category="UNKNOWN", issues=[f"Parse error: {str(e)}"])
 
         classification = FileClassification(path=file_path, category="UNKNOWN")
 
         # Extract imports
         imports = self._extract_imports(tree)
         classification.has_immutable_buffer = "ImmutableStagingBuffer" in imports
-        classification.has_state_manager = (
-            "StateManager" in imports or "state_mgr" in content.lower()
-        )
+        classification.has_state_manager = "StateManager" in imports or "state_mgr" in content.lower()
 
         # Analyze classes
         for node in ast.walk(tree):
@@ -87,10 +81,7 @@ class AppsLicASTAuditor:
                     classification.category = "SOVEREIGN_AGENT"
 
                 # Check for Enum
-                if (
-                    "Enum" in classification.base_classes
-                    or "IntEnum" in classification.base_classes
-                ):
+                if "Enum" in classification.base_classes or "IntEnum" in classification.base_classes:
                     classification.has_enum = True
                     classification.category = "SUPPORT_STRUCTURE"
                     if "Agent" in node.name:
@@ -116,9 +107,7 @@ class AppsLicASTAuditor:
 
         # Check for deprecated patterns
         if classification.has_state_manager and not classification.has_immutable_buffer:
-            classification.issues.append(
-                "Uses deprecated StateManager instead of ImmutableStagingBuffer"
-            )
+            classification.issues.append("Uses deprecated StateManager instead of ImmutableStagingBuffer")
             if "DEPRECATED" in content or "deprecated" in content.lower():
                 classification.category = "DEPRECATED"
 
@@ -275,8 +264,8 @@ def main():
     for i, rec in enumerate(recommendations, 1):
         print(f"  {i}. {rec}")
 
-    # Save results
-    output_path = Path("logs/audit_apps_lic_ast_results.json")
+    # Save results to SSOT-approved location
+    output_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     results = {
