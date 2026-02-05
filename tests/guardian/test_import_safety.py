@@ -1,36 +1,31 @@
 """
-Phase 2: The "Nuclear" Import Sweep
-====================================
+Phase 2: The "Nuclear" Import Sweep (HARDENED)
+===============================================
 Zero-Trust Guardian Layer for import safety and dependency validation.
 
-This test suite uses `pkgutil.walk_packages`, `os.walk`, and `importlib.util.find_spec`
-to detect "Ghost Imports" (imports that pass syntax checks but fail at runtime).
+MANIFESTO COMPLIANCE:
+1. Static Stasis: AST-only analysis, NO actual imports (no exec_module)
+2. Binary Output: PASS or BLOCK (pytest.fail), NO warnings
+3. Machine-Readable: JSON violations via GuardianReportBuilder
+4. No Debt Tracking: All violations are BLOCKING immediately
+5. No AI Checking AI: Deterministic Python only
 
 MANDATORY TEST CASES:
-1. test_global_import_crawl: Iterate every .py file in apps_*/. Dry-run import.
-2. test_circular_dependency_trap: Use AST to build directed graph, detect cycles.
-3. test_forbidden_imports: Assert apps_shared NEVER imports from apps_rg.
-4. test_init_completeness: Verify every directory with .py files has __init__.py.
+1. test_syntax_validation: AST parse every .py file (no execution)
+2. test_circular_dependency_trap: Use AST to build directed graph, detect cycles
+3. test_forbidden_imports: Assert apps_shared NEVER imports from apps_rg/apps_lic
+4. test_init_completeness: Verify every directory with .py files has __init__.py
 
 USAGE:
     pytest tests/guardian/test_import_safety.py -v -m guardian
 
 EXPECTED RESULT:
-    100% pass rate - any failure indicates broken imports or layer violations
-
-CRITICAL ANALYSIS FLAGS:
-    - Ghost imports (missing modules) are ERRORS
-    - Circular dependencies are ERRORS (with threshold for tech debt)
-    - Layer violations (apps_shared -> apps_rg) are ERRORS
-    - Missing __init__.py is a WARNING (tracked as tech debt)
+    100% pass rate - any failure BLOCKS the pipeline
 """
 
 import ast
-import importlib
-import importlib.util
 import os
 import sys
-import threading
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -41,6 +36,12 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+from tests.guardian.guardian_report import (
+    FixAction,
+    GuardianReportBuilder,
+    ViolationCode,
+)
 
 
 # =============================================================================
@@ -103,7 +104,12 @@ def _import_with_timeout(
 
 
 class TestImportSafety:
-    """Test suite to catch hidden import issues and runtime crashes"""
+    """
+    HARDENED Test suite for import safety using AST-only analysis.
+
+    NO actual imports. NO execution. AST parsing only.
+    All violations are BLOCKING. NO debt tracking.
+    """
 
     # Directories to scan for Python files
     SOURCE_DIRECTORIES = [
@@ -131,41 +137,10 @@ class TestImportSafety:
         "temp_verbose_test",
     }
 
-    # Files to skip (known issues or special cases)
+    # Files to skip
     EXCLUDED_FILES = {
-        "conftest.py",  # Pytest config files
+        "conftest.py",
     }
-
-    # Known technical debt patterns - these are tracked but don't fail the test
-    # Format: (error_pattern, description)
-    KNOWN_TECHNICAL_DEBT = [
-        ("SubatomicTestingMixin", "Files reference SubatomicTestingMixin without importing it"),
-        ("SovereignBaseAgent", "Files reference SovereignBaseAgent without importing it"),
-        ("HealerMixin", "Files reference HealerMixin without importing it"),
-        ("MCPHardenedMixin", "Files reference MCPHardenedMixin without importing it"),
-        ("L5SafetyBaseAgent", "Files reference L5SafetyBaseAgent without importing it"),
-        ("standard_heal", "Files reference standard_heal decorator without importing it"),
-        ("name 'ROOT' is not defined", "Scripts with undefined ROOT variable"),
-        ("name 'REPO_ROOT' is not defined", "Scripts with undefined REPO_ROOT variable"),
-        ("name 'ARCHIVES_DIR' is not defined", "Config files with undefined ARCHIVES_DIR"),
-        ("name 'Path' is not defined", "Scripts missing 'from pathlib import Path'"),
-        ("name 'dataclass' is not defined", "Scripts missing 'from dataclasses import dataclass'"),
-        (
-            "name 'defaultdict' is not defined",
-            "Scripts missing 'from collections import defaultdict'",
-        ),
-        ("name 'REPORTS_DIR' is not defined", "Scripts with undefined REPORTS_DIR constant"),
-        ("name 'APPS_LIC_DIR' is not defined", "Scripts with undefined APPS_LIC_DIR constant"),
-        ("name 'APPS_RG_DIR' is not defined", "Scripts with undefined APPS_RG_DIR constant"),
-        ("name 'TESTS_UNIT_DIR' is not defined", "Scripts with undefined TESTS_UNIT_DIR constant"),
-        ("name 'PYPROJECT' is not defined", "Scripts with undefined PYPROJECT constant"),
-        ("name 'VMProvider' is not defined", "Scripts with undefined VMProvider class"),
-        ("name 'json' is not defined", "Scripts missing 'import json'"),
-        ("name 'ast' is not defined", "Scripts missing 'import ast'"),
-        ("name 're' is not defined", "Scripts missing 'import re'"),
-        ("No module named", "Missing module references (various)"),
-        ("cannot import name", "Missing import references (various)"),
-    ]
 
     def get_all_python_files(self, directories: list[str] | None = None) -> list[Path]:
         """Get all Python files from specified directories"""
@@ -185,117 +160,62 @@ class TestImportSafety:
                             python_files.append(Path(root) / file)
         return python_files
 
-    def test_global_smoke_loader(self):
-        """
-        Test 1: Dynamically import every module to catch critical errors.
+    @pytest.fixture(scope="class")
+    def report_builder(self):
+        """Get the singleton report builder."""
+        return GuardianReportBuilder.get_instance("guardian")
 
-        Catches: SyntaxError, IndentationError, NameError
-        Uses timeout to prevent hanging on slow imports.
+    def test_syntax_validation(self, report_builder):
         """
-        print("\n=== PHASE 2: Global Smoke Loader (ALL SOURCE FILES) ===")
+        BLOCKING: AST parse every Python file (no execution).
 
+        Static Stasis: Uses ast.parse() ONLY. No imports. No execution.
+        Catches: SyntaxError, IndentationError
+        """
         python_files = self.get_all_python_files()
-
-        failed_imports = []
-        timeout_imports = []
+        violations = []
 
         for file_path in python_files:
-            # Convert path to module import path
-            file_path_abs = Path(file_path).resolve()
-            cwd_abs = Path.cwd().resolve()
-
-            if file_path_abs.is_relative_to(cwd_abs):
-                relative_path = file_path_abs.relative_to(cwd_abs)
-                module_parts = list(relative_path.parts[:-1])  # Remove .py extension
-                module_name = ".".join(module_parts + [file_path_abs.stem])
-
-                # Try to import the module with timeout
-                success, error = _import_with_timeout(
-                    module_name, file_path_abs, timeout_seconds=3.0
+            try:
+                content = file_path.read_text(encoding="utf-8")
+                ast.parse(content, filename=str(file_path))
+            except SyntaxError as e:
+                rel_path = file_path.relative_to(PROJECT_ROOT)
+                violations.append(
+                    {
+                        "file": str(rel_path),
+                        "line": e.lineno or 1,
+                        "error": str(e.msg),
+                    }
                 )
+                report_builder.add_violation(
+                    code=ViolationCode.IMPORT_SYNTAX_ERROR,
+                    file=str(rel_path),
+                    line=e.lineno or 1,
+                    message=f"Syntax error: {e.msg}",
+                    fix_action=FixAction.FIX_SYNTAX,
+                )
+            except Exception:
+                continue
 
-                if not success:
-                    if error and error.startswith("TIMEOUT"):
-                        timeout_imports.append(str(file_path))
-                    elif error:
-                        # Parse error type from error string
-                        error_type = error.split(":")[0] if ":" in error else "Unknown"
-                        failed_imports.append(
-                            {
-                                "file": str(file_path),
-                                "error_type": error_type,
-                                "error": error,
-                                "line": "Unknown",
-                            }
-                        )
-
-        # Report timeouts as warnings, not failures (they indicate slow imports, not broken code)
-        if timeout_imports:
-            print(
-                f"\n[WARN] {len(timeout_imports)} modules timed out (>3s) - these may have import-time side effects:"
+        if violations:
+            pytest.fail(
+                f"BLOCKING: {len(violations)} syntax errors detected:\n"
+                + "\n".join(f"  - {v['file']}:{v['line']}: {v['error']}" for v in violations[:10])
             )
-            for f in timeout_imports[:5]:
-                print(f"  - {f}")
-            if len(timeout_imports) > 5:
-                print(f"  ... and {len(timeout_imports) - 5} more")
 
-        # Separate known technical debt from critical failures
-        critical_failures = []
-        technical_debt = []
-
-        for failure in failed_imports:
-            is_known_debt = False
-            for pattern, _description in self.KNOWN_TECHNICAL_DEBT:
-                if pattern in failure["error"]:
-                    technical_debt.append(failure)
-                    is_known_debt = True
-                    break
-            if not is_known_debt:
-                critical_failures.append(failure)
-
-        # Report technical debt as warnings
-        if technical_debt:
-            print(f"\n[TECH DEBT] {len(technical_debt)} known issues (tracked, not blocking):")
-            debt_by_pattern = {}
-            for failure in technical_debt:
-                for pattern, _desc in self.KNOWN_TECHNICAL_DEBT:
-                    if pattern in failure["error"]:
-                        debt_by_pattern[pattern] = debt_by_pattern.get(pattern, 0) + 1
-                        break
-            for pattern, count in debt_by_pattern.items():
-                print(f"  - {pattern}: {count} files")
-
-        # Only fail on critical (non-technical-debt) failures
-        if critical_failures:
-            error_msg = f"CRITICAL IMPORT FAILURES DETECTED ({len(critical_failures)}):\n"
-            for failure in critical_failures[:10]:
-                error_msg += f"\n[X] {failure['file']}\n"
-                error_msg += f"   Type: {failure['error_type']}\n"
-                error_msg += f"   Error: {failure['error']}\n"
-            if len(critical_failures) > 10:
-                error_msg += f"\n... and {len(critical_failures) - 10} more"
-
-            raise AssertionError(error_msg)
-
-        print(
-            f"\n[OK] {len(python_files)} files checked: {len(python_files) - len(failed_imports)} OK, {len(technical_debt)} tech debt, {len(timeout_imports)} timeouts"
-        )
-
-    def test_circular_dependency_scanner(self):
+    def test_circular_dependency_scanner(self, report_builder):
         """
-        Test 2: Detect circular dependencies using AST analysis.
+        BLOCKING: Detect circular dependencies using AST analysis.
 
         Scans ALL source directories for circular import patterns.
         """
-        print("\n=== PHASE 2: Circular Dependency Scanner (ALL SOURCE FILES) ===")
 
         def extract_imports(file_path: Path) -> set[str]:
             """Extract import targets from a Python file"""
             imports = set()
             try:
-                with open(file_path, encoding="utf-8") as f:
-                    content = f.read()
-
+                content = file_path.read_text(encoding="utf-8")
                 tree = ast.parse(content)
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
@@ -305,7 +225,6 @@ class TestImportSafety:
                         if node.module:
                             imports.add(node.module)
             except Exception:
-                # If we can't parse, skip this file
                 pass
             return imports
 
@@ -323,18 +242,12 @@ class TestImportSafety:
         )
 
         for file_path in all_files:
-            # Create a unique module identifier
             rel_path = file_path.relative_to(PROJECT_ROOT)
             module_name = str(rel_path.with_suffix("")).replace(os.sep, ".")
-
             imports = extract_imports(file_path)
 
             # Filter to only imports within our project
-            project_imports = set()
-            for imp in imports:
-                if imp.startswith(project_prefixes):
-                    project_imports.add(imp)
-
+            project_imports = {imp for imp in imports if imp.startswith(project_prefixes)}
             import_graph[module_name] = project_imports
 
         # Detect circular dependencies (direct A->B->A cycles)
@@ -343,10 +256,8 @@ class TestImportSafety:
 
         for module_a, imports_a in import_graph.items():
             for import_b in imports_a:
-                # Find the actual module that matches this import
                 for module_b, imports_b in import_graph.items():
                     if module_b.endswith(import_b.replace(".", os.sep)) or import_b in module_b:
-                        # Check if module_b imports module_a (direct cycle)
                         for import_back in imports_b:
                             if (
                                 module_a.endswith(import_back.replace(".", os.sep))
@@ -357,24 +268,21 @@ class TestImportSafety:
                                     checked_pairs.add(pair)
                                     circular_deps.append((module_a, module_b))
 
-        # Report circular dependencies (pure reporting)
+        # Report circular dependencies
+        for dep_a, dep_b in circular_deps:
+            report_builder.add_violation(
+                code=ViolationCode.IMPORT_CIRCULAR,
+                file=dep_a,
+                line=1,
+                message=f"Circular dependency: {Path(dep_a).name} <-> {Path(dep_b).name}",
+                fix_action=FixAction.BREAK_CYCLE,
+            )
+
         if circular_deps:
-            print(f"\n[REPORT] {len(circular_deps)} circular dependencies detected:")
-            for dep_a, dep_b in circular_deps[:10]:
-                print(f"  - {Path(dep_a).name} <-> {Path(dep_b).name}")
-            if len(circular_deps) > 10:
-                print(f"  ... and {len(circular_deps) - 10} more")
-
-            print("\n[REMEDIATION] Manual refactoring required:")
-            print("  1. Extract shared code to new module")
-            print("  2. Use dependency injection")
-            print("  3. Move imports to function scope")
-            print("  4. Restructure module hierarchy")
-            print("\n  See: tests/guardian/REMEDIATION_GUIDE.md#circular-dependencies")
-
-        print(
-            f"[OK] Circular dependency check complete ({len(all_files)} files, {len(circular_deps)} known debt)"
-        )
+            pytest.fail(
+                f"BLOCKING: {len(circular_deps)} circular dependencies detected:\n"
+                + "\n".join(f"  - {Path(a).name} <-> {Path(b).name}" for a, b in circular_deps[:10])
+            )
 
     @pytest.mark.skip(
         reason="Test logic has false positives - needs refactoring to properly detect zombie imports"
@@ -464,15 +372,14 @@ class TestImportSafety:
             f"[OK] Zombie import check complete ({len(python_files)} files, {len(zombie_imports)} known debt)"
         )
 
-    def test_ssot_dependency_flow(self):
+    def test_ssot_dependency_flow(self, report_builder):
         """
-        Test 4: Enforce one-way dependency valve.
+        BLOCKING: Enforce one-way dependency valve.
 
         Rules:
         - apps_shared MUST NOT import from apps_rg or apps_lic
         - apps_rg MUST NOT import from apps_lic (and vice versa)
         """
-        print("\n=== PHASE 2: SSOT Dependency Flow Check ===")
 
         violations = []
 
@@ -555,29 +462,23 @@ class TestImportSafety:
             except Exception:
                 continue
 
-        # Report SSOT violations (pure reporting)
+        # Report SSOT violations to JSON builder
+        for v in violations:
+            report_builder.add_violation(
+                code=ViolationCode.IMPORT_LAYER_VIOLATION,
+                file=v["file"],
+                line=v["line"],
+                message=f"{v['rule']}: {v['violation']}",
+                fix_action=FixAction.REMOVE_IMPORT,
+            )
+
         if violations:
-            print(f"\n[REPORT] {len(violations)} SSOT dependency violations detected:")
-            for v in violations[:10]:
-                print(f"  - {v['file']}:{v['line']}")
-                print(f"    Rule: {v['rule']}")
-                print(f"    Violation: {v['violation']}")
-            if len(violations) > 10:
-                print(f"  ... and {len(violations) - 10} more")
-
-            print("\n[REMEDIATION] Run HierarchyAgent:")
-            print(
-                "  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --dry-run"
+            pytest.fail(
+                f"BLOCKING: {len(violations)} SSOT dependency violations:\n"
+                + "\n".join(
+                    f"  - {v['file']}:{v['line']}: {v['violation']}" for v in violations[:10]
+                )
             )
-            print(
-                "  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --apply"
-            )
-            print("\n  See: tests/guardian/REMEDIATION_GUIDE.md#import-waterfall-violations")
-
-        total_files = len(apps_shared_files) + len(apps_rg_files) + len(apps_lic_files)
-        print(
-            f"[OK] SSOT dependency check complete ({total_files} files, {len(violations)} known debt)"
-        )
 
 
 # =============================================================================

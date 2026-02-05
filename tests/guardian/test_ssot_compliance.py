@@ -1,19 +1,27 @@
 """
-Phase 2: SSOT Compliance Guardian
-=================================
-The Civil Engineer - Validates architectural integrity against structure_blueprint.py
+SSOT Compliance Guardian (HARDENED)
+====================================
+Zero-Trust Guardian Layer for SSOT structural compliance.
+
+MANIFESTO COMPLIANCE:
+1. Static Stasis: AST-only analysis, NO code execution
+2. Binary Output: PASS or BLOCK (pytest.fail), NO warnings
+3. Machine-Readable: JSON violations via GuardianReportBuilder
+4. Constitutional Lock: structure_blueprint.py enforcement exact
+5. No Ghost Files: Any file outside SSOT is BLOCKED
+6. No AI Checking AI: Deterministic Python only
 
 This test suite ensures:
-1. All files exist in SSOT-approved locations
-2. No files violate the sovereign territory boundaries
-3. Base agents are in their constitutional location
-4. Layer hierarchy is respected (L0-L6)
+1. All files exist in SSOT-approved locations (BLOCK otherwise)
+2. No files violate sovereign territory boundaries (BLOCK otherwise)
+3. Base agents are in constitutional location (BLOCK otherwise)
+4. Layer hierarchy is respected (BLOCK otherwise)
 
 USAGE:
     pytest tests/guardian/test_ssot_compliance.py -v
 
 EXPECTED RESULT:
-    100% pass rate - any failure indicates structural drift
+    100% pass rate - any failure BLOCKS the pipeline
 """
 
 import ast
@@ -36,94 +44,29 @@ from agentic_core.L5_safety.validators.structure_blueprint_config import (
     ROOT_WHITELIST,
     SOVEREIGN_TERRITORIES,
 )
+from tests.guardian.guardian_report import (
+    FixAction,
+    GuardianReportBuilder,
+    ViolationCode,
+)
+
+# =============================================================================
+# CONSTANTS - NO EXCEPTIONS ALLOWED
+# =============================================================================
+MAX_LOC = 800  # Subatomic atomicity limit
 
 
 class TestSSOTCompliance:
-    """Test suite for SSOT structural compliance"""
+    """HARDENED Test suite for SSOT structural compliance.
 
-    # ==========================================================================
-    # KNOWN TECHNICAL DEBT (Documented violations to be remediated)
-    # These are tracked and will be fixed in future sprints.
-    # New violations will still cause test failures.
-    # ==========================================================================
+    NO DEBT TRACKING. All violations are BLOCKING.
+    Violations are reported to GuardianReportBuilder for JSON output.
+    """
 
-    # Base agents that need to be moved to agentic_core/base_agents/
-    KNOWN_BASE_AGENT_VIOLATIONS = {
-        "L0MaintenanceBaseAgent.py",
-        "CanonBaseAgent.py",  # Multiple copies exist
-        "LICAgentBaseAgent.py",
-        "RGAgentBaseAgent.py",
-        "test_SovereignBaseAgent.py",  # Test file - naming exception
-    }
-
-    # apps_shared files with known dependency violations (to be refactored)
-    KNOWN_APPS_SHARED_VIOLATIONS = {
-        "GoldenStateEvaluator.py",
-        "MockSyntaxValidatorAgent.py",
-    }
-
-    # Test files at root level (legacy - to be moved)
-    KNOWN_ROOT_TEST_FILES = {
-        "test_always_heal_llm.py",
-        "test_execute_ssot_e2e.py",
-        "test_healing_confidence.py",
-        "test_heal_implementations.py",
-        "test_location_agent_heal.py",
-        "test_location_agent_integration.py",
-        "test_sovereign_remediation_simple.py",
-    }
-
-    # ops_scripts test files (legacy - to be moved to tests/integration/)
-    KNOWN_OPS_SCRIPTS_TEST_FILES = {
-        "test_autonomous_decision_making.py",
-        "test_autonomous_end_to_end.py",
-        "test_batch_performance_optimization.py",
-        "test_complete_mission_workflow.py",
-        "test_hop2_sovereign_strategist.py",
-        "test_hop3_hop4_hop5_foundation.py",
-        "test_hop6_hop7_crucible_governor.py",
-        "test_hop8_hop9_persistence_handoff.py",
-        "test_hop_orchestrator_master.py",
-        "test_lic_rg_parity.py",
-        "test_location_agent_telemetry.py",
-        "test_master_verification_simulation.py",
-        "test_mission_dry_run.py",
-        "test_multi_agent_collaboration.py",
-        "test_nuclear_audit.py",
-        "test_parallel_healing_performance.py",
-        "test_phase2_integration.py",
-        "test_phase3_integration.py",
-        "test_phase4_integration.py",
-        "test_phase5_integration.py",
-        "test_phase6_integration.py",
-        "test_phase7_integration.py",
-        "test_phase8_integration.py",
-        "test_phase9_integration.py",
-        "test_phase10_integration.py",
-        "test_phase11_integration.py",
-        "test_phase12_integration.py",
-        "test_phase13_integration.py",
-        "test_phase14_integration.py",
-        "test_phase15_integration.py",
-        "test_phase16_integration.py",
-        "test_phase17_integration.py",
-        "test_phase18_integration.py",
-        "test_phase19_integration.py",
-        "test_phase20_integration.py",
-        # Additional ops_scripts test files discovered
-        "test_mission_script_integrity.py",
-        "test_mission_telemetry_dashboard.py",
-        "test_phase1_config.py",
-        "test_phase1_interface.py",
-        "test_phase2_core.py",
-        "test_phase2_interface.py",
-        "test_phase3_base.py",
-        "test_phase4_orchestrator.py",
-        "test_canon_key_removal.py",
-        "test_cognitive_subset.py",
-        "test_manifest_completion.py",
-        "test_mro_refactor.py",
-    }
+    @pytest.fixture(scope="class")
+    def report_builder(self):
+        """Get the singleton report builder for JSON output."""
+        return GuardianReportBuilder.get_instance("guardian")
 
     @pytest.fixture(autouse=True)
     def setup(self):
@@ -166,13 +109,12 @@ class TestSSOTCompliance:
         """Get path relative to project root"""
         return path.relative_to(self.project_root)
 
-    def test_all_files_in_valid_territories(self):
+    def test_all_files_in_valid_territories(self, report_builder):
         """
-        Test 1: Every file must exist in a valid sovereign territory.
+        BLOCKING: Every file must exist in a valid sovereign territory.
 
         Validates that no files exist outside the defined SOVEREIGN_TERRITORIES.
         """
-        print("\n=== SSOT Compliance: Territory Validation ===")
 
         valid_territories = set(SOVEREIGN_TERRITORIES.keys())
         # Add common root-level items that are allowed
@@ -213,31 +155,32 @@ class TestSSOTCompliance:
                 continue
 
             if territory not in valid_territories:
-                violations.append(f"Unknown territory '{territory}': {rel_path}")
+                violations.append({"territory": territory, "path": str(rel_path)})
+                report_builder.add_violation(
+                    code=ViolationCode.SSOT_TERRITORY,
+                    file=str(rel_path),
+                    line=1,
+                    message=f"File in unknown territory '{territory}'",
+                    fix_action=FixAction.MOVE_FILE,
+                )
 
         if violations:
-            error_msg = f"SSOT TERRITORY VIOLATIONS ({len(violations)} files):\n"
-            for v in violations[:20]:  # Limit output
-                error_msg += f"  [X] {v}\n"
-            if len(violations) > 20:
-                error_msg += f"  ... and {len(violations) - 20} more\n"
-            pytest.fail(error_msg)
+            pytest.fail(
+                f"BLOCKING: {len(violations)} files in unknown territories:\n"
+                + "\n".join(f"  - {v['path']}" for v in violations[:20])
+            )
 
-        print(f"[OK] All files in valid territories ({len(all_files)} checked)")
-
-    def test_agentic_core_subfolder_compliance(self):
+    def test_agentic_core_subfolder_compliance(self, report_builder):
         """
-        Test 2: agentic_core files must be in approved subfolders.
+        BLOCKING: agentic_core files must be in approved subfolders.
 
         Validates the L0-L6 layer structure and specialized domains.
         """
-        print("\n=== SSOT Compliance: Agentic Core Structure ===")
-
         valid_subfolders = set(CORE_SUBFOLDER_MAP.keys())
         agentic_core_path = self.project_root / AGENTIC_CORE_DIR
 
         if not agentic_core_path.exists():
-            pytest.skip("agentic_core directory not found")
+            pytest.fail("BLOCKING: agentic_core directory not found")
 
         violations = []
 
@@ -254,28 +197,29 @@ class TestSSOTCompliance:
             elif path.suffix == ".py":
                 # Python files at agentic_core root are allowed (e.g., __init__.py)
                 if path.name not in {"__init__.py", "DiscoveredAgent.py"}:
-                    violations.append(f"Unexpected Python file at agentic_core root: {path.name}")
+                    violations.append({"file": path.name, "type": "root_file"})
+                    report_builder.add_violation(
+                        code=ViolationCode.SSOT_GHOST_FILE,
+                        file=str(path),
+                        line=1,
+                        message=f"Unexpected Python file at agentic_core root: {path.name}",
+                        fix_action=FixAction.MOVE_FILE,
+                    )
 
         if violations:
-            error_msg = f"AGENTIC_CORE STRUCTURE VIOLATIONS ({len(violations)}):\n"
-            for v in violations:
-                error_msg += f"  [X] {v}\n"
-            pytest.fail(error_msg)
+            pytest.fail(
+                f"BLOCKING: {len(violations)} agentic_core structure violations:\n"
+                + "\n".join(f"  - {v}" for v in violations[:10])
+            )
 
-        print(f"[OK] agentic_core structure compliant ({len(valid_subfolders)} subfolders)")
-
-    def test_base_agents_constitutional_location(self):
+    def test_base_agents_constitutional_location(self, report_builder):
         """
-        Test 3: [CONSTITUTIONAL] All *BaseAgent.py files must be in agentic_core/base_agents/
+        BLOCKING [CONSTITUTIONAL]: All *BaseAgent.py files must be in agentic_core/base_agents/
 
-        This is a constitutional rule that CANNOT be overridden.
-        Known violations are tracked as technical debt.
+        This is a constitutional rule that CANNOT be overridden. NO EXCEPTIONS.
         """
-        print("\n=== SSOT Compliance: Constitutional Base Agent Location ===")
-
         canonical_dir = self.project_root / AGENTIC_CORE_DIR / "base_agents"
         violations = []
-        known_debt = []
 
         # Find all files ending in BaseAgent.py
         for path in self.project_root.rglob("*BaseAgent.py"):
@@ -287,53 +231,33 @@ class TestSSOTCompliance:
 
             # Check if it's in the canonical location
             if not str(path).startswith(str(canonical_dir)):
-                # Check if this is known technical debt
-                if path.name in self.KNOWN_BASE_AGENT_VIOLATIONS:
-                    known_debt.append(f"[KNOWN DEBT] {path.name}: {rel_path}")
-                else:
-                    violations.append(
-                        f"[CONSTITUTIONAL] Base agent '{path.name}' found in wrong location: "
-                        f"{rel_path} (must be in agentic_core/base_agents/)"
-                    )
+                violations.append({"file": path.name, "path": str(rel_path)})
+                report_builder.add_violation(
+                    code=ViolationCode.CONSTITUTIONAL_BASE_AGENT,
+                    file=str(rel_path),
+                    line=1,
+                    message=f"Base agent '{path.name}' found in wrong location (must be in agentic_core/base_agents/)",
+                    fix_action=FixAction.MOVE_FILE,
+                )
 
-        # Report known debt (informational)
-        if known_debt:
-            print(
-                f"[INFO] {len(known_debt)} known base agent violations (tracked as technical debt)"
+        if violations:
+            pytest.fail(
+                f"BLOCKING [CONSTITUTIONAL]: {len(violations)} base agents in wrong location:\n"
+                + "\n".join(f"  - {v['path']}" for v in violations[:10])
             )
 
-        # Fail only on NEW violations
-        if violations:
-            error_msg = "NEW CONSTITUTIONAL VIOLATIONS - BASE AGENT LOCATION:\n"
-            error_msg += "These violations CANNOT be overridden:\n\n"
-            for v in violations:
-                error_msg += f"  [!!!] {v}\n"
-            pytest.fail(error_msg)
-
-        # Count base agents in canonical location
-        base_agent_count = (
-            len(list(canonical_dir.glob("*BaseAgent.py"))) if canonical_dir.exists() else 0
-        )
-        print(
-            f"[OK] All {base_agent_count} base agents in constitutional location (+ {len(known_debt)} known debt)"
-        )
-
-    def test_apps_shared_independence(self):
+    def test_apps_shared_independence(self, report_builder):
         """
-        Test 4: apps_shared MUST NOT import from apps_rg or apps_lic.
+        BLOCKING: apps_shared MUST NOT import from apps_rg or apps_lic.
 
-        Enforces the one-way dependency valve.
-        Known violations are tracked as technical debt.
+        Enforces the one-way dependency valve. NO EXCEPTIONS.
         """
-        print("\n=== SSOT Compliance: apps_shared Independence ===")
-
         apps_shared_path = self.project_root / APPS_SHARED_DIR
 
         if not apps_shared_path.exists():
-            pytest.skip("apps_shared directory not found")
+            pytest.fail("BLOCKING: apps_shared directory not found")
 
         violations = []
-        known_debt = []
 
         for py_file in apps_shared_path.rglob("*.py"):
             if "__pycache__" in str(py_file):
@@ -347,64 +271,57 @@ class TestSSOTCompliance:
                     if isinstance(node, ast.Import):
                         for alias in node.names:
                             if alias.name.startswith(("apps_rg", "apps_lic")):
-                                if py_file.name in self.KNOWN_APPS_SHARED_VIOLATIONS:
-                                    known_debt.append(f"[KNOWN DEBT] {py_file.name}")
-                                else:
-                                    violations.append(
-                                        f"{self._get_relative_path(py_file)}: "
-                                        f"imports '{alias.name}'"
-                                    )
+                                violations.append(
+                                    {
+                                        "file": str(self._get_relative_path(py_file)),
+                                        "import": alias.name,
+                                        "line": node.lineno,
+                                    }
+                                )
+                                report_builder.add_violation(
+                                    code=ViolationCode.SSOT_INDEPENDENCE,
+                                    file=str(py_file),
+                                    line=node.lineno,
+                                    message=f"apps_shared imports '{alias.name}'",
+                                    fix_action=FixAction.REMOVE_IMPORT,
+                                )
                     elif isinstance(node, ast.ImportFrom):
                         if node.module and node.module.startswith(("apps_rg", "apps_lic")):
-                            if py_file.name in self.KNOWN_APPS_SHARED_VIOLATIONS:
-                                known_debt.append(f"[KNOWN DEBT] {py_file.name}")
-                            else:
-                                violations.append(
-                                    f"{self._get_relative_path(py_file)}: "
-                                    f"imports from '{node.module}'"
-                                )
+                            violations.append(
+                                {
+                                    "file": str(self._get_relative_path(py_file)),
+                                    "import": node.module,
+                                    "line": node.lineno,
+                                }
+                            )
+                            report_builder.add_violation(
+                                code=ViolationCode.SSOT_INDEPENDENCE,
+                                file=str(py_file),
+                                line=node.lineno,
+                                message=f"apps_shared imports from '{node.module}'",
+                                fix_action=FixAction.REMOVE_IMPORT,
+                            )
             except SyntaxError:
                 continue
-            except Exception as e:
-                print(f"Warning: Could not parse {py_file}: {e}")
+            except Exception:
                 continue
 
-        # Report known debt (informational)
-        if known_debt:
-            print(
-                f"[INFO] {len(set(known_debt))} known dependency violations (tracked as technical debt)"
+        if violations:
+            pytest.fail(
+                f"BLOCKING: {len(violations)} apps_shared independence violations:\n"
+                + "\n".join(
+                    f"  - {v['file']}:{v['line']} imports {v['import']}" for v in violations[:20]
+                )
             )
 
-        # Fail only on NEW violations
-        if violations:
-            error_msg = f"NEW APPS_SHARED INDEPENDENCE VIOLATIONS ({len(violations)}):\n"
-            error_msg += "apps_shared MUST NOT import from apps_rg or apps_lic:\n\n"
-            for v in violations[:20]:
-                error_msg += f"  [X] {v}\n"
-            if len(violations) > 20:
-                error_msg += f"  ... and {len(violations) - 20} more\n"
-            pytest.fail(error_msg)
-
-        file_count = len(list(apps_shared_path.rglob("*.py")))
-        print(
-            f"[OK] apps_shared independence verified ({file_count} files, {len(set(known_debt))} known debt)"
-        )
-
-    def test_test_files_in_tests_directory(self):
+    def test_test_files_in_tests_directory(self, report_builder):
         """
-        Test 5: All test_*.py files must be in the tests/ directory.
+        BLOCKING: All test_*.py files must be in the tests/ directory.
 
-        Prevents test file leakage into source directories.
-        Known violations are tracked as technical debt.
+        Prevents test file leakage into source directories. NO EXCEPTIONS.
         """
-        print("\n=== SSOT Compliance: Test File Placement ===")
-
         violations = []
-        known_debt = []
         tests_dir = self.project_root / "tests"
-
-        # Combine all known test file violations
-        all_known_test_files = self.KNOWN_ROOT_TEST_FILES | self.KNOWN_OPS_SCRIPTS_TEST_FILES
 
         for py_file in self.project_root.rglob("test_*.py"):
             rel_path = self._get_relative_path(py_file)
@@ -418,43 +335,28 @@ class TestSSOTCompliance:
                 # Allow conftest.py
                 if py_file.name == "conftest.py":
                     continue
-                # Check if this is known technical debt
-                if py_file.name in all_known_test_files:
-                    known_debt.append(f"[KNOWN DEBT] {py_file.name}")
-                else:
-                    violations.append(f"Test file outside tests/: {rel_path}")
+                violations.append({"file": py_file.name, "path": str(rel_path)})
+                report_builder.add_violation(
+                    code=ViolationCode.SSOT_TEST_PLACEMENT,
+                    file=str(rel_path),
+                    line=1,
+                    message=f"Test file '{py_file.name}' outside tests/ directory",
+                    fix_action=FixAction.MOVE_FILE,
+                )
 
-        # Report known debt (informational)
-        if known_debt:
-            print(
-                f"[INFO] {len(known_debt)} known test file placement violations (tracked as technical debt)"
+        if violations:
+            pytest.fail(
+                f"BLOCKING: {len(violations)} test files outside tests/ directory:\n"
+                + "\n".join(f"  - {v['path']}" for v in violations[:20])
             )
 
-        # Fail only on NEW violations
-        if violations:
-            error_msg = f"NEW TEST FILE PLACEMENT VIOLATIONS ({len(violations)}):\n"
-            for v in violations[:20]:
-                error_msg += f"  [X] {v}\n"
-            if len(violations) > 20:
-                error_msg += f"  ... and {len(violations) - 20} more\n"
-            pytest.fail(error_msg)
-
-        test_count = len(list(tests_dir.rglob("test_*.py"))) if tests_dir.exists() else 0
-        print(
-            f"[OK] All test files in tests/ directory ({test_count} files, {len(known_debt)} known debt)"
-        )
-
-    def test_layer_hierarchy_integrity(self):
+    def test_layer_hierarchy_integrity(self, report_builder):
         """
-        Test 6: L0-L6 layers must not have cross-layer imports that violate hierarchy.
+        BLOCKING: L0-L6 layers must not have cross-layer imports that violate hierarchy.
 
         Lower layers (L0-L2) should not import from higher layers (L4-L6).
-
-        NOTE: This test is currently INFORMATIONAL due to extensive existing violations.
-        It reports violations but does not fail the test suite.
-        Once violations are remediated, this can be made strict.
+        NO EXCEPTIONS beyond the allowed_exceptions set.
         """
-        print("\n=== SSOT Compliance: Layer Hierarchy Integrity (INFORMATIONAL) ===")
 
         # Define layer hierarchy (lower number = lower layer)
         layer_order = {
@@ -537,34 +439,44 @@ class TestSSOTCompliance:
                                         # Check if it's an allowed exception
                                         if (layer_name, imported_layer) not in allowed_exceptions:
                                             violations.append(
-                                                f"{layer_name} -> {imported_layer}: "
-                                                f"{self._get_relative_path(py_file)}"
+                                                {
+                                                    "from_layer": layer_name,
+                                                    "to_layer": imported_layer,
+                                                    "file": str(self._get_relative_path(py_file)),
+                                                    "line": node.lineno
+                                                    if hasattr(node, "lineno")
+                                                    else 1,
+                                                }
+                                            )
+                                            report_builder.add_violation(
+                                                code=ViolationCode.SSOT_LAYER_HIERARCHY,
+                                                file=str(py_file),
+                                                line=node.lineno if hasattr(node, "lineno") else 1,
+                                                message=f"Layer {layer_name} imports from higher layer {imported_layer}",
+                                                fix_action=FixAction.REMOVE_IMPORT,
                                             )
                 except SyntaxError:
                     continue
                 except Exception:
                     continue
 
-        # Report violations as informational (not failing)
         if violations:
-            print(
-                f"[INFO] {len(violations)} layer hierarchy violations detected (tracked as technical debt)"
+            pytest.fail(
+                f"BLOCKING: {len(violations)} layer hierarchy violations:\n"
+                + "\n".join(
+                    f"  - {v['from_layer']} -> {v['to_layer']}: {v['file']}"
+                    for v in violations[:20]
+                )
             )
-            print("       These will be addressed in future refactoring sprints.")
-        else:
-            print(f"[OK] Layer hierarchy integrity verified ({len(layer_order)} layers)")
 
-    def test_void_compliance_whitelist(self):
+    def test_void_compliance_whitelist(self, report_builder):
         """
-        Test 7: [VOID COMPLIANCE] Root folder whitelist enforcement.
+        BLOCKING [VOID COMPLIANCE]: Root folder whitelist enforcement.
 
         Fails if any file exists in a root folder not in ROOT_WHITELIST.
         Fails if any file exists in FORBIDDEN_ROOT_FOLDERS.
         """
-        print("\n=== SSOT Compliance: Void Folder Whitelist ===")
-
         violations = []
-        forbidden_violations = []
 
         # Check all files at root level
         for path in self.project_root.iterdir():
@@ -579,52 +491,51 @@ class TestSSOTCompliance:
 
             # Check if folder is in whitelist
             if folder_name not in ROOT_WHITELIST:
-                # Check if it has any Python files
                 py_files = list(path.rglob("*.py"))
                 if py_files:
                     violations.append(
-                        f"Folder '{folder_name}' contains {len(py_files)} Python files but is not in ROOT_WHITELIST"
+                        {"folder": folder_name, "count": len(py_files), "type": "whitelist"}
+                    )
+                    report_builder.add_violation(
+                        code=ViolationCode.SSOT_VOID_COMPLIANCE,
+                        file=folder_name,
+                        line=1,
+                        message=f"Folder '{folder_name}' contains {len(py_files)} Python files but is not in ROOT_WHITELIST",
+                        fix_action=FixAction.DELETE,
                     )
 
             # Check if folder is forbidden
             if folder_name in FORBIDDEN_ROOT_FOLDERS:
                 py_files = list(path.rglob("*.py"))
                 if py_files:
-                    forbidden_violations.append(
-                        f"Folder '{folder_name}' is FORBIDDEN but contains {len(py_files)} Python files"
+                    violations.append(
+                        {"folder": folder_name, "count": len(py_files), "type": "forbidden"}
+                    )
+                    report_builder.add_violation(
+                        code=ViolationCode.SSOT_VOID_COMPLIANCE,
+                        file=folder_name,
+                        line=1,
+                        message=f"FORBIDDEN folder '{folder_name}' contains {len(py_files)} Python files",
+                        fix_action=FixAction.DELETE,
                     )
 
-        # Report violations
-        if violations or forbidden_violations:
-            error_msg = "VOID COMPLIANCE VIOLATIONS:\n\n"
+        if violations:
+            pytest.fail(
+                f"BLOCKING: {len(violations)} void compliance violations:\n"
+                + "\n".join(
+                    f"  - {v['folder']}: {v['count']} files ({v['type']})" for v in violations
+                )
+            )
 
-            if violations:
-                error_msg += f"WHITELIST VIOLATIONS ({len(violations)}):\n"
-                for v in violations:
-                    error_msg += f"  [X] {v}\n"
-
-            if forbidden_violations:
-                error_msg += f"\nFORBIDDEN FOLDER VIOLATIONS ({len(forbidden_violations)}):\n"
-                for v in forbidden_violations:
-                    error_msg += f"  [!!!] {v}\n"
-
-            pytest.fail(error_msg)
-
-        print(
-            f"[OK] All root folders comply with whitelist ({len(ROOT_WHITELIST)} whitelisted, {len(FORBIDDEN_ROOT_FOLDERS)} forbidden)"
-        )
-
-    def test_sub_atomic_granularity(self):
+    def test_sub_atomic_granularity(self, report_builder):
         """
-        Test 8: [SUB-ATOMIC] File size granularity checks (Key 13/49).
+        BLOCKING [SUB-ATOMIC]: File size granularity checks.
 
-        - Monolith Check: Fail if any file > 800 LOC.
-        - Code Dust Check: Fail if any file < 80 LOC (exclude __init__.py and tests/).
+        - Monolith Check: BLOCK if any file > 800 LOC.
+
+        Note: Code dust check (< 80 LOC) is NOT enforced as blocking.
         """
-        print("\n=== SSOT Compliance: Sub-Atomic Granularity ===")
-
-        monolith_violations = []
-        code_dust_violations = []
+        violations = []
 
         # Get all Python files
         for py_file in self.project_root.rglob("*.py"):
@@ -632,63 +543,44 @@ class TestSSOTCompliance:
             if any(excluded in str(py_file) for excluded in self.excluded_dirs):
                 continue
 
-            # Skip __init__.py files for code dust check
-            is_init_file = py_file.name == "__init__.py"
-
-            # Skip test files for code dust check
-            is_test_file = "tests" in py_file.parts
-
             try:
                 # Count lines of code
                 with open(py_file, encoding="utf-8") as f:
                     lines = f.readlines()
 
                 # Filter out empty lines and comments
-                code_lines = []
-                for line in lines:
-                    stripped = line.strip()
-                    if stripped and not stripped.startswith("#"):
-                        code_lines.append(line)
-
+                code_lines = [
+                    line for line in lines if line.strip() and not line.strip().startswith("#")
+                ]
                 loc_count = len(code_lines)
 
-                # Monolith check (> 800 LOC)
-                if loc_count > 800:
-                    monolith_violations.append(
-                        f"{self._get_relative_path(py_file)}: {loc_count} LOC (limit: 800)"
+                # Monolith check (> 800 LOC) - BLOCKING
+                if loc_count > MAX_LOC:
+                    rel_path = self._get_relative_path(py_file)
+                    violations.append(
+                        {
+                            "file": str(rel_path),
+                            "loc": loc_count,
+                            "limit": MAX_LOC,
+                        }
                     )
-
-                # Code dust check (< 80 LOC)
-                if not is_init_file and not is_test_file and loc_count < 80:
-                    code_dust_violations.append(
-                        f"{self._get_relative_path(py_file)}: {loc_count} LOC (minimum: 80)"
+                    report_builder.add_violation(
+                        code=ViolationCode.SUBATOMIC_MONOLITH,
+                        file=str(rel_path),
+                        line=1,
+                        message=f"File has {loc_count} LOC (max: {MAX_LOC})",
+                        fix_action=FixAction.SPLIT_FILE,
+                        context={"loc": loc_count, "limit": MAX_LOC},
                     )
 
             except (UnicodeDecodeError, PermissionError):
-                # Skip files that can't be read
                 continue
 
-        # Report violations as warnings (tracked as technical debt)
-        if monolith_violations or code_dust_violations:
-            print("\n⚠️  GRANULARITY TECHNICAL DEBT (tracked, not blocking):")
-
-            if monolith_violations:
-                print(f"\nMonolith files ({len(monolith_violations)} files > 800 LOC):")
-                for v in monolith_violations[:5]:
-                    print(f"  • {v}")
-                if len(monolith_violations) > 5:
-                    print(f"  ... and {len(monolith_violations) - 5} more")
-
-            if code_dust_violations:
-                print(f"\nCode dust files ({len(code_dust_violations)} files < 80 LOC):")
-                for v in code_dust_violations[:5]:
-                    print(f"  • {v}")
-                if len(code_dust_violations) > 5:
-                    print(f"  ... and {len(code_dust_violations) - 5} more")
-
-            print("\n✅ Test passes - violations tracked as technical debt for future refactoring")
-        else:
-            print("[OK] All files within granularity bounds (monolith: 0, code dust: 0)")
+        if violations:
+            pytest.fail(
+                f"BLOCKING: {len(violations)} monolith files exceed {MAX_LOC} LOC:\n"
+                + "\n".join(f"  - {v['file']}: {v['loc']} LOC" for v in violations[:10])
+            )
 
 
 # Standalone runner

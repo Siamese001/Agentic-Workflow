@@ -1,25 +1,26 @@
 """
-Phase 1: MRO & Inheritance Hardening (The Diamond Defense)
-==========================================================
+Phase 1: MRO & Inheritance Hardening (The Diamond Defense) - HARDENED
+=====================================================================
 Zero-Trust Guardian Layer for Method Resolution Order integrity.
 
-This test suite uses Python's `ast` and `inspect` modules for static analysis to:
-1. Detect Diamond of Death inheritance patterns
-2. Validate Mixin ordering (SovereignBaseAgent must be last before object)
-3. Detect duplicate Mixin injection across inheritance chains
-4. Validate dataclass field ordering to prevent TypeError at runtime
+MANIFESTO COMPLIANCE:
+1. Static Stasis: Prefer AST analysis where possible
+2. Binary Output: PASS or BLOCK (pytest.fail), NO warnings
+3. Machine-Readable: JSON violations via GuardianReportBuilder
+4. No Debt Tracking: All violations are BLOCKING immediately
+5. No AI Checking AI: Deterministic Python only
+
+This test suite validates:
+1. Diamond of Death inheritance patterns - BLOCKING
+2. Mixin ordering (SovereignBaseAgent must be last) - BLOCKING
+3. Duplicate Mixin injection - BLOCKING
+4. Dataclass field ordering - BLOCKING
 
 USAGE:
     pytest tests/guardian/test_mro_integrity.py -v -m guardian
 
 EXPECTED RESULT:
-    100% pass rate - any failure indicates MRO corruption risk
-
-CRITICAL ANALYSIS FLAGS:
-    - Diamond patterns in non-Mixin classes are ERRORS
-    - Mixin order violations are ERRORS
-    - Duplicate Mixin injection is a WARNING (tracked as tech debt)
-    - Dataclass field ordering issues are ERRORS
+    100% pass rate - any failure BLOCKS the pipeline
 """
 
 import ast
@@ -38,6 +39,12 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+from tests.guardian.guardian_report import (
+    FixAction,
+    GuardianReportBuilder,
+    ViolationCode,
+)
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.domain.core_integrity_verifier_validator import CoreIntegrityVerifier
@@ -292,18 +299,11 @@ def test_dataclass_initialization_fuzz(monkeypatch: pytest.MonkeyPatch):
                 f"{type(e).__name__}: {e}"
             )
 
-    # Known dataclass init failures (tracked as technical debt)
-    # Many agents require constructor arguments - this is expected behavior
-    KNOWN_INIT_FAILURES = 50  # Allow up to 50 known failures
-
+    # All dataclass init failures are now BLOCKING
     if failures:
-        if len(failures) <= KNOWN_INIT_FAILURES:
-            print(f"\n[TECH DEBT] {len(failures)} dataclass init failures (tracked, not blocking)")
-        else:
-            raise AssertionError(
-                f"Dataclass init failures ({len(failures)}) exceed threshold ({KNOWN_INIT_FAILURES}):\n"
-                + "\n".join(failures[:10])
-            )
+        pytest.fail(
+            f"BLOCKING: {len(failures)} dataclass init failures:\n" + "\n".join(failures[:10])
+        )
 
 
 def test_diamond_resolution_synthetic():
@@ -409,19 +409,22 @@ def test_diamond_of_death_detection():
                         f"(appears in {count} inheritance paths) - MRO: {[c.__name__ for c in mro[:5]]}..."
                     )
 
-    # Report warnings (informational)
-    if diamond_warnings:
-        print(f"\n[INFO] Diamond inheritance patterns detected ({len(diamond_warnings)} warnings):")
-        for w in diamond_warnings[:5]:
-            print(f"  - {w}")
-        if len(diamond_warnings) > 5:
-            print(f"  ... and {len(diamond_warnings) - 5} more")
-
-    # Fail on errors
-    assert not diamond_errors, (
-        f"DIAMOND OF DEATH DETECTED ({len(diamond_errors)} errors):\n"
-        + "\n".join(f"  [X] {e}" for e in diamond_errors)
-    )
+    # All violations are BLOCKING - no warnings
+    all_violations = diamond_errors + diamond_warnings
+    if all_violations:
+        report_builder = GuardianReportBuilder.get_instance("guardian")
+        for v in all_violations:
+            report_builder.add_violation(
+                code=ViolationCode.MRO_DIAMOND,
+                file="runtime",
+                line=1,
+                message=v,
+                fix_action=FixAction.REFACTOR_INHERITANCE,
+            )
+        pytest.fail(
+            f"BLOCKING: {len(all_violations)} diamond inheritance violations:\n"
+            + "\n".join(f"  - {v}" for v in all_violations[:10])
+        )
 
 
 def test_mixin_naming_convention_and_inheritance():
@@ -717,23 +720,21 @@ class TestDiamondDefense:
                     f"MRO: {[c.__name__ for c in mro[:8]]}..."
                 )
 
-        # Report results
+        # All MRO violations are BLOCKING
         if violations:
-            # Track as technical debt if within threshold
-            KNOWN_MRO_VIOLATIONS = 10
-            if len(violations) <= KNOWN_MRO_VIOLATIONS:
-                print(
-                    f"\n[TECH DEBT] {len(violations)} MRO order violations (tracked, not blocking)"
+            report_builder = GuardianReportBuilder.get_instance("guardian")
+            for v in violations:
+                report_builder.add_violation(
+                    code=ViolationCode.MRO_ORDER,
+                    file="runtime",
+                    line=1,
+                    message=v,
+                    fix_action=FixAction.REFACTOR_INHERITANCE,
                 )
-                for v in violations[:5]:
-                    print(f"  - {v}")
-            else:
-                raise AssertionError(
-                    f"MRO ORDER VIOLATIONS ({len(violations)}, exceeds threshold {KNOWN_MRO_VIOLATIONS}):\n"
-                    + "\n".join(f"  [X] {v}" for v in violations[:10])
-                )
-
-        print(f"\n[OK] Mixin order safety verified for {checked_count} classes")
+            pytest.fail(
+                f"BLOCKING: {len(violations)} MRO order violations:\n"
+                + "\n".join(f"  - {v}" for v in violations[:10])
+            )
 
     def test_duplicate_mixin_injection(self):
         """
@@ -833,25 +834,21 @@ class TestDiamondDefense:
                             f"'{parent.__name__}' MRO"
                         )
 
-        # Report results
-        KNOWN_DUPLICATE_INJECTIONS = 20  # Threshold for tech debt
-
+        # All duplicate mixin injections are BLOCKING
         if violations:
-            if len(violations) <= KNOWN_DUPLICATE_INJECTIONS:
-                print(
-                    f"\n[TECH DEBT] {len(violations)} duplicate mixin injections (tracked, not blocking):"
+            report_builder = GuardianReportBuilder.get_instance("guardian")
+            for v in violations:
+                report_builder.add_violation(
+                    code=ViolationCode.MRO_DUPLICATE_MIXIN,
+                    file="runtime",
+                    line=1,
+                    message=v,
+                    fix_action=FixAction.REMOVE_DUPLICATE,
                 )
-                for v in violations[:5]:
-                    print(f"  - {v}")
-                if len(violations) > 5:
-                    print(f"  ... and {len(violations) - 5} more")
-            else:
-                raise AssertionError(
-                    f"DUPLICATE MIXIN INJECTION ({len(violations)}, exceeds threshold {KNOWN_DUPLICATE_INJECTIONS}):\n"
-                    + "\n".join(f"  [X] {v}" for v in violations[:10])
-                )
-
-        print(f"\n[OK] Duplicate mixin injection scan complete ({scanned_classes} classes scanned)")
+            pytest.fail(
+                f"BLOCKING: {len(violations)} duplicate mixin injections:\n"
+                + "\n".join(f"  - {v}" for v in violations[:10])
+            )
 
     def test_dataclass_field_ordering(self):
         """

@@ -1,13 +1,22 @@
 """
-Guardian Suite Configuration and Reporting
-===========================================
+Guardian Suite Configuration and Reporting (HARDENED)
+======================================================
 Zero-Trust Guardian Layer - Architectural Health Validation
+
+MANIFESTO COMPLIANCE:
+1. Static Stasis: DO NOT execute agent code. AST only.
+2. Binary Output: PASS or BLOCK. No warnings.
+3. Machine-Readable: JSON report to logs/guardian_report.json
+4. Constitutional Lock: structure_blueprint.py enforcement
+5. Subatomic Atomicity: Block files >800 LOC, >2 Mixins, >2 Methods
+6. No AI Checking AI: Deterministic Python only
+7. Idempotency: Stable target names for Healer
 
 This conftest.py provides:
 1. Guardian marker registration for all tests in this directory
-2. Architectural health summary reporting
+2. JSON report builder with Ratchet mechanism
 3. Violation tracking and categorization
-4. Integration with the root tests/conftest.py
+4. Session-finish hook writes guardian_report.json
 
 USAGE:
     pytest tests/guardian/ -v -m guardian
@@ -17,7 +26,6 @@ All tests in this directory are automatically marked with @pytest.mark.guardian
 """
 
 import sys
-from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -25,6 +33,12 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+from tests.guardian.guardian_report import (
+    GuardianReportBuilder,
+    GuardianStatus,
+    write_guardian_report,
+)
 
 
 # =============================================================================
@@ -45,7 +59,10 @@ def pytest_collection_modifyitems(config, items):
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
     """
-    Generate Guardian report after test completion
+    RATCHET MECHANISM: Generate JSON Guardian report after test completion.
+
+    Writes machine-readable guardian_report.json to logs/ directory.
+    This report is consumed by the Symmetric Healer for automated remediation.
     """
     # Check if we're running guardian tests
     guardian_tests_found = False
@@ -72,98 +89,75 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     total_tests = passed_tests + len(failed_items) + len(error_items) + skipped_tests
     failed_tests = len(failed_items) + len(error_items)
 
-    # Analyze failures by category
-    failed_by_category = {
-        "MRO Integrity": [],
-        "Import Safety": [],
-        "SSOT Alignment": [],
-        "Other": [],
-    }
+    # Get or create the report builder singleton
+    builder = GuardianReportBuilder.get_instance("guardian")
+
+    # Set metadata
+    builder.set_metadata("total_tests", total_tests)
+    builder.set_metadata("passed_tests", passed_tests)
+    builder.set_metadata("failed_tests", failed_tests)
+    builder.set_metadata("skipped_tests", skipped_tests)
+    builder.set_metadata("exit_status", exitstatus)
 
     # Categorize failed tests
+    failed_by_category = {
+        "mro_integrity": [],
+        "import_safety": [],
+        "ssot_alignment": [],
+        "subatomic": [],
+        "forensic": [],
+        "other": [],
+    }
+
     for failed_test in list(failed_items) + list(error_items):
         test_name = getattr(failed_test, "nodeid", str(failed_test))
         if "mro" in test_name.lower():
-            failed_by_category["MRO Integrity"].append(test_name)
+            failed_by_category["mro_integrity"].append(test_name)
         elif "import" in test_name.lower():
-            failed_by_category["Import Safety"].append(test_name)
+            failed_by_category["import_safety"].append(test_name)
         elif "ssot" in test_name.lower() or "alignment" in test_name.lower():
-            failed_by_category["SSOT Alignment"].append(test_name)
+            failed_by_category["ssot_alignment"].append(test_name)
+        elif "subatomic" in test_name.lower():
+            failed_by_category["subatomic"].append(test_name)
+        elif "forensic" in test_name.lower():
+            failed_by_category["forensic"].append(test_name)
         else:
-            failed_by_category["Other"].append(test_name)
+            failed_by_category["other"].append(test_name)
 
-    # Generate report
-    report_lines = []
-    report_lines.append("=" * 60)
-    report_lines.append("GUARDIAN ARCHITECTURAL HEALTH REPORT")
-    report_lines.append("=" * 60)
-    report_lines.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    report_lines.append(f"Exit Status: {'PASS' if exitstatus == 0 else 'FAIL'}")
-    report_lines.append("")
+    builder.set_metadata("failed_by_category", failed_by_category)
 
-    # Summary
-    report_lines.append("EXECUTION SUMMARY:")
-    report_lines.append(f"  Total Tests Run: {total_tests}")
-    report_lines.append(f"  Passed: {passed_tests}")
-    report_lines.append(f"  Failed: {failed_tests}")
-    report_lines.append(f"  Skipped: {skipped_tests}")
-    report_lines.append("")
+    # Build and write JSON report
+    report = builder.build()
 
-    # Failed gates
-    if failed_tests > 0:
-        report_lines.append("FAILED GATES:")
-        for category, failures in failed_by_category.items():
-            if failures:
-                report_lines.append(f"  ❌ {category}: {len(failures)} test(s)")
-                for failure in failures:
-                    report_lines.append(f"     - {failure}")
-        report_lines.append("")
+    # Determine final status
+    if exitstatus == 0 and not report.is_blocking():
+        report.status = GuardianStatus.PASS.value
     else:
-        report_lines.append("✅ ALL GUARDIAN GATES PASSED")
-        report_lines.append("")
+        report.status = GuardianStatus.BLOCK.value
 
-    # Status and recommendations
-    if exitstatus == 0:
-        report_lines.append("ARCHITECTURAL HEALTH: ✅ OPTIMAL")
-        report_lines.append("All architectural integrity checks passed.")
-        report_lines.append("The codebase maintains structural integrity.")
-    else:
-        report_lines.append("ARCHITECTURAL HEALTH: ⚠️  COMPROMISED")
-        report_lines.append("Architectural violations detected.")
-        report_lines.append("Please review failed tests and remediate issues.")
-        report_lines.append("")
-        report_lines.append("RECOMMENDED ACTIONS:")
-        if failed_by_category["MRO Integrity"]:
-            report_lines.append("  - Fix MRO violations and inheritance issues")
-        if failed_by_category["Import Safety"]:
-            report_lines.append("  - Resolve import errors and circular dependencies")
-        if failed_by_category["SSOT Alignment"]:
-            report_lines.append("  - Correct SSOT alignment and file placement issues")
-        if failed_by_category["Other"]:
-            report_lines.append("  - Review and fix other architectural violations")
-
-    report_lines.append("=" * 60)
-
-    # Write report to file
-    report_content = "\n".join(report_lines)
-    report_path = Path("guardian_report.txt")
+    # Write JSON report to logs/guardian_report.json
+    json_report_path = PROJECT_ROOT / "logs" / "guardian_report.json"
+    json_report_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
-        with open(report_path, "w", encoding="utf-8") as f:
-            f.write(report_content)
+        report_path = write_guardian_report(report, json_report_path)
 
-        # Print summary to terminal
+        # Print minimal summary to terminal (JSON is the source of truth)
         print("\n" + "=" * 60)
-        print("GUARDIAN REPORT GENERATED")
+        print(f"GUARDIAN SHIELD: {report.status}")
         print("=" * 60)
-        print(f"Report saved to: {report_path.absolute()}")
-        print(f"Status: {'PASS' if exitstatus == 0 else 'FAIL'}")
-        if failed_tests > 0:
-            print(f"Failed Tests: {failed_tests}")
+        print(f"JSON Report: {report_path}")
+        print(f"Violations: {len(report.violations)}")
+        if report.summary:
+            for code, count in report.summary.items():
+                print(f"  - {code}: {count}")
         print("=" * 60)
 
     except Exception as e:
-        print(f"Warning: Could not write guardian report: {e}")
+        print(f"CRITICAL: Could not write guardian report: {e}")
+
+    # Reset builder for next run (idempotency)
+    GuardianReportBuilder.reset()
 
 
 @pytest.fixture(scope="session", autouse=True)

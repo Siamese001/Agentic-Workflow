@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """
-Unified Guardian Forensic Audit Test
-Consolidated detection of AI-Checking-AI violations and structural validation issues.
+Unified Guardian Forensic Audit Test (HARDENED)
+================================================
+Zero-Trust Guardian Layer for AI-Checking-AI violations.
 
-Combines all 6 phases into a single, efficient test suite:
-- Phase 1: Agent discovery and basic violations
-- Phase 2: LLM-based validation detection
-- Phase 3: Apps layer validation logic
-- Phases 4-6: Extended validation patterns
+MANIFESTO COMPLIANCE:
+1. Static Stasis: AST-only analysis, NO code execution
+2. Binary Output: PASS or BLOCK (pytest.fail), NO warnings
+3. Machine-Readable: JSON violations via GuardianReportBuilder
+4. No AI Checking AI: BLOCK agents that perform structural validation
+5. Deterministic: Python scripts only, no LLM calls in validation
 
-The Law: AI Agents are prohibited from performing structural, MRO, or layer-zoning
+The Law: AI Agents are PROHIBITED from performing structural, MRO, or layer-zoning
 validation. These "Laser Beam" tests must be strictly deterministic Python scripts
-located in the tests/guardian/ suite.
+located in the tests/guardian/ suite. Any violation is BLOCKING.
 """
 
 import ast
@@ -25,6 +27,12 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+from tests.guardian.guardian_report import (
+    FixAction,
+    GuardianReportBuilder,
+    ViolationCode,
+)
 
 
 @dataclass
@@ -234,7 +242,12 @@ class ForensicAuditScanner:
 
 
 class TestUnifiedForensicAudit:
-    """Unified forensic audit for all validation violations."""
+    """
+    HARDENED Unified forensic audit for all validation violations.
+
+    All violations are BLOCKING. NO warnings. NO debt tracking.
+    Violations are reported to GuardianReportBuilder for JSON output.
+    """
 
     @pytest.fixture(scope="class")
     def scanner(self):
@@ -246,99 +259,174 @@ class TestUnifiedForensicAudit:
         """Run audit once and cache results."""
         return scanner.scan_all_agents()
 
+    @pytest.fixture(scope="class")
+    def report_builder(self):
+        """Get the singleton report builder."""
+        return GuardianReportBuilder.get_instance("guardian")
+
     def test_agent_discovery(self, audit_result):
-        """Phase 1: Agent discovery and basic violation detection."""
-        assert audit_result.total_agents > 0, "Should discover agents"
+        """BLOCKING: Must discover agents to validate."""
+        if audit_result.total_agents == 0:
+            pytest.fail("BLOCKING: No agents discovered - cannot validate")
 
-        print("\n[AUDIT] Phase 1: Agent Discovery")
-        print(f"  Total agents: {audit_result.total_agents}")
-        for territory, count in audit_result.agents_by_territory.items():
-            print(f"  - {territory}: {count} agents")
+    def test_llm_validation_detection(self, audit_result, scanner, report_builder):
+        """
+        BLOCKING: Detect LLM-based validation patterns.
 
-    def test_llm_validation_detection(self, audit_result, scanner):
-        """Phase 2: LLM-based validation detection."""
-        llm_violations = 0
+        AI agents must NOT use LLM calls for structural validation.
+        """
+        violations = []
+
         for agent_info in scanner.get_all_agents():
             if agent_info.llm_validation_methods:
-                llm_violations += len(agent_info.llm_validation_methods)
+                for method in agent_info.llm_validation_methods:
+                    violations.append(
+                        {
+                            "agent": agent_info.class_name,
+                            "file": str(agent_info.file_path),
+                            "pattern": method,
+                        }
+                    )
+                    report_builder.add_violation(
+                        code=ViolationCode.FORENSIC_LLM_VALIDATION,
+                        file=str(agent_info.file_path),
+                        line=1,
+                        message=f"Agent '{agent_info.class_name}' uses LLM for validation: {method}",
+                        fix_action=FixAction.MANUAL_REVIEW,
+                    )
 
-        print("\n[AUDIT] Phase 2: LLM Validation Detection")
-        print(f"  LLM-based validation patterns: {llm_violations}")
+        if violations:
+            pytest.fail(
+                f"BLOCKING: {len(violations)} LLM-based validation patterns detected:\n"
+                + "\n".join(f"  - {v['agent']}: {v['pattern']}" for v in violations[:10])
+            )
 
-    def test_apps_layer_validation(self, audit_result, scanner):
-        """Phase 3: Apps layer validation logic detection."""
-        apps_violations = 0
+    def test_structural_validation_violations(self, audit_result, scanner, report_builder):
+        """
+        BLOCKING: AI agents must NOT perform structural validation.
+
+        Structural validation (MRO, layer zoning, hierarchy) must be in tests/guardian/.
+        """
+        violations = []
+
         for agent_info in scanner.get_all_agents():
-            if agent_info.territory.startswith("apps_") and agent_info.apps_validation_methods:
-                apps_violations += len(agent_info.apps_validation_methods)
+            for pattern in agent_info.violation_patterns:
+                if "structural" in pattern.lower() or "introspection" in pattern.lower():
+                    violations.append(
+                        {
+                            "agent": agent_info.class_name,
+                            "file": str(agent_info.file_path),
+                            "pattern": pattern,
+                        }
+                    )
+                    report_builder.add_violation(
+                        code=ViolationCode.FORENSIC_STRUCTURAL,
+                        file=str(agent_info.file_path),
+                        line=1,
+                        message=f"Agent '{agent_info.class_name}' performs structural validation: {pattern}",
+                        fix_action=FixAction.MANUAL_REVIEW,
+                    )
 
-        print("\n[AUDIT] Phase 3: Apps Layer Validation")
-        print(f"  Apps validation patterns: {apps_violations}")
+        if violations:
+            pytest.fail(
+                f"BLOCKING: {len(violations)} structural validation violations:\n"
+                + "\n".join(f"  - {v['agent']}: {v['pattern']}" for v in violations[:10])
+            )
 
-    def test_structural_validation_violations(self, audit_result):
-        """Phases 4-6: Consolidated structural validation detection."""
-        structural_count = audit_result.violations_by_type.get("structural_validation", 0)
-        introspection_count = audit_result.violations_by_type.get("dynamic_introspection", 0)
-        layer_count = audit_result.violations_by_type.get("layer_zoning_validation", 0)
+    def test_dynamic_introspection_violations(self, audit_result, scanner, report_builder):
+        """
+        BLOCKING: AI agents must NOT use dynamic introspection for validation.
 
-        print("\n[AUDIT] Phases 4-6: Structural Validation")
-        print(f"  Structural validation: {structural_count}")
-        print(f"  Dynamic introspection: {introspection_count}")
-        print(f"  Layer zoning validation: {layer_count}")
+        Dynamic introspection (importlib, spec_from_file_location) is forbidden.
+        """
+        violations = []
 
-    def test_comprehensive_audit_summary(self, audit_result):
-        """Comprehensive summary of all violations."""
-        print("\n[AUDIT] Comprehensive Summary")
-        print(f"  Total agents scanned: {audit_result.total_agents}")
-        print(f"  Agents with violations: {audit_result.agents_with_violations}")
-        print(f"  Total violations: {audit_result.total_violations}")
-        print(f"  Clean agents: {len(audit_result.clean_agents)}")
+        for agent_info in scanner.get_all_agents():
+            for pattern in agent_info.violation_patterns:
+                if "introspection" in pattern.lower():
+                    violations.append(
+                        {
+                            "agent": agent_info.class_name,
+                            "file": str(agent_info.file_path),
+                            "pattern": pattern,
+                        }
+                    )
+                    report_builder.add_violation(
+                        code=ViolationCode.FORENSIC_INTROSPECTION,
+                        file=str(agent_info.file_path),
+                        line=1,
+                        message=f"Agent '{agent_info.class_name}' uses dynamic introspection: {pattern}",
+                        fix_action=FixAction.MANUAL_REVIEW,
+                    )
 
-        if audit_result.violations_by_type:
-            print("\n  Violations by type:")
-            for vtype, count in audit_result.violations_by_type.items():
-                print(f"    - {vtype}: {count}")
+        if violations:
+            pytest.fail(
+                f"BLOCKING: {len(violations)} dynamic introspection violations:\n"
+                + "\n".join(f"  - {v['agent']}: {v['pattern']}" for v in violations[:10])
+            )
 
-    def test_no_critical_ai_checking_ai_violations(self, audit_result):
-        """Critical: Ensure no AI agents perform structural validation."""
+    def test_no_critical_ai_checking_ai_violations(self, audit_result, report_builder):
+        """
+        BLOCKING [CRITICAL]: Ensure NO AI agents perform structural validation.
+
+        This is the "No AI Checking AI" constitutional rule.
+        """
         critical_violations = []
 
         for agent in audit_result.agents:
             if agent.has_llm_calls and agent.violation_patterns:
                 for violation in agent.violation_patterns:
                     if "llm_validation" in violation or "structural" in violation:
-                        critical_violations.append(f"{agent.class_name}: {violation}")
+                        critical_violations.append(
+                            {
+                                "agent": agent.class_name,
+                                "file": str(agent.file_path),
+                                "violation": violation,
+                            }
+                        )
+                        report_builder.add_violation(
+                            code=ViolationCode.FORENSIC_LLM_VALIDATION,
+                            file=str(agent.file_path),
+                            line=1,
+                            message=f"CRITICAL: Agent '{agent.class_name}' with LLM calls performs validation",
+                            fix_action=FixAction.MANUAL_REVIEW,
+                        )
 
         if critical_violations:
-            print("\n[WARNING] Critical AI-Checking-AI violations detected:")
-            for v in critical_violations[:10]:
-                print(f"  - {v}")
-
-        assert audit_result.total_agents >= 10, "Should scan at least 10 agents"
+            pytest.fail(
+                f"BLOCKING [CRITICAL]: {len(critical_violations)} AI-Checking-AI violations:\n"
+                + "\n".join(f"  - {v['agent']}: {v['violation']}" for v in critical_violations[:10])
+            )
 
 
 def test_forensic_audit_comprehensive():
-    """Run comprehensive forensic audit."""
+    """
+    BLOCKING: Run comprehensive forensic audit.
+
+    This test fails if ANY violation is detected.
+    """
     scanner = ForensicAuditScanner()
     result = scanner.scan_all_agents()
 
-    print(f"\n{'=' * 60}")
-    print("FORENSIC AUDIT REPORT")
-    print(f"{'=' * 60}")
-    print(f"Total agents: {result.total_agents}")
-    print(f"Agents with violations: {result.agents_with_violations}")
-    print(f"Total violations: {result.total_violations}")
-    print(f"Clean agents: {len(result.clean_agents)}")
-    print(f"{'=' * 60}")
-
-    for territory, count in result.agents_by_territory.items():
-        print(f"{territory}: {count} agents")
-
-    if result.violations_by_type:
-        print("\nViolations by type:")
-        for vtype, count in result.violations_by_type.items():
-            print(f"  {vtype}: {count}")
+    if result.total_violations > 0:
+        pytest.fail(
+            f"BLOCKING: {result.total_violations} forensic violations detected "
+            f"across {result.agents_with_violations} agents"
+        )
 
 
 if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
+    import json
+
+    scanner = ForensicAuditScanner()
+    result = scanner.scan_all_agents()
+
+    report = {
+        "status": "PASS" if result.total_violations == 0 else "BLOCKING",
+        "total_agents": result.total_agents,
+        "agents_with_violations": result.agents_with_violations,
+        "total_violations": result.total_violations,
+        "violations_by_type": result.violations_by_type,
+    }
+
+    print(json.dumps(report, indent=2))
