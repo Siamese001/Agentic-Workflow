@@ -51,9 +51,9 @@ class ResumeOrchestratorEngine(BaseRGEngine):
         self.GLOBAL_STEP_LIMIT = self.rg_specs.orchestrator.global_step_limit
         self.MAX_RETRY_ITERATIONS = self.rg_specs.orchestrator.max_retry_iterations
 
-        # Persistent trace registry like LIC
+        # Persistent trace registry like LIC - use SSOT-approved location
         if self.toggles.use_persistent_tracing:
-            trace_path = Path(f"logs/missions/{mission_id}/trace.jsonl")
+            trace_path = Path(f"docs/reports/missions/{mission_id}/trace.jsonl")
             self.ctx.trace = TraceRegistry(persistence_path=trace_path)
 
     async def execute(self, job_description: str) -> dict[str, Any]:

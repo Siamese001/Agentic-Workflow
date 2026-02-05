@@ -46,8 +46,8 @@ class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, SovereignBaseAgent):
             SafetyEngine: Optional safety engine instance
         """
         self.safety: Any | None = SafetyEngine
-        # Use relative pathing to stay within the AGENTIC_CORE_DIR root gravity
-        self.log_path: Path = Path("observability/logs/threat_detections.json")
+        # Use SSOT-approved location within L6_observability
+        self.log_path: Path = Path("agentic_core/L6_observability/logs/threat_detections.json")
         self.evolution_interval: int = 3600
         self.running: bool = True
         self.confidence_threshold: float = 0.75
