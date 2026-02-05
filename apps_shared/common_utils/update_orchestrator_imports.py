@@ -9,7 +9,7 @@ Mapping:
   HardenedWorkflowOrchestratorAgent, ConsolidatedOrchestratorAgent
   -> CoreOrchestrationAgent
 
-- LicWorkflowOrchestratorAgent, OutreachPhase5OrchestratorAgent, Phase4OrchestratorAgent,
+- LicWorkflowOrchestratorAgent, OutreachPhase5Orchestrator, Phase4OrchestratorAgent,
   Phase6OrchestratorAgent, Phase7OrchestratorAgent, HOPOrchestratorAgent
   -> AppWorkflowOrchestratorAgent
 
@@ -73,7 +73,7 @@ IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
         "agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent",
         "AppWorkflowOrchestratorAgent",
     ),
-    "OutreachPhase5OrchestratorAgent": (
+    "OutreachPhase5Orchestrator": (
         "agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent",
         "AppWorkflowOrchestratorAgent",
     ),
@@ -93,15 +93,15 @@ IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
         "agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent",
         "AppWorkflowOrchestratorAgent",
     ),
-    "LicHealingOrchestratorAgent": (
+    "LicHealingOrchestrator": (
         "agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent",
         "AppWorkflowOrchestratorAgent",
     ),
-    "RgHealingOrchestratorAgent": (
+    "RgHealingOrchestrator": (
         "agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent",
         "AppWorkflowOrchestratorAgent",
     ),
-    "RgResumeOrchestratorAgent": (
+    "RgResumeOrchestrator": (
         "agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent",
         "AppWorkflowOrchestratorAgent",
     ),

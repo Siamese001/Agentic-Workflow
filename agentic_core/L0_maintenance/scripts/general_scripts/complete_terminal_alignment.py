@@ -23,10 +23,7 @@ def add_missing_imports_comprehensive(file_path: Path) -> bool:
 
     # Check for missing imports
     if "MCPHardenedMixin" in content and "class MCPHardenedMixin" not in content:
-        if (
-            "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin"
-            not in content
-        ):
+        if "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin" not in content:
             imports_to_add.append(
                 "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin"
             )
@@ -35,9 +32,7 @@ def add_missing_imports_comprehensive(file_path: Path) -> bool:
         # Add Tuple to existing typing import
         content = re.sub(
             r"from typing import ([^\n]+)",
-            lambda m: f"from typing import {m.group(1)}, Tuple"
-            if "Tuple" not in m.group(1)
-            else m.group(0),
+            lambda m: f"from typing import {m.group(1)}, Tuple" if "Tuple" not in m.group(1) else m.group(0),
             content,
         )
     elif "Tuple" in content:
@@ -54,9 +49,7 @@ def add_missing_imports_comprehensive(file_path: Path) -> bool:
         )
 
     if "ValidationGateExecutor" in content and "class ValidationGateExecutor" not in content:
-        imports_to_add.append(
-            "# ValidationGateExecutor stub\nclass ValidationGateExecutor:\n    pass\n"
-        )
+        imports_to_add.append("# ValidationGateExecutor stub\nclass ValidationGateExecutor:\n    pass\n")
 
     if not imports_to_add and content == original:
         return False
@@ -98,9 +91,7 @@ def remove_duplicate_mixin_inheritance(file_path: Path) -> bool:
         content,
     )
 
-    content = re.sub(
-        r"class (\w+)\(MCPHardenedMixin, ([^)]*LICAgentBase[^)]*)\):", r"class \1(\2):", content
-    )
+    content = re.sub(r"class (\w+)\(MCPHardenedMixin, ([^)]*LICAgentBase[^)]*)\):", r"class \1(\2):", content)
 
     # Remove HealerMixin from class definitions if LICAgentBase is present
     content = re.sub(
@@ -124,7 +115,7 @@ def main():
         "LicS2SupervisorAgent.py",
         "LicTemplateOptimizerAgent.py",
         "MessageComplianceAgent.py",
-        "MessageDiversityValidatorAgent.py",
+        "MessageDiversityValidator.py",
         "OutreachLearningAgent.py",
         "OutreachProactiveAgent.py",
         "OutreachValidationExecutorAgent.py",

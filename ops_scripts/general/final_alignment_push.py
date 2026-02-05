@@ -38,7 +38,7 @@ OUTREACH_AGENT_FILES = [
 # Files with missing mixin imports
 MIXIN_FILES = [
     "LicS2SupervisorAgent.py",
-    "MessageDiversityValidatorAgent.py",
+    "MessageDiversityValidator.py",
     "OutreachSignalRouterAgent.py",
     "OutreachValidationExecutorAgent.py",
     "k1_routing_agent.py",
@@ -67,9 +67,7 @@ Status: DEPRECATED - Do not use in production
 
     # Comment out all code
     lines = content.split("\n")
-    commented_lines = [
-        f"# {line}" if line.strip() and not line.startswith("#") else line for line in lines
-    ]
+    commented_lines = [f"# {line}" if line.strip() and not line.startswith("#") else line for line in lines]
 
     new_content = legacy_header + "\n".join(commented_lines)
 
@@ -127,9 +125,7 @@ def add_mixin_stubs(file_path: Path) -> bool:
 
     stub_code = "\n# STUBS: Legacy mixins (use LICAgentBase instead)\n"
     for stub in stubs_needed:
-        stub_code += (
-            f'class {stub}:\n    """Legacy mixin - use LICAgentBase instead."""\n    pass\n\n'
-        )
+        stub_code += f'class {stub}:\n    """Legacy mixin - use LICAgentBase instead."""\n    pass\n\n'
 
     lines = content.split("\n")
     insert_idx = 0

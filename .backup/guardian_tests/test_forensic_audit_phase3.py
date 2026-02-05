@@ -105,7 +105,7 @@ APPS_VALIDATION_PATTERNS = {
 APPS_LIC_FOCUS = [
     "CampaignBalanceAgent",
     "GovernanceShieldAgent",
-    "MessageDiversityValidatorAgent",
+    "MessageDiversityValidator",
     "OutreachProactiveAgent",
     "TwoPhaseDeduplicationAgent",
     "ValidatorAgent",
@@ -408,16 +408,12 @@ class TestForensicAuditPhase3:
     def test_apps_lic_discovered(self):
         """Test that apps_lic agents are discovered."""
         result = run_phase3_audit(PROJECT_ROOT)
-        assert result.apps_lic_count >= 20, (
-            f"Expected 20+ apps_lic agents, got {result.apps_lic_count}"
-        )
+        assert result.apps_lic_count >= 20, f"Expected 20+ apps_lic agents, got {result.apps_lic_count}"
 
     def test_apps_rg_discovered(self):
         """Test that apps_rg agents are discovered."""
         result = run_phase3_audit(PROJECT_ROOT)
-        assert result.apps_rg_count >= 10, (
-            f"Expected 10+ apps_rg agents, got {result.apps_rg_count}"
-        )
+        assert result.apps_rg_count >= 10, f"Expected 10+ apps_rg agents, got {result.apps_rg_count}"
 
     def test_apps_shared_discovered(self):
         """Test that apps_shared agents are discovered."""
@@ -507,9 +503,7 @@ def test_forensic_audit_phase3():
     print(report)
 
     # Assertions
-    assert result.total_apps_agents >= 30, (
-        f"Expected 30+ apps agents, found {result.total_apps_agents}"
-    )
+    assert result.total_apps_agents >= 30, f"Expected 30+ apps agents, found {result.total_apps_agents}"
 
     print("\n✅ Phase 3 Apps Layer Detection: PASSED")
     print(f"   Scanned {result.total_apps_agents} apps layer agents")

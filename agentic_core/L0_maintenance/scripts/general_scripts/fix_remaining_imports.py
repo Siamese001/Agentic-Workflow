@@ -3,7 +3,7 @@ Fix remaining imports
 """
 
 files = [
-    "apps_lic/engines/MessageDiversityValidatorAgent.py",
+    "apps_lic/engines/MessageDiversityValidator.py",
     "apps_lic/engines/OutreachLearningAgent.py",
     "apps_lic/engines/OutreachProactiveAgent.py",
     "apps_lic/engines/OutreachSignalRouterAgent.py",

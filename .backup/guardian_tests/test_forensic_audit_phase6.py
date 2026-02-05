@@ -6,7 +6,7 @@ This module provides deep-dive analysis of specific apps layer agents
 identified as high-risk for AI-Checking-AI violations.
 
 Focus Agents:
-- apps_lic: CampaignBalanceAgent, GovernanceShieldAgent, MessageDiversityValidatorAgent
+- apps_lic: CampaignBalanceAgent, GovernanceShieldAgent, MessageDiversityValidator
 - apps_rg: ATSCompatibilityAgent, BrandComplianceAgent, ContentQualityAgent
 - apps_shared: DuplicateCodeDetectorAgent, SecurityLevelAgent
 
@@ -58,7 +58,7 @@ class Phase6AuditResult:
 APPS_LIC_FOCUS_AGENTS = [
     "CampaignBalanceAgent",
     "GovernanceShieldAgent",
-    "MessageDiversityValidatorAgent",
+    "MessageDiversityValidator",
     "OutreachProactiveAgent",
     "TwoPhaseDeduplicationAgent",
     "ValidatorAgent",
@@ -167,26 +167,22 @@ def generate_recommendations(analysis: FocusAgentAnalysis) -> list[str]:
 
     if analysis.has_llm_calls:
         recommendations.append(
-            "CRITICAL: Remove LLM calls from validation logic. "
-            "Replace with deterministic Guardian tests."
+            "CRITICAL: Remove LLM calls from validation logic. Replace with deterministic Guardian tests."
         )
 
     if analysis.has_validation_methods and not analysis.has_guardian_test:
         recommendations.append(
-            f"Create Guardian tests for validation methods: "
-            f"{', '.join(analysis.validation_methods[:3])}"
+            f"Create Guardian tests for validation methods: {', '.join(analysis.validation_methods[:3])}"
         )
 
     if not analysis.has_guardian_test:
         recommendations.append(
-            f"Add tests/guardian/test_{analysis.agent_name.lower()}.py "
-            "with deterministic validation tests."
+            f"Add tests/guardian/test_{analysis.agent_name.lower()}.py with deterministic validation tests."
         )
 
     if analysis.has_heal_repository and not analysis.has_guardian_test:
         recommendations.append(
-            "heal_repository should invoke Guardian tests via subprocess "
-            "instead of inline validation."
+            "heal_repository should invoke Guardian tests via subprocess instead of inline validation."
         )
 
     return recommendations
@@ -332,11 +328,7 @@ def generate_phase6_report(result: Phase6AuditResult) -> str:
 
         for analysis in territory_analyses:
             risk_icon = (
-                "🔴"
-                if analysis.risk_level == "HIGH"
-                else "🟡"
-                if analysis.risk_level == "MEDIUM"
-                else "🟢"
+                "🔴" if analysis.risk_level == "HIGH" else "🟡" if analysis.risk_level == "MEDIUM" else "🟢"
             )
             guardian_icon = "✅" if analysis.has_guardian_test else "❌"
 

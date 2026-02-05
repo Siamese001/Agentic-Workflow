@@ -159,7 +159,7 @@ class Wave9IntegritySimulation:
 
     def phase2_cross_domain_handoff(self) -> SimulationResult:
         """
-        Force a hand-off from RgResumeOrchestratorAgent to LIC OutreachPhase5OrchestratorAgent.
+        Force a hand-off from RgResumeOrchestrator to LIC OutreachPhase5Orchestrator.
         Capture any ImportError or AttributeError from PascalCase renames.
         """
         LOGGER.info("=" * 60)
@@ -174,49 +174,45 @@ class Wave9IntegritySimulation:
             "identity_resolution": {},
         }
 
-        # Step 1: Verify RgResumeOrchestratorAgent file exists and class is defined
+        # Step 1: Verify RgResumeOrchestrator file exists and class is defined
         try:
-            rg_file = PROJECT_ROOT / "apps_rg" / "engines" / "RgResumeOrchestratorAgent.py"
+            rg_file = PROJECT_ROOT / "apps_rg" / "engines" / "RgResumeOrchestrator.py"
             if rg_file.exists():
                 content = rg_file.read_text(encoding="utf-8")
-                if "class RgResumeOrchestratorAgent" in content and "RGAgentBase" in content:
+                if "class RgResumeOrchestrator" in content and "RGAgentBase" in content:
                     details["rg_orchestrator_instantiated"] = True
-                    details["rg_orchestrator_class"] = "RgResumeOrchestratorAgent"
+                    details["rg_orchestrator_class"] = "RgResumeOrchestrator"
                     details["rg_inherits_correctly"] = True
-                    LOGGER.info("✓ RgResumeOrchestratorAgent verified (inherits RGAgentBase)")
+                    LOGGER.info("✓ RgResumeOrchestrator verified (inherits RGAgentBase)")
                 else:
-                    errors.append("RgResumeOrchestratorAgent missing RGAgentBase inheritance")
-                    LOGGER.error("✗ RgResumeOrchestratorAgent missing proper inheritance")
+                    errors.append("RgResumeOrchestrator missing RGAgentBase inheritance")
+                    LOGGER.error("✗ RgResumeOrchestrator missing proper inheritance")
             else:
-                errors.append("RgResumeOrchestratorAgent.py file not found")
-                LOGGER.error("✗ RgResumeOrchestratorAgent.py not found")
+                errors.append("RgResumeOrchestrator.py file not found")
+                LOGGER.error("✗ RgResumeOrchestrator.py not found")
         except Exception as e:
-            errors.append(f"RgResumeOrchestratorAgent Exception: {e}")
-            LOGGER.error(f"✗ RgResumeOrchestratorAgent verification error: {e}")
+            errors.append(f"RgResumeOrchestrator Exception: {e}")
+            LOGGER.error(f"✗ RgResumeOrchestrator verification error: {e}")
 
-        # Step 2: Verify OutreachPhase5OrchestratorAgent file exists and class is defined
+        # Step 2: Verify OutreachPhase5Orchestrator file exists and class is defined
         try:
-            lic_file = PROJECT_ROOT / "apps_lic" / "engines" / "OutreachPhase5OrchestratorAgent.py"
+            lic_file = PROJECT_ROOT / "apps_lic" / "engines" / "OutreachPhase5Orchestrator.py"
             if lic_file.exists():
                 content = lic_file.read_text(encoding="utf-8")
-                if "class OutreachPhase5OrchestratorAgent" in content and "LICAgentBase" in content:
+                if "class OutreachPhase5Orchestrator" in content and "LICAgentBase" in content:
                     details["lic_orchestrator_instantiated"] = True
-                    details["lic_orchestrator_class"] = "OutreachPhase5OrchestratorAgent"
+                    details["lic_orchestrator_class"] = "OutreachPhase5Orchestrator"
                     details["lic_inherits_correctly"] = True
-                    LOGGER.info(
-                        "✓ OutreachPhase5OrchestratorAgent verified (inherits LICAgentBase)"
-                    )
+                    LOGGER.info("✓ OutreachPhase5Orchestrator verified (inherits LICAgentBase)")
                 else:
-                    errors.append(
-                        "OutreachPhase5OrchestratorAgent missing LICAgentBase inheritance"
-                    )
-                    LOGGER.error("✗ OutreachPhase5OrchestratorAgent missing proper inheritance")
+                    errors.append("OutreachPhase5Orchestrator missing LICAgentBase inheritance")
+                    LOGGER.error("✗ OutreachPhase5Orchestrator missing proper inheritance")
             else:
-                errors.append("OutreachPhase5OrchestratorAgent.py file not found")
-                LOGGER.error("✗ OutreachPhase5OrchestratorAgent.py not found")
+                errors.append("OutreachPhase5Orchestrator.py file not found")
+                LOGGER.error("✗ OutreachPhase5Orchestrator.py not found")
         except Exception as e:
-            errors.append(f"OutreachPhase5OrchestratorAgent Exception: {e}")
-            LOGGER.error(f"✗ OutreachPhase5OrchestratorAgent verification error: {e}")
+            errors.append(f"OutreachPhase5Orchestrator Exception: {e}")
+            LOGGER.error(f"✗ OutreachPhase5Orchestrator verification error: {e}")
 
         # Step 3: Simulate hand-off
         if self.rg_orchestrator and self.lic_orchestrator:
@@ -339,8 +335,8 @@ class Wave9IntegritySimulation:
             "apps_rg/shared/core/RGAgentBase.py",
             "apps_lic/shared/core/LICAgentBase.py",
             "agentic_core/L3_orchestration/workflow_engines/NervousSystemAgent.py",
-            "apps_rg/engines/RgResumeOrchestratorAgent.py",
-            "apps_lic/engines/OutreachPhase5OrchestratorAgent.py",
+            "apps_rg/engines/RgResumeOrchestrator.py",
+            "apps_lic/engines/OutreachPhase5Orchestrator.py",
         ]
         details["batch_8_6_files"] = batch_8_6_files
 
@@ -388,10 +384,7 @@ class Wave9IntegritySimulation:
                 LOGGER.warning(f"  ⚠ Missing: {file_path}")
 
         # Determine phase status
-        if (
-            details["impact_radius_computed"]
-            and details["architecture_governor_status"] == "INTEGRATED"
-        ):
+        if details["impact_radius_computed"] and details["architecture_governor_status"] == "INTEGRATED":
             status = "SUCCESS"
             message = "Impact radius validation complete, architecture governor active"
         elif errors:
@@ -461,9 +454,7 @@ class Wave9IntegritySimulation:
                 ]
 
             if "identity_resolution" in result.details:
-                phase_data["key_findings"]["identity_resolution"] = result.details[
-                    "identity_resolution"
-                ]
+                phase_data["key_findings"]["identity_resolution"] = result.details["identity_resolution"]
 
             report["phases"].append(phase_data)
 
