@@ -119,7 +119,7 @@ def test_subatomic_agent_heal_invalid_input():
         except Exception as e:
             # If it raises an exception, that's also acceptable
             # as long as it's documented behavior
-            assert isinstance(e, (TypeError, AttributeError))
+            assert isinstance(e, TypeError | AttributeError)
 
 
 def test_phase3_completion_criteria():

@@ -429,7 +429,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             return "VAR"
         elif isinstance(node, ast.Constant):
             return f"CONST_{type(node.value).__name__}"
-        elif isinstance(node, (ast.Num, ast.Str)):
+        elif isinstance(node, ast.Num | ast.Str):
             return "CONST"
         children = [self._normalize_ast_tree(child) for child in ast.iter_child_nodes(node)]
         return f"{type(node).__name__}({'|'.join(children)})" if children else type(node).__name__

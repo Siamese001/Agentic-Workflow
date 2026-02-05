@@ -160,7 +160,7 @@ class TestCrossDomainIntegration:
         # Verify isolation
         for domain in domains:
             signature = test_data[domain]["signature"]
-            expected = test_data[domain]["result"]
+            test_data[domain]["result"]
 
             # Should get correct domain data
             cached = client.cache_get(f"domain_test:{signature}", domain)
@@ -437,7 +437,7 @@ class TestRollbackProcedures:
         )
 
         # Get initial instance
-        client1 = get_meta_learning_client()
+        get_meta_learning_client()
 
         # Reset singletons
         MetaLearningClient.reset_instance()

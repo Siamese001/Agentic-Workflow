@@ -69,7 +69,7 @@ def test_function():
 
 class TestClass:
     """Test class."""
-    
+
     def test_method(self):
         """Test method."""
         pass

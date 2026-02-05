@@ -204,10 +204,10 @@ class GlobalMutationDetector(AntiPatternDetector):
 
     # Option 1: Set PYTHONPATH before running
     # export PYTHONPATH=/path/to/project:$PYTHONPATH
-    
+
     # Option 2: Use pyproject.toml or setup.py for package installation
     # pip install -e .
-    
+
     # Option 3: Use absolute imports from project root
     from agentic_core.module import function"""
 
@@ -216,11 +216,11 @@ class GlobalMutationDetector(AntiPatternDetector):
 
     # Option 1: Use environment variables at startup
     # Set in .env file or shell profile
-    
+
     # Option 2: Use AgentDefaults for configuration
     from agentic_core.config.agent_defaults import AgentDefaults
     value = AgentDefaults.get("CONFIG_NAME", "default")
-    
+
     # Option 3: Pass configuration through function parameters
     def my_function(config_value: str = None):
         config_value = config_value or os.getenv("CONFIG_NAME", "default")"""

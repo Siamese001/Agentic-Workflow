@@ -50,7 +50,7 @@ class AnalysisMixin:
                 continue
 
             # Handle numeric values
-            if all(isinstance(v, (int, float)) for v in values):
+            if all(isinstance(v, int | float) for v in values):
                 results[key] = {
                     "count": len(values),
                     "mean": statistics.mean(values),
@@ -151,8 +151,8 @@ class AnalysisMixin:
             results["common"] = list(keys_a & keys_b)
         else:
             # Direct comparison
-            is_hashable_a = all(isinstance(x, (str, int, float)) for x in dataset_a)
-            is_hashable_b = all(isinstance(x, (str, int, float)) for x in dataset_b)
+            is_hashable_a = all(isinstance(x, str | int | float) for x in dataset_a)
+            is_hashable_b = all(isinstance(x, str | int | float) for x in dataset_b)
             set_a = set(dataset_a) if is_hashable_a else None
             set_b = set(dataset_b) if is_hashable_b else None
 

@@ -119,7 +119,7 @@ class SilentSwallowerDetector(AntiPatternDetector):
             elif isinstance(stmt, ast.Return):
                 # Check if returning False, None, or error dict
                 has_return = True
-                if isinstance(stmt.value, (ast.Constant, ast.NameConstant)):
+                if isinstance(stmt.value, ast.Constant | ast.NameConstant):
                     if stmt.value.value in (False, None):
                         has_proper_handling = True
                 elif isinstance(stmt.value, ast.Dict):

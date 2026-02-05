@@ -36,9 +36,9 @@ class MyClass:
         except:
             pass
 
-def helper_function():   
+def helper_function():
     """Helper function."""
-    x = 1   
+    x = 1
     return x
 '''
 
@@ -95,7 +95,7 @@ import os  # Inline comment
 
 class TestClass:
     """Class with 'quotes' and "double quotes"."""
-    
+
     # Method comment
     def method(self, arg1, arg2):
         """Method docstring."""
@@ -355,20 +355,20 @@ class MyClass:
         source_code = """def test():
     # List comprehension
     a = [x for x in range(10) if x % 2 == 0]
-    
+
     # Dict comprehension
     b = {k: v for k, v in items.items()}
-    
+
     # Generator expression
     c = (x * 2 for x in range(5))
-    
+
     # Lambda
     d = lambda x, y: x + y
-    
+
     # Walrus operator
     if (n := len(a)) > 5:
         pass
-    
+
     try:
         pass
     except:

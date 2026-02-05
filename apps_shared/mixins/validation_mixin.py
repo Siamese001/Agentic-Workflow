@@ -52,7 +52,7 @@ class ValidationMixin:
                 issues = result.get("issues", [])
                 suggestions = result.get("suggestions", [])
                 metadata = result.get("metadata", {})
-            elif isinstance(result, (list, tuple)):
+            elif isinstance(result, list | tuple):
                 issues = list(result)
             elif isinstance(result, bool):
                 passed = result

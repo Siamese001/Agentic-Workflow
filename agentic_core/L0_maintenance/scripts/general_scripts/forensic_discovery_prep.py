@@ -188,7 +188,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
                 s += 5
             # prefer presence of heal/execute/run methods
             method_names = [
-                i.name for i in cls.body if isinstance(i, (ast.FunctionDef, ast.AsyncFunctionDef))
+                i.name for i in cls.body if isinstance(i, ast.FunctionDef | ast.AsyncFunctionDef)
             ]
             if "heal" in method_names:
                 s += 20
@@ -209,7 +209,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
             record.selection_reason = "Selected highest-scoring ClassDef deterministically"
 
             for item in chosen.body:
-                if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                     record.methods_detected.append(item.name)
             record.has_heal = "heal" in record.methods_detected
 

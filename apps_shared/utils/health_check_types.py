@@ -136,7 +136,7 @@ class HealthChecker:
         results: list[CheckResult] = []
         overall_status = HealthStatus.HEALTHY
 
-        for name, (check_fn, critical) in self._checks.items():
+        for name, (_check_fn, critical) in self._checks.items():
             result = self.run_check(name)
             if result:
                 results.append(result)

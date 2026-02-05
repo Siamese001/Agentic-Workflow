@@ -282,7 +282,6 @@ class Wave9IntegritySimulation:
 
     def _get_random_domain_agents(self, count: int) -> list[tuple[str, str]]:
         """Get random sample of LIC/RG agents for identity verification."""
-        agents = []
         lic_engines = list(PROJECT_ROOT.glob("apps_lic/engines/*.py"))
         rg_engines = list(PROJECT_ROOT.glob("apps_rg/engines/*.py"))
 

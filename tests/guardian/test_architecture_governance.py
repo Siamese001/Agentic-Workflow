@@ -60,7 +60,7 @@ class ArchitectureGovernanceValidator:
                 return []
 
             for node in ast.walk(tree):
-                if isinstance(node, (ast.Import, ast.ImportFrom)):
+                if isinstance(node, ast.Import | ast.ImportFrom):
                     if isinstance(node, ast.ImportFrom) and node.module:
                         module_parts = node.module.split(".")
 

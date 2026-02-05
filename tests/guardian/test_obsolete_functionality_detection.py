@@ -281,7 +281,7 @@ class TestObsoleteFunctionalityDetection:
             # Check each import with AST verification
             broken_imports = []
             valid_imports = []
-            for import_type, module_name, lineno in imports:
+            for _import_type, module_name, lineno in imports:
                 try:
                     # Try to find the module spec (doesn't execute the module)
                     spec = importlib.util.find_spec(module_name.split(".")[0])
@@ -548,7 +548,7 @@ class TestObsoleteFunctionalityDetection:
                 print(f"\n  {base_name} ({len(files_and_phases)} phase files):")
                 phases = [p for _, p in files_and_phases]
                 print(f"    Phases: {phases}")
-                for file_path, phase_num in files_and_phases[:5]:
+                for file_path, _phase_num in files_and_phases[:5]:
                     rel_path = str(file_path.relative_to(project_root))
                     print(f"    - {rel_path}")
                 if len(files_and_phases) > 5:

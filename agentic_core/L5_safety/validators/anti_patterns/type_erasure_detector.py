@@ -98,14 +98,14 @@ class TypeErasureDetector(AntiPatternDetector):
 
                 # Check methods in the class
                 for item in node.body:
-                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                         violation = self._check_function(item, file_path, source_lines, node.name)
                         if violation:
                             violations.append(violation)
 
             # Also check module-level functions if not limiting to agent classes
             elif not self.check_agent_classes_only:
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                     # Skip if inside a class (already handled above)
                     violation = self._check_function(node, file_path, source_lines, None)
                     if violation:
@@ -228,7 +228,7 @@ class TypeErasureDetector(AntiPatternDetector):
         if "heal" in method_name.lower():
             return """Use HealResult dataclass:
     from agentic_core.schemas.models.heal_result import HealResult, HealStatus
-    
+
     def heal(self, violation: dict) -> HealResult:
         return HealResult(
             violations_found=1,
@@ -238,13 +238,13 @@ class TypeErasureDetector(AntiPatternDetector):
 
         return f"""Replace {return_type} with a structured type:
     from dataclasses import dataclass
-    
+
     @dataclass
     class {method_name.title().replace("_", "")}Result:
         # Define specific fields
         value: str
         status: str
-    
+
     def {method_name}(self, ...) -> {method_name.title().replace("_", "")}Result:
         ..."""
 

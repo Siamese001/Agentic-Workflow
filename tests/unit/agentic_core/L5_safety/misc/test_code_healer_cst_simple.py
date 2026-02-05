@@ -45,11 +45,11 @@ import json  # JSON operations
 
 class TestClass:
     """Class docstring."""
-    
+
     def method(self):
         # Important comment inside method
         return os.getcwd()
-        
+
 # End of file comment
 '''
 
@@ -100,7 +100,7 @@ class TestClass:
 
             # Apply CST-based healing
             healer = SurgicalCSTHealerMixin()
-            result = healer.heal_surgical_cst(context)
+            healer.heal_surgical_cst(context)
 
             # Read the healed file
             healed_content = temp_path.read_text(encoding="utf-8")
@@ -173,7 +173,7 @@ def test():
 
             # Apply CST-based healing
             healer = SurgicalCSTHealerMixin()
-            result = healer.heal_surgical_cst(context)
+            healer.heal_surgical_cst(context)
 
             # File should be unchanged
             healed_content = temp_path.read_text(encoding="utf-8")
@@ -194,7 +194,7 @@ class      TestClass:  # More weird spacing
     """  # Docstring with weird spacing
     This has weird formatting.
     """
-    
+
     def method(self):
         # Comment with    extra spaces
         pass
@@ -239,7 +239,7 @@ class      TestClass:  # More weird spacing
 
             # Apply CST-based healing
             healer = SurgicalCSTHealerMixin()
-            result = healer.heal_surgical_cst(context)
+            healer.heal_surgical_cst(context)
 
             # Read healed content
             healed_content = temp_path.read_text(encoding="utf-8")

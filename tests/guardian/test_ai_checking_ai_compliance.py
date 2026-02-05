@@ -130,7 +130,7 @@ def test_ai_checking_ai_compliance() -> None:
         print("=" * 70)
         print("❌ CONSTITUTIONAL COMPLIANCE: FAILED")
         print("=" * 70)
-        assert False, f"Found {violations_found} AI-checking-AI violations"
+        raise AssertionError(f"Found {violations_found} AI-checking-AI violations")
     else:
         print("✅ No AI-checking-AI patterns detected")
         print()

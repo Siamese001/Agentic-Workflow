@@ -38,11 +38,11 @@ class      BadName:  # Inline comment about bad name
     """  # Docstring with weird spacing
     This class has a bad name that needs fixing.
     """
-    
+
     def method(self):  # Method comment
         # Method body comment
         pass  # End of method
-    
+
     # Another method comment
     def another_method(self):
         return "test"  # Return comment

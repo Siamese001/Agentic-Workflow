@@ -12,10 +12,10 @@ CONSTITUTIONAL DESIGN PRINCIPLES:
 =================================
 
 1. STRICT OBSOLESCENCE PROTOCOL (2026-02-04):
-   "No file deletion shall occur based on naming conventions. Deletion requires an 
-   AST-based 'zero-reference' verification across the apps_lic, apps_rg, and 
+   "No file deletion shall occur based on naming conventions. Deletion requires an
+   AST-based 'zero-reference' verification across the apps_lic, apps_rg, and
    apps_shared directories."
-   
+
    - NEVER delete files based on filename patterns (e.g., "phase1", "phase2")
    - Use AST analysis to verify ALL imports are broken
    - Use fuzzy matching to detect renamed/moved modules
@@ -23,15 +23,15 @@ CONSTITUTIONAL DESIGN PRINCIPLES:
    - Only mark obsolete if: ALL imports broken AND no test classes/functions exist
 
 2. TEST LAYERING PRINCIPLE (2026-02-04):
-   "Guardian scripts are strictly for runtime validation and agentic healing; 
+   "Guardian scripts are strictly for runtime validation and agentic healing;
    they do not fulfill the requirement for 100% coverage in the /tests directory."
-   
+
    - Guardian tests (tests/guardian/) = Architectural compliance validation
    - Unit tests (tests/unit/) = Functional correctness
 
 3. STRUCTURAL INVARIANT (2026-02-05):
    "Files allowed ONLY in leaf nodes (directories with no subfolders)."
-   
+
    - Branch nodes (folders with subdirectories) must contain ONLY subdirectories
    - Leaf nodes (folders with no subdirectories) contain the actual files
    - Exceptions: __init__.py, README.md, .gitignore, pyproject.toml, py.typed

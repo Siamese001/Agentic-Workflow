@@ -256,7 +256,7 @@ class OpenAIClient:
                 raise ValueError(f"Expected string, got {type(data)}")
 
         elif schema_type == "number":
-            if not isinstance(data, (int, float)):
+            if not isinstance(data, int | float):
                 raise ValueError(f"Expected number, got {type(data)}")
 
         elif schema_type == "boolean":

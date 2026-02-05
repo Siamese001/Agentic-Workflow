@@ -130,7 +130,7 @@ class IntelligenceLibrarianDeterministic:
         # Validate specific filter values
         if "relevance_threshold" in filters:
             threshold = filters["relevance_threshold"]
-            if not isinstance(threshold, (int, float)) or not 0 <= threshold <= 1:
+            if not isinstance(threshold, int | float) or not 0 <= threshold <= 1:
                 issues.append("relevance_threshold must be between 0 and 1")
 
         if "date_range" in filters:

@@ -246,7 +246,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
         def class_score(cls: ast.ClassDef) -> int:
             bases = " ".join(extract_mro_signature(cls))
             methods = [
-                i.name for i in cls.body if isinstance(i, (ast.FunctionDef, ast.AsyncFunctionDef))
+                i.name for i in cls.body if isinstance(i, ast.FunctionDef | ast.AsyncFunctionDef)
             ]
             s = 0
             if "SovereignBaseAgent" in bases or "BaseAgent" in bases:
@@ -299,7 +299,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
 
         # Check Methods
         for item in chosen.body:
-            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                 if item.name in ["execute", "act", "run", "heal"]:
                     report.critical_methods.append(item.name)
                     has_execute_method = True

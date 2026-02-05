@@ -527,12 +527,12 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                 # Count test methods
                 for item in node.body:
-                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                         if item.name.startswith("test_"):
                             test_methods += 1
 
             # Check functions
-            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 # Check for pytest fixtures
                 for decorator in node.decorator_list:
                     if isinstance(decorator, ast.Name) and decorator.id == "fixture":
@@ -596,7 +596,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         has_main_guard = True
 
             # Check functions
-            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 script_names = {"main", "run", "execute", "start", "cli", "script"}
                 if node.name in script_names:
                     script_functions += 1
@@ -699,7 +699,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             for node in ast.walk(tree):
                 # Check in function/class names
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
                     if any(pattern.lower() in node.name.lower() for pattern in patterns):
                         return True
 
@@ -717,7 +717,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             # Check docstrings separately
             for node in ast.walk(tree):
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
                     if (
                         hasattr(node, "doc_string")
                         and node.doc_string
@@ -771,7 +771,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             config_attributes += 1
 
                     # Check for config methods
-                    elif isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    elif isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                         if item.name in ("load", "save", "validate", "configure", "get_setting"):
                             config_methods += 1
 
@@ -817,7 +817,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                 # Check for validation methods
                 for item in node.body:
-                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                         method_name = item.name.lower()
                         if any(
                             word in method_name
@@ -826,7 +826,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             validation_methods += 1
 
             # Check functions
-            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 func_name = node.name.lower()
                 if any(word in func_name for word in ("validate", "check", "verify", "ensure")):
                     check_functions += 1
@@ -892,7 +892,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # Check 4: Method-based detection
         agent_methods = {"execute", "act", "heal", "run"}
         for item in node.body:
-            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                 if item.name in agent_methods:
                     return True
 
