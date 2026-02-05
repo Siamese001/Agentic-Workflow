@@ -1,1 +1,0 @@
-System status: All core MCPs are functional and validated.

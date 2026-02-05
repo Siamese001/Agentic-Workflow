@@ -11,8 +11,8 @@
 data/cache/
 data/tmp/
 data/**/*.bin
-archives/
-!archives/gatekeeper/archival_audit.jsonl
+# [REFACTOR 2026-02-05] Healing backups folder (replaces archives/)
+.healing_backups/
 *.zip
 *.tar.gz
 *.lfs
@@ -47,9 +47,8 @@ cache/               # Unauthorized root folder - strictly ignored
 # Temp extraction folders
 temp_*/              # Automated sprawl - strictly ignored
 
-# [SSOT VIOLATION FIX] Healing backup folders - MUST be gitignored
-# These are created by LocationAgent during healing operations
-# Per SSOT: Only archives/ is the canonical backup location
+# [SSOT VIOLATION FIX] Legacy healing backup folder - deprecated
+# Now using .healing_backups/ as the canonical backup location
 .sovereign_healing_backup/
 
 # [L6 PHYSICS] ARCHITECTURAL NOISE

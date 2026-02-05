@@ -1,6 +1,0 @@
-{
-  "max_function_lines": 50,
-  "architectural_confidence": 1.0,
-  "max_globals_per_file": 0,
-  "max_classes_per_file": 5
-}

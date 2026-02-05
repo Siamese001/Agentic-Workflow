@@ -1,5 +1,14 @@
 from __future__ import annotations
 
+# ruff: noqa: E501, E402
+
+import os
+import re
+from collections.abc import Mapping, Sequence
+from pathlib import Path
+from re import Pattern
+from typing import Any, Final, TypedDict
+
 """
 SOVEREIGN BRAIN: THE MASTER CONSTITUTION
 Enforces Depth-2 for Apps/Tests and Depth-3 for the Agentic Core.
@@ -40,12 +49,6 @@ CONSTITUTIONAL DESIGN PRINCIPLES:
    - Integration tests (tests/integration/) = Component integration
    - Guardian tests are COMPLEMENTARY to unit/e2e tests, NOT replacements
 """
-import os
-import re
-from collections.abc import Mapping, Sequence
-from pathlib import Path
-from re import Pattern
-from typing import Any, Final, TypedDict
 
 # Lock down core mappings to prevent runtime mutation during mission execution
 # [CRITICAL ANALYSIS] Windsurf's initial attempt lacked static enforcement;
@@ -2564,16 +2567,6 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "import_signals": ["compliance"],
         "keyword_signals": ["compliance", "report", "audit", "coverage"],
         "weight": 7,
-    },
-    # Schemas placements
-    "agentic_core/schemas/models": {
-        "class_patterns": [".*Model$", ".*schema$", ".*DTO$"],
-        "base_classes": ["BaseModel", "pydantic.BaseModel"],
-        "function_patterns": [],
-        "import_signals": ["pydantic", "dataclasses"],
-        "keyword_signals": ["model", "schema", "dto", "dataclass"],
-        "decorator_signals": ["@dataclass"],
-        "weight": 10,
     },
     # Prompt governance placements
     "agentic_core/prompt_governance/templates": {

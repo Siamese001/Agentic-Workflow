@@ -1,4 +1,0 @@
-  File "C:\Git\Agentic-Workflow\canon_validator.py", line 2516
-    "plans": dict(self.ctx.refactor_plans),
-    ^^^^^^^
-SyntaxError: illegal target for annotation

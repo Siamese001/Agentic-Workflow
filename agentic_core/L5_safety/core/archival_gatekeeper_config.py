@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+# ruff: noqa: E501, E402
+
 """
 ArchivalGatekeeper - Centralized Service for Destructive File Operations
 
@@ -100,9 +102,9 @@ class ArchivalGatekeeper:
     _lock: threading.Lock = threading.Lock()
     _log_lock: threading.Lock = threading.Lock()
 
-    # Archive folder structure - MUST use SSOT-approved 'archives' folder
-    # Reference: structure_blueprint.py -> ARCHIVES_DIR, SOVEREIGN_EXCLUDED_FOLDERS
-    ARCHIVE_ROOT_NAME = ARCHIVES_DIR
+    # Archive folder structure - uses .healing_backups/ (gitignored, not indexed)
+    # [REFACTOR 2026-02-05] Changed from archives/ to .healing_backups/
+    ARCHIVE_ROOT_NAME = ARCHIVES_DIR  # Now resolves to ".healing_backups"
     ARCHIVE_SUBDIR = "gatekeeper"  # Subdirectory within archives for gatekeeper operations
     AUDIT_LOG_NAME = "archival_audit.jsonl"
 
@@ -116,7 +118,7 @@ class ArchivalGatekeeper:
             project_root: Root directory of the project
         """
         self.project_root = Path(project_root).resolve()
-        # Use SSOT-approved 'archives/gatekeeper' path
+        # Use .healing_backups/gatekeeper path (gitignored, not indexed)
         self.archive_root = self.project_root / self.ARCHIVE_ROOT_NAME / self.ARCHIVE_SUBDIR
         self.audit_log_path = self.archive_root / self.AUDIT_LOG_NAME
         self._operation_count = 0

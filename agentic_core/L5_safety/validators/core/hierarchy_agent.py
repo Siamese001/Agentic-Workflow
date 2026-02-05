@@ -3,6 +3,8 @@
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
 
+# ruff: noqa: E501, E402, F811
+
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
@@ -96,8 +98,8 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         self.healing_enabled = healing_enabled
         self.ctx = ctx
         self.protected_folders = SOVEREIGN_EXCLUDED_FOLDERS
-        # [SSOT] 'archives' is a protected folder in SOVEREIGN_EXCLUDED_FOLDERS
-        self.archive_root = project_root / "archives" / "hierarchy_violations"
+        # [REFACTOR 2026-02-05] Changed from archives/ to .healing_backups/ (gitignored, not indexed)
+        self.archive_root = project_root / ".healing_backups" / "hierarchy_violations"
 
         # Initialize ArchivalGatekeeper for safe file operations
         # [PHASE 33j] Gatekeeper is the SINGLE POINT OF APPROVAL
@@ -1372,7 +1374,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         Detects:
         1. Forbidden folders at project root (scripts/, logs/, coverage_html/)
-        2. .archived files at project root (should be in archives/)
+        2. .archived files at project root (should be in .healing_backups/)
         3. Files sitting in territory root instead of SSOT subfolders
 
         Args:
@@ -1413,7 +1415,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             if results["archived_files_at_root"]:
                 Logger.warning(
-                    f"   [!] {len(results['archived_files_at_root'])} archived files at root (should be in archives/)"
+                    f"   [!] {len(results['archived_files_at_root'])} archived files at root (should be in .healing_backups/)"
                 )
 
         # Phase 2: Territory root violation scanning (Ultra-hardened)
@@ -1472,7 +1474,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         Heal root directory SSOT violations.
 
         Actions:
-        1. Move .archived files to archives/root_archived/
+        1. Move .archived files to .healing_backups/root_archived/
         2. [DEPRECATED] scripts/ and logs/ are now valid roots (no merge)
         3. Add coverage_html/ to .gitignore or move to reports/
 
@@ -1498,8 +1500,8 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
             results["message"] = "No root violations to heal"
             return results
 
-        # 1. Move .archived files to archives/root_archived/
-        archives_dir = self.project_root / "archives" / "root_archived"
+        # 1. Move .archived files to .healing_backups/root_archived/
+        archives_dir = self.project_root / ".healing_backups" / "root_archived"
         if not dry_run:
             archives_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1523,7 +1525,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     if gk_result.success:
                         action["applied"] = True
                         results["archived_files_moved"] += 1
-                        Logger.info(f"   [✓] MOVED: {filename} -> archives/root_archived/")
+                        Logger.info(f"   [✓] MOVED: {filename} -> .healing_backups/root_archived/")
                     elif gk_result.approval_status == "DENIED":
                         Logger.info(f"   [SKIPPED] User declined: {filename}")
                     else:
