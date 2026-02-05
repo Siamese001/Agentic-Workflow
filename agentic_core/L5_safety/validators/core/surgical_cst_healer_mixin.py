@@ -9,23 +9,24 @@ This is the CST Pivot implementation to prevent data loss.
 
 from __future__ import annotations
 
-import libcst as cst
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
+import libcst as cst
+
+from .cst_transformers import (
+    create_bare_except_fixer,
+    create_blank_line_normalizer,
+    create_docstring_inserter,
+    create_future_import_inserter,
+    create_import_remover,
+    create_trailing_whitespace_fixer,
+    create_type_hint_inserter,
+)
 from .surgical_context import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
-)
-from .cst_transformers import (
-    create_import_remover,
-    create_docstring_inserter,
-    create_bare_except_fixer,
-    create_future_import_inserter,
-    create_trailing_whitespace_fixer,
-    create_blank_line_normalizer,
-    create_type_hint_inserter,
 )
 
 
@@ -36,8 +37,8 @@ class CSTModification:
     node_type: str
     line_number: int
     operation: str  # "insert", "delete", "replace"
-    new_content: Optional[str] = None
-    old_content: Optional[str] = None
+    new_content: str | None = None
+    old_content: str | None = None
 
 
 class SurgicalCSTTransformer(cst.CSTTransformer):
@@ -46,7 +47,7 @@ class SurgicalCSTTransformer(cst.CSTTransformer):
     def __init__(self, context: SurgicalContext):
         self.context = context
         self.modifications_made = 0
-        self.modifications: List[CSTModification] = []
+        self.modifications: list[CSTModification] = []
 
         # Convert violations to CST modifications
         self._prepare_modifications()
@@ -177,7 +178,7 @@ class SurgicalCSTHealerMixin:
     and formatting while applying precise surgical modifications.
     """
 
-    def heal_surgical_cst(self, context: SurgicalContext) -> Dict[str, Any]:
+    def heal_surgical_cst(self, context: SurgicalContext) -> dict[str, Any]:
         """
         Perform surgical healing using LibCST for zero-loss modifications.
 
@@ -314,7 +315,7 @@ class SurgicalCSTHealerMixin:
                 ],
             }
 
-    def _create_cst_insertion_node(self, violation: ViolationConstraint) -> Optional[cst.CSTNode]:
+    def _create_cst_insertion_node(self, violation: ViolationConstraint) -> cst.CSTNode | None:
         """Create CST node for insertion."""
         if violation.constraint_type == "missing_file_classification":
             # Create a comment statement
@@ -325,7 +326,7 @@ class SurgicalCSTHealerMixin:
 
     def _find_cst_node_by_coordinate(
         self, tree: cst.Module, coordinate: ASTCoordinate
-    ) -> Optional[cst.CSTNode]:
+    ) -> cst.CSTNode | None:
         """Find CST node at specific coordinate."""
 
         class CoordinateFinder(cst.CSTVisitor):
@@ -391,7 +392,7 @@ class SurgicalCSTHealerMixin:
         }
         return mapping.get(constraint_type, "modify_function")  # Default fallback
 
-    def _extract_target_node(self, violation: ViolationConstraint) -> Optional[str]:
+    def _extract_target_node(self, violation: ViolationConstraint) -> str | None:
         """Extract target node name from violation for verification."""
         if hasattr(violation, "target_node") and violation.target_node:
             return violation.target_node

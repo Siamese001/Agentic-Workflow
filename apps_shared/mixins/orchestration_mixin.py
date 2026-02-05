@@ -5,9 +5,10 @@ Provides common orchestration workflow patterns for agents.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Callable
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
 
 class WorkflowStatus(Enum):
@@ -27,10 +28,10 @@ class WorkflowStep:
     name: str
     func: Callable
     args: tuple = field(default_factory=tuple)
-    kwargs: Dict[str, Any] = field(default_factory=dict)
+    kwargs: dict[str, Any] = field(default_factory=dict)
     status: WorkflowStatus = WorkflowStatus.PENDING
     result: Any = None
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class OrchestrationMixin:
@@ -43,10 +44,10 @@ class OrchestrationMixin:
 
     def execute_workflow(
         self,
-        steps: List[WorkflowStep],
+        steps: list[WorkflowStep],
         stop_on_failure: bool = True,
         rollback_on_failure: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Execute a multi-step workflow with error handling.
 
@@ -89,7 +90,7 @@ class OrchestrationMixin:
 
         return results
 
-    def _rollback_steps(self, steps: List[WorkflowStep]) -> None:
+    def _rollback_steps(self, steps: list[WorkflowStep]) -> None:
         """
         Rollback completed steps in reverse order.
 
@@ -105,8 +106,8 @@ class OrchestrationMixin:
                         self.log(f"Rollback failed for {step.name}: {e}")
 
     def orchestrate_parallel(
-        self, tasks: List[tuple[str, Callable, tuple, Dict[str, Any]]]
-    ) -> Dict[str, Any]:
+        self, tasks: list[tuple[str, Callable, tuple, dict[str, Any]]]
+    ) -> dict[str, Any]:
         """
         Orchestrate parallel task execution.
 
@@ -130,8 +131,8 @@ class OrchestrationMixin:
         return results
 
     def coordinate_agents(
-        self, agent_tasks: Dict[str, Callable], dependencies: Optional[Dict[str, List[str]]] = None
-    ) -> Dict[str, Any]:
+        self, agent_tasks: dict[str, Callable], dependencies: dict[str, list[str]] | None = None
+    ) -> dict[str, Any]:
         """
         Coordinate multiple agents with dependency management.
 
@@ -177,7 +178,7 @@ class OrchestrationMixin:
 
         return {"agents": results, "errors": errors, "completed": list(completed)}
 
-    def create_checkpoint(self, state: Dict[str, Any], checkpoint_id: str) -> None:
+    def create_checkpoint(self, state: dict[str, Any], checkpoint_id: str) -> None:
         """
         Create a checkpoint of current state.
 
@@ -189,7 +190,7 @@ class OrchestrationMixin:
             self._checkpoints = {}
         self._checkpoints[checkpoint_id] = state.copy()
 
-    def restore_checkpoint(self, checkpoint_id: str) -> Optional[Dict[str, Any]]:
+    def restore_checkpoint(self, checkpoint_id: str) -> dict[str, Any] | None:
         """
         Restore state from checkpoint.
 

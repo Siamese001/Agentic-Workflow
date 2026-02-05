@@ -15,7 +15,7 @@ import asyncio
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
@@ -36,12 +36,12 @@ class ParityTestResult:
     passed: bool
     legacy_result: Any
     unified_result: Any
-    differences: List[str]
+    differences: list[str]
     execution_time_legacy_ms: float
     execution_time_unified_ms: float
     performance_variance_pct: float
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "passed": self.passed,
@@ -76,7 +76,7 @@ class ParityTestBase(ABC):
         pass
 
     @abstractmethod
-    def get_test_data(self) -> Dict[str, Any]:
+    def get_test_data(self) -> dict[str, Any]:
         """Get test data for agent execution."""
         pass
 
@@ -98,7 +98,7 @@ class ParityTestBase(ABC):
 
     async def execute_unified(
         self, agent: UnifiedAgent, **kwargs: Any
-    ) -> Union[ValidationResult, OrchestrationResult, HealingResult, Dict[str, Any]]:
+    ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Execute unified agent."""
         return await agent.execute(**kwargs)
 
@@ -146,7 +146,7 @@ class ParityTestBase(ABC):
             performance_variance_pct=performance_variance * 100,
         )
 
-    def compare_results(self, legacy: Any, unified: Any) -> List[str]:
+    def compare_results(self, legacy: Any, unified: Any) -> list[str]:
         """
         Compare legacy and unified results.
 
@@ -183,7 +183,7 @@ class ParityTestBase(ABC):
 
         return differences
 
-    def _compare_dicts(self, legacy: Dict, unified: Dict) -> List[str]:
+    def _compare_dicts(self, legacy: dict, unified: dict) -> list[str]:
         """Compare two dictionaries."""
         differences = []
 
@@ -202,7 +202,7 @@ class ParityTestBase(ABC):
 
     def _compare_validation_results(
         self, legacy: ValidationResult, unified: ValidationResult
-    ) -> List[str]:
+    ) -> list[str]:
         """Compare ValidationResult instances."""
         differences = []
 
@@ -214,7 +214,7 @@ class ParityTestBase(ABC):
 
         return differences
 
-    def _compare_validation_with_dict(self, legacy: Dict, unified: ValidationResult) -> List[str]:
+    def _compare_validation_with_dict(self, legacy: dict, unified: ValidationResult) -> list[str]:
         """Compare dict with ValidationResult."""
         differences = []
 
@@ -228,7 +228,7 @@ class ParityTestBase(ABC):
 
     def _compare_orchestration_results(
         self, legacy: OrchestrationResult, unified: OrchestrationResult
-    ) -> List[str]:
+    ) -> list[str]:
         """Compare OrchestrationResult instances."""
         differences = []
 
@@ -242,7 +242,7 @@ class ParityTestBase(ABC):
 
         return differences
 
-    def _compare_healing_results(self, legacy: HealingResult, unified: HealingResult) -> List[str]:
+    def _compare_healing_results(self, legacy: HealingResult, unified: HealingResult) -> list[str]:
         """Compare HealingResult instances."""
         differences = []
 
@@ -268,8 +268,8 @@ class ReturnTypeValidator:
     def validate_return_type(
         legacy_result: Any,
         unified_result: Any,
-        expected_type: Optional[Type] = None,
-    ) -> List[str]:
+        expected_type: type | None = None,
+    ) -> list[str]:
         """
         Validate return type consistency.
 
@@ -307,7 +307,7 @@ class SignalHandlingValidator:
     def validate_signals(
         legacy_agent: Any,
         unified_agent: Any,
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Validate signal handling consistency.
 
@@ -353,14 +353,14 @@ class PerformanceBenchmark:
     def __init__(self, max_variance_pct: float = 20.0):
         """Initialize benchmark with max allowed variance."""
         self.max_variance_pct = max_variance_pct
-        self.results: List[Dict[str, Any]] = []
+        self.results: list[dict[str, Any]] = []
 
     def record(
         self,
         test_name: str,
         legacy_time_ms: float,
         unified_time_ms: float,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Record a benchmark result."""
         if legacy_time_ms > 0:
             variance_pct = ((unified_time_ms - legacy_time_ms) / legacy_time_ms) * 100
@@ -378,7 +378,7 @@ class PerformanceBenchmark:
         self.results.append(result)
         return result
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get benchmark summary."""
         if not self.results:
             return {"total_tests": 0, "passed": 0, "failed": 0}

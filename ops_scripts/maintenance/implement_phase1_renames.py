@@ -8,12 +8,12 @@ import json
 import os
 import re
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
 
 
-def load_proposals() -> List[Dict[str, Any]]:
+def load_proposals() -> list[dict[str, Any]]:
     """Load proposals from the classification report"""
-    with open("file_classification_report.json", "r") as f:
+    with open("file_classification_report.json") as f:
         data = json.load(f)
     return [p for p in data["proposals"] if p["file_type"] == "SCRIPT"]
 
@@ -44,7 +44,7 @@ def update_imports_in_file(file_path: Path, old_module: str, new_module: str) ->
         return False
 
 
-def find_all_imports(project_root: Path, old_module: str) -> List[Path]:
+def find_all_imports(project_root: Path, old_module: str) -> list[Path]:
     """Find all files that import the old module"""
     files_with_imports = []
     exclude_dirs = {

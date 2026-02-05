@@ -15,15 +15,16 @@ Usage:
     python -m pytest tests/stress/test_atomic_concurrency.py -k domain_planner -v
 """
 
-import pytest
+import json
+import sys
 import threading
 import time
-import json
-from pathlib import Path
-from typing import List, Dict, Any, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-import sys
+from pathlib import Path
+from typing import Any
+
+import pytest
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -36,8 +37,8 @@ class ConcurrencyResult:
 
     thread_id: int
     success: bool
-    error: Optional[str] = None
-    final_state: Optional[Dict] = None
+    error: str | None = None
+    final_state: dict | None = None
     rollback_occurred: bool = False
     execution_time_ms: float = 0.0
 
@@ -50,7 +51,7 @@ class MockAtomicExecutionMixin:
     expected from the real AtomicExecutionMixin.
     """
 
-    _file_locks: Dict[str, threading.Lock] = {}
+    _file_locks: dict[str, threading.Lock] = {}
     _lock_manager = threading.Lock()
 
     @classmethod
@@ -62,7 +63,7 @@ class MockAtomicExecutionMixin:
             return cls._file_locks[file_path]
 
     def execute_atomic(
-        self, operation: callable, target_file: Optional[Path] = None, timeout: float = 5.0
+        self, operation: callable, target_file: Path | None = None, timeout: float = 5.0
     ) -> Any:
         """
         Execute an operation atomically with file locking.
@@ -189,7 +190,7 @@ class TestAtomicConcurrency:
         Spawns 5 threads targeting the same file simultaneously.
         Verifies file locking prevents race conditions.
         """
-        results: List[ConcurrencyResult] = []
+        results: list[ConcurrencyResult] = []
 
         with ThreadPoolExecutor(max_workers=self.NUM_THREADS) as executor:
             futures = []
@@ -241,7 +242,7 @@ class TestAtomicConcurrency:
         2. File state is consistent
         3. Counter reflects only successful operations
         """
-        results: List[ConcurrencyResult] = []
+        results: list[ConcurrencyResult] = []
         fail_thread_id = 2  # Thread 2 will fail
 
         with ThreadPoolExecutor(max_workers=self.NUM_THREADS) as executor:
@@ -375,7 +376,7 @@ class TestAtomicConcurrency:
         can handle concurrent access safely.
         """
         # Simulate DomainPlannerAgent-specific operations
-        results: List[ConcurrencyResult] = []
+        results: list[ConcurrencyResult] = []
 
         def domain_planner_operation(thread_id: int):
             """Simulate a domain planning operation."""

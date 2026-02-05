@@ -35,8 +35,8 @@ from agentic_core.L1_cognition.meta_learning.guardrails import (
 
 # PHASE 2.1: MetaLearningClient Integration
 from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
-    MetaLearningClient,
     HealingPattern,
+    MetaLearningClient,
     get_meta_learning_client,
 )
 

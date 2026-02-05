@@ -132,10 +132,11 @@ class HealingMemoryEmbedder:
     def _initialize_embedding_agent(self) -> None:
         """Initialize the embedding agent with fallback."""
         try:
+            from pathlib import Path
+
             from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import (
                 EmbeddingSovereignAgent,
             )
-            from pathlib import Path
 
             self._embedding_agent = EmbeddingSovereignAgent(Path.cwd())
             Logger.info("[HealingMemoryEmbedder] Embedding agent initialized")
@@ -278,7 +279,7 @@ class HealingMemoryEmbedder:
             return 0.0
 
         # Compute cosine similarity
-        dot_product = sum(a * b for a, b in zip(embedding1, embedding2))
+        dot_product = sum(a * b for a, b in zip(embedding1, embedding2, strict=False))
         norm1 = sum(a * a for a in embedding1) ** 0.5
         norm2 = sum(b * b for b in embedding2) ** 0.5
 

@@ -6,11 +6,12 @@ Eliminates string-based operations for precise, lossless code modifications.
 """
 
 from __future__ import annotations
+
 import ast
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
-from .surgical_context import SurgicalContext, ASTCoordinate, ViolationConstraint
+from .surgical_context import ASTCoordinate, SurgicalContext, ViolationConstraint
 
 
 class SurgicalASTTransformer(ast.NodeTransformer):
@@ -73,7 +74,7 @@ class SurgicalASTTransformer(ast.NodeTransformer):
 
         return self.generic_visit(node)
 
-    def _find_violation_for_coordinate(self, coord: ASTCoordinate) -> Optional[ViolationConstraint]:
+    def _find_violation_for_coordinate(self, coord: ASTCoordinate) -> ViolationConstraint | None:
         """Find violation constraint for a coordinate."""
         for violation in self.context.violations:
             # Simple matching - in real implementation, this would be more sophisticated
@@ -81,7 +82,7 @@ class SurgicalASTTransformer(ast.NodeTransformer):
                 return violation
         return None
 
-    def _create_insertion_node(self, violation: ViolationConstraint) -> Optional[ast.stmt]:
+    def _create_insertion_node(self, violation: ViolationConstraint) -> ast.stmt | None:
         """Create AST node for insertion."""
         if violation.constraint_type == "missing_file_classification":
             # Create a comment node (as an expression with string)
@@ -100,7 +101,7 @@ class SurgicalHealerMixin:
     for zero-loss diffs and precise modifications.
     """
 
-    def heal_surgical(self, context: SurgicalContext) -> Dict[str, Any]:
+    def heal_surgical(self, context: SurgicalContext) -> dict[str, Any]:
         """
         Perform surgical healing using SurgicalContext.
 
@@ -161,7 +162,7 @@ class SurgicalHealerMixin:
                 "skipped": 0,
             }
 
-    def heal(self, violation: Dict[str, Any]) -> Dict[str, Any]:
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Standard heal method - converts to surgical context if needed.
 
@@ -211,7 +212,7 @@ class SurgicalHealerMixin:
         # Default legacy implementation
         return self._legacy_heal(violation)
 
-    def _legacy_heal(self, violation: Dict[str, Any]) -> Dict[str, Any]:
+    def _legacy_heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Legacy heal implementation for backward compatibility.
 

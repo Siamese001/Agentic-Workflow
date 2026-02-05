@@ -5,8 +5,8 @@ Provides common validation workflow patterns for agents.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -14,9 +14,9 @@ class ValidationResult:
     """Result of a validation operation."""
 
     passed: bool
-    issues: List[str]
-    suggestions: List[str]
-    metadata: Dict[str, Any]
+    issues: list[str]
+    suggestions: list[str]
+    metadata: dict[str, Any]
 
 
 class ValidationMixin:
@@ -28,7 +28,7 @@ class ValidationMixin:
     """
 
     def validate_with_result(
-        self, data: Any, validation_func: callable, context: Optional[Dict[str, Any]] = None
+        self, data: Any, validation_func: callable, context: dict[str, Any] | None = None
     ) -> ValidationResult:
         """
         Execute validation with standardized result format.
@@ -97,8 +97,8 @@ class ValidationMixin:
                 self.add_signal(signal_name)
 
     def batch_validate(
-        self, validators: List[tuple[str, callable, Any]], stop_on_first_failure: bool = False
-    ) -> Dict[str, ValidationResult]:
+        self, validators: list[tuple[str, callable, Any]], stop_on_first_failure: bool = False
+    ) -> dict[str, ValidationResult]:
         """
         Run multiple validators in batch.
 
@@ -121,7 +121,7 @@ class ValidationMixin:
         return results
 
     def validate_required_fields(
-        self, data: Dict[str, Any], required_fields: List[str]
+        self, data: dict[str, Any], required_fields: list[str]
     ) -> ValidationResult:
         """
         Validate that required fields are present in data.
@@ -146,7 +146,7 @@ class ValidationMixin:
         return ValidationResult(passed=len(issues) == 0, issues=issues, suggestions=[], metadata={})
 
     def validate_field_types(
-        self, data: Dict[str, Any], field_types: Dict[str, type]
+        self, data: dict[str, Any], field_types: dict[str, type]
     ) -> ValidationResult:
         """
         Validate that fields have expected types.

@@ -14,7 +14,6 @@ import json
 import tempfile
 from pathlib import Path
 
-
 from agentic_core.utils.report_location_validator_types import (
     APPROVED_REPORT_LOCATIONS,
     REPORT_FILE_PATTERNS,

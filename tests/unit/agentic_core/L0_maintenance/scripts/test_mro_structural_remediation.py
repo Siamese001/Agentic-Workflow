@@ -30,7 +30,9 @@ def test_mro_integrity():
     print("=" * 60)
 
     try:
-        from agentic_core.L6_observability.l6_observability_base_agent import L6ObservabilityBaseAgent
+        from agentic_core.L6_observability.l6_observability_base_agent import (
+            L6ObservabilityBaseAgent,
+        )
 
         agent = L6ObservabilityBaseAgent()
 
@@ -139,7 +141,9 @@ def test_recursive_depth_audit():
     print("=" * 60)
 
     try:
-        from agentic_core.L6_observability.l6_observability_base_agent import L6ObservabilityBaseAgent
+        from agentic_core.L6_observability.l6_observability_base_agent import (
+            L6ObservabilityBaseAgent,
+        )
 
         agent = L6ObservabilityBaseAgent()
 

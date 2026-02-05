@@ -10,9 +10,10 @@ Tests the facade conversion of ComplexityAnalyzerAgent including:
 
 from __future__ import annotations
 
-import pytest
-from unittest.mock import Mock
 from pathlib import Path
+from unittest.mock import Mock
+
+import pytest
 
 from agentic_core.base_agents.UnifiedAgent import ValidationResult
 
@@ -163,10 +164,10 @@ class TestLegacyCompatibility:
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
+        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
         from agentic_core.L5_safety.policy_engine.ComplexityAnalyzerAgent import (
             ComplexityAnalyzerAgent,
         )
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
 
         assert issubclass(ComplexityAnalyzerAgent, SovereignBaseAgent)
 

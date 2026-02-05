@@ -5,8 +5,8 @@ LLM prompt optimization utilities for high-reasoning agents.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -15,9 +15,9 @@ class PromptTemplate:
 
     system: str
     user: str
-    variables: List[str]
-    examples: List[Dict[str, str]]
-    metadata: Dict[str, Any]
+    variables: list[str]
+    examples: list[dict[str, str]]
+    metadata: dict[str, Any]
 
 
 @dataclass
@@ -26,8 +26,8 @@ class OptimizedPrompt:
 
     prompt: str
     token_count: int
-    variables_used: Dict[str, Any]
-    optimization_applied: List[str]
+    variables_used: dict[str, Any]
+    optimization_applied: list[str]
 
 
 class PromptOptimizer:
@@ -37,8 +37,8 @@ class PromptOptimizer:
     def create_template(
         system: str,
         user: str,
-        variables: Optional[List[str]] = None,
-        examples: Optional[List[Dict[str, str]]] = None,
+        variables: list[str] | None = None,
+        examples: list[dict[str, str]] | None = None,
     ) -> PromptTemplate:
         """
         Create a structured prompt template.
@@ -135,7 +135,7 @@ class PromptOptimizer:
         return prompt
 
     @staticmethod
-    def add_context(prompt: str, context: Dict[str, Any], max_context_items: int = 5) -> str:
+    def add_context(prompt: str, context: dict[str, Any], max_context_items: int = 5) -> str:
         """
         Add context information to prompt.
 
@@ -156,7 +156,7 @@ class PromptOptimizer:
         return f"Context:\n{context_text}\n\n{prompt}"
 
     @staticmethod
-    def create_chain_of_thought_prompt(task: str, steps: List[str]) -> str:
+    def create_chain_of_thought_prompt(task: str, steps: list[str]) -> str:
         """
         Create chain-of-thought prompt.
 
@@ -177,7 +177,7 @@ Let's approach this step-by-step:
 Please provide your reasoning for each step and then the final answer."""
 
     @staticmethod
-    def create_structured_output_prompt(task: str, output_format: Dict[str, str]) -> str:
+    def create_structured_output_prompt(task: str, output_format: dict[str, str]) -> str:
         """
         Create prompt for structured output.
 
@@ -228,7 +228,7 @@ Please provide your response in the following format:
         return prompt
 
     @staticmethod
-    def validate_prompt_quality(prompt: str) -> Dict[str, Any]:
+    def validate_prompt_quality(prompt: str) -> dict[str, Any]:
         """
         Validate prompt quality.
 

@@ -40,14 +40,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.domain.core_integrity_verifier_validator import CoreIntegrityVerifier
 from tests.guardian.guardian_report import (
     FixAction,
     GuardianReportBuilder,
     ViolationCode,
 )
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.domain.core_integrity_verifier_validator import CoreIntegrityVerifier
 
 # Attempt to import SSOT discovery - fallback to manual discovery if unavailable
 try:

@@ -1,11 +1,11 @@
 """Tests for HumanReviewAdapter."""
 
-from agentic_core.L5_safety.adapters.human_review_adapter import HumanReviewAdapter
 from agentic_core.interfaces.review_protocol import (
     ReviewRequest,
     ReviewResult,
     ReviewStatus,
 )
+from agentic_core.L5_safety.adapters.human_review_adapter import HumanReviewAdapter
 from agentic_core.primitives.feature_flags import FeatureFlagManager
 
 

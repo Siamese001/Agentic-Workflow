@@ -127,7 +127,9 @@ def audit_logs():
         print("[-] No root logs/ directory found (expected - decommissioned). Skipping.")
         return {"moved_count": 0}
 
-    print(f"[*] WARNING: Root logs/ directory exists (should be decommissioned). Scanning {logs_dir} for non-trace artifacts...")
+    print(
+        f"[*] WARNING: Root logs/ directory exists (should be decommissioned). Scanning {logs_dir} for non-trace artifacts..."
+    )
 
     moved_count = 0
     for file_path in logs_dir.iterdir():

@@ -8,10 +8,10 @@ base agent classes in the inheritance list.
 v3.0: Added to prevent silent MRO shadowing failures.
 """
 
-import pytest
 import sys
 from pathlib import Path
-from typing import List, Type
+
+import pytest
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -38,17 +38,17 @@ BASE_AGENT_CLASSES = [
 ]
 
 
-def get_mro_class_names(agent_class: Type) -> List[str]:
+def get_mro_class_names(agent_class: type) -> list[str]:
     """Get list of class names in MRO order."""
     return [cls.__name__ for cls in agent_class.__mro__]
 
 
-def get_direct_bases(agent_class: Type) -> List[str]:
+def get_direct_bases(agent_class: type) -> list[str]:
     """Get names of directly inherited classes (not through inheritance chain)."""
     return [base.__name__ for base in agent_class.__bases__]
 
 
-def check_mixin_order(agent_class: Type) -> tuple[bool, str]:
+def check_mixin_order(agent_class: type) -> tuple[bool, str]:
     """
     Check if safety mixins precede base classes in MRO.
 
@@ -87,7 +87,7 @@ def check_mixin_order(agent_class: Type) -> tuple[bool, str]:
     return (True, "")
 
 
-def discover_agent_classes() -> List[Type]:
+def discover_agent_classes() -> list[type]:
     """
     Discover all agent classes in the codebase.
 

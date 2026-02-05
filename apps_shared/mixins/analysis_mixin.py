@@ -5,9 +5,9 @@ Provides common analysis workflow patterns for agents.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Tuple
-from dataclasses import dataclass
 import statistics
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -15,9 +15,9 @@ class AnalysisResult:
     """Result of an analysis operation."""
 
     summary: str
-    metrics: Dict[str, Any]
-    insights: List[str]
-    recommendations: List[str]
+    metrics: dict[str, Any]
+    insights: list[str]
+    recommendations: list[str]
     confidence: float
 
 
@@ -29,7 +29,7 @@ class AnalysisMixin:
     duplicate analysis boilerplate across agents.
     """
 
-    def analyze_metrics(self, data: List[Dict[str, Any]], metric_keys: List[str]) -> Dict[str, Any]:
+    def analyze_metrics(self, data: list[dict[str, Any]], metric_keys: list[str]) -> dict[str, Any]:
         """
         Analyze metrics from data collection.
 
@@ -73,8 +73,8 @@ class AnalysisMixin:
         return results
 
     def calculate_trends(
-        self, time_series: List[Tuple[Any, float]], window_size: int = 5
-    ) -> Dict[str, Any]:
+        self, time_series: list[tuple[Any, float]], window_size: int = 5
+    ) -> dict[str, Any]:
         """
         Calculate trends from time series data.
 
@@ -122,8 +122,8 @@ class AnalysisMixin:
         }
 
     def compare_datasets(
-        self, dataset_a: List[Any], dataset_b: List[Any], comparison_key: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, dataset_a: list[Any], dataset_b: list[Any], comparison_key: str | None = None
+    ) -> dict[str, Any]:
         """
         Compare two datasets and identify differences.
 
@@ -164,8 +164,8 @@ class AnalysisMixin:
         return results
 
     def generate_insights(
-        self, analysis_data: Dict[str, Any], thresholds: Optional[Dict[str, float]] = None
-    ) -> List[str]:
+        self, analysis_data: dict[str, Any], thresholds: dict[str, float] | None = None
+    ) -> list[str]:
         """
         Generate insights from analysis data.
 
@@ -199,7 +199,7 @@ class AnalysisMixin:
         return insights
 
     def calculate_score(
-        self, metrics: Dict[str, float], weights: Optional[Dict[str, float]] = None
+        self, metrics: dict[str, float], weights: dict[str, float] | None = None
     ) -> float:
         """
         Calculate weighted score from metrics.
@@ -224,7 +224,7 @@ class AnalysisMixin:
 
         return weighted_sum / total_weight
 
-    def identify_outliers(self, values: List[float], threshold: float = 2.0) -> Dict[str, Any]:
+    def identify_outliers(self, values: list[float], threshold: float = 2.0) -> dict[str, Any]:
         """
         Identify outliers in a dataset using standard deviation.
 

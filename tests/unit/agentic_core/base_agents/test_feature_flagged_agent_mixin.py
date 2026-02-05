@@ -1,8 +1,8 @@
 """Tests for FeatureFlaggedAgentMixin."""
 
 from agentic_core.base_agents.feature_flagged_agent_mixin import FeatureFlaggedAgentMixin
-from agentic_core.primitives.feature_flags import FeatureFlagManager
 from agentic_core.interfaces.review_protocol import ReviewStatus
+from agentic_core.primitives.feature_flags import FeatureFlagManager
 
 
 class MockAgent(FeatureFlaggedAgentMixin):

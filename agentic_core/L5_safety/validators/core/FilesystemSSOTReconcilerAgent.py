@@ -767,8 +767,8 @@ class FilesystemSSOTReconcilerAgent(
     def _apply_filesystem_alignment(self, proposals: list[dict[str, Any]]) -> list[str]:
         """Executes the terraforming actions on disk with SurgicalContext logging."""
         from agentic_core.L5_safety.validators.surgical_context import (
-            SurgicalContext,
             ASTCoordinate,
+            SurgicalContext,
             ViolationConstraint,
         )
 

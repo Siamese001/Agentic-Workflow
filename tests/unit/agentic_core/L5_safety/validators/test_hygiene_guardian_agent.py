@@ -36,7 +36,9 @@ class TestHygieneGuardianAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.hygiene_guardian_agent import HygieneGuardianAgent
+            from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
+                HygieneGuardianAgent,
+            )
 
             return HygieneGuardianAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:

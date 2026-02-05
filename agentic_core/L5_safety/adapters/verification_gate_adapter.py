@@ -7,7 +7,7 @@ enabling integration with the new feature-flagged agent system.
 
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.interfaces.verification_protocol import (
     VerificationGateProtocol,
@@ -27,7 +27,7 @@ class VerificationGateAdapter(VerificationGateProtocol):
     integration with the FeatureFlaggedAgentMixin.
     """
 
-    def __init__(self, legacy_gate: Optional[Any] = None):
+    def __init__(self, legacy_gate: Any | None = None):
         """Initialize adapter with optional legacy gate.
 
         Args:
@@ -132,7 +132,7 @@ class VerificationGateAdapter(VerificationGateProtocol):
         """Check if verification gate is available and functional."""
         return self._available and self._legacy_gate is not None
 
-    def get_supported_actions(self) -> List[str]:
+    def get_supported_actions(self) -> list[str]:
         """Get list of supported action types."""
         return self.SUPPORTED_ACTIONS
 
@@ -141,7 +141,7 @@ class VerificationGateAdapter(VerificationGateProtocol):
         if self._legacy_gate and hasattr(self._legacy_gate, "clear_cache"):
             self._legacy_gate.clear_cache()
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get cache statistics for monitoring."""
         if self._legacy_gate and hasattr(self._legacy_gate, "get_cache_stats"):
             return self._legacy_gate.get_cache_stats()

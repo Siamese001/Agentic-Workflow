@@ -18,7 +18,6 @@ from enum import Enum
 from pathlib import Path
 
 # [SSOT] IMPORT PHYSICAL LAW FROM BLUEPRINT
-from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_TERRITORIES
 
 # Add repo root to path for imports
 REPO_ROOT = Path(__file__).parent.parent.parent.parent

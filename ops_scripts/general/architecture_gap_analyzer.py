@@ -26,7 +26,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 
 @dataclass
@@ -35,8 +35,8 @@ class ArchitectureComponent:
 
     name: str
     category: str
-    required_capabilities: List[str]
-    key_patterns: List[str]  # AST patterns to look for
+    required_capabilities: list[str]
+    key_patterns: list[str]  # AST patterns to look for
     description: str
     criticality: str  # P0, P1, P2
 
@@ -49,9 +49,9 @@ class ComponentMatch:
     file_path: str
     class_name: str
     match_score: float
-    matched_capabilities: List[str]
-    missing_capabilities: List[str]
-    evidence: Dict[str, Any] = field(default_factory=dict)
+    matched_capabilities: list[str]
+    missing_capabilities: list[str]
+    evidence: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -60,9 +60,9 @@ class GapAnalysisResult:
 
     component: ArchitectureComponent
     coverage_score: float  # 0-100
-    implementations: List[ComponentMatch]
-    gaps: List[str]
-    recommendations: List[str]
+    implementations: list[ComponentMatch]
+    gaps: list[str]
+    recommendations: list[str]
 
 
 # Architecture components derived from the diagram
@@ -307,20 +307,20 @@ class ASTAnalyzer:
 
     def __init__(self, repo_root: Path):
         self.repo_root = repo_root
-        self.parsed_files: Dict[str, ast.AST] = {}
-        self.class_info: Dict[str, Dict[str, Any]] = {}
-        self.function_info: Dict[str, List[str]] = {}
+        self.parsed_files: dict[str, ast.AST] = {}
+        self.class_info: dict[str, dict[str, Any]] = {}
+        self.function_info: dict[str, list[str]] = {}
 
-    def parse_file(self, file_path: Path) -> Optional[ast.AST]:
+    def parse_file(self, file_path: Path) -> ast.AST | None:
         """Parse a Python file into AST."""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
             return ast.parse(content, filename=str(file_path))
         except (SyntaxError, UnicodeDecodeError):
             return None
 
-    def extract_class_info(self, tree: ast.AST, file_path: str) -> List[Dict[str, Any]]:
+    def extract_class_info(self, tree: ast.AST, file_path: str) -> list[dict[str, Any]]:
         """Extract class information from AST."""
         classes = []
         for node in ast.walk(tree):
@@ -356,7 +356,7 @@ class ASTAnalyzer:
             return self._get_name(node.func)
         return ""
 
-    def fuzzy_match_score(self, text: str, patterns: List[str]) -> Tuple[float, List[str]]:
+    def fuzzy_match_score(self, text: str, patterns: list[str]) -> tuple[float, list[str]]:
         """Calculate fuzzy match score against patterns."""
         text_lower = text.lower()
         matched = []
@@ -378,8 +378,8 @@ class ASTAnalyzer:
         return total_score / len(patterns) if patterns else 0, matched
 
     def analyze_class_capabilities(
-        self, class_info: Dict[str, Any], component: ArchitectureComponent
-    ) -> Tuple[float, List[str], List[str]]:
+        self, class_info: dict[str, Any], component: ArchitectureComponent
+    ) -> tuple[float, list[str], list[str]]:
         """Analyze a class for architecture component capabilities."""
         matched_capabilities = []
         missing_capabilities = []
@@ -444,9 +444,9 @@ class ArchitectureGapAnalyzer:
     def __init__(self, repo_root: Path):
         self.repo_root = repo_root
         self.ast_analyzer = ASTAnalyzer(repo_root)
-        self.results: List[GapAnalysisResult] = []
+        self.results: list[GapAnalysisResult] = []
 
-    def analyze(self) -> List[GapAnalysisResult]:
+    def analyze(self) -> list[GapAnalysisResult]:
         """Run full architecture gap analysis."""
         print("Scanning repository with AST parser...")
         self.ast_analyzer.scan_repository()
@@ -542,7 +542,7 @@ class ArchitectureGapAnalyzer:
             recommendations=recommendations,
         )
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive gap analysis report."""
         report = {
             "summary": {

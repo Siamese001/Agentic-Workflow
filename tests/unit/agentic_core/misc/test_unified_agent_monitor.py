@@ -10,15 +10,16 @@ Tests the monitoring and observability infrastructure including:
 
 from __future__ import annotations
 
-import pytest
 import time
 from datetime import datetime
 
+import pytest
+
 from agentic_core.base_agents.unified_agent_monitor import (
-    ExecutionMetrics,
     AggregatedMetrics,
-    UnifiedAgentMonitor,
+    ExecutionMetrics,
     ExecutionTimer,
+    UnifiedAgentMonitor,
     get_monitor,
 )
 

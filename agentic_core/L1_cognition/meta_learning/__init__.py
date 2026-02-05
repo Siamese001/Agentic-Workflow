@@ -10,15 +10,15 @@ Provides Meta-Learning capabilities for the Sovereign Architecture:
 [PHASE 1] Core Infrastructure Implementation
 """
 
-from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
-    MetaLearningClient,
-    get_meta_learning_client,
+from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
+    CacheStrategyManager,
 )
 from agentic_core.L1_cognition.meta_learning.healing_memory_embedder_types import (
     HealingMemoryEmbedder,
 )
-from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
-    CacheStrategyManager,
+from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+    MetaLearningClient,
+    get_meta_learning_client,
 )
 
 __all__ = [

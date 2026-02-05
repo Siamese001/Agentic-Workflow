@@ -10,20 +10,21 @@ Tests the configuration system integration including:
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import patch
 
+import pytest
+
+from apps_shared.config.config_loader_config import ConfigLoadResult
 from apps_shared.config.unified_config_helper import (
     CATEGORY_DEFAULTS,
-    get_category_defaults,
-    merge_with_defaults,
-    deep_merge,
-    load_unified_config,
-    validate_unified_config,
     UnifiedConfigLoader,
+    deep_merge,
+    get_category_defaults,
     get_unified_config_loader,
+    load_unified_config,
+    merge_with_defaults,
+    validate_unified_config,
 )
-from apps_shared.config.config_loader_config import ConfigLoadResult
 
 
 class TestCategoryDefaults:
@@ -347,8 +348,9 @@ class TestGetUnifiedConfigLoader:
 
     def test_creates_loader_with_config_root(self):
         """Test loader is created with config root."""
-        import apps_shared.config.unified_config_helper as module
         from pathlib import Path
+
+        import apps_shared.config.unified_config_helper as module
 
         module._unified_loader = None
 

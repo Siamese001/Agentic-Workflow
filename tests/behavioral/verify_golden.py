@@ -9,11 +9,12 @@ Usage:
     python -m pytest tests/behavioral/verify_golden.py -k "CodeHealer"
 """
 
-import pytest
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
+
+import pytest
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -23,11 +24,10 @@ from tests.behavioral.conftest import (
     DeterministicContext,
 )
 
-
 SNAPSHOTS_DIR = PROJECT_ROOT / "tests" / "snapshots"
 
 
-def load_golden_snapshot(agent_name: str) -> Dict[str, Any]:
+def load_golden_snapshot(agent_name: str) -> dict[str, Any]:
     """Load a golden snapshot for an agent."""
     snapshot_path = SNAPSHOTS_DIR / f"golden_{agent_name}.json"
     if not snapshot_path.exists():
@@ -47,7 +47,7 @@ class TestVerifyDomainPlannerGolden:
         return DeterministicContext()
 
     @pytest.fixture
-    def golden_snapshot(self) -> Dict[str, Any]:
+    def golden_snapshot(self) -> dict[str, Any]:
         """Load the golden snapshot."""
         if not self.GOLDEN_PATH.exists():
             pytest.skip(f"Golden snapshot not found: {self.GOLDEN_PATH}")
@@ -83,7 +83,7 @@ class TestVerifyDomainPlannerGolden:
             # Try different execution methods
             result = None
 
-            if hasattr(agent, "run") and callable(getattr(agent, "run")):
+            if hasattr(agent, "run") and callable(agent.run):
                 try:
                     result = agent.run(test_input)
                 except Exception:

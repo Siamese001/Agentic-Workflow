@@ -17,7 +17,7 @@ from __future__ import annotations
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L3_orchestration.interfaces import (
     AgentResult,
@@ -57,10 +57,10 @@ class ForwardRollingResult:
     context_size_bytes: int
     pruning_performed: bool
     health_status: HealthStatus
-    agent_result: Optional[AgentResult] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    agent_result: AgentResult | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "success": self.success,
@@ -134,11 +134,11 @@ class ForwardRollingFacade:
 
         # Optimization tracking
         self._metrics = OptimizationMetrics()
-        self._execution_times: List[float] = []
-        self._depths_reached: List[int] = []
+        self._execution_times: list[float] = []
+        self._depths_reached: list[int] = []
 
         # Caching
-        self._result_cache: Dict[str, ForwardRollingResult] = {}
+        self._result_cache: dict[str, ForwardRollingResult] = {}
         self._cache_max_size = 100
         self._cache_enabled = True
 
@@ -150,7 +150,7 @@ class ForwardRollingFacade:
     def execute(
         self,
         agent_name: str,
-        context: Optional[ExecutionContext] = None,
+        context: ExecutionContext | None = None,
         mission_id: str = "",
         use_cache: bool = True,
     ) -> ForwardRollingResult:
@@ -392,7 +392,7 @@ class ForwardRollingFacade:
             return self._monitor.get_overall_health()
         return HealthStatus.HEALTHY
 
-    def run_health_checks(self) -> List[Dict[str, Any]]:
+    def run_health_checks(self) -> list[dict[str, Any]]:
         """Run all health checks."""
         if self._monitor:
             checks = self._monitor.run_health_checks()
@@ -407,7 +407,7 @@ class ForwardRollingFacade:
             ]
         return []
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get comprehensive metrics from all components."""
         metrics = {
             "optimization": {

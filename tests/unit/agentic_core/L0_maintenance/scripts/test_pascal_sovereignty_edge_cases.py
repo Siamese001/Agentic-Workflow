@@ -9,6 +9,7 @@ import sys
 import unittest
 from pathlib import Path
 from unittest.mock import Mock
+
 from agentic_core.L0_maintenance.scripts.pascal_sovereignty_fixer import PascalSovereigntyFixer
 
 # Add project root to path for imports

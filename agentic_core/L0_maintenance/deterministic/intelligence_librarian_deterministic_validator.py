@@ -16,7 +16,7 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -24,9 +24,9 @@ class IntelligenceQueryResult:
     """Result of intelligence query validation."""
 
     valid: bool
-    issues: List[str]
+    issues: list[str]
     cache_key: str | None = None
-    metadata: Dict[str, Any] | None = None
+    metadata: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         if self.metadata is None:
@@ -41,7 +41,7 @@ class IntelligenceLibrarianDeterministic:
     external dependencies or LLM calls.
     """
 
-    def __init__(self, config: Dict[str, Any] | None = None) -> None:
+    def __init__(self, config: dict[str, Any] | None = None) -> None:
         """
         Initialize with intelligence librarian configuration.
 
@@ -58,7 +58,7 @@ class IntelligenceLibrarianDeterministic:
         self.cache_ttl = config.get("cache_ttl", 3600)
 
     def validate_query(
-        self, query: str, filters: Dict[str, Any] | None = None
+        self, query: str, filters: dict[str, Any] | None = None
     ) -> IntelligenceQueryResult:
         """
         Validate intelligence query using purely deterministic logic.
@@ -70,7 +70,7 @@ class IntelligenceLibrarianDeterministic:
         Returns:
             IntelligenceQueryResult with deterministic findings
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         # Validate query string (deterministic string validation)
         query_issues = self._validate_query_string(query)
@@ -91,13 +91,13 @@ class IntelligenceLibrarianDeterministic:
             metadata={"validation_type": "deterministic"},
         )
 
-    def _validate_query_string(self, query: str) -> List[str]:
+    def _validate_query_string(self, query: str) -> list[str]:
         """
         Validate query string using deterministic rules.
 
         Moved to Deterministic: Pure string validation
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         if not query:
             issues.append("Query cannot be empty")
@@ -115,13 +115,13 @@ class IntelligenceLibrarianDeterministic:
 
         return issues
 
-    def _validate_filters(self, filters: Dict[str, Any]) -> List[str]:
+    def _validate_filters(self, filters: dict[str, Any]) -> list[str]:
         """
         Validate filters using deterministic schema validation.
 
         Moved to Deterministic: Pure schema validation
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         for key in filters.keys():
             if key not in self.allowed_filter_keys:
@@ -140,7 +140,7 @@ class IntelligenceLibrarianDeterministic:
 
         return issues
 
-    def _generate_cache_key(self, query: str, filters: Dict[str, Any] | None) -> str:
+    def _generate_cache_key(self, query: str, filters: dict[str, Any] | None) -> str:
         """
         Generate cache key using deterministic hashing.
 
@@ -168,8 +168,8 @@ class IntelligenceLibrarianDeterministic:
         return query
 
     def filter_results(
-        self, results: List[Dict[str, Any]], filters: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        self, results: list[dict[str, Any]], filters: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """
         Filter results using deterministic filtering logic.
 
@@ -194,7 +194,7 @@ class IntelligenceLibrarianDeterministic:
 
         return filtered
 
-    def calculate_query_complexity(self, query: str) -> Dict[str, Any]:
+    def calculate_query_complexity(self, query: str) -> dict[str, Any]:
         """
         Calculate query complexity using deterministic analysis.
 

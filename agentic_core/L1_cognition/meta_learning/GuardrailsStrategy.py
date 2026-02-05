@@ -21,7 +21,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -56,10 +56,10 @@ class CacheGuardrails:
     max_patterns_per_minute: int = 100
 
     # Internal state
-    _cache_sizes: Dict[str, int] = field(default_factory=dict)
-    _request_counts: Dict[str, List[float]] = field(default_factory=dict)
-    _pattern_counts: Dict[str, List[float]] = field(default_factory=dict)
-    _depth_trackers: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    _cache_sizes: dict[str, int] = field(default_factory=dict)
+    _request_counts: dict[str, list[float]] = field(default_factory=dict)
+    _pattern_counts: dict[str, list[float]] = field(default_factory=dict)
+    _depth_trackers: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 
 class MetaLearningGuardrails:
@@ -70,7 +70,7 @@ class MetaLearningGuardrails:
     or abuse the cache and implements strict validation.
     """
 
-    def __init__(self, guardrails: Optional[CacheGuardrails] = None):
+    def __init__(self, guardrails: CacheGuardrails | None = None):
         self.guardrails = guardrails or CacheGuardrails()
         self.logger = Logger
 
@@ -139,7 +139,7 @@ class MetaLearningGuardrails:
             self.logger.error(f"Cache value serialization failed: {e}")
             return False
 
-    def _has_circular_refs(self, obj: Any, visited: Optional[List[int]] = None) -> bool:
+    def _has_circular_refs(self, obj: Any, visited: list[int] | None = None) -> bool:
         """Check for circular references in object."""
         if visited is None:
             visited = []
@@ -164,7 +164,7 @@ class MetaLearningGuardrails:
 
         return False
 
-    def validate_ttl(self, ttl: Optional[int]) -> int:
+    def validate_ttl(self, ttl: int | None) -> int:
         """
         Validate and normalize TTL.
 
@@ -252,7 +252,7 @@ class MetaLearningGuardrails:
         counts[domain].append(now)
         return True
 
-    def validate_similarity_threshold(self, threshold: Optional[float]) -> float:
+    def validate_similarity_threshold(self, threshold: float | None) -> float:
         """
         Validate similarity threshold for pattern matching.
 
@@ -356,7 +356,7 @@ class MetaLearningGuardrails:
             if violation_id in self.guardrails._depth_trackers[agent_name]:
                 del self.guardrails._depth_trackers[agent_name][violation_id]
 
-    def validate_domain_isolation(self, domain: str, pattern: Dict[str, Any]) -> bool:
+    def validate_domain_isolation(self, domain: str, pattern: dict[str, Any]) -> bool:
         """
         Validate domain isolation to prevent cross-domain contamination.
 
@@ -384,7 +384,7 @@ class MetaLearningGuardrails:
 
         return True
 
-    def sanitize_violation_data(self, violation: Dict[str, Any]) -> Dict[str, Any]:
+    def sanitize_violation_data(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Sanitize violation data to prevent cache poisoning.
 
@@ -421,7 +421,7 @@ class MetaLearningGuardrails:
 
         return sanitized
 
-    def generate_safe_cache_key(self, prefix: str, data: Dict[str, Any]) -> str:
+    def generate_safe_cache_key(self, prefix: str, data: dict[str, Any]) -> str:
         """
         Generate safe cache key from data.
 
@@ -438,7 +438,7 @@ class MetaLearningGuardrails:
 
         return f"{prefix}:{hash_digest}"
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get guardrails statistics."""
         return {
             "cache_sizes": self.guardrails._cache_sizes.copy(),

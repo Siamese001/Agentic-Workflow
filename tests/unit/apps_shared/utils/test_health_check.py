@@ -7,7 +7,6 @@ Tests Phase 5B - Deployment Readiness.
 import os
 from unittest.mock import patch
 
-
 from apps_shared.utils.health_check_types import (
     CheckResult,
     CommonChecks,

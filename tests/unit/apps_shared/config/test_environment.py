@@ -16,7 +16,6 @@ from apps_shared.config.environment_config import (
     validate_environment,
 )
 
-
 # Test fixture for required environment variables
 REQUIRED_ENV_VARS = {
     "OPENAI_API_KEY": "test-openai-key",

@@ -383,8 +383,8 @@ if TYPE_CHECKING:
                 - errors: List of error messages
         """
         from agentic_core.L5_safety.validators.unified_cst_healer import (
-            UnifiedCSTHealer,
             HealingConfig,
+            UnifiedCSTHealer,
         )
 
         file_path = violation.get("file") or violation.get("file_path")

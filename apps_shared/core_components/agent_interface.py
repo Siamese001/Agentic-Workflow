@@ -45,7 +45,7 @@ class AgentContext:
     retry_count: int = 0
     max_retries: int = 3
 
-    def with_trace(self, trace_id: str) -> "AgentContext":
+    def with_trace(self, trace_id: str) -> AgentContext:
         """Create new context with trace ID."""
         return AgentContext(
             session_id=self.session_id,
@@ -88,7 +88,7 @@ class AgentResult(Generic[OutputT]):
         output: OutputT,
         execution_time_ms: float = 0.0,
         metadata: dict[str, Any] | None = None,
-    ) -> "AgentResult[OutputT]":
+    ) -> AgentResult[OutputT]:
         """Create a successful result."""
         return cls(
             status=AgentStatus.SUCCESS,
@@ -103,7 +103,7 @@ class AgentResult(Generic[OutputT]):
         error: str,
         execution_time_ms: float = 0.0,
         metadata: dict[str, Any] | None = None,
-    ) -> "AgentResult[OutputT]":
+    ) -> AgentResult[OutputT]:
         """Create a failed result."""
         return cls(
             status=AgentStatus.FAILED,
@@ -117,7 +117,7 @@ class AgentResult(Generic[OutputT]):
         cls,
         execution_time_ms: float = 0.0,
         metadata: dict[str, Any] | None = None,
-    ) -> "AgentResult[OutputT]":
+    ) -> AgentResult[OutputT]:
         """Create a timeout result."""
         return cls(
             status=AgentStatus.TIMEOUT,

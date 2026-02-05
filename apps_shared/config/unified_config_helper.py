@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from apps_shared.config.config_loader_config import (
     ConfigLoadResult,
@@ -23,7 +23,7 @@ from apps_shared.config.config_loader_config import (
 logger = logging.getLogger(__name__)
 
 # Default configurations for each agent category
-CATEGORY_DEFAULTS: Dict[str, Dict[str, Any]] = {
+CATEGORY_DEFAULTS: dict[str, dict[str, Any]] = {
     "validator": {
         "validation_rules": {},
         "forbidden_content": [],
@@ -81,7 +81,7 @@ CATEGORY_DEFAULTS: Dict[str, Dict[str, Any]] = {
 }
 
 
-def get_category_defaults(category: str) -> Dict[str, Any]:
+def get_category_defaults(category: str) -> dict[str, Any]:
     """
     Get default configuration for a specific agent category.
 
@@ -94,7 +94,7 @@ def get_category_defaults(category: str) -> Dict[str, Any]:
     return CATEGORY_DEFAULTS.get(category.lower(), {}).copy()
 
 
-def merge_with_defaults(config: Dict[str, Any], category: str) -> Dict[str, Any]:
+def merge_with_defaults(config: dict[str, Any], category: str) -> dict[str, Any]:
     """
     Merge provided configuration with category defaults.
 
@@ -109,7 +109,7 @@ def merge_with_defaults(config: Dict[str, Any], category: str) -> Dict[str, Any]
     return deep_merge(defaults, config)
 
 
-def deep_merge(base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
+def deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
     """
     Deep merge two dictionaries, with override taking precedence.
 
@@ -134,8 +134,8 @@ def deep_merge(base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]
 def load_unified_config(
     agent_name: str,
     category: str,
-    config_file: Optional[str] = None,
-) -> Dict[str, Any]:
+    config_file: str | None = None,
+) -> dict[str, Any]:
     """
     Load configuration for a UnifiedAgent instance.
 
@@ -163,7 +163,7 @@ def load_unified_config(
         return defaults
 
 
-def validate_unified_config(config: Dict[str, Any], category: str) -> ConfigLoadResult:
+def validate_unified_config(config: dict[str, Any], category: str) -> ConfigLoadResult:
     """
     Validate configuration against category schema.
 
@@ -223,18 +223,18 @@ class UnifiedConfigLoader:
     and validation.
     """
 
-    def __init__(self, config_root: Optional[Path] = None):
+    def __init__(self, config_root: Path | None = None):
         """Initialize unified config loader."""
         self._loader = get_config_loader(config_root)
-        self._cache: Dict[str, Dict[str, Any]] = {}
+        self._cache: dict[str, dict[str, Any]] = {}
 
     def load(
         self,
         agent_name: str,
         category: str,
-        config_file: Optional[str] = None,
+        config_file: str | None = None,
         force_reload: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Load configuration for an agent.
 
@@ -277,11 +277,11 @@ class UnifiedConfigLoader:
 
 
 # Global unified config loader instance
-_unified_loader: Optional[UnifiedConfigLoader] = None
+_unified_loader: UnifiedConfigLoader | None = None
 
 
 def get_unified_config_loader(
-    config_root: Optional[Path] = None,
+    config_root: Path | None = None,
 ) -> UnifiedConfigLoader:
     """Get global unified config loader instance."""
     global _unified_loader

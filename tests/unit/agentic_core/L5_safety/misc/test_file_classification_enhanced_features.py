@@ -9,15 +9,14 @@ Tests for new functionality added in the latest enhancement:
 5. Enhanced _orchestrate_audit method integration
 """
 
+# Add project root to path
+import sys
 import tempfile
 import time
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
-
-# Add project root to path
-import sys
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
@@ -493,12 +492,13 @@ class TestMethodSignatures:
 
     def test_cleanup_redundant_conflicts_signature(self):
         """Test cleanup_redundant_conflicts method signature."""
+        import inspect
+
         from agentic_core.L5_safety.validators.file_classification_agent import (
             FileClassificationAgent,
         )
-        import inspect
 
-        method = getattr(FileClassificationAgent, "cleanup_redundant_conflicts")
+        method = FileClassificationAgent.cleanup_redundant_conflicts
         sig = inspect.signature(method)
         params = list(sig.parameters.keys())
 
@@ -510,12 +510,13 @@ class TestMethodSignatures:
 
     def test_update_file_header_signature(self):
         """Test update_file_header method signature."""
+        import inspect
+
         from agentic_core.L5_safety.validators.file_classification_agent import (
             FileClassificationAgent,
         )
-        import inspect
 
-        method = getattr(FileClassificationAgent, "update_file_header")
+        method = FileClassificationAgent.update_file_header
         sig = inspect.signature(method)
         params = list(sig.parameters.keys())
 
@@ -527,12 +528,13 @@ class TestMethodSignatures:
 
     def test_sync_companion_test_signature(self):
         """Test sync_companion_test method signature."""
+        import inspect
+
         from agentic_core.L5_safety.validators.file_classification_agent import (
             FileClassificationAgent,
         )
-        import inspect
 
-        method = getattr(FileClassificationAgent, "sync_companion_test")
+        method = FileClassificationAgent.sync_companion_test
         sig = inspect.signature(method)
         params = list(sig.parameters.keys())
 
@@ -544,12 +546,13 @@ class TestMethodSignatures:
 
     def test_refactor_non_python_assets_signature(self):
         """Test refactor_non_python_assets method signature."""
+        import inspect
+
         from agentic_core.L5_safety.validators.file_classification_agent import (
             FileClassificationAgent,
         )
-        import inspect
 
-        method = getattr(FileClassificationAgent, "refactor_non_python_assets")
+        method = FileClassificationAgent.refactor_non_python_assets
         sig = inspect.signature(method)
         params = list(sig.parameters.keys())
 

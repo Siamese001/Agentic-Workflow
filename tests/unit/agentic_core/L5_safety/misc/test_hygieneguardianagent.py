@@ -22,7 +22,9 @@ class TestHygieneGuardianAgent:
     def test_class_exists(self):
         """Verify the class can be imported."""
         try:
-            from agentic_core.L5_safety.validators.hygiene_guardian_agent import HygieneGuardianAgent
+            from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
+                HygieneGuardianAgent,
+            )
 
             assert HygieneGuardianAgent is not None
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -32,7 +34,9 @@ class TestHygieneGuardianAgent:
     def test_class_is_agent(self):
         """Verify the class follows agent patterns."""
         try:
-            from agentic_core.L5_safety.validators.hygiene_guardian_agent import HygieneGuardianAgent
+            from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
+                HygieneGuardianAgent,
+            )
 
             # Check it's a class
             assert isinstance(HygieneGuardianAgent, type)
@@ -42,7 +46,9 @@ class TestHygieneGuardianAgent:
     def test_instantiation_with_mocks(self):
         """Test that the agent can be instantiated with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.hygiene_guardian_agent import HygieneGuardianAgent
+            from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
+                HygieneGuardianAgent,
+            )
 
             # Try to instantiate with common agent patterns
             with patch.multiple(HygieneGuardianAgent, __init__=lambda self: None, create=True):
@@ -57,7 +63,9 @@ class TestHygieneGuardianAgent:
     def test_has_healing_capability(self):
         """Verify healing methods exist if agent has healing."""
         try:
-            from agentic_core.L5_safety.validators.hygiene_guardian_agent import HygieneGuardianAgent
+            from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
+                HygieneGuardianAgent,
+            )
 
             # Check for heal_repository method
             hasattr(HygieneGuardianAgent, "heal_repository") or any(
@@ -71,7 +79,9 @@ class TestHygieneGuardianAgent:
     def test_key_methods_exist(self):
         """Verify key methods are defined."""
         try:
-            from agentic_core.L5_safety.validators.hygiene_guardian_agent import HygieneGuardianAgent
+            from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
+                HygieneGuardianAgent,
+            )
 
             # Get all public methods
             methods = [m for m in dir(HygieneGuardianAgent) if not m.startswith("_")]

@@ -14,7 +14,7 @@ Deterministic Operations:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -22,9 +22,9 @@ class DeliverabilityResult:
     """Result of deliverability validation."""
 
     passed: bool
-    issues: List[str]
+    issues: list[str]
     score: float | None = None
-    metadata: Dict[str, Any] | None = None
+    metadata: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         if self.metadata is None:
@@ -39,7 +39,7 @@ class DeliverabilityDeterministic:
     external dependencies or LLM calls.
     """
 
-    def __init__(self, config: Dict[str, Any] | None = None) -> None:
+    def __init__(self, config: dict[str, Any] | None = None) -> None:
         """
         Initialize with deliverability validation configuration.
 
@@ -55,7 +55,7 @@ class DeliverabilityDeterministic:
         self.max_images = config.get("max_images", 2)
         self.spam_rate_threshold = config.get("spam_rate_threshold", 0.01)
 
-    def validate_deliverability(self, messages: List[Dict[str, Any]]) -> DeliverabilityResult:
+    def validate_deliverability(self, messages: list[dict[str, Any]]) -> DeliverabilityResult:
         """
         Validate deliverability using purely deterministic logic.
 
@@ -73,7 +73,7 @@ class DeliverabilityDeterministic:
                 metadata={"validation_type": "deterministic", "message_count": 0},
             )
 
-        issues: List[str] = []
+        issues: list[str] = []
 
         for i, message in enumerate(messages):
             content = message.get("content", "")
@@ -100,13 +100,13 @@ class DeliverabilityDeterministic:
             metadata={"validation_type": "deterministic", "message_count": len(messages)},
         )
 
-    def _check_spam_triggers(self, content: str, message_index: int) -> List[str]:
+    def _check_spam_triggers(self, content: str, message_index: int) -> list[str]:
         """
         Check for spam triggers using deterministic keyword matching.
 
         Moved to Deterministic: Pure keyword matching logic
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         for trigger in self.spam_triggers:
             if trigger in content:
@@ -114,13 +114,13 @@ class DeliverabilityDeterministic:
 
         return issues
 
-    def _check_link_count(self, content: str, message_index: int) -> List[str]:
+    def _check_link_count(self, content: str, message_index: int) -> list[str]:
         """
         Check link count using deterministic counting.
 
         Moved to Deterministic: Pure counting logic
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         link_count = content.count("http")
         if link_count > self.max_links:
@@ -128,13 +128,13 @@ class DeliverabilityDeterministic:
 
         return issues
 
-    def _check_image_count(self, content: str, message_index: int) -> List[str]:
+    def _check_image_count(self, content: str, message_index: int) -> list[str]:
         """
         Check image count using deterministic counting.
 
         Moved to Deterministic: Pure counting logic
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         img_count = content.count("<img")
         if img_count > self.max_images:
@@ -142,7 +142,7 @@ class DeliverabilityDeterministic:
 
         return issues
 
-    def _calculate_deliverability_score(self, issues: List[str], message_count: int) -> float:
+    def _calculate_deliverability_score(self, issues: list[str], message_count: int) -> float:
         """
         Calculate deliverability score using deterministic algorithm.
 
@@ -179,7 +179,7 @@ class DeliverabilityDeterministic:
             count += content.count(trigger)
         return count
 
-    def analyze_content_risk(self, content: str) -> Dict[str, Any]:
+    def analyze_content_risk(self, content: str) -> dict[str, Any]:
         """
         Analyze content risk using deterministic rules.
 

@@ -21,18 +21,17 @@ Tests cover:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
 
 def reset_all_singletons():
     """Reset all meta-learning singletons for test isolation."""
-    import agentic_core.L1_cognition.meta_learning.MetaLearningClient as mlc
-    import agentic_core.L1_cognition.meta_learning.HealingMemoryEmbedder as hme
     import agentic_core.L1_cognition.meta_learning.CacheStrategyManager as csm
-    
+    import agentic_core.L1_cognition.meta_learning.HealingMemoryEmbedder as hme
+    import agentic_core.L1_cognition.meta_learning.MetaLearningClient as mlc
+
     mlc._meta_learning_client = None
     mlc._singleton_instance = None
     hme._healing_memory_embedder = None
@@ -43,20 +42,23 @@ def reset_all_singletons():
     from agentic_core.base_agents.meta_learning_client_mixin import (
         MetaLearningClientMixin,
     )
+
     MetaLearningClientMixin._ml_client = None
     MetaLearningClientMixin._ml_embedder = None
     MetaLearningClientMixin._ml_cache_manager = None
-    
+
     # Reset domain context manager if it exists
     try:
         import agentic_core.L1_cognition.meta_learning.DomainContextManager as dcm
+
         dcm._domain_context_manager = None
     except (ImportError, AttributeError):
         pass
-    
+
     # Reset observability if it exists
     try:
         import agentic_core.L1_cognition.meta_learning.MetaLearningObservability as mlo
+
         mlo._observability_instance = None
     except (ImportError, AttributeError):
         pass
@@ -65,6 +67,7 @@ def reset_all_singletons():
 # =============================================================================
 # SECTION 1: MetaLearningClientMixin Tests (from Phase 2)
 # =============================================================================
+
 
 class TestMetaLearningClientMixin:
     """Tests for MetaLearningClientMixin functionality."""
@@ -206,6 +209,7 @@ class TestMetaLearningClientMixin:
 # SECTION 2: SovereignBaseAgent Integration Tests (from Phase 2)
 # =============================================================================
 
+
 class TestSovereignBaseAgentIntegration:
     """Tests for SovereignBaseAgent with MetaLearningClientMixin."""
 
@@ -218,11 +222,11 @@ class TestSovereignBaseAgentIntegration:
 
     def test_sovereign_base_agent_has_ml_capabilities(self):
         """Test that SovereignBaseAgent has meta-learning capabilities."""
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
-            MetaLearningClient,
-        )
         from agentic_core.L1_cognition.meta_learning.HealingMemoryEmbedder import (
             HealingMemoryEmbedder,
+        )
+        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+            MetaLearningClient,
         )
 
         with (
@@ -247,6 +251,7 @@ class TestSovereignBaseAgentIntegration:
 # =============================================================================
 # SECTION 3: Domain Isolation Tests (from Phase 3)
 # =============================================================================
+
 
 class TestDomainIsolation:
     """Tests for domain isolation in meta-learning."""
@@ -341,6 +346,7 @@ class TestDomainIsolation:
 # SECTION 4: Healing Orchestrator Tests (from Phase 4)
 # =============================================================================
 
+
 @dataclass
 class MockLicHealingOrchestrator:
     """Mock LIC Healing Orchestrator for testing meta-learning methods."""
@@ -357,6 +363,7 @@ class MockLicHealingOrchestrator:
         from agentic_core.base_agents.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
+
         self._mixin = type(
             "MixinInstance",
             (MetaLearningClientMixin,),
@@ -394,6 +401,7 @@ class TestHealingOrchestratorIntegration:
 # SECTION 5: Domain Context Manager Tests (from Phase 6)
 # =============================================================================
 
+
 class TestDomainContextManager:
     """Tests for DomainContextManager functionality."""
 
@@ -410,6 +418,7 @@ class TestDomainContextManager:
             from agentic_core.L1_cognition.meta_learning.DomainContextManager import (
                 get_domain_context_manager,
             )
+
             manager1 = get_domain_context_manager()
             manager2 = get_domain_context_manager()
             assert manager1 is manager2
@@ -422,6 +431,7 @@ class TestDomainContextManager:
             from agentic_core.L1_cognition.meta_learning.DomainContextManager import (
                 get_domain_context_manager,
             )
+
             manager = get_domain_context_manager()
             assert manager.get_context("agentic_core") is not None
             assert manager.get_context("apps_lic") is not None
@@ -433,6 +443,7 @@ class TestDomainContextManager:
 # =============================================================================
 # SECTION 6: Observability Tests (from Phase 7)
 # =============================================================================
+
 
 class TestMetaLearningObservability:
     """Tests for MetaLearningObservability functionality."""
@@ -450,6 +461,7 @@ class TestMetaLearningObservability:
             from agentic_core.L1_cognition.meta_learning.MetaLearningObservability import (
                 get_meta_learning_observability,
             )
+
             obs1 = get_meta_learning_observability()
             obs2 = get_meta_learning_observability()
             assert obs1 is obs2
@@ -462,6 +474,7 @@ class TestMetaLearningObservability:
             from agentic_core.L1_cognition.meta_learning.MetaLearningObservability import (
                 get_meta_learning_observability,
             )
+
             obs = get_meta_learning_observability()
             assert "MetaLearningClient" in obs._health_status
             assert "CacheStrategyManager" in obs._health_status

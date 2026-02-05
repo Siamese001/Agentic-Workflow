@@ -8,7 +8,7 @@ circular dependencies.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
@@ -18,7 +18,7 @@ class VerificationRequest:
     file_path: str
     action_type: str
     target_node: str
-    context: Optional[Dict[str, Any]] = field(default_factory=dict)
+    context: dict[str, Any] | None = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.context is None:
@@ -30,8 +30,8 @@ class VerificationResult:
     """Result of verification operation."""
 
     success: bool
-    reason: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = field(default_factory=dict)
+    reason: str | None = None
+    metadata: dict[str, Any] | None = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.metadata is None:
@@ -45,7 +45,7 @@ class VerificationGateProtocol(ABC):
     modifications. This prevents hallucinated fixes from being executed.
     """
 
-    SUPPORTED_ACTIONS: List[str] = [
+    SUPPORTED_ACTIONS: list[str] = [
         "delete_import",
         "modify_function",
         "remove_class",
@@ -73,11 +73,11 @@ class VerificationGateProtocol(ABC):
         pass
 
     @abstractmethod
-    def get_supported_actions(self) -> List[str]:
+    def get_supported_actions(self) -> list[str]:
         """Get list of supported action types."""
         pass
 
-    def validate_request(self, request: VerificationRequest) -> Optional[str]:
+    def validate_request(self, request: VerificationRequest) -> str | None:
         """Validate request parameters.
 
         Returns:

@@ -18,11 +18,12 @@ import difflib
 import logging
 import threading
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -120,12 +121,12 @@ class ReviewRequest:
     request_id: str = field(default_factory=lambda: str(uuid.uuid4())[:12])
     created_at: datetime = field(default_factory=datetime.utcnow)
     status: ReviewStatus = ReviewStatus.PENDING
-    context_bundle: Optional[ContextBundle] = None
+    context_bundle: ContextBundle | None = None
 
     # Review metadata
-    reviewer_id: Optional[str] = None
-    review_started_at: Optional[datetime] = None
-    review_completed_at: Optional[datetime] = None
+    reviewer_id: str | None = None
+    review_started_at: datetime | None = None
+    review_completed_at: datetime | None = None
     review_notes: str = ""
 
     # Escalation tracking
@@ -167,7 +168,7 @@ class HumanReviewQueue:
     - Callback support for async workflows
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self._pending_requests: dict[str, ReviewRequest] = {}
         self._completed_requests: list[ReviewRequest] = []
@@ -182,7 +183,7 @@ class HumanReviewQueue:
     def submit_for_review(
         self,
         context_bundle: ContextBundle,
-        timeout_seconds: Optional[int] = None,
+        timeout_seconds: int | None = None,
     ) -> ReviewRequest:
         """Submit a change for human review.
 
@@ -295,7 +296,7 @@ class HumanReviewQueue:
             self._process_expired()
             return [r.to_dict() for r in self._pending_requests.values()]
 
-    def get_request_status(self, request_id: str) -> Optional[ReviewStatus]:
+    def get_request_status(self, request_id: str) -> ReviewStatus | None:
         """Get status of a specific request."""
         with self._lock:
             if request_id in self._pending_requests:

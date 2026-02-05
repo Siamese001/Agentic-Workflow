@@ -10,8 +10,9 @@ Tests the facade conversion of LocationHealerAgent including:
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import Mock
+
+import pytest
 
 from agentic_core.base_agents.UnifiedAgent import (
     HealingResult,
@@ -105,10 +106,10 @@ class TestLocationHealerAgentFacade:
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
+        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
         from agentic_core.L5_safety.validators.LocationHealerAgent import (
             LocationHealerAgent,
         )
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
 
         assert issubclass(LocationHealerAgent, SovereignBaseAgent)
 
@@ -142,7 +143,7 @@ class TestLocationHealerMethods:
         )
 
         assert hasattr(LocationHealerAgent, "heal")
-        assert callable(getattr(LocationHealerAgent, "heal"))
+        assert callable(LocationHealerAgent.heal)
 
     def test_heal_repository_method_signature(self):
         """Test heal_repository method exists."""
@@ -151,7 +152,7 @@ class TestLocationHealerMethods:
         )
 
         assert hasattr(LocationHealerAgent, "heal_repository")
-        assert callable(getattr(LocationHealerAgent, "heal_repository"))
+        assert callable(LocationHealerAgent.heal_repository)
 
     def test_safe_move_method_exists(self):
         """Test safe_move method exists."""
@@ -160,7 +161,7 @@ class TestLocationHealerMethods:
         )
 
         assert hasattr(LocationHealerAgent, "safe_move")
-        assert callable(getattr(LocationHealerAgent, "safe_move"))
+        assert callable(LocationHealerAgent.safe_move)
 
     def test_safe_delete_method_exists(self):
         """Test safe_delete method exists."""
@@ -169,7 +170,7 @@ class TestLocationHealerMethods:
         )
 
         assert hasattr(LocationHealerAgent, "safe_delete")
-        assert callable(getattr(LocationHealerAgent, "safe_delete"))
+        assert callable(LocationHealerAgent.safe_delete)
 
     def test_post_heal_validation_method_exists(self):
         """Test post_heal_validation method exists."""
@@ -178,7 +179,7 @@ class TestLocationHealerMethods:
         )
 
         assert hasattr(LocationHealerAgent, "post_heal_validation")
-        assert callable(getattr(LocationHealerAgent, "post_heal_validation"))
+        assert callable(LocationHealerAgent.post_heal_validation)
 
     def test_fix_imports_after_move_method_exists(self):
         """Test fix_imports_after_move method exists."""
@@ -187,7 +188,7 @@ class TestLocationHealerMethods:
         )
 
         assert hasattr(LocationHealerAgent, "fix_imports_after_move")
-        assert callable(getattr(LocationHealerAgent, "fix_imports_after_move"))
+        assert callable(LocationHealerAgent.fix_imports_after_move)
 
 
 class TestLegacyCompatibility:

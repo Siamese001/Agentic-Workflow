@@ -6,7 +6,8 @@ with domain-specific configuration and utilities.
 """
 
 import logging
-from typing import Any, Callable, Dict, Optional
+from collections.abc import Callable
+from typing import Any
 
 from agentic_core.base_agents.feature_flagged_agent_mixin import FeatureFlaggedAgentMixin
 from agentic_core.primitives.feature_flags import FeatureFlagManager
@@ -52,9 +53,9 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
 
     def domain_heal_with_verification(
         self,
-        violation: Dict[str, Any],
-        heal_fn: Callable[[Dict[str, Any]], Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        violation: dict[str, Any],
+        heal_fn: Callable[[dict[str, Any]], dict[str, Any]],
+    ) -> dict[str, Any]:
         """Heal a violation with domain context.
 
         Extends heal_with_verification with domain-specific audit logging.
@@ -85,8 +86,8 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
     def domain_log_audit_event(
         self,
         event_type: str,
-        data: Dict[str, Any],
-    ) -> Optional[str]:
+        data: dict[str, Any],
+    ) -> str | None:
         """Log an audit event with domain context.
 
         Args:
@@ -103,7 +104,7 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
         }
         return self.log_audit_event(event_type, domain_data)
 
-    def validate_domain_pattern(self, pattern: Dict[str, Any]) -> bool:
+    def validate_domain_pattern(self, pattern: dict[str, Any]) -> bool:
         """Validate that a pattern belongs to this domain.
 
         Args:
@@ -121,7 +122,7 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
             return False
         return True
 
-    def get_domain_context(self) -> Dict[str, Any]:
+    def get_domain_context(self) -> dict[str, Any]:
         """Get domain context for this agent.
 
         Returns:
@@ -159,7 +160,7 @@ class RGDomainMixin(DomainAgentMixin):
     def store_resume_pattern(
         self,
         pattern_id: str,
-        pattern_data: Dict[str, Any],
+        pattern_data: dict[str, Any],
     ) -> bool:
         """Store a resume quality pattern.
 
@@ -178,7 +179,7 @@ class RGDomainMixin(DomainAgentMixin):
         # Return True - actual storage would use meta-learning service
         return True
 
-    def get_rg_context(self) -> Dict[str, Any]:
+    def get_rg_context(self) -> dict[str, Any]:
         """Get RG-specific context."""
         base_context = self.get_domain_context()
         return {
@@ -199,7 +200,7 @@ class LICDomainMixin(DomainAgentMixin):
     def store_campaign_pattern(
         self,
         campaign_id: str,
-        pattern_data: Dict[str, Any],
+        pattern_data: dict[str, Any],
     ) -> bool:
         """Store a campaign pattern.
 
@@ -217,7 +218,7 @@ class LICDomainMixin(DomainAgentMixin):
         )
         return True
 
-    def get_lic_context(self) -> Dict[str, Any]:
+    def get_lic_context(self) -> dict[str, Any]:
         """Get LIC-specific context."""
         base_context = self.get_domain_context()
         return {

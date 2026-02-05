@@ -13,9 +13,9 @@ Phase 4 Optimization - Native Python Utilities:
 
 from __future__ import annotations
 
-from apps_shared.utils.text_processing_validator import TextProcessor, TextMatch
-from apps_shared.utils.math_operations import MathProcessor, ScoreResult
 from apps_shared.utils.json_parser_validator import JsonParser, ParseResult
+from apps_shared.utils.math_operations import MathProcessor, ScoreResult
+from apps_shared.utils.text_processing_validator import TextMatch, TextProcessor
 
 # Lazy imports to avoid circular dependencies
 __all__ = [

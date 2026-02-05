@@ -32,6 +32,7 @@ import tempfile
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
 from typing import Any
 
@@ -43,17 +44,15 @@ from agentic_core.base_agents.UnifiedAgent import (
     HealingStrategy,
     UnifiedAgent,
 )
-from agentic_core.L5_safety.validators.surgical_cst_healer_mixin import (
-    SurgicalCSTHealerMixin,
-)
+from agentic_core.L5_safety.security.verification_gate import VerificationGate
 from agentic_core.L5_safety.validators.surgical_context import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
 )
-from agentic_core.L5_safety.security.verification_gate import VerificationGate
-
-from enum import Enum
+from agentic_core.L5_safety.validators.surgical_cst_healer_mixin import (
+    SurgicalCSTHealerMixin,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -73,7 +72,7 @@ class CodeHealingStrategy(HealingStrategy):
         self.enable_import = config.get("enable_import", True)
         self.enable_structural = config.get("enable_structural", True)
 
-    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> HealingResult:
+    async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> HealingResult:
         """Execute code healing logic via unified strategy."""
         agent.log_info("Executing code healing...")
 

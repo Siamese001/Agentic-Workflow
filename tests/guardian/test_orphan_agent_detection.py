@@ -144,7 +144,7 @@ class OrphanAgentDetector:
         if not discovery_path.exists():
             raise FileNotFoundError(f"agent_discovery_full.json not found at {discovery_path}")
 
-        with open(discovery_path, "r", encoding="utf-8") as f:
+        with open(discovery_path, encoding="utf-8") as f:
             self.agents = json.load(f)
 
         self.agent_classes = {agent["class_name"] for agent in self.agents}

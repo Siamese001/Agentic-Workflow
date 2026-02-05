@@ -11,9 +11,10 @@ FUNCTIONAL TESTS: Verify agents are actually registered and working.
 
 from __future__ import annotations
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parents[5]

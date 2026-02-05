@@ -79,7 +79,7 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
         self._import_cache: dict[str, bool] = {}
         self._available_agents: list[str] | None = None
 
-    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> OrchestrationResult:
+    async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> OrchestrationResult:
         """Execute orchestration logic via unified strategy."""
         agent.log_info(f"Executing L3 orchestration in {self.mode} mode...")
 

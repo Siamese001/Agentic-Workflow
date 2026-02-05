@@ -39,7 +39,6 @@ from agentic_core.L5_safety.validators.anti_patterns.type_erasure_detector impor
     TypeErasureDetector,
 )
 
-
 # ============================================================================
 # Test Fixtures
 # ============================================================================

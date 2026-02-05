@@ -2,10 +2,10 @@
 
 from agentic_core.integration.component_factory import (
     ComponentFactory,
-    get_verification_gate,
-    get_human_review_queue,
     get_detection_emitter,
+    get_human_review_queue,
     get_meta_learning_service,
+    get_verification_gate,
 )
 from agentic_core.primitives.feature_flags import FeatureFlagManager
 

@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -23,11 +23,11 @@ class GovernanceResult:
     """Result of governance validation with deterministic scoring."""
 
     passed: bool
-    issues: List[str]
+    issues: list[str]
     risk_level: str
     score: float | None = None
     protocol: str | None = None
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self) -> None:
         if self.metadata is None:
@@ -42,7 +42,7 @@ class GovernanceShieldDeterministic:
     external dependencies or LLM calls.
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """
         Initialize with governance validation configuration.
 
@@ -89,7 +89,7 @@ class GovernanceShieldDeterministic:
 
         Moved to Deterministic: Pure keyword-based risk classification
         """
-        issues: List[str] = []
+        issues: list[str] = []
         risk_scores = {"high": 0, "medium": 0, "low": 0}
 
         content_lower = content.lower()
@@ -130,7 +130,7 @@ class GovernanceShieldDeterministic:
 
         Moved to Deterministic: Pure regex pattern matching
         """
-        issues: List[str] = []
+        issues: list[str] = []
         privacy_matches = []
 
         # Check privacy patterns (deterministic regex matching)
@@ -162,7 +162,7 @@ class GovernanceShieldDeterministic:
 
         Moved to Deterministic: Pure forbidden pattern detection
         """
-        issues: List[str] = []
+        issues: list[str] = []
         forbidden_matches = []
 
         # Check forbidden patterns (deterministic regex matching)

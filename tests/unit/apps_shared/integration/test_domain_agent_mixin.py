@@ -1,11 +1,11 @@
 """Tests for DomainAgentMixin."""
 
+from agentic_core.primitives.feature_flags import FeatureFlagManager
 from apps_shared.integration.domain_agent_mixin import (
     DomainAgentMixin,
-    RGDomainMixin,
     LICDomainMixin,
+    RGDomainMixin,
 )
-from agentic_core.primitives.feature_flags import FeatureFlagManager
 
 
 class MockDomainAgent(DomainAgentMixin):

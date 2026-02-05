@@ -6,16 +6,17 @@ apps_rg and apps_lic with proper domain isolation and cross-domain
 protection.
 """
 
-import pytest
 import time
 from unittest.mock import Mock, patch
 
+import pytest
+
 # Test imports - these will need to be implemented
 try:
-    from apps_rg.engines.RgHealingOrchestratorAgent import RgHealingOrchestratorAgent
     from apps_lic.engines.LicHealingOrchestratorAgent import LicHealingOrchestratorAgent
-    from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
     from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
+    from apps_rg.engines.RgHealingOrchestratorAgent import RgHealingOrchestratorAgent
+    from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 except ImportError as e:
     pytest.skip(f"Apps not yet enhanced with full meta-learning: {e}", allow_module_level=True)
 

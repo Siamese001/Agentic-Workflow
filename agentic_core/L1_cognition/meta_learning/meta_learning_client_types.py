@@ -195,10 +195,11 @@ class MetaLearningClient:
     def _initialize_redis(self) -> None:
         """Initialize Redis connection with fallback to local cache."""
         try:
+            from pathlib import Path
+
             from agentic_core.L5_safety.validators.RedisSovereignAgent import (
                 get_redis_sovereign,
             )
-            from pathlib import Path
 
             redis_agent = get_redis_sovereign(Path.cwd())
             self._redis_client = redis_agent.get_client()
@@ -210,10 +211,11 @@ class MetaLearningClient:
     def _initialize_pinecone(self) -> None:
         """Initialize Pinecone connection."""
         try:
+            from pathlib import Path
+
             from agentic_core.L5_safety.validators.PineconeSovereignAgent import (
                 PineconeSovereignAgent,
             )
-            from pathlib import Path
 
             pinecone_agent = PineconeSovereignAgent(Path.cwd())
             if pinecone_agent.status == "ONLINE":
@@ -496,10 +498,11 @@ class MetaLearningClient:
     def _generate_embedding(self, violation: dict[str, Any]) -> list[float] | None:
         """Generate embedding for a violation using the embedding service."""
         try:
+            from pathlib import Path
+
             from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import (
                 EmbeddingSovereignAgent,
             )
-            from pathlib import Path
 
             embedding_agent = EmbeddingSovereignAgent(Path.cwd())
             v_type = violation.get("type", "")

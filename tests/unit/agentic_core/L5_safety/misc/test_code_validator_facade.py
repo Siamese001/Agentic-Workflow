@@ -10,12 +10,13 @@ Tests the facade conversion of CodeValidatorAgent including:
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import Mock, patch
 
+import pytest
+
 from agentic_core.base_agents.UnifiedAgent import (
-    ValidationResult,
     CodeValidatorStrategy,
+    ValidationResult,
 )
 
 
@@ -231,20 +232,20 @@ class TestLegacyCompatibility:
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
             CodeValidatorAgent,
         )
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         assert issubclass(CodeValidatorAgent, SovereignBaseAgent)
 
     def test_factory_functions_exist(self):
         """Test factory functions exist."""
         from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
-            create_legacy_syntax_validator,
-            create_legacy_canon_validator,
             create_legacy_async_validator,
+            create_legacy_canon_validator,
             create_legacy_print_validator,
+            create_legacy_syntax_validator,
         )
 
         assert callable(create_legacy_syntax_validator)

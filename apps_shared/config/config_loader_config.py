@@ -13,9 +13,9 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
-from typing import Any, Dict, Optional, Union
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 try:
     import yaml
@@ -30,7 +30,7 @@ class ConfigLoadResult:
     """Result of configuration loading operation."""
 
     success: bool
-    config: Dict[str, Any]
+    config: dict[str, Any]
     errors: list[str]
     source: str
 
@@ -46,16 +46,16 @@ class ConfigLoader:
     - Fallback to hardcoded values
     """
 
-    def __init__(self, config_root: Optional[Union[str, Path]] = None):
+    def __init__(self, config_root: str | Path | None = None):
         """Initialize config loader with root directory."""
         self.config_root = Path(config_root or "config/agent_configs")
-        self._cache: Dict[str, ConfigLoadResult] = {}
+        self._cache: dict[str, ConfigLoadResult] = {}
 
     def load_config(
         self,
         agent_name: str,
-        config_file: Optional[str] = None,
-        fallback_config: Optional[Dict[str, Any]] = None,
+        config_file: str | None = None,
+        fallback_config: dict[str, Any] | None = None,
     ) -> ConfigLoadResult:
         """
         Load configuration for a specific agent.
@@ -106,7 +106,7 @@ class ConfigLoader:
         return yaml_path
 
     def _load_from_file(
-        self, config_path: Path, fallback_config: Optional[Dict[str, Any]] = None
+        self, config_path: Path, fallback_config: dict[str, Any] | None = None
     ) -> ConfigLoadResult:
         """Load configuration from file."""
         try:
@@ -126,7 +126,7 @@ class ConfigLoader:
                         source="none",
                     )
 
-            with open(config_path, "r", encoding="utf-8") as f:
+            with open(config_path, encoding="utf-8") as f:
                 if config_path.suffix.lower() == ".yaml" or config_path.suffix.lower() == ".yml":
                     if not YAML_AVAILABLE:
                         return ConfigLoadResult(
@@ -177,7 +177,7 @@ class ConfigLoader:
 
         return result
 
-    def _set_nested_key(self, config: Dict[str, Any], key: str, value: Any) -> None:
+    def _set_nested_key(self, config: dict[str, Any], key: str, value: Any) -> None:
         """Set nested configuration key using dot notation."""
         keys = key.split(".")
         current = config
@@ -189,7 +189,7 @@ class ConfigLoader:
 
         current[keys[-1]] = value
 
-    def reload_config(self, agent_name: str, config_file: Optional[str] = None) -> ConfigLoadResult:
+    def reload_config(self, agent_name: str, config_file: str | None = None) -> ConfigLoadResult:
         """Force reload of configuration (clears cache)."""
         cache_key = f"{agent_name}:{config_file or 'default'}"
         if cache_key in self._cache:
@@ -197,7 +197,7 @@ class ConfigLoader:
         return self.load_config(agent_name, config_file)
 
     def validate_config(
-        self, config: Dict[str, Any], schema: Optional[Dict[str, Any]] = None
+        self, config: dict[str, Any], schema: dict[str, Any] | None = None
     ) -> ConfigLoadResult:
         """Validate configuration against optional schema."""
         errors = []
@@ -215,7 +215,7 @@ class ConfigLoader:
             success=len(errors) == 0, config=config, errors=errors, source="validation"
         )
 
-    def _validate_against_schema(self, config: Dict[str, Any], schema: Dict[str, Any]) -> list[str]:
+    def _validate_against_schema(self, config: dict[str, Any], schema: dict[str, Any]) -> list[str]:
         """Validate configuration against schema (basic implementation)."""
         errors = []
 
@@ -235,7 +235,7 @@ class ConfigLoader:
 _config_loader = None
 
 
-def get_config_loader(config_root: Optional[Union[str, Path]] = None) -> ConfigLoader:
+def get_config_loader(config_root: str | Path | None = None) -> ConfigLoader:
     """Get global config loader instance."""
     global _config_loader
     if _config_loader is None:
@@ -245,9 +245,9 @@ def get_config_loader(config_root: Optional[Union[str, Path]] = None) -> ConfigL
 
 def load_agent_config(
     agent_name: str,
-    config_file: Optional[str] = None,
-    fallback_config: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    config_file: str | None = None,
+    fallback_config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Convenience function to load agent configuration.
 

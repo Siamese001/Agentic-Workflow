@@ -25,8 +25,8 @@ HARDENED INVARIANTS:
 
 from __future__ import annotations
 
-import ast
 import argparse
+import ast
 import hashlib
 import json
 import logging
@@ -34,10 +34,9 @@ import os
 import platform
 import subprocess
 import sys
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from dataclasses import asdict, dataclass, field
-from typing import Dict, List, Optional
 
 # ==============================================================================
 # IMPORT STRATEGY: Inherit strict SSOT paths from production environment
@@ -75,15 +74,15 @@ class ForensicAgentRecord:
     layer: str
     file_path: str
     class_name: str
-    mro_signature: List[str]  # Critical for Point 8.3 (Mixin Order)
+    mro_signature: list[str]  # Critical for Point 8.3 (Mixin Order)
     status: str  # ACTIVE | STUB | GHOST | INVALID | SYNTAX_ERROR
-    methods_detected: List[str]
+    methods_detected: list[str]
     # Evidence (drift-proofing)
     file_sha256: str = ""
     file_size_bytes: int = 0
     # Selection transparency
     selection_reason: str = ""
-    selection_candidates: List[str] = field(default_factory=list)
+    selection_candidates: list[str] = field(default_factory=list)
     # Parse/validation diagnostics
     parse_error: str = ""
     # Convenience booleans for audit matrix
@@ -108,7 +107,7 @@ def safe_unparse(node: ast.AST) -> str:
         return node.__class__.__name__
 
 
-def extract_precise_mro(node: ast.ClassDef) -> List[str]:
+def extract_precise_mro(node: ast.ClassDef) -> list[str]:
     """
     Extracts base classes in exact declaration order to detect 'Inheritance Traps'.
     Example: class MyAgent(SafetyMixin, BaseAgent) -> ["SafetyMixin", "BaseAgent"]
@@ -173,7 +172,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
             return record
 
         # Collect all classes, then deterministically select best candidate
-        classes: List[ast.ClassDef] = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+        classes: list[ast.ClassDef] = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
         record.selection_candidates = [c.name for c in classes]
 
         def score(cls: ast.ClassDef) -> int:
@@ -243,7 +242,7 @@ def atomic_write(path: Path, data: str) -> None:
     os.replace(tmp, path)
 
 
-def run_forensic_discovery(out_path: Optional[Path] = None) -> int:
+def run_forensic_discovery(out_path: Path | None = None) -> int:
     project_root = get_validated_project_root()
 
     # 1. Load the Candidate List from SSOT
@@ -319,7 +318,7 @@ def run_forensic_discovery(out_path: Optional[Path] = None) -> int:
         manifest["ignored_artifacts"], key=lambda r: (r["agent_name"], r["file_path"])
     )
 
-    counts: Dict[str, int] = {}
+    counts: dict[str, int] = {}
     for r in manifest["environment_under_test"] + manifest["ignored_artifacts"]:
         counts[r["status"]] = counts.get(r["status"], 0) + 1
     manifest["counts"] = dict(sorted(counts.items(), key=lambda kv: kv[0]))

@@ -96,13 +96,13 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                             "ci": {"purpose": "CI/CD pipeline scripts"},
                             "config": {"purpose": "Configuration scripts"},
                             "installation": {"purpose": "Installation and setup scripts"},
-                            "general_scripts": {"purpose": "General maintenance scripts"}
-                        }
+                            "general_scripts": {"purpose": "General maintenance scripts"},
+                        },
                     },
                     "security": {"purpose": "Security scanning and enforcement"},
                     "sensors": {"purpose": "System monitoring and health checks"},
-                    "bootstrap": {"purpose": "Bootstrap and discovery files"}
-                }
+                    "bootstrap": {"purpose": "Bootstrap and discovery files"},
+                },
             },
             "L1_cognition": {"purpose": "Cognitive processing and thought patterns"},
             "L2_execution": {"purpose": "Tool execution and action handling"},
@@ -114,8 +114,8 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "purpose": "Configuration management and environment settings",
                 "subfolders": {
                     "blueprint_sovereign": {"purpose": "Sovereign blueprint configurations"},
-                    "core": {"purpose": "Core configuration files and settings"}
-                }
+                    "core": {"purpose": "Core configuration files and settings"},
+                },
             },
             "schemas": {"purpose": "Data models, message schemas, and validation rules"},
             "prompt_governance": {
@@ -138,7 +138,10 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "patterns": {"purpose": "Architectural and behavioral patterns for agents"},
             "semantic_memory": {"purpose": "Vector storage and semantic retrieval systems"},
             "knowledge": {"purpose": "Knowledge management and RAG systems"},
-            "interfaces": {"purpose": "Standardized internal API contracts and protocols", "weight": 100},
+            "interfaces": {
+                "purpose": "Standardized internal API contracts and protocols",
+                "weight": 100,
+            },
             "integration": {"purpose": "Integration utilities and cross-system adapters"},
             "primitives": {"purpose": "Core primitive types and foundational data structures"},
         },
@@ -243,7 +246,19 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
     "apps_shared": {
         "depth": 2,
         "purpose": "Global utilities and shared logic accessible by all apps and core.",
-        "subfolders": ["agents", "config", "core_components", "data", "tools", "utils", "common_utils", "mixins", "scripts", "integration", "llm"],
+        "subfolders": [
+            "agents",
+            "config",
+            "core_components",
+            "data",
+            "tools",
+            "utils",
+            "common_utils",
+            "mixins",
+            "scripts",
+            "integration",
+            "llm",
+        ],
         # [HARDENING] 2026-01-27: Strict Shared-Layer Independence
         "forbidden_imports": ["apps_rg", "apps_lic"],
         "ast_signals": {
@@ -310,7 +325,16 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
     "ops_scripts": {
         "depth": 2,
         "purpose": "Standalone utility scripts (formerly root scripts/).",
-        "subfolders": ["ci", "maintenance", "security", "setup", "governance", "hooks", "simulations", "general"],
+        "subfolders": [
+            "ci",
+            "maintenance",
+            "security",
+            "setup",
+            "governance",
+            "hooks",
+            "simulations",
+            "general",
+        ],
     },
     "archives": {
         "depth": 3,
@@ -349,17 +373,25 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "reports": {
                 "purpose": "Categorized assessment and execution reports.",
                 "subfolders": {
-                    "assessments": {"purpose": "Gap analyses, architectural assessments, and strategic reports"},
+                    "assessments": {
+                        "purpose": "Gap analyses, architectural assessments, and strategic reports"
+                    },
                     "coverage": {"purpose": "Test coverage reports and code quality metrics"},
-                    "telemetry": {"purpose": "System telemetry, performance metrics, and observability data"},
-                    "security": {"purpose": "Security assessments, vulnerability scans, and safety reports"},
-                    "audit": {"purpose": "Structural audits, drift analysis, and compliance reports"},
-                    "missions": {"purpose": "High-level mission execution traces and runtime logs"}
-                }
+                    "telemetry": {
+                        "purpose": "System telemetry, performance metrics, and observability data"
+                    },
+                    "security": {
+                        "purpose": "Security assessments, vulnerability scans, and safety reports"
+                    },
+                    "audit": {
+                        "purpose": "Structural audits, drift analysis, and compliance reports"
+                    },
+                    "missions": {"purpose": "High-level mission execution traces and runtime logs"},
+                },
             },
             "architecture": {},
             "plans": {},
-            "technical": {}
+            "technical": {},
         },
     },
     ".github": {
@@ -1079,13 +1111,13 @@ POLYGLOT_DOMAIN_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
     "apps_rg": {
         "signal_keywords": APP_RG_STRING_TERMS,
         "match_threshold": 2,
-        "extensions": [".yaml", ".yml", ".json"]
+        "extensions": [".yaml", ".yml", ".json"],
     },
     "apps_lic": {
         "signal_keywords": APP_LIC_STRING_TERMS,
         "match_threshold": 2,
-        "extensions": [".yaml", ".yml", ".json"]
-    }
+        "extensions": [".yaml", ".yml", ".json"],
+    },
 }
 
 # === CORE LAYER GRAVITY RULES (Internal dependency direction) ===
@@ -1504,12 +1536,24 @@ ROOT_PROTECTED_FILES: frozenset[str] = _STATIC_ROOT_PROTECTED_FILES | _DYNAMIC_R
 
 # 2. ENFORCE ROOT PURITY
 # Only these folders are allowed at the project root level
-PROJECT_ROOT_WHITELIST: Final[frozenset[str]] = frozenset({
-    "agentic_core", "apps_rg", "apps_lic", "apps_shared",
-    "ops_scripts", "tests", "docs", "data", "archives",
-    ".git", ".github", 
-    ".gravity_state", ".backup", ".vscode"
-})
+PROJECT_ROOT_WHITELIST: Final[frozenset[str]] = frozenset(
+    {
+        "agentic_core",
+        "apps_rg",
+        "apps_lic",
+        "apps_shared",
+        "ops_scripts",
+        "tests",
+        "docs",
+        "data",
+        "archives",
+        ".git",
+        ".github",
+        ".gravity_state",
+        ".backup",
+        ".vscode",
+    }
+)
 
 # [SSOT] STRICT ROOT POLICY: Any file NOT in this list or matching these patterns
 # is considered "Drift" and must be routed via ARTIFACT_ROUTING_MAP.

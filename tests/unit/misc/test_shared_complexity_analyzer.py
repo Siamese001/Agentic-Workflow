@@ -5,7 +5,6 @@ Tests for agentic_core.L4_state.utils.complexity_analyzer
 
 import ast
 
-
 from agentic_core.L4_state.utils.complexity_analyzer import (
     analyze_file_complexity,
     calculate_mccabe_complexity,

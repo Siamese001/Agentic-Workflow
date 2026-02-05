@@ -16,10 +16,11 @@ from __future__ import annotations
 
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ class Alert:
     message: str
     timestamp: str
     source: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     acknowledged: bool = False
 
 
@@ -63,7 +64,7 @@ class HealthCheck:
     message: str
     duration_ms: float
     timestamp: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -94,7 +95,7 @@ class RecursionMonitor:
 
     def __init__(
         self,
-        alert_callback: Optional[Callable[[Alert], None]] = None,
+        alert_callback: Callable[[Alert], None] | None = None,
         health_check_interval_sec: int = 30,
         metrics_retention_hours: int = 24,
     ):
@@ -111,9 +112,9 @@ class RecursionMonitor:
         self.metrics_retention_hours = metrics_retention_hours
 
         # Metrics storage
-        self._metrics_history: List[RecursionSnapshot] = []
-        self._alerts: List[Alert] = []
-        self._health_checks: List[HealthCheck] = []
+        self._metrics_history: list[RecursionSnapshot] = []
+        self._alerts: list[Alert] = []
+        self._health_checks: list[HealthCheck] = []
 
         # Thresholds
         self._thresholds = {
@@ -126,13 +127,13 @@ class RecursionMonitor:
 
         # Circuit breaker state
         self._circuit_open = False
-        self._circuit_open_until: Optional[datetime] = None
+        self._circuit_open_until: datetime | None = None
         self._consecutive_failures = 0
         self._failure_threshold = 5
 
         # Performance baseline
-        self._baseline_response_time_ms: Optional[float] = None
-        self._response_times: List[float] = []
+        self._baseline_response_time_ms: float | None = None
+        self._response_times: list[float] = []
 
         Logger.info("[RecursionMonitor] Initialized with production settings")
 
@@ -185,7 +186,7 @@ class RecursionMonitor:
         active_recursions: int,
         total_spawns: int,
         successful_spawns: int,
-        depths: List[int],
+        depths: list[int],
         memory_bytes: int,
         cache_hits: int,
         cache_misses: int,
@@ -260,7 +261,7 @@ class RecursionMonitor:
         else:
             return HealthStatus.HEALTHY
 
-    def run_health_checks(self) -> List[HealthCheck]:
+    def run_health_checks(self) -> list[HealthCheck]:
         """
         Run all health checks and return results.
 
@@ -420,7 +421,7 @@ class RecursionMonitor:
         severity: AlertSeverity,
         message: str,
         source: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> Alert:
         """Create and store an alert."""
         alert = Alert(
@@ -449,9 +450,9 @@ class RecursionMonitor:
 
     def get_alerts(
         self,
-        severity: Optional[AlertSeverity] = None,
+        severity: AlertSeverity | None = None,
         unacknowledged_only: bool = False,
-    ) -> List[Alert]:
+    ) -> list[Alert]:
         """Get alerts with optional filtering."""
         alerts = self._alerts
 
@@ -491,11 +492,11 @@ class RecursionMonitor:
             return True
         return False
 
-    def get_thresholds(self) -> Dict[str, float]:
+    def get_thresholds(self) -> dict[str, float]:
         """Get current monitoring thresholds."""
         return self._thresholds.copy()
 
-    def get_metrics_summary(self) -> Dict[str, Any]:
+    def get_metrics_summary(self) -> dict[str, Any]:
         """Get summary of collected metrics."""
         if not self._metrics_history:
             return {

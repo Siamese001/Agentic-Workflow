@@ -54,7 +54,7 @@ class ResourceKey:
         return f"{self.prefix}:{self.namespace.value}:{self.category}:{self.identifier}"
 
     @classmethod
-    def parse(cls, key_string: str) -> "ResourceKey":
+    def parse(cls, key_string: str) -> ResourceKey:
         """Parse a key string into a ResourceKey."""
         parts = key_string.split(":")
         if len(parts) != 4:

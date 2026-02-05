@@ -6,14 +6,14 @@ detection emitters, and meta-learning services with proper feature flag integrat
 """
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
-from agentic_core.primitives.feature_flags import FeatureFlagManager
-from agentic_core.primitives.dependency_resolver import DynamicLoader
-from agentic_core.interfaces.verification_protocol import VerificationGateProtocol
-from agentic_core.interfaces.review_protocol import HumanReviewProtocol
 from agentic_core.interfaces.detection_protocol import DetectionSignalProtocol
 from agentic_core.interfaces.meta_learning_protocol import MetaLearningProtocol
+from agentic_core.interfaces.review_protocol import HumanReviewProtocol
+from agentic_core.interfaces.verification_protocol import VerificationGateProtocol
+from agentic_core.primitives.dependency_resolver import DynamicLoader
+from agentic_core.primitives.feature_flags import FeatureFlagManager
 
 logger = logging.getLogger(__name__)
 
@@ -25,13 +25,13 @@ class ComponentFactory:
     feature flag integration for all component creation.
     """
 
-    _instances: Dict[str, Any] = {}
+    _instances: dict[str, Any] = {}
 
     @classmethod
     def get_verification_gate(
         cls,
         use_adapter: bool = True,
-    ) -> Optional[VerificationGateProtocol]:
+    ) -> VerificationGateProtocol | None:
         """Get verification gate instance.
 
         Args:
@@ -70,7 +70,7 @@ class ComponentFactory:
     def get_human_review_queue(
         cls,
         use_adapter: bool = True,
-    ) -> Optional[HumanReviewProtocol]:
+    ) -> HumanReviewProtocol | None:
         """Get human review queue instance.
 
         Args:
@@ -105,7 +105,7 @@ class ComponentFactory:
         return instance
 
     @classmethod
-    def get_detection_emitter(cls) -> Optional[DetectionSignalProtocol]:
+    def get_detection_emitter(cls) -> DetectionSignalProtocol | None:
         """Get detection signal emitter instance.
 
         Returns:
@@ -125,7 +125,7 @@ class ComponentFactory:
         return instance
 
     @classmethod
-    def get_meta_learning_service(cls) -> Optional[MetaLearningProtocol]:
+    def get_meta_learning_service(cls) -> MetaLearningProtocol | None:
         """Get meta-learning service instance.
 
         Returns:
@@ -151,7 +151,7 @@ class ComponentFactory:
         logger.info("ComponentFactory: Cleared all instances")
 
     @classmethod
-    def get_component_status(cls) -> Dict[str, Any]:
+    def get_component_status(cls) -> dict[str, Any]:
         """Get status of all components.
 
         Returns:
@@ -180,23 +180,23 @@ class ComponentFactory:
 # Convenience functions
 def get_verification_gate(
     use_adapter: bool = True,
-) -> Optional[VerificationGateProtocol]:
+) -> VerificationGateProtocol | None:
     """Get verification gate instance."""
     return ComponentFactory.get_verification_gate(use_adapter)
 
 
 def get_human_review_queue(
     use_adapter: bool = True,
-) -> Optional[HumanReviewProtocol]:
+) -> HumanReviewProtocol | None:
     """Get human review queue instance."""
     return ComponentFactory.get_human_review_queue(use_adapter)
 
 
-def get_detection_emitter() -> Optional[DetectionSignalProtocol]:
+def get_detection_emitter() -> DetectionSignalProtocol | None:
     """Get detection signal emitter instance."""
     return ComponentFactory.get_detection_emitter()
 
 
-def get_meta_learning_service() -> Optional[MetaLearningProtocol]:
+def get_meta_learning_service() -> MetaLearningProtocol | None:
     """Get meta-learning service instance."""
     return ComponentFactory.get_meta_learning_service()

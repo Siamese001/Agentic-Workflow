@@ -8,7 +8,7 @@ and graceful degradation patterns.
 import logging
 import os
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class FeatureFlagManager:
     All flags default to False for safe rollout.
     """
 
-    FLAGS: Dict[str, FeatureFlag] = {
+    FLAGS: dict[str, FeatureFlag] = {
         "ENABLE_META_LEARNING": FeatureFlag(
             name="ENABLE_META_LEARNING",
             default=False,
@@ -69,10 +69,10 @@ class FeatureFlagManager:
         ),
     }
 
-    _override_cache: Dict[str, bool] = {}
+    _override_cache: dict[str, bool] = {}
 
     @classmethod
-    def is_enabled(cls, flag_name: str, agent_name: Optional[str] = None) -> bool:
+    def is_enabled(cls, flag_name: str, agent_name: str | None = None) -> bool:
         """Check if feature flag is enabled.
 
         Args:
@@ -145,7 +145,7 @@ class FeatureFlagManager:
         return flag.required_for_healing if flag else False
 
     @classmethod
-    def get_all_flags(cls) -> Dict[str, bool]:
+    def get_all_flags(cls) -> dict[str, bool]:
         """Get current state of all flags.
 
         Returns:
@@ -154,7 +154,7 @@ class FeatureFlagManager:
         return {name: cls.is_enabled(name) for name in cls.FLAGS.keys()}
 
     @classmethod
-    def get_healing_required_flags(cls) -> Dict[str, bool]:
+    def get_healing_required_flags(cls) -> dict[str, bool]:
         """Get flags required for healing operations.
 
         Returns:
@@ -197,7 +197,7 @@ class FeatureFlagManager:
         logger.info(f"[FLAG] Registered: {flag.name}")
 
     @classmethod
-    def get_flag_info(cls, flag_name: str) -> Optional[Dict[str, Any]]:
+    def get_flag_info(cls, flag_name: str) -> dict[str, Any] | None:
         """Get information about a flag.
 
         Args:

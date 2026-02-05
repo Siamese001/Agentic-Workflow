@@ -58,10 +58,10 @@ class ChaosResilienceStrategy:
             return
 
         try:
+            from agentic_core.L4_state.validation_context import ValidationContext
             from agentic_core.L5_safety.red_teaming.chaos_engineering_agent_validator import (
                 ChaosEngineeringAgent,
             )
-            from agentic_core.L4_state.validation_context import ValidationContext
 
             ctx = ValidationContext()
             self._agent = ChaosEngineeringAgent(ctx=ctx)

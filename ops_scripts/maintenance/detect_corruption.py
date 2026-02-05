@@ -7,10 +7,9 @@ Scans Python files for syntax errors and potential corruption patterns.
 import ast
 import re
 from pathlib import Path
-from typing import List, Tuple
 
 
-def detect_corrupted_files(project_root: Path) -> List[Tuple[Path, int, str]]:
+def detect_corrupted_files(project_root: Path) -> list[tuple[Path, int, str]]:
     """
     Scan all Python files for syntax errors.
 
@@ -39,7 +38,7 @@ def detect_corrupted_files(project_root: Path) -> List[Tuple[Path, int, str]]:
     return corrupted
 
 
-def detect_corruption_patterns(project_root: Path) -> List[Tuple[Path, int, str]]:
+def detect_corruption_patterns(project_root: Path) -> list[tuple[Path, int, str]]:
     """
     Scan for common corruption patterns in Python files.
 

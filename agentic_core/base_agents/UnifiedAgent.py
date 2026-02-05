@@ -19,7 +19,7 @@ import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -44,12 +44,12 @@ class ValidationResult:
     """Standardized validation result across all validator agents."""
 
     passed: bool
-    issues: List[str]
-    suggestions: List[str]
-    score: Optional[float] = None
-    metadata: Optional[Dict[str, Any]] = None
+    issues: list[str]
+    suggestions: list[str]
+    score: float | None = None
+    metadata: dict[str, Any] | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "passed": self.passed,
@@ -66,13 +66,13 @@ class OrchestrationResult:
 
     completed: bool
     stage: str
-    signals: List[str]
-    artifacts: List[Dict[str, Any]] = field(default_factory=list)
-    next_actions: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    signals: list[str]
+    artifacts: list[dict[str, Any]] = field(default_factory=list)
+    next_actions: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "completed": self.completed,
@@ -91,11 +91,11 @@ class HealingResult:
 
     violations_found: int
     violations_fixed: int
-    errors: List[str]
-    skipped: List[str]
-    artifacts: List[Dict[str, Any]] = field(default_factory=list)
+    errors: list[str]
+    skipped: list[str]
+    artifacts: list[dict[str, Any]] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "violations_found": self.violations_found,
@@ -109,20 +109,20 @@ class HealingResult:
 class BaseStrategy(ABC):
     """Base strategy for unified agent implementations."""
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize strategy with configuration."""
         self._config = config
 
     @abstractmethod
     async def execute(
-        self, agent: "UnifiedAgent", **kwargs: Any
-    ) -> Union[ValidationResult, OrchestrationResult, HealingResult, Dict[str, Any]]:
+        self, agent: UnifiedAgent, **kwargs: Any
+    ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Execute strategy logic."""
         pass
 
     def heal_repository(
-        self, agent: "UnifiedAgent", dry_run: bool, execute: bool, **kwargs: Any
-    ) -> Dict[str, int]:
+        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any
+    ) -> dict[str, int]:
         """Base healing implementation."""
         return {
             "violations_found": 0,
@@ -131,7 +131,7 @@ class BaseStrategy(ABC):
             "skipped": [],
         }
 
-    def heal(self, agent: "UnifiedAgent", violation: Dict[str, Any]) -> Dict[str, Any]:
+    def heal(self, agent: UnifiedAgent, violation: dict[str, Any]) -> dict[str, Any]:
         """Base violation healing."""
         return {
             "status": "skipped",
@@ -154,7 +154,7 @@ class BaseStrategy(ABC):
 class ValidatorStrategy(BaseStrategy):
     """Strategy for validator agents."""
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize validator strategy with configuration."""
         super().__init__(config)
         self.validation_rules = config.get("validation_rules", {})
@@ -163,7 +163,7 @@ class ValidatorStrategy(BaseStrategy):
         self.forbidden_content = config.get("forbidden_content", [])
         self.required_content = config.get("required_content", [])
 
-    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> ValidationResult:
+    async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> ValidationResult:
         """Execute validation logic."""
         agent.log_info(f"Executing {agent._category.value} validation...")
 
@@ -177,9 +177,9 @@ class ValidatorStrategy(BaseStrategy):
             )
 
         # Run validation rules
-        issues: List[str] = []
-        suggestions: List[str] = []
-        score: Optional[float] = None
+        issues: list[str] = []
+        suggestions: list[str] = []
+        score: float | None = None
 
         for rule_name, rule_config in self.validation_rules.items():
             result = self._apply_validation_rule(target_data, rule_name, rule_config)
@@ -210,7 +210,7 @@ class ValidatorStrategy(BaseStrategy):
             metadata={"rules_applied": list(self.validation_rules.keys())},
         )
 
-    def _get_target_data(self, agent: "UnifiedAgent") -> Optional[Any]:
+    def _get_target_data(self, agent: UnifiedAgent) -> Any | None:
         """Extract target data from agent context."""
         ctx = getattr(agent, "ctx", None)
         if ctx:
@@ -221,12 +221,12 @@ class ValidatorStrategy(BaseStrategy):
         return None
 
     def _apply_validation_rule(
-        self, data: Any, rule_name: str, rule_config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, data: Any, rule_name: str, rule_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Apply a single validation rule."""
-        issues: List[str] = []
-        suggestions: List[str] = []
-        score: Optional[float] = None
+        issues: list[str] = []
+        suggestions: list[str] = []
+        score: float | None = None
 
         rule_type = rule_config.get("type", "pattern_match")
         data_str = self._to_string(data).lower()
@@ -262,7 +262,7 @@ class ValidatorStrategy(BaseStrategy):
 
         return {"issues": issues, "suggestions": suggestions, "score": score}
 
-    def _calculate_keyword_score(self, data: Dict[str, Any], reference: str) -> float:
+    def _calculate_keyword_score(self, data: dict[str, Any], reference: str) -> float:
         """Calculate keyword match score between data and reference."""
         ref_words = set(re.findall(r"\b[a-zA-Z]{3,}\b", reference.lower()))
         stop_words = set(self._config.get("stop_words", []))
@@ -279,21 +279,21 @@ class ValidatorStrategy(BaseStrategy):
 class OrchestrationStrategy(BaseStrategy):
     """Strategy for orchestrator agents."""
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize orchestration strategy with configuration."""
         super().__init__(config)
         self.workflow_steps = config.get("workflow_steps", [])
         self.signal_handlers = config.get("signal_handlers", {})
         self.retry_config = config.get("retry_config", {"max_retries": 3})
 
-    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> OrchestrationResult:
+    async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> OrchestrationResult:
         """Execute orchestration logic."""
         agent.log_info(f"Executing {agent._category.value} orchestration...")
 
-        completed_steps: List[str] = []
-        signals: List[str] = []
-        artifacts: List[Dict[str, Any]] = []
-        errors: List[str] = []
+        completed_steps: list[str] = []
+        signals: list[str] = []
+        artifacts: list[dict[str, Any]] = []
+        errors: list[str] = []
 
         for step in self.workflow_steps:
             step_name = step.get("name", "unknown")
@@ -327,8 +327,8 @@ class OrchestrationStrategy(BaseStrategy):
         )
 
     async def _execute_workflow_step(
-        self, agent: "UnifiedAgent", step: Dict[str, Any], **kwargs: Any
-    ) -> Dict[str, Any]:
+        self, agent: UnifiedAgent, step: dict[str, Any], **kwargs: Any
+    ) -> dict[str, Any]:
         """Execute a single workflow step."""
         step_type = step.get("type", "agent_call")
         step_name = step.get("name", "unknown")
@@ -343,9 +343,9 @@ class OrchestrationStrategy(BaseStrategy):
         else:
             return {"signals": [f"step_{step_name}_completed"], "artifacts": []}
 
-    def _determine_next_actions(self, completed_steps: List[str], signals: List[str]) -> List[str]:
+    def _determine_next_actions(self, completed_steps: list[str], signals: list[str]) -> list[str]:
         """Determine next actions based on completed steps and signals."""
-        actions: List[str] = []
+        actions: list[str] = []
 
         if "validation_failed" in signals:
             actions.append("retry_validation")
@@ -360,23 +360,23 @@ class OrchestrationStrategy(BaseStrategy):
 class HealingStrategy(BaseStrategy):
     """Strategy for healer agents."""
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize healing strategy with configuration."""
         super().__init__(config)
         self.healing_rules = config.get("healing_rules", {})
         self.auto_fix = config.get("auto_fix", False)
         self.dry_run_default = config.get("dry_run_default", True)
 
-    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> HealingResult:
+    async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> HealingResult:
         """Execute healing logic."""
         agent.log_info(f"Executing {agent._category.value} healing...")
 
         dry_run = kwargs.get("dry_run", self.dry_run_default)
         violations_found = 0
         violations_fixed = 0
-        errors: List[str] = []
-        skipped: List[str] = []
-        artifacts: List[Dict[str, Any]] = []
+        errors: list[str] = []
+        skipped: list[str] = []
+        artifacts: list[dict[str, Any]] = []
 
         violations = self._scan_violations(agent)
         violations_found = len(violations)
@@ -401,9 +401,9 @@ class HealingStrategy(BaseStrategy):
             artifacts=artifacts,
         )
 
-    def _scan_violations(self, agent: "UnifiedAgent") -> List[Dict[str, Any]]:
+    def _scan_violations(self, agent: UnifiedAgent) -> list[dict[str, Any]]:
         """Scan for violations in the repository."""
-        violations: List[Dict[str, Any]] = []
+        violations: list[dict[str, Any]] = []
 
         for rule_name, rule_config in self.healing_rules.items():
             rule_type = rule_config.get("type", "pattern_match")
@@ -420,7 +420,7 @@ class HealingStrategy(BaseStrategy):
 
         return violations
 
-    def _attempt_fix(self, agent: "UnifiedAgent", violation: Dict[str, Any]) -> Dict[str, Any]:
+    def _attempt_fix(self, agent: UnifiedAgent, violation: dict[str, Any]) -> dict[str, Any]:
         """Attempt to fix a violation."""
         if not self.auto_fix:
             return {"fixed": False, "artifacts": []}
@@ -428,8 +428,8 @@ class HealingStrategy(BaseStrategy):
         return {"fixed": False, "artifacts": []}
 
     def heal_repository(
-        self, agent: "UnifiedAgent", dry_run: bool, execute: bool, **kwargs: Any
-    ) -> Dict[str, int]:
+        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any
+    ) -> dict[str, int]:
         """Heal repository violations."""
         import asyncio
 
@@ -454,7 +454,7 @@ class HealingStrategy(BaseStrategy):
 class GenericStrategy(BaseStrategy):
     """Strategy for generic agents."""
 
-    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> Dict[str, Any]:
+    async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> dict[str, Any]:
         """Execute generic agent logic."""
         agent.log_info(f"Executing {agent._category.value} agent...")
 
@@ -483,22 +483,22 @@ class LocationHealingStrategy(HealingStrategy):
     - Archive operations
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with location healing configuration."""
         super().__init__(config)
         self.project_root = config.get("project_root")
         self.backup_enabled = config.get("backup_enabled", True)
         self.auto_fix_imports = config.get("auto_fix_imports", True)
 
-    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> HealingResult:
+    async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> HealingResult:
         """Execute location healing logic via unified strategy."""
         agent.log_info("Executing location healing...")
 
         violations_found = 0
         violations_fixed = 0
-        errors: List[str] = []
-        skipped: List[str] = []
-        artifacts: List[Dict[str, Any]] = []
+        errors: list[str] = []
+        skipped: list[str] = []
+        artifacts: list[dict[str, Any]] = []
 
         # Delegate to the actual healer methods on the agent if available
         violation = kwargs.get("violation")
@@ -521,8 +521,8 @@ class LocationHealingStrategy(HealingStrategy):
         )
 
     def heal_repository(
-        self, agent: "UnifiedAgent", dry_run: bool, execute: bool, **kwargs: Any
-    ) -> Dict[str, Any]:
+        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any
+    ) -> dict[str, Any]:
         """Heal repository location violations."""
         # Delegate to agent's heal_repository if available
         if hasattr(agent, "heal_repository"):
@@ -552,7 +552,7 @@ class StructuralValidatorStrategy(ValidatorStrategy):
     - Documentation validation
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with structural validation configuration."""
         super().__init__(config)
         self.enable_gravity = config.get("enable_gravity", True)
@@ -561,12 +561,12 @@ class StructuralValidatorStrategy(ValidatorStrategy):
         self.enable_documentation = config.get("enable_documentation", True)
         self.agent_suffix = config.get("agent_suffix", "Agent")
 
-    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> ValidationResult:
+    async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> ValidationResult:
         """Execute structural validation logic via unified strategy."""
         agent.log_info("Executing structural validation...")
 
-        issues: List[str] = []
-        suggestions: List[str] = []
+        issues: list[str] = []
+        suggestions: list[str] = []
 
         # Delegate to the actual validator methods on the agent if available
         file_path = kwargs.get("file_path")
@@ -599,7 +599,7 @@ class CodeValidatorStrategy(ValidatorStrategy):
     - Print statement policy enforcement
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with code validation configuration."""
         super().__init__(config)
         self.check_syntax = config.get("check_syntax", True)
@@ -608,12 +608,12 @@ class CodeValidatorStrategy(ValidatorStrategy):
         self.check_prints = config.get("check_prints", True)
         self.print_policy = config.get("print_policy", "warn")
 
-    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> ValidationResult:
+    async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> ValidationResult:
         """Execute code validation logic via unified strategy."""
         agent.log_info("Executing code validation...")
 
-        issues: List[str] = []
-        suggestions: List[str] = []
+        issues: list[str] = []
+        suggestions: list[str] = []
 
         # Delegate to the actual validator methods on the agent if available
         file_path = kwargs.get("file_path")
@@ -647,7 +647,7 @@ class StructureHealingStrategy(HealingStrategy):
     - Blueprint compliance healing
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with structure healing configuration."""
         super().__init__(config)
         self.enable_gravity = config.get("enable_gravity", True)
@@ -656,16 +656,16 @@ class StructureHealingStrategy(HealingStrategy):
         self.enable_territory = config.get("enable_territory", True)
         self.dry_run = config.get("dry_run", True)
 
-    async def execute(self, agent: "UnifiedAgent", **kwargs: Any) -> HealingResult:
+    async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> HealingResult:
         """Execute structure healing logic via unified strategy."""
         agent.log_info("Executing structure healing...")
 
         kwargs.get("dry_run", self.dry_run)  # Reserved for future use
         violations_found = 0
         violations_fixed = 0
-        errors: List[str] = []
-        skipped: List[str] = []
-        artifacts: List[Dict[str, Any]] = []
+        errors: list[str] = []
+        skipped: list[str] = []
+        artifacts: list[dict[str, Any]] = []
 
         # Delegate to the actual healer methods on the agent if available
         file_path = kwargs.get("file_path")
@@ -686,13 +686,13 @@ class StructureHealingStrategy(HealingStrategy):
         )
 
     def heal_repository(
-        self, agent: "UnifiedAgent", dry_run: bool, execute: bool, **kwargs: Any
-    ) -> Dict[str, Any]:
+        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any
+    ) -> dict[str, Any]:
         """Heal repository structure violations."""
         violations_found = 0
         violations_fixed = 0
-        errors: List[str] = []
-        actions: List[str] = []
+        errors: list[str] = []
+        actions: list[str] = []
 
         # Delegate to agent's heal_all if file_path provided
         file_path = kwargs.get("file_path")
@@ -713,7 +713,7 @@ class StructureHealingStrategy(HealingStrategy):
 
 
 # Strategy factory for creating appropriate strategies
-STRATEGY_MAP: Dict[AgentCategory, type] = {
+STRATEGY_MAP: dict[AgentCategory, type] = {
     AgentCategory.VALIDATOR: ValidatorStrategy,
     AgentCategory.ORCHESTRATOR: OrchestrationStrategy,
     AgentCategory.HEALER: HealingStrategy,
@@ -736,8 +736,8 @@ class UnifiedAgent(SovereignBaseAgent):
 
     _category: AgentCategory = field(default=AgentCategory.GENERIC)
     _config_name: str = field(default="generic_agent")
-    _unified_config: Dict[str, Any] = field(default_factory=dict)
-    _strategy: Optional[BaseStrategy] = field(default=None, init=False)
+    _unified_config: dict[str, Any] = field(default_factory=dict)
+    _strategy: BaseStrategy | None = field(default=None, init=False)
 
     def __post_init__(self) -> None:
         """Initialize unified agent with category and configuration."""
@@ -753,7 +753,7 @@ class UnifiedAgent(SovereignBaseAgent):
             f"UnifiedAgent initialized: category={self._category.value}, config={self._config_name}"
         )
 
-    def _load_unified_config(self) -> Dict[str, Any]:
+    def _load_unified_config(self) -> dict[str, Any]:
         """Load configuration for the unified agent."""
         try:
             from apps_shared.config.config_loader_config import load_agent_config
@@ -773,7 +773,7 @@ class UnifiedAgent(SovereignBaseAgent):
 
     async def execute(
         self, **kwargs: Any
-    ) -> Union[ValidationResult, OrchestrationResult, HealingResult, Dict[str, Any]]:
+    ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Unified execute method delegating to category strategy."""
         if self._strategy is None:
             self._strategy = self._create_strategy()
@@ -781,7 +781,7 @@ class UnifiedAgent(SovereignBaseAgent):
 
     def execute_sync(
         self, **kwargs: Any
-    ) -> Union[ValidationResult, OrchestrationResult, HealingResult, Dict[str, Any]]:
+    ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Synchronous wrapper for execute."""
         import asyncio
 
@@ -800,13 +800,13 @@ class UnifiedAgent(SovereignBaseAgent):
 
     def heal_repository(
         self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """Unified healing implementation."""
         if self._strategy is None:
             self._strategy = self._create_strategy()
         return self._strategy.heal_repository(self, dry_run, execute, **kwargs)
 
-    def heal(self, violation: Dict[str, Any]) -> Dict[str, Any]:
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Unified violation healing."""
         if self._strategy is None:
             self._strategy = self._create_strategy()
@@ -822,7 +822,7 @@ class UnifiedAgent(SovereignBaseAgent):
             self._strategy = self._create_strategy()
         return self._strategy
 
-    def get_config(self) -> Dict[str, Any]:
+    def get_config(self) -> dict[str, Any]:
         """Get the agent's configuration."""
         return self._unified_config
 

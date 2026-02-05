@@ -13,11 +13,9 @@ These tests verify components integrate correctly.
 from __future__ import annotations
 
 import json
+import sys
 import tempfile
 from pathlib import Path
-
-
-import sys
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))

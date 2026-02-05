@@ -10,9 +10,10 @@ Phase 1: Critical Tier - CodeHealerAgent, CompositeGuardrailAgent
 from __future__ import annotations
 
 import ast
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, TypeVar
+from typing import Any, TypeVar
 
 from .surgical_context import (
     ASTCoordinate,
@@ -34,13 +35,13 @@ class SurgicalHealingResult:
     errors: int
     skipped: int
     details: str = ""
-    artifacts: List[Dict[str, Any]] = None
+    artifacts: list[dict[str, Any]] = None
 
     def __post_init__(self):
         if self.artifacts is None:
             self.artifacts = []
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to standard heal response format."""
         return {
             "status": self.status,
@@ -78,9 +79,9 @@ class SurgicalHealingAdapter:
     def create_context_from_detection(
         self,
         file_path: Path,
-        detection_result: Dict[str, Any],
+        detection_result: dict[str, Any],
         detection_method: str,
-    ) -> Optional[SurgicalContext]:
+    ) -> SurgicalContext | None:
         """
         Create SurgicalContext from legacy detection result.
 
@@ -139,9 +140,9 @@ class SurgicalHealingAdapter:
     def create_batch_context(
         self,
         file_path: Path,
-        detection_results: List[Dict[str, Any]],
+        detection_results: list[dict[str, Any]],
         detection_method: str,
-    ) -> Optional[SurgicalContext]:
+    ) -> SurgicalContext | None:
         """Create SurgicalContext for multiple violations in one file."""
         if not file_path.exists() or not detection_results:
             return None

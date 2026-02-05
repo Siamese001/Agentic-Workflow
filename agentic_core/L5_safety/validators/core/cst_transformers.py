@@ -7,9 +7,9 @@ while preserving comments, whitespace, and formatting.
 
 from __future__ import annotations
 
-import libcst as cst
 from dataclasses import dataclass
-from typing import List, Optional
+
+import libcst as cst
 
 
 @dataclass
@@ -17,8 +17,8 @@ class ImportTarget:
     """Target for import removal operations."""
 
     line_number: int
-    module_name: Optional[str] = None  # For specific module targeting
-    name: Optional[str] = None  # For specific name targeting in from-imports
+    module_name: str | None = None  # For specific module targeting
+    name: str | None = None  # For specific name targeting in from-imports
 
 
 @dataclass
@@ -26,7 +26,7 @@ class DocstringTarget:
     """Target for docstring insertion operations."""
 
     line_number: int
-    name: Optional[str] = None  # Class or function name
+    name: str | None = None  # Class or function name
     node_type: str = "class"  # "class" or "function"
     docstring: str = '"""TODO: Add docstring."""'  # Docstring to insert
 
@@ -46,7 +46,7 @@ class SurgicalImportRemover(cst.CSTTransformer):
     Uses a string-based approach to identify and remove imports by name.
     """
 
-    def __init__(self, targets: List[ImportTarget]):
+    def __init__(self, targets: list[ImportTarget]):
         """
         Initialize with import removal targets.
 
@@ -161,7 +161,7 @@ class SurgicalDocstringInserter(cst.CSTTransformer):
     Uses name-based matching since CST nodes don't have position metadata.
     """
 
-    def __init__(self, targets: List[DocstringTarget]):
+    def __init__(self, targets: list[DocstringTarget]):
         """
         Initialize with docstring insertion targets.
 
@@ -257,7 +257,7 @@ class SurgicalBareExceptFixer(cst.CSTTransformer):
     Fixes ALL bare except clauses found (no position metadata needed).
     """
 
-    def __init__(self, targets: Optional[List[BareExceptTarget]] = None, fix_all: bool = True):
+    def __init__(self, targets: list[BareExceptTarget] | None = None, fix_all: bool = True):
         """
         Initialize bare except fixer.
 
@@ -308,7 +308,7 @@ class SurgicalFutureImportInserter(cst.CSTTransformer):
     Handles proper placement after shebang and module docstrings.
     """
 
-    def __init__(self, future_imports: Optional[List[str]] = None):
+    def __init__(self, future_imports: list[str] | None = None):
         """
         Initialize with future imports to add.
 
@@ -480,7 +480,7 @@ class SurgicalTypeHintInserter(cst.CSTTransformer):
     Adds return type hints and parameter type hints while preserving formatting.
     """
 
-    def __init__(self, targets: List[TypeHintTarget]):
+    def __init__(self, targets: list[TypeHintTarget]):
         """
         Initialize with type hint targets.
 
@@ -519,7 +519,7 @@ class SurgicalTypeHintInserter(cst.CSTTransformer):
         return updated_node
 
 
-def create_type_hint_inserter(violations) -> Optional[SurgicalTypeHintInserter]:
+def create_type_hint_inserter(violations) -> SurgicalTypeHintInserter | None:
     """
     Factory function to create type hint inserter from violations.
 
@@ -566,7 +566,7 @@ def create_type_hint_inserter(violations) -> Optional[SurgicalTypeHintInserter]:
     return None
 
 
-def create_trailing_whitespace_fixer(violations) -> Optional[SurgicalTrailingWhitespaceFixer]:
+def create_trailing_whitespace_fixer(violations) -> SurgicalTrailingWhitespaceFixer | None:
     """
     Factory function to create trailing whitespace fixer from violations.
 
@@ -584,7 +584,7 @@ def create_trailing_whitespace_fixer(violations) -> Optional[SurgicalTrailingWhi
 
 def create_blank_line_normalizer(
     violations, max_blank_lines: int = 2
-) -> Optional[SurgicalBlankLineNormalizer]:
+) -> SurgicalBlankLineNormalizer | None:
     """
     Factory function to create blank line normalizer from violations.
 
@@ -601,7 +601,7 @@ def create_blank_line_normalizer(
     return None
 
 
-def create_import_remover(violations) -> Optional[SurgicalImportRemover]:
+def create_import_remover(violations) -> SurgicalImportRemover | None:
     """
     Factory function to create import remover from violations.
 
@@ -633,7 +633,7 @@ def create_import_remover(violations) -> Optional[SurgicalImportRemover]:
     return None
 
 
-def create_docstring_inserter(violations) -> Optional[SurgicalDocstringInserter]:
+def create_docstring_inserter(violations) -> SurgicalDocstringInserter | None:
     """
     Factory function to create docstring inserter from violations.
 
@@ -682,7 +682,7 @@ def create_docstring_inserter(violations) -> Optional[SurgicalDocstringInserter]
     return None
 
 
-def create_bare_except_fixer(violations) -> Optional[SurgicalBareExceptFixer]:
+def create_bare_except_fixer(violations) -> SurgicalBareExceptFixer | None:
     """
     Factory function to create bare except fixer from violations.
 
@@ -709,8 +709,8 @@ def create_bare_except_fixer(violations) -> Optional[SurgicalBareExceptFixer]:
 
 
 def create_future_import_inserter(
-    violations, future_imports: Optional[List[str]] = None
-) -> Optional[SurgicalFutureImportInserter]:
+    violations, future_imports: list[str] | None = None
+) -> SurgicalFutureImportInserter | None:
     """
     Factory function to create future import inserter from violations.
 

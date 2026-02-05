@@ -4,8 +4,9 @@ Simplified test for L4 vs L5 agent distribution analysis.
 Focuses on counting and analysis without importing problematic agents.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 class TestAgentDistributionMetrics:

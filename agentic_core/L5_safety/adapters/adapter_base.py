@@ -21,7 +21,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Generic, Optional, TypeVar
+from typing import Any, Generic, TypeVar
 
 from agentic_core.L5_safety.core.circuit_breaker import CircuitBreaker, get_breaker
 
@@ -38,7 +38,7 @@ class AdapterContext:
     timestamp: datetime = field(default_factory=datetime.utcnow)
     risk_level: str = "medium"  # low, medium, high
     bypass_validation: bool = False
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -47,12 +47,12 @@ class AdapterResult:
 
     success: bool
     data: Any = None
-    error: Optional[str] = None
+    error: str | None = None
     skipped: bool = False
-    skip_reason: Optional[str] = None
-    audit_trail: Dict[str, Any] = field(default_factory=dict)
+    skip_reason: str | None = None
+    audit_trail: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "success": self.success,
@@ -94,7 +94,7 @@ class AdapterBase(ABC, Generic[T]):
         self,
         legacy_agent: T,
         service_name: str,
-        circuit_breaker_config: Optional[Dict[str, Any]] = None,
+        circuit_breaker_config: dict[str, Any] | None = None,
     ):
         """
         Initialize adapter with legacy agent.
@@ -110,7 +110,7 @@ class AdapterBase(ABC, Generic[T]):
             f"adapter_{service_name}",
             **(circuit_breaker_config or {}),
         )
-        self._audit_log: list[Dict[str, Any]] = []
+        self._audit_log: list[dict[str, Any]] = []
         self._verification_gate = None  # Lazy load
 
         logger.info(
@@ -189,9 +189,7 @@ class AdapterBase(ABC, Generic[T]):
         """
         return True
 
-    def _pre_execute_hook(
-        self, context: AdapterContext, *args, **kwargs
-    ) -> Optional[AdapterResult]:
+    def _pre_execute_hook(self, context: AdapterContext, *args, **kwargs) -> AdapterResult | None:
         """
         Hook called before execution.
 
@@ -223,7 +221,7 @@ class AdapterBase(ABC, Generic[T]):
         """
         return result
 
-    def _on_error(self, error: Exception, context: AdapterContext) -> Optional[AdapterResult]:
+    def _on_error(self, error: Exception, context: AdapterContext) -> AdapterResult | None:
         """
         Error handler for legacy execution failures.
 
@@ -242,8 +240,8 @@ class AdapterBase(ABC, Generic[T]):
         self,
         action: str,
         context: AdapterContext,
-        result: Optional[AdapterResult] = None,
-        error: Optional[Exception] = None,
+        result: AdapterResult | None = None,
+        error: Exception | None = None,
     ) -> None:
         """Log to audit trail for V10 observability."""
         try:
@@ -264,7 +262,7 @@ class AdapterBase(ABC, Generic[T]):
 
     def execute(
         self,
-        context: Optional[AdapterContext] = None,
+        context: AdapterContext | None = None,
         *args,
         **kwargs,
     ) -> AdapterResult:
@@ -389,7 +387,7 @@ class AdapterBase(ABC, Generic[T]):
 
         return result
 
-    def get_audit_log(self) -> list[Dict[str, Any]]:
+    def get_audit_log(self) -> list[dict[str, Any]]:
         """Get the audit log for this adapter."""
         return list(self._audit_log)
 
@@ -397,7 +395,7 @@ class AdapterBase(ABC, Generic[T]):
         """Clear the audit log."""
         self._audit_log.clear()
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get adapter status for dashboard."""
         return {
             "service_name": self._service_name,
@@ -421,7 +419,7 @@ class HealingAdapter(AdapterBase[T]):
         self,
         legacy_agent: T,
         service_name: str,
-        project_root: Optional[Path] = None,
+        project_root: Path | None = None,
     ):
         super().__init__(legacy_agent, service_name)
         self._project_root = project_root or Path.cwd()

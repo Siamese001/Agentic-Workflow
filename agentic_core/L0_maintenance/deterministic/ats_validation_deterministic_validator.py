@@ -17,7 +17,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Set
+from typing import Any
 
 
 @dataclass
@@ -25,9 +25,9 @@ class ATSValidationResult:
     """Result of ATS validation with deterministic scoring."""
 
     passed: bool
-    issues: List[str]
+    issues: list[str]
     score: float | None = None
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self) -> None:
         if self.metadata is None:
@@ -42,7 +42,7 @@ class ATSValidationDeterministic:
     executed without external dependencies or LLM calls.
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """
         Initialize with ATS validation configuration.
 
@@ -54,10 +54,10 @@ class ATSValidationDeterministic:
         self.allowed_non_standard_sections = config.get("allowed_non_standard_sections", [])
         self.keyword_config = config.get("keyword_optimization", {})
         self.min_score_threshold = self.keyword_config.get("min_score_threshold", 0.3)
-        self.stop_words: Set[str] = set(self.keyword_config.get("stop_words", []))
+        self.stop_words: set[str] = set(self.keyword_config.get("stop_words", []))
 
     def validate_ats_compatibility(
-        self, resume: Dict[str, Any], job_desc: str | None = None
+        self, resume: dict[str, Any], job_desc: str | None = None
     ) -> ATSValidationResult:
         """
         Validate ATS compatibility using purely deterministic logic.
@@ -69,7 +69,7 @@ class ATSValidationDeterministic:
         Returns:
             ATSValidationResult with deterministic findings
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         # Check for ATS-unfriendly patterns (deterministic regex matching)
         issues.extend(self._check_ats_unfriendly_patterns(resume))
@@ -91,13 +91,13 @@ class ATSValidationDeterministic:
             metadata={"validation_type": "deterministic"},
         )
 
-    def _check_ats_unfriendly_patterns(self, resume: Dict[str, Any]) -> List[str]:
+    def _check_ats_unfriendly_patterns(self, resume: dict[str, Any]) -> list[str]:
         """
         Check for ATS-unfriendly patterns using deterministic regex.
 
         Moved to Deterministic: Pure pattern matching logic
         """
-        issues: List[str] = []
+        issues: list[str] = []
         full_content = json.dumps(resume, ensure_ascii=False)
 
         for pattern in self.ats_unfriendly_patterns:
@@ -106,13 +106,13 @@ class ATSValidationDeterministic:
 
         return issues
 
-    def _validate_section_headers(self, resume: Dict[str, Any]) -> List[str]:
+    def _validate_section_headers(self, resume: dict[str, Any]) -> list[str]:
         """
         Validate section headers using deterministic string comparison.
 
         Moved to Deterministic: Pure string validation logic
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         for section_name in resume.keys():
             if section_name.startswith("_"):
@@ -132,7 +132,7 @@ class ATSValidationDeterministic:
 
         return issues
 
-    def calculate_keyword_score(self, resume: Dict[str, Any], job_desc: str) -> float:
+    def calculate_keyword_score(self, resume: dict[str, Any], job_desc: str) -> float:
         """
         Calculate keyword match score using deterministic algorithm.
 
@@ -164,7 +164,7 @@ class ATSValidationDeterministic:
         # Normalize case for comparison
         return text.lower()
 
-    def extract_keywords(self, text: str, min_length: int = 3) -> Set[str]:
+    def extract_keywords(self, text: str, min_length: int = 3) -> set[str]:
         """
         Extract keywords from text using deterministic regex.
 
@@ -175,13 +175,13 @@ class ATSValidationDeterministic:
         # Remove stop words
         return words - self.stop_words
 
-    def validate_formatting(self, content: str) -> List[str]:
+    def validate_formatting(self, content: str) -> list[str]:
         """
         Validate content formatting using deterministic rules.
 
         Moved to Deterministic: Pure formatting validation
         """
-        issues: List[str] = []
+        issues: list[str] = []
 
         # Check for problematic characters
         if re.search(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]", content):

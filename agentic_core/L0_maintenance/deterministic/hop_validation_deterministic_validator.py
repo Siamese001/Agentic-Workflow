@@ -17,7 +17,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -25,10 +25,10 @@ class HOPValidationResult:
     """Result of HOP validation with deterministic scoring."""
 
     passed: bool
-    issues: List[str]
+    issues: list[str]
     score: float | None = None
     classification: str | None = None
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self) -> None:
         if self.metadata is None:
@@ -38,19 +38,19 @@ class HOPValidationResult:
 class HOP1ProfileDeterministic:
     """Deterministic profile classification for HOP1."""
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with HOP1 classification rules."""
         self.industry_keywords = config.get("industry_keywords", {})
         self.seniority_keywords = config.get("seniority_keywords", {})
         self.min_profile_completeness = config.get("min_profile_completeness", 0.7)
 
-    def classify_profile_heuristic(self, profile: Dict[str, Any]) -> HOPValidationResult:
+    def classify_profile_heuristic(self, profile: dict[str, Any]) -> HOPValidationResult:
         """
         Classify profile using deterministic heuristic rules.
 
         Moved to Deterministic: Pure rule-based classification
         """
-        issues: List[str] = []
+        issues: list[str] = []
         score = 0.0
         classification = "unknown"
 
@@ -86,13 +86,13 @@ class HOP1ProfileDeterministic:
             metadata={"hop": "HOP1", "validation_type": "deterministic"},
         )
 
-    def _calculate_profile_completeness(self, profile: Dict[str, Any]) -> float:
+    def _calculate_profile_completeness(self, profile: dict[str, Any]) -> float:
         """Calculate profile completeness using deterministic rules."""
         required_fields = ["name", "experience", "education", "skills"]
         present_fields = sum(1 for field in required_fields if field in profile and profile[field])
         return present_fields / len(required_fields)
 
-    def _classify_industry(self, profile: Dict[str, Any]) -> str:
+    def _classify_industry(self, profile: dict[str, Any]) -> str:
         """Classify industry using deterministic keyword matching."""
         profile_text = json.dumps(profile).lower()
 
@@ -103,7 +103,7 @@ class HOP1ProfileDeterministic:
 
         return "unknown"
 
-    def _classify_seniority(self, profile: Dict[str, Any]) -> str:
+    def _classify_seniority(self, profile: dict[str, Any]) -> str:
         """Classify seniority using deterministic keyword matching."""
         profile_text = json.dumps(profile).lower()
 
@@ -118,18 +118,18 @@ class HOP1ProfileDeterministic:
 class HOP3DataExtractionDeterministic:
     """Deterministic data extraction for HOP3."""
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with HOP3 extraction rules."""
         self.required_entities = config.get("required_entities", [])
         self.entity_patterns = config.get("entity_patterns", {})
 
-    def extract_grounded_entities(self, json_data: Dict[str, Any]) -> HOPValidationResult:
+    def extract_grounded_entities(self, json_data: dict[str, Any]) -> HOPValidationResult:
         """
         Extract grounded entities from JSON data.
 
         Moved to Deterministic: Pure JSON parsing and extraction
         """
-        issues: List[str] = []
+        issues: list[str] = []
         extracted_entities = {}
 
         # Validate JSON structure (deterministic validation)
@@ -163,7 +163,7 @@ class HOP3DataExtractionDeterministic:
             metadata={"hop": "HOP3", "extracted_entities": extracted_entities},
         )
 
-    def _apply_entity_patterns(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
+    def _apply_entity_patterns(self, json_data: dict[str, Any]) -> dict[str, Any]:
         """Apply deterministic entity extraction patterns."""
         matches = {}
         json_text = json.dumps(json_data)
@@ -179,17 +179,17 @@ class HOP3DataExtractionDeterministic:
 class HOP4ConditionDeterministic:
     """Deterministic condition checking for HOP4."""
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with HOP4 condition rules."""
         self.conditions = config.get("conditions", [])
 
-    def check_conditions(self, context: Dict[str, Any]) -> HOPValidationResult:
+    def check_conditions(self, context: dict[str, Any]) -> HOPValidationResult:
         """
         Check routing conditions using deterministic boolean logic.
 
         Moved to Deterministic: Pure boolean condition evaluation
         """
-        issues: List[str] = []
+        issues: list[str] = []
         passed_conditions = []
 
         for condition in self.conditions:
@@ -209,8 +209,8 @@ class HOP4ConditionDeterministic:
         )
 
     def _evaluate_condition(
-        self, condition: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, condition: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate single condition using deterministic logic."""
         condition_type = condition.get("type", "equals")
         field = condition.get("field")
@@ -240,7 +240,7 @@ class HOP4ConditionDeterministic:
 class HOP6PlaceholderDeterministic:
     """Deterministic placeholder validation for HOP6."""
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with HOP6 placeholder patterns."""
         self.placeholder_patterns = config.get(
             "placeholder_patterns", [r"\[.*?\]", r"\{.*?\}", r"<.*?>", r"\$\{.*?\}"]
@@ -252,7 +252,7 @@ class HOP6PlaceholderDeterministic:
 
         Moved to Deterministic: Pure pattern matching
         """
-        issues: List[str] = []
+        issues: list[str] = []
         found_placeholders = []
 
         for pattern in self.placeholder_patterns:
@@ -275,18 +275,18 @@ class HOP6PlaceholderDeterministic:
 class HOP7GateDecisionDeterministic:
     """Deterministic gate decision classification for HOP7."""
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with HOP7 gate decision rules."""
         self.violation_categories = config.get("violation_categories", {})
         self.decision_thresholds = config.get("decision_thresholds", {})
 
-    def classify_gate_decision(self, violations: List[Dict[str, Any]]) -> HOPValidationResult:
+    def classify_gate_decision(self, violations: list[dict[str, Any]]) -> HOPValidationResult:
         """
         Classify gate decision using deterministic rule-based logic.
 
         Moved to Deterministic: Pure rule-based classification
         """
-        issues: List[str] = []
+        issues: list[str] = []
         decision = "proceed"
         violation_counts = {}
 
@@ -317,7 +317,7 @@ class HOP7GateDecisionDeterministic:
             metadata={"hop": "HOP7", "violation_counts": violation_counts},
         )
 
-    def _calculate_decision_score(self, violation_counts: Dict[str, str], decision: str) -> float:
+    def _calculate_decision_score(self, violation_counts: dict[str, str], decision: str) -> float:
         """Calculate decision score using deterministic algorithm."""
         base_scores = {"proceed": 1.0, "retry": 0.5, "reject": 0.0}
         base_score = base_scores.get(decision, 0.0)
@@ -336,7 +336,7 @@ class HOPValidationDeterministic:
     Consolidates all HOP deterministic logic into a single interface.
     """
 
-    def __init__(self, hop_config: Dict[str, Any]) -> None:
+    def __init__(self, hop_config: dict[str, Any]) -> None:
         """Initialize with HOP configuration."""
         self.hop1 = HOP1ProfileDeterministic(hop_config.get("hop1", {}))
         self.hop3 = HOP3DataExtractionDeterministic(hop_config.get("hop3", {}))
@@ -344,15 +344,15 @@ class HOPValidationDeterministic:
         self.hop6 = HOP6PlaceholderDeterministic(hop_config.get("hop6", {}))
         self.hop7 = HOP7GateDecisionDeterministic(hop_config.get("hop7", {}))
 
-    def validate_hop1_profile(self, profile: Dict[str, Any]) -> HOPValidationResult:
+    def validate_hop1_profile(self, profile: dict[str, Any]) -> HOPValidationResult:
         """Validate HOP1 profile classification."""
         return self.hop1.classify_profile_heuristic(profile)
 
-    def validate_hop3_extraction(self, json_data: Dict[str, Any]) -> HOPValidationResult:
+    def validate_hop3_extraction(self, json_data: dict[str, Any]) -> HOPValidationResult:
         """Validate HOP3 data extraction."""
         return self.hop3.extract_grounded_entities(json_data)
 
-    def validate_hop4_conditions(self, context: Dict[str, Any]) -> HOPValidationResult:
+    def validate_hop4_conditions(self, context: dict[str, Any]) -> HOPValidationResult:
         """Validate HOP4 condition checking."""
         return self.hop4.check_conditions(context)
 
@@ -360,6 +360,6 @@ class HOPValidationDeterministic:
         """Validate HOP6 placeholder detection."""
         return self.hop6.validate_placeholders(content)
 
-    def validate_hop7_decision(self, violations: List[Dict[str, Any]]) -> HOPValidationResult:
+    def validate_hop7_decision(self, violations: list[dict[str, Any]]) -> HOPValidationResult:
         """Validate HOP7 gate decision classification."""
         return self.hop7.classify_gate_decision(violations)

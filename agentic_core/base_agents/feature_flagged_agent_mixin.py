@@ -7,19 +7,18 @@ HITL capabilities.
 """
 
 import logging
-from typing import Any, Callable, Dict, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
-from agentic_core.primitives.feature_flags import FeatureFlagManager
-from agentic_core.primitives.dependency_resolver import DynamicLoader
-from agentic_core.interfaces.verification_protocol import (
-    VerificationGateProtocol,
-    VerificationRequest,
-    VerificationResult,
-)
 from agentic_core.interfaces.detection_protocol import (
-    DetectionSignalProtocol,
     DetectionResult,
+    DetectionSignalProtocol,
     Severity,
+)
+from agentic_core.interfaces.meta_learning_protocol import (
+    LearningContext,
+    LearningResult,
+    MetaLearningProtocol,
 )
 from agentic_core.interfaces.review_protocol import (
     HumanReviewProtocol,
@@ -27,11 +26,13 @@ from agentic_core.interfaces.review_protocol import (
     ReviewResult,
     ReviewStatus,
 )
-from agentic_core.interfaces.meta_learning_protocol import (
-    MetaLearningProtocol,
-    LearningContext,
-    LearningResult,
+from agentic_core.interfaces.verification_protocol import (
+    VerificationGateProtocol,
+    VerificationRequest,
+    VerificationResult,
 )
+from agentic_core.primitives.dependency_resolver import DynamicLoader
+from agentic_core.primitives.feature_flags import FeatureFlagManager
 
 logger = logging.getLogger(__name__)
 
@@ -53,10 +54,10 @@ class FeatureFlaggedAgentMixin:
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self._verification_gate: Optional[VerificationGateProtocol] = None
-        self._detection_emitter: Optional[DetectionSignalProtocol] = None
-        self._review_queue: Optional[HumanReviewProtocol] = None
-        self._meta_learning: Optional[MetaLearningProtocol] = None
+        self._verification_gate: VerificationGateProtocol | None = None
+        self._detection_emitter: DetectionSignalProtocol | None = None
+        self._review_queue: HumanReviewProtocol | None = None
+        self._meta_learning: MetaLearningProtocol | None = None
         self._feature_flags_validated = False
 
     # ==================== FEATURE FLAG HELPERS ====================
@@ -77,7 +78,7 @@ class FeatureFlaggedAgentMixin:
         self,
         flag_name: str,
         enabled_fn: Callable[..., T],
-        disabled_fn: Optional[Callable[..., T]] = None,
+        disabled_fn: Callable[..., T] | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> T:
@@ -119,7 +120,7 @@ class FeatureFlaggedAgentMixin:
     # ==================== VERIFICATION GATE ====================
 
     @property
-    def verification_gate(self) -> Optional[VerificationGateProtocol]:
+    def verification_gate(self) -> VerificationGateProtocol | None:
         """Get verification gate instance (lazy loaded)."""
         if not self._is_flag_enabled("ENABLE_VERIFICATION_GATE"):
             return None
@@ -133,7 +134,7 @@ class FeatureFlaggedAgentMixin:
         file_path: str,
         action_type: str,
         target_node: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> VerificationResult:
         """Verify if an action can be performed.
 
@@ -198,11 +199,11 @@ class FeatureFlaggedAgentMixin:
         file_path: str,
         message: str,
         severity: Severity = Severity.MEDIUM,
-        target_node: Optional[str] = None,
-        suggested_fix: Optional[str] = None,
+        target_node: str | None = None,
+        suggested_fix: str | None = None,
         auto_fixable: bool = False,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> Optional[str]:
+        metadata: dict[str, Any] | None = None,
+    ) -> str | None:
         """Emit a detection signal for a violation.
 
         If ENABLE_DETECTION_SIGNAL is disabled, returns None.
@@ -255,7 +256,7 @@ class FeatureFlaggedAgentMixin:
         target_file: str,
         description: str,
         risk_level: str = "high",
-        context_bundle: Optional[Dict[str, Any]] = None,
+        context_bundle: dict[str, Any] | None = None,
         timeout_seconds: int = 3600,
     ) -> ReviewResult:
         """Submit an operation for human review.
@@ -353,7 +354,7 @@ class FeatureFlaggedAgentMixin:
         operation_type: str,
         input_hash: str,
         execution_fn: Callable[[], Any],
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> LearningResult:
         """Recall from cache or execute with learning.
 
@@ -427,8 +428,8 @@ class FeatureFlaggedAgentMixin:
     def log_audit_event(
         self,
         event_type: str,
-        data: Dict[str, Any],
-    ) -> Optional[str]:
+        data: dict[str, Any],
+    ) -> str | None:
         """Log an audit event.
 
         If ENABLE_AUDIT_TRAIL is disabled, returns None.
@@ -460,9 +461,9 @@ class FeatureFlaggedAgentMixin:
 
     def heal_with_verification(
         self,
-        violation: Dict[str, Any],
-        heal_fn: Callable[[Dict[str, Any]], Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        violation: dict[str, Any],
+        heal_fn: Callable[[dict[str, Any]], dict[str, Any]],
+    ) -> dict[str, Any]:
         """Heal a violation with full safety checks.
 
         Applies all enabled safety checks:
@@ -527,7 +528,7 @@ class FeatureFlaggedAgentMixin:
                 }
 
         # Step 4: Execute healing (with meta-learning if enabled)
-        def do_heal() -> Dict[str, Any]:
+        def do_heal() -> dict[str, Any]:
             return heal_fn(violation)
 
         if self._is_flag_enabled("ENABLE_META_LEARNING"):
@@ -570,7 +571,7 @@ class FeatureFlaggedAgentMixin:
             "skipped": [],
         }
 
-    def _classify_violation_risk(self, violation: Dict[str, Any]) -> str:
+    def _classify_violation_risk(self, violation: dict[str, Any]) -> str:
         """Classify risk level of a violation.
 
         Args:
@@ -589,7 +590,7 @@ class FeatureFlaggedAgentMixin:
 
     # ==================== CAPABILITY REPORTING ====================
 
-    def get_feature_flag_status(self) -> Dict[str, Any]:
+    def get_feature_flag_status(self) -> dict[str, Any]:
         """Get status of all feature flags for this agent.
 
         Returns:

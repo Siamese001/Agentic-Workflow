@@ -48,7 +48,9 @@ class TestNonPythonFileDeduplication(unittest.TestCase):
         file1.write_text(json_content)
         file2.write_text(json_content)
 
-        from agentic_core.L5_safety.validators.code_deduplication_agent import CodeDeduplicationAgent
+        from agentic_core.L5_safety.validators.code_deduplication_agent import (
+            CodeDeduplicationAgent,
+        )
 
         agent = CodeDeduplicationAgent()
 
@@ -73,7 +75,9 @@ nested:
         file1.write_text(yaml_content)
         file2.write_text(yaml_content)
 
-        from agentic_core.L5_safety.validators.code_deduplication_agent import CodeDeduplicationAgent
+        from agentic_core.L5_safety.validators.code_deduplication_agent import (
+            CodeDeduplicationAgent,
+        )
 
         agent = CodeDeduplicationAgent()
 
@@ -100,7 +104,9 @@ Content here.
         file1.write_text(md_content)
         file2.write_text(md_content)
 
-        from agentic_core.L5_safety.validators.code_deduplication_agent import CodeDeduplicationAgent
+        from agentic_core.L5_safety.validators.code_deduplication_agent import (
+            CodeDeduplicationAgent,
+        )
 
         agent = CodeDeduplicationAgent()
 
@@ -119,7 +125,9 @@ Content here.
         file1.write_text(text_content)
         file2.write_text(text_content)
 
-        from agentic_core.L5_safety.validators.code_deduplication_agent import CodeDeduplicationAgent
+        from agentic_core.L5_safety.validators.code_deduplication_agent import (
+            CodeDeduplicationAgent,
+        )
 
         agent = CodeDeduplicationAgent()
 
@@ -143,7 +151,9 @@ Content here.
         for filename, content in files_to_create.items():
             (self.temp_path / filename).write_text(content)
 
-        from agentic_core.L5_safety.validators.code_deduplication_agent import CodeDeduplicationAgent
+        from agentic_core.L5_safety.validators.code_deduplication_agent import (
+            CodeDeduplicationAgent,
+        )
 
         agent = CodeDeduplicationAgent()
 
@@ -169,7 +179,9 @@ Content here.
         file1.write_text(content1)
         file2.write_text(content2)
 
-        from agentic_core.L5_safety.validators.code_deduplication_agent import CodeDeduplicationAgent
+        from agentic_core.L5_safety.validators.code_deduplication_agent import (
+            CodeDeduplicationAgent,
+        )
 
         agent = CodeDeduplicationAgent()
 
@@ -194,7 +206,9 @@ Content here.
         (dir1 / "config.json").write_text(content)
         (dir2 / "config.json").write_text(content)
 
-        from agentic_core.L5_safety.validators.code_deduplication_agent import CodeDeduplicationAgent
+        from agentic_core.L5_safety.validators.code_deduplication_agent import (
+            CodeDeduplicationAgent,
+        )
 
         agent = CodeDeduplicationAgent()
 
@@ -215,7 +229,9 @@ class TestNonPythonFileExtensions(unittest.TestCase):
 
     def test_supported_extensions(self):
         """Verify agent can process common non-Python extensions."""
-        from agentic_core.L5_safety.validators.code_deduplication_agent import CodeDeduplicationAgent
+        from agentic_core.L5_safety.validators.code_deduplication_agent import (
+            CodeDeduplicationAgent,
+        )
 
         agent = CodeDeduplicationAgent()
 

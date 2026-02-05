@@ -6,7 +6,7 @@ with the feature-flagged agent system.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -19,10 +19,10 @@ class IntegrationConfig:
     ttl_seconds: int
     rate_limit_requests: int = 100
     rate_limit_window_seconds: int = 60
-    required_flags: List[str] = field(default_factory=list)
-    optional_flags: List[str] = field(default_factory=list)
+    required_flags: list[str] = field(default_factory=list)
+    optional_flags: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "domain": self.domain,

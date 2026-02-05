@@ -168,7 +168,7 @@ class EnvironmentValidator:
 
         if raise_on_missing and not valid:
             error_msg = cls._format_error_message(result)
-            raise EnvironmentError(error_msg)
+            raise OSError(error_msg)
 
         return result
 
@@ -208,7 +208,7 @@ class EnvironmentValidator:
         """
         result = cls.validate(raise_on_missing=True)
         if result.config is None:
-            raise EnvironmentError("Failed to load environment configuration")
+            raise OSError("Failed to load environment configuration")
         return result.config
 
     @classmethod
@@ -223,7 +223,7 @@ class EnvironmentValidator:
 
         if not result.valid:
             error_msg = cls._format_error_message(result)
-            raise EnvironmentError(error_msg)
+            raise OSError(error_msg)
 
         # Log optional missing variables as warnings
         if result.missing_optional:

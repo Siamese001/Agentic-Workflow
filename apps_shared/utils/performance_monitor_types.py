@@ -12,8 +12,9 @@ import functools
 import logging
 import statistics
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -234,7 +235,7 @@ class PerformanceMonitor:
         self.collector = MetricsCollector(name)
         self.thresholds = PerformanceThresholds()
 
-    def time_operation(self, operation: str) -> "OperationTimer":
+    def time_operation(self, operation: str) -> OperationTimer:
         """Create a context manager for timing an operation."""
         return OperationTimer(self, operation)
 
@@ -286,7 +287,7 @@ class OperationTimer:
         self.start_time: float = 0.0
         self.duration_ms: float = 0.0
 
-    def __enter__(self) -> "OperationTimer":
+    def __enter__(self) -> OperationTimer:
         self.start_time = time.perf_counter()
         return self
 

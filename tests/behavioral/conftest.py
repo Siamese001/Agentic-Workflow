@@ -17,13 +17,13 @@ Usage:
             assert clean == expected_golden
 """
 
-import pytest
-from unittest.mock import patch, MagicMock
-from datetime import datetime
-from typing import Any, List
-from pathlib import Path
 import uuid
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+from unittest.mock import MagicMock, patch
 
+import pytest
 
 # Frozen timestamp for all tests
 FROZEN_TIMESTAMP = datetime(2026, 1, 1, 0, 0, 0)
@@ -78,7 +78,7 @@ class DeterministicUUIDGenerator:
         self.index = 0
 
 
-def strip_volatile_fields(obj: Any, fields: List[str] = None) -> Any:
+def strip_volatile_fields(obj: Any, fields: list[str] = None) -> Any:
     """
     Recursively strip volatile fields from a dictionary or list.
 

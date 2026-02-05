@@ -20,14 +20,15 @@ Usage:
 from __future__ import annotations
 
 import logging
-import pytest
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 # Import the modules we're testing
 from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
-    discover_all_agents,
     check_compliance_gate,
+    discover_all_agents,
     get_agent_discovery_summary,
     get_structured_agent_paths,
 )
@@ -161,7 +162,7 @@ class TestAuditIntegrity:
         agent_paths = get_structured_agent_paths()
 
         # Read audit report content
-        with open(audit_report_path, "r", encoding="utf-8") as f:
+        with open(audit_report_path, encoding="utf-8") as f:
             audit_content = f.read()
 
         # Check each agent has a section in the audit
@@ -181,7 +182,7 @@ class TestAuditIntegrity:
         """
         Test that audit report follows the required structure.
         """
-        with open(audit_report_path, "r", encoding="utf-8") as f:
+        with open(audit_report_path, encoding="utf-8") as f:
             content = f.read()
 
         # Check for required sections
@@ -204,7 +205,7 @@ class TestAuditIntegrity:
 
         Per the Skeptic Rule: Every agent has debt and should have findings.
         """
-        with open(audit_report_path, "r", encoding="utf-8") as f:
+        with open(audit_report_path, encoding="utf-8") as f:
             content = f.read()
 
         # Extract agent sections - look for actual agent patterns
@@ -239,7 +240,7 @@ class TestSanityCheck:
         """
         audit_report_path = Path(__file__).parent.parent / "reports" / "optimization_audit.md"
 
-        with open(audit_report_path, "r", encoding="utf-8") as f:
+        with open(audit_report_path, encoding="utf-8") as f:
             content = f.read()
 
         # Look for "0 findings" pattern
@@ -256,7 +257,7 @@ class TestSanityCheck:
         """
         audit_report_path = Path(__file__).parent.parent / "reports" / "optimization_audit.md"
 
-        with open(audit_report_path, "r", encoding="utf-8") as f:
+        with open(audit_report_path, encoding="utf-8") as f:
             content = f.read()
 
         # Check for all 5 categories
@@ -330,7 +331,7 @@ class TestEndToEndIntegration:
         assert audit_report_path.exists(), "Pipeline requires audit report"
 
         # Step 3: Verify audit covers all agents
-        with open(audit_report_path, "r", encoding="utf-8") as f:
+        with open(audit_report_path, encoding="utf-8") as f:
             audit_content = f.read()
 
         for agent_path in paths:

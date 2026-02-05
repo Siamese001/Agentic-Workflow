@@ -9,28 +9,28 @@ Usage:
     python -m pytest tests/behavioral/capture_golden.py -k "CodeHealer" --capture-output
 """
 
-import pytest
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
+
+import pytest
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from tests.behavioral.conftest import (
-    DeterministicContext,
     FROZEN_TIMESTAMP_ISO,
+    DeterministicContext,
 )
-
 
 SNAPSHOTS_DIR = PROJECT_ROOT / "tests" / "snapshots"
 
 
 def save_golden_snapshot(
     agent_name: str,
-    test_input: Dict[str, Any],
+    test_input: dict[str, Any],
     output: Any,
     harness: DeterministicContext,
     mro_depth: int = 2,
@@ -98,7 +98,7 @@ class TestCaptureDomainPlannerGolden:
         return DeterministicContext()
 
     @pytest.fixture
-    def standard_input(self) -> Dict[str, Any]:
+    def standard_input(self) -> dict[str, Any]:
         """Standard test input for DomainPlannerAgent."""
         return {
             "task": "Plan repository healing",
@@ -136,7 +136,7 @@ class TestCaptureDomainPlannerGolden:
             result = None
 
             # Try run() method
-            if hasattr(agent, "run") and callable(getattr(agent, "run")):
+            if hasattr(agent, "run") and callable(agent.run):
                 try:
                     result = agent.run(standard_input)
                 except Exception as e:
@@ -193,7 +193,7 @@ class TestCaptureCodeHealerGolden:
         return DeterministicContext()
 
     @pytest.fixture
-    def standard_input(self) -> Dict[str, Any]:
+    def standard_input(self) -> dict[str, Any]:
         """Standard test input for CodeHealerAgent."""
         return {
             "file_path": "test_file.py",

@@ -9,6 +9,7 @@ Rationale:
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+
 from agentic_core.L0_maintenance.scripts.pascal_sovereignty_fixer import PascalSovereigntyFixer
 
 
