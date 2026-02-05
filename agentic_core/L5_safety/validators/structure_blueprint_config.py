@@ -7,6 +7,30 @@ Enforces Depth-2 for Apps/Tests and Depth-3 for the Agentic Core.
 
 CONSOLIDATED VERSION: Reduced redundancy while preserving all information.
 [CRITICAL ANALYSIS] Upgraded from Any to strict typing with Final and Mapping for immutability.
+
+CONSTITUTIONAL DESIGN PRINCIPLES:
+=================================
+
+1. STRICT OBSOLESCENCE PROTOCOL (2026-02-04):
+   "No file deletion shall occur based on naming conventions. Deletion requires an 
+   AST-based 'zero-reference' verification across the apps_lic, apps_rg, and 
+   apps_shared directories."
+   
+   - NEVER delete files based on filename patterns (e.g., "phase1", "phase2")
+   - Use AST analysis to verify ALL imports are broken
+   - Use fuzzy matching to detect renamed/moved modules
+   - Require manual verification before deletion
+   - Only mark obsolete if: ALL imports broken AND no test classes/functions exist
+
+2. TEST LAYERING PRINCIPLE (2026-02-04):
+   "Guardian scripts are strictly for runtime validation and agentic healing; 
+   they do not fulfill the requirement for 100% coverage in the /tests directory."
+   
+   - Guardian tests (tests/guardian/) = Architectural compliance validation
+   - Unit tests (tests/unit/) = Functional correctness
+   - E2E tests (tests/e2e/) = End-to-end workflows
+   - Integration tests (tests/integration/) = Component integration
+   - Guardian tests are COMPLEMENTARY to unit/e2e tests, NOT replacements
 """
 import os
 import re
@@ -216,6 +240,17 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "e2e": {
                 "purpose": "Full system user-flow simulations",
                 "subfolders": ["scenarios", "flows", "snapshots"],
+            },
+            # TYPE 4: Guardian (Architectural Compliance Validation)
+            "guardian": {
+                "purpose": "Architectural compliance validation (Red Shield validation gate)",
+                "constitutional_rules": [
+                    "Guardian tests are COMPLEMENTARY to unit/e2e tests, NOT replacements",
+                    "Guardian validates architectural compliance, NOT functional correctness",
+                    "Guardian tests do NOT fulfill 100% coverage requirements",
+                    "Guardian tests use AST-based analysis, NEVER string regex",
+                    "Guardian tests NEVER delete files based on filename patterns",
+                ],
             },
             "fixtures": {
                 "purpose": "Shared Pytest fixtures",

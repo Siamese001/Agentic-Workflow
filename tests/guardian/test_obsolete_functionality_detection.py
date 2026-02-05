@@ -9,11 +9,24 @@ Architecture Position:
 - Unit/E2E/Integration tests = Standard test coverage under tests/ folder
 - Guardian validates architectural compliance; unit tests validate functionality
 
+CONSTITUTIONAL PRINCIPLES (from SSOT structure_blueprint_config.py):
+==================================================================
+
+1. STRICT OBSOLESCENCE PROTOCOL:
+   "No file deletion shall occur based on naming conventions. Deletion requires an 
+   AST-based 'zero-reference' verification across the apps_lic, apps_rg, and 
+   apps_shared directories."
+
+2. TEST LAYERING PRINCIPLE:
+   "Guardian scripts are strictly for runtime validation and agentic healing; 
+   they do not fulfill the requirement for 100% coverage in the /tests directory."
+
 Detection Strategy (AST-based, NOT string regex):
 1. Parse files with AST to verify imports resolve to existing modules
 2. Use fuzzy matching to detect references to renamed/moved code
 3. Check if test classes/functions reference existing production code
 4. NEVER delete based on filename alone (e.g., "phase1" in name)
+5. Require manual verification before any deletion
 
 Design Pattern: Guardian tests are VALIDATION GATES that call VALIDATORS (agents).
 """
