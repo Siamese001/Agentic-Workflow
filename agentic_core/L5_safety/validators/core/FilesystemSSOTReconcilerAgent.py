@@ -149,14 +149,14 @@ class FilesystemSSOTReconcilerAgent(
 
     Enforces the SSOT blueprint by aligning the filesystem:
     - Creation: Ensures all folders in sovereign_registry exist.
-    - Archival: Moves unauthorized folders to /archives/unmapped_drift/.
+    - Archival: Moves unauthorized folders to /.healing_backups/unmapped_drift/.
     - Validation: Post-alignment check with LocationAgent/HierarchyAgent.
 
     Direction: Blueprint → Filesystem
     SSOT: structure_blueprint.py is the immutable source.
 
     Safety mechanisms:
-    - No-deletion policy (unauthorized folders are MOVED to archives).
+    - No-deletion policy (unauthorized folders are MOVED to .healing_backups/).
     - Path validation to prevent root-level accidental modifications.
     - Dry-run mode by default (auto_apply=False)
     """
@@ -194,7 +194,8 @@ class FilesystemSSOTReconcilerAgent(
             }
 
     BLUEPRINT_PATH = Path("agentic_core/config/blueprint_sovereign/structure_blueprint.py")
-    ARCHIVE_ROOT = Path("archives/unmapped_drift/")
+    # [REFACTOR 2026-02-05] Changed from archives/ to .healing_backups/ (gitignored, not indexed)
+    ARCHIVE_ROOT = Path(".healing_backups/unmapped_drift/")
 
     def __init__(self, project_root: Path, enforcement_mode: bool = True) -> None:
         """Initialize the instance."""

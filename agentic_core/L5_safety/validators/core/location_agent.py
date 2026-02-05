@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+# ruff: noqa: E501, E402
+
 from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -741,8 +743,8 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         }
 
     # SUPPLEMENTED FROM FilesystemAgent — enhances backup + cleanup capability — merged 2025-12-30
-    # [SSOT FIX 2026-01-19] Changed from .sovereign_healing_backup to archives/healing_backups
-    # Per SSOT: Only archives/ is the canonical backup location
+    # [REFACTOR 2026-02-05] Changed from archives/healing_backups to .healing_backups/
+    # Per SSOT: .healing_backups/ is gitignored and not indexed
     def _init_backup_dir(self) -> Path:
         """FACADE: Delegates to LocationHealerAgent."""
         healer = self._get_healer()
@@ -1599,7 +1601,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
             List of action dicts with results including batch_post_heal summary
         """
         actions = []
-        archives_root = self.project_root / "archives"
+        archives_root = self.project_root / ".healing_backups"
         affected_paths: list[Path] = []  # Track original + new paths for batch validation
         import_touched_paths: list[Path] = []  # Collect from import fixes for naming validation
 

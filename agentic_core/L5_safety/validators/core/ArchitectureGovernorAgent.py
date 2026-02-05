@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+# ruff: noqa: E501
+
 """ArchitectureGovernorAgent - Universal Architecture Governance
 
 Phase 1 Upgrade (2026-01-21): Activated from stub to functioning enforcer.
@@ -1626,7 +1628,8 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     return False
 
             elif decision.action == "ARCHIVE":
-                archive_path = decision.target_path or "archives/cognitive_disposition"
+                # [REFACTOR 2026-02-05] Changed from archives/ to .healing_backups/
+                archive_path = decision.target_path or ".healing_backups/cognitive_disposition"
                 Logger.info(f"    [COGNITIVE] Archiving {file_path.name} to {archive_path}")
 
                 gatekeeper = self._get_archival_gatekeeper()
