@@ -69,9 +69,7 @@ def risky_function():
 # Footer comment
 '''
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -118,9 +116,7 @@ def risky_function():
     return x + y + z  # Sum
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -162,9 +158,7 @@ def risky_function():
         return 0
 '''
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -199,9 +193,7 @@ def decorated_function():
         return 0
 '''
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -238,9 +230,7 @@ def func2():
         pass
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 

@@ -191,9 +191,7 @@ def test_case_2_terminal_independence():
         )
         print(f"  Orchestration autonomous execution: {orch_result}")
 
-        safety_result = safety_agent.heal_repository(
-            dry_run=True, auto_approve=True, terminal_test="Safety"
-        )
+        safety_result = safety_agent.heal_repository(dry_run=True, auto_approve=True, terminal_test="Safety")
         print(f"  Safety autonomous execution: {safety_result}")
 
         print("\n✅ PASS: Terminal Independence")
@@ -241,9 +239,7 @@ def test_case_3_depth_constraint_persistence():
         orchestrator = L3OrchestrationBaseAgent()
 
         # Depth 3 - should be limited
-        result_d3 = orchestrator.heal_repository(
-            dry_run=True, depth=3, max_depth=2, depth_test="level_3"
-        )
+        result_d3 = orchestrator.heal_repository(dry_run=True, depth=3, max_depth=2, depth_test="level_3")
 
         if not result_d3.get("depth_limited"):
             print(f"❌ FAIL: Depth 3 should be limited. Got: {result_d3}")
@@ -257,14 +253,10 @@ def test_case_3_depth_constraint_persistence():
         executor = L2ExecutionBaseAgent(ctx=None)
         cognition = L1CognitionBaseAgent()
 
-        exec_result = executor.heal_repository(
-            dry_run=True, depth=2, max_depth=2, layer_test="Execution"
-        )
+        exec_result = executor.heal_repository(dry_run=True, depth=2, max_depth=2, layer_test="Execution")
         print(f"  Execution at depth 2: {exec_result}")
 
-        cog_result = cognition.heal_repository(
-            dry_run=True, depth=2, max_depth=2, layer_test="Cognition"
-        )
+        cog_result = cognition.heal_repository(dry_run=True, depth=2, max_depth=2, layer_test="Cognition")
         print(f"  Cognition at depth 2: {cog_result}")
 
         # Step 4: Verify depth counter increments

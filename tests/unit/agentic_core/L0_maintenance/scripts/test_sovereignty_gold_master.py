@@ -10,7 +10,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from agentic_core.L0_maintenance.scripts.general_scripts.pascal_sovereignty_fixer import PascalSovereigntyFixer
+from agentic_core.L0_maintenance.scripts.general_scripts.pascal_sovereignty_fixer import (
+    PascalSovereigntyFixer,
+)
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parents[5]
@@ -31,17 +33,11 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         content = "from .llm_mixin import BaseLLM\nfrom ..llm_mixin import Helper"
 
         # Simulating internal logic with the actual pattern
-        regex_from = re.compile(
-            r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)"
-        )
+        regex_from = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)")
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
 
-        self.assertIn(
-            "from .LLMMixin import", updated, "Single-dot relative import should be preserved"
-        )
-        self.assertIn(
-            "from ..LLMMixin import", updated, "Double-dot relative import should be preserved"
-        )
+        self.assertIn("from .LLMMixin import", updated, "Single-dot relative import should be preserved")
+        self.assertIn("from ..LLMMixin import", updated, "Double-dot relative import should be preserved")
 
     def test_relative_import_no_dots(self):
         """Verify absolute imports still work without dots."""
@@ -49,14 +45,10 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         new_mod = "HealerMixin"
         content = "from healer_mixin import Healer"
 
-        regex_from = re.compile(
-            r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)"
-        )
+        regex_from = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)")
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
 
-        self.assertIn(
-            "from healer_mixin import", updated, "Absolute import should work without dots"
-        )
+        self.assertIn("from healer_mixin import", updated, "Absolute import should work without dots")
 
     def test_relative_import_triple_dots(self):
         """Edge Case: Triple-dot relative imports (from ...module)."""
@@ -64,9 +56,7 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         new_mod = "ConfigMixin"
         content = "from ...config_mixin_config import Config"
 
-        regex_from = re.compile(
-            r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)"
-        )
+        regex_from = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)")
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
 
         self.assertIn(
@@ -137,14 +127,10 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         # Direct module import without subpath
         content = "from .tracing_mixin import Tracer"
 
-        regex_from = re.compile(
-            r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)"
-        )
+        regex_from = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)")
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
 
-        self.assertIn(
-            "from .tracing_mixin import", updated, "Direct relative import should be updated"
-        )
+        self.assertIn("from .tracing_mixin import", updated, "Direct relative import should be updated")
 
     def test_import_alias_with_relative(self):
         """Verify import aliases work with absolute imports."""
@@ -165,9 +151,7 @@ class TestRelativeImportPatterns(unittest.TestCase):
 
     def test_single_dot_pattern(self):
         """Test single-dot relative import pattern."""
-        pattern = re.compile(
-            r"(?P<prefix>from\s+\.*)" + re.escape("old_module") + r"(?P<suffix>\s+import)"
-        )
+        pattern = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape("old_module") + r"(?P<suffix>\s+import)")
 
         test_cases = [
             ("from .old_module import func", True, "from .NEW import func"),
@@ -184,9 +168,7 @@ class TestRelativeImportPatterns(unittest.TestCase):
 
     def test_direct_module_match(self):
         """Test direct module name matching without subpaths."""
-        pattern = re.compile(
-            r"(?P<prefix>from\s+\.*)" + re.escape("mixin") + r"(?P<suffix>\s+import)"
-        )
+        pattern = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape("mixin") + r"(?P<suffix>\s+import)")
 
         # Direct module import
         content = "from .mixin import Helper"

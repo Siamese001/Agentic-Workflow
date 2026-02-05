@@ -157,9 +157,7 @@ class MigrationHelper:
     @classmethod
     def _has_method(cls, agent_class: type, method_name: str) -> bool:
         """Check if agent has a specific method."""
-        return hasattr(agent_class, method_name) and callable(
-            getattr(agent_class, method_name, None)
-        )
+        return hasattr(agent_class, method_name) and callable(getattr(agent_class, method_name, None))
 
     @classmethod
     def get_migration_status(

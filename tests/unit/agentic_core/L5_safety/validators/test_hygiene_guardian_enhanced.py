@@ -45,9 +45,7 @@ class TestHygieneGuardianNamingEnhanced:
 
         guardian._check_filename_length(test_file)
 
-        assert len(guardian.naming_violations) == 1, (
-            "Failed to detect violation in mixed delimiter file"
-        )
+        assert len(guardian.naming_violations) == 1, "Failed to detect violation in mixed delimiter file"
         assert guardian.naming_violations[0]["current_count"] == 6
         print("✅ PASS: Mixed Delimiters")
 

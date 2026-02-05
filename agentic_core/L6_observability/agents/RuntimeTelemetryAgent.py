@@ -53,9 +53,7 @@ class RuntimeTelemetryAgent(AtomicExecutionMixin, SubatomicTestingMixin, Soverei
         }
 
     @standard_heal
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -78,9 +76,7 @@ class RuntimeTelemetryAgent(AtomicExecutionMixin, SubatomicTestingMixin, Soverei
         self.metrics: dict[str, float] = {}
         self.logger = logging.getLogger("SovereignTelemetry")
 
-    def benchmark_startup(
-        self, agent_init_func: Callable, *args: Any, **kwargs: Any
-    ) -> tuple[Any, float]:
+    def benchmark_startup(self, agent_init_func: Callable, *args: Any, **kwargs: Any) -> tuple[Any, float]:
         """
         Measures the initialization time of a specific agent with high precision.
         Returns the agent instance and the duration in seconds.

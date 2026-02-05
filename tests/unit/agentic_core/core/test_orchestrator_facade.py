@@ -67,9 +67,7 @@ class TestL3OrchestrationStrategy:
             L3OrchestrationStrategy,
         )
 
-        strategy = L3OrchestrationStrategy(
-            {"workflow_steps": [], "signal_handlers": {}}, mode="unified"
-        )
+        strategy = L3OrchestrationStrategy({"workflow_steps": [], "signal_handlers": {}}, mode="unified")
         mock_agent = Mock()
         mock_agent.log_info = Mock()
 
@@ -80,13 +78,9 @@ class TestL3OrchestrationStrategy:
 
     def test_get_available_agents(self, strategy):
         """Test get_available_agents returns list."""
-        with patch(
-            "agentic_core.L3_orchestration.OrchestratorAgent.get_validated_project_root"
-        ) as mock_root:
+        with patch("agentic_core.L3_orchestration.OrchestratorAgent.get_validated_project_root") as mock_root:
             mock_root.return_value = Path.cwd()
-            with patch(
-                "agentic_core.L3_orchestration.OrchestratorAgent.get_agent_paths"
-            ) as mock_paths:
+            with patch("agentic_core.L3_orchestration.OrchestratorAgent.get_agent_paths") as mock_paths:
                 mock_paths.return_value = [
                     "/path/to/TestAgent.py",
                     "/path/to/OtherAgent.py",

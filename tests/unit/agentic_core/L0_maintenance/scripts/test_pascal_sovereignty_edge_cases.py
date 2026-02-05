@@ -10,7 +10,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from agentic_core.L0_maintenance.scripts.general_scripts.pascal_sovereignty_fixer import PascalSovereigntyFixer
+from agentic_core.L0_maintenance.scripts.general_scripts.pascal_sovereignty_fixer import (
+    PascalSovereigntyFixer,
+)
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parents[5]
@@ -33,9 +35,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
 
         compliant = self.fixer.get_compliant_name(mock_path, "MIXIN")
         # AuthMixin already ends with 'Mixin', converts to auth_mixin.py (not double suffix)
-        self.assertEqual(
-            compliant, "auth_mixin.py", "Should convert PascalCase Mixin to snake_case"
-        )
+        self.assertEqual(compliant, "auth_mixin.py", "Should convert PascalCase Mixin to snake_case")
 
     def test_mixin_already_compliant(self):
         """Edge Case: Mixins already in snake_case_mixin.py format should not be renamed."""
@@ -204,9 +204,7 @@ class TestRegexPrecision(unittest.TestCase):
 
     def test_import_as_pattern(self):
         """Test 'import x as y' pattern matching."""
-        pattern = re.compile(
-            r"(?P<prefix>import\s+)old_module(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
-        )
+        pattern = re.compile(r"(?P<prefix>import\s+)old_module(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))")
 
         test_cases = [
             ("import old_module", True),

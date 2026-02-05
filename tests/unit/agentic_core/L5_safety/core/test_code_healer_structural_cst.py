@@ -35,9 +35,7 @@ class TestStructuralHealingCST:
         # Note: Using explicit trailing spaces
         source_code = "# Comment   \ndef test():   \n    return 42   \n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -101,9 +99,7 @@ class MyClass:
         pass
 '''
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -231,9 +227,7 @@ def func2():
     return 42
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 

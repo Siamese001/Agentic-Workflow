@@ -93,9 +93,7 @@ class TestLegacyHygieneFunctionality:
         hygiene_agent._scan_directory(temp_project)
 
         # Check violations
-        orphan_violations = [
-            v for v in hygiene_agent.violations if v.violation_type == "orphaned_init"
-        ]
+        orphan_violations = [v for v in hygiene_agent.violations if v.violation_type == "orphaned_init"]
         assert len(orphan_violations) == 1
         assert orphan_violations[0].file_path == orphan_init
 
@@ -110,9 +108,7 @@ class TestLegacyHygieneFunctionality:
         hygiene_agent._scan_directory(temp_project)
 
         # Check violations
-        backup_violations = [
-            v for v in hygiene_agent.violations if v.violation_type == "stale_backup"
-        ]
+        backup_violations = [v for v in hygiene_agent.violations if v.violation_type == "stale_backup"]
         assert len(backup_violations) == 3
 
     def test_detects_temp_files(self, hygiene_agent, temp_project):
@@ -147,9 +143,7 @@ class TestPortedFileCleanupLogic:
         hygiene_agent._scan_directory(temp_project)
 
         # Check violations
-        repeated_violations = [
-            v for v in hygiene_agent.violations if v.violation_type == "repeated_filename"
-        ]
+        repeated_violations = [v for v in hygiene_agent.violations if v.violation_type == "repeated_filename"]
         assert len(repeated_violations) == 3
 
         # Verify valid file is NOT flagged
@@ -172,9 +166,7 @@ class TestPortedFileCleanupLogic:
         hygiene_agent._scan_directory(temp_project)
 
         # Check violations
-        copy_violations = [
-            v for v in hygiene_agent.violations if v.violation_type == "copy_pattern"
-        ]
+        copy_violations = [v for v in hygiene_agent.violations if v.violation_type == "copy_pattern"]
         assert len(copy_violations) == 5
 
         # Verify valid file is NOT flagged

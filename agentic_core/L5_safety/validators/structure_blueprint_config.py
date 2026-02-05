@@ -105,16 +105,27 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "subfolders": {
                     "guardrails": {
                         "purpose": "Operational L5 safety guardrail agents and components "
-                                 "(PII sanitizers, hygiene, red teaming, membranes, etc.)",
+                        "(PII sanitizers, hygiene, red teaming, membranes, etc.)",
                         "naming_convention": "snake_case_agent",  # Enforced by FileClassificationAgent
                         "ast_signals": {
                             "AGENT": {
                                 "inherits": ["SovereignBaseAgent", "SubatomicTestingMixin"],
-                                "keywords": ["guardrail", "membrane", "sanitizer", "hygiene", "redact", "scrub"],
+                                "keywords": [
+                                    "guardrail",
+                                    "membrane",
+                                    "sanitizer",
+                                    "hygiene",
+                                    "redact",
+                                    "scrub",
+                                ],
                                 "methods": ["sanitize", "scrub", "redact", "block", "heal", "execute"],
                             }
                         },
-                        "forbidden_patterns": ["*Agent.py", "*Membrane.py", "*Strategy.py"],  # Force snake_case
+                        "forbidden_patterns": [
+                            "*Agent.py",
+                            "*Membrane.py",
+                            "*Strategy.py",
+                        ],  # Force snake_case
                         "required_dirs": [],  # Leaf node preferred
                     },
                     "validators": {"purpose": "Structural and runtime validators"},

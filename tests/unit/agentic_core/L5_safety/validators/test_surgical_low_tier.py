@@ -36,9 +36,7 @@ class TestAgentPermissionIntegration:
         """Test restore checkpoint detection."""
         source = "class AgentPermission: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -70,9 +68,7 @@ class TestAutonomousThreatEvolutionAgentIntegration:
         """Test recent detections loading."""
         source = "class AutonomousThreatEvolutionAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -103,9 +99,7 @@ class TestCheckpointManagerAgentIntegration:
         """Test checkpoint listing."""
         source = "class CheckpointManagerAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -136,9 +130,7 @@ class TestCodeDeduplicationAgentIntegration:
         """Test dead code detection."""
         source = "class CodeDeduplicationAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -169,9 +161,7 @@ class TestCredentialScannerAgentIntegration:
         """Test credential scanning."""
         source = "class CredentialScannerAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -202,9 +192,7 @@ class TestMCPGuardianAgentIntegration:
         """Test MCP validation."""
         source = "class MCPGuardianAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -235,9 +223,7 @@ class TestNamingAgentIntegration:
         """Test naming validation."""
         source = "class NamingAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -268,9 +254,7 @@ class TestNervousSystemAgentIntegration:
         """Test nervous system detection."""
         source = "class NervousSystemAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -301,9 +285,7 @@ class TestPineconeSovereignAgentIntegration:
         """Test Pinecone operations."""
         source = "class PineconeSovereignAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -334,9 +316,7 @@ class TestPreCommitSovereignAgentIntegration:
         """Test pre-commit validation."""
         source = "class PreCommitSovereignAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -367,9 +347,7 @@ class TestReportLocationAgentIntegration:
         """Test report location validation."""
         source = "class ReportLocationAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -400,9 +378,7 @@ class TestRootHygieneAgentIntegration:
         """Test root hygiene validation."""
         source = "class RootHygieneAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -433,9 +409,7 @@ class TestSubAtomicRegistryAgentIntegration:
         """Test registry validation."""
         source = "class SubAtomicRegistryAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -466,9 +440,7 @@ class TestSystemArchitectAgentIntegration:
         """Test architecture validation."""
         source = "class SystemArchitectAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -499,9 +471,7 @@ class TestValidationOrchestratorAgentIntegration:
         """Test orchestration validation."""
         source = "class ValidationOrchestratorAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -550,9 +520,7 @@ class TestLowTierGenericTemplate:
 
         source = "def test(): pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -581,9 +549,7 @@ class TestLowTierGenericTemplate:
         """Test surgical healing applies for low tier agents."""
         source = "def my_func():\n    pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 

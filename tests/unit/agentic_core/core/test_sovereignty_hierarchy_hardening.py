@@ -172,9 +172,7 @@ class TestHierarchyScopedHealing:
             auto_approve=True,
         )
 
-    def test_heal_hierarchy_passes_target_territory_to_create_structure(
-        self, workspace, hierarchy_agent
-    ):
+    def test_heal_hierarchy_passes_target_territory_to_create_structure(self, workspace, hierarchy_agent):
         """Verify heal_hierarchy passes target_territory to create_missing_structure."""
         with patch.object(
             hierarchy_agent,
@@ -190,9 +188,7 @@ class TestHierarchyScopedHealing:
             )
             mock_create.assert_called_once_with("prompt_governance")
 
-    def test_heal_hierarchy_passes_target_territory_to_relocate_files(
-        self, workspace, hierarchy_agent
-    ):
+    def test_heal_hierarchy_passes_target_territory_to_relocate_files(self, workspace, hierarchy_agent):
         """Verify heal_hierarchy passes target_territory to relocate_misplaced_files."""
         with patch.object(
             hierarchy_agent,
@@ -208,9 +204,7 @@ class TestHierarchyScopedHealing:
             )
             mock_relocate.assert_called_once_with("prompt_governance")
 
-    def test_heal_hierarchy_passes_target_territory_to_enforce_depth(
-        self, workspace, hierarchy_agent
-    ):
+    def test_heal_hierarchy_passes_target_territory_to_enforce_depth(self, workspace, hierarchy_agent):
         """Verify heal_hierarchy passes target_territory to enforce_depth_rules."""
         with patch.object(
             hierarchy_agent, "enforce_depth_rules", return_value={"violations_found": 0}
@@ -284,9 +278,7 @@ class TestEnforceDepthRulesScoping:
     def test_enforce_depth_skips_apps_when_targeting_core_module(self, workspace, hierarchy_agent):
         """Verify enforce_depth_rules skips apps depth check when targeting a core module."""
         with patch.object(hierarchy_agent, "_enforce_apps_depth", return_value=0) as mock_apps:
-            with patch.object(
-                hierarchy_agent, "_enforce_tests_depth", return_value=0
-            ) as mock_tests:
+            with patch.object(hierarchy_agent, "_enforce_tests_depth", return_value=0) as mock_tests:
                 with patch.object(hierarchy_agent, "_enforce_universal_depth", return_value=0):
                     hierarchy_agent.enforce_depth_rules(target_territory="prompt_governance")
                     # Apps depth should NOT be called when targeting core module
@@ -306,9 +298,7 @@ class TestEnforceDepthRulesScoping:
     def test_enforce_depth_runs_tests_when_targeting_tests(self, workspace, hierarchy_agent):
         """Verify enforce_depth_rules runs tests depth check when targeting tests."""
         with patch.object(hierarchy_agent, "_enforce_apps_depth", return_value=0):
-            with patch.object(
-                hierarchy_agent, "_enforce_tests_depth", return_value=0
-            ) as mock_tests:
+            with patch.object(hierarchy_agent, "_enforce_tests_depth", return_value=0) as mock_tests:
                 with patch.object(hierarchy_agent, "_enforce_universal_depth", return_value=0):
                     hierarchy_agent.enforce_depth_rules(target_territory="tests")
                     # Tests depth SHOULD be called when targeting tests

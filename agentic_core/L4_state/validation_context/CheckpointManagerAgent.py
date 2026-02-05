@@ -170,9 +170,7 @@ class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # Load existing checkpoints
         self._load_checkpoints()
 
-        Logger.info(
-            f"UnifiedCheckpointManager initialized in {self.mode} mode at {self.storage_path}"
-        )
+        Logger.info(f"UnifiedCheckpointManager initialized in {self.mode} mode at {self.storage_path}")
 
     # =========================================================================
     # CHECKPOINT CREATION (Hybrid Sync/Async)
@@ -206,16 +204,12 @@ class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
             try:
                 asyncio.get_running_loop()
                 # Already in async context, create task
-                asyncio.ensure_future(
-                    self._save_async(checkpoint_id, state_data, file_hashes, metadata)
-                )
+                asyncio.ensure_future(self._save_async(checkpoint_id, state_data, file_hashes, metadata))
                 # Return checkpoint_id immediately, save happens in background
                 return checkpoint_id
             except RuntimeError:
                 # No running loop, create one
-                return asyncio.run(
-                    self._save_async(checkpoint_id, state_data, file_hashes, metadata)
-                )
+                return asyncio.run(self._save_async(checkpoint_id, state_data, file_hashes, metadata))
 
     async def create_checkpoint_async(
         self,
@@ -404,9 +398,7 @@ class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 m_hash = hashlib.md5(mirror.read_bytes()).hexdigest()
 
                 if p_hash != m_hash:
-                    Logger.warning(
-                        f"Hash mismatch for {checkpoint_id}: primary={p_hash}, mirror={m_hash}"
-                    )
+                    Logger.warning(f"Hash mismatch for {checkpoint_id}: primary={p_hash}, mirror={m_hash}")
                     return False
 
                 return True
@@ -803,9 +795,7 @@ class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append(
-                {"name": "test_instantiation", "status": "failed", "error": str(e)}
-            )
+            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
 
         # Test 2: Checkpoint ID generation
         try:
@@ -847,9 +837,7 @@ class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
 # =========================================================================
 
 
-def get_checkpoint_manager(
-    mode: str = "ASYNC", storage_path: Path | None = None
-) -> CheckpointManagerAgent:
+def get_checkpoint_manager(mode: str = "ASYNC", storage_path: Path | None = None) -> CheckpointManagerAgent:
     """
     Factory function to get CheckpointManagerAgent instance.
 

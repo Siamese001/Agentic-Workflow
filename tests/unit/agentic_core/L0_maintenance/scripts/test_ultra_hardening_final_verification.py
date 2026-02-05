@@ -36,9 +36,7 @@ class TestSovereignFinalClosure:
             assert f not in current_vars, f"GHOST VARIABLE DETECTED: {f} still exists in SSOT."
 
         # Also verify no imports of these variables exist
-        structure_blueprint_path = (
-            project_root / "agentic_core/L5_safety/validators/structure_blueprint.py"
-        )
+        structure_blueprint_path = project_root / "agentic_core/L5_safety/validators/structure_blueprint.py"
         with open(structure_blueprint_path, encoding="utf-8") as f:
             content = f.read()
             for f in forbidden:
@@ -52,9 +50,7 @@ class TestSovereignFinalClosure:
         from agentic_core.utils.discovery_parser import AGENT_METADATA
 
         # Verify it's a Mapping
-        assert isinstance(AGENT_METADATA, collections.abc.Mapping), (
-            "AGENT_METADATA is not a Mapping"
-        )
+        assert isinstance(AGENT_METADATA, collections.abc.Mapping), "AGENT_METADATA is not a Mapping"
 
         # Verify mutation operations are forbidden
         with pytest.raises((AttributeError, TypeError)):
@@ -90,9 +86,7 @@ class TestSovereignFinalClosure:
 
         # Verify Final status via annotations
         annotations = getattr(structure_blueprint, "__annotations__", {})
-        assert "Final" in str(annotations.get("AGENTIC_CORE_DIR", "")), (
-            "AGENTIC_CORE_DIR not marked Final"
-        )
+        assert "Final" in str(annotations.get("AGENTIC_CORE_DIR", "")), "AGENTIC_CORE_DIR not marked Final"
 
     def test_location_agent_integrity(self):
         """
@@ -157,9 +151,7 @@ class TestSovereignFinalClosure:
                 with open(full_path, encoding="utf-8") as f:
                     content = f.read()
                     for pattern in forbidden_patterns:
-                        assert pattern not in content, (
-                            f"GHOST REFERENCE: {pattern} found in {file_path}"
-                        )
+                        assert pattern not in content, f"GHOST REFERENCE: {pattern} found in {file_path}"
 
     def test_final_root_constants(self):
         """

@@ -63,9 +63,7 @@ def test_guardian_audit_full_scan(tmp_path, disable_path_shield):
     # Create mix of valid and invalid files
     (tmp_path / "valid_file.py").write_text("# Valid", encoding="utf-8")
     (tmp_path / "another_valid_module.py").write_text("# Valid", encoding="utf-8")
-    (tmp_path / "way_too_many_words_in_this_filename_bloat.py").write_text(
-        "# Invalid", encoding="utf-8"
-    )
+    (tmp_path / "way_too_many_words_in_this_filename_bloat.py").write_text("# Invalid", encoding="utf-8")
     (tmp_path / "excessive_semantic_density_pattern_matcher_engine.py").write_text(
         "# Invalid", encoding="utf-8"
     )

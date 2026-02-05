@@ -10,7 +10,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from agentic_core.L0_maintenance.scripts.general_scripts.pascal_sovereignty_fixer import PascalSovereigntyFixer
+from agentic_core.L0_maintenance.scripts.general_scripts.pascal_sovereignty_fixer import (
+    PascalSovereigntyFixer,
+)
 
 
 class TestFinalSovereignty(unittest.TestCase):
@@ -27,17 +29,13 @@ class TestFinalSovereignty(unittest.TestCase):
             status = "PASS"
         except Exception as e:
             status = f"FAIL: {e}"
-        self.assertEqual(
-            status, "PASS", "Performance regression: Import refactoring must use memory cache."
-        )
+        self.assertEqual(status, "PASS", "Performance regression: Import refactoring must use memory cache.")
 
     def test_test_exemption_100_percent_pass(self):
         """Verify that test files are strictly ignored to prevent CI destruction."""
         #
         test_path = Path("tests/test_logic.py")
-        self.assertEqual(
-            self.fixer.classify_file(test_path), "IGNORE", "Fail: Test files must be exempted."
-        )
+        self.assertEqual(self.fixer.classify_file(test_path), "IGNORE", "Fail: Test files must be exempted.")
 
         test_suffix_path = Path("logic_test.py")
         self.assertEqual(

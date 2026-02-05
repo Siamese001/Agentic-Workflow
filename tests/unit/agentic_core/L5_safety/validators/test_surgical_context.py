@@ -168,9 +168,7 @@ class TestSurgicalContextBuilder:
 
     def test_builder_creates_context(self):
         """Test that builder creates a valid context."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write("def test_func(): pass\n")
             temp_path = Path(f.name)
 
@@ -302,9 +300,7 @@ class TestSurgicalHealerMixin:
 
         healer = TestHealer()
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write("def test_func():\n    pass\n")
             temp_path = Path(f.name)
 
@@ -431,9 +427,7 @@ def my_func():
         """Test that running healing twice produces same result."""
         source = "def my_func():\n    pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 

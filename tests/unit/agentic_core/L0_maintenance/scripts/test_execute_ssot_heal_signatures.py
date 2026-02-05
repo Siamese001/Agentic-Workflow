@@ -99,17 +99,13 @@ class TestHealSignatureCompatibility:
         assert "auto_approve" in param_names, (
             "HierarchyAgent.heal_hierarchy() must accept 'auto_approve' parameter"
         )
-        assert "dry_run" in param_names, (
-            "HierarchyAgent.heal_hierarchy() must accept 'dry_run' parameter"
-        )
+        assert "dry_run" in param_names, "HierarchyAgent.heal_hierarchy() must accept 'dry_run' parameter"
 
     def test_location_agent_has_heal_violations_method(self):
         """LocationAgent must have heal_violations method for execute_ssot.py."""
         from agentic_core.L5_safety.validators.core.location_agent import LocationAgent
 
-        assert hasattr(LocationAgent, "heal_violations") or hasattr(
-            LocationAgent, "heal_repository"
-        ), (
+        assert hasattr(LocationAgent, "heal_violations") or hasattr(LocationAgent, "heal_repository"), (
             "LocationAgent must have either heal_violations() or heal_repository() method. "
             "execute_ssot.py checks for heal_violations first"
         )
@@ -126,9 +122,7 @@ class TestExecuteSSOTMainFunction:
 
         # Count functions named 'main' in the module
         main_functions = [
-            name
-            for name, obj in inspect.getmembers(ssot_module, inspect.isfunction)
-            if name == "main"
+            name for name, obj in inspect.getmembers(ssot_module, inspect.isfunction) if name == "main"
         ]
 
         assert len(main_functions) == 1, (
@@ -159,9 +153,7 @@ class TestExecuteSSOTMainFunction:
         assert "PascalSovereigntyAgent" in source, (
             "main() must import and use PascalSovereigntyAgent for sovereignty enforcement"
         )
-        assert "pascal_sovereignty" in source, (
-            "main() must register pascal_sovereignty in the agents dict"
-        )
+        assert "pascal_sovereignty" in source, "main() must register pascal_sovereignty in the agents dict"
 
 
 class TestHealResultSchema:

@@ -275,9 +275,7 @@ class OrchestratorAgent(AtomicExecutionMixin, SovereignBaseAgent):
         if context is None:
             context = ExecutionContext(dry_run=dry_run, execute=execute)
 
-        self.logger.info(
-            f"[MISSION] Starting mission with {len(agents)} agents (mode={self.mode.value})"
-        )
+        self.logger.info(f"[MISSION] Starting mission with {len(agents)} agents (mode={self.mode.value})")
 
         # [DNA GATE] Perform Pre-Flight Audit
         # DEPRECATED: CanonDependencySentinelAgent removed - Guardian test framework handles validation
@@ -292,9 +290,7 @@ class OrchestratorAgent(AtomicExecutionMixin, SovereignBaseAgent):
         for agent_name in agents:
             # [PHASE 33m] Pre-Flight Import Validation
             if not self._validate_agent_import(agent_name):
-                self.logger.critical(
-                    f"[GATE] CRITICAL_IMPORT_FAILURE: {agent_name} is unimportable"
-                )
+                self.logger.critical(f"[GATE] CRITICAL_IMPORT_FAILURE: {agent_name} is unimportable")
                 agent_results.append(
                     AgentResult(
                         agent_name=agent_name,
@@ -374,9 +370,7 @@ class OrchestratorAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 return self._run_full_mode(agent_name, dry_run, context)
         except Exception as e:
             self.logger.error(f"[AGENT] {agent_name} failed: {e}")
-            return AgentResult(
-                agent_name=agent_name, success=False, errors=1, status="ERROR", message=str(e)
-            )
+            return AgentResult(agent_name=agent_name, success=False, errors=1, status="ERROR", message=str(e))
 
     def _run_compliance_mode(
         self, agent_name: str, dry_run: bool, context: ExecutionContext | None
@@ -400,9 +394,7 @@ class OrchestratorAgent(AtomicExecutionMixin, SovereignBaseAgent):
             credential_results = credential_scanner.scan_for_credentials()
 
             total_credentials = credential_results.get("total_matches", 0)
-            high_severity = (
-                credential_results.get("summary", {}).get("by_severity", {}).get("high", 0)
-            )
+            high_severity = credential_results.get("summary", {}).get("by_severity", {}).get("high", 0)
 
             status = "PASS" if total_credentials == 0 else "WARN"
             if high_severity > 0:
@@ -468,9 +460,7 @@ class OrchestratorAgent(AtomicExecutionMixin, SovereignBaseAgent):
             metadata={"dry_run": dry_run, "mode": "healing"},
         )
 
-    def _run_ssot_mode(
-        self, agent_name: str, dry_run: bool, context: ExecutionContext | None
-    ) -> AgentResult:
+    def _run_ssot_mode(self, agent_name: str, dry_run: bool, context: ExecutionContext | None) -> AgentResult:
         """Execute agent in SSOT mode - enforce SSOT compliance."""
         self.logger.info(f"[SSOT] Running {agent_name}")
 
@@ -486,9 +476,7 @@ class OrchestratorAgent(AtomicExecutionMixin, SovereignBaseAgent):
             metadata={"dry_run": dry_run, "mode": "ssot"},
         )
 
-    def _run_full_mode(
-        self, agent_name: str, dry_run: bool, context: ExecutionContext | None
-    ) -> AgentResult:
+    def _run_full_mode(self, agent_name: str, dry_run: bool, context: ExecutionContext | None) -> AgentResult:
         """
         Execute agent in FULL/UNIFIED mode with Zero-Loss Context Merging.
 
@@ -607,9 +595,7 @@ class OrchestratorAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 return self._import_cache[module_path]
 
             # [ULTRA-HARDENED] Enforce Module Whitelist
-            if not any(
-                module_path == p or module_path.startswith(p + ".") for p in ALLOWED_MODULE_PREFIXES
-            ):
+            if not any(module_path == p or module_path.startswith(p + ".") for p in ALLOWED_MODULE_PREFIXES):
                 self.logger.critical(
                     f"[GATE] SECURITY BLOCK: Agent '{agent_name}' "
                     f"({module_path}) is outside allowed namespaces."
@@ -628,8 +614,7 @@ class OrchestratorAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             if result.returncode != 0:
                 self.logger.error(
-                    f"[GATE] Import validation failed for {agent_name}: "
-                    f"{result.stderr.strip()[:200]}"
+                    f"[GATE] Import validation failed for {agent_name}: {result.stderr.strip()[:200]}"
                 )
                 self._import_cache[module_path] = False
                 return False

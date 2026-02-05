@@ -290,9 +290,7 @@ def test_3_depth_constraint_cycle():
         # Test 3c: Verify _call_path is cleaned up
         print("\n🔧 Testing _call_path cleanup...")
         fresh_path = set()
-        cycle_agent.heal_repository(
-            dry_run=True, execute=False, depth=0, max_depth=3, _call_path=fresh_path
-        )
+        cycle_agent.heal_repository(dry_run=True, execute=False, depth=0, max_depth=3, _call_path=fresh_path)
 
         # After the call, fresh_path should be empty (cleaned in finally block)
         if len(fresh_path) == 0:
@@ -423,9 +421,7 @@ def run_all_tests():
 
     for test_name, result in RESULTS.items():
         status = result["status"]
-        icon = {"PASS": "✅", "FAIL": "❌", "ERROR": "🔥", "WARN": "⚠️", "PENDING": "⏳"}.get(
-            status, "❓"
-        )
+        icon = {"PASS": "✅", "FAIL": "❌", "ERROR": "🔥", "WARN": "⚠️", "PENDING": "⏳"}.get(status, "❓")
         print(f"{icon} {test_name}: {status}")
 
         if status == "PASS":
@@ -509,9 +505,7 @@ def test_5_asynchronous_deadlock_prevention():
             agent = AsyncCycleTestAgent(ctx=ctx)
 
             # Simulate high-frequency call volume
-            tasks = [
-                agent.heal_repository(depth=0, max_depth=10, _call_path=set()) for _ in range(50)
-            ]
+            tasks = [agent.heal_repository(depth=0, max_depth=10, _call_path=set()) for _ in range(50)]
 
             start_time = asyncio.get_event_loop().time()
             results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -519,9 +513,7 @@ def test_5_asynchronous_deadlock_prevention():
 
             execution_time = end_time - start_time
 
-            result["details"].append(
-                f"✅ Execution time: {execution_time:.2f}s for 50 concurrent calls"
-            )
+            result["details"].append(f"✅ Execution time: {execution_time:.2f}s for 50 concurrent calls")
             result["details"].append(f"✅ All tasks completed: {len(results)} results")
 
             if execution_time < 2.0:
@@ -714,9 +706,7 @@ def test_7_maximum_depth_termination_hard():
         agent = MaxDepthTestAgent(ctx=ctx)
 
         # Test exactly at max_depth + 1
-        result["details"].append(
-            "🔧 Testing depth termination at max_depth + 1 (depth=5, max_depth=5)..."
-        )
+        result["details"].append("🔧 Testing depth termination at max_depth + 1 (depth=5, max_depth=5)...")
         heal_result = agent.heal_repository(depth=5, max_depth=5)
 
         result["details"].append(f"✅ Heal result: {heal_result}")
@@ -724,9 +714,7 @@ def test_7_maximum_depth_termination_hard():
         if heal_result.get("depth_limited") is True:
             result["details"].append("✅ Correctly terminated at max_depth + 1")
         else:
-            result["details"].append(
-                f"❌ Failed to terminate at max_depth + 1. Result: {heal_result}"
-            )
+            result["details"].append(f"❌ Failed to terminate at max_depth + 1. Result: {heal_result}")
             result["status"] = "FAIL"
             return result
 

@@ -26,8 +26,6 @@ class ValidatorMixin:
             self._validator_orchestrator = get_validator_orchestrator()
         return self._validator_orchestrator
 
-    async def orchestrator_validate(
-        self, content: Any, validator_name: str, context: dict = None
-    ) -> dict:
+    async def orchestrator_validate(self, content: Any, validator_name: str, context: dict = None) -> dict:
         """Execute validation through orchestrator."""
         return await self.validator_orchestrator.validate(content, validator_name, context)

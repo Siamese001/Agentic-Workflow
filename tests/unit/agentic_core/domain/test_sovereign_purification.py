@@ -16,9 +16,7 @@ class TestSovereignPurification(unittest.TestCase):
         from agentic_core.L5_safety.validators.structure_blueprint_config import CORE_SUBFOLDER_MAP
 
         # SUCCESS: 100% PASS - Ensuring Phase 6/7 mapping is preserved in the blueprint
-        self.assertIn(
-            "policy_engine", CORE_SUBFOLDER_MAP["L5_safety"], "L5_safety map missing policy_engine"
-        )
+        self.assertIn("policy_engine", CORE_SUBFOLDER_MAP["L5_safety"], "L5_safety map missing policy_engine")
         self.assertNotIn(
             "unified",
             CORE_SUBFOLDER_MAP["L5_safety"],
@@ -32,9 +30,7 @@ class TestSovereignPurification(unittest.TestCase):
         legacy_path = Path("agentic_core/L5_safety/unified/CodeDetectorAgent.py")
 
         # SUCCESS: 100% PASS - Confirming Phase 4/5 cleanup integrity
-        self.assertFalse(
-            legacy_path.exists(), f"Legacy leakage detected: {legacy_path} should not exist."
-        )
+        self.assertFalse(legacy_path.exists(), f"Legacy leakage detected: {legacy_path} should not exist.")
 
     def test_sovereign_import_logic(self):
         """Verify CodeDetectorAgent is importable from policy_engine (100% pass mandatory)."""

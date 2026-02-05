@@ -28,9 +28,7 @@ try:
 except:
     pass
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -65,9 +63,7 @@ def dangerous_func(user_input):
     result = eval(user_input)
     return result
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -99,9 +95,7 @@ def my_func():
     import pdb; pdb.set_trace()
     return 42
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -136,9 +130,7 @@ try:
 except:
     import pdb; pdb.set_trace()
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -173,9 +165,7 @@ class MisplacedAgent:
     def run(self):
         pass
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -206,9 +196,7 @@ class MisplacedAgent:
         """Test detecting root-level drift."""
         source = "# Misplaced file\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -237,9 +225,7 @@ class MisplacedAgent:
         """Test batch SSOT drift violations."""
         source = "class TestClass: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -270,9 +256,7 @@ class TestStructureHealerAgentIntegration:
         """Test detecting missing __init__.py files."""
         source = "# Package marker\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -304,9 +288,7 @@ class MyClass:
     def method(self):
         pass
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -337,9 +319,7 @@ class MyClass:
         """Test applying surgical healing for structural issues."""
         source = "def my_func():\n    pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -390,9 +370,7 @@ class ValidClass:
     \"\"\"Class docstring.\"\"\"
     pass
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -424,9 +402,7 @@ class AgentOne:
 class AgentTwo:
     pass
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 

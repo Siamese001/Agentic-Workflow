@@ -155,9 +155,7 @@ class UnusedCleanupAgent(SovereignBaseAgent):
                 if file_path.exists():
                     import asyncio
 
-                    result = asyncio.get_event_loop().run_until_complete(
-                        self.execute(str(file_path))
-                    )
+                    result = asyncio.get_event_loop().run_until_complete(self.execute(str(file_path)))
                     return {
                         "violations_fixed": 1 if result.get("healed") else 0,
                         "violations_found": 1,

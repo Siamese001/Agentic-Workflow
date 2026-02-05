@@ -58,9 +58,7 @@ class TestManifestAnalysis:
             result = analyze_impact(dangerous_report)
             assert result is False
             # Verify that mass deletion warning was logged
-            mock_warning.assert_any_call(
-                "🚨 MASS DELETION RISK: 50 orphan files identified for deletion."
-            )
+            mock_warning.assert_any_call("🚨 MASS DELETION RISK: 50 orphan files identified for deletion.")
 
     def test_analysis_flags_blast_radius(self):
         """Scenario: Too many files modified."""

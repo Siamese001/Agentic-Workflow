@@ -34,9 +34,7 @@ def test():
     return os.getcwd()
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -47,9 +45,7 @@ def test():
             tree = ast.parse(source_code)
 
             # Create violation for unused import (simulating CodeHealerAgent logic)
-            coordinate = ASTCoordinate(
-                line=3, column=0, node_id="unused_import", node_type="Import"
-            )
+            coordinate = ASTCoordinate(line=3, column=0, node_id="unused_import", node_type="Import")
 
             violation = ViolationConstraint(
                 constraint_type="unused_import",
@@ -96,9 +92,7 @@ def test():
     return "test"
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -152,9 +146,7 @@ def test():
     return os.path.join("data.json")
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -165,9 +157,7 @@ def test():
             tree = ast.parse(source_code)
 
             # Create violation for unused import
-            coordinate = ASTCoordinate(
-                line=3, column=0, node_id="unused_import", node_type="Import"
-            )
+            coordinate = ASTCoordinate(line=3, column=0, node_id="unused_import", node_type="Import")
 
             violation = ViolationConstraint(
                 constraint_type="unused_import",
@@ -204,9 +194,7 @@ def test():
             # 2. The comment should stay (proving zero-loss)
             assert "# Module comment" in healed_content, "Module comment was lost!"
             assert "# Used import" in healed_content, "Used import comment was lost!"
-            assert "# Another used import" in healed_content, (
-                "Another used import comment was lost!"
-            )
+            assert "# Another used import" in healed_content, "Another used import comment was lost!"
 
             # 3. Other imports should be preserved
             assert "import os" in healed_content, "Used import was incorrectly removed!"
@@ -239,9 +227,7 @@ class TestClass:
         return os.path.join("path", "file.json")
 '''
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -359,9 +345,7 @@ if __name__ == "__main__":
     print("test")
 '''
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 

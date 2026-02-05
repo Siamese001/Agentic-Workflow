@@ -41,9 +41,7 @@ def test():
     return os.getcwd()
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -102,9 +100,7 @@ def risky():
         pass
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -162,9 +158,7 @@ class MyClass:
         pass
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -227,9 +221,7 @@ class MyClass:
             pass
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -252,9 +244,7 @@ class MyClass:
             coordinates.append(coord1)
 
             # Bare except violation
-            coord2 = ASTCoordinate(
-                line=8, column=0, node_id="bare_except_8", node_type="ExceptHandler"
-            )
+            coord2 = ASTCoordinate(line=8, column=0, node_id="bare_except_8", node_type="ExceptHandler")
             viol2 = ViolationConstraint(
                 constraint_type="bare_except",
                 severity="warning",
@@ -301,9 +291,7 @@ class MyClass:
 import os
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 

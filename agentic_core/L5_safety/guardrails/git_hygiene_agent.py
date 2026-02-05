@@ -94,9 +94,7 @@ class GitHygieneAgent(SovereignBaseAgent):
         cutoff_ts = int(cutoff.timestamp())
 
         # Format: branch_name committer_date_unix
-        branches_output = self._run_git(
-            ["branch", "--format=%(refname:short) %(committerdate:unix)"]
-        )
+        branches_output = self._run_git(["branch", "--format=%(refname:short) %(committerdate:unix)"])
         stale = []
 
         for line in branches_output.splitlines():
@@ -279,9 +277,7 @@ class GitHygieneAgent(SovereignBaseAgent):
                 self.logger.error(f"  Error during Git hygiene audit: {e}")
                 errors += 1
 
-            self.logger.info(
-                f"[{agent_name}] Complete: {violations_found} issues, {violations_fixed} fixed"
-            )
+            self.logger.info(f"[{agent_name}] Complete: {violations_found} issues, {violations_fixed} fixed")
 
             return {
                 "violations_found": violations_found,

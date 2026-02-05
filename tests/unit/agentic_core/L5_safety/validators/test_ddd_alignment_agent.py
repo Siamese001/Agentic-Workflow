@@ -68,9 +68,7 @@ class TestDDDAlignmentAgent:
         """Verify DDDAlignmentAgent has a description in registry."""
         from agentic_core.config.core.core_hygiene_agents import AGENT_DESCRIPTIONS
 
-        assert "DDDAlignmentAgent" in AGENT_DESCRIPTIONS, (
-            "DDDAlignmentAgent must have a description"
-        )
+        assert "DDDAlignmentAgent" in AGENT_DESCRIPTIONS, "DDDAlignmentAgent must have a description"
         assert "DDD" in AGENT_DESCRIPTIONS["DDDAlignmentAgent"]
 
     def test_bounded_contexts_defined(self):

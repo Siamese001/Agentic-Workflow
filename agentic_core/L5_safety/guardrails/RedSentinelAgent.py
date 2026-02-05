@@ -100,9 +100,7 @@ class RedSentinelAgent(SovereignBaseAgent):
                         "traceback": result["traceback"],
                     }
                 )
-                results["vulnerabilities"].append(
-                    {"type": "crash", "input": input_data, "Severity": "HIGH"}
-                )
+                results["vulnerabilities"].append({"type": "crash", "input": input_data, "Severity": "HIGH"})
             elif result["unexpected_behavior"]:
                 results["vulnerabilities"].append(
                     {
@@ -121,9 +119,7 @@ class RedSentinelAgent(SovereignBaseAgent):
             "details": results,
         }
 
-    async def _generate_hostile_inputs(
-        self, func_name: str, func_code: str
-    ) -> list[dict[str, Any]]:
+    async def _generate_hostile_inputs(self, func_name: str, func_code: str) -> list[dict[str, Any]]:
         """
         Generate 5 hostile inputs for a function.
         Phase 16B: Uses LLM router MCP instead of direct google.generativeai.

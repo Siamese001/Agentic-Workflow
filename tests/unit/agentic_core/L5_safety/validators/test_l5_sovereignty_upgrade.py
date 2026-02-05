@@ -215,10 +215,7 @@ class TestPhase6HygieneGuardian:
         for m in own_methods:
             try:
                 method = getattr(HygieneGuardianAgent, m)
-                if (
-                    hasattr(method, "__qualname__")
-                    and "HygieneGuardianAgent" in method.__qualname__
-                ):
+                if hasattr(method, "__qualname__") and "HygieneGuardianAgent" in method.__qualname__:
                     source_methods.append(m)
             except Exception:
                 pass

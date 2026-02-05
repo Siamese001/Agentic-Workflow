@@ -70,9 +70,7 @@ class CoreIntegrityVerifier:
                     pass  # Ignore cleanup errors
 
         if unsafe_files:
-            raise ConfigurationError(
-                f"Integrity Breach: Unsafe artifacts found in Core: {unsafe_files}"
-            )
+            raise ConfigurationError(f"Integrity Breach: Unsafe artifacts found in Core: {unsafe_files}")
 
         # Calculate current Merkle root
         current_hash = cls._calculate_merkle_root()
@@ -170,9 +168,7 @@ class CoreIntegrityVerifier:
         )
 
         if unsafe_files:
-            raise ConfigurationError(
-                f"Integrity Breach: Unsafe artifacts found in Core: {unsafe_files}"
-            )
+            raise ConfigurationError(f"Integrity Breach: Unsafe artifacts found in Core: {unsafe_files}")
 
         return True
 

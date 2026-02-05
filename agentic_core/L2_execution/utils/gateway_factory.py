@@ -182,9 +182,7 @@ class _StubEmbeddingGateway:
 class _StubValidatorOrchestrator:
     """Stub validator orchestrator for testing."""
 
-    async def validate(
-        self, content: Any, validator_name: str, context: dict | None = None
-    ) -> dict:
+    async def validate(self, content: Any, validator_name: str, context: dict | None = None) -> dict:
         return {
             "valid": True,
             "validator": validator_name,

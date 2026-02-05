@@ -85,9 +85,7 @@ class HealingSovereignOrchestrator:
             self.operation_stats["by_strategy"][name] = {"attempts": 0, "successes": 0}
         Logger.info(f"[Healing Orchestrator] Registered strategy: {name}")
 
-    def _audit(
-        self, strategy_name: str, violation_type: str, success: bool, latency_ms: float
-    ) -> None:
+    def _audit(self, strategy_name: str, violation_type: str, success: bool, latency_ms: float) -> None:
         """
         [PHASE 5] Record healing operation with FIFO memory protection.
         """

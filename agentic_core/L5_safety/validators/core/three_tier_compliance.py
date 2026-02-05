@@ -86,11 +86,7 @@ class AgentCompliance:
     @property
     def is_fully_compliant(self) -> bool:
         """Check if agent is compliant across all tiers."""
-        return (
-            self.contract_tier.is_covered
-            and self.blueprint_tier.is_covered
-            and self.soul_tier.is_covered
-        )
+        return self.contract_tier.is_covered and self.blueprint_tier.is_covered and self.soul_tier.is_covered
 
     @property
     def compliance_score(self) -> int:
@@ -341,17 +337,14 @@ class ThreeTierComplianceChecker:
             "## Summary",
             "",
             f"- **Total Agents:** {result.total_agents}",
-            f"- **Fully Compliant:** {result.fully_compliant} "
-            f"({result.overall_compliance_pct:.1f}%)",
+            f"- **Fully Compliant:** {result.fully_compliant} ({result.overall_compliance_pct:.1f}%)",
             "",
             "### Tier Coverage",
             "",
             "| Tier | Covered | Percentage |",
             "|------|---------|------------|",
-            f"| Contract (Pre-Commit) | {result.contract_covered} | "
-            f"{result.contract_coverage_pct:.1f}% |",
-            f"| Blueprint (Guardian) | {result.blueprint_covered} | "
-            f"{result.blueprint_coverage_pct:.1f}% |",
+            f"| Contract (Pre-Commit) | {result.contract_covered} | {result.contract_coverage_pct:.1f}% |",
+            f"| Blueprint (Guardian) | {result.blueprint_covered} | {result.blueprint_coverage_pct:.1f}% |",
             f"| Soul (Unit Tests) | {result.soul_covered} | {result.soul_coverage_pct:.1f}% |",
             "",
         ]

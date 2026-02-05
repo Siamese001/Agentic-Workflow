@@ -110,9 +110,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         }
 
         # [L4 CONTEXT] Try to recall a successful pattern first (cross-agent learning)
-        cached_pattern = self.context.recall_healing_pattern(
-            violation, agent="GravityLeakRepairAgent"
-        )
+        cached_pattern = self.context.recall_healing_pattern(violation, agent="GravityLeakRepairAgent")
         if cached_pattern:
             self.logger.info(
                 f"[GravityLeakRepairAgent] Using cached fix pattern from {cached_pattern.get('discovered_by')}"
@@ -294,9 +292,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         if _call_path is None:
             _call_path = []
 
-        self.logger.info(
-            f"[GravityLeakRepairAgent] Starting gravity leak repair (dry_run={dry_run})"
-        )
+        self.logger.info(f"[GravityLeakRepairAgent] Starting gravity leak repair (dry_run={dry_run})")
 
         # Get violations from StructuralValidatorAgent
         try:

@@ -29,9 +29,7 @@ Logger = logging.getLogger(__name__)
 class SecureError(Exception):
     """Base class for secure errors with sanitized messages."""
 
-    def __init__(
-        self, message: str, ErrorCode: str | None = None, context: dict[str, Any] | None = None
-    ):
+    def __init__(self, message: str, ErrorCode: str | None = None, context: dict[str, Any] | None = None):
         """Initialize secure error.
 
         Args:
@@ -324,9 +322,7 @@ class SecureErrorHandler:
         if isinstance(error, SecureError):
             secure_error = error
         else:
-            secure_error = ErrorSanitizer.create_secure_error(
-                SecurityError, error, add_context=context
-            )
+            secure_error = ErrorSanitizer.create_secure_error(SecurityError, error, add_context=context)
 
         # Log the error securely
         log_data = {

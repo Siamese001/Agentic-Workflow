@@ -101,9 +101,7 @@ class CodeDetectorAgent(SovereignBaseAgent):
                 Logger.warning(f"Failed to load baseline: {e}")
 
     @standard_heal
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Sovereign Interface.
         Detectors primarily REPORT. 'execute' mode can update baselines.

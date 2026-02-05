@@ -55,8 +55,7 @@ class CoverageAgent(AtomicExecutionMixin, SovereignBaseAgent):
         bias_weight: float = 4.0,  # Selection score multiplier (tunable; 3-5 recommended)
         bias_duration_cycles: int = 30,  # How many orchestration cycles to sustain bias
         synthetic_tasks_per_trigger: int = 10,  # Safe no-ops injected per act() imbalance detection
-        priority_boost_layers: list[str]
-        | None = None,  # Ordered forced exploration (Phase roadmap)
+        priority_boost_layers: list[str] | None = None,  # Ordered forced exploration (Phase roadmap)
     ) -> None:
         """
         Initialize coverage agent.
@@ -111,9 +110,7 @@ class CoverageAgent(AtomicExecutionMixin, SovereignBaseAgent):
             print(f"[{self.name}] Updated bias_weight to {self.bias_weight}")
         if "synthetic_tasks_per_trigger" in event_data:
             self.synthetic_tasks_per_trigger = event_data["synthetic_tasks_per_trigger"]
-            print(
-                f"[{self.name}] Updated synthetic_tasks_per_trigger to {self.synthetic_tasks_per_trigger}"
-            )
+            print(f"[{self.name}] Updated synthetic_tasks_per_trigger to {self.synthetic_tasks_per_trigger}")
 
     def _fetch_metrics(self) -> dict[str, int] | None:
         """Pull layer activation counts from dashboard backend."""
@@ -191,9 +188,7 @@ class CoverageAgent(AtomicExecutionMixin, SovereignBaseAgent):
         priority_index = (
             self.priority_boost_layers.index(layer) if layer in self.priority_boost_layers else 99
         )
-        effective_weight = self.bias_weight + (
-            5 - priority_index
-        )  # Extra boost for roadmap priorities
+        effective_weight = self.bias_weight + (5 - priority_index)  # Extra boost for roadmap priorities
         publish_event(
             "coverage_bias_update",
             {
@@ -230,9 +225,7 @@ class CoverageAgent(AtomicExecutionMixin, SovereignBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append(
-                {"name": "test_instantiation", "status": "failed", "error": str(e)}
-            )
+            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 
     @timeout(120)

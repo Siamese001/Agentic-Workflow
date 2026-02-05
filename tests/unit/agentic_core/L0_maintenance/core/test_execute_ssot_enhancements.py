@@ -45,9 +45,7 @@ class TestSafetyMechanisms:
         engine = EnhancedEngine(enable_llm=False)
 
         # 1. First call - OK
-        proceed, _ = engine.should_proceed_with_healing(
-            ConfidenceScore(1.0, "Perfect"), agent_name="Agent_A"
-        )
+        proceed, _ = engine.should_proceed_with_healing(ConfidenceScore(1.0, "Perfect"), agent_name="Agent_A")
         assert proceed is True, "First call should pass"
 
         # 2. Recursive call (Same Agent) - BLOCK
@@ -74,9 +72,7 @@ class TestSafetyMechanisms:
         engine.should_proceed_with_healing(ConfidenceScore(1.0, ""), agent_name="Agent_2")
 
         # Exceed budget
-        proceed, msg = engine.should_proceed_with_healing(
-            ConfidenceScore(1.0, ""), agent_name="Agent_3"
-        )
+        proceed, msg = engine.should_proceed_with_healing(ConfidenceScore(1.0, ""), agent_name="Agent_3")
         assert proceed is False
         assert "budget exceeded" in msg.lower()
 
@@ -254,9 +250,7 @@ class TestConfidenceScoring:
             violations_count=5, violation_types=["UNKNOWN_XYZ", "MYSTERY_ABC"], territory="scripts"
         )
 
-        assert known_conf.value > unknown_conf.value, (
-            "Known violation types should have higher confidence"
-        )
+        assert known_conf.value > unknown_conf.value, "Known violation types should have higher confidence"
 
     def test_should_proceed_with_healing_high_confidence(self):
         """High confidence (>0.75) should proceed with healing."""
@@ -511,9 +505,7 @@ class TestEnhancedAutonomousDecisionEngine:
         )
 
         state_mgr = RuntimeStateManager(tmp_path)
-        engine = EnhancedAutonomousDecisionEngine(
-            enable_llm=False, state_mgr=state_mgr, enable_cda=False
-        )
+        engine = EnhancedAutonomousDecisionEngine(enable_llm=False, state_mgr=state_mgr, enable_cda=False)
 
         assert engine.enable_llm is False
         assert engine.enable_cda is False
@@ -527,15 +519,11 @@ class TestEnhancedAutonomousDecisionEngine:
         )
 
         state_mgr = RuntimeStateManager(tmp_path)
-        engine = EnhancedAutonomousDecisionEngine(
-            enable_llm=False, state_mgr=state_mgr, enable_cda=False
-        )
+        engine = EnhancedAutonomousDecisionEngine(enable_llm=False, state_mgr=state_mgr, enable_cda=False)
 
         # Test various violation message patterns
         assert engine._classify_violation_type("Missing sovereign root: xyz") == "MISSING_DIRECTORY"
-        assert (
-            engine._classify_violation_type("Forbidden keyword 'def test_'") == "FORBIDDEN_CONTENT"
-        )
+        assert engine._classify_violation_type("Forbidden keyword 'def test_'") == "FORBIDDEN_CONTENT"
         assert engine._classify_violation_type("Forbidden extension .py") == "EXTENSION_MISMATCH"
         assert engine._classify_violation_type("test_ file found") == "TEST_FILE_MISPLACED"
         assert engine._classify_violation_type("sovereign violation") == "SOVEREIGN_VIOLATION"

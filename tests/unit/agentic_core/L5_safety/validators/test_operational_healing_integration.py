@@ -478,9 +478,7 @@ class TestSemanticDebuggerAgentDeleted:
 
     def test_semantic_debugger_agent_not_exists(self):
         """Test SemanticDebuggerAgent file no longer exists."""
-        agent_path = (
-            PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "SemanticDebuggerAgent.py"
-        )
+        agent_path = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "SemanticDebuggerAgent.py"
         assert not agent_path.exists(), "SemanticDebuggerAgent.py should be deleted"
 
     def test_semantic_debugger_not_importable(self):

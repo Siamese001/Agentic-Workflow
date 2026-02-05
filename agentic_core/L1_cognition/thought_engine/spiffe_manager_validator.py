@@ -132,22 +132,16 @@ class SpiffeManager:
         if not identity:
             return IdentityVerificationResult(valid=False, reason="Identity not found")
         if identity.is_expired():
-            return IdentityVerificationResult(
-                valid=False, identity=identity, reason="Identity has expired"
-            )
+            return IdentityVerificationResult(valid=False, identity=identity, reason="Identity has expired")
         if identity.public_key != public_key:
-            return IdentityVerificationResult(
-                valid=False, identity=identity, reason="Public key mismatch"
-            )
+            return IdentityVerificationResult(valid=False, identity=identity, reason="Public key mismatch")
         if self.enable_logging:
             LOGGER.debug("identity_verified", extra={"spiffe_id": spiffe_id})
         return IdentityVerificationResult(
             valid=True, identity=identity, reason="Identity verified successfully"
         )
 
-    def rotate_credentials(
-        self, spiffe_id: str, ttl_seconds: int | None = None
-    ) -> AgentIdentity | None:
+    def rotate_credentials(self, spiffe_id: str, ttl_seconds: int | None = None) -> AgentIdentity | None:
         """Rotate credentials for an existing identity.
 
         Args:

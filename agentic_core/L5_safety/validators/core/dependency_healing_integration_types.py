@@ -177,9 +177,7 @@ def register_dependency_healing(project_root: Path | None = None) -> dict[str, A
         orchestrator = get_healing_orchestrator()
 
         try:
-            orchestrator.register_strategy(
-                "dependency_pruning", get_dependency_strategy(project_root)
-            )
+            orchestrator.register_strategy("dependency_pruning", get_dependency_strategy(project_root))
             registered.append("dependency_pruning")
         except Exception as e:
             errors.append(f"dependency_pruning: {e}")

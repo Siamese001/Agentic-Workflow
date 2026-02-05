@@ -59,9 +59,7 @@ class HistorianAgent(AtomicExecutionMixin, SovereignBaseAgent):
     def __init__(self, ctx) -> None:
         super().__init__(ctx)
         # Use env var for log path for better environment isolation
-        self.log_file = os.getenv(
-            "HISTORIAN_LOG_PATH", f"validation_log_{datetime.date.today()}.md"
-        )
+        self.log_file = os.getenv("HISTORIAN_LOG_PATH", f"validation_log_{datetime.date.today()}.md")
 
     async def execute(self) -> None:
         """Execute execute operation."""

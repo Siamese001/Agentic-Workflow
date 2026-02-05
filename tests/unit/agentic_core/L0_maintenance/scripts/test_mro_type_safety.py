@@ -98,9 +98,7 @@ def test_heal_repository_return_type_consistency():
         assert not missing_keys, f"Missing canonical keys: {missing_keys}"
 
         # Verify we did NOT get the old "termination point" dict with wrong keys
-        assert "violations" not in result, (
-            "Got legacy 'violations' key instead of 'violations_found'"
-        )
+        assert "violations" not in result, "Got legacy 'violations' key instead of 'violations_found'"
         assert "fixed" not in result, "Got legacy 'fixed' key instead of 'violations_fixed'"
 
         print("  ✓ Return type is HealResult-compatible dict")

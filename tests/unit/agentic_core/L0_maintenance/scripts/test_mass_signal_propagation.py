@@ -134,9 +134,7 @@ def test_case_2_multi_agent_cycle_persistence():
         call_path.add("L3OrchestrationBaseAgent")
 
         # Step 3: Executor tries to call with Orchestrator already in path
-        result_exec = executor.heal_repository(
-            dry_run=True, _call_path=call_path, cycle_test="multi_agent"
-        )
+        result_exec = executor.heal_repository(dry_run=True, _call_path=call_path, cycle_test="multi_agent")
         print(f"✓ Step 3: Executor called with existing path: {result_exec}")
 
         # Step 4: Simulate cycle
@@ -221,9 +219,7 @@ def test_case_3_gatekeeper_automation_sweep():
         )
         print(f"  Orchestration result: {orch_result}")
 
-        safety_result = safety_agent.heal_repository(
-            dry_run=True, auto_approve=True, sweep_test="Safety"
-        )
+        safety_result = safety_agent.heal_repository(dry_run=True, auto_approve=True, sweep_test="Safety")
         print(f"  Safety result: {safety_result}")
 
         print("\n✅ PASS: Gatekeeper Automation Sweep")

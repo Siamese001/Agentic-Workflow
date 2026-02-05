@@ -159,11 +159,7 @@ class RegistryVerifier:
                         bases.append(base.attr)
 
                 # Extract methods
-                methods = [
-                    n.name
-                    for n in node.body
-                    if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)
-                ]
+                methods = [n.name for n in node.body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)]
 
                 return AgentInfo(
                     class_name=node.name,
@@ -258,9 +254,7 @@ class RegistryVerifier:
 
         # Calculate coverage
         if result.total_filesystem_agents > 0:
-            result.coverage_percentage = (
-                len(result.valid_agents) / result.total_filesystem_agents * 100
-            )
+            result.coverage_percentage = len(result.valid_agents) / result.total_filesystem_agents * 100
 
         result.is_complete = (
             len(result.orphan_agents) == 0

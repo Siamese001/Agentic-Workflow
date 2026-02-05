@@ -25,9 +25,7 @@ class TestSurgicalHealingAdapter:
 
     def test_create_context_from_detection(self):
         """Test creating SurgicalContext from detection result."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write("def test_func():\n    pass\n")
             temp_path = Path(f.name)
 
@@ -69,9 +67,7 @@ class TestSurgicalHealingAdapter:
 
     def test_create_batch_context(self):
         """Test creating batch context for multiple violations."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write("def func1():\n    pass\n\ndef func2():\n    pass\n")
             temp_path = Path(f.name)
 
@@ -97,9 +93,7 @@ class TestSurgicalHealingAdapter:
 
     def test_apply_surgical_healing(self):
         """Test applying surgical healing."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write("def test_func():\n    pass\n")
             temp_path = Path(f.name)
 
@@ -202,9 +196,7 @@ class TestCodeHealerAgentIntegration:
 
     def test_adapter_with_import_detection(self):
         """Test adapter with import-style detection results."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write("import os\nimport sys\n\ndef main():\n    print(os.getcwd())\n")
             temp_path = Path(f.name)
 
@@ -233,9 +225,7 @@ class TestCodeHealerAgentIntegration:
 
     def test_adapter_with_canon_detection(self):
         """Test adapter with canon-style detection results."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write("try:\n    pass\nexcept:\n    pass\n")
             temp_path = Path(f.name)
 
@@ -266,9 +256,7 @@ class TestCodeHealerAgentIntegration:
 
     def test_adapter_with_structural_detection(self):
         """Test adapter with structural-style detection results."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write("def main():  \n    pass\n")  # trailing whitespace
             temp_path = Path(f.name)
 
@@ -300,9 +288,7 @@ class TestCompositeGuardrailIntegration:
 
     def test_adapter_with_guardrail_detection(self):
         """Test adapter with guardrail-style detection results."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write("class MyAgent:\n    def run(self):\n        pass\n")
             temp_path = Path(f.name)
 
@@ -331,15 +317,9 @@ class TestCompositeGuardrailIntegration:
 
     def test_batch_guardrail_violations(self):
         """Test batch processing of guardrail violations."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(
-                "class MyAgent:\n"
-                "    def method1(self):\n"
-                "        pass\n"
-                "    def method2(self):\n"
-                "        pass\n"
+                "class MyAgent:\n    def method1(self):\n        pass\n    def method2(self):\n        pass\n"
             )
             temp_path = Path(f.name)
 

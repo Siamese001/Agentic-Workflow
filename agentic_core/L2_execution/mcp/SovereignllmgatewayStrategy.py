@@ -68,9 +68,7 @@ class SovereignLLMGateway:
     def config(self):
         return get_sovereign_config()
 
-    def _audit(
-        self, provider: str, model: str, success: bool, latency_ms: float, tokens: int = 0
-    ) -> None:
+    def _audit(self, provider: str, model: str, success: bool, latency_ms: float, tokens: int = 0) -> None:
         limit = self.config.max_audit_log_size
         if len(self.audit_log) >= limit:
             prune_count = max(1, int(limit * 0.1))
@@ -178,9 +176,7 @@ class SovereignLLMGateway:
                 )
 
                 latency = (time.time() - start) * 1000
-                self._audit(
-                    current_provider, str(current_model), True, latency, result.get("tokens", 0)
-                )
+                self._audit(current_provider, str(current_model), True, latency, result.get("tokens", 0))
 
                 if current_provider != provider:
                     self.operation_stats["fallbacks"] += 1
@@ -245,9 +241,7 @@ class SovereignLLMGateway:
         )
         return {
             "content": response.content[0].text,
-            "tokens": response.usage.input_tokens + response.usage.output_tokens
-            if response.usage
-            else 0,
+            "tokens": response.usage.input_tokens + response.usage.output_tokens if response.usage else 0,
             "provider": "anthropic",
             "model": model,
         }
