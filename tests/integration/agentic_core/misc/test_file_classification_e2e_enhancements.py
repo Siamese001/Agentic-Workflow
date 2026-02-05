@@ -21,7 +21,7 @@ class TestE2EAllPhasesIntegration:
     """E2E tests verifying all phases work together."""
 
     def test_e2e_file_type_has_all_categories(self):
-        """Verify FileType has all 19 categories from all phases."""
+        """Verify FileType has all categories from implementation."""
         from agentic_core.L5_safety.validators.FileClassificationAgent import FileType
 
         expected = {
@@ -38,33 +38,32 @@ class TestE2EAllPhasesIntegration:
             "TYPES",
             "GATEWAY",
             "IGNORE",
-            # Phase 3 additions
-            "SERVICE",
+            # Windsurf implementation additions
+            "ORCHESTRATOR",
+            "VALIDATOR",
             "FACTORY",
-            "ASYNC_AGENT",
-            "ADAPTER",
             "CONFIG",
-            "MODEL",
-            "REPOSITORY",
+            "ADAPTER",
         }
         assert set(FileType.__args__) == expected
-        assert len(FileType.__args__) == 19
+        assert len(FileType.__args__) == 17
 
     def test_e2e_all_detection_methods_exist(self):
-        """Verify all 8 new detection methods exist."""
+        """Verify all detection methods exist."""
         from agentic_core.L5_safety.validators.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
         methods = [
             "_is_true_agent",
-            "_is_service_class",
-            "_is_factory_class",
-            "_is_async_agent",
-            "_is_adapter_class",
-            "_is_config_class",
             "_is_model_class",
             "_is_repository_class",
+            "_to_smart_snake_case",  # New method from refactoring
+            "_detect_test_patterns",
+            "_detect_script_patterns",
+            "_detect_type_patterns",
+            "_detect_config_patterns",
+            "_detect_validator_patterns",
         ]
         for method in methods:
             assert hasattr(FileClassificationAgent, method), f"Missing: {method}"
@@ -133,50 +132,49 @@ class TestE2EBackwardCompatibility:
 class TestE2EPhaseValidation:
     """Validate each phase's contributions."""
 
-    def test_e2e_phase1_methods(self):
-        """Verify Phase 1 detection methods exist."""
+    def test_e2e_core_detection_methods(self):
+        """Verify core detection methods exist."""
         from agentic_core.L5_safety.validators.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
-        phase1_methods = [
+        core_methods = [
             "_is_true_agent",
-            "_is_service_class",
-            "_is_factory_class",
-            "_is_async_agent",
-            "_is_adapter_class",
-        ]
-        for method in phase1_methods:
-            assert hasattr(FileClassificationAgent, method)
-
-    def test_e2e_phase2_methods(self):
-        """Verify Phase 2 detection methods exist."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
-            FileClassificationAgent,
-        )
-
-        phase2_methods = [
-            "_is_config_class",
             "_is_model_class",
             "_is_repository_class",
+            "_to_smart_snake_case",
         ]
-        for method in phase2_methods:
+        for method in core_methods:
             assert hasattr(FileClassificationAgent, method)
 
-    def test_e2e_phase3_categories(self):
-        """Verify Phase 3 categories exist."""
+    def test_e2e_ast_detection_methods(self):
+        """Verify AST-based detection methods exist."""
+        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        ast_methods = [
+            "_detect_test_patterns",
+            "_detect_script_patterns",
+            "_detect_type_patterns",
+            "_detect_config_patterns",
+            "_detect_validator_patterns",
+        ]
+        for method in ast_methods:
+            assert hasattr(FileClassificationAgent, method)
+
+    def test_e2e_windsurf_categories(self):
+        """Verify Windsurf implementation categories exist."""
         from agentic_core.L5_safety.validators.FileClassificationAgent import FileType
 
-        phase3_categories = {
-            "SERVICE",
+        windsurf_categories = {
+            "ORCHESTRATOR",
+            "VALIDATOR",
             "FACTORY",
-            "ASYNC_AGENT",
-            "ADAPTER",
             "CONFIG",
-            "MODEL",
-            "REPOSITORY",
+            "ADAPTER",
         }
-        assert phase3_categories.issubset(set(FileType.__args__))
+        assert windsurf_categories.issubset(set(FileType.__args__))
 
 
 class TestE2EModuleImports:
@@ -215,38 +213,37 @@ class TestE2EEnhancementsSummary:
     """Summary E2E tests for all enhancements."""
 
     def test_e2e_total_enhancements(self):
-        """Verify total enhancements: 8 methods + 7 categories."""
+        """Verify total enhancements: detection methods + categories."""
         from agentic_core.L5_safety.validators.FileClassificationAgent import (
             FileClassificationAgent,
             FileType,
         )
 
-        # 8 new detection methods
-        new_methods = [
+        # Key detection methods
+        key_methods = [
             "_is_true_agent",
-            "_is_service_class",
-            "_is_factory_class",
-            "_is_async_agent",
-            "_is_adapter_class",
-            "_is_config_class",
             "_is_model_class",
             "_is_repository_class",
+            "_to_smart_snake_case",
+            "_detect_test_patterns",
+            "_detect_script_patterns",
+            "_detect_type_patterns",
+            "_detect_config_patterns",
+            "_detect_validator_patterns",
         ]
-        method_count = sum(1 for m in new_methods if hasattr(FileClassificationAgent, m))
-        assert method_count == 8
+        method_count = sum(1 for m in key_methods if hasattr(FileClassificationAgent, m))
+        assert method_count >= 9
 
-        # 7 new categories
-        new_categories = {
-            "SERVICE",
+        # Windsurf implementation categories
+        windsurf_categories = {
+            "ORCHESTRATOR",
+            "VALIDATOR",
             "FACTORY",
-            "ASYNC_AGENT",
             "ADAPTER",
             "CONFIG",
-            "MODEL",
-            "REPOSITORY",
         }
-        category_count = sum(1 for c in new_categories if c in FileType.__args__)
-        assert category_count == 7
+        category_count = sum(1 for c in windsurf_categories if c in FileType.__args__)
+        assert category_count == 5
 
     def test_e2e_file_classification_agent_is_dataclass(self):
         """Verify FileClassificationAgent is a dataclass."""

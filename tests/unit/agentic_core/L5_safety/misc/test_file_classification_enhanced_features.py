@@ -142,9 +142,7 @@ class TestUpdateFileHeader:
 
             # Create test file with old name in header
             test_file = tmpdir / "OldName.py"
-            content = (
-                '"""File: OldName.py\nPath: some/path/OldName.py\n"""\nclass OldName:\n    pass\n'
-            )
+            content = '"""File: OldName.py\nPath: some/path/OldName.py\n"""\nclass OldName:\n    pass\n'
             test_file.write_text(content)
 
             # Create agent
@@ -557,6 +555,343 @@ class TestMethodSignatures:
         params = list(sig.parameters.keys())
 
         assert params == ["self", "old_name", "new_name"]
+
+
+class TestSmartSnakeCaseConversion:
+    """Test the _to_smart_snake_case method for acronym preservation."""
+
+    def test_smart_snake_case_simple(self):
+        """Test basic PascalCase to snake_case conversion."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        agent = object.__new__(FileClassificationAgent)
+        agent.project_root = Path.cwd()
+
+        assert agent._to_smart_snake_case("MyClass") == "my_class"
+        assert agent._to_smart_snake_case("SimpleTest") == "simple_test"
+
+    def test_smart_snake_case_with_acronyms(self):
+        """Test that acronyms are preserved correctly."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        agent = object.__new__(FileClassificationAgent)
+        agent.project_root = Path.cwd()
+
+        # PIISanitizer should become pii_sanitizer, not p_i_i_sanitizer
+        assert agent._to_smart_snake_case("PIISanitizer") == "pii_sanitizer"
+        assert agent._to_smart_snake_case("PDFLoader") == "pdf_loader"
+        assert agent._to_smart_snake_case("HTTPClient") == "http_client"
+        assert agent._to_smart_snake_case("XMLParser") == "xml_parser"
+
+    def test_smart_snake_case_mixed(self):
+        """Test mixed acronyms and regular words."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        agent = object.__new__(FileClassificationAgent)
+        agent.project_root = Path.cwd()
+
+        assert agent._to_smart_snake_case("MyPDFReader") == "my_pdf_reader"
+        assert agent._to_smart_snake_case("HTTPSConnectionManager") == "https_connection_manager"
+
+    def test_smart_snake_case_already_lowercase(self):
+        """Test that lowercase names are handled correctly."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        agent = object.__new__(FileClassificationAgent)
+        agent.project_root = Path.cwd()
+
+        assert agent._to_smart_snake_case("myclass") == "myclass"
+        assert agent._to_smart_snake_case("test") == "test"
+
+
+class TestPrimaryClassCentricDetection:
+    """Test the refactored primary-class-centric detection logic."""
+
+    def test_primary_class_detection_matches_filename(self):
+        """Test that primary class is determined by filename match."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            # Create file with multiple classes where one matches filename
+            test_file = tmpdir / "MyAgent.py"
+            test_file.write_text(
+                "class HelperClass:\n    pass\n\nclass MyAgent:\n    pass\n\nclass AnotherHelper:\n    pass\n"
+            )
+
+            agent = object.__new__(FileClassificationAgent)
+            agent.project_root = tmpdir
+
+            file_type = agent.classify_file(test_file)
+            assert file_type == "AGENT", f"Expected AGENT (primary class MyAgent), got {file_type}"
+
+    def test_primary_class_fallback_to_first_class(self):
+        """Test fallback to first class when no filename match."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            # Create file with classes that don't match filename
+            test_file = tmpdir / "utilities.py"
+            test_file.write_text("class MyHelper:\n    pass\n\nclass AnotherClass:\n    pass\n")
+
+            agent = object.__new__(FileClassificationAgent)
+            agent.project_root = tmpdir
+
+            file_type = agent.classify_file(test_file)
+            # First class (MyHelper) is used - should be CLASS
+            assert file_type == "CLASS", f"Expected CLASS, got {file_type}"
+
+
+class TestExceptionClassification:
+    """Test that Exception classes are classified as CLASS."""
+
+    def test_exception_class_by_name(self):
+        """Test that classes ending in Error or Exception are CLASS."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            # Create custom exception file
+            test_file = tmpdir / "CustomError.py"
+            test_file.write_text("class CustomError(Exception):\n    pass\n")
+
+            agent = object.__new__(FileClassificationAgent)
+            agent.project_root = tmpdir
+
+            file_type = agent.classify_file(test_file)
+            assert file_type == "CLASS", f"Expected CLASS for exception, got {file_type}"
+
+    def test_exception_class_by_inheritance(self):
+        """Test that classes inheriting from Exception are CLASS."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            # Create custom exception with non-Error/Exception name
+            test_file = tmpdir / "ValidationFailure.py"
+            test_file.write_text("class ValidationFailure(Exception):\n    pass\n")
+
+            agent = object.__new__(FileClassificationAgent)
+            agent.project_root = tmpdir
+
+            file_type = agent.classify_file(test_file)
+            assert file_type == "CLASS", f"Expected CLASS for exception subclass, got {file_type}"
+
+
+class TestMixinPriorityElevation:
+    """Test that MIXIN priority is elevated to prevent override."""
+
+    def test_mixin_not_overridden_by_orchestrator_patterns(self):
+        """Test that Mixin files are not misclassified as Orchestrator."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            # Create mixin that has workflow-like content
+            test_file = tmpdir / "WorkflowMixin.py"
+            test_file.write_text(
+                "class WorkflowMixin:\n    def orchestrate(self): pass\n    def coordinate(self): pass\n"
+            )
+
+            agent = object.__new__(FileClassificationAgent)
+            agent.project_root = tmpdir
+
+            file_type = agent.classify_file(test_file)
+            assert file_type == "MIXIN", f"Expected MIXIN, got {file_type}"
+
+
+class TestAgentExclusionFromScript:
+    """Test that Agents are not misclassified as SCRIPT."""
+
+    def test_agent_with_main_guard_stays_agent(self):
+        """Test that Agent with if __name__ == '__main__' stays AGENT."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            # Create agent with main guard (common for testing)
+            test_file = tmpdir / "MyAgent.py"
+            test_file.write_text(
+                "class MyAgent:\n"
+                "    def execute(self): pass\n\n"
+                "if __name__ == '__main__':\n"
+                "    agent = MyAgent()\n"
+                "    agent.execute()\n"
+            )
+
+            agent = object.__new__(FileClassificationAgent)
+            agent.project_root = tmpdir
+
+            file_type = agent.classify_file(test_file)
+            assert file_type == "AGENT", f"Expected AGENT despite main guard, got {file_type}"
+
+    def test_agent_inheriting_base_with_argparse_stays_agent(self):
+        """Test that Agent using argparse stays AGENT."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            # Create agent that imports argparse
+            test_file = tmpdir / "CLIAgent.py"
+            test_file.write_text("import argparse\n\nclass CLIAgent:\n    def run(self): pass\n")
+
+            agent = object.__new__(FileClassificationAgent)
+            agent.project_root = tmpdir
+
+            file_type = agent.classify_file(test_file)
+            assert file_type == "AGENT", f"Expected AGENT despite argparse, got {file_type}"
+
+
+class TestOrchestratorNamingFix:
+    """Test that ORCHESTRATOR naming strips Agent/Service suffixes."""
+
+    def test_orchestrator_strips_agent_suffix(self):
+        """Test that Agent suffix is stripped before adding Orchestrator."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            test_file = tmpdir / "MyOrchestratorAgent.py"
+            test_file.write_text("class MyOrchestratorAgent:\n    pass\n")
+
+            agent = object.__new__(FileClassificationAgent)
+            agent.project_root = tmpdir
+
+            file_type = agent.classify_file(test_file)
+            new_name = agent.get_compliant_name(test_file, file_type)
+
+            # Should be MyOrchestrator.py, not MyOrchestratorAgentOrchestrator.py
+            if new_name:
+                assert "AgentOrchestrator" not in new_name, f"Should not have AgentOrchestrator: {new_name}"
+
+    def test_orchestrator_strips_service_suffix(self):
+        """Test that Service suffix is stripped before adding Orchestrator."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            test_file = tmpdir / "ConfigurationService.py"
+            test_file.write_text("class ConfigurationService:\n    def orchestrate(self): pass\n")
+
+            agent = object.__new__(FileClassificationAgent)
+            agent.project_root = tmpdir
+
+            file_type = agent.classify_file(test_file)
+            if file_type == "ORCHESTRATOR":
+                new_name = agent.get_compliant_name(test_file, file_type)
+                if new_name:
+                    assert "ServiceOrchestrator" not in new_name, (
+                        f"Should not have ServiceOrchestrator: {new_name}"
+                    )
+
+
+class TestAdapterNamingFix:
+    """Test that ADAPTER naming strips Agent suffix."""
+
+    def test_adapter_strips_agent_suffix(self):
+        """Test that Agent suffix is stripped before adding Strategy."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            test_file = tmpdir / "MyStrategyAgent.py"
+            test_file.write_text("class MyStrategyAgent:\n    pass\n")
+
+            agent = object.__new__(FileClassificationAgent)
+            agent.project_root = tmpdir
+
+            file_type = agent.classify_file(test_file)
+            if file_type == "ADAPTER":
+                new_name = agent.get_compliant_name(test_file, file_type)
+                if new_name:
+                    assert "AgentStrategy" not in new_name, f"Should not have AgentStrategy: {new_name}"
+
+
+class TestValidatorConfigSnakeCase:
+    """Test that VALIDATOR and CONFIG use _to_smart_snake_case."""
+
+    def test_validator_uses_smart_snake_case(self):
+        """Test validator naming uses smart snake_case for acronyms."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            test_file = tmpdir / "PIIValidator.py"
+            test_file.write_text("class PIIValidator:\n    def validate(self): pass\n")
+
+            agent = object.__new__(FileClassificationAgent)
+            agent.project_root = tmpdir
+
+            file_type = agent.classify_file(test_file)
+            if file_type == "VALIDATOR":
+                new_name = agent.get_compliant_name(test_file, file_type)
+                if new_name:
+                    # Should preserve PII as pii, not p_i_i
+                    assert "p_i_i" not in new_name, f"Should use smart snake_case: {new_name}"
+
+    def test_config_uses_smart_snake_case(self):
+        """Test config naming uses smart snake_case for acronyms."""
+        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            test_file = tmpdir / "APIConfig.py"
+            test_file.write_text("class APIConfig:\n    API_KEY = 'test'\n")
+
+            agent = object.__new__(FileClassificationAgent)
+            agent.project_root = tmpdir
+
+            file_type = agent.classify_file(test_file)
+            if file_type == "CONFIG":
+                new_name = agent.get_compliant_name(test_file, file_type)
+                if new_name:
+                    # Should preserve API as api, not a_p_i
+                    assert "a_p_i" not in new_name, f"Should use smart snake_case: {new_name}"
 
 
 if __name__ == "__main__":

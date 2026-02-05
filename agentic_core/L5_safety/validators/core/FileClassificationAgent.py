@@ -153,9 +153,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         return {
             "success": success == 0,
             "stats": self.stats,
-            "summary": (
-                f"Renamed: {self.stats['renamed']}, Refactors: {self.stats['deep_refactors']}"
-            ),
+            "summary": (f"Renamed: {self.stats['renamed']}, Refactors: {self.stats['deep_refactors']}"),
         }
 
     def _orchestrate_audit(self, root: Path) -> int:
@@ -208,11 +206,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             old_stem = path.stem
                             new_stem = Path(new_name).stem
 
-                            if (
-                                old_stem != new_stem
-                                and old_stem[0].isupper()
-                                and new_stem[0].isupper()
-                            ):
+                            if old_stem != new_stem and old_stem[0].isupper() and new_stem[0].isupper():
                                 print(f"  [DEEP REFACTOR] {old_stem} -> {new_stem}")
                                 refactor_count = self.deep_refactor_name(old_stem, new_stem)
                                 self.stats["deep_refactors"] += refactor_count
@@ -223,9 +217,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                             else:
                                 # Standard Import Update for non-architectural renames
-                                self.stats["imports_fixed"] += self.update_imports(
-                                    path.name, new_name
-                                )
+                                self.stats["imports_fixed"] += self.update_imports(path.name, new_name)
                         else:
                             # File was deleted due to duplicate content - remove from registry
                             self.file_registry[idx] = None
@@ -340,107 +332,86 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 pass
             return "TEST"
 
-        # [PRIORITY 4] SCRIPT Detection: Enhanced AST-based detection
-        # Detect scripts by entry points and execution patterns
-        # Exclude the FileClassificationAgent itself
-        if path.name != "FileClassificationAgent.py":
-            script_indicators = self._detect_script_patterns(tree, path)
-            if script_indicators["is_script"]:
-                return "SCRIPT"
-
         # [PRIORITY 5] TYPES Detection: Enhanced AST-based detection
         # Detect type collections by class patterns
         type_indicators = self._detect_type_patterns(tree, path)
         if type_indicators["is_types"]:
             return "TYPES"
 
-        has_class = False
-        is_agent = False
+        # === REFACTORED PRIMARY-CLASS-CENTRIC DETECTION ===
+        # Collect all ClassDef nodes
+        class_nodes = [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
+        if not class_nodes:
+            return "UTILITY"
+
+        class_names = [node.name for node in class_nodes]
+
+        # Determine primary class (heuristic: name matches filename stem)
+        primary_name = class_names[0]
+        stem_clean = re.sub(r"[^a-zA-Z0-9]", "", path.stem.lower())
+        for name in class_names:
+            if re.sub(r"[^a-zA-Z0-9]", "", name.lower()) == stem_clean:
+                primary_name = name
+                break
+
+        primary_node = next(n for n in class_nodes if n.name == primary_name)
+
+        # Reset flags based exclusively on primary class
         is_protocol = False
-        # is_gateway = False  # Not used in new priority queue
-        is_mixin = False
+        is_mixin = primary_name.endswith("Mixin")
+        is_factory = primary_name.endswith("Factory")
+        is_exception = primary_name.endswith(("Error", "Exception"))
 
-        # [HARDENED] Structural Contexts - REMOVED low-signal folder checks
-        # is_engine = "engines" in path.parts  # Not used in new priority queue
+        # Protocol via bases
+        for base in primary_node.bases:
+            if isinstance(base, ast.Name):
+                if base.id == "Protocol":
+                    is_protocol = True
+                if "Exception" in base.id or "Error" in base.id:
+                    is_exception = True
+            elif isinstance(base, ast.Attribute):
+                if base.attr == "Protocol":
+                    is_protocol = True
+                if base.attr in ("Exception", "BaseException"):
+                    is_exception = True
 
-        # WINDSURF IMPLEMENTATION: New category detection flags
-        is_orchestrator = False
-        is_adapter = False
-        is_config = False
-        is_validator = False
-        is_factory = False
-
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ClassDef):
-                has_class = True
-                name = node.name
-
-                # Protocol Check (bases)
-                for base in node.bases:
-                    if (isinstance(base, ast.Name) and base.id == "Protocol") or (
-                        isinstance(base, ast.Attribute) and base.attr == "Protocol"
-                    ):
-                        is_protocol = True
-
-                # Name-based checks
-                if name.endswith("Mixin"):
-                    is_mixin = True
-                if name.endswith("Agent"):
+        # Agent via name or inheritance
+        is_agent = primary_name.endswith("Agent")
+        if not is_agent:
+            for base in primary_node.bases:
+                if isinstance(base, ast.Name) and "Agent" in base.id:
+                    is_agent = True
+                elif isinstance(base, ast.Attribute) and "Agent" in base.attr:
                     is_agent = True
 
-                # Enhanced AST-based detection with fuzzy matching
-                # ORCHESTRATOR detection
-                orchestrator_patterns = [
-                    "Orchestrator",
-                    "orchestrator",
-                    "orchestrate",
-                    "coordinate",
-                    "workflow",
-                ]
-                if self._fuzzy_match_name_or_content(name, path, content, orchestrator_patterns):
-                    is_orchestrator = True
-
-                # ADAPTER detection
-                adapter_patterns = ["Strategy", "Adapter", "strategy", "adapter", "adapt", "wrap"]
-                if self._fuzzy_match_name_or_content(name, path, content, adapter_patterns):
-                    is_adapter = True
-                if name.endswith("Factory"):
-                    is_factory = True
-
-                # Inheritance Check for Agents (if not already found)
-                if not is_agent:
-                    for base in node.bases:
-                        if (isinstance(base, ast.Name) and "Agent" in base.id) or (
-                            isinstance(base, ast.Attribute) and "Agent" in base.attr
-                        ):
-                            is_agent = True
-
-        # Enhanced CONFIG detection using AST patterns
-        config_indicators = [
-            "config",
-            "blueprint",
-            "settings",
-            "manifest",
-            "Config",
-            "Settings",
-            "Options",
+        # Architectural fuzzy - STRICT: primary class name only
+        orchestrator_patterns = [
+            "Orchestrator",
+            "orchestrator",
+            "orchestrate",
+            "Coordinator",
+            "Pipeline",
         ]
+        is_orchestrator = any(p in primary_name for p in orchestrator_patterns)
+
+        adapter_patterns = ["Strategy", "Adapter", "strategy", "adapter"]
+        is_adapter = any(p in primary_name for p in adapter_patterns)
+
+        # Check Config via pattern helper (passed tree for attribute check)
+        config_indicators = ["config", "blueprint", "settings", "manifest", "Config", "Settings", "Options"]
         config_patterns = {"configuration", "settings", "options", "params", "parameters"}
-        if self._detect_config_patterns(tree, path, content, config_indicators, config_patterns):
-            is_config = True
+        is_config = self._detect_config_patterns(tree, path, content, config_indicators, config_patterns)
 
         # Enhanced VALIDATOR detection using AST patterns
-        validator_patterns = [
-            "validator",
-            "validate",
-            "check",
-            "verify",
-            "Validator",
-            "Check",
-            "Verify",
-        ]
-        if self._detect_validator_patterns(tree, path, content, validator_patterns):
-            is_validator = True
+        validator_patterns = ["validator", "validate", "check", "verify", "Validator", "Check", "Verify"]
+        is_validator = self._detect_validator_patterns(tree, path, content, validator_patterns)
+
+        # [PRIORITY 4] SCRIPT Detection - MOVED AFTER AGENT CHECK
+        # CRITICAL FIX: Explicitly exclude Agents from being classified as Scripts
+        if path.name != "FileClassificationAgent.py" and not is_agent:
+            script_indicators = self._detect_script_patterns(tree, path)
+            if script_indicators["is_script"]:
+                return "SCRIPT"
 
         # [WINDSURF IMPLEMENTATION] PRIORITY EXECUTION - Order matters!
         # 1. STUB: Already handled above (preempts all)
@@ -448,8 +419,16 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # 2.5 SELF_DETECTION: Already handled above
         # 2.7 BLUEPRINT_DETECTION: Already handled above
         # 3. TEST: Already handled above
-        # 4. SCRIPT: Already handled above
+        # 4. SCRIPT: Handled above (with Agent exclusion)
         # 5. TYPES: Already handled above
+
+        # NEW: Exception forces CLASS early
+        if is_exception:
+            return "CLASS"
+        # NEW: Elevate MIXIN priority to prevent override
+        if is_mixin:
+            return "MIXIN"
+
         # 6. ORCHESTRATOR: Detect if Orchestrator in class name or path
         if is_orchestrator:
             return "ORCHESTRATOR"
@@ -471,19 +450,23 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # 12. AGENT: Keep existing inheritance/path logic
         elif is_agent:
             return "AGENT"
-        # 13. MIXIN: Keep existing logic
-        elif is_mixin:
-            return "MIXIN"
         # 14. CLASS: Fallback for any other class
-        elif has_class:
-            return "CLASS"
-        # 15. UTILITY: Fallback for files with no classes
         else:
-            return "UTILITY"
+            return "CLASS"
 
     # ========================================================================
     # ENHANCED AST-BASED DETECTION METHODS
     # ========================================================================
+
+    def _to_smart_snake_case(self, name: str) -> str:
+        """
+        Converts PascalCase to snake_case while preserving acronyms.
+        Example: 'PIISanitizer' -> 'pii_sanitizer', 'PDFLoader' -> 'pdf_loader'
+        """
+        # Pass 1: Handle acronym boundaries (PDFLoader -> PDF_Loader)
+        s1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
+        # Pass 2: Handle standard camel boundaries (LoaderFile -> Loader_File)
+        return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
     def _detect_test_patterns(self, tree: ast.AST, path: Path) -> dict[str, bool]:
         """
@@ -649,10 +632,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     if isinstance(decorator, ast.Name) and decorator.id == "dataclass":
                         dataclass_count += 1
                     elif isinstance(decorator, ast.Call):
-                        if (
-                            isinstance(decorator.func, ast.Name)
-                            and decorator.func.id == "dataclass"
-                        ):
+                        if isinstance(decorator.func, ast.Name) and decorator.func.id == "dataclass":
                             dataclass_count += 1
 
                 # Check model naming patterns
@@ -677,9 +657,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         return indicators
 
-    def _fuzzy_match_name_or_content(
-        self, name: str, path: Path, content: str, patterns: list[str]
-    ) -> bool:
+    def _fuzzy_match_name_or_content(self, name: str, path: Path, content: str, patterns: list[str]) -> bool:
         """
         Fuzzy matching for names and content patterns.
 
@@ -1227,9 +1205,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                     # Regex to fix the module source in relative imports
                     # Pattern: from .OldName import
-                    regex_init_mod = re.compile(
-                        rf"(from\s+\.+){re.escape(old_file_stem)}(\s+import)"
-                    )
+                    regex_init_mod = re.compile(rf"(from\s+\.+){re.escape(old_file_stem)}(\s+import)")
                     new_content = regex_init_mod.sub(rf"\1{new_file_stem}\2", new_content)
 
                 if new_content != content:
@@ -1333,9 +1309,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                 # Check if they're the same file (case-insensitive on Windows)
                 if src_resolved == dest_resolved:
-                    print(
-                        "  [INFO] Source and destination are the same file (case-insensitive match)"
-                    )
+                    print("  [INFO] Source and destination are the same file (case-insensitive match)")
                     return False  # No action needed
                 else:
                     is_collision = True
@@ -1459,7 +1433,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         # SCRIPT: Force Snake Case
         if file_type == "SCRIPT":
-            snake = re.sub(r"(?<!^)(?=[A-Z])", "_", path.stem).lower().replace("__", "_")
+            snake = self._to_smart_snake_case(path.stem)
             return f"{snake}.py" if f"{snake}.py" != path.name else None
 
         # TEST: Force test_ prefix + snake_case
@@ -1472,10 +1446,7 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # Example: HygieneMixin.py -> hygiene_mixin.py
         if file_type == "MIXIN":
             stem = path.stem
-            # Acronym-aware snake_case conversion (Pass 1: LLMProvider -> LLM_Provider)
-            s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", stem)
-            # Pass 2: camelCase boundaries (llmProvider -> llm_Provider)
-            clean_stem = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+            clean_stem = self._to_smart_snake_case(stem)
 
             if not clean_stem.endswith("_mixin"):
                 clean_stem += "_mixin"
@@ -1523,11 +1494,15 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             # WINDSURF IMPLEMENTATION: New naming conventions
             elif file_type == "ORCHESTRATOR":
+                # [FIX] Strip conflicting suffixes first to prevent "AgentOrchestrator"
+                target_name = target_name.replace("Agent", "").replace("Service", "")
                 # Force PascalCase and ensure Orchestrator suffix
                 if not target_name.endswith("Orchestrator"):
                     target_name += "Orchestrator"
 
             elif file_type == "ADAPTER":
+                # [FIX] Handle Strategy/Adapter duality
+                target_name = target_name.replace("Agent", "")
                 # Force PascalCase and ensure Strategy suffix (for Strategy patterns)
                 if "Strategy" not in target_name:
                     # If it's an Adapter, ensure Adapter suffix
@@ -1541,17 +1516,13 @@ class FileClassificationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             elif file_type == "VALIDATOR":
                 # Force snake_case and ensure validator suffix
-                # Convert PascalCase to snake_case
-                s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", target_name)
-                target_name = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+                target_name = self._to_smart_snake_case(target_name)
                 if not target_name.endswith("_validator"):
                     target_name += "_validator"
 
             elif file_type == "CONFIG":
                 # Force snake_case and ensure config suffix
-                # Convert PascalCase to snake_case
-                s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", target_name)
-                target_name = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+                target_name = self._to_smart_snake_case(target_name)
                 if not target_name.endswith("_config"):
                     target_name += "_config"
 
@@ -1717,9 +1688,7 @@ def main():
 
     is_dry_run = args.dry_run or args.validate
 
-    agent = FileClassificationAgent(
-        project_root=Path("."), dry_run=is_dry_run, validate_only=args.validate
-    )
+    agent = FileClassificationAgent(project_root=Path("."), dry_run=is_dry_run, validate_only=args.validate)
 
     result = agent.run()
     sys.exit(0 if result["success"] else 1)

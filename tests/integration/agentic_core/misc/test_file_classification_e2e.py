@@ -62,6 +62,11 @@ class TestE2EFileClassificationAgent:
                 "SCRIPT": 0,
                 "TYPES": 0,
                 "GATEWAY": 0,
+                "ORCHESTRATOR": 0,
+                "VALIDATOR": 0,
+                "FACTORY": 0,
+                "CONFIG": 0,
+                "ADAPTER": 0,
             },
         }
         agent.file_registry = []
@@ -122,9 +127,7 @@ class TestE2EFileClassificationAgent:
         """Test protocols are properly classified."""
         test_file = temp_project / "MyProtocol.py"
         test_file.write_text(
-            "from typing import Protocol\n\n"
-            "class MyProtocol(Protocol):\n"
-            "    def method(self) -> None: ...\n"
+            "from typing import Protocol\n\nclass MyProtocol(Protocol):\n    def method(self) -> None: ...\n"
         )
 
         file_type = agent.classify_file(test_file)
@@ -227,6 +230,11 @@ class TestIntegrationPromptGovernance:
                 "SCRIPT": 0,
                 "TYPES": 0,
                 "GATEWAY": 0,
+                "ORCHESTRATOR": 0,
+                "VALIDATOR": 0,
+                "FACTORY": 0,
+                "CONFIG": 0,
+                "ADAPTER": 0,
             },
         }
         agent.file_registry = []
@@ -327,6 +335,11 @@ class TestAllPhasesIntegration:
                     "SCRIPT": 0,
                     "TYPES": 0,
                     "GATEWAY": 0,
+                    "ORCHESTRATOR": 0,
+                    "VALIDATOR": 0,
+                    "FACTORY": 0,
+                    "CONFIG": 0,
+                    "ADAPTER": 0,
                 },
             }
             agent.file_registry = []
@@ -389,6 +402,11 @@ class TestAllPhasesIntegration:
                     "SCRIPT": 0,
                     "TYPES": 0,
                     "GATEWAY": 0,
+                    "ORCHESTRATOR": 0,
+                    "VALIDATOR": 0,
+                    "FACTORY": 0,
+                    "CONFIG": 0,
+                    "ADAPTER": 0,
                 },
             }
             agent.file_registry = []
@@ -409,6 +427,116 @@ class TestAllPhasesIntegration:
             private_file = tmp_path / "_internal.py"
             private_file.write_text("class Internal:\n    pass\n")
             assert agent.classify_file(private_file) == "TYPES"
+
+
+class TestPrimaryClassCentricE2E:
+    """E2E tests for primary-class-centric detection."""
+
+    @pytest.fixture
+    def agent(self, tmp_path):
+        """Create agent instance for testing."""
+        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+            FileClassificationAgent,
+        )
+
+        agent = object.__new__(FileClassificationAgent)
+        agent.project_root = tmp_path.resolve()
+        agent.dry_run = True
+        agent.verbose = False
+        agent.validate_only = False
+        agent.stats = {
+            "analyzed": 0,
+            "compliant": 0,
+            "renamed": 0,
+            "imports_fixed": 0,
+            "collisions_resolved": 0,
+            "violations": {
+                "AGENT": 0,
+                "CLASS": 0,
+                "MIXIN": 0,
+                "UTILITY": 0,
+                "PROTOCOL": 0,
+                "ENGINE": 0,
+                "STUB": 0,
+                "TEST": 0,
+                "SCRIPT": 0,
+                "TYPES": 0,
+                "GATEWAY": 0,
+                "ORCHESTRATOR": 0,
+                "VALIDATOR": 0,
+                "FACTORY": 0,
+                "CONFIG": 0,
+                "ADAPTER": 0,
+            },
+        }
+        agent.file_registry = []
+        return agent
+
+    def test_e2e_exception_classified_as_class(self, agent, tmp_path):
+        """Test that exception classes are correctly classified as CLASS."""
+        test_file = tmp_path / "CustomError.py"
+        test_file.write_text("class CustomError(Exception):\n    pass\n")
+
+        file_type = agent.classify_file(test_file)
+        assert file_type == "CLASS", f"Expected CLASS for exception, got {file_type}"
+
+    def test_e2e_mixin_priority_over_orchestrator(self, agent, tmp_path):
+        """Test that Mixin classification takes priority over Orchestrator patterns."""
+        test_file = tmp_path / "OrchestrationMixin.py"
+        test_file.write_text("class OrchestrationMixin:\n    def orchestrate(self): pass\n")
+
+        file_type = agent.classify_file(test_file)
+        assert file_type == "MIXIN", f"Expected MIXIN, got {file_type}"
+
+    def test_e2e_agent_not_misclassified_as_script(self, agent, tmp_path):
+        """Test that Agent with main guard is not misclassified as SCRIPT."""
+        test_file = tmp_path / "ProcessingAgent.py"
+        test_file.write_text(
+            "class ProcessingAgent:\n"
+            "    def run(self): pass\n\n"
+            "if __name__ == '__main__':\n"
+            "    agent = ProcessingAgent()\n"
+        )
+
+        file_type = agent.classify_file(test_file)
+        assert file_type == "AGENT", f"Expected AGENT despite main guard, got {file_type}"
+
+    def test_e2e_orchestrator_naming_strips_agent(self, agent, tmp_path):
+        """Test that Orchestrator naming correctly strips Agent suffix."""
+        test_file = tmp_path / "WorkflowOrchestratorAgent.py"
+        test_file.write_text("class WorkflowOrchestratorAgent:\n    pass\n")
+
+        file_type = agent.classify_file(test_file)
+        if file_type == "ORCHESTRATOR":
+            new_name = agent.get_compliant_name(test_file, file_type)
+            if new_name:
+                assert "AgentOrchestrator" not in new_name
+
+    def test_e2e_adapter_naming_strips_agent(self, agent, tmp_path):
+        """Test that Adapter naming correctly strips Agent suffix."""
+        test_file = tmp_path / "CacheStrategyAgent.py"
+        test_file.write_text("class CacheStrategyAgent:\n    pass\n")
+
+        file_type = agent.classify_file(test_file)
+        if file_type == "ADAPTER":
+            new_name = agent.get_compliant_name(test_file, file_type)
+            if new_name:
+                assert "AgentStrategy" not in new_name
+
+    def test_e2e_smart_snake_case_preserves_acronyms(self, agent, tmp_path):
+        """Test that smart snake_case preserves acronyms in naming."""
+        # Create a script with acronym in name
+        scripts_dir = tmp_path / "scripts"
+        scripts_dir.mkdir()
+        test_file = scripts_dir / "APIProcessor.py"
+        test_file.write_text("def main():\n    pass\n")
+
+        file_type = agent.classify_file(test_file)
+        if file_type == "SCRIPT":
+            new_name = agent.get_compliant_name(test_file, file_type)
+            if new_name:
+                # Should be api_processor.py, not a_p_i_processor.py
+                assert "a_p_i" not in new_name, f"Acronym not preserved: {new_name}"
 
 
 if __name__ == "__main__":
