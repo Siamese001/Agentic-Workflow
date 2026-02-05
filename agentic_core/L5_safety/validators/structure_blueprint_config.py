@@ -282,11 +282,13 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "unit": {
                 "purpose": "Isolated logic tests mirroring source structure",
                 "subfolders": ["agentic_core", "apps_rg", "apps_lic", "apps_shared", "utils"],
+                "mirror_source": True,  # Flag indicating this should mirror source structure
             },
             # TYPE 2: Integration Tests (DB, API, Component Interaction)
             "integration": {
                 "purpose": "Component interaction tests mirroring source structure",
                 "subfolders": ["agentic_core", "apps_rg", "apps_lic", "apps_shared"],
+                "mirror_source": True,  # Flag indicating this should mirror source structure
             },
             # TYPE 3: E2E (Full System)
             "e2e": {
