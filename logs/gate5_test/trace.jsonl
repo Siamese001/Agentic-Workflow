@@ -1,9 +1,0 @@
-{"timestamp": "2026-01-23T15:15:51.427568", "type": "ORCHESTRATOR_START", "details": {"mission_id": "gate5_connected"}}
-{"timestamp": "2026-01-23T15:15:51.427568", "type": "PHASE_START", "details": {"hop": "HOP1"}}
-{"timestamp": "2026-01-23T15:15:51.427568", "type": "PHASE_START", "details": {"hop": "HOP2"}}
-{"timestamp": "2026-01-23T15:15:51.427568", "type": "PHASE_START", "details": {"hop": "HOP3"}}
-{"timestamp": "2026-01-23T15:15:51.433490", "type": "PHASE_START", "details": {"hop": "HOP4"}}
-{"timestamp": "2026-01-23T15:15:51.433490", "type": "PHASE_START", "details": {"hop": "HOP5"}}
-{"timestamp": "2026-01-23T15:15:51.435042", "type": "PHASE_START", "details": {"hop": "HOP6"}}
-{"timestamp": "2026-01-23T15:15:51.438209", "type": "PHASE_START", "details": {"hop": "HOP7"}}
-{"timestamp": "2026-01-23T15:15:51.439081", "type": "PHASE_START", "details": {"hop": "HOP8"}}
