@@ -4,6 +4,114 @@
 
 Guardian tests represent the **Guardian (Validation Gate)** in the center of the architecture (The Red Shield). They act as the final **Compliance Gate** that a "Proposed Fix" must pass before entering the **Symmetric Validator-Healer Pipe**.
 
+## CRITICAL: Guardian Tests are COMPLEMENTARY, Not Replacements
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        TEST HIERARCHY                                │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  tests/unit/        → Functional correctness (unit tests)           │
+│  tests/e2e/         → End-to-end workflows                          │
+│  tests/integration/ → Component integration                          │
+│  tests/guardian/    → Architectural compliance (validation gate)    │
+│                                                                      │
+│  Guardian tests DO NOT replace unit/e2e tests!                      │
+│  They are COMPLEMENTARY - different purposes.                       │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### What Guardian Tests Do:
+- Validate architectural compliance (MRO, SSOT, schema integrity)
+- Enforce hard structural rules
+- Emit signed artifacts (pass/fail with metadata)
+
+### What Guardian Tests Do NOT Do:
+- Replace unit tests for functional correctness
+- Delete files based on filename patterns (e.g., "phase1")
+- Use string regex for obsolescence detection
+
+## Obsolescence Detection: AST-Based Analysis Required
+
+**NEVER use string regex or filename patterns to determine obsolescence.**
+
+### ❌ WRONG: String Regex / Filename Patterns
+```python
+# DO NOT DO THIS
+if 'phase ' in line_lower:
+    issues.append("Obsolete indicator found")
+
+# DO NOT DO THIS
+if 'phase1' in filename:
+    delete_file(filename)
+```
+
+### ✅ CORRECT: AST-Based Analysis
+```python
+def analyze_with_ast(self, file_path: Path) -> Dict:
+    """Use AST to determine if file is obsolete."""
+    tree = ast.parse(content)
+    
+    # Extract and verify imports
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom):
+            spec = importlib.util.find_spec(node.module)
+            if spec is None:
+                broken_imports.append(node.module)
+    
+    # Only mark obsolete if ALL imports are broken
+    if len(broken_imports) == len(all_imports):
+        return {'is_obsolete': True, 'confidence': 0.9}
+```
+
+### Obsolescence Criteria (AST-Based):
+1. **ALL imports are broken** (not just some)
+2. **No valid test classes/functions exist**
+3. **File has syntax errors** (may be corrupted)
+4. **Fuzzy matching finds renamed modules** (not deleted)
+
+### Files Requiring Manual Review:
+- Files with "phase1", "phase2" in filename → May be valid tests
+- Files with some broken imports → May need import updates
+- Files with no test functions → May be utility modules
+
+## Test Directory Scanning: ALL Levels Required
+
+Guardian tests must scan ALL levels of the tests/ hierarchy:
+
+```
+tests/                          ← Level 1: Root test files
+├── test_audit_pipeline.py
+├── test_meta_learning.py
+├── unit/                       ← Level 2: Unit test root
+│   ├── test_environment.py
+│   └── agentic_core/           ← Level 3: Module root
+│       ├── L0_maintenance/     ← Level 4: Layer root
+│       │   └── scripts/        ← Level 5: Subfolder
+│       ├── L5_safety/
+│       │   └── validators/
+│       └── ...
+├── e2e/                        ← Level 2: E2E tests
+├── integration/                ← Level 2: Integration tests
+└── guardian/                   ← Level 2: Guardian tests (this folder)
+```
+
+### Implementation:
+```python
+def collect_test_files_all_levels(self, tests_root: Path) -> Dict[str, List[Path]]:
+    """Collect test files at ALL levels of tests/ hierarchy."""
+    result = {}
+    
+    # Level 1: tests/ root
+    result['tests_root'] = list(tests_root.glob("test_*.py"))
+    
+    # Level 2+: Recursive subdirectories
+    for subdir in tests_root.iterdir():
+        if subdir.is_dir():
+            result[f'tests_{subdir.name}'] = list(subdir.glob("test_*.py"))
+            # Continue recursively...
+```
+
 ## Design Principles
 
 ### 1. Separation of Concerns
