@@ -25,7 +25,7 @@ repos:
 
       - id: check-report-location
         name: Check Report Location (SSOT)
-        entry: python scripts/hooks/validate_report_location.py --staged-only
+        entry: python ops_scripts/hooks/validate_report_location.py --staged-only
         language: system
         pass_filenames: false  # Script uses --staged-only to query git internally
         always_run: true
