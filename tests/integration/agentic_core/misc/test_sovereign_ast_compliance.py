@@ -53,9 +53,7 @@ class TestSovereignASTCompliance:
                     has_agent_suffix = True
 
         # This file has Enum but is mislabeled as 'Agent'
-        assert has_enum or has_agent_suffix, (
-            "FailureClassifierAgent should be identified as needing rename"
-        )
+        assert has_enum or has_agent_suffix, "FailureClassifierAgent should be identified as needing rename"
 
     def test_k_node_logic_injection(self):
         """
@@ -76,13 +74,9 @@ class TestSovereignASTCompliance:
 
             content = path.read_text(encoding="utf-8")
             # Check for K-Node patterns
-            has_k_node = any(
-                pattern in content for pattern in ["K.1", "K.3", "K.5", "K.7", "K_NODE"]
-            )
+            has_k_node = any(pattern in content for pattern in ["K.1", "K.3", "K.5", "K.7", "K_NODE"])
 
-            assert has_k_node or "Agent" in content, (
-                f"{file_path} should contain K-Node logic or Agent class"
-            )
+            assert has_k_node or "Agent" in content, f"{file_path} should contain K-Node logic or Agent class"
 
     def test_immutable_protocol_compliance(self):
         """
@@ -111,9 +105,7 @@ class TestSovereignASTCompliance:
 
             # V2.5 agents should use ImmutableStagingBuffer, not StateManager
             if has_state_manager:
-                assert has_immutable_buffer, (
-                    f"{agent_path} uses StateManager without ImmutableStagingBuffer"
-                )
+                assert has_immutable_buffer, f"{agent_path} uses StateManager without ImmutableStagingBuffer"
 
     def test_v2_agent_base_presence(self):
         """
@@ -190,9 +182,7 @@ class TestSovereignASTCompliance:
 
             # Check for deprecation markers
             assert "DEPRECATED" in content, "Deprecated file must contain DEPRECATED marker"
-            assert "DeprecationError" in content or "raise" in content, (
-                "Deprecated file must raise error"
-            )
+            assert "DeprecationError" in content or "raise" in content, "Deprecated file must raise error"
 
     def test_consolidation_opportunity_detection(self):
         """
@@ -204,7 +194,7 @@ class TestSovereignASTCompliance:
         import json
         from pathlib import Path
 
-        audit_results_path = Path("logs/audit_apps_lic_ast_results.json")
+        audit_results_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
 
         # If audit results exist, verify they contain recommendations
         if audit_results_path.exists():
@@ -237,8 +227,7 @@ class TestSovereignASTCompliance:
 
             # Check for mixin imports or usage
             has_mixins = any(
-                mixin in content
-                for mixin in ["SubatomicTestingMixin", "HealerMixin", "MCPHardenedMixin"]
+                mixin in content for mixin in ["SubatomicTestingMixin", "HealerMixin", "MCPHardenedMixin"]
             )
 
             # LICAgentBase includes these, so check for LICAgentBase
