@@ -1,4 +1,4 @@
-"""RgResumeOrchestratorAgent - Resume generation orchestration.
+"""RgResumeOrchestrator - Resume generation orchestration.
 
 Orchestrates the complete resume generation process including engine, memory,
 prompt management, and state tracking.
@@ -28,9 +28,9 @@ _logger = logging.getLogger(__name__)
 # from shared.configuration.config import ContentConstraintsConfig
 
 
-# NAMING FIXED: RgResumeOrchestratorAgent → RgResumeOrchestratorAgent
+# NAMING FIXED: RgResumeOrchestrator → RgResumeOrchestrator
 @dataclass
-class RgResumeOrchestratorAgent(RGAgentBase):
+class RgResumeOrchestrator(RGAgentBase):
     """Orchestrate the multi-hop resume generation workflow."""
 
     master_resume: dict[str, Any] = field(default_factory=dict)
@@ -70,11 +70,7 @@ class RgResumeOrchestratorAgent(RGAgentBase):
 
     def _record_hop(self, hop_id: str, results: list = None) -> None:
         """Record a hop Checkpoint."""
-        status = (
-            "COMPLETED"
-            if not results or all(getattr(r, "passed", True) for r in results)
-            else "FAILED"
-        )
+        status = "COMPLETED" if not results or all(getattr(r, "passed", True) for r in results) else "FAILED"
         self.hop_checkpoints.append({"hop_id": hop_id, "status": status})
 
     @timeout(300)
@@ -111,5 +107,5 @@ class RgResumeOrchestratorAgent(RGAgentBase):
 
 def orchestrate_resume(master_resume: dict, JobDescription: str) -> dict[str, object]:
     """Single public function - pure routing between atoms."""
-    orchestrator = RgResumeOrchestratorAgent(master_resume)
+    orchestrator = RgResumeOrchestrator(master_resume)
     return orchestrator.run(JobDescription)

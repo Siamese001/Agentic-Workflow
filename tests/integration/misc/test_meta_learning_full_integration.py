@@ -13,9 +13,9 @@ import pytest
 
 # Test imports - these will need to be implemented
 try:
-    from apps_lic.engines.LicHealingOrchestratorAgent import LicHealingOrchestratorAgent
+    from apps_lic.engines.LicHealingOrchestrator import LicHealingOrchestrator
     from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
-    from apps_rg.engines.RgHealingOrchestratorAgent import RgHealingOrchestratorAgent
+    from apps_rg.engines.RgHealingOrchestrator import RgHealingOrchestrator
     from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
 except ImportError as e:
     pytest.skip(f"Apps not yet enhanced with full meta-learning: {e}", allow_module_level=True)
@@ -26,7 +26,7 @@ class TestFullIntegration:
 
     def test_rg_healing_with_meta_learning(self):
         """Test RG healing orchestrator uses meta-learning effectively."""
-        orchestrator = RgHealingOrchestratorAgent()
+        orchestrator = RgHealingOrchestrator()
 
         violation = {
             "type": "resume_structure",
@@ -45,20 +45,16 @@ class TestFullIntegration:
         # If healing was successful, verify pattern was stored
         if result["status"] == "fixed":
             # Mock pattern retrieval to verify storage
-            with patch.object(
-                orchestrator._meta_client, "retrieve_healing_patterns"
-            ) as mock_retrieve:
+            with patch.object(orchestrator._meta_client, "retrieve_healing_patterns") as mock_retrieve:
                 mock_patterns = [Mock(similarity_score=0.90)]
                 mock_retrieve.return_value = mock_patterns
 
-                retrieved = orchestrator._meta_client.retrieve_healing_patterns(
-                    violation, domain="apps_rg"
-                )
+                retrieved = orchestrator._meta_client.retrieve_healing_patterns(violation, domain="apps_rg")
                 assert len(retrieved) > 0, "Should have stored patterns for successful healing"
 
     def test_lic_healing_with_meta_learning(self):
         """Test LIC healing orchestrator uses meta-learning effectively."""
-        orchestrator = LicHealingOrchestratorAgent()
+        orchestrator = LicHealingOrchestrator()
 
         incident = {
             "type": "api_timeout",
@@ -113,7 +109,7 @@ class TestFullIntegration:
 
     def test_healing_depth_prevention(self):
         """Test healing depth limits prevent infinite loops."""
-        orchestrator = RgHealingOrchestratorAgent()
+        orchestrator = RgHealingOrchestrator()
 
         # Create a violation that will cause repeated healing attempts
         violation = {
@@ -150,8 +146,8 @@ class TestFullIntegration:
 
     def test_pattern_similarity_matching(self):
         """Test semantic similarity matching works across domains."""
-        rg_orchestrator = RgHealingOrchestratorAgent()
-        lic_orchestrator = LicHealingOrchestratorAgent()
+        rg_orchestrator = RgHealingOrchestrator()
+        lic_orchestrator = LicHealingOrchestrator()
 
         # Store similar patterns in both domains
         rg_patterns = [
@@ -174,9 +170,7 @@ class TestFullIntegration:
         # Test similarity matching in RG domain
         rg_violation = {"type": "resume_quality", "message": "Work experience missing"}
 
-        with patch.object(
-            rg_orchestrator._meta_client, "retrieve_healing_patterns"
-        ) as mock_retrieve:
+        with patch.object(rg_orchestrator._meta_client, "retrieve_healing_patterns") as mock_retrieve:
             mock_retrieve.return_value = [
                 Mock(similarity_score=0.92, healing_strategy={"action": "add_experience"}),
                 Mock(similarity_score=0.85, healing_strategy={"action": "create_section"}),
@@ -194,9 +188,7 @@ class TestFullIntegration:
         # Test similarity matching in LIC domain
         lic_incident = {"type": "campaign_issue", "message": "Engagement rate too low"}
 
-        with patch.object(
-            lic_orchestrator._meta_client, "retrieve_healing_patterns"
-        ) as mock_retrieve:
+        with patch.object(lic_orchestrator._meta_client, "retrieve_healing_patterns") as mock_retrieve:
             mock_retrieve.return_value = [
                 Mock(similarity_score=0.94, healing_strategy={"action": "optimize_content"}),
                 Mock(similarity_score=0.88, healing_strategy={"action": "adjust_timing"}),
@@ -330,7 +322,7 @@ class TestErrorHandlingAndRecovery:
 
     def test_meta_client_failure_recovery(self):
         """Test recovery when meta-learning client fails."""
-        orchestrator = RgHealingOrchestratorAgent()
+        orchestrator = RgHealingOrchestrator()
 
         violation = {"type": "test_violation", "message": "test"}
 
@@ -358,9 +350,7 @@ class TestErrorHandlingAndRecovery:
             result = agent.ml_recall_resume_quality_pattern("corrupted_key")
 
             # Should return None or handle appropriately
-            assert result is None or "corrupted" not in str(result), (
-                "Should handle corrupted cache data"
-            )
+            assert result is None or "corrupted" not in str(result), "Should handle corrupted cache data"
 
     def test_domain_isolation_violation_handling(self):
         """Test handling of domain isolation violations."""

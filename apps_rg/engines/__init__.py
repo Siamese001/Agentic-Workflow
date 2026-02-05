@@ -29,9 +29,9 @@ from .FactCheckAgent import FactCheckAgent
 from .HardenedanthropicexecutorStrategy import HardenedAnthropicExecutor
 from .HardenedopenaiexecutorStrategy import HardenedOpenAIExecutor
 from .ProactiveAgent import ProactiveAgent
-from .RgHealingOrchestratorAgent import RgHealingOrchestratorAgent
+from .RgHealingOrchestrator import RgHealingOrchestrator
 from .RgReflectionAgent import RgReflectionAgent
-from .RgResumeOrchestratorAgent import RgResumeOrchestratorAgent
+from .RgResumeOrchestrator import RgResumeOrchestrator
 from .RgStrategicPlannerAgent import RgStrategicPlannerAgent
 from .RgTemplateOptimizerAgent import RgTemplateOptimizerAgent
 
@@ -59,9 +59,9 @@ __all__ = [
     "RgStrategicPlannerAgent",
     "RgTemplateOptimizerAgent",
     # Orchestration & Healing
-    "RgHealingOrchestratorAgent",
+    "RgHealingOrchestrator",
     "RgReflectionAgent",
-    "RgResumeOrchestratorAgent",
+    "RgResumeOrchestrator",
     "ProactiveAgent",
     # Core Engine Components
     "Router",

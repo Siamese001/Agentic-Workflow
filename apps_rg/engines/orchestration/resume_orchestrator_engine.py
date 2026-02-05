@@ -1,6 +1,6 @@
 """
 Resume Orchestrator Engine - L3 Manager handling HOP transitions
-Refactored from orchestrate_resume.py + RgResumeOrchestratorAgent.py
+Refactored from orchestrate_resume.py + RgResumeOrchestrator.py
 Following Batch 1 specifications
 
 HARDENING: Extends the workflow to include Generation (K9), Refinement (Optimizer/Ranker),
@@ -80,9 +80,7 @@ class ResumeOrchestratorEngine(BaseRGEngine):
             ]:
                 step_count += 1
                 if step_count > self.GLOBAL_STEP_LIMIT:
-                    self.ctx.trace.add_trace(
-                        "CRITICAL_FAILURE", {"reason": "Global step limit exceeded"}
-                    )
+                    self.ctx.trace.add_trace("CRITICAL_FAILURE", {"reason": "Global step limit exceeded"})
                     raise RuntimeError(
                         f"Mission aborted: Exceeded global step limit of {self.GLOBAL_STEP_LIMIT}"
                     )
@@ -140,9 +138,7 @@ class ResumeOrchestratorEngine(BaseRGEngine):
                     mission_input["retry_iteration"] = iteration
                     mission_input["quality_feedback"] = quality_report.get("issues", [])
                     mission_input["ats_feedback"] = ats_report.get("issues", [])
-                    self.ctx.buffer.write(
-                        "mission_input", mission_input, source_agent="ORCHESTRATOR_RETRY"
-                    )
+                    self.ctx.buffer.write("mission_input", mission_input, source_agent="ORCHESTRATOR_RETRY")
 
                     # Retry from enrichment with adjusted parameters
                     await self._run_engine(DataEnrichmentEngine, "HOP-2-RETRY")

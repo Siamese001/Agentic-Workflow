@@ -464,11 +464,45 @@ class FileClassificationAgent(*BASE_CLASSES):
         """
         Converts PascalCase to snake_case while preserving acronyms.
         Example: 'PIISanitizer' -> 'pii_sanitizer', 'PDFLoader' -> 'pdf_loader'
+
+        Hardening: Recognizes project-specific atomic words to prevent false positives.
+        - "Grounding" stays as "grounding", not "g_r_ounding"
+        - "Routing" stays as "routing", not "r_outing"
         """
+        # Project-specific atomic words that should not be split
+        atomic_words = {
+            "Grounding": "grounding",
+            "Routing": "routing",
+            "Sender": "sender",
+            "Receiver": "receiver",
+            "Planner": "planner",
+            "Scheduler": "scheduler",
+        }
+
+        # Check if the entire name is an atomic word
+        if name in atomic_words:
+            return atomic_words[name]
+
+        # Replace atomic words with placeholders before processing
+        placeholders = {}
+        temp_name = name
+        for idx, (word, replacement) in enumerate(atomic_words.items()):
+            if word in temp_name:
+                placeholder = f"__ATOMIC_{idx}__"
+                placeholders[placeholder] = replacement
+                temp_name = temp_name.replace(word, placeholder)
+
         # Pass 1: Handle acronym boundaries (PDFLoader -> PDF_Loader)
-        s1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
+        s1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", temp_name)
         # Pass 2: Handle standard camel boundaries (LoaderFile -> Loader_File)
-        return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+        s2 = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
+        # Restore atomic words from placeholders
+        result = s2
+        for placeholder, replacement in placeholders.items():
+            result = result.replace(placeholder.lower(), replacement)
+
+        return result
 
     def _detect_test_patterns(self, tree: ast.AST, path: Path) -> dict[str, bool]:
         """

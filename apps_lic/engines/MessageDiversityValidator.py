@@ -4,7 +4,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
-MessageDiversityValidatorAgent - Extracted for one-class-per-file pattern.
+MessageDiversityValidator - Extracted for one-class-per-file pattern.
 
 Originally from: ContentCleanlinessValidatorAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
@@ -25,7 +25,7 @@ class HealerMixin:
 
 
 @dataclass
-class MessageDiversityValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class MessageDiversityValidator(SubatomicTestingMixin, SovereignBaseAgent):
     """
     Prevent repetitive messages using cosine similarity
     FEATURE 1.3 from SUPREME_SPELL
@@ -65,9 +65,7 @@ class MessageDiversityValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
             max_idx = int(np.argmax(similarities))
 
             is_diverse = max_similarity < self.MIN_DIVERSITY_THRESHOLD
-            most_similar = (
-                self.message_history[max_idx] if max_idx < len(self.message_history) else ""
-            )
+            most_similar = self.message_history[max_idx] if max_idx < len(self.message_history) else ""
 
             return is_diverse, max_similarity, most_similar
 
@@ -94,19 +92,19 @@ class MessageDiversityValidatorAgent(SubatomicTestingMixin, SovereignBaseAgent):
         return super().heal_repository()
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
-        """Heal violations detected by MessageDiversityValidatorAgent."""
+        """Heal violations detected by MessageDiversityValidator."""
         violation_type = violation.get("type", "unknown")
         try:
             return {
                 "status": "skipped",
-                "details": f"MessageDiversityValidatorAgent heal() not yet implemented for {violation_type}",
+                "details": f"MessageDiversityValidator heal() not yet implemented for {violation_type}",
                 "artifacts": [],
                 "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
-                "details": f"MessageDiversityValidatorAgent heal() failed: {str(e)}",
+                "details": f"MessageDiversityValidator heal() failed: {str(e)}",
                 "artifacts": [],
                 "errors": [str(e)],
             }

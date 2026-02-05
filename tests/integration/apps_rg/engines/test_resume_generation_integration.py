@@ -80,7 +80,7 @@ class TestResumeGenerationIntegration:
         assert section_analysis["overall_balance"] > 0.8, "Good balance"
 
     def test_healing_orchestrator_integration(self):
-        """Test RgHealingOrchestratorAgent integration."""
+        """Test RgHealingOrchestrator integration."""
         healing_result = {
             "issues_detected": 2,
             "issues_fixed": 2,

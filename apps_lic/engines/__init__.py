@@ -16,17 +16,17 @@ from .HOP9IntegrationAgent import HOP9IntegrationAgent
 from .IntelligenceLibrarianAgent import IntelligenceLibrarianAgent
 from .LeadQualityAgent import LeadQualityAgent
 from .LicCodeInterpreter import LicCodeInterpreter
-from .LicHealingOrchestratorAgent import LicHealingOrchestratorAgent
+from .LicHealingOrchestrator import LicHealingOrchestrator
 from .LicReflectionAgent import LicReflectionAgent
 from .LicS2SupervisorAgent import LicS2SupervisorAgent
 from .LicTemplateOptimizerAgent import LicTemplateOptimizerAgent
 from .LogReaderAgent import LogReaderAgent
 from .MessageArchitectAgent import MessageArchitectAgent
 from .MessageComplianceAgent import MessageComplianceAgent
-from .MessageDiversityValidatorAgent import MessageDiversityValidatorAgent
+from .MessageDiversityValidator import MessageDiversityValidator
 from .OutreachCapabilityMonitorAgent import OutreachCapabilityMonitorAgent
 from .OutreachLearningAgent import OutreachLearningAgent
-from .OutreachPhase5OrchestratorAgent import OutreachPhase5OrchestratorAgent
+from .OutreachPhase5Orchestrator import OutreachPhase5Orchestrator
 from .OutreachProactiveAgent import OutreachProactiveAgent
 from .OutreachSignalRouterAgent import OutreachSignalRouterAgent
 from .OutreachTestPilotAgent import OutreachTestPilotAgent
@@ -56,16 +56,16 @@ __all__ = [
     "MessageArchitectAgent",
     "LeadQualityAgent",
     "LicCodeInterpreter",
-    "LicHealingOrchestratorAgent",
+    "LicHealingOrchestrator",
     "LicReflectionAgent",
     "LicS2SupervisorAgent",
     "LicTemplateOptimizerAgent",
     "LogReaderAgent",
     "MessageComplianceAgent",
-    "MessageDiversityValidatorAgent",
+    "MessageDiversityValidator",
     "OutreachCapabilityMonitorAgent",
     "OutreachLearningAgent",
-    "OutreachPhase5OrchestratorAgent",
+    "OutreachPhase5Orchestrator",
     "OutreachProactiveAgent",
     "OutreachSignalRouterAgent",
     "OutreachTestPilotAgent",
