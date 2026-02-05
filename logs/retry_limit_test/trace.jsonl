@@ -1,7 +1,0 @@
-{"timestamp": "2026-01-23T13:54:49.643975", "type": "ORCHESTRATOR_START", "details": {"mission_id": "limit_test"}}
-{"timestamp": "2026-01-23T13:54:49.653535", "type": "ORCHESTRATOR_RETRY", "details": {"action": "RETRY_HOP5", "reason": "Always fail"}}
-{"timestamp": "2026-01-23T13:54:49.656539", "type": "ORCHESTRATOR_RETRY", "details": {"action": "RETRY_HOP5", "reason": "Always fail"}}
-{"timestamp": "2026-01-23T13:54:49.658541", "type": "ORCHESTRATOR_RETRY", "details": {"action": "RETRY_HOP5", "reason": "Always fail"}}
-{"timestamp": "2026-01-23T13:54:49.660543", "type": "ORCHESTRATOR_LIMIT_EXCEEDED", "details": {"action": "RETRY_HOP5", "iteration": 4}}
-{"timestamp": "2026-01-23T13:57:07.494062", "type": "ORCHESTRATOR_START", "details": {"mission_id": "limit_test"}}
-{"timestamp": "2026-01-23T13:57:07.504973", "type": "ORCHESTRATOR_LIMIT_EXCEEDED", "details": {"action": "RETRY_HOP5", "iteration": 1}}

@@ -28,6 +28,14 @@ CONSTITUTIONAL DESIGN PRINCIPLES:
    
    - Guardian tests (tests/guardian/) = Architectural compliance validation
    - Unit tests (tests/unit/) = Functional correctness
+
+3. STRUCTURAL INVARIANT (2026-02-05):
+   "Files allowed ONLY in leaf nodes (directories with no subfolders)."
+   
+   - Branch nodes (folders with subdirectories) must contain ONLY subdirectories
+   - Leaf nodes (folders with no subdirectories) contain the actual files
+   - Exceptions: __init__.py, README.md, .gitignore, pyproject.toml, py.typed
+   - This enforces clean separation between structure and content
    - E2E tests (tests/e2e/) = End-to-end workflows
    - Integration tests (tests/integration/) = Component integration
    - Guardian tests are COMPLEMENTARY to unit/e2e tests, NOT replacements
@@ -76,14 +84,39 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
         "subfolders": {
             "base_agents": {"purpose": "Foundational agent classes and mixins for inheritance"},
             "domain": {"purpose": "Pure domain entities and business objects"},
-            "L0_maintenance": {"purpose": "System maintenance and healing operations"},
+            "L0_maintenance": {
+                "purpose": "System maintenance and healing operations",
+                "subfolders": {
+                    "deterministic": {"purpose": "Deterministic healing and validation"},
+                    "logs": {"purpose": "Runtime logs and execution traces"},
+                    "scripts": {
+                        "purpose": "Maintenance and operational scripts",
+                        "subfolders": {
+                            ".github": {"purpose": "GitHub workflow scripts"},
+                            "ci": {"purpose": "CI/CD pipeline scripts"},
+                            "config": {"purpose": "Configuration scripts"},
+                            "installation": {"purpose": "Installation and setup scripts"},
+                            "general_scripts": {"purpose": "General maintenance scripts"}
+                        }
+                    },
+                    "security": {"purpose": "Security scanning and enforcement"},
+                    "sensors": {"purpose": "System monitoring and health checks"},
+                    "bootstrap": {"purpose": "Bootstrap and discovery files"}
+                }
+            },
             "L1_cognition": {"purpose": "Cognitive processing and thought patterns"},
             "L2_execution": {"purpose": "Tool execution and action handling"},
             "L3_orchestration": {"purpose": "Workflow orchestration and coordination"},
             "L4_state": {"purpose": "State management and persistence"},
             "L5_safety": {"purpose": "Security, validation, and safety enforcement"},
             "L6_observability": {"purpose": "Monitoring, telemetry, and compliance reporting"},
-            "config": {"purpose": "Configuration management and environment settings"},
+            "config": {
+                "purpose": "Configuration management and environment settings",
+                "subfolders": {
+                    "blueprint_sovereign": {"purpose": "Sovereign blueprint configurations"},
+                    "core": {"purpose": "Core configuration files and settings"}
+                }
+            },
             "schemas": {"purpose": "Data models, message schemas, and validation rules"},
             "prompt_governance": {
                 "purpose": "Template lifecycle and persona management.",
@@ -105,6 +138,9 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "patterns": {"purpose": "Architectural and behavioral patterns for agents"},
             "semantic_memory": {"purpose": "Vector storage and semantic retrieval systems"},
             "knowledge": {"purpose": "Knowledge management and RAG systems"},
+            "interfaces": {"purpose": "Standardized internal API contracts and protocols", "weight": 100},
+            "integration": {"purpose": "Integration utilities and cross-system adapters"},
+            "primitives": {"purpose": "Core primitive types and foundational data structures"},
         },
         "ast_signals": {
             # --- CONSTITUTIONAL FOUNDATION (Weight 100) ---
@@ -207,7 +243,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
     "apps_shared": {
         "depth": 2,
         "purpose": "Global utilities and shared logic accessible by all apps and core.",
-        "subfolders": ["agents", "config", "core_components", "data", "tools", "utils"],
+        "subfolders": ["agents", "config", "core_components", "data", "tools", "utils", "common_utils", "mixins", "scripts", "integration", "llm"],
         # [HARDENING] 2026-01-27: Strict Shared-Layer Independence
         "forbidden_imports": ["apps_rg", "apps_lic"],
         "ast_signals": {
@@ -256,18 +292,30 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "purpose": "Shared Pytest fixtures",
                 "subfolders": ["data", "mocks", "factories"],
             },
+            "snapshots": {
+                "purpose": "Test snapshot data for comparison and regression testing",
+            },
+            "behavioral": {
+                "purpose": "Behavioral and acceptance testing",
+            },
+            "stress": {
+                "purpose": "Stress and load testing",
+            },
+            "performance": {
+                "purpose": "Performance benchmarking and profiling tests",
+            },
         },
         "volatile": False,
     },
     "ops_scripts": {
         "depth": 2,
         "purpose": "Standalone utility scripts (formerly root scripts/).",
-        "subfolders": ["ci", "maintenance", "security", "setup"],
+        "subfolders": ["ci", "maintenance", "security", "setup", "governance", "hooks", "simulations", "general"],
     },
     "archives": {
-        "depth": 2,
-        "purpose": "Canonical repository for deprecated agents and transaction artifacts.",
-        "subfolders": ["agents", "compliance_reports", "backups"],
+        "depth": 3,
+        "purpose": "Canonical repository for deprecated agents and transaction artifacts. Allows flexible recursive subfolders.",
+        "subfolders": {},
         "volatile": False,
     },
     "data": {
@@ -289,35 +337,53 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "prompts",
             "raw",
             "sdks_mcps",
+            "snapshots",
             "tasks",
         ],
     },
     "docs": {
-        "depth": 2,
+        "depth": 3,
         "purpose": "Documentation and reporting.",
-        "subfolders": ["MCP", "metrics", "reports"],
+        "subfolders": {
+            "metrics": {},
+            "reports": {
+                "purpose": "Categorized assessment and execution reports.",
+                "subfolders": {
+                    "assessments": {"purpose": "Gap analyses, architectural assessments, and strategic reports"},
+                    "coverage": {"purpose": "Test coverage reports and code quality metrics"},
+                    "telemetry": {"purpose": "System telemetry, performance metrics, and observability data"},
+                    "security": {"purpose": "Security assessments, vulnerability scans, and safety reports"},
+                    "audit": {"purpose": "Structural audits, drift analysis, and compliance reports"},
+                    "missions": {"purpose": "High-level mission execution traces and runtime logs"}
+                }
+            },
+            "architecture": {},
+            "plans": {},
+            "technical": {}
+        },
     },
-    "logs": {
+    ".github": {
         "depth": 2,
-        "purpose": "Runtime logs and test outputs.",
+        "purpose": "GitHub Actions workflows and repository configuration.",
         "subfolders": [],
         "volatile": True,
     },
-    "reports": {
+    ".gravity_state": {
         "depth": 2,
-        "purpose": "Generated reports and analysis outputs.",
-        "subfolders": ["coverage_html", "telemetry", "audit", "plans"],
-    },
-    "scripts": {
-        "depth": 2,
-        "purpose": "Project maintenance and utility scripts.",
-        "subfolders": ["hooks", "maintenance"],
-    },
-    ".sovereign_healing_backup": {
-        "depth": 2,
-        "purpose": "Backup directory for healing operations.",
-        "subfolders": ["filesystem", "location", "naming", "transactions"],
+        "purpose": "Gravity system state tracking and metadata.",
+        "subfolders": [],
         "volatile": True,
+    },
+    ".backup": {
+        "depth": 2,
+        "purpose": "Backup and recovery artifacts.",
+        "subfolders": [],
+        "volatile": True,
+    },
+    "config": {
+        "depth": 2,
+        "purpose": "Root-level configuration files and agent configs.",
+        "subfolders": ["agent_configs"],
     },
 }
 
@@ -347,6 +413,19 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
         "runtime",  # shared_runtime at variable depth
         "patterns",  # agent_roles at variable depth
         "semantic_memory",  # store/embeddings at variable depth
+        # Top-level territories that allow files in root
+        "agentic_core",  # __init__.py and core files at territory root
+        "apps_rg",  # Application files at territory root
+        "apps_lic",  # Application files at territory root
+        "apps_shared",  # Shared files at territory root
+        "ops_scripts",  # Standalone scripts at territory root
+        "tests",  # Test files at territory root (conftest.py, etc.)
+        "docs",  # Documentation files at territory root
+        "reports",  # Report files at territory root
+        "logs",  # Log files at territory root
+        "archives",  # Archive files at territory root
+        ".gravity_state",  # State files at territory root
+        ".backup",  # Backup files at territory root
         "knowledge",  # document_loaders at variable depth
     }
 )
@@ -989,6 +1068,26 @@ APP_LIC_STRING_TERMS: Final[frozenset[str]] = frozenset(
     }
 )
 
+# ============================================================================
+# POLYGLOT DOMAIN DETECTION (Non-Code Asset Routing)
+# ============================================================================
+# Enables structural scanning of non-Python files (YAML, JSON, MD, TXT).
+# Agents scan raw text content against domain dictionaries to route artifacts.
+
+# 3. ADD POLYGLOT DOMAIN SIGNALS (For YAML/JSON Analysis)
+POLYGLOT_DOMAIN_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
+    "apps_rg": {
+        "signal_keywords": APP_RG_STRING_TERMS,
+        "match_threshold": 2,
+        "extensions": [".yaml", ".yml", ".json"]
+    },
+    "apps_lic": {
+        "signal_keywords": APP_LIC_STRING_TERMS,
+        "match_threshold": 2,
+        "extensions": [".yaml", ".yml", ".json"]
+    }
+}
+
 # === CORE LAYER GRAVITY RULES (Internal dependency direction) ===
 # === APP-LAYER GRAVITY RULES (Cross-App Isolation) ===
 # [SSOT] Prevents apps_shared from importing from specific apps to avoid circularity.
@@ -1402,6 +1501,15 @@ _DYNAMIC_ROOT_PROTECTED_FILES: frozenset[str] = frozenset(
 
 # Final combined immutable set - Single Source of Truth for all root-level protection
 ROOT_PROTECTED_FILES: frozenset[str] = _STATIC_ROOT_PROTECTED_FILES | _DYNAMIC_ROOT_PROTECTED_FILES
+
+# 2. ENFORCE ROOT PURITY
+# Only these folders are allowed at the project root level
+PROJECT_ROOT_WHITELIST: Final[frozenset[str]] = frozenset({
+    "agentic_core", "apps_rg", "apps_lic", "apps_shared",
+    "ops_scripts", "tests", "docs", "data", "archives",
+    ".git", ".github", 
+    ".gravity_state", ".backup", ".vscode"
+})
 
 # [SSOT] STRICT ROOT POLICY: Any file NOT in this list or matching these patterns
 # is considered "Drift" and must be routed via ARTIFACT_ROUTING_MAP.
@@ -1871,33 +1979,91 @@ _semantic_templates = {
 # [SSOT 2026-01-27] Ultra-Hardened: Includes strict 'forbidden_signals' to prevent gravity leakage.
 ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
     # === DOCS & REPORTS ===
-    "docs/reports": {
-        "description": "Assessment findings, audit results, and execution summaries.",
+    "docs/reports/assessments": {
+        "description": "Gap analyses, architectural assessments, and strategic reports.",
         "file_extensions": [".md", ".json", ".csv", ".txt"],
         "content_signals": {
-            "headers": [
-                "# Assessment",
-                "## Findings",
-                "## Recommendations",
-                "# Audit Report",
-                "## Violations",
-            ],
-            "json_keys": [
-                "critical_violations",
-                "compliance_score",
-                "drift_metrics",
-                "assessment_summary",
-            ],
-            "keywords": ["CRITICAL FAILURE", "PASS", "FAIL", "Violation Count:", "Severity: High"],
+            "keywords": ["assessment", "analysis", "gap", "architecture", "strategic"],
+        },
+        "naming_patterns": [
+            re.compile(r".*assessment.*"),
+            re.compile(r".*analysis.*"),
+            re.compile(r".*gap.*"),
+        ],
+        "forbidden_extensions": [".py", ".js", ".sh", ".bat", ".ts"],
+        "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
+    },
+    "docs/reports/audit": {
+        "description": "Structural audits, drift analysis, and compliance reports.",
+        "file_extensions": [".md", ".json", ".csv", ".txt"],
+        "content_signals": {
+            "headers": ["# Audit Report", "## Violations", "## Drift"],
+            "json_keys": ["critical_violations", "compliance_score", "drift_metrics"],
+            "keywords": ["audit", "drift", "variance", "compliance", "SSOT"],
         },
         "naming_patterns": [
             re.compile(r".*audit.*"),
-            re.compile(r".*assessment.*"),
-            re.compile(r".*finding.*"),
-            re.compile(r".*report.*"),
-            re.compile(r".*scan_results.*"),
+            re.compile(r".*drift.*"),
+            re.compile(r".*variance.*"),
+            re.compile(r".*compliance.*"),
         ],
-        # HARDENING: Prevent code files from being misclassified as reports
+        "forbidden_extensions": [".py", ".js", ".sh", ".bat", ".ts"],
+        "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
+    },
+    "docs/reports/coverage": {
+        "description": "Test coverage reports and code quality metrics.",
+        "file_extensions": [".md", ".json", ".html", ".xml", ".txt"],
+        "content_signals": {
+            "keywords": ["coverage", "test", "quality", "percentage", "htmlcov"],
+        },
+        "naming_patterns": [
+            re.compile(r".*coverage.*"),
+            re.compile(r".*test.*"),
+            re.compile(r".*quality.*"),
+        ],
+        "forbidden_extensions": [".py", ".js", ".sh", ".bat", ".ts"],
+        "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
+    },
+    "docs/reports/security": {
+        "description": "Security assessments, vulnerability scans, and safety reports.",
+        "file_extensions": [".md", ".json", ".csv", ".txt"],
+        "content_signals": {
+            "keywords": ["security", "vulnerability", "safety", "hardened", "guardrails"],
+        },
+        "naming_patterns": [
+            re.compile(r".*security.*"),
+            re.compile(r".*vulnerability.*"),
+            re.compile(r".*hardened.*"),
+        ],
+        "forbidden_extensions": [".py", ".js", ".sh", ".bat", ".ts"],
+        "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
+    },
+    "docs/reports/telemetry": {
+        "description": "System telemetry, performance metrics, and observability data.",
+        "file_extensions": [".md", ".json", ".csv", ".txt"],
+        "content_signals": {
+            "keywords": ["telemetry", "metrics", "performance", "observability"],
+        },
+        "naming_patterns": [
+            re.compile(r".*telemetry.*"),
+            re.compile(r".*metrics.*"),
+            re.compile(r".*performance.*"),
+        ],
+        "forbidden_extensions": [".py", ".js", ".sh", ".bat", ".ts"],
+        "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
+    },
+    "docs/reports/missions": {
+        "description": "High-level mission execution traces and runtime logs (Deported from Root).",
+        "file_extensions": [".jsonl", ".trace", ".log", ".json"],
+        "content_signals": {
+            "json_keys": ["mission_id", "trace_id", "execution_log"],
+            "keywords": ["mission", "trace", "execution"],
+        },
+        "naming_patterns": [
+            re.compile(r".*mission.*"),
+            re.compile(r".*trace.*"),
+            re.compile(r".*execution.*"),
+        ],
         "forbidden_extensions": [".py", ".js", ".sh", ".bat", ".ts"],
         "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
     },

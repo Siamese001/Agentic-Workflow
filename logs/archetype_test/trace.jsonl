@@ -1,9 +1,0 @@
-{"timestamp": "2026-01-23T15:15:51.552192", "type": "ORCHESTRATOR_START", "details": {"mission_id": "archetype_test"}}
-{"timestamp": "2026-01-23T15:15:51.554194", "type": "PHASE_START", "details": {"hop": "HOP1"}}
-{"timestamp": "2026-01-23T15:15:51.555196", "type": "PHASE_START", "details": {"hop": "HOP2"}}
-{"timestamp": "2026-01-23T15:15:51.556197", "type": "PHASE_START", "details": {"hop": "HOP3"}}
-{"timestamp": "2026-01-23T15:15:51.557200", "type": "PHASE_START", "details": {"hop": "HOP4"}}
-{"timestamp": "2026-01-23T15:15:51.558721", "type": "PHASE_START", "details": {"hop": "HOP5"}}
-{"timestamp": "2026-01-23T15:15:51.560283", "type": "PHASE_START", "details": {"hop": "HOP6"}}
-{"timestamp": "2026-01-23T15:15:51.563306", "type": "PHASE_START", "details": {"hop": "HOP7"}}
-{"timestamp": "2026-01-23T15:15:51.564304", "type": "PHASE_START", "details": {"hop": "HOP8"}}

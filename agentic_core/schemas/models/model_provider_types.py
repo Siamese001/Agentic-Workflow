@@ -39,9 +39,9 @@ SAFETY_THRESHOLD = "MEDIUM_AND_ABOVE"
 # Resolve absolute paths
 PROJECT_ROOT = Path(__file__).parent.parent.absolute()
 DATA_DIR = PROJECT_ROOT / "data"
-OUTPUT_DIR = PROJECT_ROOT / "output"
-CACHE_DIR = PROJECT_ROOT / "cache"
-LOGS_DIR = PROJECT_ROOT / "logs"
+OUTPUT_DIR = PROJECT_ROOT / "data" / "output"
+CACHE_DIR = PROJECT_ROOT / "data" / "cache"
+LOGS_DIR = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "logs"
 
 # Ensure directories exist
 for d in [DATA_DIR, OUTPUT_DIR, CACHE_DIR, LOGS_DIR]:

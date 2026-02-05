@@ -47,7 +47,7 @@ def validate_mcp_catalogs() -> dict[str, object]:
     """Validate all MCP catalog files."""
     results = {"valid": True, "errors": [], "catalogs": {}}
 
-    catalog_dir = Path("mcp_catalog")
+    catalog_dir = Path(__file__).parent / "mcp_catalog"
     catalog_files = ["openai_mcp_v3.json", "anthropic_mcp_v2.json", "google_mcp_v1.json"]
 
     for catalog_file in catalog_files:

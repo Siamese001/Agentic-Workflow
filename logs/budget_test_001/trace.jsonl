@@ -1,8 +1,0 @@
-{"timestamp": "2026-01-23T13:54:47.460826", "type": "ORCHESTRATOR_START", "details": {"mission_id": "infinite_test"}}
-{"timestamp": "2026-01-23T13:54:47.473987", "type": "ORCHESTRATOR_RETRY", "details": {"action": "RETRY_HOP5", "reason": "Always fail"}}
-{"timestamp": "2026-01-23T13:54:47.475501", "type": "CRITICAL_FAILURE", "details": {"reason": "Global step limit exceeded"}}
-{"timestamp": "2026-01-23T13:54:47.477190", "type": "ORCHESTRATOR_ERROR", "details": {"error": "Mission aborted: Exceeded global step limit of 8"}}
-{"timestamp": "2026-01-23T13:57:07.320190", "type": "ORCHESTRATOR_START", "details": {"mission_id": "infinite_test"}}
-{"timestamp": "2026-01-23T13:57:07.328216", "type": "ORCHESTRATOR_RETRY", "details": {"action": "RETRY_HOP5", "reason": "Always fail"}}
-{"timestamp": "2026-01-23T13:57:07.330324", "type": "CRITICAL_FAILURE", "details": {"reason": "Global step limit exceeded"}}
-{"timestamp": "2026-01-23T13:57:07.332354", "type": "ORCHESTRATOR_ERROR", "details": {"error": "Mission aborted: Exceeded global step limit of 8"}}
