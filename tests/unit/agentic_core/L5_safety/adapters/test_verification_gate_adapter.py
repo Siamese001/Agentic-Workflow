@@ -3,14 +3,14 @@
 import os
 import tempfile
 
-from agentic_core.interfaces.verification_protocol import (
+from agentic_core.utils.verification_protocol import (
     VerificationRequest,
     VerificationResult,
 )
 from agentic_core.L5_safety.adapters.verification_gate_adapter import (
     VerificationGateAdapter,
 )
-from agentic_core.primitives.feature_flags import FeatureFlagManager
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 
 class TestVerificationGateAdapter:
@@ -224,7 +224,7 @@ class TestVerificationGateAdapterProtocolCompliance:
 
     def test_implements_protocol(self):
         """Test that adapter implements VerificationGateProtocol."""
-        from agentic_core.interfaces.verification_protocol import (
+        from agentic_core.utils.verification_protocol import (
             VerificationGateProtocol,
         )
 

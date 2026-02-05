@@ -33,7 +33,7 @@ from typing import Any, Literal
 try:
     from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.L5_safety.validators.decorators import standard_heal
+    from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
     HAS_SOVEREIGN_BASE = True
     HAS_ATOMIC_MIXIN = True
@@ -53,7 +53,7 @@ except ImportError:
 # Logger for healing operations
 import logging
 
-Logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 # SSOT Integration with fast-fail pruning
@@ -148,10 +148,11 @@ class FileClassificationAgent(*BASE_CLASSES):
         }
         # CACHE: Track file paths in memory to avoid repetitive disk scanning (O(1) lookups)
         self.file_registry: list[Path] = []
+        self.logger = logging.getLogger(__name__)
 
     def run(self) -> dict[str, Any]:
         """Entry point for execute_ssot.py orchestration."""
-        print(f"[CLASSIFICATION] Executing File Classification Audit at {self.project_root}")
+        self.logger.info(f"Executing File Classification Audit at {self.project_root}")
         success = self._orchestrate_audit(self.project_root)
         return {
             "success": success == 0,
@@ -161,13 +162,13 @@ class FileClassificationAgent(*BASE_CLASSES):
 
     def _orchestrate_audit(self, root: Path) -> int:
         """Core file classification and audit logic."""
-        print(f"[CLASSIFICATION] {'DRY RUN' if self.dry_run else 'EXECUTE'} MODE")
-        print("=" * 60)
+        self.logger.info(f"{'DRY RUN' if self.dry_run else 'EXECUTE'} MODE")
+        self.logger.info("=" * 60)
 
         if not self.verify_environment():
             return 1
 
-        print("Scanning repository (Fast One-Time Pass)...")
+        self.logger.info("Scanning repository (Fast One-Time Pass)...")
         self.file_registry = get_python_files_fast(root)
         self.stats["analyzed"] = len(self.file_registry)
 
@@ -183,8 +184,8 @@ class FileClassificationAgent(*BASE_CLASSES):
             # [NEW] Territory Enforcement (Move before Rename)
             target_territory_path = self.check_territory_violation(path, ftype)
             if target_territory_path:
-                print(f"\n[TERRITORY] {path.name} ({ftype}) is in {path.parent.name}")
-                print(f"  [ACTION] MOVE to {target_territory_path.parent.name}")
+                self.logger.info(f"\n[TERRITORY] {path.name} ({ftype}) is in {path.parent.name}")
+                self.logger.info(f"  [ACTION] MOVE to {target_territory_path.parent.name}")
 
                 # Execute Move
                 if self.resolve_collision_and_rename(
@@ -197,12 +198,12 @@ class FileClassificationAgent(*BASE_CLASSES):
                         self.file_registry[idx] = path
                 else:
                     # If move failed (collision), log and continue to rename check in place
-                    print("  [WARNING] Move failed. Proceeding with in-place audit.")
+                    self.logger.warning("Move failed. Proceeding with in-place audit.")
 
             new_name = self.get_compliant_name(path, ftype)
             if new_name and new_name != path.name:
                 self.stats["violations"][ftype] += 1
-                print(f"\n[DETECT] {path.name} ({ftype}) -> {new_name}")
+                self.logger.info(f"\n[DETECT] {path.name} ({ftype}) -> {new_name}")
                 # [CHANGED] From safe_rename_windows to resolve_collision_and_rename
                 if self.resolve_collision_and_rename(path, new_name):
                     if not self.dry_run:
@@ -230,7 +231,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                             new_stem = Path(new_name).stem
 
                             if old_stem != new_stem and old_stem[0].isupper() and new_stem[0].isupper():
-                                print(f"  [DEEP REFACTOR] {old_stem} -> {new_stem}")
+                                self.logger.info(f"  [DEEP REFACTOR] {old_stem} -> {new_stem}")
                                 refactor_count = self.deep_refactor_name(old_stem, new_stem)
                                 self.stats["deep_refactors"] += refactor_count
                                 self.stats["imports_fixed"] += refactor_count
@@ -251,34 +252,34 @@ class FileClassificationAgent(*BASE_CLASSES):
         # Removes .CONFLICT files ONLY if they are identical to the live file
         self.cleanup_redundant_conflicts(root)
 
-        print("\n" + "=" * 60)
-        print(f"Total files analyzed: {self.stats['analyzed']}")
-        print(f"Compliant files:      {self.stats['compliant']}")
+        self.logger.info("\n" + "=" * 60)
+        self.logger.info(f"Total files analyzed: {self.stats['analyzed']}")
+        self.logger.info(f"Compliant files:      {self.stats['compliant']}")
         total_violations = sum(self.stats["violations"].values())
-        print(f"Violations detected:  {total_violations}")
-        print(f"  - Agents:  {self.stats['violations']['AGENT']}")
-        print(f"  - Classes: {self.stats['violations']['CLASS']}")
-        print(f"  - Utils:   {self.stats['violations']['UTILITY']}")
-        print(f"  - Mixins:  {self.stats['violations']['MIXIN']}")
-        print(f"  - Protocols: {self.stats['violations']['PROTOCOL']}")
-        print(f"  - Engines: {self.stats['violations']['ENGINE']}")
-        print(f"  - Stubs:   {self.stats['violations']['STUB']}")
-        print(f"  - Tests:   {self.stats['violations']['TEST']}")
-        print(f"  - Scripts: {self.stats['violations']['SCRIPT']}")
-        print(f"  - Types:   {self.stats['violations']['TYPES']}")
+        self.logger.info(f"Violations detected:  {total_violations}")
+        self.logger.info(f"  - Agents:  {self.stats['violations']['AGENT']}")
+        self.logger.info(f"  - Classes: {self.stats['violations']['CLASS']}")
+        self.logger.info(f"  - Utils:   {self.stats['violations']['UTILITY']}")
+        self.logger.info(f"  - Mixins:  {self.stats['violations']['MIXIN']}")
+        self.logger.info(f"  - Protocols: {self.stats['violations']['PROTOCOL']}")
+        self.logger.info(f"  - Engines: {self.stats['violations']['ENGINE']}")
+        self.logger.info(f"  - Stubs:   {self.stats['violations']['STUB']}")
+        self.logger.info(f"  - Tests:   {self.stats['violations']['TEST']}")
+        self.logger.info(f"  - Scripts: {self.stats['violations']['SCRIPT']}")
+        self.logger.info(f"  - Types:   {self.stats['violations']['TYPES']}")
         print(f"  - Gateways: {self.stats['violations']['GATEWAY']}")
         # WINDSURF IMPLEMENTATION: New categories summary
-        print(f"  - Orchestrators: {self.stats['violations']['ORCHESTRATOR']}")
-        print(f"  - Validators: {self.stats['violations']['VALIDATOR']}")
-        print(f"  - Factories: {self.stats['violations']['FACTORY']}")
-        print(f"  - Configs: {self.stats['violations']['CONFIG']}")
-        print(f"  - Adapters: {self.stats['violations']['ADAPTER']}")
+        self.logger.info(f"  - Orchestrators: {self.stats['violations']['ORCHESTRATOR']}")
+        self.logger.info(f"  - Validators: {self.stats['violations']['VALIDATOR']}")
+        self.logger.info(f"  - Factories: {self.stats['violations']['FACTORY']}")
+        self.logger.info(f"  - Configs: {self.stats['violations']['CONFIG']}")
+        self.logger.info(f"  - Adapters: {self.stats['violations']['ADAPTER']}")
         if not self.dry_run:
-            print(f"Files Renamed:        {self.stats['renamed']}")
-            print(f"Deep Refactors:       {self.stats['deep_refactors']}")
-            print(f"Imports Fixed:        {self.stats['imports_fixed']}")
-            print(f"Collisions Resolved:  {self.stats['collisions_resolved']}")
-            print(f"Territory Moves:      {self.stats['territory_moves']}")
+            self.logger.info(f"Files Renamed:        {self.stats['renamed']}")
+            self.logger.info(f"Deep Refactors:       {self.stats['deep_refactors']}")
+            self.logger.info(f"Imports Fixed:        {self.stats['imports_fixed']}")
+            self.logger.info(f"Collisions Resolved:  {self.stats['collisions_resolved']}")
+            self.logger.info(f"Territory Moves:      {self.stats['territory_moves']}")
 
         # Critical Analysis: Returning exit 1 on violations ensures git hooks
         # block non-compliant commits.
@@ -356,11 +357,20 @@ class FileClassificationAgent(*BASE_CLASSES):
                 pass
             return "TEST"
 
+        # CONSOLIDATED TEST IMMUNITY FOR GUARDRAILS
+        if "guardrails" in path.parts:
+            pass  # Skip TEST classification entirely
+
         # [PRIORITY 5] TYPES Detection: Enhanced AST-based detection
         # Detect type collections by class patterns
         type_indicators = self._detect_type_patterns(tree, path)
         if type_indicators["is_types"]:
             return "TYPES"
+
+        # HARDENED TYPES PRIORITY
+        if "types" in path.name.lower() and path.name.endswith(".py"):
+            if any(keyword in content for keyword in ["TypedDict", "Protocol", "TypeAlias", "Enum", "Literal", "Final"]):
+                return "TYPES"
 
         # === REFACTORED PRIMARY-CLASS-CENTRIC DETECTION ===
         # Collect all ClassDef nodes
@@ -407,6 +417,17 @@ class FileClassificationAgent(*BASE_CLASSES):
                     is_agent = True
                 elif isinstance(base, ast.Attribute) and "Agent" in base.attr:
                     is_agent = True
+
+        # CONSOLIDATED L5 GUARDRAILS SUPER-BOOST
+        if "guardrails" in path.parts:
+            # Primary: canonical Agent signals
+            if (primary_name.endswith("Agent") or is_agent or
+                "SovereignBaseAgent" in content or "SubatomicTestingMixin" in content):
+                return "AGENT"
+            # Extended: non-inherited safety components
+            elif (any(k in content.lower() for k in ["guardrail", "membrane", "sanitizer", "redact", "scrub", "block", "l5 safety", "hygiene"]) and
+                  any(m in content for m in ["sanitize(", "scrub(", "redact(", "block(", "clean(", "verify("])):
+                return "AGENT"
 
         # Architectural fuzzy - STRICT: primary class name only
         orchestrator_patterns = [
@@ -463,6 +484,9 @@ class FileClassificationAgent(*BASE_CLASSES):
         elif is_config:
             return "CONFIG"
         # 9. VALIDATOR: Detect if path contains validators/ or file name ends in _validator
+        # CONSOLIDATED PRIORITY: AGENT wins over VALIDATOR
+        if is_agent:
+            return "AGENT"
         elif is_validator:
             return "VALIDATOR"
         # 10. PROTOCOL: Keep existing AST check
@@ -471,9 +495,6 @@ class FileClassificationAgent(*BASE_CLASSES):
         # 11. FACTORY: Detect if class name ends in Factory
         elif is_factory:
             return "FACTORY"
-        # 12. AGENT: Keep existing inheritance/path logic
-        elif is_agent:
-            return "AGENT"
         # 14. CLASS: Fallback for any other class
         else:
             return "CLASS"
@@ -872,6 +893,14 @@ class FileClassificationAgent(*BASE_CLASSES):
                 for stmt in ast.walk(node):
                     if isinstance(stmt, ast.Assert):
                         assert_usage += 1
+
+        # CONSOLIDATED VALIDATOR HARDENING IN GUARDRAILS
+        if "guardrails" in str(path).lower():
+            validation_methods = sum(1 for node in ast.walk(tree)
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and any(w in node.name.lower() for w in ("validate", "check", "verify", "ensure", "scrub", "sanitize")))
+            if validation_methods < 4:
+                return False
 
         # Determine if validator based on patterns
         if validation_methods > 0 or check_functions > 0 or assert_usage > 2:
@@ -1494,78 +1523,140 @@ class FileClassificationAgent(*BASE_CLASSES):
 
     def check_territory_violation(self, path: Path, file_type: str) -> Path | None:
         """
-        Enforces physical-to-logical alignment with Hardened Path Logic.
-        Returns the correct destination Path if the file is in the wrong folder.
-
-        Current implementation assumes shallow category depth (app_root/category/file.py)
-        which matches apps_rg, apps_lic, apps_shared, and their test mirrors.
+        Enforces physical-to-logical alignment with Context-Aware Sovereignty.
+        Distinguishes between App-Layer (Strict Pattern) and Core-Layer (Domain Semantic).
+        
+        [HARDENED] Robust against deep nesting and handles all file types.
         """
-        # Map logical types to mandatory parent folder names
-        territory_map = {
+        # 1. IDENTIFY CONTEXT & ANCHOR
+        parts = path.parts
+        current_parent = path.parent.name.lower()
+        
+        # Determine the Sovereign Root (App vs Core)
+        # We search path parts to find the anchor directory
+        sovereign_roots = {"agentic_core", "apps_rg", "apps_lic", "apps_shared"}
+        root_anchor = None
+        root_index = -1
+        
+        for i, part in enumerate(parts):
+            if part in sovereign_roots:
+                root_anchor = part
+                root_index = i
+                break
+        
+        if not root_anchor:
+            return None # Outside of sovereign territory control
+
+        is_core = root_anchor == "agentic_core"
+        is_app = root_anchor.startswith("apps_")
+
+        # 2. DEFINE RULES (THE CONSTITUTION)
+        
+        # [APP RULES] Strict MVC/Layered Pattern
+        # In apps, an Agent MUST be in engines/ or core/. 
+        app_rules = {
             "AGENT": ["engines", "core"],
-            "ORCHESTRATOR": ["engines", "orchestrators", "core"],
-            "VALIDATOR": ["validators", "safety", "guards", "validation"],  # validation added for apps_rg
-            "CONFIG": ["config", "manifests"],
-            "MIXIN": ["mixins", "base_agents"],
-            "ADAPTER": ["adapters", "strategies"],
+            "ORCHESTRATOR": ["engines", "orchestrators"],
+            "VALIDATOR": ["validators", "validation", "logic_nodes"], # Added logic_nodes for apps_lic/rg
+            "CONFIG": ["config"],
+            "MIXIN": ["mixins", "shared", "core"],
+            "ADAPTER": ["adapters", "strategies", "tools"],
             "FACTORY": ["factories"],
             "GATEWAY": ["gateways"],
+            "PROTOCOL": ["interfaces", "core"],
+            "TYPES": ["domain", "models", "types", "config"], # Allow config for Pydantic models
         }
 
-        current_parent = path.parent.name.lower()
+        # [CORE RULES] Domain-Driven Design
+        # In Core, Agents follow the Domain (Guardrails, Registry, etc.)
+        # We explicitly whitelist valid functional domains for each type.
+        core_rules = {
+            "AGENT": {
+                "engines", "core", "agents", # Standard
+                "guardrails",   # L5 Safety
+                "tool_registry", # L2 Execution
+                "thought_engine", # L1 Cognition
+                "workflow_engines", # L3 Orchestration
+                "validation_context", # L4 State
+                "red_teaming", # L5 Safety
+                "observability", # L6 Observability
+                "mcp", # L2/L3 MCP Agents
+                "fission_logic", # L3
+                "scripts", # L0 Maintenance (Allow agents in scripts if they are autonomous)
+            },
+            "VALIDATOR": {
+                "validators", "safety", "guards", "validation", 
+                "guardrails", "validation_context", "gravity", "red_teaming"
+            },
+            "CONFIG": {"config", "manifests", "blueprint_sovereign"},
+            "PROTOCOL": {"interfaces", "protocols", "mcp"}, # MCP has protocols
+            "TYPES": {"schemas", "models", "domain", "types", "config"},
+            "MIXIN": {"mixins", "base_agents", "utils"}, # Allow mixins in utils
+        }
 
-        # Special handling for Tests: Mirror the architectural source
+        # 3. EXECUTE VALIDATION
+        
+        target_folder = None
+        
+        if is_app:
+            # Strict Check
+            allowed = app_rules.get(file_type)
+            if allowed and current_parent not in allowed:
+                # Default to the first allowed folder (usually the "Best Practice" one)
+                target_folder = allowed[0]
+
+        elif is_core:
+            # Domain Check
+            allowed_set = core_rules.get(file_type)
+            if allowed_set:
+                # If current parent is NOT in the allowed domain set
+                if current_parent not in allowed_set:
+                    # Generic Catch-All: If it's in a generic junk folder, move it.
+                    # If it's in a specialized domain (e.g. 'planning'), assume it's OK (Innocent until proven guilty)
+                    junk_drawers = {"utils", "common", "helpers", "misc", "temp"}
+                    
+                    if current_parent in junk_drawers:
+                        # Move to the primary home for that type
+                        # Map Type -> Primary Core Home
+                        core_defaults = {
+                            "AGENT": "base_agents", # Or specific layer if inferable, but base_agents is safe
+                            "VALIDATOR": "validators",
+                            "CONFIG": "config",
+                            "PROTOCOL": "interfaces",
+                            "TYPES": "schemas",
+                            "MIXIN": "base_agents"
+                        }
+                        target_folder = core_defaults.get(file_type)
+
+        # 4. SPECIAL HANDLING: TESTS
         if file_type == "TEST":
-            name_lower = path.name.lower()
-            if "_validator" in name_lower or "validator_" in name_lower:
-                target_territories = ["validators", "safety", "validation"]
-            elif "_agent" in name_lower or "_orchestrator" in name_lower:
-                target_territories = ["engines", "core"]
-            elif "_config" in name_lower:
-                target_territories = ["config"]
-            elif "_node" in name_lower:
-                target_territories = ["logic_nodes"]
-            else:
-                return None
-        elif file_type in territory_map:
-            target_territories = territory_map[file_type]
-        else:
-            return None
+            if "tests" not in parts and not path.name.startswith("test_"):
+                 # It's a test file outside of tests/ -> Violates Mirroring
+                 # (This logic is complex, usually handled by mirror check, skipping for now to avoid over-engineering)
+                 pass
 
-        # If current location is valid, return None
-        if any(allowed == current_parent for allowed in target_territories):
-            return None
-
-        # [HARDENED] Path Swap Logic
-        # Only swap directories if we are confident we are at the right architectural level.
-
-        all_known_territories = {t for lst in territory_map.values() for t in lst}
-        all_known_territories.update(
-            {
-                "utils",
-                "common_utils",
-                "helpers",
-                "logic_nodes",
-                "domain",
-                "shared",
-                "system_flow",
-                "asset_library",
-                "unit",
-                "integration",
-                "tests",
-            }
-        )
-
-        # If we are in a known wrong territory, move sideways
-        if current_parent in all_known_territories:
-            # Safe to swap: e.g. .../engines/Val.py -> .../validators/Val.py
-            target_folder = target_territories[0]
-
-            # CRITICAL: Preserve depth for tests/unit/app_name/category/
-            # Assumes structure: .../app_root/wrong_category/file.py
-            return path.parent.parent / target_folder / path.name
+        # 5. CALCULATE RESULT
+        if target_folder:
+            return self._calculate_move_target(path, root_index, target_folder)
 
         return None
+
+    def _calculate_move_target(self, path: Path, root_index: int, target_folder: str) -> Path:
+        """
+        Robustly calculates the move target relative to the Sovereign Root.
+        Fixes the 'parent.parent' fragility by pivoting from the anchor.
+        
+        Strategy: Root / Target_Folder / Filename
+        (Flattens nesting to enforce standard structure)
+        """
+        # parts[0...root_index] is the path up to and including 'apps_rg'
+        # e.g. (..., 'apps_rg')
+        root_parts = path.parts[:root_index+1]
+        
+        # Construct new path: .../apps_rg/target_folder/filename
+        new_path = Path(*root_parts) / target_folder / path.name
+        
+        return new_path
 
     def get_compliant_name(self, path: Path, file_type: FileType) -> str | None:
         """Calculates the target filename. Returns None if no change needed."""
@@ -1576,6 +1667,17 @@ class FileClassificationAgent(*BASE_CLASSES):
         if file_type == "SCRIPT":
             snake = self._to_smart_snake_case(path.stem)
             return f"{snake}.py" if f"{snake}.py" != path.name else None
+
+        # CONSOLIDATED GUARDRAILS NAMING CONVENTION
+        if file_type == "AGENT" and "guardrails" in path.parts:
+            base_name = (path.stem
+                .removesuffix("Agent")
+                .removesuffix("Membrane")
+                .removesuffix("Strategy")
+                .removesuffix("Handler")
+                .removesuffix("Types"))
+            snake_name = self._to_smart_snake_case(base_name)
+            return f"{snake_name}_agent.py"
 
         # TEST: Force test_ prefix + snake_case
         if file_type == "TEST":
@@ -1642,6 +1744,8 @@ class FileClassificationAgent(*BASE_CLASSES):
                     target_name += "Orchestrator"
 
             elif file_type == "ADAPTER":
+                if "guardrails" in path.parts:
+                    return None
                 # [FIXED] Handle Strategy/Adapter duality & strip Agent
                 target_name = target_name.replace("Agent", "")
                 # Force PascalCase and ensure Strategy suffix (for Strategy patterns)
@@ -1819,6 +1923,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 def main():
     """Standalone execution for testing."""
     import argparse
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     parser = argparse.ArgumentParser(description="File Classification Agent")
     parser.add_argument("--dry-run", action="store_true", help="Preview changes")

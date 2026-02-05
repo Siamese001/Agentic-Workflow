@@ -23,15 +23,15 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.registry_verification import (
+from agentic_core.L5_safety.validators.core.registry_verification import (
     RegistryVerifier,
     VerificationResult,
 )
-from agentic_core.L5_safety.validators.ssot_structure_validation import (
+from agentic_core.L5_safety.validators.core.ssot_structure_validation import (
     SSOTStructureValidator,
     StructureValidationResult,
 )
-from agentic_core.L5_safety.validators.three_tier_compliance import (
+from agentic_core.L5_safety.validators.core.three_tier_compliance import (
     ComplianceResult,
     ThreeTierComplianceChecker,
 )

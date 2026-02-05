@@ -8,13 +8,13 @@ enabling integration with the new feature-flagged agent system.
 import logging
 from typing import Any
 
-from agentic_core.interfaces.review_protocol import (
+from agentic_core.utils.review_protocol import (
     HumanReviewProtocol,
     ReviewRequest,
     ReviewResult,
     ReviewStatus,
 )
-from agentic_core.primitives.feature_flags import FeatureFlagManager
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 logger = logging.getLogger(__name__)
 

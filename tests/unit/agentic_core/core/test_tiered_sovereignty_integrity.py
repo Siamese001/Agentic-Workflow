@@ -2,7 +2,7 @@ import os
 import unittest
 from unittest.mock import patch
 
-from agentic_core.L0_maintenance.scripts.execute_ssot import (
+from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import (
     ConfidenceScore,
     SovereignDecisionEngine,
 )

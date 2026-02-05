@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 # DUPLICATE ACCEPTED: App-specific customization valid
 # (different contexts: L2 core planning vs L1 strategic vs apps_rg implementations)

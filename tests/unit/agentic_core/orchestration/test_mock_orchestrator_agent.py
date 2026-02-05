@@ -12,7 +12,7 @@ sys.path.insert(0, str(project_root))
 
 from typing import Any
 
-from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent
+from agentic_core.L1_cognition.thought_engine.MetaLearningAgent import MetaLearningAgent
 from agentic_core.L3_orchestration.interfaces import (
     ExecutionContext,
     ExecutionPhase,

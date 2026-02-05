@@ -1,6 +1,6 @@
 """Tests for DetectionSignalProtocol."""
 
-from agentic_core.interfaces.detection_protocol import (
+from agentic_core.utils.detection_protocol import (
     DetectionRequest,
     DetectionResult,
     DetectionSignalProtocol,

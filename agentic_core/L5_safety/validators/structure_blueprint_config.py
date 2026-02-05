@@ -17,37 +17,25 @@ Enforces Depth-2 for Apps/Tests and Depth-3 for the Agentic Core.
 CONSOLIDATED VERSION: Reduced redundancy while preserving all information.
 [CRITICAL ANALYSIS] Upgraded from Any to strict typing with Final and Mapping for immutability.
 
-CONSTITUTIONAL DESIGN PRINCIPLES:
-=================================
+CONSTITUTIONAL DESIGN PRINCIPLES (A+ HARDENED 2026-02-05):
+=========================================================================
 
-1. STRICT OBSOLESCENCE PROTOCOL (2026-02-04):
-   "No file deletion shall occur based on naming conventions. Deletion requires an
-   AST-based 'zero-reference' verification across the apps_lic, apps_rg, and
-   apps_shared directories."
+1. STRICT OBSOLESCENCE PROTOCOL:
+   No file deletion based solely on naming. Requires AST-based zero-reference
+   verification + fuzzy rename detection + manual approval.
 
-   - NEVER delete files based on filename patterns (e.g., "phase1", "phase2")
-   - Use AST analysis to verify ALL imports are broken
-   - Use fuzzy matching to detect renamed/moved modules
-   - Require manual verification before deletion
-   - Only mark obsolete if: ALL imports broken AND no test classes/functions exist
+2. TEST LAYERING PRINCIPLE:
+   Guardian tests complement (never replace) unit/integration/E2E coverage.
 
-2. TEST LAYERING PRINCIPLE (2026-02-04):
-   "Guardian scripts are strictly for runtime validation and agentic healing;
-   they do not fulfill the requirement for 100% coverage in the /tests directory."
+3. STRUCTURAL INVARIANT (LEAF NODE RULE):
+   Files permitted ONLY in leaf directories (no subfolders).
+   Branch nodes: directories only.
+   Exceptions: __init__.py, README.md, .gitignore, pyproject.toml, py.typed.
 
-   - Guardian tests (tests/guardian/) = Architectural compliance validation
-   - Unit tests (tests/unit/) = Functional correctness
-
-3. STRUCTURAL INVARIANT (2026-02-05):
-   "Files allowed ONLY in leaf nodes (directories with no subfolders)."
-
-   - Branch nodes (folders with subdirectories) must contain ONLY subdirectories
-   - Leaf nodes (folders with no subdirectories) contain the actual files
-   - Exceptions: __init__.py, README.md, .gitignore, pyproject.toml, py.typed
-   - This enforces clean separation between structure and content
-   - E2E tests (tests/e2e/) = End-to-end workflows
-   - Integration tests (tests/integration/) = Component integration
-   - Guardian tests are COMPLEMENTARY to unit/e2e tests, NOT replacements
+4. GUARDRAILS NAMING CONVENTION (NEW 2026-02-05):
+   All L5 safety guardrail components in agentic_core/L5_safety/guardrails/
+   MUST use snake_case + "_agent.py" naming (e.g., pii_sanitizer_agent.py).
+   PascalCase or missing suffix forbidden.
 """
 
 # Lock down core mappings to prevent runtime mutation during mission execution
@@ -78,6 +66,7 @@ class TerritoryDefinition(TypedDict):
     volatile: bool | None
     required_dirs: Sequence[str] | None
     forbidden_patterns: Sequence[str] | None
+    naming_convention: str | None  # e.g., "snake_case_agent" or "PascalCase_Agent"
 
 
 SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
@@ -111,7 +100,26 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "L2_execution": {"purpose": "Tool execution and action handling"},
             "L3_orchestration": {"purpose": "Workflow orchestration and coordination"},
             "L4_state": {"purpose": "State management and persistence"},
-            "L5_safety": {"purpose": "Security, validation, and safety enforcement"},
+            "L5_safety": {
+                "purpose": "L5 sovereign safety layer - guardrails and validators",
+                "subfolders": {
+                    "guardrails": {
+                        "purpose": "Operational L5 safety guardrail agents and components "
+                                 "(PII sanitizers, hygiene, red teaming, membranes, etc.)",
+                        "naming_convention": "snake_case_agent",  # Enforced by FileClassificationAgent
+                        "ast_signals": {
+                            "AGENT": {
+                                "inherits": ["SovereignBaseAgent", "SubatomicTestingMixin"],
+                                "keywords": ["guardrail", "membrane", "sanitizer", "hygiene", "redact", "scrub"],
+                                "methods": ["sanitize", "scrub", "redact", "block", "heal", "execute"],
+                            }
+                        },
+                        "forbidden_patterns": ["*Agent.py", "*Membrane.py", "*Strategy.py"],  # Force snake_case
+                        "required_dirs": [],  # Leaf node preferred
+                    },
+                    "validators": {"purpose": "Structural and runtime validators"},
+                },
+            },
             "L6_observability": {"purpose": "Monitoring, telemetry, and compliance reporting"},
             "config": {
                 "purpose": "Configuration management and environment settings",
@@ -4511,6 +4519,16 @@ PROJECT_ROOT_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
         "notes": "Test files separate from execution scripts",
         "file_patterns": ["test_*.py", "*_test.py", "conftest.py", "*.fixture"],
         "keywords": ["test", "spec", "fixture", "mock"],
+        "naming_convention": "snake_case_test",  # Enforce consistent test naming
+    },
+    "guardrails": {  # NEW EXPLICIT CONTENT TYPE FOR L5 SAFETY
+        "purpose": "L5 safety guardrail agents and components",
+        "content_types": ["safety_agent", "membrane", "sanitizer", "hygiene_agent"],
+        "execution_allowed": True,  # Operational agents
+        "notes": "Sovereign operational safety components - snake_case_agent naming mandatory",
+        "file_patterns": ["*_agent.py"],
+        "keywords": ["guardrail", "membrane", "sanitizer", "hygiene", "redact", "scrub", "pii", "threat"],
+        "naming_convention": "snake_case_agent",
     },
     "archives": {
         "purpose": "Archived files and historical data",

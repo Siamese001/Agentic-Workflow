@@ -1,12 +1,12 @@
 """Tests for HumanReviewAdapter."""
 
-from agentic_core.interfaces.review_protocol import (
+from agentic_core.utils.review_protocol import (
     ReviewRequest,
     ReviewResult,
     ReviewStatus,
 )
 from agentic_core.L5_safety.adapters.human_review_adapter import HumanReviewAdapter
-from agentic_core.primitives.feature_flags import FeatureFlagManager
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 
 class TestHumanReviewAdapter:
@@ -296,7 +296,7 @@ class TestHumanReviewAdapterProtocolCompliance:
 
     def test_implements_protocol(self):
         """Test that adapter implements HumanReviewProtocol."""
-        from agentic_core.interfaces.review_protocol import HumanReviewProtocol
+        from agentic_core.utils.review_protocol import HumanReviewProtocol
 
         adapter = HumanReviewAdapter()
         assert isinstance(adapter, HumanReviewProtocol)

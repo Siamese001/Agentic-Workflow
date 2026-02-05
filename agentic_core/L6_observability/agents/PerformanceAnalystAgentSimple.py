@@ -19,7 +19,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 

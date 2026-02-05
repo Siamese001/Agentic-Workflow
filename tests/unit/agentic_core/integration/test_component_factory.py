@@ -1,13 +1,13 @@
 """Tests for ComponentFactory."""
 
-from agentic_core.integration.component_factory import (
+from agentic_core.utils.component_factory import (
     ComponentFactory,
     get_detection_emitter,
     get_human_review_queue,
     get_meta_learning_service,
     get_verification_gate,
 )
-from agentic_core.primitives.feature_flags import FeatureFlagManager
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 
 class TestComponentFactory:

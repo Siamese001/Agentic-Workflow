@@ -35,7 +35,7 @@ class TestGlobalKeyPurge:
     def test_location_agent_fallback_consistency(self):
         """Verify LocationAgent correctly identifies app-leaks without key indices."""
         try:
-            from agentic_core.L5_safety.validators.location_agent import LocationAgent
+            from agentic_core.L5_safety.validators.core.location_agent import LocationAgent
 
             agent = LocationAgent()
             # Test a known app-specific leak prefix

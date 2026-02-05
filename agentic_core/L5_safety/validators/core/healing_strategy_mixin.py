@@ -4,7 +4,7 @@ HealingStrategyMixin - Unified Healing Access for Agents
 [PHASE 5 MIGRATION] Provides single interface to healing operations.
 """
 
-from agentic_core.L5_safety.validators.healing_sovereign_orchestrator_types import (
+from agentic_core.L5_safety.validators.core.healing_sovereign_orchestrator_types import (
     HealingSovereignOrchestrator,
     get_healing_orchestrator,
 )

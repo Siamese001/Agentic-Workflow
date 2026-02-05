@@ -87,7 +87,7 @@ class TestHealSignatureCompatibility:
 
     def test_hierarchy_agent_heal_hierarchy_accepts_target_territory(self):
         """HierarchyAgent.heal_hierarchy must accept target_territory parameter."""
-        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+        from agentic_core.L5_safety.validators.core.hierarchy_agent import HierarchyAgent
 
         sig = inspect.signature(HierarchyAgent.heal_hierarchy)
         param_names = list(sig.parameters.keys())
@@ -105,7 +105,7 @@ class TestHealSignatureCompatibility:
 
     def test_location_agent_has_heal_violations_method(self):
         """LocationAgent must have heal_violations method for execute_ssot.py."""
-        from agentic_core.L5_safety.validators.location_agent import LocationAgent
+        from agentic_core.L5_safety.validators.core.location_agent import LocationAgent
 
         assert hasattr(LocationAgent, "heal_violations") or hasattr(
             LocationAgent, "heal_repository"
@@ -122,7 +122,7 @@ class TestExecuteSSOTMainFunction:
 
     def test_only_one_main_function(self):
         """execute_ssot.py should have exactly one main() function (not shadowed)."""
-        import agentic_core.L0_maintenance.scripts.execute_ssot as ssot_module
+        import agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot as ssot_module
 
         # Count functions named 'main' in the module
         main_functions = [
@@ -138,7 +138,7 @@ class TestExecuteSSOTMainFunction:
 
     def test_main_legacy_removed_in_consolidation(self):
         """The legacy main was removed in Phase 2 consolidation."""
-        import agentic_core.L0_maintenance.scripts.execute_ssot as ssot_module
+        import agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot as ssot_module
 
         # main_legacy should NOT exist (removed in consolidation)
         assert not hasattr(ssot_module, "main_legacy"), (
@@ -152,7 +152,7 @@ class TestExecuteSSOTMainFunction:
         """The main() function should import and use PascalSovereigntyAgent."""
         import inspect
 
-        from agentic_core.L0_maintenance.scripts.execute_ssot import main
+        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import main
 
         source = inspect.getsource(main)
 
@@ -189,7 +189,7 @@ class TestHealResultSchema:
         """HierarchyAgent.heal_hierarchy must return a valid results dict."""
         import inspect
 
-        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+        from agentic_core.L5_safety.validators.core.hierarchy_agent import HierarchyAgent
 
         # Verify signature instead of running (to avoid stdin issues in pytest)
         sig = inspect.signature(HierarchyAgent.heal_hierarchy)
@@ -219,7 +219,7 @@ class TestAgentInvocationChain:
 
         import inspect
 
-        from agentic_core.L0_maintenance.scripts.execute_ssot import main
+        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import main
 
         source = inspect.getsource(main)
 
@@ -232,7 +232,7 @@ class TestAgentInvocationChain:
         """Verify PascalSovereigntyAgent is called with target_territory."""
         import inspect
 
-        from agentic_core.L0_maintenance.scripts.execute_ssot import main
+        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import main
 
         source = inspect.getsource(main)
 

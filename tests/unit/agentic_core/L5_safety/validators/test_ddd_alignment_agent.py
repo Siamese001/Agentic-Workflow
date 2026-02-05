@@ -59,14 +59,14 @@ class TestDDDAlignmentAgent:
 
     def test_agent_in_core_hygiene_registry(self):
         """Verify DDDAlignmentAgent is in core hygiene agents registry."""
-        from agentic_core.config.core_hygiene_agents import CORE_HYGIENE_AGENTS
+        from agentic_core.config.core.core_hygiene_agents import CORE_HYGIENE_AGENTS
 
         tier_2 = CORE_HYGIENE_AGENTS.get("tier_2_architectural", [])
         assert "DDDAlignmentAgent" in tier_2, "DDDAlignmentAgent must be in tier_2_architectural"
 
     def test_agent_has_description(self):
         """Verify DDDAlignmentAgent has a description in registry."""
-        from agentic_core.config.core_hygiene_agents import AGENT_DESCRIPTIONS
+        from agentic_core.config.core.core_hygiene_agents import AGENT_DESCRIPTIONS
 
         assert "DDDAlignmentAgent" in AGENT_DESCRIPTIONS, (
             "DDDAlignmentAgent must have a description"

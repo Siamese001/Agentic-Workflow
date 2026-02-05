@@ -12,7 +12,7 @@ Replaces:
 - Redundant file scanning
 
 Usage:
-    from agentic_core.L4_state.context_manager import get_context_manager
+    from agentic_core.L4_state.utils.context_manager import get_context_manager
 
     ctx = get_context_manager(project_root)
 

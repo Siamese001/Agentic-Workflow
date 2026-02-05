@@ -106,7 +106,7 @@ class TestLocationHealerAgentFacade:
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L5_safety.validators.LocationHealerAgent import (
             LocationHealerAgent,
         )

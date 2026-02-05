@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.validators.surgical_healing_adapter import (
+from agentic_core.L5_safety.validators.core.surgical_healing_adapter import (
     SurgicalHealingAdapter,
 )
 

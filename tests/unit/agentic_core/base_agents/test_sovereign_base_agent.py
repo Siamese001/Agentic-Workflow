@@ -37,7 +37,7 @@ class TestSovereignBaseAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+            from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
             return SovereignBaseAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -129,7 +129,7 @@ class TestSovereignBaseAgentMixins:
     def test_config_mixin_exists(self):
         """Verify ConfigMixin is available."""
         try:
-            from agentic_core.config.config_mixin_config import ConfigMixin
+            from agentic_core.config.core.config_mixin_config import ConfigMixin
 
             assert ConfigMixin is not None
         except (ImportError, NameError, AttributeError):

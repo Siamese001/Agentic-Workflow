@@ -219,7 +219,7 @@ class CognitiveNode:
 
         # Phase 3 components
         try:
-            from agentic_core.L1_cognition.learning.MetaLearningAgent import MetaLearningAgent
+            from agentic_core.L1_cognition.thought_engine.MetaLearningAgent import MetaLearningAgent
 
             self.meta_learner = MetaLearningAgent()
         except ImportError:

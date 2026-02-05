@@ -1,8 +1,8 @@
 """Tests for FeatureFlaggedAgentMixin."""
 
 from agentic_core.base_agents.feature_flagged_agent_mixin import FeatureFlaggedAgentMixin
-from agentic_core.interfaces.review_protocol import ReviewStatus
-from agentic_core.primitives.feature_flags import FeatureFlagManager
+from agentic_core.utils.review_protocol import ReviewStatus
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 
 class MockAgent(FeatureFlaggedAgentMixin):
@@ -184,7 +184,7 @@ class TestDetectionSignal:
     def test_emit_detection_signal_disabled(self):
         """Test that emit returns None when disabled."""
         agent = MockAgent()
-        from agentic_core.interfaces.detection_protocol import Severity
+        from agentic_core.utils.detection_protocol import Severity
 
         result = agent.emit_detection_signal(
             detection_type="test",
@@ -198,7 +198,7 @@ class TestDetectionSignal:
         """Test emit when enabled but no implementation available."""
         FeatureFlagManager.set_override("ENABLE_DETECTION_SIGNAL", True)
         agent = MockAgent()
-        from agentic_core.interfaces.detection_protocol import Severity
+        from agentic_core.utils.detection_protocol import Severity
 
         result = agent.emit_detection_signal(
             detection_type="test",

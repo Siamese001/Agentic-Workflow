@@ -11,7 +11,7 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 try:
-    from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+    from agentic_core.L5_safety.validators.core.hierarchy_agent import HierarchyAgent
 except (ImportError, NameError, AttributeError, TypeError) as e:
     print(f"Import error: {e}")
     print(f"Project root: {project_root}")

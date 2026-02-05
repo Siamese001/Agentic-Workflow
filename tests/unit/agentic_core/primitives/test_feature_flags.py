@@ -2,7 +2,7 @@
 
 import os
 
-from agentic_core.primitives.feature_flags import FeatureFlag, FeatureFlagManager
+from agentic_core.utils.feature_flags import FeatureFlag, FeatureFlagManager
 
 
 class TestFeatureFlag:

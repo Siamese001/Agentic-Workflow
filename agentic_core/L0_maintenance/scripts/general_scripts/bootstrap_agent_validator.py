@@ -10,7 +10,7 @@ from pathlib import Path
 from agentic_core.base_agents.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L3_orchestration.mixins.L3SubatomicTestingMixin import SubatomicTestingMixin
-from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 
 @dataclass

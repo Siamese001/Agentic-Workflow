@@ -3,14 +3,14 @@
 import pytest
 
 from agentic_core.base_agents.feature_flagged_agent_mixin import FeatureFlaggedAgentMixin
-from agentic_core.integration.migration_helper import (
+from agentic_core.utils.migration_helper import (
     ComplianceResult,
     MigrationHelper,
     MigrationStatus,
     check_agent_compliance,
     get_migration_status,
 )
-from agentic_core.primitives.feature_flags import FeatureFlagManager
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 
 class NonCompliantAgent:

@@ -39,7 +39,7 @@ from agentic_core.L5_safety.validators.location_constants import (
     DEFAULT_ARCHIVE_SUBFOLDER,
     HEALING_STRATEGY_MAP,
 )
-from agentic_core.L5_safety.validators.location_utils import (
+from agentic_core.L5_safety.validators.core.location_utils import (
     compute_module_path,
 )
 
@@ -435,7 +435,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         try:
             # Get all Python files
-            from agentic_core.L5_safety.validators.location_utils import get_agent_files
+            from agentic_core.L5_safety.validators.core.location_utils import get_agent_files
 
             python_files = [Path(f) for f in get_agent_files(str(self.project_root))]
 

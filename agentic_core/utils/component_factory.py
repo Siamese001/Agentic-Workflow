@@ -8,12 +8,12 @@ detection emitters, and meta-learning services with proper feature flag integrat
 import logging
 from typing import Any
 
-from agentic_core.interfaces.detection_protocol import DetectionSignalProtocol
-from agentic_core.interfaces.meta_learning_protocol import MetaLearningProtocol
-from agentic_core.interfaces.review_protocol import HumanReviewProtocol
-from agentic_core.interfaces.verification_protocol import VerificationGateProtocol
-from agentic_core.primitives.dependency_resolver import DynamicLoader
-from agentic_core.primitives.feature_flags import FeatureFlagManager
+from agentic_core.utils.detection_protocol import DetectionSignalProtocol
+from agentic_core.utils.meta_learning_protocol import MetaLearningProtocol
+from agentic_core.utils.review_protocol import HumanReviewProtocol
+from agentic_core.utils.verification_protocol import VerificationGateProtocol
+from agentic_core.utils.dependency_resolver import DynamicLoader
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 logger = logging.getLogger(__name__)
 

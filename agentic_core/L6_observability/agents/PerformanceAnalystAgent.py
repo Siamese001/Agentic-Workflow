@@ -29,7 +29,7 @@ from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMix
 L6ObservabilityBaseAgent = object  # Stub for archived import
 AgentPerformanceMetrics = None
 CritiqueReport = None
-from agentic_core.L5_safety.validators.decorators import standard_heal
+from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 
 # [SOVEREIGN FACTORY]

@@ -53,7 +53,7 @@ class TestSovereignPurification(unittest.TestCase):
     def test_integrity_hash_verification(self):
         """Verify the AE386C... hash lock is active (100% pass mandatory)."""
         # [CRITICAL ANALYSIS] Verify the integrity seal was actually regenerated and matches the report.
-        from agentic_core.domain.core_integrity_verifier_validator import CoreIntegrityVerifier
+        from agentic_core.utils.core_integrity_verifier_validator import CoreIntegrityVerifier
 
         verifier = CoreIntegrityVerifier()
 

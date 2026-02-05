@@ -37,20 +37,20 @@ from agentic_core.base_agents.runtime_safety_mixin import RuntimeSafetyMixin
 from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [PHASE 9] Global Architecture Injection
-from agentic_core.config.config_mixin_config import ConfigMixin
-from agentic_core.domain.core_integrity_verifier_validator import (
+from agentic_core.config.core.config_mixin_config import ConfigMixin
+from agentic_core.utils.core_integrity_verifier_validator import (
     CoreIntegrityVerifier,
     emergency_shutdown,
 )
-from agentic_core.domain.HealerError import ConfigurationError, SovereignError
+from agentic_core.utils.HealerError import ConfigurationError, SovereignError
 
 # [COGNITIVE HARDENING] Anti-Context Drift and Token Overload
 from agentic_core.L1_cognition.memory.golden_context_mixin import GoldenContextMixin
 from agentic_core.L2_execution.mcp.embedding_mixin import EmbeddingMixin
 from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
 from agentic_core.L4_state.utils.telemetry_sanitizer import sanitize_tool_output
-from agentic_core.L5_safety.validators.healing_strategy_mixin import HealingStrategyMixin
-from agentic_core.L5_safety.validators.validator_mixin import ValidatorMixin
+from agentic_core.L5_safety.validators.core.healing_strategy_mixin import HealingStrategyMixin
+from agentic_core.L5_safety.validators.core.validator_mixin import ValidatorMixin
 
 logger = logging.getLogger(__name__)
 

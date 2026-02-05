@@ -34,7 +34,7 @@ def test_case_1_signal_saturation_sweep():
     print("=" * 70)
 
     try:
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L1_cognition.thought_engine.l1_cognition_base_agent import (
             L1CognitionBaseAgent,
         )
@@ -134,7 +134,7 @@ def test_case_2_terminal_independence():
         print("✓ Step 1: Set SOVEREIGN_AUTO_APPROVE=1")
 
         # Step 2: Test HierarchyAgent (has gatekeeper integration)
-        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+        from agentic_core.L5_safety.validators.core.hierarchy_agent import HierarchyAgent
 
         hierarchy_agent = HierarchyAgent(
             project_root=project_root,

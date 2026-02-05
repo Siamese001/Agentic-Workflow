@@ -3,16 +3,18 @@ Integration module for agentic_core.
 
 Provides factory functions and utilities for creating protocol-compliant
 components with proper feature flag integration across all core layers.
+
+RE-EXPORT: All integration files are in agentic_core.utils - this module re-exports for API stability.
 """
 
-from .component_factory import (
+from agentic_core.utils.component_factory import (
     ComponentFactory,
     get_detection_emitter,
     get_human_review_queue,
     get_meta_learning_service,
     get_verification_gate,
 )
-from .migration_helper import (
+from agentic_core.utils.migration_helper import (
     MigrationHelper,
     check_agent_compliance,
     get_migration_status,

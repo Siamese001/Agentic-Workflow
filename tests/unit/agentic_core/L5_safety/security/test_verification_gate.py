@@ -8,12 +8,12 @@ surgical operations before they corrupt the codebase.
 import pytest
 
 from agentic_core.L5_safety.security.verification_gate import VerificationGate
-from agentic_core.L5_safety.validators.surgical_context import (
+from agentic_core.L5_safety.validators.core.surgical_context import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
 )
-from agentic_core.L5_safety.validators.unified_cst_healer import (
+from agentic_core.L5_safety.validators.core.unified_cst_healer import (
     HealingConfig,
     UnifiedCSTHealer,
 )

@@ -53,7 +53,7 @@ def test_1_signal_saturation_sweep():
     try:
         from dataclasses import dataclass
 
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L5_safety.validators.context import ValidationContext
 
         # Create a concrete test agent
@@ -139,7 +139,7 @@ def test_2_terminal_independence():
         os.environ["SOVEREIGN_AUTO_APPROVE"] = "1"
         result["details"].append("✅ Set SOVEREIGN_AUTO_APPROVE=1")
 
-        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+        from agentic_core.L5_safety.validators.core.hierarchy_agent import HierarchyAgent
 
         # Instantiate HierarchyAgent with auto_approve=True
         agent = HierarchyAgent(
@@ -196,7 +196,7 @@ def test_3_depth_constraint_cycle():
     try:
         from dataclasses import dataclass
 
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Create a test agent that tracks call depth
         @dataclass
@@ -334,7 +334,7 @@ def test_4_mro_integrity():
     try:
         from dataclasses import dataclass
 
-        from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Create a direct SovereignBaseAgent instance
         @dataclass

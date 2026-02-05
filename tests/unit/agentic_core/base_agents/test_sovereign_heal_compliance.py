@@ -5,7 +5,7 @@ Ensures SovereignBaseAgent and its subclasses satisfy the PreFlightValidator
 requirements for the 'heal' method.
 """
 
-from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 class TestSovereignHealCompliance:
