@@ -1,5 +1,5 @@
 """
-apps_lic/engines/OutreachPhase5OrchestratorAgent.py
+apps_lic/engines/OutreachPhase5Orchestrator.py
 """
 
 from __future__ import annotations
@@ -12,16 +12,14 @@ from apps_lic.shared.core.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class OutreachPhase5OrchestratorAgent(LICAgentBase, SubatomicTestingMixin):
+class OutreachPhase5Orchestrator(LICAgentBase, SubatomicTestingMixin):
     """
     Sovereign Phase 5 Orchestrator.
     Manages the final assembly and dispatch validation of outreach campaigns.
     """
 
     # Configuration via Field Factory
-    validation_gates: list[str] = field(
-        default_factory=lambda: ["compliance", "sentiment", "format"]
-    )
+    validation_gates: list[str] = field(default_factory=lambda: ["compliance", "sentiment", "format"])
     campaign_state: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:

@@ -1,5 +1,5 @@
 """
-apps_lic/engines/LicHealingOrchestratorAgent.py
+apps_lic/engines/LicHealingOrchestrator.py
 
 PHASE 4 META-LEARNING (Feb 2026):
 - MetaLearningClient integration for healing pattern memory
@@ -22,7 +22,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class LicHealingOrchestratorAgent(SubatomicTestingMixin, LICAgentBase):
+class LicHealingOrchestrator(SubatomicTestingMixin, LICAgentBase):
     """
     Sovereign LIC Healing Orchestrator.
     Coordinates domain-specific recovery actions for the LIC ecosystem.
@@ -109,9 +109,7 @@ class LicHealingOrchestratorAgent(SubatomicTestingMixin, LICAgentBase):
             # Step 3: Try to recall a successful resolution pattern
             cached_resolution = self.ml_recall_incident_resolution(incident_type)
             if cached_resolution:
-                Logger.info(
-                    f"[{self.__class__.__name__}] Using cached resolution for {incident_type}"
-                )
+                Logger.info(f"[{self.__class__.__name__}] Using cached resolution for {incident_type}")
                 self.ml_reset_healing_depth(incident_id)
                 return {
                     **cached_resolution,
@@ -202,9 +200,7 @@ class LicHealingOrchestratorAgent(SubatomicTestingMixin, LICAgentBase):
         cached_playbook = self.ml_cache_get(cache_key)
 
         if cached_playbook:
-            return cached_playbook.get(
-                "playbook", self.recovery_playbooks.get(incident_type, "default")
-            )
+            return cached_playbook.get("playbook", self.recovery_playbooks.get(incident_type, "default"))
 
         # Fall back to default playbook
         return self.recovery_playbooks.get(incident_type, "default_recovery")
@@ -259,9 +255,7 @@ class LicHealingOrchestratorAgent(SubatomicTestingMixin, LICAgentBase):
 
         # Check healing depth using guardrails
         if not self.guardrails_check_healing_depth(incident_id):
-            Logger.warning(
-                f"[{self.__class__.__name__}] Healing depth limit reached for {incident_id}"
-            )
+            Logger.warning(f"[{self.__class__.__name__}] Healing depth limit reached for {incident_id}")
             return {
                 "status": "skipped",
                 "incident_id": incident_id,

@@ -1,5 +1,5 @@
 """
-RgHealingOrchestratorAgent - Extracted for one-class-per-file pattern.
+RgHealingOrchestrator - Extracted for one-class-per-file pattern.
 
 Originally from: SignalRouterAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
@@ -26,7 +26,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class RgHealingOrchestratorAgent(RGAgentBase):
+class RgHealingOrchestrator(RGAgentBase):
     """
     Orchestrates the complete self-healing process for resume generation.
 
@@ -163,9 +163,7 @@ class RgHealingOrchestratorAgent(RGAgentBase):
         #     final_resume=self.ctx.current_resume.copy(),
         # )
 
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -180,21 +178,19 @@ class RgHealingOrchestratorAgent(RGAgentBase):
         return super().heal_repository(dry_run, execute, **kwargs)
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
-        """Heal violations detected by RgHealingOrchestratorAgent."""
+        """Heal violations detected by RgHealingOrchestrator."""
         violation_type = violation.get("type", "unknown")
         try:
             return {
                 "status": "skipped",
-                "details": (
-                    f"RgHealingOrchestratorAgent heal() not yet implemented for {violation_type}"
-                ),
+                "details": (f"RgHealingOrchestrator heal() not yet implemented for {violation_type}"),
                 "artifacts": [],
                 "errors": [],
             }
         except Exception as e:
             return {
                 "status": "failed",
-                "details": f"RgHealingOrchestratorAgent heal() failed: {str(e)}",
+                "details": f"RgHealingOrchestrator heal() failed: {str(e)}",
                 "artifacts": [],
                 "errors": [str(e)],
             }
@@ -336,9 +332,7 @@ class RgHealingOrchestratorAgent(RGAgentBase):
 
         # Check healing depth using guardrails
         if not self.guardrails_check_healing_depth(violation_id):
-            Logger.warning(
-                f"[{self.__class__.__name__}] Healing depth limit reached for {violation_id}"
-            )
+            Logger.warning(f"[{self.__class__.__name__}] Healing depth limit reached for {violation_id}")
             return {
                 "status": "skipped",
                 "violation_id": violation_id,

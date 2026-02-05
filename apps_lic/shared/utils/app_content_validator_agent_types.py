@@ -5,7 +5,7 @@ AppContentValidatorAgent - Application Content Validation
 Phase 2 Consolidation: Merges functionality from:
 - ContactValidatorAgent (contact validation)
 - ContentCleanlinessValidatorAgent (content cleanliness)
-- MessageDiversityValidatorAgent (message diversity/similarity)
+- MessageDiversityValidator (message diversity/similarity)
 
 Features:
 - Contact validation (email, LinkedIn URL, phone)
@@ -139,7 +139,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
     Consolidates:
     - ContactValidatorAgent (contact validation)
     - ContentCleanlinessValidatorAgent (content cleanliness)
-    - MessageDiversityValidatorAgent (message diversity)
+    - MessageDiversityValidator (message diversity)
 
     Usage:
         agent = AppContentValidatorAgent()
@@ -160,9 +160,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
     def __post_init__(self) -> None:
         """Initialize the validator."""
         self._email_pattern = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-        self._linkedin_pattern = re.compile(
-            r"^(https?://)?(www\.)?linkedin\.com/(in|pub)/[a-zA-Z0-9_-]+/?$"
-        )
+        self._linkedin_pattern = re.compile(r"^(https?://)?(www\.)?linkedin\.com/(in|pub)/[a-zA-Z0-9_-]+/?$")
         self._phone_pattern = re.compile(r"^\+?1?\d{9,15}$")
         Logger.info("AppContentValidatorAgent initialized")
 
@@ -371,9 +369,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
             all_violations.extend(self.validate_linkedin(linkedin))
 
         # Validate content
-        content = message_data.get(
-            "message_body", message_data.get("body", message_data.get("content", ""))
-        )
+        content = message_data.get("message_body", message_data.get("body", message_data.get("content", "")))
         all_violations.extend(self.validate_content_cleanliness(content))
 
         report.violations = all_violations
@@ -474,12 +470,12 @@ def create_legacy_content_cleanliness_validator(**kwargs: Any) -> AppContentVali
 
 def create_legacy_message_diversity_validator(**kwargs: Any) -> AppContentValidatorAgent:
     """
-    Factory for backward compatibility with MessageDiversityValidatorAgent.
+    Factory for backward compatibility with MessageDiversityValidator.
 
     DEPRECATED: Use AppContentValidatorAgent directly.
     """
     warnings.warn(
-        "MessageDiversityValidatorAgent is deprecated. Use AppContentValidatorAgent instead. "
+        "MessageDiversityValidator is deprecated. Use AppContentValidatorAgent instead. "
         "This factory will be removed after 2026-02-19.",
         DeprecationWarning,
         stacklevel=2,
