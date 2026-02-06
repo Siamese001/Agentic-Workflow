@@ -121,11 +121,15 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             },
             "L1_cognition": {
                 "purpose": "Cognitive processing, reasoning, and thought patterns.",
-                "notes": "Standard V10 structure. thought_engine/ is DISSOLVED — use agents/, engine/, types/, validators/, utils/.",
+                "notes": "Standard V10 structure. thought_engine/ is DISSOLVED — use agents/, engine/, types/, validators/, utils/, config/.",
                 "subfolders": {
                     "agents": {"purpose": "Active cognitive agents (reasoning, planning, budgeting)."},
-                    "engine": {"purpose": "Core cognitive logic loops and processing pipelines."},
-                    "types": {"purpose": "Cognitive data models, enums, and type definitions."},
+                    "engine": {
+                        "purpose": "Core cognitive logic loops and processing pipelines.",
+                        "notes": "Engine REJECTS configs and types. Suffix is SSOT over location.",
+                    },
+                    "config": {"purpose": "Cognitive configuration (RAG config, ReAct config, etc.)."},
+                    "types": {"purpose": "Cognitive data models, enums, protocols, and type definitions."},
                     "validators": {"purpose": "Cognitive validation logic (consensus, reasoning checks)."},
                     "utils": {"purpose": "Cognitive helper functions."},
                     # DISSOLVED: "generators" removed — pitch_generator moved to engine/pitch_engine.py
@@ -141,14 +145,27 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         },
                     },
                 },
+                # HARDENING 2026-02-06: Strict suffix enforcement — Filename is SSOT over Location.
+                "allowed_suffixes": {
+                    "engine": ["_engine.py", "_manager.py", "_planner.py", "_mapper.py", "_strategy.py"],
+                    "config": ["_config.py"],
+                    "types": ["_types.py", "_protocol.py"],
+                },
+                "routing_rules": {
+                    "*_config.py": "config",
+                    "*_types.py": "types",
+                    "I*.py": "types",
+                },
             },
             "L2_execution": {"purpose": "Tool execution and action handling"},
             "L3_orchestration": {
                 "purpose": "Workflow orchestration, strategy patterns, and multi-agent coordination.",
                 "subfolders": {
                     "agents": {"purpose": "Orchestration agents and unified strategy framework."},
+                    "config": {"purpose": "Orchestration configuration dataclasses."},
                     "fission_logic": {"purpose": "Task decomposition and fission logic."},
                     "interfaces": {"purpose": "Orchestration interfaces and protocols."},
+                    "routers": {"purpose": "Action routing and plan execution nodes."},
                     "utils": {"purpose": "Orchestration utility functions."},
                     "workflow_engines": {"purpose": "Workflow execution engines."},
                 },

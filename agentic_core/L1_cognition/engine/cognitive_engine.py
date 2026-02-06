@@ -16,9 +16,17 @@ import hashlib
 import time
 from typing import Any
 
-from .ActionNode import ActionNode
-from .PerceptionNode import PerceptionNode
-from .ReasoningNode import ReasoningNode
+from agentic_core.L3_orchestration.routers.action_router import ActionNode
+
+try:
+    from .PerceptionNode import PerceptionNode
+except ImportError:
+    PerceptionNode = None  # type: ignore[misc,assignment]
+
+try:
+    from .ReasoningNode import ReasoningNode
+except ImportError:
+    ReasoningNode = None  # type: ignore[misc,assignment]
 
 
 class CognitiveNodeRefactored:
