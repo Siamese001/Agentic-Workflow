@@ -131,7 +131,15 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     # DISSOLVED: "generators" removed — pitch_generator moved to engine/pitch_engine.py
                     # DISSOLVED: "intent_analysis" removed — files distributed to engine/, types/, L2/config/, L0/scripts/
                     "memory": {"purpose": "Memory systems (golden context, episodic, semantic)."},
-                    "meta_learning": {"purpose": "Meta-learning and self-improvement systems."},
+                    "meta_learning": {
+                        "purpose": "Meta-learning and self-improvement systems.",
+                        "subfolders": {
+                            "engine": {"purpose": "Meta-learning logic (client, embedder, cache, domain manager)."},
+                            "validators": {"purpose": "Meta-learning guardrails and validation."},
+                            "types": {"purpose": "Meta-learning data models and type definitions."},
+                            "config": {"purpose": "Meta-learning configuration."},
+                        },
+                    },
                 },
             },
             "L2_execution": {"purpose": "Tool execution and action handling"},

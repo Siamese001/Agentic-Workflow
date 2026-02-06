@@ -20,11 +20,11 @@ import pytest
 
 def reset_all_singletons():
     """Reset all meta-learning singletons for test isolation."""
-    import agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types as csm
-    import agentic_core.L1_cognition.meta_learning.domain_context_manager_types as dcm
-    import agentic_core.L1_cognition.meta_learning.healing_memory_embedder_types as hme
-    import agentic_core.L1_cognition.meta_learning.meta_learning_client_types as mlc
-    import agentic_core.L1_cognition.meta_learning.meta_learning_observability_types as mlo
+    import agentic_core.L1_cognition.meta_learning.engine.cache_manager as csm
+    import agentic_core.L1_cognition.meta_learning.engine.domain_manager as dcm
+    import agentic_core.L1_cognition.meta_learning.engine.memory_embedder as hme
+    import agentic_core.L1_cognition.meta_learning.engine.meta_client as mlc
+    import agentic_core.L1_cognition.meta_learning.engine.meta_observability as mlo
     from agentic_core.mixins.meta_learning_client_mixin import (
         MetaLearningClientMixin,
     )
@@ -54,14 +54,14 @@ class TestFullStackIntegration:
 
     def test_full_healing_workflow(self):
         """Test complete healing workflow with meta-learning."""
-        from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.cache_manager import (
             get_cache_strategy_manager,
         )
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.meta_client import (
             MetaLearningClient,
             get_meta_learning_client,
         )
-        from agentic_core.L1_cognition.meta_learning.meta_learning_observability_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.meta_observability import (
             get_meta_learning_observability,
         )
 
@@ -100,10 +100,10 @@ class TestFullStackIntegration:
 
     def test_cross_domain_pattern_sharing(self):
         """Test cross-domain pattern sharing workflow."""
-        from agentic_core.L1_cognition.meta_learning.domain_context_manager_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.domain_manager import (
             get_domain_context_manager,
         )
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.meta_client import (
             MetaLearningClient,
             get_meta_learning_client,
         )
@@ -135,7 +135,7 @@ class TestFullStackIntegration:
 
     def test_domain_isolation(self):
         """Test that domains are properly isolated."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.meta_client import (
             MetaLearningClient,
             get_meta_learning_client,
         )
@@ -162,10 +162,10 @@ class TestFullStackIntegration:
 
     def test_observability_health_check(self):
         """Test observability health check across all components."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.meta_client import (
             MetaLearningClient,
         )
-        from agentic_core.L1_cognition.meta_learning.meta_learning_observability_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.meta_observability import (
             get_meta_learning_observability,
         )
 
@@ -185,11 +185,11 @@ class TestFullStackIntegration:
 
     def test_dashboard_data_aggregation(self):
         """Test dashboard data aggregation from all components."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.meta_client import (
             MetaLearningClient,
             get_meta_learning_client,
         )
-        from agentic_core.L1_cognition.meta_learning.meta_learning_observability_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.meta_observability import (
             OperationTimer,
             get_meta_learning_observability,
         )
@@ -232,10 +232,10 @@ class TestHealingPatternLearning:
 
     def test_pattern_store_and_recall(self):
         """Test storing and recalling healing patterns."""
-        from agentic_core.L1_cognition.meta_learning.healing_memory_embedder_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.memory_embedder import (
             HealingMemoryEmbedder,
         )
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.meta_client import (
             MetaLearningClient,
             get_meta_learning_client,
         )
@@ -263,7 +263,7 @@ class TestHealingPatternLearning:
 
     def test_healing_depth_prevents_infinite_loops(self):
         """Test that healing depth tracking prevents infinite loops."""
-        from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.cache_manager import (
             get_cache_strategy_manager,
         )
 
@@ -295,7 +295,7 @@ class TestDomainSpecificBehavior:
 
     def test_lic_domain_higher_threshold(self):
         """Test that LIC domain has higher similarity threshold."""
-        from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.cache_manager import (
             get_cache_strategy_manager,
         )
 
@@ -309,7 +309,7 @@ class TestDomainSpecificBehavior:
 
     def test_domain_specific_ttl(self):
         """Test domain-specific TTL configuration."""
-        from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.cache_manager import (
             get_cache_strategy_manager,
         )
 
@@ -337,17 +337,17 @@ class TestEndToEndWorkflow:
 
     def test_complete_meta_learning_cycle(self):
         """Test a complete meta-learning cycle from violation to learned pattern."""
-        from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.cache_manager import (
             get_cache_strategy_manager,
         )
-        from agentic_core.L1_cognition.meta_learning.domain_context_manager_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.domain_manager import (
             get_domain_context_manager,
         )
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.meta_client import (
             MetaLearningClient,
             get_meta_learning_client,
         )
-        from agentic_core.L1_cognition.meta_learning.meta_learning_observability_types import (
+        from agentic_core.L1_cognition.meta_learning.engine.meta_observability import (
             get_meta_learning_observability,
         )
 
