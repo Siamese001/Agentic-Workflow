@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Any, Final
 
 # CORE SOCKETING: Align with Phase 2A Unified Base Class
-from agentic_core.base_agents.AppBaseAgent import AppBaseAgent
+from apps_shared.agents.AppBase import AppBase
 
 # PHASE 1.1: Guardrails Integration
 from agentic_core.L1_cognition.meta_learning.guardrails import (
@@ -62,11 +62,11 @@ except ImportError:
 
 
 @dataclass
-class LICAgentBase(MetaLearningMixin, AppBaseAgent, HealerMixin):
+class LICAgentBase(MetaLearningMixin, AppBase, HealerMixin):
     """
     LICAgentBase: Sovereign Foundation for 'Linked-In Canonical' (LIC).
 
-    Inherits from AppBaseAgent for unified app-level capabilities.
+    Inherits from AppBase for unified app-level capabilities.
 
     PHASE 1.1 GUARDRAILS:
     - Integrated MetaLearningGuardrails for security

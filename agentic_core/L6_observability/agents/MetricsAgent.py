@@ -6,7 +6,7 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -38,7 +38,7 @@ from pathlib import Path
 from threading import Lock
 from typing import Any, List, Tuple
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import List, Tuple, timeout
 
 Logger = logging.getLogger(__name__)
@@ -139,9 +139,7 @@ class MetricsAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
             self.set_gauge("state_sync.redis_monitor_active", is_active)
 
             if is_active:
-                Logger.info(
-                    f"[MetricsAgent] Redis Monitor detected: {monitor_sentinel.decode('utf-8')}"
-                )
+                Logger.info(f"[MetricsAgent] Redis Monitor detected: {monitor_sentinel.decode('utf-8')}")
             else:
                 Logger.warning("[MetricsAgent] Redis Monitor sentinel Missing from state.")
         except Exception as e:
@@ -232,9 +230,7 @@ class MetricsAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
             try:
                 self.alerting_rules_file.parent.mkdir(parents=True, exist_ok=True)
                 self.alerting_rules_file.write_text(yaml_str, encoding="utf-8")
-                Logger.info(
-                    f"[MetricsAgent] Alerting rules synchronized: {self.alerting_rules_file}"
-                )
+                Logger.info(f"[MetricsAgent] Alerting rules synchronized: {self.alerting_rules_file}")
             except Exception as e:
                 Logger.error(f"[MetricsAgent] Failed to write alerting rules: {e}")
 
@@ -290,9 +286,7 @@ class MetricsAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
 
             # Metadata
             self._metadata["compliance.last_scan"] = timestamp
-            self._metadata["compliance.scan_count"] = (
-                self._metadata.get("compliance.scan_count", 0) + 1
-            )
+            self._metadata["compliance.scan_count"] = self._metadata.get("compliance.scan_count", 0) + 1
 
         # Refresh the external monitor heartbeat
         self.check_redis_monitor()
@@ -311,7 +305,7 @@ class MetricsAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        Heal a specific violation (HealerProtocol compliance).
+        Heal a specific violation (IHealerProtocol compliance).
 
         Args:
             violation: Dict containing violation details

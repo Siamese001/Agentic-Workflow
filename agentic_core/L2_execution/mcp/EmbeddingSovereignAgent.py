@@ -29,8 +29,8 @@ Logger = logging.getLogger(__name__)
 
 # Import mixins for functionality
 try:
-    from agentic_core.base_agents.redis_cache_mixin import RedisCacheMixin
-    from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+    from agentic_core.base_agents.redis_cache_mixin import redis_cache_mixin
+    from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 except ImportError:
     # Fallback stubs if mixins are not available
     class SubatomicTestingMixin:

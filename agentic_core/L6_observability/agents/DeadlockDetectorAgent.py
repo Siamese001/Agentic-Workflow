@@ -12,7 +12,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # NAMING FIXED: Consistent Logger usage
@@ -110,7 +110,7 @@ class DeadlockDetectorAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        Heal a specific violation (HealerProtocol compliance).
+        Heal a specific violation (IHealerProtocol compliance).
 
         Args:
             violation: Dict containing violation details

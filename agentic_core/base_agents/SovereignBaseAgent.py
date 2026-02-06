@@ -30,11 +30,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.audit_trail_mixin import AuditTrailMixin
+from agentic_core.base_agents.audit_trail_mixin import audit_trail_mixin
 from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
-from agentic_core.base_agents.meta_learning_client_mixin import MetaLearningClientMixin
-from agentic_core.base_agents.runtime_safety_mixin import RuntimeSafetyMixin
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.meta_learning_client_mixin import meta_learning_client_mixin
+from agentic_core.base_agents.runtime_safety_mixin import runtime_safety_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.config.core.config_mixin_config import ConfigMixin

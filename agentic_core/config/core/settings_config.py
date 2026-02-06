@@ -17,9 +17,7 @@ class Settings(BaseSettings):
 
     # Core Application Settings
     APP_NAME: str = Field(default="AgenticCore", description="Application identifier")
-    ENVIRONMENT: Literal["dev", "test", "prod"] = Field(
-        default="dev", description="Runtime environment"
-    )
+    ENVIRONMENT: Literal["dev", "test", "prod"] = Field(default="dev", description="Runtime environment")
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = Field(
         default="INFO", description="Logging verbosity"
     )

@@ -41,7 +41,7 @@ class SovereignObservabilityAgent(
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        Heal a specific violation (HealerProtocol compliance).
+        Heal a specific violation (IHealerProtocol compliance).
 
         Args:
             violation: Dict containing violation details
@@ -57,9 +57,7 @@ class SovereignObservabilityAgent(
         }
 
     @standard_heal
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -98,9 +96,7 @@ class SovereignObservabilityAgent(
         """
         try:
             if self.redis_client:
-                self.redis_client.xgroup_create(
-                    self._stream_name, self._group_name, id="0", mkstream=True
-                )
+                self.redis_client.xgroup_create(self._stream_name, self._group_name, id="0", mkstream=True)
         except Exception as e:
             if "BUSYGROUP" not in str(e):
                 self._ee_logger.error(f"Failed to create consumer group: {e}")
@@ -119,10 +115,8 @@ class SovereignObservabilityAgent(
         if not self.redis_client:
             return
 
-        messages: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = (
-            self.redis_client.xreadgroup(
-                self._group_name, self._consumer_name, {self._stream_name: ">"}, count=count
-            )
+        messages: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = self.redis_client.xreadgroup(
+            self._group_name, self._consumer_name, {self._stream_name: ">"}, count=count
         )
 
         for _, stream_msgs in messages:
@@ -243,9 +237,7 @@ class SovereignObservabilityAgent(
         if hasattr(self, "_telemetry_buffer"):
             if len(self._telemetry_buffer) + len(filtered_batch) > self._max_buffer_size:
                 # Shed oldest entries to make room
-                overflow_count = (
-                    len(self._telemetry_buffer) + len(filtered_batch) - self._max_buffer_size
-                )
+                overflow_count = len(self._telemetry_buffer) + len(filtered_batch) - self._max_buffer_size
                 self._telemetry_buffer = self._telemetry_buffer[overflow_count:]
                 stats["buffer_overflow"] = True
 

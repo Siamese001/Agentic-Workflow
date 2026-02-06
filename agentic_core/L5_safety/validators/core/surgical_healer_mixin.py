@@ -11,7 +11,7 @@ import ast
 from pathlib import Path
 from typing import Any
 
-from .surgical_context import ASTCoordinate, SurgicalContext, ViolationConstraint
+from .surgical_context_types import ASTCoordinate, SurgicalContext, ViolationConstraint
 
 
 class SurgicalASTTransformer(ast.NodeTransformer):
@@ -47,9 +47,7 @@ class SurgicalASTTransformer(ast.NodeTransformer):
                     # Insert docstring after function signature
                     if not ast.get_docstring(node):
                         docstring = ast.Expr(
-                            value=ast.Constant(
-                                value=violation.expected_pattern or "TODO: Add docstring"
-                            )
+                            value=ast.Constant(value=violation.expected_pattern or "TODO: Add docstring")
                         )
                         node.body.insert(0, docstring)
                         self.modifications_made += 1
@@ -65,9 +63,7 @@ class SurgicalASTTransformer(ast.NodeTransformer):
                     # Insert docstring after class signature
                     if not ast.get_docstring(node):
                         docstring = ast.Expr(
-                            value=ast.Constant(
-                                value=violation.expected_pattern or "TODO: Add docstring"
-                            )
+                            value=ast.Constant(value=violation.expected_pattern or "TODO: Add docstring")
                         )
                         node.body.insert(0, docstring)
                         self.modifications_made += 1
@@ -175,7 +171,7 @@ class SurgicalHealerMixin:
         # Try to convert legacy violation format to SurgicalContext
         if "file_path" in violation:
             try:
-                from .surgical_context import SurgicalContextBuilder
+                from .surgical_context_types import SurgicalContextBuilder
 
                 builder = SurgicalContextBuilder(
                     Path(violation["file_path"]), self.__class__.__name__, "heal"

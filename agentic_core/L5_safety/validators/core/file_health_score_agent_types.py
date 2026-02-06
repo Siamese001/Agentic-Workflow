@@ -83,9 +83,7 @@ class AtomicBlackboard(SovereignBaseAgent):
         if hasattr(self, "redis_client") and self.redis_client:
             try:
                 # Use NX (Not Exists) for locking
-                acquired = self.redis_client.set(
-                    lock_key, lease_id, nx=True, ex=self.lease_duration
-                )
+                acquired = self.redis_client.set(lock_key, lease_id, nx=True, ex=self.lease_duration)
                 if acquired:
                     return HealingLease(file_path, agent_name, acquired_at, expires_at, lease_id)
                 return None
@@ -114,9 +112,7 @@ class AtomicBlackboard(SovereignBaseAgent):
             return FileHealthScore.from_dict(data)
         return None
 
-    def update_health_score(
-        self, file_path: str, violations: int, file_hash: str = ""
-    ) -> FileHealthScore:
+    def update_health_score(self, file_path: str, violations: int, file_hash: str = "") -> FileHealthScore:
         score_key = f"health:{file_path}"
         existing = self.get_health_score(file_path)
 

@@ -51,9 +51,7 @@ class ContextItem:
 
     def __post_init__(self) -> None:
         if not self.item_id:
-            self.item_id = hashlib.sha256(
-                f"{self.content[:100]}{self.timestamp}".encode()
-            ).hexdigest()[:12]
+            self.item_id = hashlib.sha256(f"{self.content[:100]}{self.timestamp}".encode()).hexdigest()[:12]
 
 
 @dataclass
@@ -286,9 +284,7 @@ class ContextManagementMixin:
         """
         return self._prune_by_priority(ContextPriority.LOW, target_tokens)
 
-    def _prune_by_priority(
-        self, priority: ContextPriority, target_tokens: int | None = None
-    ) -> int:
+    def _prune_by_priority(self, priority: ContextPriority, target_tokens: int | None = None) -> int:
         """
         Prune context items of a specific priority.
 
@@ -360,8 +356,7 @@ class ContextManagementMixin:
         self._last_summarization_time = time.time()
 
         Logger.info(
-            f"[CONTEXT] Summarized {len(items_to_summarize)} items "
-            f"into {summary_item.token_count} tokens"
+            f"[CONTEXT] Summarized {len(items_to_summarize)} items into {summary_item.token_count} tokens"
         )
 
     def _create_summary(self, content: str) -> str:
@@ -447,14 +442,10 @@ class ContextManagementMixin:
         with self._context_lock:
             if preserve_critical:
                 critical_items = [
-                    item
-                    for item in self._context_items
-                    if item.priority == ContextPriority.CRITICAL
+                    item for item in self._context_items if item.priority == ContextPriority.CRITICAL
                 ]
                 cleared_count = len(self._context_items) - len(critical_items)
-                cleared_tokens = self._total_context_tokens - sum(
-                    item.token_count for item in critical_items
-                )
+                cleared_tokens = self._total_context_tokens - sum(item.token_count for item in critical_items)
                 self._context_items = critical_items
                 self._total_context_tokens = sum(item.token_count for item in critical_items)
             else:

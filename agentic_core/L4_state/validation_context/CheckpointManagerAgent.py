@@ -36,7 +36,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
@@ -618,12 +618,12 @@ class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
             return False
 
     # =========================================================================
-    # HEALING (HealerProtocol Compliance)
+    # HEALING (IHealerProtocol Compliance)
     # =========================================================================
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        HealerProtocol compliance method for checkpoint violations.
+        IHealerProtocol compliance method for checkpoint violations.
 
         Args:
             violation: Dictionary containing violation details

@@ -41,14 +41,10 @@ class CodeTransformArgs(BaseModel):
 
     operation: TransformOperation = Field(..., description="Type of transformation to perform")
     code: str = Field(..., description="Source code to transform")
-    target: str = Field(
-        ..., description="Target symbol name, line range, or expression to transform"
-    )
+    target: str = Field(..., description="Target symbol name, line range, or expression to transform")
     new_name: str | None = Field(None, description="New name for rename operations")
     destination: str | None = Field(None, description="Destination for move operations")
-    decorator_name: str | None = Field(
-        None, description="Decorator name for add/remove decorator operations"
-    )
+    decorator_name: str | None = Field(None, description="Decorator name for add/remove decorator operations")
     extract_name: str | None = Field(None, description="Name for extracted function/variable")
     line_start: int | None = Field(None, description="Start line for extraction (1-indexed)")
     line_end: int | None = Field(None, description="End line for extraction (1-indexed)")
@@ -105,9 +101,7 @@ class SymbolRenamer(ast.NodeTransformer):
     def visit_Name(self, node: ast.Name) -> ast.Name:
         """Rename Name nodes."""
         if node.id == self.old_name and not self._is_shadowed():
-            self.changes.append(
-                f"Renamed '{self.old_name}' to '{self.new_name}' at line {node.lineno}"
-            )
+            self.changes.append(f"Renamed '{self.old_name}' to '{self.new_name}' at line {node.lineno}")
             node.id = self.new_name
         return node
 
@@ -143,9 +137,7 @@ class SymbolRenamer(ast.NodeTransformer):
     def visit_ClassDef(self, node: ast.ClassDef) -> ast.ClassDef:
         """Handle class definitions."""
         if node.name == self.old_name:
-            self.changes.append(
-                f"Renamed class '{self.old_name}' to '{self.new_name}' at line {node.lineno}"
-            )
+            self.changes.append(f"Renamed class '{self.old_name}' to '{self.new_name}' at line {node.lineno}")
             node.name = self.new_name
 
         self._push_scope()
@@ -186,9 +178,7 @@ class DecoratorModifier(ast.NodeTransformer):
                 # Add decorator
                 new_decorator = ast.Name(id=self.decorator_name, ctx=ast.Load())
                 node.decorator_list.insert(0, new_decorator)
-                self.changes.append(
-                    f"Added @{self.decorator_name} to function '{self.target_name}'"
-                )
+                self.changes.append(f"Added @{self.decorator_name} to function '{self.target_name}'")
             else:
                 # Remove decorator
                 original_count = len(node.decorator_list)
@@ -198,9 +188,7 @@ class DecoratorModifier(ast.NodeTransformer):
                     if not (isinstance(d, ast.Name) and d.id == self.decorator_name)
                 ]
                 if len(node.decorator_list) < original_count:
-                    self.changes.append(
-                        f"Removed @{self.decorator_name} from function '{self.target_name}'"
-                    )
+                    self.changes.append(f"Removed @{self.decorator_name} from function '{self.target_name}'")
 
         self.generic_visit(node)
         return node
@@ -220,9 +208,7 @@ class DecoratorModifier(ast.NodeTransformer):
                     if not (isinstance(d, ast.Name) and d.id == self.decorator_name)
                 ]
                 if len(node.decorator_list) < original_count:
-                    self.changes.append(
-                        f"Removed @{self.decorator_name} from class '{self.target_name}'"
-                    )
+                    self.changes.append(f"Removed @{self.decorator_name} from class '{self.target_name}'")
 
         self.generic_visit(node)
         return node
@@ -257,9 +243,7 @@ def rename_symbol(code: str, old_name: str, new_name: str) -> TransformResult:
     """
     tree, error = _parse_code(code)
     if error:
-        return TransformResult(
-            success=False, transformed_code=code, operation="rename_symbol", error=error
-        )
+        return TransformResult(success=False, transformed_code=code, operation="rename_symbol", error=error)
 
     renamer = SymbolRenamer(old_name, new_name)
     new_tree = renamer.visit(tree)
@@ -289,9 +273,7 @@ def rename_symbol(code: str, old_name: str, new_name: str) -> TransformResult:
         )
 
 
-def extract_function(
-    code: str, line_start: int, line_end: int, function_name: str
-) -> TransformResult:
+def extract_function(code: str, line_start: int, line_end: int, function_name: str) -> TransformResult:
     """
     Extract lines into a new function.
 
@@ -423,9 +405,7 @@ def add_decorator(code: str, target_name: str, decorator_name: str) -> Transform
     """
     tree, error = _parse_code(code)
     if error:
-        return TransformResult(
-            success=False, transformed_code=code, operation="add_decorator", error=error
-        )
+        return TransformResult(success=False, transformed_code=code, operation="add_decorator", error=error)
 
     modifier = DecoratorModifier(target_name, decorator_name, add=True)
     new_tree = modifier.visit(tree)

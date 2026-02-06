@@ -7,7 +7,7 @@ import asyncio
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
@@ -33,9 +33,7 @@ LOGGER: Any = logging.getLogger(__name__)
 class AgentInfo(AtomicExecutionMixin, SovereignBaseAgent):
     """Simple agent information container."""
 
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -97,9 +95,7 @@ def _run_self_tests() -> dict:
 class SovereignCognitivePlaneAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """Sovereign cognitive plane with in-memory agent registry and L5 streaming."""
 
-    def __init__(
-        self, enable_streaming: bool = True, streamer_factory: callable | None = None
-    ) -> None:
+    def __init__(self, enable_streaming: bool = True, streamer_factory: callable | None = None) -> None:
         """
         Initialize with sovereign agents.
 
@@ -118,17 +114,13 @@ class SovereignCognitivePlaneAgent(AtomicExecutionMixin, SovereignBaseAgent):
             if streamer_factory:
                 try:
                     self._streamer = streamer_factory()
-                    LOGGER.info(
-                        "L5 Streamer integrated with SovereignCognitivePlaneAgent via factory"
-                    )
+                    LOGGER.info("L5 Streamer integrated with SovereignCognitivePlaneAgent via factory")
                 except Exception as e:
                     LOGGER.warning(
                         f"Failed to initialize L5 Streamer via factory: {e} - reasoning broadcast disabled"
                     )
             else:
-                LOGGER.warning(
-                    "L5 Streamer not provided via factory - reasoning broadcast disabled"
-                )
+                LOGGER.warning("L5 Streamer not provided via factory - reasoning broadcast disabled")
 
     async def start_streaming(self) -> Any:
         """Start the L5 streamer if enabled."""
@@ -157,18 +149,14 @@ class SovereignCognitivePlaneAgent(AtomicExecutionMixin, SovereignBaseAgent):
     async def plan(self, request: PlanningRequest) -> PlanningResult:
         """Async plan implementation replacing blocking logic."""
         if self._streamer:
-            await self._streamer.broadcast_reasoning(
-                f"Processing planning request: {request.task_id}"
-            )
+            await self._streamer.broadcast_reasoning(f"Processing planning request: {request.task_id}")
         await asyncio.sleep(0)
         return PlanningResult(
             plan_id=f"sovereign_{request.task_id}",
             steps=["analyze_context", "select_agents", "generate_strategy"],
         )
 
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """Autonomous healing implementation as per Canon Key 51."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
         return {"violations": 0, "fixed": 0, "errors": 0}

@@ -6,7 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -41,7 +41,7 @@ from threading import Lock
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
@@ -207,9 +207,7 @@ class TelemetryAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseA
             },
         )
 
-    def emit_violation_detected(
-        self, file_path: str, ViolationType: str, message: str, agent: str
-    ) -> None:
+    def emit_violation_detected(self, file_path: str, ViolationType: str, message: str, agent: str) -> None:
         """Emit individual Violation detection event."""
         self.emit(
             event_type="compliance.violation_detected",
@@ -247,7 +245,7 @@ class TelemetryAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseA
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        Heal a specific violation (HealerProtocol compliance).
+        Heal a specific violation (IHealerProtocol compliance).
 
         Args:
             violation: Dict containing violation details

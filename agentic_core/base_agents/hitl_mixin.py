@@ -99,9 +99,7 @@ class HITLConfig:
     require_notes_on_rejection: bool = True
     escalation_timeout_seconds: float = 600.0
     max_escalation_levels: int = 3
-    default_escalation_chain: list[str] = field(
-        default_factory=lambda: ["team_lead", "manager", "director"]
-    )
+    default_escalation_chain: list[str] = field(default_factory=lambda: ["team_lead", "manager", "director"])
     # [HARDENING] Memory protection limits
     max_pending_approvals: int = 100  # Prevent unbounded pending queue
     max_history_size: int = 10000  # Prevent unbounded history growth
@@ -134,9 +132,7 @@ class ApprovalTimeoutError(Exception):
 
     def __init__(self, request: ApprovalRequest):
         self.request = request
-        super().__init__(
-            f"Approval timeout for '{request.operation_name}' after {request.timeout_seconds}s"
-        )
+        super().__init__(f"Approval timeout for '{request.operation_name}' after {request.timeout_seconds}s")
 
 
 class HITLMixin:
@@ -282,15 +278,11 @@ class HITLMixin:
             self._sensitive_operations[operation_name] = {
                 "risk_level": risk_level,
                 "description": description,
-                "escalation_chain": (
-                    escalation_chain or self._hitl_config.default_escalation_chain
-                ),
+                "escalation_chain": (escalation_chain or self._hitl_config.default_escalation_chain),
                 "timeout_seconds": (timeout_seconds or self._hitl_config.default_timeout_seconds),
             }
 
-        Logger.info(
-            f"[HITL] Registered sensitive operation: {operation_name} (Risk: {risk_level.name})"
-        )
+        Logger.info(f"[HITL] Registered sensitive operation: {operation_name} (Risk: {risk_level.name})")
 
     def create_approval_request(
         self,
@@ -316,12 +308,8 @@ class HITLMixin:
             description=description or op_config.get("description", ""),
             risk_level=op_config.get("risk_level", RiskLevel.MEDIUM),
             context=context or {},
-            timeout_seconds=op_config.get(
-                "timeout_seconds", self._hitl_config.default_timeout_seconds
-            ),
-            escalation_chain=op_config.get(
-                "escalation_chain", self._hitl_config.default_escalation_chain
-            ),
+            timeout_seconds=op_config.get("timeout_seconds", self._hitl_config.default_timeout_seconds),
+            escalation_chain=op_config.get("escalation_chain", self._hitl_config.default_escalation_chain),
         )
 
         with self._hitl_lock:

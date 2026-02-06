@@ -155,9 +155,7 @@ class ActionNode:
 
         return tools
 
-    def _execute_tools(
-        self, tools: list[dict[str, Any]], reasoning: dict[str, Any]
-    ) -> list[dict[str, Any]]:
+    def _execute_tools(self, tools: list[dict[str, Any]], reasoning: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Execute selected tools.
 

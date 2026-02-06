@@ -46,9 +46,7 @@ class SovereignSeverity(Enum):
 class TestSovereigntyAgent(SovereignBaseAgent):
     """L5 specialist — advanced sovereign testing."""
 
-    def __init__(
-        self, ctx: any | None = None, *args: any, _allow_mock: bool = True, **kwargs: any
-    ) -> None:
+    def __init__(self, ctx: any | None = None, *args: any, _allow_mock: bool = True, **kwargs: any) -> None:
         """Initialize TestSovereigntyAgent.
 
         Args:
@@ -103,9 +101,7 @@ class TestSovereigntyAgent(SovereignBaseAgent):
             # CRITIQUE: Integrated self-tests
             critique = self._run_integrated_self_tests()
             if not critique["all_passed"]:
-                self._emit_event(
-                    SovereignSeverity.ERROR, "TEST_SOVEREIGNTY_CRITIQUE_FAILED", critique
-                )
+                self._emit_event(SovereignSeverity.ERROR, "TEST_SOVEREIGNTY_CRITIQUE_FAILED", critique)
                 results["passed"] = False
                 results[TESTS_DIR].append({"name": "self_critique", "passed": False})
         finally:
@@ -234,9 +230,7 @@ class TestSovereigntyAgent(SovereignBaseAgent):
         all_passed = all(t["passed"] for t in tests)
         return {TESTS_DIR: tests, "all_passed": all_passed}
 
-    def _emit_event(
-        self, Severity: SovereignSeverity, event_type: str, payload: dict | None = None
-    ) -> None:
+    def _emit_event(self, Severity: SovereignSeverity, event_type: str, payload: dict | None = None) -> None:
         """Telemetry for observability."""
         print(f"[SOVEREIGN EVENT] {Severity.value} | {event_type}")
         if payload:

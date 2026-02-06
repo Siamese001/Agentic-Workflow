@@ -117,9 +117,7 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
 
             # Write test
             self.state[test_key] = test_value
-            assert self.state.get(test_key) == test_value, (
-                f"{class_name}: State write/read corruption"
-            )
+            assert self.state.get(test_key) == test_value, f"{class_name}: State write/read corruption"
 
             # Cleanup
             if original_value is None:

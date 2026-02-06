@@ -65,9 +65,7 @@ class MigrationMixin:
             migration_func = getattr(self, migration_method_name, None)
 
             if not migration_func:
-                error_msg = (
-                    f"No migration path found from {current_v}. Missing {migration_method_name}."
-                )
+                error_msg = f"No migration path found from {current_v}. Missing {migration_method_name}."
                 self._mm_logger.error(error_msg)
                 raise MigrationError(error_msg)
 

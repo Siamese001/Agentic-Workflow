@@ -31,9 +31,7 @@ class SovereignEnv:
         """Load and validate all environment configuration from root .env"""
         env_path = project_root / ".env"
         if not env_path.exists():
-            raise FileNotFoundError(
-                f"[L6 CRITICAL] .env Missing at {env_path} — Neural Link broken"
-            )
+            raise FileNotFoundError(f"[L6 CRITICAL] .env Missing at {env_path} — Neural Link broken")
         load_dotenv(dotenv_path=env_path, override=True)
         self.GEMINI_API_KEY = self._require("GEMINI_API_KEY")
         self.GEMINI_MODEL = self._require("GEMINI_MODEL")

@@ -9,7 +9,7 @@ import asyncio
 import logging
 import os
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # Import schemas from SSOT
@@ -41,9 +41,7 @@ class SupremeCourt(AtomicExecutionMixin, SovereignBaseAgent):
             },
         }
 
-    async def deliberate(
-        self, context: str, goal: str, risk_level: str = "medium"
-    ) -> ConsensusVerdict:
+    async def deliberate(self, context: str, goal: str, risk_level: str = "medium") -> ConsensusVerdict:
         self.log_info(f"Starting deliberation for goal: {goal}")
         opinions = await self._gather_opinions(context, goal, risk_level)
         verdict = await self._analyze_consensus(opinions, context, goal)
@@ -54,9 +52,7 @@ class SupremeCourt(AtomicExecutionMixin, SovereignBaseAgent):
 
         return verdict
 
-    async def _gather_opinions(
-        self, context: str, goal: str, risk_level: str
-    ) -> list[ModelOpinion]:
+    async def _gather_opinions(self, context: str, goal: str, risk_level: str) -> list[ModelOpinion]:
         tasks = []
         # Primary (Judge)
         tasks.append(
@@ -118,9 +114,7 @@ class SupremeCourt(AtomicExecutionMixin, SovereignBaseAgent):
 
         # Judge Call
         prompt = f"Analyze these {len(opinions)} opinions for goal: {goal}. Return JSON with 'consensus_score' (float) and 'reasoning' (str)."
-        await self.llm_generate(
-            prompt, provider="openai", model=os.getenv("OPENAI_MODEL", "gpt-4o")
-        )
+        await self.llm_generate(prompt, provider="openai", model=os.getenv("OPENAI_MODEL", "gpt-4o"))
 
         # Mock parse for stability
         return ConsensusVerdict(

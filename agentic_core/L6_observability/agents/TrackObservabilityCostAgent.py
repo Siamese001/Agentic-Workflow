@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
@@ -31,7 +31,7 @@ class OperationResult:
 
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
@@ -47,9 +47,7 @@ class TrackObservabilityCostAgent(AtomicExecutionMixin, SubatomicTestingMixin, S
         """Execute operation."""
         try:
             RESULT: Any = self._process(data, **kwargs)
-            return OperationResult(
-                success=True, DATA=RESULT, METADATA={"input_type": type(data).__name__}
-            )
+            return OperationResult(success=True, DATA=RESULT, METADATA={"input_type": type(data).__name__})
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             LOGGER.error(f"Operation failed: {e}")
             return OperationResult(success=False, message=str(e))
@@ -60,7 +58,7 @@ class TrackObservabilityCostAgent(AtomicExecutionMixin, SubatomicTestingMixin, S
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        Heal a specific violation (HealerProtocol compliance).
+        Heal a specific violation (IHealerProtocol compliance).
 
         Args:
             violation: Dict containing violation details

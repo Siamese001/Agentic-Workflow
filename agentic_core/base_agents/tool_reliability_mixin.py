@@ -94,9 +94,7 @@ class CircuitBreakerError(Exception):
     def __init__(self, tool_name: str, time_until_retry: float):
         self.tool_name = tool_name
         self.time_until_retry = time_until_retry
-        super().__init__(
-            f"Circuit breaker open for '{tool_name}'. Retry in {time_until_retry:.1f}s"
-        )
+        super().__init__(f"Circuit breaker open for '{tool_name}'. Retry in {time_until_retry:.1f}s")
 
 
 class RetryExhaustedError(Exception):
@@ -416,9 +414,7 @@ class ToolReliabilityMixin:
                 result = await result
             return result
 
-        raise RetryExhaustedError(
-            tool_name, policy.max_retries + 1, last_error or Exception("Unknown error")
-        )
+        raise RetryExhaustedError(tool_name, policy.max_retries + 1, last_error or Exception("Unknown error"))
 
     def with_retry_sync(
         self,
@@ -469,9 +465,7 @@ class ToolReliabilityMixin:
             Logger.info(f"[RELIABILITY] '{tool_name}' retries exhausted, using fallback")
             return fallback()
 
-        raise RetryExhaustedError(
-            tool_name, policy.max_retries + 1, last_error or Exception("Unknown error")
-        )
+        raise RetryExhaustedError(tool_name, policy.max_retries + 1, last_error or Exception("Unknown error"))
 
     def get_tool_health(self, tool_name: str) -> dict[str, Any]:
         """

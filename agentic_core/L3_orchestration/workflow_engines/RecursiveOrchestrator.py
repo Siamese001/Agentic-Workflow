@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
@@ -109,9 +109,7 @@ class RecursiveOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
     def __post_init__(self) -> None:
         """Initialize the orchestrator."""
         super().__post_init__()
-        logger.info(
-            f"RecursiveOrchestrator initialized with max_retry_attempts={self.max_retry_attempts}"
-        )
+        logger.info(f"RecursiveOrchestrator initialized with max_retry_attempts={self.max_retry_attempts}")
 
     def handle_task_status(
         self,
@@ -208,8 +206,7 @@ class RecursiveOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
 
         if retry_function is None:
             raise ValueError(
-                f"Cannot determine retry function for {failed_node_id}. "
-                "Provide retry_function parameter."
+                f"Cannot determine retry function for {failed_node_id}. Provide retry_function parameter."
             )
 
         # Spawn successor node via DAGMutation

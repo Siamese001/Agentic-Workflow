@@ -217,9 +217,7 @@ class L5Streamer:
             self.stream_task = None
         for client in list(self._websocket_clients):
             try:
-                asyncio.run_coroutine_threadsafe(client.close(), asyncio.get_event_loop()).result(
-                    timeout=1.0
-                )
+                asyncio.run_coroutine_threadsafe(client.close(), asyncio.get_event_loop()).result(timeout=1.0)
             except Exception:
                 pass
         self._websocket_clients.clear()

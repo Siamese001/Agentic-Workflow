@@ -26,9 +26,7 @@ class AirlockProtocol:
         """Determines if a tool execution is safe to proceed under Zero-Trust."""
         # 1. Check Registry Whitelist
         if tool_name not in self.allowed_tools and tool_name not in self.high_risk_tools:
-            raise PermissionError(
-                f"Airlock Block: Tool '{tool_name}' is not in the Sovereign Registry."
-            )
+            raise PermissionError(f"Airlock Block: Tool '{tool_name}' is not in the Sovereign Registry.")
 
         # 2. Risk Mitigation for Critical Tools
         if tool_name in self.high_risk_tools:

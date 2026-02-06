@@ -21,13 +21,11 @@ from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
 
 
-class OrchestrationHandshakeAgent(
-    SubatomicTestingMixin, SovereignBaseAgent, CoreOrchestrationAgent
-):
+class OrchestrationHandshakeAgent(SubatomicTestingMixin, SovereignBaseAgent, CoreOrchestrationAgent):
     """
     Sovereign handshake protocol — now with deep L3 caching.
     Renamed from OrchestrationHandshake for consistent Agent suffix pattern.
@@ -42,7 +40,9 @@ class OrchestrationHandshakeAgent(
         Discover agents/methods capable of Task via hybrid registry search.
         cache-first — Redis hit -> instant discovery.
         """
-        cache_key: Any = f"handshake_discover:{hashlib.sha256((Task + str(min_confidence)).encode()).hexdigest()}"
+        cache_key: Any = (
+            f"handshake_discover:{hashlib.sha256((Task + str(min_confidence)).encode()).hexdigest()}"
+        )
         if self.redis:
             cached: Any = self.redis.get(cache_key)
             if cached:

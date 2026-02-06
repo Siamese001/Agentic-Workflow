@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """L3 Orchestration: Sovereign MCP router — Eternal Integration
@@ -46,9 +46,7 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
             mcp_authority.record_breach(str(e))
             raise
 
-    async def resolve_violation(
-        self, key_id: int, file_path: str, violation_desc: str
-    ) -> dict[str, Any]:
+    async def resolve_violation(self, key_id: int, file_path: str, violation_desc: str) -> dict[str, Any]:
         """Route canon key Violation to hardened MCP tool — L5 shielded"""
         if not mcp_authority.is_authorized():
             return {"status": "blocked", "reason": "MCP sovereignty compromised"}
@@ -128,9 +126,7 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
                         ctx: Any = ValidationContext._instance
                         if hasattr(ctx, "figma_client") and ctx.figma_client:
                             try:
-                                tokens: Any = await ctx.figma_client.get_variable_defs(
-                                    "SOVEREIGN_FILE_KEY"
-                                )
+                                tokens: Any = await ctx.figma_client.get_variable_defs("SOVEREIGN_FILE_KEY")
                                 return {
                                     "status": "l2_figma_truth",
                                     "tool": "figma_tokens",
@@ -206,12 +202,8 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
                         "insight": "L0 hygiene restored via automated pruning",
                     }
                 except Exception as cleanup_e:
-                    Logger.warning(
-                        f"[L0 MCP] Cleanup failed: {cleanup_e} — falling back to diagnostics"
-                    )
-                    diag_result: Any = await self.manager.call_tool(
-                        "l0_diagnostics", {"scope": "repository"}
-                    )
+                    Logger.warning(f"[L0 MCP] Cleanup failed: {cleanup_e} — falling back to diagnostics")
+                    diag_result: Any = await self.manager.call_tool("l0_diagnostics", {"scope": "repository"})
                     return {
                         "status": "l0_diagnostics",
                         "tool": "l0_diagnostics",
@@ -223,11 +215,7 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
                         "read_wiki_structure", {"repo": "xai/grok-canon"}
                     )
                     relevant_topic: Any = next(
-                        (
-                            t
-                            for t in structure.get("topics", [])
-                            if str(key_id) in t or "canon" in t.lower()
-                        ),
+                        (t for t in structure.get("topics", []) if str(key_id) in t or "canon" in t.lower()),
                         None,
                     )
                     if relevant_topic:
@@ -249,9 +237,7 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
                     )
                     return {"status": "l2_deepwiki_qa", "answer": answer.get("response", "")}
                 except Exception as wiki_e:
-                    Logger.warning(
-                        f"[L2 DEEPWIKI] Wiki access failed: {wiki_e} — falling back to search"
-                    )
+                    Logger.warning(f"[L2 DEEPWIKI] Wiki access failed: {wiki_e} — falling back to search")
                     try:
                         search_result: Any = await self.manager.call_tool(
                             "brave_search",

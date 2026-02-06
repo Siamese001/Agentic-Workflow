@@ -1,0 +1,23 @@
+"""
+Tools module for L2 Execution tool_registry.
+
+Provides common tool implementations.
+"""
+
+from typing import Any
+
+from .base import base_tool_script, tool_registry
+
+__all__ = ["BaseTool", "tool_registry", "FunctionTool"]
+
+
+class FunctionTool(BaseTool):
+    """A tool that wraps a callable function."""
+
+    def __init__(self, name: str, func: callable, description: str = ""):
+        super().__init__(name, description)
+        self._func = func
+
+    def execute(self, *args, **kwargs) -> Any:
+        """Execute the wrapped function."""
+        return self._func(*args, **kwargs)

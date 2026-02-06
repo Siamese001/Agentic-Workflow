@@ -62,9 +62,7 @@ class ActionNodeCore:
             result: Any = self._execute_single_step(step)
             results.append(result)
             if result.get("status") == "error":
-                Logger.error(
-                    f"🛑 Execution halted at step {step.get('step', 'N/A')}: {result.get('output')}"
-                )
+                Logger.error(f"🛑 Execution halted at step {step.get('step', 'N/A')}: {result.get('output')}")
                 return {"status": "failed", "results": results}
         Logger.info("[OK] Plan execution completed successfully.")
         return {"status": "success", "results": results}
@@ -93,9 +91,7 @@ class ActionNodeCore:
             output: str = self.allowed_tools[tool_key](**params)
             return {"step": step_number, "status": "success", "output": output}
         except Exception as e:
-            Logger.error(
-                f"[X] Tool '{tool_key}' execution failed for step {step_number}: {e}", exc_info=True
-            )
+            Logger.error(f"[X] Tool '{tool_key}' execution failed for step {step_number}: {e}", exc_info=True)
             return {"step": step_number, "status": "error", "output": str(e)}
 
 

@@ -151,13 +151,10 @@ class AuditTrailMixin:
         self._session_id = datetime.now().strftime("%Y%m%d-%H%M%S")
 
         Logger.debug(
-            f"[{self.__class__.__name__}] Audit chain initialized: "
-            f"chain_id={self._audit_session_salt[:8]}..."
+            f"[{self.__class__.__name__}] Audit chain initialized: chain_id={self._audit_session_salt[:8]}..."
         )
 
-    def log_sovereign_event(
-        self, action: str, details: dict[str, Any], level: str = "INFO"
-    ) -> None:
+    def log_sovereign_event(self, action: str, details: dict[str, Any], level: str = "INFO") -> None:
         """
         Write an immutable record to the structured Black Box log.
 
@@ -200,9 +197,7 @@ class AuditTrailMixin:
         else:
             Logger.info(log_entry)
 
-    def log_heal_event(
-        self, violations_found: int, violations_fixed: int, execution_time_ms: float
-    ) -> None:
+    def log_heal_event(self, violations_found: int, violations_fixed: int, execution_time_ms: float) -> None:
         """
         Specialized logging for heal_repository events.
 
@@ -221,9 +216,7 @@ class AuditTrailMixin:
             },
         )
 
-    def log_validation_event(
-        self, validator_name: str, result: bool, details: dict[str, Any]
-    ) -> None:
+    def log_validation_event(self, validator_name: str, result: bool, details: dict[str, Any]) -> None:
         """
         Specialized logging for validator events.
 
@@ -287,11 +280,7 @@ class AuditTrailMixin:
 
         # Create chain link: prev_hash | salt | action | payload | timestamp
         raw_data = (
-            f"{self._audit_last_hash}|"
-            f"{self._audit_session_salt}|"
-            f"{action_type}|"
-            f"{payload_str}|"
-            f"{timestamp}"
+            f"{self._audit_last_hash}|{self._audit_session_salt}|{action_type}|{payload_str}|{timestamp}"
         )
 
         # SHA-256 hash
@@ -338,8 +327,7 @@ class AuditTrailMixin:
         # Check for event_emission_mixin dependency
         if not hasattr(self, "emit_event"):
             raise NotImplementedError(
-                "AuditTrailMixin requires event_emission_mixin. "
-                "Ensure your class inherits from both mixins."
+                "AuditTrailMixin requires event_emission_mixin. Ensure your class inherits from both mixins."
             )
 
         # Build event payload with audit proof
@@ -361,8 +349,7 @@ class AuditTrailMixin:
         )
 
         Logger.debug(
-            f"[{self.__class__.__name__}] Audited action: {action_type} "
-            f"(hash={proof.curr_hash[:16]}...)"
+            f"[{self.__class__.__name__}] Audited action: {action_type} (hash={proof.curr_hash[:16]}...)"
         )
 
         return proof
@@ -388,8 +375,7 @@ class AuditTrailMixin:
         proof = self._generate_audit_proof(action_type, payload)
 
         Logger.debug(
-            f"[{self.__class__.__name__}] Sync audit proof: {action_type} "
-            f"(hash={proof.curr_hash[:16]}...)"
+            f"[{self.__class__.__name__}] Sync audit proof: {action_type} (hash={proof.curr_hash[:16]}...)"
         )
 
         return proof

@@ -147,9 +147,7 @@ class CognitiveBatchProcessor:
 
             # Skip if already processed in checkpoint
             if file_path_str in self.results:
-                Logger.debug(
-                    f"[BATCH] [{i}/{len(violations)}] Skipping (cached): {Path(file_path).name}"
-                )
+                Logger.debug(f"[BATCH] [{i}/{len(violations)}] Skipping (cached): {Path(file_path).name}")
                 stats["SKIPPED"] += 1
                 continue
 

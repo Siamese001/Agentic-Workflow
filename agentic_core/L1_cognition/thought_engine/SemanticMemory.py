@@ -70,9 +70,7 @@ class SemanticMemory:
             if key in self._memories:
                 # Simple dot product as similarity (not normalized)
                 similarity = sum(a * b for a, b in zip(query_embedding, embedding, strict=False))
-                results.append(
-                    {"key": key, "value": self._memories[key]["value"], "similarity": similarity}
-                )
+                results.append({"key": key, "value": self._memories[key]["value"], "similarity": similarity})
         results.sort(key=lambda x: x["similarity"], reverse=True)
         return results[:top_k]
 

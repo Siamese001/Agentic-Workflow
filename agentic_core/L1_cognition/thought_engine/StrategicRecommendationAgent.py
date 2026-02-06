@@ -28,7 +28,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -175,9 +175,7 @@ Output strict JSON:
                 return json.loads(json_match.group(0))
             return {"review": "Parsing failed", "recommendations": []}
 
-    def _generate_fallback_recommendations(
-        self, dashboard_data: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    def _generate_fallback_recommendations(self, dashboard_data: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Generate rule-based recommendations when LLM is unavailable.
 
@@ -367,9 +365,7 @@ Output strict JSON:
         # Complexity
         high_cc_territories = [r for r in non_total_rows if safe_val(r, "Avg CC", 0) > 15]
         if high_cc_territories:
-            avg_cc = sum(safe_val(r, "Avg CC", 0) for r in high_cc_territories) / len(
-                high_cc_territories
-            )
+            avg_cc = sum(safe_val(r, "Avg CC", 0) for r in high_cc_territories) / len(high_cc_territories)
             recommendations.append(
                 {
                     "priority": 4,

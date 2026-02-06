@@ -6,7 +6,7 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -180,9 +180,7 @@ Return ONLY JSON in this format:
 
         if not match:
             Logger.error("[PROMPT_GOVERNOR] LLM output Missing required fenced code block")
-            raise ValueError(
-                "LLM output Missing required fenced code block - response may be malformed"
-            )
+            raise ValueError("LLM output Missing required fenced code block - response may be malformed")
 
         code = match.group(1)
 
@@ -269,9 +267,7 @@ Return ONLY JSON in this format:
         return hashlib.sha256(combined.encode("utf-8")).hexdigest()
 
     @standard_heal
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
         """Autonomous healing implementation as per Canon Key 51."""
         super().heal_repository(**kwargs)
 

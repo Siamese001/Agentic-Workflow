@@ -151,9 +151,7 @@ class ArchivalGatekeeper:
         with cls._lock:
             if cls._instance is None:
                 if project_root is None:
-                    raise ValueError(
-                        "project_root must be provided on first call to get_instance()"
-                    )
+                    raise ValueError("project_root must be provided on first call to get_instance()")
                 cls._instance = cls(project_root)
             return cls._instance
 
@@ -278,9 +276,7 @@ class ArchivalGatekeeper:
         # Check batch mode first
         if self._is_batch_mode():
             result.approval_status = "BATCH_APPROVED"
-            Logger.info(
-                f"[ArchivalGatekeeper] BATCH_APPROVED: {result.operation.value} {result.source_path}"
-            )
+            Logger.info(f"[ArchivalGatekeeper] BATCH_APPROVED: {result.operation.value} {result.source_path}")
             return True
 
         # Skip approval if disabled (for testing without mocking input)

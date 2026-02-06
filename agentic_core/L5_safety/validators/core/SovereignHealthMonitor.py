@@ -59,9 +59,7 @@ class SovereignHealthMonitor:
             # Also update current domain health
             self.redis.set(
                 f"sovereign_health:{domain}",
-                json.dumps(
-                    {"compliance_score": score, "total_fixes": fixes, "last_updated": timestamp}
-                ),
+                json.dumps({"compliance_score": score, "total_fixes": fixes, "last_updated": timestamp}),
             )
 
             # Increment global fix counter

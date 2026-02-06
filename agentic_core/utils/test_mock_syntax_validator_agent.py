@@ -66,9 +66,7 @@ def test_1_syntax_gate():
     print(f"   Tier 0 violations: {total_violations}")
 
     # In execute mode with violations, is_stable should be False
-    assert not is_stable, (
-        "Tier 0 should report is_stable=False when violations exist in execute mode"
-    )
+    assert not is_stable, "Tier 0 should report is_stable=False when violations exist in execute mode"
     assert total_violations == 5, f"Expected 5 violations, got {total_violations}"
 
     # Verify the gate logic would prevent Tier 1 execution
@@ -109,9 +107,7 @@ def test_2_deduplication_detection():
     agent = get_two_phase_deduplication_agent(PROJECT_ROOT)
 
     assert hasattr(agent, "heal_repository"), "Agent must have heal_repository method"
-    assert hasattr(agent, "run_phase_a"), (
-        "Agent must have run_phase_a method for identity collisions"
-    )
+    assert hasattr(agent, "run_phase_a"), "Agent must have run_phase_a method for identity collisions"
 
     print("   heal_repository method: exists ✓")
     print("   run_phase_a method: exists ✓")

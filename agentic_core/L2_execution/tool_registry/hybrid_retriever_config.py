@@ -98,27 +98,21 @@ class ASTAwareTokenizer:
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
                     tokens.extend(
-                        cls.split_identifier(node.name)
-                        * (cls.BOOST_FUNCTION_CLASS if boost_symbols else 1)
+                        cls.split_identifier(node.name) * (cls.BOOST_FUNCTION_CLASS if boost_symbols else 1)
                     )
                 elif isinstance(node, ast.ClassDef):
                     tokens.extend(
-                        cls.split_identifier(node.name)
-                        * (cls.BOOST_FUNCTION_CLASS if boost_symbols else 1)
+                        cls.split_identifier(node.name) * (cls.BOOST_FUNCTION_CLASS if boost_symbols else 1)
                     )
                 elif isinstance(node, ast.Name):
                     tokens.extend(
-                        cls.split_identifier(node.id)
-                        * (cls.BOOST_IDENTIFIER if boost_symbols else 1)
+                        cls.split_identifier(node.id) * (cls.BOOST_IDENTIFIER if boost_symbols else 1)
                     )
                 elif isinstance(node, ast.arg):
-                    tokens.extend(
-                        cls.split_identifier(node.arg) * (cls.BOOST_ARG if boost_symbols else 1)
-                    )
+                    tokens.extend(cls.split_identifier(node.arg) * (cls.BOOST_ARG if boost_symbols else 1))
                 elif isinstance(node, ast.Attribute):
                     tokens.extend(
-                        cls.split_identifier(node.attr)
-                        * (cls.BOOST_IDENTIFIER if boost_symbols else 1)
+                        cls.split_identifier(node.attr) * (cls.BOOST_IDENTIFIER if boost_symbols else 1)
                     )
                 elif isinstance(node, ast.Constant) and isinstance(node.value, str):
                     # Docstrings and string literals
@@ -177,9 +171,7 @@ class HybridRetriever:
         cache_path = Path("agentic_core/L4_state/validation_context/.sovereign_local_index.json")
         if cache_path.exists():
             try:
-                data = await asyncio.to_thread(
-                    lambda: json.loads(cache_path.read_text(encoding="utf-8"))
-                )
+                data = await asyncio.to_thread(lambda: json.loads(cache_path.read_text(encoding="utf-8")))
                 self.local_chunks = data["chunks"]
 
                 def _build_bm25():
@@ -208,13 +200,9 @@ class HybridRetriever:
                 def _sync():
                     tokenized = [self.tokenizer.tokenize_code(c["text"]) for c in chunks]
                     idx = BM25Okapi(tokenized)
-                    cache_path = Path(
-                        "agentic_core/L4_state/validation_context/.sovereign_local_index.json"
-                    )
+                    cache_path = Path("agentic_core/L4_state/validation_context/.sovereign_local_index.json")
                     cache_path.parent.mkdir(parents=True, exist_ok=True)
-                    with tempfile.NamedTemporaryFile(
-                        "w", delete=False, dir=cache_path.parent
-                    ) as tf:
+                    with tempfile.NamedTemporaryFile("w", delete=False, dir=cache_path.parent) as tf:
                         json.dump({"chunks": chunks}, tf, ensure_ascii=False)
                         temp_name = tf.name
                     os.replace(temp_name, cache_path)
@@ -265,9 +253,7 @@ class HybridRetriever:
                 )
         return results
 
-    def deduplicate_by_hash(
-        self, results: list[RetrievalResult], request_seen: set
-    ) -> list[RetrievalResult]:
+    def deduplicate_by_hash(self, results: list[RetrievalResult], request_seen: set) -> list[RetrievalResult]:
         """Deduplicate by content hash — prevents redundant chunks"""
         unique: Any = []
         for r in results:
@@ -302,9 +288,7 @@ class HybridRetriever:
         fused.sort(key=lambda x: x.score, reverse=True)
         return fused
 
-    async def rerank_combined(
-        self, combined: list[RetrievalResult], query: str
-    ) -> list[RetrievalResult]:
+    async def rerank_combined(self, combined: list[RetrievalResult], query: str) -> list[RetrievalResult]:
         """L5 reranking via cross-encoder (guardrail)"""
         if not combined:
             return []
@@ -319,9 +303,7 @@ class HybridRetriever:
         if not dense_results and (not sparse_results):
             return []
         fused: Any = self.reciprocal_rank_fusion(dense_results, sparse_results)
-        return await self.guardrail.rerank_documents(
-            fused[: min(50, len(fused))], query, top_k=top_k
-        )
+        return await self.guardrail.rerank_documents(fused[: min(50, len(fused))], query, top_k=top_k)
 
     async def wait_for_index(self) -> Any:
         """Wait for BM25 index to be ready"""

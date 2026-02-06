@@ -128,9 +128,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
         """Probe naming laws on synthetic filenames."""
         test_names = ["good_agent.py", "l5_bad_prefix.py", "temp.bak.123"]
         violations = [
-            name
-            for name in test_names
-            if has_forbidden_layer_prefix(name) or is_broken_backup_file(name)
+            name for name in test_names if has_forbidden_layer_prefix(name) or is_broken_backup_file(name)
         ]
         return f"Naming check: {len(violations)} synthetic violations detected (expected)"
 
@@ -210,9 +208,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
             results["failed"] += 1
-            results["tests"].append(
-                {"name": "test_instantiation", "status": "failed", "error": str(e)}
-            )
+            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:

@@ -96,9 +96,7 @@ class CognitiveNodeRefactored:
 
         return output
 
-    async def process_async(
-        self, raw_input: dict[str, Any], context: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def process_async(self, raw_input: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         """
         Parallel cognitive processing with async/await.
 

@@ -32,15 +32,15 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agentic_core.base_agents.context_management_mixin import ContextManagementMixin
-from agentic_core.base_agents.cost_guardrail_mixin import CostGuardrailMixin
-from agentic_core.base_agents.healer_mixin import HealerMixin
-from agentic_core.base_agents.hitl_mixin import HITLMixin
-from agentic_core.base_agents.performance_mixin import PerformanceMixin
-from agentic_core.base_agents.pinecone_vector_mixin import PineconeVectorMixin
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.base_agents.tool_reliability_mixin import ToolReliabilityMixin
-from agentic_core.base_agents.tracing_mixin import TracingMixin
+from agentic_core.base_agents.context_management_mixin import context_management_mixin
+from agentic_core.base_agents.cost_guardrail_mixin import cost_guardrail_mixin
+from agentic_core.base_agents.healer_mixin import healer_mixin
+from agentic_core.base_agents.hitl_mixin import hitl_mixin
+from agentic_core.base_agents.performance_mixin import performance_mixin
+from agentic_core.base_agents.pinecone_vector_mixin import pinecone_vector_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.base_agents.tool_reliability_mixin import tool_reliability_mixin
+from agentic_core.base_agents.tracing_mixin import tracing_mixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
@@ -144,9 +144,7 @@ class InfrastructureMixin(
         # since some agents may not use MCP features
 
         if errors:
-            error_msg = "Infrastructure initialization failed:\n" + "\n".join(
-                f"  - {e}" for e in errors
-            )
+            error_msg = "Infrastructure initialization failed:\n" + "\n".join(f"  - {e}" for e in errors)
             Logger.error(f"[INFRA] {error_msg}")
             raise RuntimeError(error_msg)
 

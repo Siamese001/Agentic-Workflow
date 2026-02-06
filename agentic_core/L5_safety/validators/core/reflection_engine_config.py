@@ -229,9 +229,7 @@ class ReflectionEngine:
         # Update average confidence
         total = self.stats["total_critiques"]
         current_avg = self.stats["average_confidence"]
-        self.stats["average_confidence"] = (
-            current_avg * (total - 1) + result.confidence_score
-        ) / total
+        self.stats["average_confidence"] = (current_avg * (total - 1) + result.confidence_score) / total
 
         return result
 
@@ -282,9 +280,7 @@ class ReflectionEngine:
         confidence = weighted_score / total_weight if total_weight > 0 else 0.0
         is_valid = confidence >= self.config.confidence_threshold
 
-        reasoning = (
-            "Fast path validation: " + "; ".join(results) if results else "All criteria passed"
-        )
+        reasoning = "Fast path validation: " + "; ".join(results) if results else "All criteria passed"
 
         return CritiqueResult(
             is_valid=is_valid,
@@ -299,10 +295,7 @@ class ReflectionEngine:
         """Evaluate using LLM for semantic validation."""
         # Build prompt
         criteria_text = "\n".join(
-            [
-                f"- {c.name}: {c.description}{' (Required)' if c.is_required else ''}"
-                for c in criteria
-            ]
+            [f"- {c.name}: {c.description}{' (Required)' if c.is_required else ''}" for c in criteria]
         )
 
         context_text = f"\nContext: {json.dumps(context, indent=2)}" if context else ""

@@ -22,9 +22,7 @@ def test_dag_executor_records_agent_assignments() -> None:
     edges: list[Edge] = []
     Graph(nodes=nodes, edges=edges)
     AgentRegistry()
-    registry.register_agent(
-        AgentCard(agent_id="planner-1", role=AgentRole.PLANNER, agent_type="planner")
-    )
+    registry.register_agent(AgentCard(agent_id="planner-1", role=AgentRole.PLANNER, agent_type="planner"))
     DAGExecutor(graph, AgentRegistry=registry)
     asyncio.run(executor.run())
     ASSIGNMENTS: Any = result.get("_agent_assignments", {})

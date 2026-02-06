@@ -80,9 +80,7 @@ class MetaLearningClientMixin:
                 MetaLearningClientMixin._ml_embedder = get_healing_memory_embedder()
                 Logger.debug(f"[{self.__class__.__name__}] HealingMemoryEmbedder initialized")
             except Exception as e:
-                Logger.warning(
-                    f"[{self.__class__.__name__}] HealingMemoryEmbedder unavailable: {e}"
-                )
+                Logger.warning(f"[{self.__class__.__name__}] HealingMemoryEmbedder unavailable: {e}")
 
     def _ensure_ml_cache_manager(self) -> None:
         """Ensure CacheStrategyManager is initialized (lazy loading)."""
@@ -165,9 +163,7 @@ class MetaLearningClientMixin:
         # Check rate limits for pattern operations
         if MetaLearningClientMixin._ml_guardrails is not None:
             if not MetaLearningClientMixin._ml_guardrails.check_rate_limit(domain, "pattern"):
-                Logger.warning(
-                    f"[{self.__class__.__name__}] Pattern rate limited for domain: {domain}"
-                )
+                Logger.warning(f"[{self.__class__.__name__}] Pattern rate limited for domain: {domain}")
                 return None
 
         try:
@@ -180,17 +176,13 @@ class MetaLearningClientMixin:
 
                 # Validate domain isolation
                 if MetaLearningClientMixin._ml_guardrails is not None:
-                    if not MetaLearningClientMixin._ml_guardrails.validate_domain_isolation(
-                        domain, pattern
-                    ):
+                    if not MetaLearningClientMixin._ml_guardrails.validate_domain_isolation(domain, pattern):
                         Logger.warning(f"[{self.__class__.__name__}] Cross-domain pattern rejected")
                         return None
 
                     # Check similarity threshold
                     similarity = pattern.get("similarity_score", 0.0)
-                    min_threshold = (
-                        MetaLearningClientMixin._ml_guardrails.guardrails.min_similarity_threshold
-                    )
+                    min_threshold = MetaLearningClientMixin._ml_guardrails.guardrails.min_similarity_threshold
 
                     if similarity < min_threshold:
                         Logger.debug(
@@ -244,9 +236,7 @@ class MetaLearningClientMixin:
         # Check rate limits for pattern operations
         if MetaLearningClientMixin._ml_guardrails is not None:
             if not MetaLearningClientMixin._ml_guardrails.check_rate_limit(domain, "pattern"):
-                Logger.warning(
-                    f"[{self.__class__.__name__}] Pattern rate limited for domain: {domain}"
-                )
+                Logger.warning(f"[{self.__class__.__name__}] Pattern rate limited for domain: {domain}")
                 return None
 
         try:
@@ -415,9 +405,7 @@ class MetaLearningClientMixin:
         if MetaLearningClientMixin._ml_guardrails is None:
             return
 
-        MetaLearningClientMixin._ml_guardrails.reset_healing_depth(
-            self.__class__.__name__, violation_id
-        )
+        MetaLearningClientMixin._ml_guardrails.reset_healing_depth(self.__class__.__name__, violation_id)
 
     # ==================== SIGNATURE GENERATION ====================
 
@@ -497,9 +485,7 @@ class MetaLearningClientMixin:
 
         # Step 1: Check healing depth
         if not self.ml_check_healing_depth(violation_id):
-            Logger.warning(
-                f"[{self.__class__.__name__}] Healing depth limit reached for {violation_id}"
-            )
+            Logger.warning(f"[{self.__class__.__name__}] Healing depth limit reached for {violation_id}")
             return {
                 "status": "skipped",
                 "reason": "healing_depth_limit_reached",
@@ -513,9 +499,7 @@ class MetaLearningClientMixin:
             # Step 3: Try to recall a successful pattern
             cached_pattern = self.ml_recall_healing_pattern(violation)
             if cached_pattern:
-                Logger.info(
-                    f"[{self.__class__.__name__}] Using cached healing pattern for {violation_id}"
-                )
+                Logger.info(f"[{self.__class__.__name__}] Using cached healing pattern for {violation_id}")
                 # Reset depth on successful recall
                 self.ml_reset_healing_depth(violation_id)
                 return {

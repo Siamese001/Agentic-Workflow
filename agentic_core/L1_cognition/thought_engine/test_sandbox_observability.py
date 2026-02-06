@@ -19,8 +19,6 @@ def test_sandbox_observability_events_include_vm_id(self: Any) -> None:
     teardown_vm(vm)
     get_all_events()
     vm_ids: Any = {
-        e.attributes.get("vm_id")
-        for e in events
-        if isinstance(getattr(e, "attributes", None), dict)
+        e.attributes.get("vm_id") for e in events if isinstance(getattr(e, "attributes", None), dict)
     }
     assert vm.id in vm_ids

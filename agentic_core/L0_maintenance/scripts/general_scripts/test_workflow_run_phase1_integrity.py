@@ -9,9 +9,7 @@ import asyncio
 import logging
 from typing import Any
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 Logger: Any = logging.getLogger("Phase1_Integrity_With_L5")
 
 

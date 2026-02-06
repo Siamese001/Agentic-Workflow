@@ -76,7 +76,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        Heal method for L5 safety compliance (HealerProtocol).
+        Heal method for L5 safety compliance (IHealerProtocol).
 
         Args:
             violation: Dict containing violation details
@@ -323,9 +323,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
         # Append new entry and persist
         self.registry[template_name].append(entry)
         self._save_registry()
-        Logger.info(
-            f"Registered: {template_name} {version} (Territory: {territory}, Author: {author})"
-        )
+        Logger.info(f"Registered: {template_name} {version} (Territory: {territory}, Author: {author})")
         print(f"    [REGISTERED] {template_name} {version} (Territory: {territory})")
 
     def get_active_version(self, template_name: str) -> dict[str, Any] | None:
@@ -336,11 +334,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
 
     def list_active_prompts(self) -> list[str]:
         """List all currently active template names for mission planning."""
-        return [
-            name
-            for name, versions in self.registry.items()
-            if any(v.get("active") for v in versions)
-        ]
+        return [name for name, versions in self.registry.items() if any(v.get("active") for v in versions)]
 
 
 class DuplicatePromptError(Exception):

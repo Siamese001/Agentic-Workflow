@@ -195,8 +195,7 @@ class autonomous_execution_engine:
         """Get current execution status"""
         return {
             "running": self.running,
-            "execution_task_active": self._execution_task is not None
-            and not self._execution_task.done(),
+            "execution_task_active": self._execution_task is not None and not self._execution_task.done(),
             "consecutive_failures": self.consecutive_failures,
             "last_mission": self.last_mission_result,
             "execution_interval": self.execution_interval,

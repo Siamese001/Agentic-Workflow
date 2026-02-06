@@ -1,4 +1,4 @@
-from .i_orchestrator_agent_types import (
+from .i_orchestrator_agent_types_config import (
     AgentResult,
     ExecutionContext,
     ExecutionPhase,

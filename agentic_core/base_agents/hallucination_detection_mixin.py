@@ -67,8 +67,7 @@ class HallucinationDetectionMixin:
             self._hallucination_cache[cache_key] = result
             if not result:
                 logger.warning(
-                    f"Hallucination detected: {target_type} '{target_name}' "
-                    f"not found in {file_path}"
+                    f"Hallucination detected: {target_type} '{target_name}' not found in {file_path}"
                 )
             return result
 
@@ -97,15 +96,11 @@ class HallucinationDetectionMixin:
             elif target_type == "import":
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        if alias.name == target_name or (
-                            alias.asname and alias.asname == target_name
-                        ):
+                        if alias.name == target_name or (alias.asname and alias.asname == target_name):
                             return True
                 elif isinstance(node, ast.ImportFrom):
                     for alias in node.names:
-                        if alias.name == target_name or (
-                            alias.asname and alias.asname == target_name
-                        ):
+                        if alias.name == target_name or (alias.asname and alias.asname == target_name):
                             return True
 
             elif target_type == "variable":

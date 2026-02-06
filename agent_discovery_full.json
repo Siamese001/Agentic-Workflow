@@ -2673,8 +2673,8 @@
     "has_metadata": true
   },
   {
-    "class_name": "DecompositionOrchestratorAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\DecompositionOrchestratorAgent.py",
+    "class_name": "DecompositionOrchestrator",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\DecompositionOrchestrator.py",
     "layer": "L3",
     "territory": "L3 Orchestration/DAG",
     "category": "Validator",
@@ -2855,8 +2855,8 @@
     "has_metadata": true
   },
   {
-    "class_name": "SovereignRedisOrchestratorAgent",
-    "path": "agentic_core\\L3_orchestration\\workflow_engines\\SovereignRedisOrchestratorAgent.py",
+    "class_name": "SovereignRedisOrchestrator",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\SovereignRedisOrchestrator.py",
     "layer": "L3",
     "territory": "L3 Orchestration/Workflow",
     "category": "Orchestrator",

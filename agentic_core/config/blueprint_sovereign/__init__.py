@@ -48,7 +48,7 @@ from agentic_core.L5_safety.validators.structure_blueprint_config import (
     ROOT_PROTECTED_FILES,
 )
 
-from .registry import (
+from .registry_util import (
     AGENT_RESILIENCE_CONFIG,
     CORE_SUBFOLDER_MAP,
     GRAVITY_CONFIG,

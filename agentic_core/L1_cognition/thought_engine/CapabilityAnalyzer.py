@@ -44,9 +44,7 @@ class CapabilityAnalyzer:
         if self.enable_logging:
             LOGGER.info("capability_analyzer_initialized")
 
-    def analyze_failures(
-        self, agent_id: str, failure_reports: list[dict[str, Any]]
-    ) -> list[CapabilityGap]:
+    def analyze_failures(self, agent_id: str, failure_reports: list[dict[str, Any]]) -> list[CapabilityGap]:
         """Analyze failure reports to identify capability gaps.
 
         Args:
@@ -68,14 +66,10 @@ class CapabilityAnalyzer:
             self._gap_history[agent_id] = []
         self._gap_history[agent_id].extend(gaps)
         if self.enable_logging:
-            LOGGER.info(
-                "capability_gaps_identified", EXTRA={"agent_id": agent_id, "gap_count": len(gaps)}
-            )
+            LOGGER.info("capability_gaps_identified", EXTRA={"agent_id": agent_id, "gap_count": len(gaps)})
         return gaps
 
-    def generate_recommendations(
-        self, agent_id: str, gaps: list[CapabilityGap]
-    ) -> list[Recommendation]:
+    def generate_recommendations(self, agent_id: str, gaps: list[CapabilityGap]) -> list[Recommendation]:
         """Generate improvement recommendations for capability gaps.
 
         Args:
@@ -100,9 +94,7 @@ class CapabilityAnalyzer:
             )
         return recommendations
 
-    def create_analysis_report(
-        self, agent_id: str, failure_reports: list[dict[str, Any]]
-    ) -> AnalysisReport:
+    def create_analysis_report(self, agent_id: str, failure_reports: list[dict[str, Any]]) -> AnalysisReport:
         """Create complete capability gap analysis report.
 
         Args:

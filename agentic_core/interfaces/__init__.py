@@ -30,6 +30,11 @@ from agentic_core.utils.verification_protocol import (
     VerificationResult,
 )
 
+# Sovereign Protocols (Zero-Ambiguity Standard)
+from agentic_core.interfaces.IHealerProtocol import IHealerProtocol
+from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+from agentic_core.interfaces.IMemoryStoreProtocol import IMemoryStoreProtocol
+
 __all__ = [
     # Verification
     "VerificationGateProtocol",
@@ -49,4 +54,8 @@ __all__ = [
     "MetaLearningProtocol",
     "LearningContext",
     "LearningResult",
+    # Sovereign Protocols (Zero-Ambiguity Standard)
+    "IHealerProtocol",
+    "IOrchestratorProtocol",
+    "IMemoryStoreProtocol",
 ]

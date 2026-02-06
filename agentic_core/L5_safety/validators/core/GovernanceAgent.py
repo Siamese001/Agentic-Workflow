@@ -6,7 +6,7 @@ from __future__ import annotations
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
@@ -67,7 +67,7 @@ except ImportError:
         pass
 
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
@@ -198,9 +198,7 @@ class DependencyGraph:
         self._build_reverse_index()
         self._calculate_dependencies()
         self._built = True
-        LOGGER.info(
-            f"[OK] Code graph built: {len(self.graph)} files, {len(self.class_map)} classes"
-        )
+        LOGGER.info(f"[OK] Code graph built: {len(self.graph)} files, {len(self.class_map)} classes")
 
     def _build_reverse_index(self):
         """Build reverse lookup indices."""
@@ -261,9 +259,7 @@ class DependencyGraph:
                 if current in checked:
                     continue
                 checked.add(current)
-                current_module: Any = (
-                    current.replace("/", ".").replace("\\", ".").replace(".py", "")
-                )
+                current_module: Any = current.replace("/", ".").replace("\\", ".").replace(".py", "")
                 if current_module in self.reverse_graph:
                     for dependent in self.reverse_graph[current_module]:
                         if dependent not in impacted:
@@ -493,9 +489,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
         if not dir_path.name.startswith(".") and dir_path.name not in self.ALLOWED_ROOT_FOLDERS:
             violations.append(f"Unauthorized directory at root: {dir_path.name}")
 
-    def _check_root_file(
-        self, item: Path, violations: list, sanitized: list, auto_sanitize: bool
-    ) -> None:
+    def _check_root_file(self, item: Path, violations: list, sanitized: list, auto_sanitize: bool) -> None:
         """Check if root file is authorized and sanitize if needed."""
         if item.name not in self.ALLOWED_ROOT_FILES:
             violations.append(f"Unauthorized file at root: {item.name}")
@@ -524,9 +518,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
         is_noise = any(pattern in file_path.name.lower() for pattern in noise_patterns)
         if is_noise:
             # DELEGATION: Use ArchivalGatekeeper for safe deletion
-            result = self.gatekeeper.safe_delete(
-                file_path, "GovernanceAgent", "Root noise file cleanup"
-            )
+            result = self.gatekeeper.safe_delete(file_path, "GovernanceAgent", "Root noise file cleanup")
             if result.success:
                 return "DELETED (noise)"
             else:
@@ -707,9 +699,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
                     complexity: Any = self._calculate_mccabe(node)
-                    func_lines: Any = (
-                        node.end_lineno - node.lineno + 1 if hasattr(node, "end_lineno") else 0
-                    )
+                    func_lines: Any = node.end_lineno - node.lineno + 1 if hasattr(node, "end_lineno") else 0
                     if complexity > self.MAX_COMPLEXITY:
                         violations.append(
                             {
@@ -805,9 +795,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
             or report["complexity_violations"]
         )
 
-    def validate_architecture(
-        self, file_paths: list[str] = None, enforce: bool = False
-    ) -> dict[str, Any]:
+    def validate_architecture(self, file_paths: list[str] = None, enforce: bool = False) -> dict[str, Any]:
         """Perform full architecture validation."""
         report = self._create_empty_report()
         report["root_violations"] = self.check_root_hygiene(auto_sanitize=enforce)
@@ -829,9 +817,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
             self._backup_dir.mkdir(parents=True, exist_ok=True)
         return self._backup_dir
 
-    def post_hierarchy_validation(
-        self, file_paths: list[str], dry_run: bool = True
-    ) -> dict[str, Any]:
+    def post_hierarchy_validation(self, file_paths: list[str], dry_run: bool = True) -> dict[str, Any]:
         """Run HierarchyAgent validation after governance fixes."""
         report = {
             "hierarchy_status": "SKIPPED",
@@ -889,9 +875,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
 
         return report
 
-    def cleanup_violations(
-        self, file_paths: list[str] = None, dry_run: bool = True
-    ) -> list[dict[str, Any]]:
+    def cleanup_violations(self, file_paths: list[str] = None, dry_run: bool = True) -> list[dict[str, Any]]:
         """
         GOLD STANDARD CLEANUP ENGINE — Multi-stage autonomous governance.
 
@@ -976,9 +960,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
 
         return actions
 
-    def run_with_cleanup(
-        self, file_paths: list[str] = None, dry_run: bool = True
-    ) -> dict[str, Any]:
+    def run_with_cleanup(self, file_paths: list[str] = None, dry_run: bool = True) -> dict[str, Any]:
         """
         GOLD STANDARD WORKFLOW — Full governance compliance with autonomous cleanup.
         """

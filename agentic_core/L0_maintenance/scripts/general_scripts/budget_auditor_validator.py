@@ -55,10 +55,7 @@ class BudgetAuditor:
         Returns:
             Formatted status string with spending and token counts
         """
-        return (
-            f"${self.spent:.4f} / ${self.limit} "
-            f"({self.input_tokens:.0f} in, {self.output_tokens:.0f} out)"
-        )
+        return f"${self.spent:.4f} / ${self.limit} ({self.input_tokens:.0f} in, {self.output_tokens:.0f} out)"
 
     def get_metrics(self) -> dict[str, float]:
         """Get detailed budget metrics.

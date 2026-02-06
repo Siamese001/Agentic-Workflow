@@ -50,9 +50,7 @@ class SovereignMcpMarketplace:
 
             # L5 sovereignty check: block competitive brains
             if any(forbidden in Provider for forbidden in FORBIDDEN_PROVIDERS):
-                Logger.critical(
-                    f"[L5 MCP BREACH] Forbidden Provider detected: {Provider} — blocked."
-                )
+                Logger.critical(f"[L5 MCP BREACH] Forbidden Provider detected: {Provider} — blocked.")
                 mcp_authority.record_breach(f"Attempted Marketplace Load: {Provider}")
                 continue
 

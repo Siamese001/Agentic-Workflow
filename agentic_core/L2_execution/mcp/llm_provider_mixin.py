@@ -6,7 +6,7 @@ LLMProviderMixin - Unified LLM Access for Agents
 
 from typing import Any, Literal
 
-from agentic_core.L2_execution.mcp.SovereignllmgatewayStrategy import (
+from agentic_core.L2_execution.mcp.SovereignLLMGateway import (
     SovereignLLMGateway,
     get_llm_gateway,
 )

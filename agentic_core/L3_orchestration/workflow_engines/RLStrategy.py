@@ -12,7 +12,7 @@ This module consolidates logic from:
 
 SSOT PRINCIPLE:
     All RL-related orchestration flows through this strategy,
-    which is injected into OrchestratorAgent.
+    which is injected into Orchestrator.
 """
 
 
@@ -38,7 +38,7 @@ class RLStrategy:
 
     Usage:
         strategy = RLStrategy(project_root=Path.cwd())
-        orchestrator = OrchestratorAgent(strategy=strategy)
+        orchestrator = Orchestrator(strategy=strategy)
         result = orchestrator.run_mission({"dry_run": True})
     """
 
@@ -160,9 +160,7 @@ class RLStrategy:
                 "error_message": str(e),
             }
 
-    def should_abort_tier(
-        self, tier_name: str, tier_results: list[dict[str, Any]], execute: bool
-    ) -> bool:
+    def should_abort_tier(self, tier_name: str, tier_results: list[dict[str, Any]], execute: bool) -> bool:
         """
         Determine if execution should abort after a tier.
 

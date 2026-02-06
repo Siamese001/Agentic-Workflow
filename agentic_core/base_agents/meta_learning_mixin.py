@@ -154,9 +154,7 @@ class MetaLearningMixin(BaseMetaLearner):
                         Logger.debug(f"[{self.__class__.__name__}] Connected to Knowledge Graph")
                     except Exception as e:
                         # KG is optional - don't crash, just log
-                        Logger.warning(
-                            f"[{self.__class__.__name__}] Knowledge Graph unavailable: {e}"
-                        )
+                        Logger.warning(f"[{self.__class__.__name__}] Knowledge Graph unavailable: {e}")
 
     def _ensure_graph_bridge_connection(self) -> None:
         """
@@ -173,14 +171,10 @@ class MetaLearningMixin(BaseMetaLearner):
                         )
 
                         MetaLearningMixin._graph_bridge = GraphMemoryBridge.get_instance()
-                        Logger.debug(
-                            f"[{self.__class__.__name__}] Connected to Graph Memory Bridge"
-                        )
+                        Logger.debug(f"[{self.__class__.__name__}] Connected to Graph Memory Bridge")
                     except Exception as e:
                         # Graph bridge is optional - don't crash, just log
-                        Logger.warning(
-                            f"[{self.__class__.__name__}] Graph Memory Bridge unavailable: {e}"
-                        )
+                        Logger.warning(f"[{self.__class__.__name__}] Graph Memory Bridge unavailable: {e}")
 
     def _register_agent_entity(self) -> None:
         """
@@ -269,9 +263,7 @@ class MetaLearningMixin(BaseMetaLearner):
         try:
             result = MetaLearningMixin._memory.recall(context, self._namespace)
             if result:
-                Logger.info(
-                    f"[{self._namespace}] INSTINCT TRIGGERED: Recalled previous experience."
-                )
+                Logger.info(f"[{self._namespace}] INSTINCT TRIGGERED: Recalled previous experience.")
             return result
         except Exception as e:
             Logger.warning(f"[{self._namespace}] Recall error: {e}")
