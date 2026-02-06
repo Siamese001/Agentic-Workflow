@@ -134,7 +134,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "utils": {"purpose": "Cognitive helper functions."},
                     # DISSOLVED: "generators" removed — pitch_generator moved to engine/pitch_engine.py
                     # DISSOLVED: "intent_analysis" removed — files distributed to engine/, types/, L2/config/, L0/scripts/
-                    "memory": {"purpose": "Memory systems (golden context, episodic, semantic)."},
+                    # DISSOLVED: "memory" removed — golden_context_mixin elevated to agentic_core/mixins/
                     "meta_learning": {
                         "purpose": "Meta-learning and self-improvement systems.",
                         "subfolders": {

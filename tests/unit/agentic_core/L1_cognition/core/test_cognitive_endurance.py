@@ -12,7 +12,7 @@ COGNITIVE HARDENING (Feb 2026):
 
 import pytest
 
-from agentic_core.L1_cognition.memory.golden_context_mixin import (
+from agentic_core.mixins.golden_context_mixin import (
     GOLDEN_CONTEXT_SUMMARY,
     GoldenContextMixin,
 )
