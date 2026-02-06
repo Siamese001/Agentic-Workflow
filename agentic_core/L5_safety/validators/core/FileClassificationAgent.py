@@ -149,6 +149,15 @@ class FileClassificationAgent(*BASE_CLASSES):
         # CACHE: Track file paths in memory to avoid repetitive disk scanning (O(1) lookups)
         self.file_registry: list[Path] = []
         self.logger = logging.getLogger(__name__)
+        # UNIFIED ACTION COUNTERS (2026-02-05 HARDENING)
+        # Separate fine-grained trackers to prevent summary vs stats drift
+        self.action_counters = {
+            "renames": 0,
+            "territory_moves": 0,
+            "import_fixes": 0,
+            "deep_refactors": 0,
+            "config_updates": 0,  # Non-python asset refs
+        }
 
     def run(self) -> dict[str, Any]:
         """Entry point for execute_ssot.py orchestration."""
@@ -193,6 +202,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 ):
                     if not self.dry_run:
                         self.stats["territory_moves"] += 1
+                        self.action_counters["territory_moves"] += 1
                         # Update path registry to reflect new location for subsequent operations
                         path = target_territory_path
                         self.file_registry[idx] = path
@@ -209,6 +219,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                     if not self.dry_run:
                         self.stats["renamed"] += 1
                         self.stats["collisions_resolved"] += 1
+                        self.action_counters["renames"] += 1
 
                         # [HARDENED] Update in-memory tracker AFTER successful file operation
                         dest = path.parent / new_name
@@ -235,13 +246,18 @@ class FileClassificationAgent(*BASE_CLASSES):
                                 refactor_count = self.deep_refactor_name(old_stem, new_stem)
                                 self.stats["deep_refactors"] += refactor_count
                                 self.stats["imports_fixed"] += refactor_count
+                                self.action_counters["deep_refactors"] += 1
+                                self.action_counters["import_fixes"] += refactor_count
 
                                 # 4. Refactor Non-Python Assets (Configs/Manifests)
                                 self.refactor_non_python_assets(old_stem, new_stem)
+                                self.action_counters["config_updates"] += 1
 
                             else:
                                 # Standard Import Update for non-architectural renames
-                                self.stats["imports_fixed"] += self.update_imports(path.name, new_name)
+                                import_count = self.update_imports(path.name, new_name)
+                                self.stats["imports_fixed"] += import_count
+                                self.action_counters["import_fixes"] += import_count
                         else:
                             # File was deleted due to duplicate content - remove from registry
                             self.file_registry[idx] = None
@@ -275,11 +291,16 @@ class FileClassificationAgent(*BASE_CLASSES):
         self.logger.info(f"  - Configs: {self.stats['violations']['CONFIG']}")
         self.logger.info(f"  - Adapters: {self.stats['violations']['ADAPTER']}")
         if not self.dry_run:
-            self.logger.info(f"Files Renamed:        {self.stats['renamed']}")
-            self.logger.info(f"Deep Refactors:       {self.stats['deep_refactors']}")
-            self.logger.info(f"Imports Fixed:        {self.stats['imports_fixed']}")
-            self.logger.info(f"Collisions Resolved:  {self.stats['collisions_resolved']}")
-            self.logger.info(f"Territory Moves:      {self.stats['territory_moves']}")
+            self.logger.info("\n=== FINAL HEALING SUMMARY ===")
+            self.logger.info(f"Files Analyzed:     {self.stats['analyzed']}")
+            self.logger.info(f"Compliant:          {self.stats['compliant']}")
+            self.logger.info(f"Renames:            {self.action_counters['renames']}")
+            self.logger.info(f"Territory Moves:    {self.action_counters['territory_moves']}")
+            self.logger.info(f"Import Fixes:       {self.action_counters['import_fixes']}")
+            self.logger.info(f"Deep Refactors:     {self.action_counters['deep_refactors']}")
+            self.logger.info(f"Config Updates:     {self.action_counters['config_updates']}")
+            self.logger.info(f"Total Actions:      {sum(self.action_counters.values())}")
+            self.logger.info("=" * 60)
 
         # Critical Analysis: Returning exit 1 on violations ensures git hooks
         # block non-compliant commits.
@@ -1697,20 +1718,48 @@ class FileClassificationAgent(*BASE_CLASSES):
         if file_type in {"IGNORE", "TYPES", "UTILITY"}:
             return None
 
+        # SSOT IMMUNITY LIST (2026-02-05)
+        # Known sovereign configuration/blueprint files - immune to renaming
+        immune_paths = {
+            "structure_blueprint_config.py",
+            "file_classification_healing_manifest.json",  # Prevent self-mutation
+        }
+        if path.name in immune_paths:
+            self.logger.info(f"[IMMUNE] Skipping rename for SSOT file: {path.name}")
+            return None
+
         # SCRIPT: Force Snake Case
         if file_type == "SCRIPT":
             snake = self._to_smart_snake_case(path.stem)
             return f"{snake}.py" if f"{snake}.py" != path.name else None
 
-        # CONSOLIDATED GUARDRAILS NAMING CONVENTION
+        # CONSOLIDATED GUARDRAILS NAMING CONVENTION ENFORCEMENT
         if file_type == "AGENT" and "guardrails" in path.parts:
-            base_name = (
-                path.stem.removesuffix("Agent")
-                .removesuffix("Membrane")
-                .removesuffix("Strategy")
-                .removesuffix("Handler")
-                .removesuffix("Types")
-            )
+            # FINAL STABILITY HARDENING (2026-02-05)
+            # Get target_name from AST for accurate comparison
+            try:
+                tree = ast.parse(path.read_text(encoding="utf-8"))
+                classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+                target_name = classes[0] if classes else path.stem
+            except Exception:
+                target_name = path.stem
+
+            # 1. If already perfectly compliant → skip entirely
+            if path.name.endswith("_agent.py"):
+                # Optional: check if base name matches primary class (extra safety)
+                expected_base = self._to_smart_snake_case(target_name.removesuffix("Agent"))
+                if path.stem == f"{expected_base}_agent":
+                    self.logger.info(f"[GUARDRAILS PERFECT] No rename needed: {path.name}")
+                    return None
+                # If mismatch but ends with _agent.py → still skip to avoid oscillation
+                self.logger.info(f"[GUARDRAILS COMPLIANT] Skipping rename (already _agent.py): {path.name}")
+                return None
+
+            # 2. Strip only known legacy/mixed suffixes (preserve semantics)
+            base_name = target_name.removesuffix("Agent").removesuffix("Strategy").removesuffix("Handler")
+            # Preserve meaningful terms like Membrane, Sentinel, Governor
+            # Do NOT strip them — they are part of the sovereign identity
+
             snake_name = self._to_smart_snake_case(base_name)
             return f"{snake_name}_agent.py"
 
@@ -1718,6 +1767,41 @@ class FileClassificationAgent(*BASE_CLASSES):
         if file_type == "TEST":
             clean = re.sub(r"(?<!^)(?=[A-Z])", "_", path.stem.replace("test_", "")).lower()
             return f"test_{clean}.py" if f"test_{clean}.py" != path.name else None
+
+        # CONFIG STANDARDIZATION HARDENING (SEMANTIC PRESERVATION 2026-02-05)
+        if file_type == "CONFIG":
+            # CONSERVATIVE APPROACH: Only enforce _config.py suffix
+            # Do NOT strip meaningful terms or rewrite base name aggressively
+            # Rationale: CONFIG files often use dataclasses/TypedDict without strong primary class
+            #           Aggressive stripping causes semantic loss (e.g., gateway_factory → gateway_bundle)
+            if path.name.endswith("_config.py"):
+                self.logger.info(f"[CONFIG COMPLIANT] Skipping rename (already _config.py): {path.name}")
+                return None
+
+            # Use filename stem as base (preserves existing meaningful name)
+            base_name = path.stem
+            # Minimal cleanup: only remove legacy/mixed suffixes if present
+            base_name = (
+                base_name.removesuffix("_agent")
+                .removesuffix("_validator")
+                .removesuffix("Config")
+                .removesuffix("Agent")
+            )
+            snake_name = self._to_smart_snake_case(base_name)
+            return f"{snake_name}_config.py"
+
+        # VALIDATOR HARDENING (similar conservative approach)
+        if file_type == "VALIDATOR":
+            if path.name.endswith("_validator.py"):
+                self.logger.info(
+                    f"[VALIDATOR COMPLIANT] Skipping rename (already _validator.py): {path.name}"
+                )
+                return None
+
+            base_name = path.stem
+            base_name = base_name.removesuffix("Validator").removesuffix("Agent")
+            snake_name = self._to_smart_snake_case(base_name)
+            return f"{snake_name}_validator.py"
 
         # --- MIXIN STANDARDIZATION ---
         # Logic: Forces Mixins to snake_case.
@@ -1794,17 +1878,15 @@ class FileClassificationAgent(*BASE_CLASSES):
                 if not target_name.endswith("Factory"):
                     target_name += "Factory"
 
+            # VALIDATOR and CONFIG are now handled earlier with conservative approach
+            # These elif blocks are kept for fallback but should not be reached
             elif file_type == "VALIDATOR":
-                # Force snake_case and ensure validator suffix
-                target_name = self._to_smart_snake_case(target_name)
-                if not target_name.endswith("_validator"):
-                    target_name += "_validator"
+                # Fallback: should be handled by early return above
+                pass
 
             elif file_type == "CONFIG":
-                # Force snake_case and ensure config suffix
-                target_name = self._to_smart_snake_case(target_name)
-                if not target_name.endswith("_config"):
-                    target_name += "_config"
+                # Fallback: should be handled by early return above
+                pass
 
             # Note: TEST handling is done earlier in the method (before AST parsing)
 
@@ -1937,15 +2019,21 @@ class FileClassificationAgent(*BASE_CLASSES):
             # Execute the sovereignty audit on the scoped root
             exit_code = self._orchestrate_audit(scan_root)
 
-            # Calculate violations based on stats
+            # UNIFIED HEALING RESULT CALCULATION
             total_violations = sum(self.stats["violations"].values())
-            violations_fixed = self.stats["renamed"] + self.stats["collisions_resolved"]
+            violations_fixed = (
+                self.action_counters["renames"]
+                + self.action_counters["territory_moves"] * 2  # Move counts as find+fix
+                + self.action_counters["import_fixes"]
+                + self.action_counters["deep_refactors"]
+            )
 
             return {
                 "violations_found": total_violations,
                 "violations_fixed": violations_fixed,
                 "errors": 0 if exit_code == 0 else 1,
                 "skipped": 0,
+                "action_counters": self.action_counters,  # Include for external tracking
             }
 
         except Exception as e:  # guardian: allow-silent_swallower
