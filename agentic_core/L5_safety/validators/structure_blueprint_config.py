@@ -129,7 +129,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "validators": {"purpose": "Cognitive validation logic (consensus, reasoning checks)."},
                     "utils": {"purpose": "Cognitive helper functions."},
                     # DISSOLVED: "generators" removed — pitch_generator moved to engine/pitch_engine.py
-                    "intent_analysis": {"purpose": "Intent classification and analysis."},
+                    # DISSOLVED: "intent_analysis" removed — files distributed to engine/, types/, L2/config/, L0/scripts/
                     "memory": {"purpose": "Memory systems (golden context, episodic, semantic)."},
                     "meta_learning": {"purpose": "Meta-learning and self-improvement systems."},
                 },
@@ -441,7 +441,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                             ],
                             "L1_cognition": [
                                 "thought_engine",
-                                "intent_analysis",
+                                # DISSOLVED: "intent_analysis" removed
                                 "memory",
                                 "meta_learning",
                                 "core",
@@ -1486,7 +1486,7 @@ CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
     "L1_cognition/thought_engine": {
         "primary": frozenset({"think", "reason", "plan", "decompose", "critique", "reflect"}),
     },
-    "L1_cognition/intent_analysis": {"primary": frozenset({"intent", "goal", "understand", "parse", "user"})},
+    # DISSOLVED: "L1_cognition/intent_analysis" removed
     "L2_execution/tool_registry": {"primary": frozenset({"tool", "execute", "call", "registry", "runner"})},
     "L2_execution/mcp": {"primary": frozenset({"mcp", "client", "fetch", "protocol"})},
     "L3_orchestration/workflow_engines": {
@@ -2866,14 +2866,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "decorator_signals": ["@thought_node", "@reasoning_step"],
         "weight": 15,  # Domain Logic tier
     },
-    "agentic_core/L1_cognition/intent_analysis": {
-        "class_patterns": [".*Intent.*", ".*Parser.*", ".*Classifier.*"],
-        "base_classes": ["IntentClassifier", "QueryParser"],
-        "function_patterns": ["parse_intent.*", "classify_.*", "extract_intent.*"],
-        "import_signals": ["intent", "classification"],
-        "keyword_signals": ["intent", "classify", "parse", "extract", "query"],
-        "weight": 15,
-    },
+    # DISSOLVED: "agentic_core/L1_cognition/intent_analysis" removed
     "agentic_core/L1_cognition/planning": {
         "class_patterns": [".*Planner.*", ".*Strategy.*", ".*Plan.*"],
         "base_classes": ["BasePlanner", "StrategyPlanner"],
@@ -3096,7 +3089,7 @@ PLACEMENT_CONFIDENCE = {
 # For quick parent resolution
 L2_TO_L1_MAP: Final[Mapping[str, str]] = {
     "thought_engine": "L1_cognition",
-    "intent_analysis": "L1_cognition",
+    # DISSOLVED: "intent_analysis" removed
     "planning": "L1_cognition",
     "tool_registry": "L2_execution",
     "action_handlers": "L2_execution",
@@ -3817,43 +3810,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "ReActAgentStep",
             ],
         },
-        "intent_analysis": {
-            "purpose": "User intent detection, goal extraction, multi-turn request classification, ambiguity resolution, and command parsing",
-            "entity_types": ["Class", "Function"],
-            "keywords": [
-                "intent",
-                "goal",
-                "objective",
-                "request",
-                "classify",
-                "detect",
-                "extract",
-                "parse",
-                "understand",
-                "ambiguity",
-                "user_goal",
-                "TaskType",
-                "command",
-                "query_type",
-                "multi_turn",
-                "conversation",
-            ],
-            "imports": [
-                "agentic_core.L1_cognition.intent_analysis",
-                "google.genai",
-                "re",
-                "pydantic",
-            ],
-            "bases": ["IntentClassifier", "GoalExtractor", "RequestParser", "AmbiguityResolver"],
-            "examples": [
-                "IntentClassifier",
-                "GoalDecomposer",
-                "AmbiguityResolver",
-                "UserRequestParser",
-                "TaskTypeDetector",
-                "MultiTurnIntentTracker",
-            ],
-        },
+        # DISSOLVED: "intent_analysis" removed — distributed to engine/, types/, L2/config/, L0/scripts/
         "planning": {
             "purpose": "Mission decomposition, strategy formulation, step sequencing, dependency mapping, plan validation, and execution roadmap generation",
             "entity_types": ["Class", "Function"],
