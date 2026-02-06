@@ -185,9 +185,7 @@ class tool_registry:
             reasons.append(f"semantic similarity ({similarity:.2f})")
         return "; ".join(reasons)
 
-    async def get_tool_recommendations(
-        self, Task: str, context: dict[str, Any] | None = None
-    ) -> str:
+    async def get_tool_recommendations(self, Task: str, context: dict[str, Any] | None = None) -> str:
         """
         Get natural language tool recommendations for a Task.
 
@@ -217,9 +215,7 @@ class tool_registry:
         """Get a tool by name."""
         return self.tools.get(name)
 
-    def list_tools(
-        self, category: str | None = None, tags: list[str] | None = None
-    ) -> list[ToolDefinition]:
+    def list_tools(self, category: str | None = None, tags: list[str] | None = None) -> list[ToolDefinition]:
         """List all tools, optionally filtered."""
         tools_list: Any = list(self.tools.values())
         if category:
@@ -268,12 +264,8 @@ class tool_registry:
         return {
             "total_tools": len(self.tools),
             "categories": categories_count,
-            "most_used": max(self.tools.values(), key=lambda t: t.usage_count).name
-            if self.tools
-            else None,
-            "avg_success_rate": np.mean([t.success_rate for t in self.tools.values()])
-            if self.tools
-            else 0.0,
+            "most_used": max(self.tools.values(), key=lambda t: t.usage_count).name if self.tools else None,
+            "avg_success_rate": np.mean([t.success_rate for t in self.tools.values()]) if self.tools else 0.0,
         }
 
 

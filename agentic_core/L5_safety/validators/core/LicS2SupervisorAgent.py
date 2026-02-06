@@ -159,9 +159,7 @@ class LicS2SupervisorAgent(SovereignBaseAgent):
                     if validation.get("staleness_warning"):
                         staleness_warnings.append(validation["staleness_warning"])
                 elif entity["type"] == "initiative":
-                    validation = await self.organization_agent.validate_initiative(
-                        entity["name"], mission
-                    )
+                    validation = await self.organization_agent.validate_initiative(entity["name"], mission)
                     rag_results.extend(validation["rag_results"])
                     if validation.get("staleness_warning"):
                         pass
@@ -246,9 +244,7 @@ class LicS2SupervisorAgent(SovereignBaseAgent):
     async def _run_adversarial_check(self, context: ResearchContext) -> List[str]:
         # ... (rest of the code remains the same)
 
-        rag_summary = "\n".join(
-            [f"- {r.SourceType}: {r.text[:100]}..." for r in context.rag_results[:10]]
-        )
+        rag_summary = "\n".join([f"- {r.SourceType}: {r.text[:100]}..." for r in context.rag_results[:10]])
 
         critique_prompt = f"""You are an adversarial reviewer. Review the following research findings and identify any weak or unsupported claims:
 
@@ -264,13 +260,9 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
 
         loop = asyncio.get_event_loop()
         try:
-            findings_text = await loop.run_in_executor(
-                None, self.llm_client.generate, critique_prompt
-            )
+            findings_text = await loop.run_in_executor(None, self.llm_client.generate, critique_prompt)
 
-            findings = [
-                f.strip() for f in findings_text.split("\n") if f.strip() and len(f.strip()) > 10
-            ]
+            findings = [f.strip() for f in findings_text.split("\n") if f.strip() and len(f.strip()) > 10]
 
             return findings[:3]
 
@@ -287,8 +279,7 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
             text_lower = result.text.lower()
 
             if any(
-                marker in text_lower
-                for marker in ["team member", "colleague", "worked with", "collaborator"]
+                marker in text_lower for marker in ["team member", "colleague", "worked with", "collaborator"]
             ):
                 names = self._extract_names_from_text(result.text)
                 grounding.team_members.extend(names)
@@ -297,20 +288,15 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
                         "team_members", []
                     ) + [result.text[:200]]
 
-            if any(
-                marker in text_lower for marker in ["product", "platform", "solution", "service"]
-            ):
+            if any(marker in text_lower for marker in ["product", "platform", "solution", "service"]):
                 products = self._extract_capitalized_phrases(result.text)
                 grounding.products.extend(products)
                 if products:
-                    grounding.raw_evidence["products"] = grounding.raw_evidence.get(
-                        "products", []
-                    ) + [result.text[:200]]
+                    grounding.raw_evidence["products"] = grounding.raw_evidence.get("products", []) + [
+                        result.text[:200]
+                    ]
 
-            if any(
-                marker in text_lower
-                for marker in ["client", "customer", "case study", "project for"]
-            ):
+            if any(marker in text_lower for marker in ["client", "customer", "case study", "project for"]):
                 cases = self._extract_capitalized_phrases(result.text)
                 grounding.case_studies.extend(cases)
                 if cases:
@@ -358,19 +344,14 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
         all_text = " ".join([r.text for r in context.rag_results]).lower()
 
         if provisional_analysis.Archetype != Archetype.C_LEVEL:
-            if any(
-                term in all_text
-                for term in ["strategic vision", "board member", "company direction"]
-            ):
+            if any(term in all_text for term in ["strategic vision", "board member", "company direction"]):
                 critique = "RAG evidence suggests C_LEVEL status (strategic indicators)"
                 provisional_analysis.Archetype = Archetype.C_LEVEL
                 provisional_analysis.confidence = 0.90
                 provisional_analysis.critique_history.append(critique)
 
         if provisional_analysis.Archetype != Archetype.RECRUITER:
-            if any(
-                term in all_text for term in ["talent acquisition", "hiring manager", "recruitment"]
-            ):
+            if any(term in all_text for term in ["talent acquisition", "hiring manager", "recruitment"]):
                 critique = "RAG evidence suggests RECRUITER role (hiring indicators)"
                 provisional_analysis.Archetype = Archetype.RECRUITER
                 provisional_analysis.confidence = 0.88

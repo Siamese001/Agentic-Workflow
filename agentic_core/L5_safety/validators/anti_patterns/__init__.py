@@ -9,7 +9,7 @@ Guardian integration for detecting and preventing Phase 2 landmine anti-patterns
 - Global Mutation: Runtime sys.path or os.environ modifications
 """
 
-from .base_detector import (
+from .base_detector_config import (
     AntiPatternDetector,
     AntiPatternViolation,
     EnforcementLevel,

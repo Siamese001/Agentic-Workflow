@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -46,7 +46,7 @@ from pathlib import Path
 from threading import Lock
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
@@ -209,9 +209,7 @@ class TracingAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
 
             endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
             if endpoint:
-                resource = Resource(
-                    attributes={SERVICE_NAME: "sovereign-agentic", SERVICE_VERSION: "v2.9"}
-                )
+                resource = Resource(attributes={SERVICE_NAME: "sovereign-agentic", SERVICE_VERSION: "v2.9"})
                 Provider = TracerProvider(resource=resource)
                 processor = BatchSpanProcessor(OTLPSpanExporter(endpoint=endpoint, insecure=True))
                 Provider.add_span_processor(processor)
@@ -219,9 +217,7 @@ class TracingAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
                 tracer = otel_trace.get_tracer("sovereign.tracing")
                 Logger.info(f"[TracingAgent] OTLP export enabled: {endpoint}")
             else:
-                Logger.info(
-                    "[TracingAgent] Using mock Provider (OTEL_EXPORTER_OTLP_ENDPOINT not set)"
-                )
+                Logger.info("[TracingAgent] Using mock Provider (OTEL_EXPORTER_OTLP_ENDPOINT not set)")
         except Exception as e:
             Logger.warning(f"[TracingAgent] OTLP setup failed — using mock tracer: {e}")
 
@@ -238,9 +234,7 @@ class TracingAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
             try:
                 self.export_path.mkdir(parents=True, exist_ok=True)
             except Exception as e:
-                Logger.error(
-                    f"[TracingAgent] Failed to create export directory {self.export_path}: {e}"
-                )
+                Logger.error(f"[TracingAgent] Failed to create export directory {self.export_path}: {e}")
                 self.export_path = None
 
     def _get_export_filepath(self, trace_id: str | None = None) -> Path | None:
@@ -436,9 +430,7 @@ class TracingAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
         self.force_sample_trace(trace_id)
 
         attributes = {"mission_id": mission_id, "agent": "ComplianceOrchestratorAgent"}
-        with self.create_span(
-            "full_compliance_mission", trace_id, attributes=attributes
-        ) as root_span:
+        with self.create_span("full_compliance_mission", trace_id, attributes=attributes) as root_span:
             try:
                 yield root_span, trace_id
             finally:
@@ -448,7 +440,7 @@ class TracingAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        Heal a specific violation (HealerProtocol compliance).
+        Heal a specific violation (IHealerProtocol compliance).
 
         Args:
             violation: Dict containing violation details

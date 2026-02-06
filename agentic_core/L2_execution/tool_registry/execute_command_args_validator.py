@@ -167,13 +167,9 @@ def execute_with_timeout(
         )
         return result
     except subprocess.TimeoutExpired as e:
-        raise ExecutionTimeoutError(
-            f"Command timed out after {timeout}s: {' '.join(command)}"
-        ) from e
+        raise ExecutionTimeoutError(f"Command timed out after {timeout}s: {' '.join(command)}") from e
     except subprocess.CalledProcessError as e:
-        raise ExecutionError(
-            f"Command failed with exit code {e.returncode}: {' '.join(command)}"
-        ) from e
+        raise ExecutionError(f"Command failed with exit code {e.returncode}: {' '.join(command)}") from e
 
 
 def execute_command(args: ExecuteCommandArgs) -> tuple[int, str, str]:
@@ -224,9 +220,7 @@ def check_tool_installed(tool_name: str) -> bool:
         return False
     for command in ALLOWED_COMMANDS[tool_name]:
         try:
-            result: Any = safe_execute(
-                [command, "--version"], capture_output=True, timeout=5, check=False
-            )
+            result: Any = safe_execute([command, "--version"], capture_output=True, timeout=5, check=False)
             if result.returncode == 0:
                 return True
         except (subprocess.TimeoutExpired, FileNotFoundError):
@@ -234,9 +228,7 @@ def check_tool_installed(tool_name: str) -> bool:
     return False
 
 
-def run_linter(
-    tool: str, target_path: str = ".", extra_args: list[str] | None = None
-) -> tuple[bool, str]:
+def run_linter(tool: str, target_path: str = ".", extra_args: list[str] | None = None) -> tuple[bool, str]:
     """
     Run a linter tool on the codebase.
     Args:
@@ -255,9 +247,7 @@ def run_linter(
         args.extend(extra_args)
     args.append(target_path)
     try:
-        result: Any = execute_with_timeout(
-            command=args, timeout=120, capture_output=True, check=False
-        )
+        result: Any = execute_with_timeout(command=args, timeout=120, capture_output=True, check=False)
         success: Any = result.returncode == 0
         output: Any = result.stdout if result.stdout else result.stderr
         return (success, output)

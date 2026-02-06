@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Implementation for ContextCurator."""
@@ -25,9 +25,7 @@ class ContextCurator(AtomicExecutionMixin, SovereignBaseAgent):
     - Automatic pruning
     """
 
-    def __init__(
-        self, max_tokens: int = 8000, reserved_tokens: int = 1000, enable_logging: bool = True
-    ):
+    def __init__(self, max_tokens: int = 8000, reserved_tokens: int = 1000, enable_logging: bool = True):
         """Initialize context curator.
 
         Args:
@@ -289,7 +287,5 @@ def _run_self_tests(self) -> dict:
         results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
     except AssertionError as e:
         results["failed"] += 1
-        results[TESTS_DIR].append(
-            {"name": "test_instantiation", "status": "failed", "error": str(e)}
-        )
+        results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
     return results

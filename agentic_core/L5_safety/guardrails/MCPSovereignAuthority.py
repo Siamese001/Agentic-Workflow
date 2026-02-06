@@ -38,16 +38,12 @@ class MCPSovereignAuthority:
         forbidden_sdks: Any = {"openai", "anthropic", "cohere", "mistral"}
         if tool_name in forbidden_sdks:
             self.record_breach(f"FORBIDDEN SDK CALL: {tool_name}")
-            raise PermissionError(
-                "Sovereignty Shield: Competitive LLM providers are eternally blocked."
-            )
+            raise PermissionError("Sovereignty Shield: Competitive LLM providers are eternally blocked.")
         if tool_name == "fetch":
             url: Any = args.get("url", "")
             if url and (not url.startswith("https://")):
                 if not url.startswith("http://"):
-                    raise PermissionError(
-                        "Sovereignty Shield: Fetch only allowed over secure https/http."
-                    )
+                    raise PermissionError("Sovereignty Shield: Fetch only allowed over secure https/http.")
         if tool_name in {"brave_search", "fetch", "playwright"}:
             query: Any = args.get("query") or args.get("url", "")
             if len(str(query)) > 1000:
@@ -58,9 +54,7 @@ class MCPSovereignAuthority:
         if tool_name in {"sequential_thinking", "gemini_policy_enforcer"}:
             max_steps: Any = args.get("max_steps", 0)
             if max_steps > 15:
-                raise ValueError(
-                    "Sequential thinking request exceeds sovereign safety limit (15 steps)."
-                )
+                raise ValueError("Sequential thinking request exceeds sovereign safety limit (15 steps).")
             Task: Any = args.get("Task") or args.get("Violation", "")
             if len(str(Task)) > 2000:
                 raise ValueError("L1 cognitive tool input too long — reasoning overflow risk.")
@@ -77,9 +71,7 @@ class MCPSovereignAuthority:
         if tool_name in {"l0_cleanup", "l0_diagnostics"}:
             target: Any = args.get("target") or args.get("scope", "")
             if not target or ".." in str(target) or str(target).startswith("/"):
-                raise PermissionError(
-                    f"L0 tool target '{target}' invalid — path traversal blocked."
-                )
+                raise PermissionError(f"L0 tool target '{target}' invalid — path traversal blocked.")
             allowed_prefixes: Any = {"L0_maintenance", "logs", "benchmarks", "apps_shared"}
             if not any(str(target).startswith(p) for p in allowed_prefixes):
                 raise PermissionError("L0 tool target outside sovereign maintenance zones.")
@@ -93,9 +85,7 @@ class MCPSovereignAuthority:
         if tool_name in {"create_entities", "add_observations"}:
             if len(args.get("entities", [])) > 20 or len(args.get("observations", [])) > 50:
                 raise ValueError("Memory write batch exceeds sovereign safety limit.")
-            if any(
-                bad in str(args).lower() for bad in ["delete_all", "drop_graph", "reset_memory"]
-            ):
+            if any(bad in str(args).lower() for bad in ["delete_all", "drop_graph", "reset_memory"]):
                 raise PermissionError("Destructive memory operation blocked by L5 shield.")
         if tool_name in {"read_wiki_structure", "read_wiki_contents", "ask_question"}:
             repo: Any = args.get("repo", "")
@@ -120,9 +110,7 @@ class MCPSovereignAuthority:
             if path and (not any(str(path).startswith(p) for p in allowed_roots)):
                 raise PermissionError(f"L4 Breach: Attempted write outside sovereign roots: {path}")
         if not self.is_authorized():
-            raise PermissionError(
-                "MCP Sovereign Shield active: Tool call blocked due to chronic breaches."
-            )
+            raise PermissionError("MCP Sovereign Shield active: Tool call blocked due to chronic breaches.")
 
 
 mcp_authority: Any = MCPSovereignAuthority()

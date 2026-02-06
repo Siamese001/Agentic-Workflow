@@ -19,9 +19,7 @@ class CachedSafetyShield(SovereignBaseAgent):
         key = f"l5_{category}:{self.session_id}:{hashlib.sha256(identifier.encode()).hexdigest()}"
         return self.cache_get(key)
 
-    def store_verdict(
-        self, category: str, identifier: str, verdict: dict, ttl: int = 86400
-    ) -> None:
+    def store_verdict(self, category: str, identifier: str, verdict: dict, ttl: int = 86400) -> None:
         key = f"l5_{category}:{self.session_id}:{hashlib.sha256(identifier.encode()).hexdigest()}"
         verdict["timestamp"] = __import__("datetime").datetime.now().isoformat()
         self.cache_set(key, verdict, ttl=ttl)

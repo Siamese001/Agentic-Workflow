@@ -26,7 +26,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
@@ -54,9 +54,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self.project_root = project_root or Path.cwd()
         self.violations: list[dict[str, Any]] = []
 
-    async def audit_mcp_call(
-        self, operation: str, client_name: str, config: dict[str, Any]
-    ) -> bool:
+    async def audit_mcp_call(self, operation: str, client_name: str, config: dict[str, Any]) -> bool:
         """
         Audit a single MCP call for compliance.
 

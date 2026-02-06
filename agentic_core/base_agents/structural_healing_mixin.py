@@ -82,9 +82,7 @@ class StructuralHealingMixin:
 
             # Check line count
             if structure_info["line_count"] > self.max_lines_per_file:
-                structure_info["issues"].append(
-                    f"File too large: {structure_info['line_count']} lines"
-                )
+                structure_info["issues"].append(f"File too large: {structure_info['line_count']} lines")
 
             # Check for syntax errors
             try:

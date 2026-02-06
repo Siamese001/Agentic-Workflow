@@ -91,7 +91,5 @@ class SecretsManagementMixin:
         Trigger a rotation for a compromised or expired secret.
         (Placeholder for future Vault integration)
         """
-        self._sm_logger.warning(
-            f"Secret rotation requested for '{key}' - Not implemented in EnvVar mode"
-        )
+        self._sm_logger.warning(f"Secret rotation requested for '{key}' - Not implemented in EnvVar mode")
         return False

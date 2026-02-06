@@ -13,9 +13,7 @@ from typing import Any
 
 from agentic_core.action_node_modules import ActionNodeCore, SecureToolsImpl
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 Logger: Any = logging.getLogger("ActionNode")
 
 

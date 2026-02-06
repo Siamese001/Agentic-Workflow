@@ -6,7 +6,7 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 
@@ -126,12 +126,8 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         )
         self.phases = self._phase_execution.phases
 
-        self._architecture_governance = NervousSystemArchitectureGovernance(
-            self.ArchitectureGovernor, LOGGER
-        )
-        self._intervention_manager = NervousSystemInterventionManager(
-            self.InterventionServer, LOGGER
-        )
+        self._architecture_governance = NervousSystemArchitectureGovernance(self.ArchitectureGovernor, LOGGER)
+        self._intervention_manager = NervousSystemInterventionManager(self.InterventionServer, LOGGER)
 
         self._phase_orchestrator = NervousSystemPhaseOrchestratorAgent(  # New orchestrator
             self._phase_execution,
@@ -202,9 +198,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         # Enforce max concurrent
         if len(self.coverage_bias_state) >= self.max_concurrent_biases:
-            lowest_layer = min(
-                self.coverage_bias_state, key=lambda k: self.coverage_bias_state[k]["weight"]
-            )
+            lowest_layer = min(self.coverage_bias_state, key=lambda k: self.coverage_bias_state[k]["weight"])
             del self.coverage_bias_state[lowest_layer]
 
         self.coverage_bias_state[layer] = {
@@ -216,9 +210,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     def _decay_biases(self) -> None:
         """Decrement and cleanup expired biases with dynamic decay based on health."""
-        expired = [
-            l for l, info in self.coverage_bias_state.items() if info["remaining_cycles"] <= 0
-        ]
+        expired = [l for l, info in self.coverage_bias_state.items() if info["remaining_cycles"] <= 0]
         for l in expired:
             del self.coverage_bias_state[l]
 
@@ -363,9 +355,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # Execute the mission
         return await self.execute(context, resume_phase=resume_phase)
 
-    async def execute(
-        self, context: ExecutionContext, resume_phase: str | None = None
-    ) -> ExecutionResult:
+    async def execute(self, context: ExecutionContext, resume_phase: str | None = None) -> ExecutionResult:
         """Execute mission through phase-based execution.
 
         Args:
@@ -510,9 +500,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         Returns:
             Dictionary with impact analysis
         """
-        return await self._architecture_governance.get_impact_radius(
-            modified_files, self._modified_files
-        )
+        return await self._architecture_governance.get_impact_radius(modified_files, self._modified_files)
 
     def validate_architecture(self, file_paths: list[str] = None) -> dict[str, Any]:
         """
@@ -575,9 +563,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 for path in valid_files:
                     result = self.hierarchy_agent.validate_file_hierarchy(path)
                     if not result.get("is_valid", True):
-                        hierarchy_violations.append(
-                            {"file": str(path), "issue": result.get("message", "")}
-                        )
+                        hierarchy_violations.append({"file": str(path), "issue": result.get("message", "")})
                 report["hierarchy_validation"] = {
                     "violations": hierarchy_violations,
                     "status": "FULL_SUCCESS" if not hierarchy_violations else "NEEDS_REVIEW",
@@ -651,10 +637,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
             try:
                 # Route to appropriate agent based on violation type
                 if violation.file_path and self.location_agent:
-                    if (
-                        "LOCATION" in violation.message.upper()
-                        or "TERRITORY" in violation.message.upper()
-                    ):
+                    if "LOCATION" in violation.message.upper() or "TERRITORY" in violation.message.upper():
                         cleanup_result = self.location_agent.cleanup_violations(
                             [(violation.file_path, violation.message)], dry_run=dry_run
                         )
@@ -672,10 +655,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             if not dry_run:
                                 affected_paths.append(violation.file_path)
 
-                    elif (
-                        "IMPORT" in violation.message.upper()
-                        or "GRAVITY" in violation.message.upper()
-                    ):
+                    elif "IMPORT" in violation.message.upper() or "GRAVITY" in violation.message.upper():
                         if self.import_agent:
                             cleanup_result = self.import_agent.cleanup_violations(
                                 [(violation.file_path, violation.message)], dry_run=dry_run
@@ -722,9 +702,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         # Run post-phase validation for all phases
         for phase_name in self.phases.keys():
-            validation_report = self.post_phase_validation(
-                phase_name, affected_paths, dry_run=dry_run
-            )
+            validation_report = self.post_phase_validation(phase_name, affected_paths, dry_run=dry_run)
 
             # Convert validation issues to PhaseViolation objects
             for loc_viol in validation_report.get("location_validation", {}).get("violations", []):
@@ -737,17 +715,13 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         severity=5,
                     )
                 )
-            for hier_viol in validation_report.get("hierarchy_validation", {}).get(
-                "violations", []
-            ):
+            for hier_viol in validation_report.get("hierarchy_validation", {}).get("violations", []):
                 all_violations.append(
                     PhaseViolation(
                         phase_name=phase_name,
                         is_valid=False,
                         message=hier_viol.get("issue", "Hierarchy violation"),
-                        file_path=Path(hier_viol.get("file", ""))
-                        if hier_viol.get("file")
-                        else None,
+                        file_path=Path(hier_viol.get("file", "")) if hier_viol.get("file") else None,
                         severity=4,
                     )
                 )
@@ -763,9 +737,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 )
 
         # Cleanup violations
-        cleanup_results = (
-            self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
-        )
+        cleanup_results = self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
         batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}
 
         return {

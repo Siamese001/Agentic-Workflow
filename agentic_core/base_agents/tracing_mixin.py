@@ -96,9 +96,7 @@ class TracingMixin:
     # Class-level configuration
     _trace_sample_rate: float = float(os.getenv("TRACE_SAMPLE_RATE", "0.1"))  # 10% default
     _trace_enabled: bool = os.getenv("TRACE_ENABLED", "true").lower() == "true"
-    _init_timeout_seconds: float = float(
-        os.getenv("TRACE_INIT_TIMEOUT", "2.0")
-    )  # Circuit breaker timeout
+    _init_timeout_seconds: float = float(os.getenv("TRACE_INIT_TIMEOUT", "2.0"))  # Circuit breaker timeout
 
     # Class-level circuit breaker state
     _circuit_breaker_open: bool = False
@@ -132,8 +130,7 @@ class TracingMixin:
         if TracingMixin._circuit_breaker_open:
             self._tracing_degraded = True
             Logger.warning(
-                f"[TRACING] {self._tracing_service_name} initialized in DEGRADED mode "
-                "(circuit breaker open)"
+                f"[TRACING] {self._tracing_service_name} initialized in DEGRADED mode (circuit breaker open)"
             )
         else:
             # Attempt initialization with timeout protection
@@ -146,10 +143,7 @@ class TracingMixin:
                 TracingMixin._circuit_breaker_failures += 1
 
                 # Check if we should open the circuit
-                if (
-                    TracingMixin._circuit_breaker_failures
-                    >= TracingMixin._circuit_breaker_threshold
-                ):
+                if TracingMixin._circuit_breaker_failures >= TracingMixin._circuit_breaker_threshold:
                     TracingMixin._circuit_breaker_open = True
                     Logger.error(
                         f"[TRACING] Circuit breaker OPENED after {TracingMixin._circuit_breaker_failures} failures. "

@@ -46,9 +46,7 @@ class RagGuardrail:
         except ImportError:
             print("   [!] FlagEmbedding not installed — falling back to RRF only")
 
-    async def rerank_documents(
-        self, documents: list[Any], query: str, top_k: int = 10
-    ) -> list[Any]:
+    async def rerank_documents(self, documents: list[Any], query: str, top_k: int = 10) -> list[Any]:
         """
         L5 reranking using BGE-v2-m3 for sovereign precision
         """
@@ -106,9 +104,7 @@ class RagGuardrail:
         # If the retrieved docs don't contain at least 50% of the query's entities, warn.
         ratio = supported_entities / len(query_entities)
         if ratio < 0.5:
-            print(
-                f"   [WARN] Retrieval Validity Low: Only {ratio:.1%} of query entities found in context."
-            )
+            print(f"   [WARN] Retrieval Validity Low: Only {ratio:.1%} of query entities found in context.")
 
         return documents
 

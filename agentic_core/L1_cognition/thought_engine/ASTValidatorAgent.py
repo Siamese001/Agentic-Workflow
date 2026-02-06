@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
@@ -334,7 +334,7 @@ class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAge
             self.clear_violations()
             test_code = """
 from typing import TYPE_CHECKING
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 if TYPE_CHECKING:
     eval('should be ignored')
 """

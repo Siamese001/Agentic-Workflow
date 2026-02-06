@@ -127,17 +127,11 @@ class RagTelemetryCollector:
             sorted_latencies = sorted(self._latency_samples)
             p95_idx = int(len(sorted_latencies) * 0.95)
             p99_idx = int(len(sorted_latencies) * 0.99)
-            self.metrics.p95_latency_ms = (
-                sorted_latencies[p95_idx] if p95_idx < len(sorted_latencies) else 0
-            )
-            self.metrics.p99_latency_ms = (
-                sorted_latencies[p99_idx] if p99_idx < len(sorted_latencies) else 0
-            )
+            self.metrics.p95_latency_ms = sorted_latencies[p95_idx] if p95_idx < len(sorted_latencies) else 0
+            self.metrics.p99_latency_ms = sorted_latencies[p99_idx] if p99_idx < len(sorted_latencies) else 0
 
         if self._doc_count_samples:
-            self.metrics.avg_documents_returned = sum(self._doc_count_samples) / len(
-                self._doc_count_samples
-            )
+            self.metrics.avg_documents_returned = sum(self._doc_count_samples) / len(self._doc_count_samples)
 
         if self._faithfulness_samples:
             self.metrics.avg_faithfulness_score = sum(self._faithfulness_samples) / len(

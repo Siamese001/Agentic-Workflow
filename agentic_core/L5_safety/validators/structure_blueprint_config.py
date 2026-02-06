@@ -82,7 +82,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "deterministic": {"purpose": "Deterministic healing and validation"},
                     "logs": {"purpose": "Runtime logs and execution traces"},
                     "scripts": {
-                        "purpose": "Maintenance and operational scripts",
+                        "purpose": "Maintenance and operational scripts - home for *_script.py files (Zero-Ambiguity Standard)",
                         "subfolders": {
                             ".github": {"purpose": "GitHub workflow scripts"},
                             "ci": {"purpose": "CI/CD pipeline scripts"},
@@ -93,7 +93,12 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     },
                     "security": {"purpose": "Security scanning and enforcement"},
                     "sensors": {"purpose": "System monitoring and health checks"},
-                    "bootstrap": {"purpose": "Bootstrap and discovery files"},
+                    "bootstrap": {
+                        "purpose": "Boot sequence scripts and initialization logic only",
+                        "allowed_extensions": [".py"],
+                        "forbidden_extensions": [".json", ".txt", ".md"],
+                        "content_types": ["boot_scripts"],
+                    },
                 },
             },
             "L1_cognition": {"purpose": "Cognitive processing and thought patterns"},
@@ -156,22 +161,37 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 ],
             },
             "runtime": {"purpose": "Runtime environment setup and resource management"},
-            "utils": {"purpose": "General utility functions and helpers"},
-            "patterns": {"purpose": "Architectural and behavioral patterns for agents"},
+            "utils": {
+                "purpose": "General utility functions - home for *_util.py files (Zero-Ambiguity Standard)"
+            },
+            # DEPRECATED: "patterns" territory removed - evacuate to base_agents
             "semantic_memory": {"purpose": "Vector storage and semantic retrieval systems"},
             "knowledge": {"purpose": "Knowledge management and RAG systems"},
             "interfaces": {
                 "purpose": "Standardized internal API contracts and protocols",
                 "weight": 100,
+                "naming_convention": "I*Protocol.py",  # Must start with I, end with Protocol.py
+                "content_types": ["protocols", "abstract_interfaces", "type_contracts"],
             },
-            "integration": {"purpose": "Integration utilities and cross-system adapters"},
-            "primitives": {"purpose": "Core primitive types and foundational data structures"},
         },
         "ast_signals": {
             # --- CONSTITUTIONAL FOUNDATION (Weight 100) ---
             "agentic_core/base_agents": {
-                "class_patterns": [".*BaseAgent$"],
-                "base_classes": ["SovereignBaseAgent", "CanonBaseAgent"],
+                "class_patterns": [".*BaseAgent$", ".*Base$"],
+                "base_classes": ["SovereignBaseAgent", "CanonBaseAgent", "L0MaintenanceBase"],
+                # GRAVITY REDIRECTED: Keywords from deprecated patterns/agent_roles
+                "keyword_signals": [
+                    "sovereign",
+                    "base",
+                    "inheritance",
+                    "abstract",
+                    "foundation",
+                    "role",
+                    "persona",
+                    "archetype",
+                    "behavior",
+                    "agent_type",
+                ],
                 "weight": 100,
             },
             # --- L5 SAFETY: MAXIMUM DEFENSIVE PRIORITY (Weight 22-25) ---
@@ -359,7 +379,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                             "L6_observability": ["dashboards", "agents", "reports", "telemetry", "core"],
                             "base_agents": [],
                             "domain": [],
-                            "patterns": ["agent_roles"],
+                            # DEPRECATED: "patterns" removed - evacuate to base_agents
                             "utils": [],
                         },
                     },
@@ -620,7 +640,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
         "schemas",  # models at variable depth
         "prompt_governance",  # meta_prompts at variable depth
         "runtime",  # shared_runtime at variable depth
-        "patterns",  # agent_roles at variable depth
+        # DEPRECATED: "patterns" removed - evacuate to base_agents
         "semantic_memory",  # store/embeddings at variable depth
         # Top-level territories that allow files in root
         "agentic_core",  # __init__.py and core files at territory root
@@ -850,54 +870,88 @@ CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "base_agents": [],  # Pure library domain - foundational classes and mixins only
     "domain": [],  # Pure domain entities and business objects - no subfolders currently
     "L0_maintenance": [
+        "agents",
+        "utils",
+        "config",
         "scripts",
+        "sensors",
+        "bootstrap",
         "logs",
-        "reports",
-        "boot",
-        "security",
-        "agentic_core",
-    ],  # System maintenance and healing
+        "keys",
+        "integrity",
+    ],  # Standard Kernel + L0 Extensions
     "L1_cognition": [
+        "agents",
+        "utils",
+        "config",
+        "prompts",
+        "patterns",
         "thought_engine",
-        "intent_analysis",
-    ],  # Cognitive processing (no scripts - pure data domain)
-    "L2_execution": ["tool_registry", "mcp", "execution_bridge"],  # Execution engines and tools
+        "generators",
+    ],  # Standard Kernel + L1 Extensions
+    "L2_execution": [
+        "agents",
+        "utils",
+        "config",
+        "tools",
+        "resources",
+        "mcp",
+    ],  # Standard Kernel + L2 Extensions
     "L3_orchestration": [
+        "agents",
+        "utils",
+        "config",
         "workflow_engines",
-        "fission_logic",
-        "interfaces",
-    ],  # Workflow orchestration
-    "L4_state": ["validation_context", "ledger", "memory"],  # State management
+        "delegators",
+    ],  # Standard Kernel + L3 Extensions
+    "L4_state": [
+        "agents",
+        "utils",
+        "config",
+        "memory",
+        "schemas",
+        "migrations",
+        "ledger",
+    ],  # Standard Kernel + L4 Extensions
     "L5_safety": [
+        "agents",
+        "utils",
+        "config",
         "validators",
         "guardrails",
-        "policy_engine",
-        "gravity",
-        "red_teaming",
-        "cognition",
-        "core",
-        "utils",
-    ],  # Security and validation
+    ],  # Standard Kernel + L5 Extensions
     "L6_observability": [
-        "dashboards",
         "agents",
+        "utils",
+        "config",
+        "dashboards",
         "reports",
         "telemetry",
-    ],  # Monitoring and reporting
+    ],  # Standard Kernel + L6 Extensions
     # === SPECIALIZED DOMAINS ===
-    "schemas": ["models"],  # Data schemas - currently only models subfolder exists
+    "schemas": [],  # Passive data contracts only - FLAT STRUCTURE (models subfolder DEPRECATED)
     "config": ["blueprint_sovereign"],  # Configuration management - currently only blueprint_sovereign exists
     "prompt_governance": [
-        "meta_prompts",
-        "templates",
+        "domain",
+        "security",
+        "core",
+        "optimization",
         "scripts",
-        "version_registry",
-    ],  # [RECONCILED] Canonical L3 folders
-    "runtime": ["shared_runtime"],  # Runtime environment - currently only shared_runtime exists
+        "utils",
+        "templates",
+        "meta_prompts",
+        "registry",
+    ],  # Standard Kernel + Prompt Governance Extensions
+    "runtime": [
+        "utils",
+        "config",
+        "domain",
+        "agents",
+    ],  # Standard Kernel - shared_runtime DEPRECATED
     "utils": [],  # Utility functions - no subfolders currently (flat structure)
-    "patterns": ["agent_roles"],  # Architectural and behavioral patterns
-    "semantic_memory": ["store"],  # Vector memory and retrieval systems - currently only store exists
-    "knowledge": ["document_loaders"],  # Knowledge management - currently only document_loaders exists
+    # DEPRECATED: "patterns" removed - evacuate contents to base_agents
+    # DEPRECATED: "semantic_memory" removed - annexed to L4_state/memory/semantic
+    "knowledge": ["document_loaders", "static_index", "research_cache"],  # Knowledge management
 }
 
 # === SUBFOLDER METADATA AND CONTENT GUIDELINES ===
@@ -911,9 +965,9 @@ SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
     },
     "domain": {
         "purpose": "Pure domain entities and business objects",
-        "content_types": ["domain_entities", "domain_models", "domain_exceptions"],
+        "content_types": ["domain_entities", "domain_models", "domain_exceptions", "domain_types"],
         "execution_allowed": False,
-        "notes": "Contains only pure domain objects - no validation or infrastructure logic",
+        "notes": "Contains only pure domain objects - no validation or infrastructure logic. Accepts *_types.py files.",
     },
     "L0_maintenance": {
         "purpose": "System maintenance, healing, and operational tasks",
@@ -1487,16 +1541,82 @@ NAMING_CONVENTIONS: Final[Mapping[str, Mapping[str, Any]]] = {
         "min_words": 2,  # At least 2 words (e.g., HealerAgent = Healer + Agent)
         "max_words": 4,  # Max 4 words (e.g., CodeDeduplicationAgent)
     },
-    # Python scripts - snake_case, high-signal, 2-3 words
+    # Python scripts - snake_case, MUST end with _script.py (Zero-Ambiguity Standard)
     "script": {
-        "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){1,2}\.py$",
-        "description": "snake_case with 2-3 words containing high-signal keyword",
-        "examples": ["sovereign_ingestion.py", "CanonValidatorAgent.py", "healing_strategies.py"],
-        "anti_examples": ["utils.py", "helper.py", "main.py", "my_super_long_script_name.py"],
+        "pattern": r"^[a-z][a-z0-9_]*_script\.py$",
+        "description": "snake_case ending with '_script.py'",
+        "examples": ["db_migration_script.py", "daily_cleanup_script.py", "audit_status_script.py"],
+        "anti_examples": ["main.py", "utils.py", "script.py", "run.py"],
         "extensions": [".py"],
-        "min_words": 2,
-        "max_words": 3,
-        # "require_signal": True,  # DEPRECATED: CANON_SIGNALS removed
+    },
+    # Python utilities - snake_case, MUST end with _util.py (Zero-Ambiguity Standard)
+    "utility": {
+        "pattern": r"^[a-z][a-z0-9_]*_util\.py$",
+        "description": "snake_case ending with '_util.py'",
+        "examples": ["string_formatter_util.py", "date_parser_util.py", "decorators_util.py"],
+        "anti_examples": ["utils.py", "helpers.py", "util.py"],
+        "extensions": [".py"],
+    },
+    # Python types/schemas - snake_case, MUST end with _types.py (Zero-Ambiguity Standard)
+    "types": {
+        "pattern": r"^[a-z][a-z0-9_]*_types\.py$",
+        "description": "snake_case ending with '_types.py' for type definitions/schemas",
+        "examples": ["user_profile_types.py", "api_response_types.py", "action_request_types.py"],
+        "anti_examples": ["types.py", "models.py", "schemas.py"],
+        "extensions": [".py"],
+    },
+    # Strategy pattern - PascalCase ending with Strategy (Zero-Ambiguity Standard)
+    "strategy": {
+        "pattern": r"^[A-Z][a-zA-Z0-9]*Strategy\.py$",
+        "description": "PascalCase ending with 'Strategy'",
+        "examples": ["RecoveryStrategy.py", "BackoffStrategy.py", "ExpansionStrategy.py"],
+        "anti_examples": ["strategy.py", "Strategies.py"],
+        "extensions": [".py"],
+    },
+    # Adapter pattern - PascalCase ending with Adapter (Zero-Ambiguity Standard)
+    "adapter": {
+        "pattern": r"^[A-Z][a-zA-Z0-9]*Adapter\.py$",
+        "description": "PascalCase ending with 'Adapter'",
+        "examples": ["LocalDiskAdapter.py", "S3Adapter.py", "MCPAdapter.py"],
+        "anti_examples": ["adapter.py", "Adapters.py"],
+        "extensions": [".py"],
+    },
+    # Protocol/Interface - PascalCase starting with I, ending with Protocol (Zero-Ambiguity Standard)
+    "protocol": {
+        "pattern": r"^I[A-Z][a-zA-Z0-9]*Protocol\.py$",
+        "description": "PascalCase starting with 'I', ending with 'Protocol'",
+        "examples": ["IHealerProtocol.py", "IValidatorProtocol.py", "IExecutorProtocol.py"],
+        "anti_examples": ["Protocol.py", "protocol.py", "HealerProtocol.py"],
+        "extensions": [".py"],
+    },
+    # Mixin - snake_case ending with _mixin.py (Zero-Ambiguity Standard)
+    "mixin": {
+        "pattern": r"^[a-z][a-z0-9_]*_mixin\.py$",
+        "description": "snake_case ending with '_mixin.py'",
+        "examples": ["caching_mixin.py", "audit_trail_mixin.py", "rate_limit_mixin.py"],
+        "anti_examples": ["Mixin.py", "mixins.py", "CachingMixin.py"],
+        "extensions": [".py"],
+    },
+    # Sensor - snake_case ending with _sensor.py (Zero-Ambiguity Standard)
+    "sensor": {
+        "pattern": r"^[a-z][a-z0-9_]*_sensor\.py$",
+        "description": "snake_case ending with '_sensor.py' for deterministic binary sensors",
+        "examples": ["git_health_sensor.py", "import_violation_sensor.py", "file_integrity_sensor.py"],
+        "anti_examples": ["Sensor.py", "sensors.py", "GitHealthSensor.py"],
+        "extensions": [".py"],
+    },
+    # Validator - snake_case ending with _validator.py (Zero-Ambiguity Standard)
+    "validator": {
+        "pattern": r"^[a-z][a-z0-9_]*_validator\.py$",
+        "description": "snake_case ending with '_validator.py' for deterministic validators",
+        "examples": [
+            "input_validator.py",
+            "schema_validator.py",
+            "ats_validator.py",
+            "lead_quality_validator.py",
+        ],
+        "anti_examples": ["Validator.py", "validators.py", "InputValidator.py"],
+        "extensions": [".py"],
     },
     # Python core modules - snake_case, high-signal, 2-3 words
     "core_module": {
@@ -2246,6 +2366,7 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
             re.compile(r".*security.*"),
             re.compile(r".*vulnerability.*"),
             re.compile(r".*hardened.*"),
+            re.compile(r".*hardening.*"),
         ],
         "forbidden_extensions": [".py", ".js", ".sh", ".bat", ".ts"],
         "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
@@ -2353,7 +2474,12 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
         "content_signals": {
             "json_keys": ["dataset_version", "record_count", "processed_at", "schema_version"],
         },
-        "naming_patterns": [re.compile(r".*dataset.*"), re.compile(r".*processed.*")],
+        "naming_patterns": [
+            re.compile(r".*dataset.*"),
+            re.compile(r".*processed.*"),
+            re.compile(r"agent_discovery.*\.json$"),
+            re.compile(r".*manifest.*\.json$"),
+        ],
         # HARDENING: Prevent config files or code
         "forbidden_keywords": ["def ", "class ", "api_key", "secret"],
     },
@@ -2520,6 +2646,17 @@ LEGACY_AST_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
 # Maps AST patterns to exact L1/L2 paths for file placement
 # This is the SSOT for AST-based file placement decisions
 AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
+    # [NEW] Interfaces - Sovereign Protocols (Constitutional Priority)
+    "agentic_core/interfaces": {
+        "class_patterns": ["^I[A-Z].*Protocol$", "^I[A-Z].*$"],
+        "base_classes": ["Protocol", "ABC", "typing.Protocol", "abc.ABC"],
+        "function_patterns": [],
+        "import_signals": ["typing.Protocol", "abc.ABC", "abc.abstractmethod"],
+        "keyword_signals": ["protocol", "interface", "contract", "abstract"],
+        "filename_patterns": ["^I[A-Z].*Protocol\\.py$"],
+        "decorator_signals": ["@abstractmethod", "@runtime_checkable"],
+        "weight": 100,  # Constitutional Priority - same as base_agents
+    },
     # Base agents - Constitutional Priority
     "agentic_core/base_agents": {
         "class_patterns": [".*BaseAgent$"],
@@ -2531,11 +2668,23 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "weight": 100,  # Constitutional Priority
     },
     # [NEW] Pydantic Domain Modeling (Schema Separation)
+    # Zero-Ambiguity: Also routes *_types.py files here
     "agentic_core/schemas/models": {
-        "class_patterns": [".*Model$", ".*Schema$", ".*DTO$"],
+        "class_patterns": [".*Model$", ".*Schema$", ".*DTO$", ".*Types$"],
         "base_classes": ["BaseModel", "pydantic.BaseModel"],
-        "import_signals": ["pydantic"],
-        "keyword_signals": ["field", "validator", "root_validator", "config"],
+        "import_signals": ["pydantic", "typing", "typing_extensions"],
+        "keyword_signals": [
+            "field",
+            "validator",
+            "root_validator",
+            "config",
+            "TypeAlias",
+            "TypedDict",
+            "Literal",
+            "Union",
+            "Optional",
+        ],
+        "filename_patterns": [".*_types\\.py$"],  # Route *_types.py files here
         "weight": 10,
     },
     # [NEW] Configuration Modeling
@@ -2546,13 +2695,22 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "keyword_signals": ["env_file", "secrets", "api_key"],
         "weight": 10,
     },
+    # [NEW] Knowledge Management (RAG, Document Loaders, Orchestrators)
+    "agentic_core/knowledge": {
+        "class_patterns": [".*Orchestrator$", ".*Manager$", ".*Loader$", ".*Cache$"],
+        "base_classes": ["SovereignRagOrchestrator", "BaseDocumentLoader"],
+        "function_patterns": ["retrieve_.*", "ingest_.*", "index_.*"],
+        "import_signals": ["knowledge", "rag", "document_loaders"],
+        "keyword_signals": ["rag", "retrieval", "knowledge", "document", "ingest", "orchestrator"],
+        "weight": 12,
+    },
     # L1_cognition placements
     "agentic_core/L1_cognition/thought_engine": {
-        "class_patterns": [".*Node$", ".*Thought.*", ".*Reason.*", ".*Chain.*"],
-        "base_classes": ["BaseNode", "ThoughtNode", "ReActNode"],
+        "class_patterns": [".*Node$", ".*Thought.*", ".*Reason.*", ".*Chain.*", ".*Strategy$"],
+        "base_classes": ["BaseNode", "ThoughtNode", "ReActNode", "ReActStrategy"],
         "function_patterns": ["think_.*", "reason_.*", "decompose_.*"],
         "import_signals": ["langchain", "langgraph", "thought_engine"],
-        "keyword_signals": ["thought", "reasoning", "decomposition", "chain_of_thought", "react"],
+        "keyword_signals": ["thought", "reasoning", "decomposition", "chain_of_thought", "react", "strategy"],
         "decorator_signals": ["@thought_node", "@reasoning_step"],
         "weight": 15,  # Domain Logic tier
     },
@@ -2649,11 +2807,11 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "weight": 14,
     },
     "agentic_core/L4_state/memory": {
-        "class_patterns": [".*Memory.*", ".*cache.*", ".*Store.*"],
+        "class_patterns": [".*Memory.*", ".*cache.*", ".*Store.*", ".*Adapter$"],
         "base_classes": ["MemoryStore", "CacheManager"],
         "function_patterns": ["store_.*", "retrieve_.*", "cache_.*"],
         "import_signals": ["pinecone", "redis", "memory"],
-        "keyword_signals": ["memory", "cache", "store", "retrieve", "embedding", "vector"],
+        "keyword_signals": ["memory", "cache", "store", "retrieve", "embedding", "vector", "adapter"],
         "weight": 14,
     },
     # L5_safety placements
@@ -2675,12 +2833,23 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "weight": 25,
     },
     "agentic_core/L5_safety/validators": {
-        "class_patterns": [".*Validator.*", ".*Enforcer.*", ".*Checker.*", ".*Agent$"],
+        "purpose": "Deterministic safety checks and domain validation",
+        "class_patterns": [".*Validator.*", ".*Enforcer.*", ".*Checker.*", ".*Agent$", ".*Deterministic$"],
         "base_classes": ["BaseValidator", "Enforcer"],
         "function_patterns": ["validate_.*", "enforce_.*", "check_.*"],
         "import_signals": ["validators", "compliance"],
-        "keyword_signals": ["validator", "enforce", "compliance", "check", "verify", "audit"],
-        "weight": 25,
+        "keyword_signals": [
+            "validator",
+            "enforce",
+            "compliance",
+            "check",
+            "verify",
+            "audit",
+            "deterministic",
+            "sanitizer",
+        ],
+        "filename_patterns": [".*_validator\\.py$"],
+        "weight": 50,  # Increased to attract deterministic validators from L0
     },
     "agentic_core/L5_safety/gravity": {
         "class_patterns": [".*Gravity.*", ".*Import.*", ".*Waterfall.*"],
@@ -2697,6 +2866,16 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "import_signals": ["red_teaming"],
         "keyword_signals": ["redteam", "adversarial", "attack", "probe", "jailbreak", "exploit"],
         "weight": 20,
+    },
+    # [NEW] L5_safety/utils - Security utilities (higher weight than config to win gravity)
+    "agentic_core/L5_safety/utils": {
+        "class_patterns": [".*Security.*", ".*Control.*", ".*Subprocess.*"],
+        "base_classes": [],
+        "function_patterns": ["validate_.*", "safe_.*", "security_.*", "create_instance.*"],
+        "import_signals": ["L5_safety", "security"],
+        "keyword_signals": ["security", "controls", "safe_execute", "subprocess", "injection", "whitelist"],
+        "filename_patterns": [".*security.*_util\\.py$", ".*controls.*_util\\.py$"],
+        "weight": 26,  # Higher than config (10) to win gravity battles
     },
     # Utils placements
     # core_extensions EVICTED - merged into utils root or specialized helpers
@@ -4064,11 +4243,26 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
     },
     "prompt_governance": {
         "templates": {
+            "description": "Atomic instructional fragments and Jinja2 partials.",
             "purpose": "Reusable prompt fragments, system instructions, and jinja templates",
             "entity_types": ["Class", "str constant"],
-            "keywords": ["prompt", "template", "system", "instruction", "jinja", "persona"],
+            "keywords": ["prompt", "template", "system", "instruction", "jinja", "partial"],
             "imports": ["jinja2"],
             "bases": [],
+            "allowed_extensions": [".jinja", ".txt"],
+            "required_content": ["SCHEMA_HEADER"],
+            "category": "PARTIAL",
+        },
+        "meta_prompts": {
+            "description": "High-level strategic directives and persona definitions.",
+            "purpose": "Strategic prompt orchestration, persona definitions, and meta-level directives",
+            "entity_types": ["Class", "str constant"],
+            "keywords": ["meta", "persona", "strategy", "directive", "orchestration"],
+            "imports": ["jinja2", "yaml"],
+            "bases": [],
+            "allowed_extensions": [".jinja", ".yaml"],
+            "required_content": ["VERSIONED_ENTRY"],
+            "category": "STRATEGY",
         },
         "rendering": {
             "purpose": "Dynamic prompt assembly, variable substitution, and rendering logic",
@@ -4358,12 +4552,13 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
             "examples": ["LoggerComponent", "ConfigLoader", "NotificationWidget", "AppPluginBase"],
         },
         "agents": {
-            "purpose": "Shared application-level agent templates and worker base classes",
+            "purpose": "Shared application-level agent templates and worker base classes - home for AppBase.py",
             "entity_types": ["Class"],
             "keywords": ["agent", "base_agent", "worker", "bot", "task_executor", "app_worker"],
-            "imports": ["agentic_core.L3_orchestration.workflow_engines"],
-            "bases": ["CanonBaseAgent", "AppBaseAgent"],
-            "examples": ["AppBaseAgent", "TaskWorker", "AsyncAppWorker", "StatefulAppAgent"],
+            "imports": ["agentic_core.L3_orchestration.workflow_engines", "apps_shared.agents.AppBase"],
+            "bases": ["CanonBaseAgent", "AppBase"],
+            "examples": ["AppBase", "TaskWorker", "AsyncAppWorker", "StatefulAppAgent"],
+            "canonical_files": ["AppBase.py"],  # Zero-Ambiguity: Renamed from AppBaseAgent.py
         },
         "models": {
             "purpose": "Shared Pydantic data models, Data Transfer Objects (DTOs), and domain-agnostic schemas",

@@ -77,9 +77,7 @@ class AdaptiveLearningEngine:
     - Continuous learning from new healing attempts
     """
 
-    def __init__(
-        self, pattern_storage_path: str | Path | None = None, autonomous_mode: bool = True
-    ):
+    def __init__(self, pattern_storage_path: str | Path | None = None, autonomous_mode: bool = True):
         """Initialize the adaptive learning engine."""
         # Phase 2 Landmine Remediation: Use pathlib.Path for cross-platform compatibility
         if pattern_storage_path:
@@ -154,10 +152,7 @@ class AdaptiveLearningEngine:
         try:
             os.makedirs(os.path.dirname(self.pattern_storage_path), exist_ok=True)
             if self.storage_path.exists():
-                backup = (
-                    self.backup_dir
-                    / f"healing_patterns.{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
-                )
+                backup = self.backup_dir / f"healing_patterns.{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
                 import shutil
 
                 shutil.copy2(self.storage_path, backup)
@@ -322,9 +317,7 @@ class AdaptiveLearningEngine:
         self.prediction_cache[cache_key] = predictions[:5]
         return predictions[:5]
 
-    def get_recommended_fix(
-        self, violation_key: int, violation_details: str, file_path: str
-    ) -> str | None:
+    def get_recommended_fix(self, violation_key: int, violation_details: str, file_path: str) -> str | None:
         """
         Get recommended fix based on learned patterns.
 
@@ -356,8 +349,7 @@ class AdaptiveLearningEngine:
         avg_success_rate: Any = 0.0
         if total_patterns > 0:
             avg_success_rate: Any = (
-                sum(p.success_rate for patterns in self.patterns.values() for p in patterns)
-                / total_patterns
+                sum(p.success_rate for patterns in self.patterns.values() for p in patterns) / total_patterns
             )
         return {
             "total_patterns": total_patterns,
@@ -365,9 +357,7 @@ class AdaptiveLearningEngine:
             "average_success_rate": avg_success_rate,
             "keys_with_patterns": len(self.patterns),
             "total_healing_attempts": sum(
-                p.success_count + p.failure_count
-                for patterns in self.patterns.values()
-                for p in patterns
+                p.success_count + p.failure_count for patterns in self.patterns.values() for p in patterns
             ),
         }
 
@@ -376,6 +366,4 @@ def create_adaptive_learning_engine(
     storage_path: str | None = None, autonomous_mode: bool = True
 ) -> AdaptiveLearningEngine:
     """Factory function to create adaptive learning engine."""
-    return AdaptiveLearningEngine(
-        pattern_storage_path=storage_path, autonomous_mode=autonomous_mode
-    )
+    return AdaptiveLearningEngine(pattern_storage_path=storage_path, autonomous_mode=autonomous_mode)

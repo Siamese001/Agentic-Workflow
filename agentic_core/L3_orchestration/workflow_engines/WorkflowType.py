@@ -22,7 +22,5 @@ class WorkflowBlueprint:
     _description: str
     _roles: list[AgentRole]
     _edges: list[tuple[AgentRole, AgentRole]]
-    _mutation_hooks: dict[AgentRole, list[tuple[MutationAction, AgentRole]]] = field(
-        default_factory=dict
-    )
+    _mutation_hooks: dict[AgentRole, list[tuple[MutationAction, AgentRole]]] = field(default_factory=dict)
     _parallel_groups: list[list[AgentRole]] = field(default_factory=list)

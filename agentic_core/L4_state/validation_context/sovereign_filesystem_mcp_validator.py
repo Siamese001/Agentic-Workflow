@@ -18,9 +18,7 @@ Logger = logging.getLogger(__name__)
 
 # [SSOT] Sovereign territory boundaries derived from SOVEREIGN_REGISTRY
 # NAMING FIXED: ALLOWED_ROOT_PREFIXES → allowed_root_prefixes
-allowed_root_prefixes = set(SOVEREIGN_REGISTRY.keys()) | {
-    "config"
-}  # config is a subfolder, add explicitly
+allowed_root_prefixes = set(SOVEREIGN_REGISTRY.keys()) | {"config"}  # config is a subfolder, add explicitly
 # NAMING FIXED: FORBIDDEN_PATH_PATTERNS → forbidden_path_patterns
 forbidden_path_patterns = {
     "..",
@@ -78,9 +76,7 @@ class SovereignFilesystemMcp:
             for path, content in files.items():
                 # We use 'write_file' but record the intent in Redis first
                 # This ensures we can recover if the MCP server crashes mid-fission
-                result = await self.manager.call_tool(
-                    "write_file", {"path": path, "content": content}
-                )
+                result = await self.manager.call_tool("write_file", {"path": path, "content": content})
                 results.append(result)
 
             # [L4 LEDGER] Record the physical change history

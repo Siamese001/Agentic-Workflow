@@ -33,9 +33,7 @@ class MissionHistorian:
                 writer = csv.writer(f)
                 writer.writerow(["timestamp", "file", "action", "source", "destination", "reason"])
 
-    def record(
-        self, file_name: str, action: str, source: str, destination: str, reason: str
-    ) -> Any:
+    def record(self, file_name: str, action: str, source: str, destination: str, reason: str) -> Any:
         """
         Record a mission action to the audit log.
 
@@ -49,9 +47,7 @@ class MissionHistorian:
         try:
             with open(self.log_path, "a", newline="", encoding="utf-8") as f:
                 writer: Any = csv.writer(f)
-                writer.writerow(
-                    [datetime.now().isoformat(), file_name, action, source, destination, reason]
-                )
+                writer.writerow([datetime.now().isoformat(), file_name, action, source, destination, reason])
             Logger.debug(f"[MissionHistorian] Recorded: {action} on {file_name}")
         except Exception as e:
             Logger.error(f"[MissionHistorian] Failed to record action: {e}")

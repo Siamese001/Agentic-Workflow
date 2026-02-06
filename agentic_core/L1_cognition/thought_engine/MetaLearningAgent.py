@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # from agentic_core.utils.sovereign_index import SovereignIndex  # Archived - not needed
@@ -134,9 +134,7 @@ class MetaLearningAgent(AtomicExecutionMixin, SovereignBaseAgent):
         total = sum(self.strategy_weights.values())
         if total > 0:
             for k in self.strategy_weights:
-                self.strategy_weights[k] = (
-                    self.strategy_weights[k] / total * len(self.strategy_weights)
-                )
+                self.strategy_weights[k] = self.strategy_weights[k] / total * len(self.strategy_weights)
 
         return self.strategy_weights
 
@@ -180,9 +178,7 @@ class MetaLearningAgent(AtomicExecutionMixin, SovereignBaseAgent):
         """Legacy method for backward compatibility."""
         return self.get_live_statistics()
 
-    def _discover_patterns(
-        self, pattern_str: str = "*.py", project_root: Path | None = None
-    ) -> list[Path]:
+    def _discover_patterns(self, pattern_str: str = "*.py", project_root: Path | None = None) -> list[Path]:
         """
         Discover files matching a pattern using SovereignIndex for high-performance cached lookup.
 
@@ -200,9 +196,7 @@ class MetaLearningAgent(AtomicExecutionMixin, SovereignBaseAgent):
         idx = SovereignIndex.get_instance(project_root)
         return idx.get_files(pattern_str)
 
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
         return {"violations": 0, "fixed": 0, "errors": 0}

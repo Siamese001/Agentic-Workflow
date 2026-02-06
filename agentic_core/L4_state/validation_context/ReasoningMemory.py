@@ -186,9 +186,7 @@ class ReasoningMemory:
         matching = [t for t in self.thoughts if t.thought_type == thought_type]
         return [self._thought_to_dict(t) for t in matching[-count:]]
 
-    def retrieve_high_confidence(
-        self, threshold: float = 0.9, count: int = 10
-    ) -> list[dict[str, Any]]:
+    def retrieve_high_confidence(self, threshold: float = 0.9, count: int = 10) -> list[dict[str, Any]]:
         """
         Retrieve high-confidence thoughts.
 

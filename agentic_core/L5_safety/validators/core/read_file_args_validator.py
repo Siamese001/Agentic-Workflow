@@ -34,9 +34,7 @@ class WriteFileArgs(BaseModel):
 
     path: str = Field(..., description="Relative path to the file to write")
     content: str = Field(..., description="Content to write to the file")
-    create_dirs: bool = Field(
-        default=True, description="Create parent directories if they don't exist"
-    )
+    create_dirs: bool = Field(default=True, description="Create parent directories if they don't exist")
 
     @validator("path")
     def validate_path(cls, v):
@@ -63,9 +61,7 @@ class ListFilesArgs(BaseModel):
     """Arguments for listing files in a directory."""
 
     path: str = Field(default=".", description="Relative path to the directory to list")
-    pattern: str | None = Field(
-        default=None, description="Glob pattern to filter files (e.g., '*.py')"
-    )
+    pattern: str | None = Field(default=None, description="Glob pattern to filter files (e.g., '*.py')")
     recursive: bool = Field(default=False, description="Recursively list subdirectories")
 
     @validator("path")
@@ -110,9 +106,7 @@ class ExecuteCommandArgs(BaseModel):
 
     command: str = Field(..., description="Command to execute")
     args: list[str] = Field(default_factory=list, description="Command arguments")
-    cwd: str | None = Field(
-        default=None, description="Working directory (relative to project root)"
-    )
+    cwd: str | None = Field(default=None, description="Working directory (relative to project root)")
     timeout: int = Field(default=30, description="Timeout in seconds (max 300)")
     capture_output: bool = Field(default=True, description="Capture stdout and stderr")
 

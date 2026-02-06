@@ -13,7 +13,7 @@ from typing import Any
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # [FIX] Use Functional Naming alias for imports
@@ -25,8 +25,8 @@ try:
     ScenarioType = OrchestrationTypes.ScenarioType
     TrainingScenario = OrchestrationTypes.TrainingScenario
 
-    TrainingSession = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = (
-        type("Stub", (), {})
+    TrainingSession = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = type(
+        "Stub", (), {}
     )
 except ImportError:
     BenchmarkResult = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = (
@@ -132,9 +132,7 @@ class AgentGym(AtomicExecutionMixin, SovereignBaseAgent):
             except Exception as e:
                 if self.enable_logging:
                     Logger.error("test_case_failed", extra={"case_id": case.id, "error": str(e)})
-                OUTPUTS[CASE.ID] = GoldenOutput(
-                    case_id=case.id, actual_output="", METADATA={"error": str(e)}
-                )
+                OUTPUTS[CASE.ID] = GoldenOutput(case_id=case.id, actual_output="", METADATA={"error": str(e)})
         return outputs
 
     def _create_benchmark_result(

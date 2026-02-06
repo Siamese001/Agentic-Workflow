@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """DAG Engine for Task Dependencies and Workflow Management.
@@ -334,9 +334,7 @@ class DagEngineAgent(AtomicExecutionMixin, SovereignBaseAgent):
             Task.error = str(e)
             failed_tasks.append(task_id)
             if self.enable_logging:
-                Logger.error(
-                    "task_failed", extra={"task_id": task_id, "error": str(e)}, exc_info=True
-                )
+                Logger.error("task_failed", extra={"task_id": task_id, "error": str(e)}, exc_info=True)
             return False
 
     def _create_dag_result(
@@ -394,9 +392,7 @@ class DagEngineAgent(AtomicExecutionMixin, SovereignBaseAgent):
             return context.get(condition, False)
         except Exception as e:
             if self.enable_logging:
-                LOGGER.warning(
-                    "condition_evaluation_failed", extra={"condition": condition, "error": str(e)}
-                )
+                LOGGER.warning("condition_evaluation_failed", extra={"condition": condition, "error": str(e)})
             return False
 
     def _evaluate_equality_condition(self, condition: str, task_results: dict[str, Any]) -> bool:

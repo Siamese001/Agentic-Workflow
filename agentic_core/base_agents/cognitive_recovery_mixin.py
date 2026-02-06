@@ -43,9 +43,7 @@ class CognitiveRecoveryMixin:
                 for r in results
             ]
         except Exception as e:
-            logger.warning(
-                f"[{self.__class__.__name__}] Brain Freeze (Knowledge Query Failed): {e}"
-            )
+            logger.warning(f"[{self.__class__.__name__}] Brain Freeze (Knowledge Query Failed): {e}")
             return []
 
     def perform_cognitive_rca(self, exception: Exception) -> str | None:

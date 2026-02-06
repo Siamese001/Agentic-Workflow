@@ -1,0 +1,289 @@
+"""
+Verification Gate - Structural validation layer to prevent Epistemic Cascade.
+
+This module provides a verification mechanism that agents must query before
+executing high-impact changes, preventing blind trust in upstream hallucinations.
+
+Integrates with L4ContextManager for shared file analysis caching.
+"""
+
+import ast
+import logging
+from pathlib import Path
+from typing import Any
+
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
+from agentic_core.base_agents.hallucination_detection_mixin import (
+    HallucinationDetectionMixin,
+)
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
+Logger = logging.getLogger(__name__)
+
+
+class VerificationGate(AtomicExecutionMixin, HallucinationDetectionMixin, SovereignBaseAgent):
+    """
+    Structural validation layer that verifies actions against actual AST structure.
+
+    Prevents Epistemic Cascade by ensuring agents only act on verified targets
+    that actually exist in the codebase structure.
+
+    V10 Refactored: Now inherits from AtomicExecutionMixin for rollback capability
+    and HallucinationDetectionMixin for structural validation.
+
+    MRO: VerificationGate -> AtomicExecutionMixin -> HallucinationDetectionMixin -> ...
+
+    Integrates with L4ContextManager for performance optimization.
+    """
+
+    def __init__(self, context_manager=None):
+        """
+        Initialize verification gate.
+
+        Args:
+            context_manager: Optional L4ContextManager for shared caching
+        """
+        self.verification_cache: dict[str, bool] = {}
+        self.context_manager = context_manager
+
+    def verify_action(self, file_path: Path, action_type: str, target_node: str) -> bool:
+        """
+        Verify that the target node exists in the file before allowing action.
+
+        Args:
+            file_path: Path to the file to verify
+            action_type: Type of action (e.g., 'delete_import', 'modify_function', 'remove_class')
+            target_node: Target node name to verify exists
+
+        Returns:
+            True if target exists and action is valid, False otherwise
+        """
+        if not file_path.exists():
+            return False
+
+        # Create cache key for performance
+        cache_key = f"{file_path}:{action_type}:{target_node}"
+        if cache_key in self.verification_cache:
+            return self.verification_cache[cache_key]
+
+        try:
+            with open(file_path, encoding="utf-8") as f:
+                content = f.read()
+
+            tree = ast.parse(content)
+            result = self._verify_target_in_ast(tree, action_type, target_node)
+
+            # Cache the result
+            self.verification_cache[cache_key] = result
+            return result
+
+        except (SyntaxError, UnicodeDecodeError, OSError):
+            # File cannot be parsed or read
+            return False
+
+    def _verify_target_in_ast(self, tree: ast.AST, action_type: str, target_node: str) -> bool:
+        """
+        Verify target node exists in AST based on action type.
+
+        Args:
+            tree: Parsed AST tree
+            action_type: Type of action to verify
+            target_node: Target node name
+
+        Returns:
+            True if target exists for the given action type
+        """
+        if action_type == "delete_import":
+            return self._verify_import_exists(tree, target_node)
+        elif action_type == "modify_function":
+            return self._verify_function_exists(tree, target_node)
+        elif action_type == "remove_class":
+            return self._verify_class_exists(tree, target_node)
+        elif action_type == "modify_variable":
+            return self._verify_variable_exists(tree, target_node)
+        elif action_type == "modify_method":
+            return self._verify_method_exists(tree, target_node)
+        else:
+            # Default: check if any node with matching name exists
+            return self._verify_any_node_exists(tree, target_node)
+
+    def _verify_import_exists(self, tree: ast.AST, import_name: str) -> bool:
+        """Verify that an import statement exists."""
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name == import_name or alias.asname == import_name:
+                        return True
+            elif isinstance(node, ast.ImportFrom):
+                for alias in node.names:
+                    if alias.name == import_name or alias.asname == import_name:
+                        return True
+        return False
+
+    def _verify_function_exists(self, tree: ast.AST, func_name: str) -> bool:
+        """Verify that a function definition exists."""
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef) and node.name == func_name:
+                return True
+            elif isinstance(node, ast.AsyncFunctionDef) and node.name == func_name:
+                return True
+        return False
+
+    def _verify_class_exists(self, tree: ast.AST, class_name: str) -> bool:
+        """Verify that a class definition exists."""
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef) and node.name == class_name:
+                return True
+        return False
+
+    def _verify_variable_exists(self, tree: ast.AST, var_name: str) -> bool:
+        """Verify that a variable assignment exists."""
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and target.id == var_name:
+                        return True
+            elif isinstance(node, ast.AnnAssign):
+                if isinstance(node.target, ast.Name) and node.target.id == var_name:
+                    return True
+        return False
+
+    def _verify_method_exists(self, tree: ast.AST, method_name: str) -> bool:
+        """Verify that a method exists within any class."""
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                for item in node.body:
+                    if isinstance(item, ast.FunctionDef) and item.name == method_name:
+                        return True
+                    elif isinstance(item, ast.AsyncFunctionDef) and item.name == method_name:
+                        return True
+        return False
+
+    def _verify_any_node_exists(self, tree: ast.AST, node_name: str) -> bool:
+        """Generic verification - check if any node with matching name exists."""
+        for node in ast.walk(tree):
+            if hasattr(node, "name") and node.name == node_name:
+                return True
+            elif hasattr(node, "id") and node.id == node_name:
+                return True
+        return False
+
+    def verify_modification(self, context) -> bool:
+        """
+        Verify all modifications in a SurgicalContext before allowing execution.
+
+        This is the primary method for preventing Epistemic Cascade - it ensures
+        that all target nodes actually exist before any surgical changes are made.
+
+        Args:
+            context: SurgicalContext containing violations and target coordinates
+
+        Returns:
+            True if all targets are verified, False if any hallucination detected
+        """
+        if not context.file_path.exists():
+            Logger.warning(f"Verification failed: File does not exist: {context.file_path}")
+            return False
+
+        # Check L4 cache first if available
+        if self.context_manager:
+            cached_analysis = self.context_manager.get_file_analysis(context.file_path, "verification_gate")
+            if cached_analysis and cached_analysis.get("verified"):
+                Logger.debug(f"Using cached verification for {context.file_path}")
+                return True
+
+        # Parse file once for all verifications
+        try:
+            with open(context.file_path, encoding="utf-8") as f:
+                content = f.read()
+            tree = ast.parse(content)
+        except (SyntaxError, UnicodeDecodeError, OSError) as e:
+            Logger.error(f"Failed to parse {context.file_path}: {e}")
+            return False
+
+        # Verify each violation's target exists
+        for violation in context.violations:
+            action_type = self._map_violation_to_action(violation)
+            target_node = self._extract_target_from_violation(violation)
+
+            if not target_node:
+                Logger.warning(f"No target node found in violation: {violation}")
+                continue
+
+            if not self._verify_target_in_ast(tree, action_type, target_node):
+                Logger.warning(
+                    f"Hallucination detected: {action_type} target '{target_node}' "
+                    f"not found in {context.file_path}"
+                )
+                return False
+
+        # Cache successful verification in L4 if available
+        if self.context_manager:
+            self.context_manager.set_file_analysis(
+                context.file_path,
+                "verification_gate",
+                {"verified": True, "violations_count": len(context.violations)},
+            )
+
+        return True
+
+    def _map_violation_to_action(self, violation) -> str:
+        """Map violation constraint to action type."""
+        constraint_type = getattr(violation, "constraint_type", "")
+        fix_type = getattr(violation, "fix_type", "")
+
+        # Map constraint types to action types
+        if "import" in constraint_type.lower():
+            return "delete_import"
+        elif "function" in constraint_type.lower():
+            return "modify_function"
+        elif "class" in constraint_type.lower():
+            return "remove_class"
+        elif "method" in constraint_type.lower():
+            return "modify_method"
+        elif "variable" in constraint_type.lower():
+            return "modify_variable"
+        elif fix_type == "delete":
+            return "delete_node"
+        else:
+            return "modify_node"
+
+    def _extract_target_from_violation(self, violation) -> str | None:
+        """Extract target node name from violation."""
+        # Try target_coordinate first
+        if hasattr(violation, "target_coordinate") and violation.target_coordinate:
+            coord = violation.target_coordinate
+            if hasattr(coord, "node_id"):
+                return coord.node_id
+
+        # Try message parsing
+        if hasattr(violation, "message"):
+            message = violation.message
+            # Extract from patterns like "Remove import 'numpy'"
+            import re
+
+            match = re.search(r"['\"]([\w\.]+)['\"]", message)
+            if match:
+                return match.group(1)
+
+        # Try expected_pattern
+        if hasattr(violation, "expected_pattern"):
+            pattern = violation.expected_pattern
+            if pattern and isinstance(pattern, str):
+                # Extract module/function name
+                parts = pattern.split()
+                if len(parts) > 1:
+                    return parts[-1].strip(",'\"")
+
+        return None
+
+    def clear_cache(self):
+        """Clear the verification cache."""
+        self.verification_cache.clear()
+
+    def get_cache_stats(self) -> dict[str, Any]:
+        """Get cache statistics for monitoring."""
+        return {
+            "cache_size": len(self.verification_cache),
+            "cache_keys": list(self.verification_cache.keys()),
+        }

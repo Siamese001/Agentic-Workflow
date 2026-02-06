@@ -68,9 +68,7 @@ class RecursionLimitError(Exception):
         self.limit_type = limit_type
         self.current = current
         self.limit = limit
-        super().__init__(
-            f"Recursion limit exceeded: {limit_type} - Current: {current}, Limit: {limit}"
-        )
+        super().__init__(f"Recursion limit exceeded: {limit_type} - Current: {current}, Limit: {limit}")
 
 
 # Model pricing per 1K tokens (as of Jan 2026)
@@ -194,9 +192,7 @@ class CostGuardrailMixin:
 
         Logger.info(f"[COST] Budget configured: {self._budget_config}")
 
-    def estimate_cost(
-        self, prompt_tokens: int, completion_tokens: int, model: str = "default"
-    ) -> float:
+    def estimate_cost(self, prompt_tokens: int, completion_tokens: int, model: str = "default") -> float:
         """
         Estimate cost for a given token usage.
 
@@ -385,12 +381,8 @@ class CostGuardrailMixin:
                 "session_cost_usd": self._total_session_cost,
                 "max_tokens_per_session": self._budget_config.max_tokens_per_session,
                 "max_cost_per_session_usd": self._budget_config.max_cost_per_session_usd,
-                "token_usage_pct": (
-                    self._total_session_tokens / self._budget_config.max_tokens_per_session
-                ),
-                "cost_usage_pct": (
-                    self._total_session_cost / self._budget_config.max_cost_per_session_usd
-                ),
+                "token_usage_pct": (self._total_session_tokens / self._budget_config.max_tokens_per_session),
+                "cost_usage_pct": (self._total_session_cost / self._budget_config.max_cost_per_session_usd),
                 "operations_count": len(self._session_token_usage),
                 "current_recursion_depth": len(self._call_stack),
                 "active_loops": len(self._loop_counters),

@@ -109,9 +109,7 @@ class GoldenContextMixin:
         # Append to the end so it's fresh in the context window
         messages.append(golden_message)
 
-        logger.debug(
-            f"[GoldenContextMixin] Injected golden context. Total messages: {len(messages)}"
-        )
+        logger.debug(f"[GoldenContextMixin] Injected golden context. Total messages: {len(messages)}")
 
         return messages
 

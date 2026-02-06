@@ -215,9 +215,7 @@ class ContextPruningStrategy:
 
         return preserved
 
-    def _score_keys_for_pruning(
-        self, context: dict[str, Any], prunable_keys: list[str]
-    ) -> list[tuple]:
+    def _score_keys_for_pruning(self, context: dict[str, Any], prunable_keys: list[str]) -> list[tuple]:
         """
         Score keys for pruning priority.
 
@@ -365,8 +363,7 @@ class AdaptiveDepthManager:
         self._depth_history: list[int] = []
 
         Logger.info(
-            f"[AdaptiveDepth] Initialized with base={base_limit}, "
-            f"max={max_limit}, adaptive={enable_adaptive}"
+            f"[AdaptiveDepth] Initialized with base={base_limit}, max={max_limit}, adaptive={enable_adaptive}"
         )
 
     def calculate_adaptive_limit(
@@ -413,9 +410,7 @@ class AdaptiveDepthManager:
 
         return limit
 
-    def _assess_complexity(
-        self, context: dict[str, Any], metrics: dict[str, Any] | None = None
-    ) -> float:
+    def _assess_complexity(self, context: dict[str, Any], metrics: dict[str, Any] | None = None) -> float:
         """
         Assess mission complexity from 0.0 to 1.0.
 
@@ -468,9 +463,7 @@ class AdaptiveDepthManager:
         # Calculate average complexity
         return score / max(factors, 1)
 
-    def should_extend_limit(
-        self, current_depth: int, current_limit: int, success_rate: float
-    ) -> bool:
+    def should_extend_limit(self, current_depth: int, current_limit: int, success_rate: float) -> bool:
         """
         Determine if depth limit should be extended mid-mission.
 

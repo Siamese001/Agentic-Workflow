@@ -166,9 +166,7 @@ class AtomicExecutionMixin:
         # Remove created files
         for created_path in txn.created_files:
             try:
-                if created_path.exists() and created_path not in [
-                    b.original_path for b in txn.backups
-                ]:
+                if created_path.exists() and created_path not in [b.original_path for b in txn.backups]:
                     created_path.unlink()
                     logger.debug(f"Removed created file {created_path}")
             except Exception as e:

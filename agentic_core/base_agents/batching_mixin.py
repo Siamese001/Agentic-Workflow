@@ -104,9 +104,7 @@ class BatchingMixin:
                 queue_name not in self._batch_queues
                 and len(self._batch_queues) >= self._batching_config.max_batch_queues
             ):
-                raise ValueError(
-                    f"Maximum batch queues ({self._batching_config.max_batch_queues}) exceeded"
-                )
+                raise ValueError(f"Maximum batch queues ({self._batching_config.max_batch_queues}) exceeded")
 
             if queue_name not in self._batch_queues:
                 self._batch_queues[queue_name] = []

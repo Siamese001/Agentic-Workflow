@@ -122,9 +122,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
             # Update average confidence
             total = self.analytics["analyses_performed"]
             current_avg = self.analytics["average_confidence"]
-            self.analytics["average_confidence"] = (
-                (current_avg * (total - 1)) + decision.confidence
-            ) / total
+            self.analytics["average_confidence"] = ((current_avg * (total - 1)) + decision.confidence) / total
 
             await self.cache_set(cache_key, decision.__dict__, ttl=3600)
 
@@ -142,8 +140,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         """
         return {
             **self.analytics,
-            "cache_hit_rate": self.analytics["cache_hits"]
-            / max(self.analytics["analyses_performed"], 1),
+            "cache_hit_rate": self.analytics["cache_hits"] / max(self.analytics["analyses_performed"], 1),
             "project_root": str(self.project_root),
             "confidence_threshold": self.confidence_threshold,
         }
@@ -192,9 +189,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                 file_path = Path(path)
 
                 # Get the decision from cognitive analysis
-                decision = asyncio.run(
-                    self.analyze_violation_async(file_path, violation_type, context)
-                )
+                decision = asyncio.run(self.analyze_violation_async(file_path, violation_type, context))
 
                 if decision.confidence >= self.confidence_threshold:
                     action = decision.action.lower()
@@ -206,9 +201,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                         )
 
                         archivist = ArchivalGatekeeper(self.project_root)
-                        archivist.archive_file(
-                            file_path, reason=f"cognitive_disposition: {decision.reason}"
-                        )
+                        archivist.archive_file(file_path, reason=f"cognitive_disposition: {decision.reason}")
                         Logger.info(f"  Archived {path} based on cognitive analysis")
                         return {
                             "violations_fixed": 1,
@@ -258,9 +251,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                             "skipped": 1,
                         }
                 else:
-                    Logger.warning(
-                        f"  Low confidence ({decision.confidence}) - requires manual review"
-                    )
+                    Logger.warning(f"  Low confidence ({decision.confidence}) - requires manual review")
                     return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
             except Exception as e:

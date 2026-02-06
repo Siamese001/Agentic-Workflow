@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Implementation for AutonomicMonitorAgent."""
@@ -27,7 +27,7 @@ Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 
 @dataclass
@@ -233,7 +233,7 @@ class AutonomicMonitorAgent(AtomicExecutionMixin, SubatomicTestingMixin, Soverei
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        Heal a specific violation (HealerProtocol compliance).
+        Heal a specific violation (IHealerProtocol compliance).
 
         Args:
             violation: Dict containing violation details

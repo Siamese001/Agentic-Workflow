@@ -14,7 +14,7 @@ from typing import Any
 
 import libcst as cst
 
-from .cst_transformers import (
+from .cst_transformers_types import (
     create_bare_except_fixer,
     create_blank_line_normalizer,
     create_docstring_inserter,
@@ -23,7 +23,7 @@ from .cst_transformers import (
     create_trailing_whitespace_fixer,
     create_type_hint_inserter,
 )
-from .surgical_context import (
+from .surgical_context_types import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
@@ -65,9 +65,7 @@ class SurgicalCSTTransformer(cst.CSTTransformer):
                 )
                 self.modifications.append(mod)
 
-    def leave_ClassDef(
-        self, original_node: cst.ClassDef, updated_node: cst.ClassDef
-    ) -> cst.ClassDef:
+    def leave_ClassDef(self, original_node: cst.ClassDef, updated_node: cst.ClassDef) -> cst.ClassDef:
         """Handle ClassDef nodes."""
         return self._apply_modifications_if_needed(original_node, updated_node, "ClassDef")
 
@@ -81,9 +79,7 @@ class SurgicalCSTTransformer(cst.CSTTransformer):
         """Handle Import nodes."""
         return self._apply_modifications_if_needed(original_node, updated_node, "Import")
 
-    def leave_ImportFrom(
-        self, original_node: cst.ImportFrom, updated_node: cst.ImportFrom
-    ) -> cst.ImportFrom:
+    def leave_ImportFrom(self, original_node: cst.ImportFrom, updated_node: cst.ImportFrom) -> cst.ImportFrom:
         """Handle ImportFrom nodes."""
         return self._apply_modifications_if_needed(original_node, updated_node, "ImportFrom")
 
@@ -91,9 +87,7 @@ class SurgicalCSTTransformer(cst.CSTTransformer):
         self, original_node: cst.SimpleStatementLine, updated_node: cst.SimpleStatementLine
     ) -> cst.SimpleStatementLine:
         """Handle SimpleStatementLine nodes (for bare except, etc.)."""
-        return self._apply_modifications_if_needed(
-            original_node, updated_node, "SimpleStatementLine"
-        )
+        return self._apply_modifications_if_needed(original_node, updated_node, "SimpleStatementLine")
 
     def _apply_modifications_if_needed(
         self, original_node: cst.CSTNode, updated_node: cst.CSTNode, node_type: str
@@ -160,9 +154,7 @@ class SurgicalCSTTransformer(cst.CSTTransformer):
             if "bare_except" in modification.node_type:
                 except_handler = cst.ExceptHandler(
                     body=cst.IndentBlock(
-                        body=[
-                            cst.SimpleStatementLine(body=[cst.Expr(value=cst.Name(value="pass"))])
-                        ]
+                        body=[cst.SimpleStatementLine(body=[cst.Expr(value=cst.Name(value="pass"))])]
                     )
                 )
                 return cst.SimpleStatementLine(body=[except_handler])
@@ -324,9 +316,7 @@ class SurgicalCSTHealerMixin:
 
         return None
 
-    def _find_cst_node_by_coordinate(
-        self, tree: cst.Module, coordinate: ASTCoordinate
-    ) -> cst.CSTNode | None:
+    def _find_cst_node_by_coordinate(self, tree: cst.Module, coordinate: ASTCoordinate) -> cst.CSTNode | None:
         """Find CST node at specific coordinate."""
 
         class CoordinateFinder(cst.CSTVisitor):
@@ -335,41 +325,25 @@ class SurgicalCSTHealerMixin:
                 self.found_node = None
 
             def visit_ClassDef(self, node: cst.ClassDef) -> bool:
-                if (
-                    hasattr(node, "position")
-                    and node.position
-                    and node.position.line == self.target_line
-                ):
+                if hasattr(node, "position") and node.position and node.position.line == self.target_line:
                     self.found_node = node
                     return False  # Don't visit children
                 return True
 
             def visit_FunctionDef(self, node: cst.FunctionDef) -> bool:
-                if (
-                    hasattr(node, "position")
-                    and node.position
-                    and node.position.line == self.target_line
-                ):
+                if hasattr(node, "position") and node.position and node.position.line == self.target_line:
                     self.found_node = node
                     return False  # Don't visit children
                 return True
 
             def visit_Import(self, node: cst.Import) -> bool:
-                if (
-                    hasattr(node, "position")
-                    and node.position
-                    and node.position.line == self.target_line
-                ):
+                if hasattr(node, "position") and node.position and node.position.line == self.target_line:
                     self.found_node = node
                     return False
                 return True
 
             def visit_ImportFrom(self, node: cst.ImportFrom) -> bool:
-                if (
-                    hasattr(node, "position")
-                    and node.position
-                    and node.position.line == self.target_line
-                ):
+                if hasattr(node, "position") and node.position and node.position.line == self.target_line:
                     self.found_node = node
                     return False
                 return True

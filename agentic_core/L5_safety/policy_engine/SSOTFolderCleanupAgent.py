@@ -107,9 +107,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         except ImportError as e:
             Logger.critical(f"FATAL: Failed to load SSOT config: {e}")
             # SAFETY INTERLOCK: Do not proceed with empty config
-            raise RuntimeError(
-                "SSOT configuration Load Failed - Aborting to prevent mass deletion."
-            )
+            raise RuntimeError("SSOT configuration Load Failed - Aborting to prevent mass deletion.")
 
     def _build_approved_paths(self) -> None:
         """Build the complete set of SSOT-approved paths."""
@@ -411,16 +409,12 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
             if i in import_lines:
                 # Apply replacements ONLY on verified import lines
                 # 1. Handle "from X import Y"
-                line = from_pattern.sub(
-                    lambda m: f"from {new_module}{m.group(1) or ''} import", line
-                )
+                line = from_pattern.sub(lambda m: f"from {new_module}{m.group(1) or ''} import", line)
                 # 2. Handle "import X"
                 # Ensure we don't match "import X" inside "from Z import X"
                 # (which AST filtering helps with, but regex needs care)
                 if not line.strip().startswith("from"):
-                    line = import_pattern.sub(
-                        lambda m: f"import {new_module}{m.group(1) or ''}", line
-                    )
+                    line = import_pattern.sub(lambda m: f"import {new_module}{m.group(1) or ''}", line)
             new_lines.append(line)
 
         return "".join(new_lines)
@@ -584,9 +578,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         finally:
             self.dry_run = original_dry_run
 
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

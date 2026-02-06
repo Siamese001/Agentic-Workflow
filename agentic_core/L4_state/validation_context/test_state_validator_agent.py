@@ -121,9 +121,7 @@ class StateValidatorAgent(SovereignBaseAgent):
                     field_name = key.replace(f"_{field_suffix}", "")
                     if field_name in state_data:
                         if state_data[field_name] not in valid_values:
-                            errors.append(
-                                f"Invalid value for {field_name}: {state_data[field_name]}"
-                            )
+                            errors.append(f"Invalid value for {field_name}: {state_data[field_name]}")
 
         is_valid = len(errors) == 0
 
@@ -131,7 +129,7 @@ class StateValidatorAgent(SovereignBaseAgent):
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        HealerProtocol compliance method for state validation violations.
+        IHealerProtocol compliance method for state validation violations.
 
         Args:
             violation: Dictionary containing violation details
@@ -185,9 +183,7 @@ class StateValidatorAgent(SovereignBaseAgent):
                                     fixes_applied.append(f"Added missing field: {field}")
 
                         # Re-validate after fixes
-                        is_valid_after_fix, remaining_errors = self.validate_state(
-                            hop_id, fixed_data
-                        )
+                        is_valid_after_fix, remaining_errors = self.validate_state(hop_id, fixed_data)
 
                         if is_valid_after_fix:
                             return {
@@ -236,9 +232,7 @@ class StateValidatorAgent(SovereignBaseAgent):
                                     if fixed_data[field_name] not in valid_values:
                                         # Use first valid value as default
                                         fixed_data[field_name] = valid_values[0]
-                                        fixes_applied.append(
-                                            f"Fixed {field_name} to {valid_values[0]}"
-                                        )
+                                        fixes_applied.append(f"Fixed {field_name} to {valid_values[0]}")
 
                         return {
                             "status": "success",

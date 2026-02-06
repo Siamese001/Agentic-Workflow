@@ -65,9 +65,7 @@ class TruthKeeper:
                             }
                         )
         except SyntaxError as e:
-            violations.append(
-                {"type": "syntax", "file": file_path, "message": f"Syntax error: {e}"}
-            )
+            violations.append({"type": "syntax", "file": file_path, "message": f"Syntax error: {e}"})
         except Exception as e:
             LOGGER.error(f"Error checking {file_path}: {e}")
         return {"violations": violations, "fixes": fixes, "file": file_path}

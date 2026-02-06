@@ -31,7 +31,7 @@ from typing import Any, Literal
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
-    from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+    from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
@@ -94,7 +94,8 @@ FileType = Literal[
     "VALIDATOR",
     "FACTORY",
     "CONFIG",
-    "ADAPTER",
+    "ADAPTER",  # Classes ending in Adapter, Wrapper, Bridge
+    "STRATEGY",  # Classes ending in Strategy
     "IGNORE",
 ]
 
@@ -143,6 +144,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 "FACTORY": 0,
                 "CONFIG": 0,
                 "ADAPTER": 0,
+                "STRATEGY": 0,
             },
             "territory_moves": 0,
         }
@@ -172,6 +174,114 @@ class FileClassificationAgent(*BASE_CLASSES):
             "CLASS": ["domain", "engines", "utils"],
             "MIXIN": ["utils", "shared", "mixins"],
         }
+
+        # STANDARD KERNEL: All layers should have these subfolders
+        self.standard_kernel = ["utils", "config", "agents"]
+
+    def enforce_kernel_structure(self, file_path: Path, layer_root: Path | None = None) -> Path | None:
+        """
+        Enforce Standard Kernel structure by detecting and relocating misplaced files.
+
+        Standard Kernel subfolders (utils, config, agents) should exist in all layers.
+        Files matching kernel patterns are routed to their appropriate subfolder.
+
+        GLOBAL OVERRIDES (apply regardless of current location):
+        - *_validator.py -> agentic_core/L5_safety/validators/ (all validators go to L5)
+
+        KERNEL ROUTING (within layer):
+        - *_util.py -> layer_root/utils/
+        - *_config.py -> layer_root/config/
+        - *_script.py (L0 only) -> layer_root/scripts/
+        - *Agent.py (at layer root) -> layer_root/agents/
+
+        Args:
+            file_path: The file to check
+            layer_root: Optional pre-computed layer root
+
+        Returns:
+            New target path if file should be moved, None if file is correctly placed.
+        """
+        parts = file_path.parts
+        filename = file_path.name
+
+        # Skip critical files
+        if filename in ("__init__.py", "__main__.py", "conftest.py"):
+            return None
+
+        # === GLOBAL OVERRIDE: Validators always go to L5_safety/validators ===
+        if filename.endswith("_validator.py"):
+            # Find agentic_core root
+            if "agentic_core" in parts:
+                agentic_idx = parts.index("agentic_core")
+                agentic_root = Path(*parts[: agentic_idx + 1])
+                target = agentic_root / "L5_safety" / "validators" / filename
+                # Only return if not already there
+                if file_path.parent != target.parent:
+                    return target
+            return None
+
+        # Only process files in agentic_core layers for kernel routing
+        if "agentic_core" not in parts:
+            return None
+
+        # Find the layer root (L0-L6) if not provided
+        if layer_root is None:
+            layer_prefixes = ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
+            layer_idx = None
+
+            for i, part in enumerate(parts):
+                if any(part.startswith(prefix) for prefix in layer_prefixes):
+                    layer_root = Path(*parts[: i + 1])
+                    layer_idx = i
+                    break
+
+            if not layer_root:
+                return None
+        else:
+            # Calculate layer_idx from provided layer_root
+            layer_idx = len(layer_root.parts) - 1
+
+        # Determine current file depth relative to layer
+        file_depth = len(parts) - 1  # Index of filename
+
+        # === L0 SCRIPTS SPECIAL CASE ===
+        if "L0_maintenance" in parts and "scripts" in parts:
+            scripts_idx = parts.index("scripts")
+            # If file is directly in scripts/ (not in a sub-subfolder)
+            if file_depth == scripts_idx + 1:
+                # Utilities in scripts should go to utils
+                if filename.endswith("_util.py"):
+                    return layer_root / "utils" / filename
+                # Agents in scripts should go to agents
+                if filename.endswith("Agent.py"):
+                    return layer_root / "agents" / filename
+                # Scripts stay in scripts (if properly named)
+                if filename.endswith("_script.py"):
+                    return None  # Already correct
+
+        # If file is not at layer root, it's already in a subfolder
+        if file_depth != layer_idx + 1:
+            return None
+
+        # === KERNEL ROUTING FOR FILES AT LAYER ROOT ===
+
+        # Utilities -> utils/
+        if filename.endswith("_util.py"):
+            return layer_root / "utils" / filename
+
+        # Configs -> config/ (except structure_blueprint_config.py)
+        if filename.endswith("_config.py") and filename != "structure_blueprint_config.py":
+            return layer_root / "config" / filename
+
+        # Scripts (L0 only) -> scripts/
+        if filename.endswith("_script.py") and "L0_maintenance" in str(layer_root):
+            return layer_root / "scripts" / filename
+
+        # Agents -> agents/
+        if filename.endswith("Agent.py"):
+            return layer_root / "agents" / filename
+
+        return None
 
     def run(self) -> dict[str, Any]:
         """Entry point for execute_ssot.py orchestration."""
@@ -383,9 +493,32 @@ class FileClassificationAgent(*BASE_CLASSES):
             return "IGNORE"
 
         # [PRIORITY 2.5] BASE AGENT Detection: Special case for base_agents
-        # Base agents are foundational classes, not runtime agents
+        # Only canonical base agents (L0-L6BaseAgent, SovereignBaseAgent) are forced to CLASS
+        # NOTE: AppBaseAgent REMOVED - it belongs in apps_shared/agents/AppBase.py
+        # Mixins should remain MIXIN, scripts/utilities should be flagged for movement
         if "base_agents" in path.parts:
-            return "CLASS"
+            # Canonical base agent patterns - these are foundational classes
+            # HARDENED: "App" prefix files are FORBIDDEN in agentic_core - they belong in apps_*
+            canonical_base_patterns = [
+                "SovereignBaseAgent",
+                "LightweightAgentBase",
+                "L0MaintenanceBase",
+                "L1CognitionBaseAgent",
+                "L2ExecutionBaseAgent",
+                "L3OrchestrationBaseAgent",
+                "L4StateBaseAgent",
+                "L5SafetyBaseAgent",
+                "L6ObservabilityBaseAgent",
+                "BaseMetaLearner",
+            ]
+            # Check if this is a canonical base agent
+            if any(pattern in path.name for pattern in canonical_base_patterns):
+                return "CLASS"
+            # Allow Mixin files to be classified as MIXIN (don't force CLASS)
+            if "Mixin" in path.name or "mixin" in path.name.lower():
+                pass  # Let normal classification handle it
+            # Scripts and utilities in base_agents should NOT be forced to CLASS
+            # They will be classified normally and flagged for territory violation
 
         # [PRIORITY 2.5] SELF DETECTION: FileClassificationAgent is always an AGENT
         if path.name == "FileClassificationAgent.py":
@@ -408,20 +541,6 @@ class FileClassificationAgent(*BASE_CLASSES):
         # CONSOLIDATED TEST IMMUNITY FOR GUARDRAILS
         if "guardrails" in path.parts:
             pass  # Skip TEST classification entirely
-
-        # [PRIORITY 5] TYPES Detection: Enhanced AST-based detection
-        # Detect type collections by class patterns
-        type_indicators = self._detect_type_patterns(tree, path)
-        if type_indicators["is_types"]:
-            return "TYPES"
-
-        # HARDENED TYPES PRIORITY
-        if "types" in path.name.lower() and path.name.endswith(".py"):
-            if any(
-                keyword in content
-                for keyword in ["TypedDict", "Protocol", "TypeAlias", "Enum", "Literal", "Final"]
-            ):
-                return "TYPES"
 
         # === REFACTORED PRIMARY-CLASS-CENTRIC DETECTION ===
         # Collect all ClassDef nodes
@@ -507,8 +626,15 @@ class FileClassificationAgent(*BASE_CLASSES):
         ]
         is_orchestrator = any(p in primary_name for p in orchestrator_patterns)
 
-        adapter_patterns = ["Strategy", "Adapter", "strategy", "adapter"]
+        # Split ADAPTER into STRATEGY and ADAPTER categories
+        strategy_patterns = ["Strategy"]
+        is_strategy = any(p in primary_name for p in strategy_patterns)
+
+        adapter_patterns = ["Adapter", "Wrapper", "Bridge"]
         is_adapter = any(p in primary_name for p in adapter_patterns)
+
+        # PROTOCOL priority: Files starting with "I" (interface convention)
+        is_interface_protocol = path.name.startswith("I") and path.name[1:2].isupper()
 
         # Check Config via pattern helper (passed tree for attribute check)
         config_indicators = ["config", "blueprint", "settings", "manifest", "Config", "Settings", "Options"]
@@ -520,11 +646,14 @@ class FileClassificationAgent(*BASE_CLASSES):
         is_validator = self._detect_validator_patterns(tree, path, content, validator_patterns)
 
         # [PRIORITY 4] SCRIPT Detection - MOVED AFTER AGENT CHECK
-        # CRITICAL FIX: Explicitly exclude Agents from being classified as Scripts
+        # CRITICAL FIX: Explicitly exclude Agents, Orchestrators, Engines, Adapters from being classified as Scripts
         if path.name != "FileClassificationAgent.py" and not is_agent:
-            script_indicators = self._detect_script_patterns(tree, path)
-            if script_indicators["is_script"]:
-                return "SCRIPT"
+            # Exclude architectural components from SCRIPT classification (case-insensitive)
+            exclusion_keywords = ["agent", "orchestrator", "engine", "adapter"]
+            if not any(keyword in path.name.lower() for keyword in exclusion_keywords):
+                script_indicators = self._detect_script_patterns(tree, path)
+                if script_indicators["is_script"]:
+                    return "SCRIPT"
 
         # [WINDSURF IMPLEMENTATION] PRIORITY EXECUTION - Order matters!
         # 1. STUB: Already handled above (preempts all)
@@ -542,10 +671,17 @@ class FileClassificationAgent(*BASE_CLASSES):
         if is_mixin:
             return "MIXIN"
 
+        # 5.5. PROTOCOL PRIORITY: Interface files (I*.py) are strictly PROTOCOL
+        if is_interface_protocol or is_protocol:
+            return "PROTOCOL"
+
         # 6. ORCHESTRATOR: Detect if Orchestrator in class name or path
         if is_orchestrator:
             return "ORCHESTRATOR"
-        # 7. ADAPTER: Detect if Strategy or Adapter in class name or file path
+        # 7. STRATEGY: Classes ending in Strategy
+        elif is_strategy:
+            return "STRATEGY"
+        # 7.5. ADAPTER: Classes ending in Adapter, Wrapper, Bridge
         elif is_adapter:
             return "ADAPTER"
         # APP-SPECIFIC CLASSIFICATION OVERRIDES
@@ -559,21 +695,41 @@ class FileClassificationAgent(*BASE_CLASSES):
             if "Validator" in primary_name and "Agent" in primary_name:
                 return "VALIDATOR"
 
-        # 8. CONFIG: Detect if file name or path contains config, blueprint, settings, or manifest
-        elif is_config:
-            return "CONFIG"
-        # 9. VALIDATOR: Detect if path contains validators/ or file name ends in _validator
-        # CONSOLIDATED PRIORITY: AGENT wins over VALIDATOR
+        # 8. AGENT: PRIORITY - Agent detection must come before CONFIG/VALIDATOR
+        # Files can contain Config/Validator classes but if primary class is Agent, it's an AGENT
         if is_agent:
             return "AGENT"
+        # 9. CONFIG: Detect if file name or path contains config, blueprint, settings, or manifest
+        elif is_config:
+            return "CONFIG"
+        # 10. VALIDATOR: Detect if path contains validators/ or file name ends in _validator
         elif is_validator:
             return "VALIDATOR"
-        # 10. PROTOCOL: Keep existing AST check
-        elif is_protocol:
-            return "PROTOCOL"
+        # 10. PROTOCOL: Already handled above with priority
         # 11. FACTORY: Detect if class name ends in Factory
         elif is_factory:
             return "FACTORY"
+
+        # [PRIORITY 12] TYPES Detection: HARDENED for schemas/ and models/
+        # Files in schemas/ or models/ are TYPES even with minor config/validation logic
+        # This prevents hybrid names like _types_config.py - enforce pure _types.py suffix
+        if "schemas" in path.parts or "models" in path.parts:
+            # Force TYPES classification for data structure files in these folders
+            if not is_agent and not is_orchestrator:
+                return "TYPES"
+
+        type_indicators = self._detect_type_patterns(tree, path)
+        if type_indicators["is_types"]:
+            return "TYPES"
+
+        # HARDENED TYPES PRIORITY (secondary check)
+        if "types" in path.name.lower() and path.name.endswith(".py"):
+            if any(
+                keyword in content
+                for keyword in ["TypedDict", "Protocol", "TypeAlias", "Enum", "Literal", "Final"]
+            ):
+                return "TYPES"
+
         # 14. CLASS: Fallback for any other class
         else:
             return "CLASS"
@@ -581,6 +737,19 @@ class FileClassificationAgent(*BASE_CLASSES):
     # ========================================================================
     # ENHANCED AST-BASED DETECTION METHODS
     # ========================================================================
+
+    def _to_pascal_case(self, name: str) -> str:
+        """
+        Converts snake_case or mixed case to PascalCase.
+        Example: 'pii_sanitizer' -> 'PiiSanitizer', 'PDFLoader' -> 'PdfLoader'
+        """
+        # If already PascalCase, return as-is
+        if name and name[0].isupper() and "_" not in name:
+            return name
+
+        # Split on underscores and capitalize each part
+        parts = name.split("_")
+        return "".join(word.capitalize() for word in parts if word)
 
     def _to_smart_snake_case(self, name: str) -> str:
         """
@@ -626,6 +795,109 @@ class FileClassificationAgent(*BASE_CLASSES):
             result = result.replace(placeholder.lower(), replacement)
 
         return result
+
+    def _sanitize_filename(self, stem: str) -> str:
+        """
+        Strip known architectural suffixes from a filename stem to prevent stuttering.
+
+        This prevents "stuttering" (e.g., feature_flags_config_util.py) and
+        "hybrid suffixes" (e.g., embedding_config_types_config.py).
+
+        Logic: Iteratively remove known suffixes until none remain.
+
+        IMPORTANT: Only strips TRAILING architectural suffixes, not semantic content.
+        For example, "agent_discovery" keeps "agent" because it's semantic, not a suffix.
+
+        Args:
+            stem: The filename stem (without .py extension)
+
+        Returns:
+            The sanitized core name with trailing architectural suffixes removed.
+
+        Examples:
+            - "feature_flags_config_util" -> "feature_flags"
+            - "embedding_config_types_config" -> "embedding"
+            - "user_profile_types" -> "user_profile"
+            - "agent_discovery_util" -> "agent_discovery" (keeps semantic "agent")
+        """
+        # Known architectural suffixes to strip (trailing only)
+        # These are file-type markers, not semantic content
+        known_suffixes = [
+            "_config",
+            "_util",
+            "_types",
+            "_script",
+            "_mixin",
+            "_base",
+            "_validator",
+            "_protocol",
+            "_strategy",
+            "_adapter",
+            "_factory",
+            "_orchestrator",
+            "_engine",
+            "_gateway",
+            "_stub",
+            "_test",
+            "Config",
+            "Util",
+            "Types",
+            "Script",
+            "Mixin",
+            "Base",
+            "Validator",
+            "Protocol",
+            "Strategy",
+            "Adapter",
+            "Factory",
+            "Orchestrator",
+            "Engine",
+            "Gateway",
+            "Stub",
+            "Test",
+        ]
+
+        # NOTE: "_agent" and "Agent" are NOT stripped because they often carry
+        # semantic meaning (e.g., "agent_discovery" describes what the utility does)
+        # Only strip "_agent" if it's a trailing suffix AND followed by another suffix
+
+        sanitized = stem
+        changed = True
+
+        # Iteratively strip suffixes until no more are found
+        while changed:
+            changed = False
+            for suffix in known_suffixes:
+                if sanitized.endswith(suffix) and len(sanitized) > len(suffix):
+                    sanitized = sanitized[: -len(suffix)]
+                    changed = True
+                    break  # Restart from beginning of suffix list
+
+        # Special case: Strip trailing "_agent" or "Agent" if it appears AFTER a known suffix pattern
+        # This catches cases like "healing_mixin_agent" (mixin before agent) but not "agent_discovery"
+        # Check if the original stem had a pattern like *_mixin_agent, *_config_agent, etc.
+        agent_after_suffix_patterns = [
+            "_mixin_agent",
+            "_config_agent",
+            "_types_agent",
+            "_util_agent",
+            "_validator_agent",
+            "_script_agent",
+            "_base_agent",
+        ]
+        for pattern in agent_after_suffix_patterns:
+            if stem.endswith(pattern):
+                # Strip the trailing _agent since it was after another suffix
+                if sanitized.endswith("_agent"):
+                    sanitized = sanitized[:-6]
+                elif sanitized.endswith("Agent"):
+                    sanitized = sanitized[:-5]
+                break
+
+        # Clean up trailing underscores
+        sanitized = sanitized.rstrip("_")
+
+        return sanitized if sanitized else stem  # Fallback to original if fully stripped
 
     def _detect_test_patterns(self, tree: ast.AST, path: Path) -> dict[str, bool]:
         """
@@ -1643,7 +1915,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # [APP RULES] Now using self.app_territory_map instead
 
-        # [CORE RULES] Domain-Driven Design
+        # [CORE RULES] Domain-Driven Design with Functional Stratification
         # In Core, Agents follow the Domain (Guardrails, Registry, etc.)
         # We explicitly whitelist valid functional domains for each type.
         core_rules = {
@@ -1671,11 +1943,21 @@ class FileClassificationAgent(*BASE_CLASSES):
                 "validation_context",
                 "gravity",
                 "red_teaming",
+                "core",  # Allow validators in core/
             },
-            "CONFIG": {"config", "manifests", "blueprint_sovereign"},
+            "CONFIG": {
+                "config",  # Root config folder
+                "core",  # config/core/ for foundational settings
+                "manifests",  # config/manifests/ for system metadata
+                "engines",  # config/engines/ for layer-specific parameters
+                "blueprint_sovereign",
+            },
             "PROTOCOL": {"interfaces", "protocols", "mcp"},  # MCP has protocols
-            "TYPES": {"schemas", "models", "domain", "types", "config"},
-            "MIXIN": {"mixins", "base_agents", "utils"},  # Allow mixins in utils
+            "TYPES": {"schemas", "models", "domain", "types"},
+            "MIXIN": {"mixins", "base_agents"},  # Strict: only mixins folder and base_agents
+            "CLASS": {"base_agents", "core", "shared_runtime"},  # Base classes allowed here
+            "SCRIPT": {"scripts", "L0_maintenance"},  # Scripts only in scripts/ or L0_maintenance/
+            "UTILITY": {"utils", "scripts", "L0_maintenance"},  # Utilities in utils/ or L0_maintenance/
         }
 
         # 3. EXECUTE VALIDATION
@@ -1699,6 +1981,75 @@ class FileClassificationAgent(*BASE_CLASSES):
             return None
 
         elif is_core:
+            # [HARDENED] APP PREFIX DEPORTATION: "App*" files are FORBIDDEN in agentic_core
+            # They belong in apps_shared/agents/ - trigger territory violation
+            if path.name.startswith("App") and "agentic_core" in str(path):
+                # Deport to apps_shared/agents/
+                target_path = self.project_root / "apps_shared" / "agents" / path.name
+                self.processed_paths.add(path)
+                self.processed_paths.add(target_path)
+                return target_path
+
+            # [HARDENED] base_agents PURIFICATION: Only CLASS (*Base.py) and MIXIN (*_mixin.py) allowed
+            # Scripts, utilities, and active workers MUST be relocated
+            if current_parent == "base_agents":
+                if file_type in ("SCRIPT", "UTILITY"):
+                    # Flag for movement to L0_maintenance/scripts/
+                    for i, part in enumerate(path.parts):
+                        if part == "agentic_core":
+                            target_path = (
+                                Path(*path.parts[: i + 1]) / "L0_maintenance" / "scripts" / path.name
+                            )
+                            self.processed_paths.add(path)
+                            self.processed_paths.add(target_path)
+                            return target_path
+                    return None
+                # CLASS and MIXIN are allowed in base_agents - no violation
+                if file_type in ("CLASS", "MIXIN"):
+                    return None
+                # AGENT workers should be moved to engines/ (not L0_maintenance/scripts/)
+                if file_type == "AGENT":
+                    for i, part in enumerate(path.parts):
+                        if part == "agentic_core":
+                            target_path = Path(*path.parts[: i + 1]) / "engines" / path.name
+                            self.processed_paths.add(path)
+                            self.processed_paths.add(target_path)
+                            return target_path
+                # CONFIG, PROTOCOL, TYPES, STRATEGY, ADAPTER etc. should NOT be in base_agents
+                # Flag for movement to appropriate location
+                if file_type in ("CONFIG", "PROTOCOL", "TYPES", "STRATEGY", "ADAPTER"):
+                    for i, part in enumerate(path.parts):
+                        if part == "agentic_core":
+                            # Route to appropriate folder based on type
+                            target_folder = {
+                                "CONFIG": "config",
+                                "PROTOCOL": "L3_orchestration/interfaces",
+                                "TYPES": "schemas",
+                                "STRATEGY": "L3_orchestration/utils",
+                                "ADAPTER": "L2_execution/mcp",
+                            }.get(file_type, "utils")
+                            target_path = Path(*path.parts[: i + 1]) / target_folder / path.name
+                            self.processed_paths.add(path)
+                            self.processed_paths.add(target_path)
+                            return target_path
+
+            # [HARDENED] config/ PURIFICATION: Only CONFIG types allowed
+            # Scripts and utilities in config/ MUST be moved to L0_maintenance/scripts/
+            if current_parent == "config":
+                if file_type in ("SCRIPT", "UTILITY"):
+                    for i, part in enumerate(path.parts):
+                        if part == "agentic_core":
+                            target_path = (
+                                Path(*path.parts[: i + 1]) / "L0_maintenance" / "scripts" / path.name
+                            )
+                            self.processed_paths.add(path)
+                            self.processed_paths.add(target_path)
+                            return target_path
+                    return None
+                # CONFIG is allowed in config/ - no violation
+                if file_type == "CONFIG":
+                    return None
+
             # Domain Check
             allowed_set = core_rules.get(file_type)
             if allowed_set:
@@ -1706,20 +2057,47 @@ class FileClassificationAgent(*BASE_CLASSES):
                 if current_parent not in allowed_set:
                     # Generic Catch-All: If it's in a generic junk folder, move it.
                     # If in specialized domain (e.g. 'planning'), assume OK (Innocent until proven guilty)
-                    junk_drawers = {"utils", "common", "helpers", "misc", "temp"}
+                    # DEPRECATED ZONES: These folders are "junk drawers" that must be evacuated
+                    junk_drawers = {
+                        "utils",
+                        "common",
+                        "helpers",
+                        "misc",
+                        "temp",
+                        "patterns",
+                        "agent_roles",  # Deprecated: evacuate to base_agents
+                    }
 
                     if current_parent in junk_drawers:
                         # Move to the primary home for that type
                         # Map Type -> Primary Core Home
                         core_defaults = {
-                            "AGENT": "base_agents",  # Or specific layer if inferable, but base_agents is safe
+                            "AGENT": "base_agents",
                             "VALIDATOR": "validators",
                             "CONFIG": "config",
                             "PROTOCOL": "interfaces",
                             "TYPES": "schemas",
                             "MIXIN": "base_agents",
+                            "CLASS": "base_agents",  # Classes evacuate to base_agents
+                            "SCRIPT": "L0_maintenance/scripts",  # Scripts evacuate to L0
+                            "UTILITY": "L0_maintenance/scripts",  # Utilities evacuate to L0
+                            "STRATEGY": "L3_orchestration/utils",
+                            "ADAPTER": "L2_execution/mcp",
                         }
                         target_folder = core_defaults.get(file_type)
+
+                    # DEPRECATED ZONE EVACUATION: Force evacuation from patterns/* regardless of type
+                    if "patterns" in path.parts and target_folder is None:
+                        # Default evacuation for any file type in patterns/
+                        type_to_folder = {
+                            "MIXIN": "base_agents",
+                            "CLASS": "base_agents",
+                            "CONFIG": "config",
+                            "SCRIPT": "L0_maintenance/scripts",
+                            "UTILITY": "L0_maintenance/scripts",
+                            "TYPES": "schemas",
+                        }
+                        target_folder = type_to_folder.get(file_type, "base_agents")
 
         # GUARDRAILS IMMUNITY
         if "guardrails" in path.parts and file_type == "AGENT":
@@ -1756,8 +2134,19 @@ class FileClassificationAgent(*BASE_CLASSES):
         return new_path
 
     def get_compliant_name(self, path: Path, file_type: FileType) -> str | None:
-        """Calculates the target filename. Returns None if no change needed."""
-        if file_type in {"IGNORE", "TYPES", "UTILITY"}:
+        """Calculates the target filename. Returns None if no change needed.
+
+        Zero-Ambiguity Naming Standard:
+        - PROTOCOL: PascalCase, starts with 'I' (e.g., IHealerProtocol.py)
+        - CLASS: *Base.py for foundational base agents (e.g., L1CognitionBase.py)
+        - STRATEGY: PascalCase with Strategy.py suffix
+        - ADAPTER: PascalCase with Adapter.py suffix
+        - SCRIPT: snake_case with _script.py suffix
+        - UTILITY: snake_case with _util.py suffix
+        - TYPES: snake_case with _types.py suffix
+        - MIXIN: snake_case with _mixin.py suffix
+        """
+        if file_type == "IGNORE":
             return None
 
         # GLOBAL IDEMPOTENCE GATE
@@ -1823,10 +2212,29 @@ class FileClassificationAgent(*BASE_CLASSES):
 
             return None
 
-        # SCRIPT: Force Snake Case
+        # SCRIPT: Force snake_case with _script.py suffix
         if file_type == "SCRIPT":
-            snake = self._to_smart_snake_case(path.stem)
-            return f"{snake}.py" if f"{snake}.py" != path.name else None
+            # ANTI-STUTTER: Sanitize first, then apply single correct suffix
+            core_name = self._sanitize_filename(path.stem)
+            snake = self._to_smart_snake_case(core_name)
+            new_name = f"{snake}_script.py"
+            return new_name if new_name != path.name else None
+
+        # UTILITY: Force snake_case with _util.py suffix
+        if file_type == "UTILITY":
+            # ANTI-STUTTER: Sanitize first, then apply single correct suffix
+            core_name = self._sanitize_filename(path.stem)
+            snake = self._to_smart_snake_case(core_name)
+            new_name = f"{snake}_util.py"
+            return new_name if new_name != path.name else None
+
+        # TYPES: Force snake_case with _types.py suffix
+        if file_type == "TYPES":
+            # ANTI-STUTTER: Sanitize first, then apply single correct suffix
+            core_name = self._sanitize_filename(path.stem)
+            snake = self._to_smart_snake_case(core_name)
+            new_name = f"{snake}_types.py"
+            return new_name if new_name != path.name else None
 
         # CONSOLIDATED GUARDRAILS NAMING CONVENTION ENFORCEMENT
         if file_type == "AGENT" and "guardrails" in path.parts:
@@ -1847,51 +2255,35 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # CONFIG STANDARDIZATION HARDENING (SEMANTIC PRESERVATION 2026-02-05)
         if file_type == "CONFIG":
-            # CONSERVATIVE APPROACH: Only enforce _config.py suffix
-            # Do NOT strip meaningful terms or rewrite base name aggressively
-            # Rationale: CONFIG files often use dataclasses/TypedDict without strong primary class
-            #           Aggressive stripping causes semantic loss (e.g., gateway_factory → gateway_bundle)
-            if path.name.endswith("_config.py"):
-                self.logger.info(f"[CONFIG COMPLIANT] Skipping rename (already _config.py): {path.name}")
+            # ANTI-STUTTER: Sanitize first, then apply single correct suffix
+            core_name = self._sanitize_filename(path.stem)
+            snake_name = self._to_smart_snake_case(core_name)
+            new_name = f"{snake_name}_config.py"
+            if new_name == path.name:
+                self.logger.info(f"[CONFIG COMPLIANT] Skipping rename (already correct): {path.name}")
                 return None
-
-            # Use filename stem as base (preserves existing meaningful name)
-            base_name = path.stem
-            # Minimal cleanup: only remove legacy/mixed suffixes if present
-            base_name = (
-                base_name.removesuffix("_agent")
-                .removesuffix("_validator")
-                .removesuffix("Config")
-                .removesuffix("Agent")
-            )
-            snake_name = self._to_smart_snake_case(base_name)
-            return f"{snake_name}_config.py"
+            return new_name
 
         # VALIDATOR HARDENING (similar conservative approach)
         if file_type == "VALIDATOR":
-            if path.name.endswith("_validator.py"):
-                self.logger.info(
-                    f"[VALIDATOR COMPLIANT] Skipping rename (already _validator.py): {path.name}"
-                )
+            # ANTI-STUTTER: Sanitize first, then apply single correct suffix
+            core_name = self._sanitize_filename(path.stem)
+            snake_name = self._to_smart_snake_case(core_name)
+            new_name = f"{snake_name}_validator.py"
+            if new_name == path.name:
+                self.logger.info(f"[VALIDATOR COMPLIANT] Skipping rename (already correct): {path.name}")
                 return None
-
-            base_name = path.stem
-            base_name = base_name.removesuffix("Validator").removesuffix("Agent")
-            snake_name = self._to_smart_snake_case(base_name)
-            return f"{snake_name}_validator.py"
+            return new_name
 
         # --- MIXIN STANDARDIZATION ---
         # Logic: Forces Mixins to snake_case.
         # Example: HygieneMixin.py -> hygiene_mixin.py
         if file_type == "MIXIN":
-            stem = path.stem
-            clean_stem = self._to_smart_snake_case(stem)
-
-            if not clean_stem.endswith("_mixin"):
-                clean_stem += "_mixin"
-
-            target = f"{clean_stem}.py"
-            return target if target != path.name else None
+            # ANTI-STUTTER: Sanitize first, then apply single correct suffix
+            core_name = self._sanitize_filename(path.stem)
+            snake = self._to_smart_snake_case(core_name)
+            new_name = f"{snake}_mixin.py"
+            return new_name if new_name != path.name else None
 
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"))
@@ -1913,8 +2305,12 @@ class FileClassificationAgent(*BASE_CLASSES):
                     target_name += "Agent"
 
             elif file_type == "PROTOCOL":
-                # Protocols must remain strictly PascalCase, preserving 'I' prefix.
-                pass
+                # Protocols must be PascalCase and start with 'I' prefix
+                if not target_name.startswith("I"):
+                    target_name = "I" + target_name
+                # Ensure Protocol suffix if not present
+                if not target_name.endswith("Protocol"):
+                    target_name += "Protocol"
 
             elif file_type == "ENGINE":
                 # Engines are high-authority classes, strictly PascalCase.
@@ -1933,22 +2329,27 @@ class FileClassificationAgent(*BASE_CLASSES):
 
             # WINDSURF IMPLEMENTATION: New naming conventions
             elif file_type == "ORCHESTRATOR":
-                # [FIXED] Strip conflicting suffixes first to prevent "AgentOrchestrator"
-                target_name = target_name.replace("Agent", "").replace("Service", "")
+                # [FIXED] Strip conflicting suffixes first to prevent "AgentOrchestrator" or "ConfigOrchestrator"
+                target_name = target_name.replace("Agent", "").replace("Service", "").replace("Config", "")
                 # Force PascalCase and ensure Orchestrator suffix
                 if not target_name.endswith("Orchestrator"):
                     target_name += "Orchestrator"
 
+            elif file_type == "STRATEGY":
+                # STRATEGY: PascalCase with Strategy suffix
+                target_name = target_name.replace("Agent", "")
+                # STUTTER PREVENTION: Check if Strategy already exists
+                if not target_name.endswith("Strategy"):
+                    target_name += "Strategy"
+
             elif file_type == "ADAPTER":
                 if "guardrails" in path.parts:
                     return None
-                # [FIXED] Handle Strategy/Adapter duality & strip Agent
+                # ADAPTER: PascalCase with Adapter suffix
                 target_name = target_name.replace("Agent", "")
-                # Force PascalCase and ensure Strategy suffix (for Strategy patterns)
-                if "Strategy" not in target_name:
-                    # If it's an Adapter, ensure Adapter suffix
-                    if "Adapter" not in target_name:
-                        target_name += "Strategy"  # Default to Strategy for consistency
+                # STUTTER PREVENTION: Check if Adapter/Wrapper/Bridge already exists
+                if not any(target_name.endswith(s) for s in ["Adapter", "Wrapper", "Bridge"]):
+                    target_name += "Adapter"
 
             elif file_type == "FACTORY":
                 # Force PascalCase and ensure Factory suffix

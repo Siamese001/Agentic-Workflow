@@ -83,8 +83,7 @@ class DashboardDataGenerator:
 
         avg_cc = round(metrics["cc_sum"] / t, 1)
         health = round(
-            ((metrics["test"] / t * 100) + (metrics["heal_inv"] / t * 100) + (metrics["obs"] / t))
-            / 3,
+            ((metrics["test"] / t * 100) + (metrics["heal_inv"] / t * 100) + (metrics["obs"] / t)) / 3,
             1,
         )
 
@@ -98,11 +97,7 @@ class DashboardDataGenerator:
             "Typed %": round(metrics["typed"] / t, 1),
             "Documented %": round(metrics["doc"] / t, 1),
             "Health": health,
-            "Risk": "HIGH"
-            if avg_cc > 12 or health < 60
-            else "MED"
-            if avg_cc > 8 or health < 80
-            else "LOW",
+            "Risk": "HIGH" if avg_cc > 12 or health < 60 else "MED" if avg_cc > 8 or health < 80 else "LOW",
             "Priority": priority,
             "schema Strictness %": round(metrics["schema_strictness"] / t, 1),
             "Proper Base %": round(metrics["proper_base"] / t, 1),

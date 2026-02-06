@@ -56,10 +56,7 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
 
             def visit_Call(self, node):
                 # Check for calls to reasoning methods
-                if (
-                    isinstance(node.func, ast.Attribute)
-                    and node.func.attr.lower() in self.reasoning_methods
-                ):
+                if isinstance(node.func, ast.Attribute) and node.func.attr.lower() in self.reasoning_methods:
                     self.issues.append(
                         f"Dark Reasoning Violation: Unobserved reasoning call '{node.func.attr}' at line {node.lineno}"
                     )
@@ -75,9 +72,7 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
                         "openai",
                         "anthropic",
                     }:
-                        self.issues.append(
-                            f"Potential L5 Bypass: Direct LLM call at line {node.lineno}"
-                        )
+                        self.issues.append(f"Potential L5 Bypass: Direct LLM call at line {node.lineno}")
 
                 self.generic_visit(node)
 

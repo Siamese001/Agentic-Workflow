@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.utils.file_cache import FileCache
 
 logger = logging.getLogger(__name__)
@@ -374,9 +374,7 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
             )
 
         if any("aws" in m.pattern_type.lower() for m in self.matches):
-            recommendations.append(
-                "AWS credentials detected - use IAM roles or AWS SSM Parameter Store"
-            )
+            recommendations.append("AWS credentials detected - use IAM roles or AWS SSM Parameter Store")
 
         if not recommendations:
             recommendations.append("✅ No high-priority credential leaks detected")

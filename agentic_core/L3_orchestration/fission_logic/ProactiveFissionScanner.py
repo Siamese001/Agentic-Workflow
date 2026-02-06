@@ -186,9 +186,7 @@ class ProactiveFissionScanner:
         branch_name: Any = f"proactive-refactor-{timestamp}"
         Logger.info(f"🌿 Creating refactor proposal branch: {branch_name}")
         try:
-            await self.router.call_mcp(
-                "gitkraken", {"action": "create_branch", "name": branch_name}
-            )
+            await self.router.call_mcp("gitkraken", {"action": "create_branch", "name": branch_name})
             await self.router.call_mcp(
                 "redis",
                 {
@@ -234,9 +232,7 @@ class ProactiveFissionScanner:
         return report
 
 
-def get_proactive_scanner(
-    McpRouterAgent: Any, line_threshold: int = 600
-) -> ProactiveFissionScanner:
+def get_proactive_scanner(McpRouterAgent: Any, line_threshold: int = 600) -> ProactiveFissionScanner:
     """
     Factory function to create ProactiveFissionScanner instance.
 

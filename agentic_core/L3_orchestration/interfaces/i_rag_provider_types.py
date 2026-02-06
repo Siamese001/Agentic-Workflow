@@ -67,9 +67,7 @@ class IRagProvider(ABC):
         pass
 
     @abstractmethod
-    async def index(
-        self, documents: list[RagDocument], namespace: str = "sovereign-core"
-    ) -> dict[str, int]:
+    async def index(self, documents: list[RagDocument], namespace: str = "sovereign-core") -> dict[str, int]:
         """
         Index documents into RAG system.
 

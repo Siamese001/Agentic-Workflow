@@ -311,9 +311,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     target_roots = [target_territory]
                 else:
                     target_roots = ["agentic_core"]
-                Logger.info(
-                    f"[{agent_name}] TARGETED AUDIT: {target_territory} (Roots: {target_roots})"
-                )
+                Logger.info(f"[{agent_name}] TARGETED AUDIT: {target_territory} (Roots: {target_roots})")
             else:
                 target_roots = list(sovereign_territories.keys())
 
@@ -391,9 +389,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 self._log_categorical_drift(all_violations)
 
             # Phase 4/6: Logic Consolidation & Deduplication Audit with Resolution
-            dedup_results = self._trigger_deduplication_audit(
-                roots_scanned, execute=execute and not dry_run
-            )
+            dedup_results = self._trigger_deduplication_audit(roots_scanned, execute=execute and not dry_run)
 
             # Phase 3: Post-Healing Environmental Maintenance
             if self.healing_enabled and execute and not dry_run and violations_fixed > 0:
@@ -407,12 +403,8 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             ssot_imports_updated = 0
             if not dry_run:
                 try:
-                    Logger.info(
-                        f"[{agent_name}] Initiating SSOT Folder Cleanup (dry_run={dry_run})..."
-                    )
-                    janitor = SSOTFolderCleanupAgent(
-                        project_root=self.project_root, dry_run=dry_run
-                    )
+                    Logger.info(f"[{agent_name}] Initiating SSOT Folder Cleanup (dry_run={dry_run})...")
+                    janitor = SSOTFolderCleanupAgent(project_root=self.project_root, dry_run=dry_run)
 
                     # Execute cleanup (or preview)
                     cleanup_stats = janitor.cleanup_repository()
@@ -462,9 +454,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         if is_compliant:
             Logger.info("✅ Architecture Integrity Verified. No violations.")
         else:
-            Logger.error(
-                f"❌ Architecture violations detected: {results.get('violations_found', 0)}"
-            )
+            Logger.error(f"❌ Architecture violations detected: {results.get('violations_found', 0)}")
 
         return is_compliant, results
 
@@ -519,9 +509,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             "drift_violations": drift_violations,
         }
 
-    def _orchestrate_guardian_scan(
-        self, target_territories: list[str] | None = None
-    ) -> dict[str, Any]:
+    def _orchestrate_guardian_scan(self, target_territories: list[str] | None = None) -> dict[str, Any]:
         """
         Orchestrate scanning of all L5 Guardians in one pass.
         Internal method for run_audit to consolidate scanning logic.
@@ -675,9 +663,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 return (True, f"False positive identified by Cognitive Triage: {decision.reason}")
 
             # Build detailed reason with recommendation
-            reason = (
-                f"Structural violation: {decision.reason}. Recommended Action: {decision.action}"
-            )
+            reason = f"Structural violation: {decision.reason}. Recommended Action: {decision.action}"
             if decision.target_path:
                 reason += f" to {decision.target_path}"
             reason += f" (confidence: {decision.confidence:.2f})"
@@ -909,9 +895,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
     # PHASE 4/6: DEDUPLICATION & LOGIC CONSOLIDATION WITH HEALING
     # =========================================================================
 
-    def _trigger_deduplication_audit(
-        self, roots: list[str], execute: bool = False
-    ) -> dict[str, Any]:
+    def _trigger_deduplication_audit(self, roots: list[str], execute: bool = False) -> dict[str, Any]:
         """
         [PHASE 4/6] Identify and resolve redundant logic across roots.
 
@@ -1081,8 +1065,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         remaining = [
             p
             for p in path.iterdir()
-            if p.name not in {"__pycache__", "__init__.py", ".gitkeep"}
-            and not p.name.startswith(".")
+            if p.name not in {"__pycache__", "__init__.py", ".gitkeep"} and not p.name.startswith(".")
         ]
 
         if not remaining:
@@ -1148,9 +1131,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         if is_pure:
             Logger.info(f"[{agent_name}] ✅ LOCKDOWN VERIFIED: Repository is sovereign-compliant")
         else:
-            Logger.warning(
-                f"[{agent_name}] ❌ LOCKDOWN FAILED: {violations_found} violations detected"
-            )
+            Logger.warning(f"[{agent_name}] ❌ LOCKDOWN FAILED: {violations_found} violations detected")
 
         return is_pure, results
 
@@ -1217,9 +1198,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 full_path = self.project_root / rel_path
 
                 if not full_path.exists():
-                    violations.append(
-                        {"type": "MISSING_FILE", "path": rel_path, "severity": "CRITICAL"}
-                    )
+                    violations.append({"type": "MISSING_FILE", "path": rel_path, "severity": "CRITICAL"})
                     continue
 
                 current_hash = hashlib.sha256(full_path.read_bytes()).hexdigest()
@@ -1294,9 +1273,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         violations_found = raw_result.get("violations_found", 0)
 
         if violations_found > 0:
-            Logger.warning(
-                f"[{agent_name}] Baseline captured with {violations_found} unresolved violations."
-            )
+            Logger.warning(f"[{agent_name}] Baseline captured with {violations_found} unresolved violations.")
         else:
             Logger.info(f"[{agent_name}] ✅ Golden Baseline captured: 0 violations")
 
@@ -1380,9 +1357,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         else:
             raw_result = lockdown_details.get("_raw_result", lockdown_details)
             remaining = raw_result.get("violations_found", 0)
-            Logger.warning(
-                f"[{agent_name}] ⚠️ CONVERGENCE INCOMPLETE: {remaining} violations remain."
-            )
+            Logger.warning(f"[{agent_name}] ⚠️ CONVERGENCE INCOMPLETE: {remaining} violations remain.")
 
         return {
             "purge_status": purge_results,

@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import Any, Final
 
 # CORE SOCKETING: Align with Phase 2A Unified Base Class
-from agentic_core.base_agents.AppBaseAgent import AppBaseAgent
+from apps_shared.agents.AppBase import AppBase
 
 # PHASE 1.1: Guardrails Integration
 from agentic_core.L1_cognition.meta_learning.guardrails import (
@@ -45,11 +45,11 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class RGAgentBase(AppBaseAgent):
+class RGAgentBase(AppBase):
     """
     RGAgentBase: The Sovereign Foundation for all 'Resume Generation' Agents.
 
-    Inherits from AppBaseAgent for unified app-level capabilities.
+    Inherits from AppBase for unified app-level capabilities.
 
     PHASE 1.1 GUARDRAILS:
     - Integrated MetaLearningGuardrails for security
@@ -78,7 +78,7 @@ class RGAgentBase(AppBaseAgent):
         """
         Initialize RG-specific capabilities after Core hardening.
         """
-        # CRITICAL: Trigger Core Security Validation via AppBaseAgent
+        # CRITICAL: Trigger Core Security Validation via AppBase
         super().__post_init__()
 
         # RG Domain Validation

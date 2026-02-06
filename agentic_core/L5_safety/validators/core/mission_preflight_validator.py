@@ -129,9 +129,7 @@ class MissionPreflight:
         # Print dashboard
         self._print_dashboard(results)
 
-        total_violations = (
-            results["Span"] + results["hierarchy"] + results["naming"] + results["gravity"]
-        )
+        total_violations = results["Span"] + results["hierarchy"] + results["naming"] + results["gravity"]
         results["compliant"] = total_violations == 0
 
         return results
@@ -162,9 +160,7 @@ class MissionPreflight:
         if hierarchy_agent:
             try:
                 result = hierarchy_agent.validate_hierarchy()
-                violations = [
-                    v for v in result if ".git" not in str(v[0]) and "__init__.py" not in str(v[0])
-                ]
+                violations = [v for v in result if ".git" not in str(v[0]) and "__init__.py" not in str(v[0])]
                 if violations:
                     print(f"[!] L6 ALERT: Found {len(violations)} hierarchy violations:")
                     for folder_path, reason in violations[:3]:
@@ -200,9 +196,7 @@ class MissionPreflight:
                 dirs[:] = [d for d in dirs if d not in self.protected_folders]
                 for file in files:
                     if scanned_count >= MAX_SCAN_FILES:
-                        print(
-                            f"   [WARNING] Scan limit reached ({MAX_SCAN_FILES} files) - stopping early"
-                        )
+                        print(f"   [WARNING] Scan limit reached ({MAX_SCAN_FILES} files) - stopping early")
                         scan_limit_reached = True
                         break
                     if not file.endswith(".py"):
@@ -266,8 +260,7 @@ class MissionPreflight:
         location_violations = [
             v
             for v in location_violations
-            if v[0].name not in autonomous_agents
-            and not any(s in str(v[0]) for s in allowed_stages)
+            if v[0].name not in autonomous_agents and not any(s in str(v[0]) for s in allowed_stages)
         ]
 
         if location_violations:
@@ -304,8 +297,6 @@ class MissionPreflight:
         if total_violations == 0:
             print("[SUCCESS] All structural laws satisfied. Neural Link established.")
         else:
-            print(
-                f"   [SOVEREIGN OVERRIDE] Forcing mutation for convergence ({total_violations} violations)"
-            )
+            print(f"   [SOVEREIGN OVERRIDE] Forcing mutation for convergence ({total_violations} violations)")
 
         print("=" * 70 + "\n")

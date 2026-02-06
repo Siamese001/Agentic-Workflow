@@ -4,9 +4,9 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 """
 GravityStateAgent - Gravity Healing State Tracker
@@ -70,9 +70,7 @@ class GravityStateAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBa
     STATE_FILE = "gravity_healing_state.json"
 
     @standard_heal
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -89,7 +87,7 @@ class GravityStateAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBa
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        HealerProtocol compliance method for gravity state violations.
+        IHealerProtocol compliance method for gravity state violations.
 
         Args:
             violation: Dictionary containing violation details

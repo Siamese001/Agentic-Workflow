@@ -60,9 +60,7 @@ class PerceptionNode:
 
         return perceived
 
-    async def process_async(
-        self, raw_input: dict[str, Any], context: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def process_async(self, raw_input: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         """
         Asynchronous input processing.
 
@@ -127,9 +125,7 @@ class PerceptionNode:
         else:
             return "general"
 
-    def _retrieve_relevant_memory(
-        self, query: str, context: dict[str, Any]
-    ) -> list[dict[str, Any]]:
+    def _retrieve_relevant_memory(self, query: str, context: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Retrieve relevant memory for query.
 

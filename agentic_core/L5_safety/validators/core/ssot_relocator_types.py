@@ -149,9 +149,7 @@ class SSOTRelocator:
             else:
                 report.failed += 1
 
-        logger.info(
-            f"Orphan relocation complete: {report.successful}/{report.total_operations} successful"
-        )
+        logger.info(f"Orphan relocation complete: {report.successful}/{report.total_operations} successful")
 
         return report
 
@@ -194,9 +192,7 @@ class SSOTRelocator:
             target = self.project_root / Path(*target_parts)
 
             # Move contents to flattened location
-            result = self._flatten_folder(
-                source=source, target=target, max_depth=violation.max_depth
-            )
+            result = self._flatten_folder(source=source, target=target, max_depth=violation.max_depth)
 
             report.results.append(result)
             report.total_operations += 1
@@ -209,8 +205,7 @@ class SSOTRelocator:
                 report.failed += 1
 
         logger.info(
-            f"Hierarchy enforcement complete: "
-            f"{report.successful}/{report.total_operations} successful"
+            f"Hierarchy enforcement complete: {report.successful}/{report.total_operations} successful"
         )
 
         return report
@@ -251,9 +246,7 @@ class SSOTRelocator:
             else:
                 report.failed += 1
 
-        logger.info(
-            f"Agent relocation complete: {report.successful}/{report.total_operations} successful"
-        )
+        logger.info(f"Agent relocation complete: {report.successful}/{report.total_operations} successful")
 
         return report
 
@@ -317,9 +310,7 @@ class SSOTRelocator:
 
         return result
 
-    def _relocate_folder(
-        self, source: Path, target: Path, action: str = "MOVED"
-    ) -> RelocationResult:
+    def _relocate_folder(self, source: Path, target: Path, action: str = "MOVED") -> RelocationResult:
         """
         Relocate an entire folder with safety checks.
 

@@ -135,9 +135,7 @@ class TelepathyInterface:
             instructions: The instructions that were consumed
         """
         try:
-            done_content: Any = (
-                f"# DONE (Cycle {self._cycle})\n\n# Original instructions:\n{instructions}"
-            )
+            done_content: Any = f"# DONE (Cycle {self._cycle})\n\n# Original instructions:\n{instructions}"
             self.instructions_path.write_text(done_content, encoding="utf-8")
             self._last_consumed = instructions
             LOGGER.info(f"Instructions consumed and marked done (Cycle {self._cycle})")
@@ -158,9 +156,7 @@ class TelepathyInterface:
         if hasattr(context, "signals"):
             context.signals.update(commands["custom_signals"])
         if hasattr(context, "metadata"):
-            context.metadata.update(
-                {"telepathy_commands": commands, "telepathy_cycle": self._cycle}
-            )
+            context.metadata.update({"telepathy_commands": commands, "telepathy_cycle": self._cycle})
         else:
             context.metadata = {"telepathy_commands": commands, "telepathy_cycle": self._cycle}
         if commands["force_agents"] and hasattr(context, "forced_agents"):

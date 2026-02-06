@@ -4,7 +4,7 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING, Any
 
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
@@ -22,11 +22,11 @@ if TYPE_CHECKING:
     ScenarioSimulationResult = dict[str, Any]
     StrategyPlan = dict[str, Any]
 
-    from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+    from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 # Runtime imports
 try:
-    from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+    from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 except ImportError:
     # Fallback stub if mixin is not available
     class SubatomicTestingMixin:

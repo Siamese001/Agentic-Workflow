@@ -148,9 +148,7 @@ class SovereignRAGManager(SovereignBaseAgent):
         combined = self._fuse_results(vector_results, bm25_results)
         return combined[:top_k]
 
-    def _fuse_results(
-        self, vector: list[dict[str, Any]], bm25: list[dict[str, Any]]
-    ) -> list[dict[str, Any]]:
+    def _fuse_results(self, vector: list[dict[str, Any]], bm25: list[dict[str, Any]]) -> list[dict[str, Any]]:
         return vector + bm25
 
     def format_context(self, results: list[dict[str, Any]]) -> str:

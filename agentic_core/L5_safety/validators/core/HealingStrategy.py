@@ -14,10 +14,10 @@ TIERS:
     Tier 4: Final Gate - Safety validation, final checks
 
 USAGE:
-    from agentic_core.L3_orchestration.unified_orchestrator import OrchestratorAgent
+    from agentic_core.L3_orchestration.unified_orchestrator import Orchestrator
 
     strategy = HealingStrategy(project_root=Path.cwd())
-    orchestrator = OrchestratorAgent(strategy=strategy)
+    orchestrator = Orchestrator(strategy=strategy)
     result = orchestrator.run_mission({"dry_run": True})
 """
 
@@ -38,7 +38,7 @@ class HealingStrategy:
     """
     Tiered healing execution strategy.
 
-    Implements the MissionStrategy protocol for the OrchestratorAgent.
+    Implements the MissionStrategy protocol for the Orchestrator.
     Encapsulates the 5-tier healing execution flow from SSOTOrchestratorAgent.
     """
 
@@ -379,9 +379,7 @@ class HealingStrategy:
             "raw_result": result,
         }
 
-    def should_abort_tier(
-        self, tier_name: str, tier_results: list[dict[str, Any]], execute: bool
-    ) -> bool:
+    def should_abort_tier(self, tier_name: str, tier_results: list[dict[str, Any]], execute: bool) -> bool:
         """
         Determine if execution should abort after a tier.
 

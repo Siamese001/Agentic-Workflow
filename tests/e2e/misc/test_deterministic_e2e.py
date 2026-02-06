@@ -14,30 +14,40 @@ from __future__ import annotations
 
 import time
 
-from agentic_core.L0_maintenance.deterministic.ats_validation_deterministic_validator import (
-    ATSValidationDeterministic,
+from agentic_core.L5_safety.validators.ats_validator import (
+    AtsValidator,
 )
-from agentic_core.L0_maintenance.deterministic.campaign_balance_deterministic_validator import (
-    CampaignBalanceDeterministic,
+from agentic_core.L5_safety.validators.campaign_balance_validator import (
+    CampaignBalanceValidator,
 )
-from agentic_core.L0_maintenance.deterministic.content_quality_deterministic_validator import (
-    ContentQualityDeterministic,
+from agentic_core.L5_safety.validators.content_quality_validator import (
+    ContentQualityValidator,
 )
-from agentic_core.L0_maintenance.deterministic.deliverability_deterministic_validator import (
-    DeliverabilityDeterministic,
+from agentic_core.L5_safety.validators.deliverability_validator import (
+    DeliverabilityValidator,
 )
-from agentic_core.L0_maintenance.deterministic.governance_shield_deterministic_validator import (
-    GovernanceShieldDeterministic,
+from agentic_core.L5_safety.validators.governance_shield_validator import (
+    GovernanceShieldValidator,
 )
-from agentic_core.L0_maintenance.deterministic.hop_validation_deterministic_validator import (
-    HOPValidationDeterministic,
+from agentic_core.L5_safety.validators.hop_validator import (
+    HOP1ProfileDeterministic,
 )
-from agentic_core.L0_maintenance.deterministic.intelligence_librarian_deterministic_validator import (
-    IntelligenceLibrarianDeterministic,
+from agentic_core.L5_safety.validators.intelligence_query_validator import (
+    IntelligenceQueryValidator,
 )
-from agentic_core.L0_maintenance.deterministic.lead_quality_deterministic_validator import (
-    LeadQualityDeterministic,
+from agentic_core.L5_safety.validators.lead_quality_validator import (
+    LeadQualityValidator,
 )
+
+# Backward compatibility aliases
+ATSValidationDeterministic = AtsValidator
+CampaignBalanceDeterministic = CampaignBalanceValidator
+ContentQualityDeterministic = ContentQualityValidator
+DeliverabilityDeterministic = DeliverabilityValidator
+GovernanceShieldDeterministic = GovernanceShieldValidator
+HOPValidationDeterministic = HOP1ProfileDeterministic
+IntelligenceLibrarianDeterministic = IntelligenceQueryValidator
+LeadQualityDeterministic = LeadQualityValidator
 
 
 class TestFullPipelineE2E:

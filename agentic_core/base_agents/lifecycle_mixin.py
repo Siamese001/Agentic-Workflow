@@ -158,9 +158,7 @@ class LifecycleMixin(ABC):
                 raise LifecycleError(f"{self.__class__.__name__} startup already in progress")
 
             if self._lifecycle_state == LifecycleState.STOPPED:
-                raise LifecycleError(
-                    f"{self.__class__.__name__} has been stopped and cannot be restarted"
-                )
+                raise LifecycleError(f"{self.__class__.__name__} has been stopped and cannot be restarted")
 
             self._lifecycle_state = LifecycleState.STARTING
             Logger.debug(f"[{self.__class__.__name__}] Starting...")

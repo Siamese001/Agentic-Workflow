@@ -183,9 +183,7 @@ class ReportingAgent(SovereignBaseAgent):
         try:
             return {
                 "total_violations": self.metrics_agent.get_counter("compliance.total_violations"),
-                "violations_by_type": self.metrics_agent.get_labeled_counter(
-                    "compliance.violations_by_type"
-                ),
+                "violations_by_type": self.metrics_agent.get_labeled_counter("compliance.violations_by_type"),
                 "compliance_rate": self.metrics_agent.get_gauge("compliance.compliance_rate"),
                 "last_scan_timestamp": self.metrics_agent.get_metadata("compliance.last_scan"),
             }
