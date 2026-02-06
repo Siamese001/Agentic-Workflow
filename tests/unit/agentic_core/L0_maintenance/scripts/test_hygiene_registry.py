@@ -1,6 +1,6 @@
 """Test script to validate core hygiene agents registry."""
 
-from agentic_core.config.core.core_hygiene_agents import (
+from agentic_core.config.core.hygiene_registry_config import (
     CORE_HYGIENE_AGENTS,
     MANDATORY_PREFLIGHT,
     get_all_hygiene_agents,

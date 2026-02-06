@@ -27,7 +27,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.config.core_hygiene_agents import (
+from agentic_core.config.core.hygiene_registry_config import (
     CORE_HYGIENE_AGENTS,
 )
 

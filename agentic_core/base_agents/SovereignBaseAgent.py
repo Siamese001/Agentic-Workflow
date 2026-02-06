@@ -33,7 +33,7 @@ from typing import Any
 from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
 
 # [PHASE 9] Global Architecture Injection
-from agentic_core.config.core.config_mixin_config import ConfigMixin
+from agentic_core.mixins.configuration_mixin import ConfigMixin
 
 # [COGNITIVE HARDENING] Anti-Context Drift and Token Overload
 from agentic_core.L1_cognition.memory.golden_context_mixin import GoldenContextMixin

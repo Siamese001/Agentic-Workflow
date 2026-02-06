@@ -27,7 +27,7 @@ def phase10_ssot_purification():
     ssot_files = [
         project_root / "agentic_core/L5_safety/validators/structure_blueprint.py",
         project_root / "agentic_core/L2_execution/tool_registry/SubAtomicRegistryAgent.py",
-        project_root / "agentic_core/config/core_hygiene_agents.py",
+        project_root / "agentic_core/config/core/hygiene_registry_config.py",
     ]
 
     print("--- SSOT Files to Purify ---")

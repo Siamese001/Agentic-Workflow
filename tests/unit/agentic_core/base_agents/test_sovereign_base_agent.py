@@ -129,7 +129,7 @@ class TestSovereignBaseAgentMixins:
     def test_config_mixin_exists(self):
         """Verify ConfigMixin is available."""
         try:
-            from agentic_core.config.core.config_mixin_config import ConfigMixin
+            from agentic_core.mixins.configuration_mixin import ConfigMixin
 
             assert ConfigMixin is not None
         except (ImportError, NameError, AttributeError):

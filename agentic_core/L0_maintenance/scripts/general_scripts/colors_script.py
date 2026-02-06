@@ -575,7 +575,7 @@ def main():
 
     # Handle hygiene modes
     if args.preflight_only or args.hygiene or args.full_hygiene:
-        from agentic_core.config.core_hygiene_agents import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
+        from agentic_core.config.core.hygiene_registry_config import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
         from agentic_core.L3_orchestration.Orchestrator import Orchestrator
         from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
 
