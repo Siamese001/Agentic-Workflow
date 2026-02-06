@@ -159,6 +159,20 @@ class FileClassificationAgent(*BASE_CLASSES):
             "config_updates": 0,  # Non-python asset refs
         }
 
+        # GLOBAL RUN-LEVEL IDEMPOTENCE CACHE (FINAL HARDENING 2026-02-05)
+        self.processed_paths: set[Path] = set()
+
+        # APP-SPECIFIC TERRITORY MAP (DEPTH-2 MVC)
+        self.app_territory_map = {
+            "AGENT": ["engines"],
+            "ORCHESTRATOR": ["engines"],
+            "VALIDATOR": ["domain", "utils"],
+            "CONFIG": ["config"],
+            "TYPES": ["domain"],
+            "CLASS": ["domain", "engines", "utils"],
+            "MIXIN": ["utils", "shared", "mixins"],
+        }
+
     def run(self) -> dict[str, Any]:
         """Entry point for execute_ssot.py orchestration."""
         self.logger.info(f"Executing File Classification Audit at {self.project_root}")
@@ -196,6 +210,10 @@ class FileClassificationAgent(*BASE_CLASSES):
                 self.logger.info(f"\n[TERRITORY] {path.name} ({ftype}) is in {path.parent.name}")
                 self.logger.info(f"  [ACTION] MOVE to {target_territory_path.parent.name}")
 
+                # Cache paths before move
+                self.processed_paths.add(path)
+                self.processed_paths.add(target_territory_path)
+
                 # Execute Move
                 if self.resolve_collision_and_rename(
                     path, target_territory_path.name, target_dir=target_territory_path.parent
@@ -221,6 +239,10 @@ class FileClassificationAgent(*BASE_CLASSES):
                         self.stats["collisions_resolved"] += 1
                         self.action_counters["renames"] += 1
 
+                        # Cache source and renamed path
+                        self.processed_paths.add(path)
+                        self.processed_paths.add(path.parent / new_name)
+
                         # [HARDENED] Update in-memory tracker AFTER successful file operation
                         dest = path.parent / new_name
 
@@ -241,7 +263,12 @@ class FileClassificationAgent(*BASE_CLASSES):
                             old_stem = path.stem
                             new_stem = Path(new_name).stem
 
-                            if old_stem != new_stem and old_stem[0].isupper() and new_stem[0].isupper():
+                            # APP DEEP REFACTOR SUPPRESSION
+                            is_app = any(p.startswith("apps_") for p in path.parts)
+                            if is_app:
+                                # Suppress deep refactors in apps for stability
+                                pass
+                            elif old_stem != new_stem and old_stem[0].isupper() and new_stem[0].isupper():
                                 self.logger.info(f"  [DEEP REFACTOR] {old_stem} -> {new_stem}")
                                 refactor_count = self.deep_refactor_name(old_stem, new_stem)
                                 self.stats["deep_refactors"] += refactor_count
@@ -521,6 +548,17 @@ class FileClassificationAgent(*BASE_CLASSES):
         # 7. ADAPTER: Detect if Strategy or Adapter in class name or file path
         elif is_adapter:
             return "ADAPTER"
+        # APP-SPECIFIC CLASSIFICATION OVERRIDES
+        is_app = any(p.startswith("apps_") for p in path.parts)
+        if is_app:
+            # Suppress loose SCRIPT in apps (no __main__ = CLASS)
+            if not is_agent and not is_validator and not is_config and "__main__" not in content:
+                # Would have been SCRIPT, force to CLASS
+                pass
+            # Force VALIDATOR on hybrid names
+            if "Validator" in primary_name and "Agent" in primary_name:
+                return "VALIDATOR"
+
         # 8. CONFIG: Detect if file name or path contains config, blueprint, settings, or manifest
         elif is_config:
             return "CONFIG"
@@ -1594,25 +1632,16 @@ class FileClassificationAgent(*BASE_CLASSES):
         if not root_anchor:
             return None  # Outside of sovereign territory control
 
+        # GLOBAL IDEMPOTENCE GATE
+        if path in self.processed_paths:
+            return None
+
         is_core = root_anchor == "agentic_core"
         is_app = root_anchor.startswith("apps_")
 
         # 2. DEFINE RULES (THE CONSTITUTION)
 
-        # [APP RULES] Strict MVC/Layered Pattern
-        # In apps, an Agent MUST be in engines/ or core/.
-        app_rules = {
-            "AGENT": ["engines", "core"],
-            "ORCHESTRATOR": ["engines", "orchestrators"],
-            "VALIDATOR": ["validators", "validation", "logic_nodes"],  # Added logic_nodes for apps_lic/rg
-            "CONFIG": ["config"],
-            "MIXIN": ["mixins", "shared", "core"],
-            "ADAPTER": ["adapters", "strategies", "tools"],
-            "FACTORY": ["factories"],
-            "GATEWAY": ["gateways"],
-            "PROTOCOL": ["interfaces", "core"],
-            "TYPES": ["domain", "models", "types", "config"],  # Allow config for Pydantic models
-        }
+        # [APP RULES] Now using self.app_territory_map instead
 
         # [CORE RULES] Domain-Driven Design
         # In Core, Agents follow the Domain (Guardrails, Registry, etc.)
@@ -1654,11 +1683,20 @@ class FileClassificationAgent(*BASE_CLASSES):
         target_folder = None
 
         if is_app:
-            # Strict Check
-            allowed = app_rules.get(file_type)
-            if allowed and current_parent not in allowed:
-                # Default to the first allowed folder (usually the "Best Practice" one)
-                target_folder = allowed[0]
+            allowed = self.app_territory_map.get(file_type, [])
+            if current_parent not in allowed:
+                target_dir = (
+                    "config"
+                    if file_type == "CONFIG"
+                    else "engines"
+                    if file_type in ("AGENT", "ORCHESTRATOR")
+                    else "domain"
+                )
+                target_path = path.parent.parent / target_dir / path.name
+                self.processed_paths.add(path)
+                self.processed_paths.add(target_path)
+                return target_path
+            return None
 
         elif is_core:
             # Domain Check
@@ -1667,7 +1705,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 # If current parent is NOT in the allowed domain set
                 if current_parent not in allowed_set:
                     # Generic Catch-All: If it's in a generic junk folder, move it.
-                    # If it's in a specialized domain (e.g. 'planning'), assume it's OK (Innocent until proven guilty)
+                    # If in specialized domain (e.g. 'planning'), assume OK (Innocent until proven guilty)
                     junk_drawers = {"utils", "common", "helpers", "misc", "temp"}
 
                     if current_parent in junk_drawers:
@@ -1683,11 +1721,15 @@ class FileClassificationAgent(*BASE_CLASSES):
                         }
                         target_folder = core_defaults.get(file_type)
 
+        # GUARDRAILS IMMUNITY
+        if "guardrails" in path.parts and file_type == "AGENT":
+            return None
+
         # 4. SPECIAL HANDLING: TESTS
         if file_type == "TEST":
             if "tests" not in parts and not path.name.startswith("test_"):
                 # It's a test file outside of tests/ -> Violates Mirroring
-                # (This logic is complex, usually handled by mirror check, skipping for now to avoid over-engineering)
+                # (Complex logic, handled by mirror check, skip to avoid over-engineering)
                 pass
 
         # 5. CALCULATE RESULT
@@ -1718,6 +1760,12 @@ class FileClassificationAgent(*BASE_CLASSES):
         if file_type in {"IGNORE", "TYPES", "UTILITY"}:
             return None
 
+        # GLOBAL IDEMPOTENCE GATE
+        if path in self.processed_paths:
+            return None
+
+        is_app = any(p.startswith("apps_") for p in path.parts)
+
         # SSOT IMMUNITY LIST (2026-02-05)
         # Known sovereign configuration/blueprint files - immune to renaming
         immune_paths = {
@@ -1728,6 +1776,53 @@ class FileClassificationAgent(*BASE_CLASSES):
             self.logger.info(f"[IMMUNE] Skipping rename for SSOT file: {path.name}")
             return None
 
+        # Get target_name from AST for accurate comparison
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+            classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+            target_name = classes[0] if classes else path.stem
+        except Exception:
+            target_name = path.stem
+
+        if is_app:
+            # APPS HIGH-SIGNAL NAMING (MINIMALIST MVC)
+            base_name = re.sub(r"Phase\d+", "", target_name)  # Strip Phase#
+            if "hop" in base_name.lower():
+                base_name = re.sub(r"hop", "HOP", base_name, flags=re.IGNORECASE)
+
+            if file_type in ("AGENT", "CLASS", "ORCHESTRATOR"):
+                base_name = base_name.removesuffix("Agent").removesuffix("Strategy").removesuffix("Validator")
+                new_name = f"{self._to_pascal_case(base_name)}.py"
+                if new_name != path.name:
+                    self.processed_paths.add(path)
+                    self.processed_paths.add(path.with_name(new_name))
+                    return new_name
+                return None
+
+            if file_type == "CONFIG":
+                if path.name.endswith("_config.py"):
+                    return None
+                base_name = path.stem.removesuffix("Config").removesuffix("Agent")
+                new_name = f"{self._to_smart_snake_case(base_name)}_config.py"
+                if new_name != path.name:
+                    self.processed_paths.add(path)
+                    self.processed_paths.add(path.with_name(new_name))
+                    return new_name
+                return None
+
+            if file_type == "VALIDATOR":
+                if path.name.endswith("_validator.py"):
+                    return None
+                base_name = target_name.removesuffix("Validator").removesuffix("Agent")
+                new_name = f"{self._to_smart_snake_case(base_name)}_validator.py"
+                if new_name != path.name:
+                    self.processed_paths.add(path)
+                    self.processed_paths.add(path.with_name(new_name))
+                    return new_name
+                return None
+
+            return None
+
         # SCRIPT: Force Snake Case
         if file_type == "SCRIPT":
             snake = self._to_smart_snake_case(path.stem)
@@ -1735,33 +1830,15 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # CONSOLIDATED GUARDRAILS NAMING CONVENTION ENFORCEMENT
         if file_type == "AGENT" and "guardrails" in path.parts:
-            # FINAL STABILITY HARDENING (2026-02-05)
-            # Get target_name from AST for accurate comparison
-            try:
-                tree = ast.parse(path.read_text(encoding="utf-8"))
-                classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
-                target_name = classes[0] if classes else path.stem
-            except Exception:
-                target_name = path.stem
-
-            # 1. If already perfectly compliant → skip entirely
             if path.name.endswith("_agent.py"):
-                # Optional: check if base name matches primary class (extra safety)
-                expected_base = self._to_smart_snake_case(target_name.removesuffix("Agent"))
-                if path.stem == f"{expected_base}_agent":
-                    self.logger.info(f"[GUARDRAILS PERFECT] No rename needed: {path.name}")
-                    return None
-                # If mismatch but ends with _agent.py → still skip to avoid oscillation
-                self.logger.info(f"[GUARDRAILS COMPLIANT] Skipping rename (already _agent.py): {path.name}")
                 return None
-
-            # 2. Strip only known legacy/mixed suffixes (preserve semantics)
             base_name = target_name.removesuffix("Agent").removesuffix("Strategy").removesuffix("Handler")
-            # Preserve meaningful terms like Membrane, Sentinel, Governor
-            # Do NOT strip them — they are part of the sovereign identity
-
-            snake_name = self._to_smart_snake_case(base_name)
-            return f"{snake_name}_agent.py"
+            new_name = f"{self._to_smart_snake_case(base_name)}_agent.py"
+            if new_name != path.name:
+                self.processed_paths.add(path)
+                self.processed_paths.add(path.with_name(new_name))
+                return new_name
+            return None
 
         # TEST: Force test_ prefix + snake_case
         if file_type == "TEST":
@@ -1913,21 +1990,21 @@ class FileClassificationAgent(*BASE_CLASSES):
         violation_type = violation.get("type", "naming")
         path = violation.get("path", "")
 
-        Logger.info(f"[HEAL] Processing {violation_type} violation at {path}")
+        self.logger.info(f"[HEAL] Processing {violation_type} violation at {path}")
 
         if violation_type != "naming":
-            Logger.warning(f"  Unknown violation type: {violation_type}")
+            self.logger.warning(f"  Unknown violation type: {violation_type}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
         file_path = Path(path)
 
         # Validate file exists and is Python
         if not file_path.exists():
-            Logger.warning(f"  File does not exist: {path}")
+            self.logger.warning(f"  File does not exist: {path}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
         if file_path.suffix != ".py":
-            Logger.info(f"  Non-Python file {path}, skipping")
+            self.logger.info(f"  Non-Python file {path}, skipping")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
         try:
@@ -1935,30 +2012,30 @@ class FileClassificationAgent(*BASE_CLASSES):
             file_type = self.classify_file(file_path)
 
             if file_type == "IGNORE":
-                Logger.info(f"  File {path} is IGNORE type, skipping")
+                self.logger.info(f"  File {path} is IGNORE type, skipping")
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
             # Use unified naming logic (same as main audit)
             new_name = self.get_compliant_name(file_path, file_type)
 
             if not new_name or new_name == file_path.name:
-                Logger.info(f"  File {path} is already compliant")
+                self.logger.info(f"  File {path} is already compliant")
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
             new_path = file_path.parent / new_name
 
             if new_path.exists():
-                Logger.warning(f"  Target {new_path} already exists")
+                self.logger.warning(f"  Target {new_path} already exists")
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
             # Perform the rename
             file_path.rename(new_path)
-            Logger.info(f"  Renamed {path} -> {new_path}")
+            self.logger.info(f"  Renamed {path} -> {new_path}")
 
             return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
 
         except Exception as e:  # guardian: allow-silent_swallower
-            Logger.error(f"  Error processing {path}: {e}")
+            self.logger.error(f"  Error processing {path}: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
     @standard_heal
@@ -2041,6 +2118,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         finally:
             _call_path.discard(agent_id)
+            self.processed_paths.clear()  # Fresh for next run
 
 
 def main():
