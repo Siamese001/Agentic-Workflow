@@ -12,12 +12,18 @@ import subprocess
 import time
 from typing import Any
 
-from agentic_core.L2_execution.tool_registry.firecracker_manager_types import (
-    VMConfig,
-    VMInstance,
-    VMProvider,
-    VMStatus,
-)
+try:
+    from agentic_core.L2_execution.types.firecracker_manager_types import (
+        VMConfig,
+        VMInstance,
+        VMProvider,
+        VMStatus,
+    )
+except ImportError:
+    VMConfig = None  # type: ignore[misc,assignment]
+    VMInstance = None  # type: ignore[misc,assignment]
+    VMProvider = None  # type: ignore[misc,assignment]
+    VMStatus = None  # type: ignore[misc,assignment]
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.validators.core.decorators import standard_heal

@@ -12,8 +12,15 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.tool_registry.firecracker_manager_impl import FirecrackerManager
-from agentic_core.L2_execution.tool_registry.firecracker_manager_types import VMConfig
+try:
+    from agentic_core.L2_execution.sandbox.firecracker_manager import FirecrackerManager
+except ImportError:
+    FirecrackerManager = None  # type: ignore[misc,assignment]
+
+try:
+    from agentic_core.L2_execution.types.firecracker_manager_types import VMConfig
+except ImportError:
+    VMConfig = None  # type: ignore[misc,assignment]
 
 LOGGER = logging.getLogger(__name__)
 
